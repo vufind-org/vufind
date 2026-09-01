@@ -167,9 +167,9 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
         ?\VuFind\Config\Config $config = null
     ): History {
         return new History(
-            $searchService ?? $this->createMock(SearchServiceInterface::class),
+            $searchService ?? $this->createStub(SearchServiceInterface::class),
             'foosession',
-            $resultsManager ?? $this->createMock(\VuFind\Search\Results\PluginManager::class),
+            $resultsManager ?? $this->createStub(\VuFind\Search\Results\PluginManager::class),
             $config
         );
     }

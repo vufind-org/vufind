@@ -30,10 +30,14 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
+use VuFind\Exception\Forbidden;
+use VuFind\Http\HttpStatus;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -46,9 +50,10 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
+class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface, AuthorizationServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use AuthorizationServiceAwareTrait;
 
     /**
      * Constructor.
@@ -64,19 +69,25 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         protected Config $config,
         protected SessionServiceInterface $sessionService
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
+
+        if (!$this->getAuthorizationService()->isGranted('access.SystemStatus')) {
+            throw new Forbidden('Access denied');
+        }
+
         // Check system status
         if (
             !empty($this->config->System->healthCheckFile)
@@ -84,7 +95,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         ) {
             return $this->formatResponse(
                 'Health check file exists',
-                self::STATUS_HTTP_UNAVAILABLE
+                HttpStatus::UNAVAILABLE
             );
         }
 
@@ -92,7 +103,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         $this->log('info', 'SystemStatus log check', [], true);
 
         // Test search index
-        if ($params->fromPost('index') ?? $params->fromQuery('index', 1)) {
+        if ($this->getPostOrQueryParam($request, 'index', 1)) {
             try {
                 $results = $this->resultsManager->get(DEFAULT_SEARCH_BACKEND);
                 $paramsObj = $results->getParams();
@@ -101,19 +112,19 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             } catch (\Exception $e) {
                 return $this->formatResponse(
                     'Search index error: ' . $e->getMessage(),
-                    self::STATUS_HTTP_ERROR
+                    HttpStatus::ERROR
                 );
             }
         }
 
         // Test database connection
-        if ($params->fromPost('database') ?? $params->fromQuery('database', 1)) {
+        if ($this->getPostOrQueryParam($request, 'database', 1)) {
             try {
                 $this->sessionService->getSessionById('healthcheck', false);
             } catch (\Exception $e) {
                 return $this->formatResponse(
                     'Database error: ' . $e->getMessage(),
-                    self::STATUS_HTTP_ERROR
+                    HttpStatus::ERROR
                 );
             }
         }

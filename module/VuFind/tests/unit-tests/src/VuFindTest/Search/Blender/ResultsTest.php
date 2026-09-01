@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Blender;
 
-use VuFind\Config\Config;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Blender\Results;
@@ -90,7 +89,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $paramsClasses,
-            new Config([]),
             []
         );
         $searchService = $this->createMock(\VuFindSearch\Service::class);
@@ -101,8 +99,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results = new Results($params, $searchService, $recordLoader);
         $results->performAndProcessSearch();
 
-        $this->assertEquals(20, $results->getResultTotal());
-        $this->assertEquals([], $results->getResults());
-        $this->assertEquals(['Error Message'], $results->getErrors());
+        $this->assertSame(20, $results->getResultTotal());
+        $this->assertSame([], $results->getResults());
+        $this->assertSame(['Error Message'], $results->getErrors());
     }
 }

@@ -100,9 +100,7 @@ class MultiBackend extends AbstractMultiDriver
         'findReserves',
         'getCourses',
         'getDepartments',
-        'getFunds',
         'getInstructors',
-        'getNewItems',
         'getOfflineMode',
         'getSuppressedAuthorityRecords',
         'getSuppressedRecords',
@@ -313,38 +311,6 @@ class MultiBackend extends AbstractMultiDriver
             return $drivers[0];
         }
         return '';
-    }
-
-    /**
-     * Get New Items.
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        if ($driver = $this->getDriver($this->defaultDriver)) {
-            $result = $driver->getNewItems($page, $limit, $daysOld, $fundId);
-            if (isset($result['results'])) {
-                $result['results']
-                    = $this->addIdPrefixes($result['results'], $this->defaultDriver);
-            }
-            return $result;
-        }
-        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -671,14 +637,13 @@ class MultiBackend extends AbstractMultiDriver
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
-     * @return string A location ID
+     * @return false|string       The default request group for the patron.
      */
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
@@ -992,7 +957,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $source = null;
         if (!empty($params)) {
@@ -1031,7 +996,7 @@ class MultiBackend extends AbstractMultiDriver
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

@@ -512,7 +512,7 @@ class SierraRest extends AbstractBase implements
         $this->patronBlockMappings = $this->config['PatronBlockMappings'] ?? [];
         $this->fineTypeMappings = (array)($this->config['FineTypeMappings'] ?? []);
         if ($types = $this->config['OnlinePayment']['fineTypes'] ?? '') {
-            $this->onlinePayableFineTypes = $this->explodeSetting($types, true, ',');
+            $this->onlinePayableFineTypes = $this->explodeSetting($types, 'trim', ',');
         }
         if ($mappings = $this->config['OnlinePayment']['driverProductCodeMappings'] ?? []) {
             foreach ($mappings as $mapping) {
@@ -650,31 +650,6 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get New Items.
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        return ['count' => 0, 'results' => []];
-    }
-
-    /**
      * Find Reserves.
      *
      * Obtain information on course reserves.
@@ -700,7 +675,7 @@ class SierraRest extends AbstractBase implements
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -2007,7 +1982,7 @@ class SierraRest extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactions' === $function) {
             return [
@@ -2016,7 +1991,7 @@ class SierraRest extends AbstractBase implements
         }
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 100,
@@ -2031,7 +2006,7 @@ class SierraRest extends AbstractBase implements
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
         if ('OnlinePayment' === $function) {
             $result = $this->config['OnlinePayment'] ?? [];
@@ -2040,7 +2015,7 @@ class SierraRest extends AbstractBase implements
             return $result;
         }
 
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**

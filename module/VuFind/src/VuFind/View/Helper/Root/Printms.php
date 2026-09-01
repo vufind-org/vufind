@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 use function sprintf;
 
 /**
@@ -42,7 +40,7 @@ use function sprintf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Printms extends AbstractHelper
+class Printms
 {
     /**
      * Prints a human readable format from a number of milliseconds.

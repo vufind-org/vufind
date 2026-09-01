@@ -33,8 +33,10 @@ namespace VuFind\View\Helper\Root;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Icon helper factory.
@@ -83,11 +85,13 @@ class IconFactory implements FactoryInterface
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);
         $helpers = $container->get('ViewHelperManager');
+        $renderer = $container->get(RendererInterface::class);
         return new $requestedName(
             $config,
             $cache,
             $helpers->get('escapeHtmlAttr'),
-            $container->get('ViewManager')->getViewModel()->rtl
+            $renderer,
+            $container->get(GlobalsContainer::class)['rtl']
         );
     }
 }

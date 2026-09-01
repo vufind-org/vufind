@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountMenuFactory extends AbstractMenuFactory
+class AccountMenuFactory
 {
     /**
      * Create an object.
@@ -75,19 +75,15 @@ class AccountMenuFactory extends AbstractMenuFactory
             );
         }
 
-        return parent::__invoke(
-            $container,
-            $requestedName,
-            [
-                'AccountMenu.yaml',
-                $container->get(\VuFind\Config\AccountCapabilities::class),
-                $container->get(\VuFind\Auth\Manager::class),
-                $container->get(\VuFind\ILS\Connection::class),
-                $container->get(\VuFind\Auth\ILSAuthenticator::class),
-                $connector,
-                $configManager->getConfigArray('config'),
-                ...($options ?? []),
-            ]
+        return new $requestedName(
+            $container->get(\VuFind\Section\SectionServiceInterface::class),
+            $configManager->getConfigArray('AccountMenu'),
+            $configManager->getConfigArray('config'),
+            $container->get(\VuFind\Config\AccountCapabilities::class),
+            $container->get(\VuFind\Auth\Manager::class),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $connector,
         );
     }
 }

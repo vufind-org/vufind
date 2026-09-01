@@ -35,6 +35,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       callnumAndLocations.forEach((callnumAndLocation) => {
         VuFind.setInnerHtml(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
       });
+      VuFind.lightbox.bind(callnumAndLocations);
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
     } else if (typeof(result.missing_data) !== 'undefined'
       && result.missing_data
@@ -43,11 +44,12 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       el.querySelectorAll('.callnumAndLocation,.status').forEach((e) => e.classList.add('hidden'));
     } else if (result.locationList) {
       // We have multiple locations - hide unwanted labels and display HTML from response:
-      el.querySelectorAll('.callnumber,.hideIfDetailed,.location').forEach((e) => e.classList.add('hidden'));
+      el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.getThis').forEach((e) => e.classList.add('hidden'));
       el.querySelectorAll('.locationDetails').forEach((locationDetails) => {
         locationDetails.classList.remove('hidden');
         VuFind.setInnerHtml(locationDetails, result.locationList);
       });
+      VuFind.lightbox.bind(el);
     } else {
       // Default case -- load call number and location into appropriate containers:
       el.querySelectorAll('.callnumber').forEach((callnumber) => {
@@ -55,6 +57,13 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           VuFind.setInnerHtml(callnumber, result.callnumberHtml + '<br>');
         } else {
           callnumber.textContent = '';
+        }
+      });
+      el.querySelectorAll('.getThis').forEach((getThisContainer) => {
+        if (result.getThisURL && getThisContainer.getElementsByTagName('a').length > 0) {
+          getThisContainer.getElementsByTagName('a')[0].href = result.getThisURL;
+        } else {
+          getThisContainer.remove();
         }
       });
       el.querySelectorAll('.location').forEach((location) => {
@@ -223,7 +232,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     if (callnumAndLocationEl) {
       callnumAndLocationEl.classList.remove("hidden");
     }
-    el.querySelectorAll(".callnumAndLocation .ajax-availability").forEach(
+    el.querySelectorAll(".callnumAndLocation .ajax-availability:not(.getThis)").forEach(
       (ajaxEl) => ajaxEl.classList.remove("hidden")
     );
 

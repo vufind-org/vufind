@@ -61,13 +61,12 @@ class SampleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that sample driver never returns new items.
+     * Test that sample driver never returns departments.
      *
      * @return void
      */
-    public function testGetNewItems()
+    public function testGetDepartments()
     {
-        $new = $this->driver->getNewItems(1, 1, 1);
-        $this->assertEquals(0, $new['count']);
+        $this->assertSame([], $this->driver->getDepartments());
     }
 }

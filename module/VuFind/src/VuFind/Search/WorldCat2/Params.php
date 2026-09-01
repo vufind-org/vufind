@@ -48,7 +48,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $facetToFilterFieldMap = [
+    protected array $facetToFilterFieldMap = [
         'language' => 'inLanguage',
     ];
 
@@ -57,7 +57,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 
@@ -98,19 +98,15 @@ class Params extends \VuFind\Search\Base\Params
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
         $hiddenFilterList = $this->getHiddenFilters();
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    $params->add($this->mapFacetFieldToFilterParam($filt['field']), $filt['value']);
-                }
+        // Loop through all filters and add appropriate values to request:
+        foreach ($filterList as $filterArray) {
+            foreach ($filterArray as $filt) {
+                $params->add($this->mapFacetFieldToFilterParam($filt['field']), $filt['value']);
             }
         }
-        if (!empty($hiddenFilterList)) {
-            foreach ($hiddenFilterList as $field => $hiddenFilters) {
-                foreach ($hiddenFilters as $value) {
-                    $params->add($this->mapFacetFieldToFilterParam($field), $value);
-                }
+        foreach ($hiddenFilterList as $field => $hiddenFilters) {
+            foreach ($hiddenFilters as $value) {
+                $params->add($this->mapFacetFieldToFilterParam($field), $value);
             }
         }
     }

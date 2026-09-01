@@ -30,7 +30,6 @@
 namespace VuFindTest\CSV;
 
 use VuFind\CSV\Importer;
-use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
 
 use function array_slice;
@@ -286,11 +285,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->exactly(3))->method('save')->with(
             'Solr',
-            $this->callback(
-                function ($doc) {
-                    return $doc instanceof RawJSONDocument;
-                }
-            ),
+            $this->isInstanceOf(\VuFindSearch\Backend\Solr\Document\RawJSONDocument::class),
             'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);

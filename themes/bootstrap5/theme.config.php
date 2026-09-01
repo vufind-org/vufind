@@ -98,13 +98,14 @@ return [
      */
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
+        'abstract_factories' => [
+            \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+        ],
         'factories' => [
             'VuFind\View\Helper\Bootstrap5\BulkAction' => 'VuFind\View\Helper\Root\BulkActionFactory',
-            'VuFind\View\Helper\Bootstrap5\CopyToClipboardButton' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap5\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap5\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap5\LayoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClassFactory',
-            'VuFind\View\Helper\Bootstrap5\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
             'bulkAction' => 'VuFind\View\Helper\Bootstrap5\BulkAction',
@@ -186,6 +187,8 @@ return [
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'content-delete' => 'FontAwesome:trash',
+            'content-edit' => 'FontAwesome:edit',
             'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
             'currency-eur' => 'FontAwesome:euro-sign',
@@ -199,7 +202,9 @@ return [
             'currency-usd' => 'FontAwesome:dollar-sign',
             'currency-won' => 'FontAwesome:won-sign',
             'currency-yen' => 'FontAwesome:yen-sign',
-            'dropdown-caret' => 'FontAwesome:caret-down',
+            'dropdown-caret' => 'Alias:dropdown-open', // deprecated, use dropdown-open instead
+            'dropdown-close' => 'FontAwesome:caret-up',
+            'dropdown-open' => 'FontAwesome:caret-down',
             'explain' => 'FontAwesome:question-circle',
             'export' => 'FontAwesome:up-right-from-square',
             'external-link' => 'FontAwesome:link',

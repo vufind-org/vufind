@@ -31,6 +31,7 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
+use VuFind\Connection\Webhook;
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -154,13 +155,19 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param string $test   Name of test fixture to load
-     * @param ?array $config Driver configuration (null to use default)
+     * @param string   $test              Name of test fixture to load
+     * @param ?array   $config            Driver configuration (null to use default)
+     * @param ?Webhook $webhookConnection Webhook connection (null to use default)
+     * @param array    $extraMockMethods  Names of additional methods to allow mocking
      *
      * @return void
      */
-    protected function createConnector(string $test, ?array $config = null): void
-    {
+    protected function createConnector(
+        string $test,
+        ?array $config = null,
+        ?Webhook $webhookConnection = null,
+        array $extraMockMethods = []
+    ): void {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
         $this->currentFixture = $test;
@@ -172,8 +179,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         };
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
-            ->onlyMethods(['makeRequest'])
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, $webhookConnection])
+            ->onlyMethods(['makeRequest', ...$extraMockMethods])
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
@@ -328,6 +335,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'addressTypeIds' => [],
             'major' => null,
             'college' => null,
+            'addresses' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -359,19 +367,43 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'addressTypeIds' => [],
             'major' => null,
             'college' => null,
+            'addresses' => [],
         ];
         $this->assertEquals($expected, $result);
     }
 
     /**
+     * Successful place hold test provider.
+     *
+     * @return \Iterator
+     */
+    public static function successfulPlaceHoldTestProvider(): \Iterator
+    {
+        yield 'normal' => [
+            false,
+        ];
+        yield 'using webhook' => [
+            true,
+        ];
+    }
+
+    /**
      * Test successful place hold.
+     *
+     * @param bool $useWebhook Set a webhook url
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
-    public function testSuccessfulPlaceHold(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('successfulPlaceHoldTestProvider')]
+    public function testSuccessfulPlaceHold(bool $useWebhook): void
     {
-        $this->createConnector('successful-place-hold');
+        $config = $this->defaultDriverConfig;
+        if ($useWebhook) {
+            $config['Holds']['webhook'] = 'http://foo.bar';
+        }
+        $webhookConnection = $this->createMock(Webhook::class);
+        $this->createConnector('successful-place-hold', $config, $webhookConnection);
         $details = [
             'requiredBy' => '2022-01-01',
             'requiredByTS' => 1641049790,
@@ -381,6 +413,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
+        if ($useWebhook) {
+            $webhookConnection->expects($this->once())->method('post')->with('http://foo.bar');
+        } else {
+            $webhookConnection->expects($this->never())->method('post');
+        }
         $result = $this->driver->placeHold($details);
         $expected = [
             'success' => true,
@@ -618,7 +655,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected = [];
+        $expected = ['records' => [], 'count' => 0];
         $this->assertEquals($expected, $result);
     }
 
@@ -635,18 +672,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Page',
-            'create' => '12-20-2022',
-            'expire' => '',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
-            'available' => true,
-            'in_transit' => false,
-            'last_pickup_date' => '12-29-2022',
-            'position' => 1,
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Page',
+                    'create' => '12-20-2022',
+                    'expire' => '',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+                    'available' => true,
+                    'in_transit' => false,
+                    'last_pickup_date' => '12-29-2022',
+                    'position' => 1,
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -664,19 +706,24 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'bar',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Page',
-            'create' => '12-20-2022',
-            'expire' => '',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
-            'available' => true,
-            'in_transit' => false,
-            'last_pickup_date' => '12-29-2022',
-            'position' => 1,
-            'proxiedFor' => 'TestuserJohn, John',
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Page',
+                    'create' => '12-20-2022',
+                    'expire' => '',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+                    'available' => true,
+                    'in_transit' => false,
+                    'last_pickup_date' => '12-29-2022',
+                    'position' => 1,
+                    'proxiedFor' => 'TestuserJohn, John',
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -694,18 +741,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Page',
-            'create' => '11-07-2022',
-            'expire' => '',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Basic economics : a common sense guide to the economy ',
-            'available' => false,
-            'in_transit' => true,
-            'last_pickup_date' => null,
-            'position' => 1,
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Page',
+                    'create' => '11-07-2022',
+                    'expire' => '',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Basic economics : a common sense guide to the economy ',
+                    'available' => false,
+                    'in_transit' => true,
+                    'last_pickup_date' => null,
+                    'position' => 1,
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -723,18 +775,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Hold',
-            'create' => '12-20-2022',
-            'expire' => '12-28-2022',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Organic farming : everything you need to know ',
-            'available' => false,
-            'in_transit' => false,
-            'last_pickup_date' => null,
-            'position' => 3,
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Hold',
+                    'create' => '12-20-2022',
+                    'expire' => '12-28-2022',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Organic farming : everything you need to know ',
+                    'available' => false,
+                    'in_transit' => false,
+                    'last_pickup_date' => null,
+                    'position' => 3,
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -1458,6 +1515,109 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Campus addresss type id.
+     *
+     * @var string
+     */
+    protected static string $campusTypeId = 'e4b2d831-2c9e-4a67-b841-5dfa031e8c92';
+
+    /**
+     * Home addresss type id.
+     *
+     * @var string
+     */
+    protected static string $homeTypeId = 'f5de8b20-1492-498c-be82-cd2831bb2d60';
+
+    /**
+     * Data provider for testGetPickupLocationsForDelivery.
+     *
+     * @return \Iterator
+     */
+    public static function getPickupLocationsProvider(): \Iterator
+    {
+        yield 'undefined' => [
+            null,
+            [
+                [
+                    'locationID' => FolioTest::$campusTypeId,
+                    'locationDisplay' => 'Campus',
+                ],
+                [
+                    'locationID' => FolioTest::$homeTypeId,
+                    'locationDisplay' => 'Home',
+                ],
+            ],
+        ];
+        yield 'no formatting' => [
+            false,
+            [
+                [
+                    'locationID' => FolioTest::$campusTypeId,
+                    'locationDisplay' => 'Campus',
+                ],
+                [
+                    'locationID' => FolioTest::$homeTypeId,
+                    'locationDisplay' => 'Home',
+                ],
+            ],
+        ];
+        yield 'with formatting' => [
+            true,
+            [
+                [
+                    'locationID' => FolioTest::$campusTypeId,
+                    'locationDisplay' => 'pick_up_location_delivery_address_format',
+                ],
+                [
+                    'locationID' => FolioTest::$homeTypeId,
+                    'locationDisplay' => 'pick_up_location_delivery_address_format',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test getPickupLocations for delivery.
+     *
+     * @param ?bool $formatAddresses Configuration of whether to format addresses
+     * @param array $expected        Expected list of delivery locations
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPickupLocationsProvider')]
+    public function testGetPickupLocationsForDelivery(?bool $formatAddresses, array $expected): void
+    {
+        $config = $this->defaultDriverConfig;
+        $config['Holds'] = [
+            ...($formatAddresses ? ['formatDeliveryAddressTypes' => $formatAddresses] : []),
+        ];
+        $this->createConnector('get-address-types', $config);
+
+        $patron = [
+            'addressTypeIds' => [
+                FolioTest::$campusTypeId,
+                FolioTest::$homeTypeId,
+            ],
+            'addresses' => [
+                (object)[
+                    'addressTypeId' => FolioTest::$campusTypeId,
+                    'addressLine1' => '987 University Ave.',
+                    'city' => 'Big City',
+                ],
+                (object)[
+                    'addressTypeId' => FolioTest::$homeTypeId,
+                    'addressLine1' => '123 Chestnut St.',
+                    'city' => 'Small Town',
+                ],
+            ],
+        ];
+        $holdInfo = ['requestGroupId' => 'Delivery'];
+        $addresses = $this->driver->getPickupLocations($patron, $holdInfo);
+        $this->assertEquals($expected, $addresses);
+    }
+
+    /**
      * Test getBoundWithRecords with an item with six boundWithTitles.
      *
      * @return void
@@ -1506,5 +1666,143 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test getDefaultRequestGroup with a user UUID-based lookup.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testGetDefaultRequestGroup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $this->createConnector('get-request-preference', $driverConfig);
+
+        // Confirm the FOLIO call is made only once per user, due to caching
+        $this->driver->expects($this->exactly(2))->method('makeRequest');
+        $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'whatever']);
+        $this->assertEquals('Delivery', $requestGroup);
+        for ($i = 0; $i < 2; $i++) {
+            $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'user2']);
+        }
+        $this->assertEquals('Hold Shelf', $requestGroup);
+    }
+
+    /**
+     * Example campus pickup location.
+     *
+     * @var array
+     */
+    protected static array $campusPickupLocation = [
+        'locationID' => 'e4b2d831-2c9e-4a67-b841-5dfa031e8c92',
+        'locationDisplay' => 'Campus',
+    ];
+
+    /**
+     * Example home pickup location.
+     *
+     * @var array
+     */
+    protected static array $homePickupLocation = [
+        'locationID' => 'f5de8b20-1492-498c-be82-cd2831bb2d60',
+        'locationDisplay' => 'Home',
+    ];
+
+    /**
+     * Data provider for testGetPickupLocationsForDelivery.
+     *
+     * @return \Iterator
+     */
+    public static function getPickupLocationsLimitAddressTypesProvider(): \Iterator
+    {
+        yield 'no config, no default' => [
+            null,
+            [],
+            [static::$campusPickupLocation, static::$homePickupLocation],
+        ];
+        yield 'no config, default is campus' => [
+            null,
+            ['defaultDeliveryAddressTypeId' => static::$campusPickupLocation['locationID'],],
+            [static::$campusPickupLocation, static::$homePickupLocation],
+        ];
+        yield 'campus only, no default' => [
+            ['Campus'],
+            [],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus only, default is campus' => [
+            ['Campus'],
+            ['defaultDeliveryAddressTypeId' => static::$campusPickupLocation['locationID'],],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus only, default is home' => [
+            ['Campus'],
+            ['defaultDeliveryAddressTypeId' => static::$homePickupLocation['locationID'],],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus or default only, no default' => [
+            ['Campus', 'FOLIO_DEFAULT'],
+            [],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus or default only, default is campus' => [
+            ['Campus', 'FOLIO_DEFAULT'],
+            ['defaultDeliveryAddressTypeId' => static::$campusPickupLocation['locationID'],],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus or default only, default is home' => [
+            ['Campus', 'FOLIO_DEFAULT'],
+            ['defaultDeliveryAddressTypeId' => static::$homePickupLocation['locationID'],],
+            [static::$campusPickupLocation, static::$homePickupLocation],
+        ];
+    }
+
+    /**
+     * Test that getPickupLocations for delivery can limit by address type.
+     *
+     * @param ?array $limitDeliveryAddressTypes Configuration of limitDeliveryAddressTypes
+     * @param array  $requestPreference         Mock requestPreference object containing a defaultDeliveryAddressTypeId
+     * @param array  $expected                  Expected list of delivery locations
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPickupLocationsLimitAddressTypesProvider')]
+    public function testGetPickupLocationsLimitAddressTypes(
+        ?array $limitDeliveryAddressTypes,
+        array $requestPreference,
+        array $expected
+    ): void {
+        $config = $this->defaultDriverConfig;
+        $config['Holds'] = [
+            ...($limitDeliveryAddressTypes ? ['limitDeliveryAddressTypes' => $limitDeliveryAddressTypes] : []),
+        ];
+        $this->createConnector('get-address-types', $config, null, ['getRequestPreference']);
+        $this->driver->method('getRequestPreference')->willReturn($requestPreference);
+
+        $patron = [
+            'id' => 'foo',
+            'addressTypeIds' => [
+                static::$campusPickupLocation['locationID'],
+                static::$homePickupLocation['locationID'],
+            ],
+            'addresses' => [
+                (object)[
+                    'addressTypeId' => static::$campusPickupLocation['locationID'],
+                    'addressLine1' => '987 University Ave.',
+                    'city' => 'Big City',
+                ],
+                (object)[
+                    'addressTypeId' => static::$homePickupLocation['locationID'],
+                    'addressLine1' => '123 Chestnut St.',
+                    'city' => 'Small Town',
+                ],
+            ],
+        ];
+
+        $holdInfo = ['requestGroupId' => 'Delivery'];
+        $addresses = $this->driver->getPickupLocations($patron, $holdInfo);
+        $this->assertEquals($expected, $addresses);
     }
 }

@@ -42,6 +42,7 @@ use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFindTest\Container\MockContainer;
 
 use function defined;
+use function is_callable;
 use function strlen;
 
 /**
@@ -174,11 +175,11 @@ trait ConfigRelatedServicesTrait
      * Get a mock configuration plugin manager with the given configuration "files"
      * available.
      *
-     * @param array            $configs               An associative array of configurations
+     * @param array|callable   $configs               An associative array of configurations
      * where key is the file (e.g. 'config') and value an array of configuration
-     * sections and directives
-     * @param array            $default               Default configuration to return when no
-     * entry is found in $configs
+     * sections and directives or alternatively a callable that returns that array
+     * @param array|callable   $default               Default configuration to return when no
+     * entry is found in $configs or alternatively a callable that returns that array
      * @param ?InvocationOrder $getConfigArrayExpect  The expected invocation order for the getConfigArray()
      * method (null for any)
      * @param ?InvocationOrder $getConfigObjectExpect The expected invocation order for the getConfigObject()
@@ -187,26 +188,28 @@ trait ConfigRelatedServicesTrait
      * @return MockObject&ConfigManagerInterface
      */
     protected function getMockConfigManager(
-        array $configs = [],
-        array $default = [],
+        array|callable $configs = [],
+        array|callable $default = [],
         ?InvocationOrder $getConfigArrayExpect = null,
         ?InvocationOrder $getConfigObjectExpect = null
     ): ConfigManagerInterface {
+        $configsCallback = is_callable($configs) ? $configs : fn () => $configs;
+        $defaultCallback = is_callable($default) ? $default : fn () => $default;
         $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($getConfigArrayExpect ?? $this->any())
             ->method('getConfigArray')
             ->with($this->isType('string'))
             ->willReturnCallback(
-                function ($config) use ($configs, $default): array {
-                    return $configs[$config] ?? $default;
+                function ($config) use ($configsCallback, $defaultCallback): array {
+                    return $configsCallback()[$config] ?? $defaultCallback();
                 }
             );
         $manager->expects($getConfigObjectExpect ?? $this->any())
             ->method('getConfigObject')
             ->with($this->isType('string'))
             ->willReturnCallback(
-                function ($config) use ($configs, $default): Config {
-                    return new Config($configs[$config] ?? $default);
+                function ($config) use ($configsCallback, $defaultCallback): Config {
+                    return new Config($configsCallback()[$config] ?? $defaultCallback());
                 }
             );
         return $manager;

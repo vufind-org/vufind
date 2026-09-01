@@ -671,7 +671,7 @@ class Koha extends AbstractBase
      * @param string $password The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -796,11 +796,11 @@ class Koha extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 100,
@@ -815,6 +815,6 @@ class Koha extends AbstractBase
                 'default_sort' => 'checkout desc',
             ];
         }
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 }

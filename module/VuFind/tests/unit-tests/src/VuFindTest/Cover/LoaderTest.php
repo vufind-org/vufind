@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Cover;
 
-use VuFind\Config\Config;
 use VuFind\Cover\Loader;
+use VuFindHttp\HttpService;
 use VuFindTheme\ThemeInfo;
 
 use function strlen;
@@ -164,28 +164,26 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a loader object to test.
+     * Get a loader object to test (may be a mock).
      *
-     * @param array                                $config      Configuration
-     * @param \VuFind\Content\Covers\PluginManager $manager     Plugin manager (null to create mock)
-     * @param ThemeInfo                            $theme       Theme info object (null to create default)
-     * @param \VuFindHttp\HttpService              $httpService HTTP client factory
-     * @param array|bool                           $mock        Array of functions to mock, or false for real object
+     * @param array                                 $config      Configuration
+     * @param ?\VuFind\Content\Covers\PluginManager $manager     Plugin manager (null to create mock)
+     * @param ?ThemeInfo                            $theme       Theme info object (null to create default)
+     * @param ?HttpService                          $httpService HTTP client factory
+     * @param array|false                           $mock        Array of functions to mock, or false for real object
      *
-     * @return Loader|\PHPUnit\Framework\MockObject\MockObject
+     * @return Loader
      */
-    protected function getLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
-    {
-        $config = new Config($config);
-        if (null === $manager) {
-            $manager = $this->createMock(\VuFind\Content\Covers\PluginManager::class);
-        }
-        if (null === $theme) {
-            $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
-        }
-        if (null === $httpService) {
-            $httpService = $this->createMock(\VuFindHttp\HttpService::class);
-        }
+    protected function getLoader(
+        array $config = [],
+        ?\VuFind\Content\Covers\PluginManager $manager = null,
+        ?ThemeInfo $theme = null,
+        ?HttpService $httpService = null,
+        array|false $mock = false
+    ): Loader {
+        $manager ??= $this->createMock(\VuFind\Content\Covers\PluginManager::class);
+        $theme ??= new ThemeInfo($this->getThemeDir(), $this->testTheme);
+        $httpService ??= $this->createMock(\VuFindHttp\HttpService::class);
         if ($mock) {
             $mock = array_unique(array_merge($mock, ['debug']));
             $mockLoader = $this->getMockBuilder(Loader::class)

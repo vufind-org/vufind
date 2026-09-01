@@ -473,23 +473,6 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Funds.
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @return array An associative array with key = fund ID, value = fund name.
-     *
-     * @deprecated
-     */
-    public function getFunds()
-    {
-        // If you do not want or support such limits, just return an empty
-        // array here and the limit control on the new item search screen
-        // will disappear.
-        return [];
-    }
-
-    /**
      * Cancel Storage Retrieval Request.
      *
      * Attempts to Cancel a Storage Retrieval Request on a particular item. The
@@ -867,31 +850,6 @@ class PAIA extends DAIA
     }
 
     /**
-     * This method queries the ILS for new items.
-     *
-     * @param string  $page    page number of results to retrieve (counting starts @1)
-     * @param string  $limit   the size of each page of results to retrieve
-     * @param string  $daysOld the maximum age of records to retrieve in days (max 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array An associative array with two keys: 'count' (the number of items
-     * in the 'results' array) and 'results' (an array of associative arrays, each
-     * with a single key: 'id', a record ID).
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        return [];
-    }
-
-    /**
      * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
@@ -957,7 +915,7 @@ class PAIA extends DAIA
      * @param string $username The patron's username
      * @param string $password The patron's login password
      *
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @throws ILSException

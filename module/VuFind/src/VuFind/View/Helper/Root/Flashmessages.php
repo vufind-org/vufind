@@ -29,8 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
+use VuFind\View\GlobalsContainer;
 
 use function is_array;
 
@@ -43,30 +45,41 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Flashmessages extends AbstractHelper
+class Flashmessages
 {
     /**
-     * Flash messenger controller helper.
+     * Flash messenger namespaces and methods for getting the messages.
      *
-     * @var FlashMessenger
-     */
-    protected $fm;
-
-    /**
-     * Flash messenger namespaces.
+     * The list is in priority order (errors are displayed first).
      *
-     * @var string[]
+     * @var array
      */
-    protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
+    protected $namespaces = [
+        'error' => 'getErrorMessages',
+        'warning' => 'getWarningMessages',
+        'info' => 'getInfoMessages',
+        'success' => 'getSuccessMessages',
+    ];
 
     /**
      * Constructor.
      *
-     * @param FlashMessenger $fm Flash messenger controller helper
+     * @param FlashMessengerInterface $flashMessenger   Flash messenger controller helper
+     * @param GlobalsContainer        $globalsContainer Global data container
+     * @param Translate               $translate        Translate helper
+     * @param EscapeHtml              $escapeHtml       EscapeHtml helper
+     * @param TransEsc                $transEsc         TransEsc helper
      */
-    public function __construct(FlashMessenger $fm)
-    {
-        $this->fm = $fm;
+    public function __construct(
+        protected FlashMessengerInterface $flashMessenger,
+        protected GlobalsContainer $globalsContainer,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected TransEsc $transEsc
+    ) {
     }
 
     /**
@@ -88,15 +101,12 @@ class Flashmessages extends AbstractHelper
      */
     public function __invoke()
     {
-        if (!empty($this->getView()->layout()->lightboxChild)) {
+        if (!empty($this->globalsContainer['lightboxChild'])) {
             return '';
         }
         $html = '';
-        foreach ($this->namespaces as $ns) {
-            $messages = array_merge(
-                $this->fm->getMessages($ns),
-                $this->fm->getCurrentMessages($ns)
-            );
+        foreach ($this->namespaces as $ns => $method) {
+            $messages = $this->flashMessenger->$method();
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div role="alert" class="'
                     . $this->getClassForNamespace($ns) . '"';
@@ -111,46 +121,43 @@ class Flashmessages extends AbstractHelper
                 if (is_array($msg)) {
                     $msgHtml = $msg['html'] ?? false;
                     $message = $msg['msg'];
-                    $escapeHtml = $this->getView()->plugin('escapeHtml');
+
                     // Process tokens and translate the message unless requested not
                     // to:
                     if ($msg['translate'] ?? true) {
-                        $translate = $this->getView()->plugin('translate');
                         $tokens = $msg['tokens'] ?? [];
                         if ($tokens) {
                             if ($msg['translateTokens'] ?? false) {
                                 $tokens = array_map(
-                                    $translate,
+                                    $this->translate,
                                     $tokens
                                 );
                             }
                             // Escape tokens if the main message is HTML, unless
                             // requested not to by setting tokensHtml to true:
                             if ($msgHtml && !($msg['tokensHtml'] ?? false)) {
-                                $tokens = array_map($escapeHtml, $tokens);
+                                $tokens = array_map($this->escapeHtml, $tokens);
                             }
                         }
                         $default = $msg['default'] ?? null;
 
                         // Translate the message:
-                        $message = $translate($message, $tokens, $default, $msg['icu'] ?? false);
+                        $message = ($this->translate)($message, $tokens, $default, $msg['icu'] ?? false);
                     }
                     // Escape the message unless requested not to:
                     if (!$msgHtml) {
-                        $message = $escapeHtml($message);
+                        $message = ($this->escapeHtml)($message);
                     }
 
                     $html .= $message;
                 } else {
                     // Basic default string:
-                    $transEsc = $this->getView()->plugin('transEsc');
-                    $html .= $transEsc($msg);
+                    $html .= ($this->transEsc)($msg);
                 }
                 $html .= '</div>';
             }
-            $this->fm->clearMessages($ns);
-            $this->fm->clearCurrentMessages($ns);
         }
+        $this->flashMessenger->clearAllMessages();
         return $html;
     }
 }

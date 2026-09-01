@@ -53,14 +53,14 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @var string
      */
-    protected $backendId = 'EDS';
+    protected string $backendId = 'EDS';
 
     /**
      * Facet list.
      *
      * @var array
      */
-    protected $responseFacets;
+    protected array $responseFacets;
 
     /**
      * Constructor.
@@ -99,18 +99,19 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = trim($query->getAllTerms());
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
+        $params = $this->getParams();
+        $backendParams = $params->getBackendParameters();
         if ($allTerms === '') {
             if (!$this->config['General']['limiter_only'] ?? false) {
                 $this->storeErrorResponse('empty_search_disallowed');
                 return;
-            } elseif (!$this->paramsIncludeLimiter($params)) {
+            } elseif (!$this->paramsIncludeLimiter($backendParams)) {
                 $this->storeErrorResponse('empty_search_no_filters_disallowed');
                 return;
             }
@@ -121,7 +122,7 @@ class Results extends \VuFind\Search\Base\Results
             $query,
             $offset,
             $limit,
-            $params
+            $backendParams
         );
         $collection = $this->getSearchService()->invoke($command)
             ->getResult();
@@ -141,6 +142,12 @@ class Results extends \VuFind\Search\Base\Results
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
             $this->restrictedView = $collection->isRestrictedView();
+
+            // For a page parameter being out of the results list, we do not want
+            // to return any results from another page.
+            if ($this->getResultTotal() > 0 && $params->getPage() > $this->getLastAvailablePage()) {
+                $this->results = [];
+            }
         }
     }
 
@@ -163,12 +170,12 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         if (null === $this->responseFacets) {
             $this->performAndProcessSearch();
@@ -181,7 +188,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array
      */
-    public function getScores()
+    public function getScores(): array
     {
         $scoreMap = [];
         foreach ($this->results as $record) {
@@ -195,7 +202,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return ?float
      */
-    public function getMaxScore()
+    public function getMaxScore(): ?float
     {
         if (
             empty($this->results) ||

@@ -45,5 +45,5 @@ class Search2RecordFormatterFactory extends RecordFormatterFactory
      *
      * @var string
      */
-    protected $configFile = 'Search2ApiRecordFields.yaml';
+    protected $configFile = 'Search2ApiRecordFields';
 }

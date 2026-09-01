@@ -31,7 +31,6 @@
 
 namespace VuFind\Mailer;
 
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -39,6 +38,7 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
 use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 use function is_array;
@@ -91,11 +91,15 @@ class Mailer implements
     /**
      * Constructor.
      *
-     * @param MailerInterface $transport Mail transport
-     * @param array           $options   Message log options
+     * @param MailerInterface           $transport        Mail transport
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param array                     $options          Message log options
      */
-    public function __construct(MailerInterface $transport, protected array $options = [])
-    {
+    public function __construct(
+        MailerInterface $transport,
+        protected TemplateRendererInterface $templateRenderer,
+        protected array $options = []
+    ) {
         $this->setTransport($transport);
     }
 
@@ -336,7 +340,6 @@ class Mailer implements
      * @param string|Address                         $from    Sender name and email address
      * @param string                                 $msg     User notes to include in message
      * @param string                                 $url     URL to share
-     * @param PhpRenderer                            $view    View object (used to render email templates)
      * @param ?string                                $subject Subject for email (optional)
      * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
      * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
@@ -349,7 +352,6 @@ class Mailer implements
         string|Address $from,
         string $msg,
         string $url,
-        PhpRenderer $view,
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
@@ -357,9 +359,9 @@ class Mailer implements
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
         }
-        $body = $view->partial(
-            'Email/share-link.phtml',
-            [
+        $body = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/share-link.phtml',
+            params: [
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg,
             ]
         );
@@ -383,7 +385,6 @@ class Mailer implements
      * @param string|Address                $from    Sender name and email address
      * @param string                        $msg     User notes to include in message
      * @param AbstractBase                  $record  Record being emailed
-     * @param PhpRenderer                   $view    View object (used to render email templates)
      * @param ?string                       $subject Subject for email (optional)
      * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
      * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
@@ -396,7 +397,6 @@ class Mailer implements
         string|Address $from,
         string $msg,
         AbstractBase $record,
-        PhpRenderer $view,
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
@@ -404,12 +404,13 @@ class Mailer implements
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);
         }
-        $body = $view->partial(
-            'Email/record.phtml',
-            [
+        $body = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/record.phtml',
+            params: [
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg,
             ]
         );
+
         $this->send($to, $from, $subject, $body, $cc, $replyTo);
     }
 

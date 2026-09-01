@@ -29,8 +29,6 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 use function is_callable;
 
 /**
@@ -69,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrmarc' => SolrMarc::class,
         'solrmarcremote' => SolrMarcRemote::class,
         'solroverdrive' => SolrOverdrive::class,
+        'solrqdc' => SolrQdc::class,
         'solrreserves' => SolrReserves::class,
         'solrweb' => SolrWeb::class,
         'summon' => Summon::class,
@@ -92,26 +91,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        BrowZine::class => InvokableFactory::class,
         EDS::class => NameBasedConfigFactory::class,
         EIT::class => NameBasedConfigFactory::class,
         EPF::class => NameBasedConfigFactory::class,
-        LibGuides::class => InvokableFactory::class,
-        LibGuidesAZ::class => InvokableFactory::class,
-        Missing::class => AbstractBaseFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
-        Search2Default::class => Search2DefaultFactory::class,
-        SolrArchivesSpace::class => SolrDefaultFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrAuthMarc::class => SolrDefaultWithoutSearchServiceFactory::class,
-        SolrDefault::class => SolrDefaultFactory::class,
-        SolrMarc::class => SolrDefaultFactory::class,
-        SolrMarcRemote::class => SolrDefaultFactory::class,
-        SolrOverdrive::class => SolrOverdriveFactory::class,
         SolrReserves::class => SolrDefaultWithoutSearchServiceFactory::class,
-        SolrWeb::class => SolrWebFactory::class,
-        Summon::class => SummonFactory::class,
         WorldCat2::class => NameBasedConfigFactory::class,
     ];
 

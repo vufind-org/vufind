@@ -1,4 +1,5 @@
 /*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
+/*global VuFind */
 
 /**
  * Get the HathiTrust preview rights codes from a CSS class.
@@ -30,27 +31,6 @@ function getOLOptions() {
   return $('[class*="olPreviewSpan"]').attr("class").split('__')[1].split(',');
 }
 
-/**
- * Fetch HathiTrust books in batches from the API.
- * @param {string} keys A space-separated string of bibkeys.
- */
-function getHTPreviews(keys) {
-  var skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
-  var bibkeys = skeys.split(/\s+/);
-  // fetch 20 books at time if there are more than 20
-  // since hathitrust only allows 20 at a time
-  // as per https://vufind.org/jira/browse/VUFIND-317
-  var batch = [];
-  for (var i = 0; i < bibkeys.length; i++) {
-    batch.push(bibkeys[i]);
-    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
-      var script = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
-                + batch.join('|') + '&callback=processHTBookInfo';
-      $.getScript(script);
-      batch = [];
-    }
-  }
-}
 /**
  * Update a preview link and its corresponding record thumbnail with a new URL.
  * @param {jQuery} $link The preview button element.
@@ -141,42 +121,41 @@ function processHTBookInfo(booksInfo) {
 }
 
 /**
- * Array.indexOf is not universally supported
- * We need to set it for users who don't have it.
- *
- * developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf
+ * Fetch a single HathiTrust batch and pass the JSON response to the preview processor.
+ * Extracted from the loop in getHTPreviews() to avoid creating a callback inside the
+ * loop body, which triggers a JSHint warning.
+ * @param {Array} batch An array of HathiTrust bibkeys to request.
+ * @returns {Promise} A promise resolving when the batch has been processed.
  */
-function setIndexOf() {
-  Array.prototype.indexOf = function indexOfPolyfill(searchElement /*, fromIndex */ ) {
-    "use strict";
-    if (this == null) {
-      throw new TypeError();
+function fetchHTPreviewBatch(batch) {
+  const url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
+    + batch.join('|');
+  return fetch(url, {
+    headers: {
+      'Accept': 'application/json'
     }
-    var t = Object(this);
-    var len = t.length;
-    if (len === 0) {
-      return -1;
+  }).then(response => response.json())
+    .then(processHTBookInfo);
+}
+
+/**
+ * Fetch HathiTrust books in batches from the API.
+ * @param {string} keys A space-separated string of bibkeys.
+ */
+function getHTPreviews(keys) {
+  let skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
+  let bibkeys = skeys.split(/\s+/);
+  // fetch 20 books at time if there are more than 20
+  // since hathitrust only allows 20 at a time
+  // as per https://vufind.org/jira/browse/VUFIND-317
+  let batch = [];
+  for (let i = 0; i < bibkeys.length; i++) {
+    batch.push(bibkeys[i]);
+    if ((i + 1) % 20 === 0 || i === bibkeys.length - 1) {
+      fetchHTPreviewBatch(batch);
+      batch = [];
     }
-    var n = 0;
-    if (arguments.length > 1) {
-      n = Number(arguments[1]);
-      if (n !== n) { // shortcut for verifying if it's NaN
-        n = 0;
-      } else if (n !== 0 && n !== Infinity && n !== -Infinity) {
-        n = (n > 0 || -1) * Math.floor(Math.abs(n));
-      }
-    }
-    if (n >= len) {
-      return -1;
-    }
-    var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-    for (; k < len; k++) {
-      if (k in t && t[k] === searchElement) {
-        return k;
-      }
-    }
-    return -1;
-  };
+  }
 }
 
 /**
@@ -185,8 +164,10 @@ function setIndexOf() {
  */
 function getBibKeyString() {
   var skeys = '';
-  $('.previewBibkeys').each(function previewBibkeysEach(){
+  // Only collect from elements not yet processed, then mark them
+  $('.previewBibkeys:not([data-preview-loaded])').each(function previewBibkeysEach(){
     skeys += $(this).attr('class');
+    $(this).attr('data-preview-loaded', '1'); // mark as processed
   });
   return skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
 }
@@ -195,9 +176,12 @@ function getBibKeyString() {
  * Initiate request to various book preview APIs.
  */
 function getBookPreviews() {
-  var skeys = getBibKeyString();
-  var bibkeys = skeys.split(/\s+/);
-  var script;
+  let skeys = getBibKeyString();
+  if (!skeys) {
+    return; // All elements already processed, nothing to do
+  }
+  let bibkeys = skeys.split(/\s+/);
+  let script;
 
   // fetch Google preview if enabled
   if ($('[class*="googlePreviewSpan"]').length > 0) {
@@ -208,13 +192,13 @@ function getBookPreviews() {
       $.getScript(script);
     } else {
       // if so, break request into chunks of 100
-      var keyString = '';
+      let keyString = '';
       // loop through array
-      for (var i = 0; i < bibkeys.length; i++){
+      for (let i = 0; i < bibkeys.length; i++){
         keyString += bibkeys[i] + ',';
         // send request when there are 100 requests ready or when there are no
         // more elements to be sent
-        if ((i > 0 && i % 100 === 0) || i === bibkeys.length - 1) {
+        if ((i + 1) % 100 === 0 || i === bibkeys.length - 1) {
           script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
             + keyString + '&callback=processGBSBookInfo';
           $.getScript(script);
@@ -241,8 +225,6 @@ function getBookPreviews() {
  * The main entry point and initiates the fetching of book previews.
  */
 $(function previewDocReady() {
-  if (!Array.prototype.indexOf) {
-    setIndexOf();
-  }
   getBookPreviews();
+  VuFind.listen('results-init', getBookPreviews);
 });

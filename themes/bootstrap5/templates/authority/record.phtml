@@ -1,6 +1,6 @@
 <?php
   $this->breadcrumbs()->disable();
-  $this->layout()->searchClassId = 'SolrAuth';
+  $this->globals()['searchClassId'] = 'SolrAuth';
   // Pick a tab to display -- Details if available, otherwise first option (if any):
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
   $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);

@@ -9,7 +9,7 @@
         <add>
             <xsl:for-each select="//sitemap:url">
                 <!-- We can't index without a loc element containing a URI! -->
-                <xsl:if test="sitemap:loc">
+                <xsl:if test="string-length(sitemap:loc) > 0">
                     <doc>
                         <!-- Pass the URI to PHP, which will use full-text
                              extraction and generate pre-built XML output;

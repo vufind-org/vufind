@@ -38,7 +38,9 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\RecommendListener;
+use VuFind\Search\ResultScroller;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function count;
@@ -102,7 +104,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->options = $this->getOptionsForClass();
-        if ($view->options->getAdvancedSearchAction() === false) {
+        if ($view->options->getAdvancedSearchAction() === null) {
             throw new \Exception('Advanced search not supported.');
         }
 
@@ -273,7 +275,7 @@ class AbstractSearch extends AbstractBase
             throw new \Exception('Unrecoverable deep paging error.');
         }
         $request['page'] = $page;
-        $this->flashMessenger()->addErrorMessage(
+        $this->getFlashMessenger()->addErrorMessage(
             [
                 'msg' => 'deep_paging_failure',
                 'tokens' => ['%%page%%' => $page],
@@ -389,12 +391,9 @@ class AbstractSearch extends AbstractBase
         }
         $view->params = $params = $results->getParams();
 
-        // For page parameter being out of results list, we want to redirect to correct page
-        $page = $params->getPage();
-        $totalResults = $results->getResultTotal();
-        $limit = $params->getLimit();
-        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
-        if ($totalResults > 0 && $page > $lastPage) {
+        // For a page parameter being out of the results list, we want to redirect to the correct page
+        $lastPage = $results->getLastAvailablePage();
+        if ($results->getResultTotal() > 0 && $params->getPage() > $lastPage) {
             $queryParams = $request;
             $queryParams['page'] = $lastPage;
             return $this->redirect()->toRoute(
@@ -431,12 +430,12 @@ class AbstractSearch extends AbstractBase
 
             // Set up results scroller:
             if ($results->getOptions()->resultScrollerActive()) {
-                $this->resultScroller()->init($results);
+                $this->getService(ResultScroller::class)->init($results);
             }
 
             foreach ($results->getErrors() as $error) {
                 try {
-                    $this->flashMessenger()->addErrorMessage($error);
+                    $this->getFlashMessenger()->addErrorMessage($error);
                 } catch (\Exception $e) {
                     // The flash messenger will throw an exception if session writes are disabled,
                     // which will happen in combined search AJAX requests. For that situation, we'll
@@ -578,7 +577,7 @@ class AbstractSearch extends AbstractBase
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger()->addErrorMessage('advSearchError_notFound');
+            $this->getFlashMessenger()->addErrorMessage('advSearchError_notFound');
             return false;
         }
 
@@ -593,7 +592,7 @@ class AbstractSearch extends AbstractBase
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('advSearchError_notAdvanced');
                 return false;
             }
@@ -892,7 +891,9 @@ class AbstractSearch extends AbstractBase
         // Has the request been sent in an AJAX context?
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
         $urlBase = $this->params()->fromQuery('urlBase', '');
-        $searchAction = $this->params()->fromQuery('searchAction', '');
+        $defaultSearchAction = $this->getService(RouteHelper::class)
+            ->getUrlFromRoute($params->getOptions()->getSearchAction());
+        $searchAction = $this->params()->fromQuery('searchAction', $defaultSearchAction);
         // $urlBase and $searchAction should be relative URLs; if there is an
         // absolute URL passed in, this may be a sign of malicious activity and
         // we should fail.

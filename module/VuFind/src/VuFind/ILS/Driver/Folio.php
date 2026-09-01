@@ -34,12 +34,14 @@ use DateTimeZone;
 use Exception;
 use Laminas\Http\Response;
 use VuFind\Config\Feature\SecretTrait;
+use VuFind\Connection\Webhook;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
+use function array_slice;
 use function count;
 use function in_array;
 use function is_callable;
@@ -145,15 +147,31 @@ class Folio extends AbstractAPI implements
     protected $courseCache = null;
 
     /**
+     * Cache for request preference data.
+     *
+     * @var array
+     */
+    protected array $requestPreferenceCache = [];
+
+    /**
+     * Timeout in seconds for webhook calls.
+     *
+     * @var float
+     */
+    protected float $webhookTimeout = 5;
+
+    /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param callable               $sessionFactory Factory function returning
-     * SessionContainer object
+     * @param \VuFind\Date\Converter $dateConverter     Date converter object
+     * @param callable               $sessionFactory    Factory function returning
+     *                                                  SessionContainer object
+     * @param ?Webhook               $webhookConnection Connection for webhooks (optional)
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,
+        protected ?Webhook $webhookConnection = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -508,7 +526,7 @@ class Folio extends AbstractAPI implements
      *
      * @return string
      */
-    protected function escapeCql($in)
+    protected function escapeCql(string $in): string
     {
         return str_replace('"', '\"', str_replace('&', '%26', $in));
     }
@@ -772,13 +790,14 @@ class Folio extends AbstractAPI implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $key = match ($function) {
             'getMyTransactions' => 'Loans',
+            'getMyHolds' => 'Holdings',
             default => $function
         };
-        return $this->config[$key] ?? false;
+        return $this->config[$key] ?? [];
     }
 
     /**
@@ -1145,18 +1164,31 @@ class Folio extends AbstractAPI implements
      */
     protected function sortHoldings(array $holdings, string $sortField): array
     {
+        return $this->sortArray($holdings, $sortField);
+    }
+
+    /**
+     * Given an array and a sort field, sort the array.
+     *
+     * @param array  $data      Array to sort
+     * @param string $sortField Sort field
+     *
+     * @return array
+     */
+    protected function sortArray(array $data, string $sortField): array
+    {
         usort(
-            $holdings,
+            $data,
             function ($a, $b) use ($sortField) {
                 return strnatcasecmp($a[$sortField], $b[$sortField]);
             }
         );
         // Renumber the re-sorted batch:
-        $nbCount = count($holdings);
+        $nbCount = count($data);
         for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
-            $holdings[$nbIndex]['number'] = $nbIndex + 1;
+            $data[$nbIndex]['number'] = $nbIndex + 1;
         }
-        return $holdings;
+        return $data;
     }
 
     /**
@@ -1552,7 +1584,7 @@ class Folio extends AbstractAPI implements
      *
      * @return string
      */
-    protected function getUserWithCql($username, $password)
+    protected function getUserWithCql(string $username, ?string $password): string
     {
         // Construct user query using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
@@ -1673,7 +1705,7 @@ class Folio extends AbstractAPI implements
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed Associative array of patron info on successful login,
+     * @return ?array Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -1728,6 +1760,7 @@ class Folio extends AbstractAPI implements
                     fn ($address) => $address->addressTypeId,
                     $profile->personal->addresses ?? []
                 ),
+                'addresses' => $profile->personal->addresses ?? [],
             ],
         );
     }
@@ -1829,51 +1862,88 @@ class Folio extends AbstractAPI implements
         $limit = $params['limit'] ?? 1000;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
 
-        $query = 'userId==' . $patron['id'] . ' and status.name==Open';
-        if (isset($params['sort'])) {
-            $query .= ' sortby ' . $this->escapeCql($params['sort']);
-        }
-        $resultPage = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
-        $transactions = [];
-        foreach ($resultPage->loans ?? [] as $trans) {
-            $dueStatus = false;
-            $date = $this->getDateTimeFromString($trans->dueDate);
-            $dueDateTimestamp = $date->getTimestamp();
+        $requestedSort = $params['sort'] ?? '';
+        $vufindSortMap = $this->config['Loans']['vufind_sort'] ?? [];
+        $localSortField = $vufindSortMap[$requestedSort] ?? null;
 
-            $now = time();
-            if ($now > $dueDateTimestamp) {
-                $dueStatus = 'overdue';
-            } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
-                $dueStatus = 'due';
+        $query = 'userId==' . $patron['id'] . ' and status.name==Open';
+        $transactions = [];
+        $count = null;
+
+        // Fetch data from FOLIO, only pass sort to API if it is NOT handled locally by VuFind
+        if ($localSortField) {
+            $rawItems = $this->getPagedResults('loans', '/circulation/loans', compact('query'));
+        } else {
+            if (!empty($requestedSort)) {
+                $query .= ' sortby ' . $this->escapeCql($requestedSort);
             }
-            $transactions[] = [
-                'duedate' =>
-                    $this->dateConverter->convertToDisplayDate(
-                        'U',
-                        $dueDateTimestamp
-                    ),
-                'dueTime' =>
-                    $this->dateConverter->convertToDisplayTime(
-                        'U',
-                        $dueDateTimestamp
-                    ),
-                'dueStatus' => $dueStatus,
-                'id' => $this->getBibId($trans->item->instanceId),
-                'item_id' => $trans->item->id,
-                'barcode' => $trans->item->barcode,
-                'renew' => $trans->renewalCount ?? 0,
-                'renewable' => true,
-                'title' => $trans->item->title,
-            ];
+            $result = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
+            $rawItems = $result->loans ?? [];
         }
-        // If we have a full page or have applied an offset, we need to look up the total count of transactions:
+
+        // Format the transaction results
+        foreach ($rawItems as $trans) {
+            $transactions[] = $this->formatTransactionItem($trans);
+        }
+
+        // If we have a full page, have applied an offset, or are not using a vufind_sort option,
+        // we need to look up the total count of transactions:
         $count = count($transactions);
-        if ($offset > 0 || $count >= $limit) {
+        if (!$localSortField && ($offset > 0 || $count >= $limit)) {
             // We could use the count in the result page, but that may be an estimate;
             // safer to do a separate lookup to be sure we have the right number!
             $count = $this->getResultCount('/circulation/loans', compact('query'));
         }
+
+        // Apply local sorting if requested
+        if ($localSortField) {
+            $transactions = $this->sortArray($transactions, $localSortField);
+            $transactions = array_slice($transactions, $offset, $limit);
+        }
+
         return ['count' => $count, 'records' => $transactions];
+    }
+
+    /**
+     * Support method for getMyTransactions to parse a single
+     * transaction result.
+     *
+     * @param array $transaction An single transaction
+     * array from getMyTransactions
+     *
+     * @return string The FOLIO loan ID for this loan
+     */
+    protected function formatTransactionItem($transaction)
+    {
+        $dueStatus = false;
+        $date = $this->getDateTimeFromString($transaction->dueDate);
+        $dueDateTimestamp = $date->getTimestamp();
+
+        $now = time();
+        if ($now > $dueDateTimestamp) {
+            $dueStatus = 'overdue';
+        } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
+            $dueStatus = 'due';
+        }
+        return [
+            'duedate' =>
+                $this->dateConverter->convertToDisplayDate(
+                    'U',
+                    $dueDateTimestamp
+                ),
+            'dueTime' =>
+                $this->dateConverter->convertToDisplayTime(
+                    'U',
+                    $dueDateTimestamp
+                ),
+            'dueStatus' => $dueStatus,
+            'id' => $this->getBibId($transaction->item->instanceId),
+            'item_id' => $transaction->item->id,
+            'barcode' => $transaction->item->barcode,
+            'renew' => $transaction->renewalCount ?? 0,
+            'renewable' => true,
+            'title' => $transaction->item->title,
+        ];
     }
 
     /**
@@ -1975,13 +2045,25 @@ class Folio extends AbstractAPI implements
         if ('Delivery' == ($holdInfo['requestGroupId'] ?? null)) {
             $addressTypes = $this->getAddressTypes();
             $limitDeliveryAddressTypes = $this->config['Holds']['limitDeliveryAddressTypes'] ?? [];
+            if (in_array('FOLIO_DEFAULT', $limitDeliveryAddressTypes)) {
+                $requestPreference = $this->getRequestPreference($patron['id']);
+                $defaultDeliveryAddressTypeId = $requestPreference['defaultDeliveryAddressTypeId'] ?? null;
+            }
             $deliveryPickupLocations = [];
             foreach ($patron['addressTypeIds'] as $addressTypeId) {
                 $addressType = $addressTypes[$addressTypeId];
-                if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
+                if (
+                    empty($limitDeliveryAddressTypes)
+                    || in_array($addressType, $limitDeliveryAddressTypes)
+                    || ($defaultDeliveryAddressTypeId ?? null) === $addressTypeId
+                ) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
-                        'locationDisplay' => $addressType,
+                        'locationDisplay' => $this->formatDeliveryAddress(
+                            $addressTypeId,
+                            $addressType,
+                            $patron['addresses'] ?? []
+                        ),
                     ];
                 }
             }
@@ -2094,31 +2176,76 @@ class Folio extends AbstractAPI implements
         $patron = null,
         $holdDetails = null
     ) {
-        // circulation-storage.request-preferences.collection.get
-        $response = $this->makeRequest(
-            'GET',
-            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
-        );
-        $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
-        $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        $allowHoldShelf = $requestPreference['holdShelf'] ?? true;
+        $allowDelivery = ($requestPreference['delivery'] ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
+        $noLocationsLabels = $this->config['Holds']['noLocationsLabelByRequestGroup'] ?? [];
+        $selectLocationText = $this->config['Holds']['selectLocationTextByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
                 [
                     'id' => 'Hold Shelf',
                     'name' => 'fulfillment_method_hold_shelf',
                     'locationsLabel' => $locationsLabels['Hold Shelf'] ?? null,
+                    'noLocationsLabel' => $noLocationsLabels['Hold Shelf'] ?? null,
+                    'selectLocationText' => $selectLocationText['Hold Shelf'] ?? null,
                 ],
                 [
                     'id' => 'Delivery',
                     'name' => 'fulfillment_method_delivery',
                     'locationsLabel' => $locationsLabels['Delivery'] ?? null,
+                    'noLocationsLabel' => $noLocationsLabels['Delivery'] ?? null,
+                    'selectLocationText' => $selectLocationText['Delivery'] ?? null,
                 ],
             ];
         }
         return false;
+    }
+
+    /**
+     * Get Default Request Group.
+     *
+     * In FOLIO, this is equivalent to the fulfillment preference.
+     *
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return false|string       The default request group for the patron.
+     */
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
+    {
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        return $requestPreference['fulfillment'] ?? 'Hold Shelf';
+    }
+
+    /**
+     * Retrieve and cache the request preference.
+     *
+     * @param string $userId The user's UUID
+     *
+     * @return array An array containing several aspects of request preference
+     */
+    protected function getRequestPreference(string $userId): array
+    {
+        $requestPreference = $this->requestPreferenceCache[$userId] ?? null;
+        if ($requestPreference !== null) {
+            return $requestPreference;
+        }
+
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $userId
+        );
+        $requestPreferencesResponse = json_decode($response->getBody(), true);
+        $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? [];
+
+        $this->requestPreferenceCache[$userId] = $requestPreference;
+        return $requestPreference;
     }
 
     /**
@@ -2144,6 +2271,39 @@ class Folio extends AbstractAPI implements
             $this->putCachedData($cacheKey, $addressTypes);
         }
         return $addressTypes;
+    }
+
+    /**
+     * Get a formatted display string for delivery to a particular patron address type.
+     *
+     * Can include patron specific information, i.e. "Campus - 123 Main St.".
+     *
+     * @param string $addressTypeId Type id of the address
+     * @param string $addressType   Type of the address
+     * @param array  $addresses     Patron's list of addresses
+     *
+     * @return string The display-formatted address
+     */
+    protected function formatDeliveryAddress(string $addressTypeId, string $addressType, array $addresses): string
+    {
+        if (!($this->config['Holds']['formatDeliveryAddressTypes'] ?? false)) {
+            return $addressType;
+        }
+
+        foreach ($addresses as $address) {
+            if ($addressTypeId == $address->addressTypeId) {
+                $tokens = [
+                    'type' => $addressType,
+                    'line1' => ($address?->addressLine1 ?? '') ?: 'EMPTY',
+                    'line2' => ($address?->addressLine2 ?? '') ?: 'EMPTY',
+                    'city' => ($address?->city ?? '') ?: 'EMPTY',
+                    'region' => ($address?->region ?? '') ?: 'EMPTY',
+                    'postalCode' => ($address?->postalCode ?? '') ?: 'EMPTY',
+                ];
+                return $this->translate('pick_up_location_delivery_address_format', $tokens, null, true);
+            }
+        }
+        return $addressType;
     }
 
     /**
@@ -2183,22 +2343,31 @@ class Folio extends AbstractAPI implements
      * This optional feature was introduced in release 3.1.
      *
      * @param array $patron Patron login information from $this->patronLogin
+     * @param array $params Parameters
      *
      * @return array Associative array of holds information
      */
-    public function getMyHolds($patron)
+    public function getMyHolds($patron, $params = [])
     {
         $userQuery = '(requesterId == "' . $patron['id'] . '" '
             . 'or proxyUserId == "' . $patron['id'] . '")';
         $query = ['query' => '(' . $userQuery . ' and status == Open*)'];
         $holds = [];
-        foreach (
-            $this->getPagedResults(
+
+        if ($limit = $params['limit'] ?? null) {
+            $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
+            $result = $this->getResultPage('/request-storage/requests', $query, $offset, $limit);
+            $rawHolds = $result->requests ?? [];
+            $count = $result->totalRecords ?? null;
+        } else {
+            $rawHolds = $this->getPagedResults(
                 'requests',
                 '/request-storage/requests',
                 $query
-            ) as $hold
-        ) {
+            );
+        }
+
+        foreach ($rawHolds as $hold) {
             $requestDate = $this->dateConverter->convertToDisplayDate(
                 'Y-m-d H:i',
                 $hold->requestDate
@@ -2263,7 +2432,10 @@ class Folio extends AbstractAPI implements
             }
             $holds[] = $currentHold;
         }
-        return $holds;
+
+        $count ??= count($holds);
+
+        return ['count' => $count, 'records' => $holds];
     }
 
     /**
@@ -2363,6 +2535,25 @@ class Folio extends AbstractAPI implements
             'success' => false,
             'status' => $json->errors[0]->message ?? '',
         ];
+    }
+
+    /**
+     * Support method for placeHold(): Notify an external process
+     * that a request was successfully submitted.
+     *
+     * @return void
+     */
+    protected function sendWebhookAfterHoldRequest()
+    {
+        $url = $this->config['Holds']['webhook'] ?? null;
+        if ($url) {
+            if (!$this->webhookConnection) {
+                throw new ILSException('Webhook connection not set.');
+            }
+
+            // Short timeout -- don't impact user.
+            $this->webhookConnection->post($url, $this->webhookTimeout);
+        }
     }
 
     /**
@@ -2499,6 +2690,7 @@ class Folio extends AbstractAPI implements
             $requestBody['requestType'] = $requestType;
             $result = $this->performHoldRequest($requestBody);
             if ($result['success']) {
+                $this->sendWebhookAfterHoldRequest();
                 break;
             }
         }
@@ -3028,20 +3220,6 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Funds.
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @return array An associative array with key = fund ID, value = fund name.
-     *
-     * @deprecated
-     */
-    public function getFunds()
-    {
-        return [];
-    }
-
-    /**
      * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
@@ -3057,30 +3235,5 @@ class Folio extends AbstractAPI implements
     public function getMyTransactionHistory($patron, $params)
     {
         return[];
-    }
-
-    /**
-     * Get New Items.
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        return [];
     }
 }

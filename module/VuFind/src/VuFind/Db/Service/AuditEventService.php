@@ -31,6 +31,7 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use VuFind\Db\Entity\AuditEventEntityInterface;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
@@ -204,14 +205,63 @@ class AuditEventService extends AbstractDbService implements
         ?PaymentEntityInterface $payment = null,
         ?array $sort = null,
     ): array {
+        return $this->getEventsQuery(
+            $fromDate,
+            $untilDate,
+            $type,
+            $subtype,
+            $userOrId,
+            $username,
+            $clientIp,
+            $serverIp,
+            $serverName,
+            $payment,
+            $sort
+        )->getResult();
+    }
+
+    /**
+     * Get events query.
+     *
+     * @param ?DateTime                     $fromDate   Start date
+     * @param ?DateTime                     $untilDate  End date
+     * @param AuditEventType|string|null    $type       Event type
+     * @param AuditEventSubtype|string|null $subtype    Event subtype
+     * @param UserEntityInterface|int|null  $userOrId   User entity or ID of user
+     * @param ?string                       $username   User's username
+     * @param ?string                       $clientIp   Client's IP address
+     * @param ?string                       $serverIp   Server's IP address
+     * @param ?string                       $serverName Server's host name
+     * @param ?PaymentEntityInterface       $payment    Payment entity
+     * @param ?array                        $sort       Sort order (null for default descending order)
+     * @param ?array                        $conditions Additional conditions
+     * @param ?array                        $params     Parameters for additional conditions
+     *
+     * @return Query
+     */
+    protected function getEventsQuery(
+        ?DateTime $fromDate = null,
+        ?DateTime $untilDate = null,
+        AuditEventType|string|null $type = null,
+        AuditEventSubtype|string|null $subtype = null,
+        UserEntityInterface|int|null $userOrId = null,
+        ?string $username = null,
+        ?string $clientIp = null,
+        ?string $serverIp = null,
+        ?string $serverName = null,
+        ?PaymentEntityInterface $payment = null,
+        ?array $sort = null,
+        ?array $conditions = null,
+        ?array $params = null
+    ): Query {
         $user = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         if (null === $sort) {
             $sort = ['date DESC', 'id DESC'];
         }
 
         $dql = 'SELECT e FROM ' . AuditEventEntityInterface::class . ' e';
-        $conditions = [];
-        $params = [];
+        $conditions ??= [];
+        $params ??= [];
 
         // Handle date limits:
         if (null !== $fromDate) {
@@ -269,8 +319,7 @@ class AuditEventService extends AbstractDbService implements
 
         return $this->entityManager
             ->createQuery($dql)
-            ->setParameters($params)
-            ->getResult();
+            ->setParameters($params);
     }
 
     /**
@@ -330,7 +379,7 @@ class AuditEventService extends AbstractDbService implements
      *
      * @param array $details Details
      *
-     * @return @rray
+     * @return array
      */
     protected function scrubSecrets(array $details): array
     {

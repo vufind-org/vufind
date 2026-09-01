@@ -30,13 +30,14 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Resolver\Connection;
 use VuFind\Resolver\Driver\PluginManager as ResolverManager;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * "Get Resolver Links" AJAX handler.
@@ -56,64 +57,40 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Resolver driver plugin manager.
-     *
-     * @var ResolverManager
-     */
-    protected $pluginManager;
-
-    /**
-     * View renderer.
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Top-level VuFind configuration (config.ini).
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
-     * @param SessionSettings   $ss       Session settings
-     * @param ResolverManager   $pm       Resolver driver plugin manager
-     * @param RendererInterface $renderer View renderer
-     * @param Config            $config   Top-level VuFind configuration (config.ini)
+     * @param SessionSettings           $ss            Session settings
+     * @param ResolverManager           $pluginManager Resolver driver plugin manager
+     * @param TemplateRendererInterface $renderer      Template renderer
+     * @param Config                    $config        Top-level VuFind configuration (config.ini)
      */
     public function __construct(
         SessionSettings $ss,
-        ResolverManager $pm,
-        RendererInterface $renderer,
-        Config $config
+        protected ResolverManager $pluginManager,
+        protected TemplateRendererInterface $renderer,
+        protected Config $config
     ) {
-        $this->sessionSettings = $ss;
-        $this->pluginManager = $pm;
-        $this->renderer = $renderer;
-        $this->config = $config;
+        parent::__construct($ss);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $openUrl = $params->fromQuery('openurl', '');
-        $searchClassId = $params->fromQuery('searchClassId', '');
+        $openUrl = $this->getQueryParam($request, 'openurl', '');
+        $searchClassId = $this->getQueryParam($request, 'searchClassId', '');
 
         $resolverType = $this->config->OpenURL->resolver ?? 'generic';
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         $resolver = new Connection($this->pluginManager->get($resolverType));
@@ -165,7 +142,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
             'searchClassId' => $searchClassId,
             'moreOptionsLink' => $moreOptionsLink,
         ];
-        $html = $this->renderer->render('ajax/resolverLinks.phtml', $view);
+        $html = $this->renderer->renderTemplateAsString($request, 'ajax/resolverLinks.phtml', $view);
 
         // output HTML encoded in JSON object
         return $this->formatResponse(compact('html'));

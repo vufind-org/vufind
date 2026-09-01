@@ -1,12 +1,12 @@
 <?php
-    $view = $currentSearch['view'];
-    $results = $view->results;
+    $templateParams = $this->currentSearch['templateParams'];
+    $results = $templateParams['results'];
     $params = $results->getParams();
     $lookfor = $params->getDisplayQuery();
 
     // Set up Javascript for use below:
-    $searchClassIdEncoded = urlencode($searchClassId);
-    $targetIdHtmlEscaped = $this->escapeHtml('#' . $currentSearch['domId']);
+    $searchClassIdEncoded = urlencode($this->searchClassId);
+    $targetIdHtmlEscaped = $this->escapeHtml('#' . $this->currentSearch['domId']);
     $lookforEncoded = urlencode($lookfor);
     $typeEncoded = urlencode($params->getSearchHandler() ?? '');
     $loadJs = <<<JS
@@ -19,9 +19,9 @@
         JS;
 
 ?>
-<h2><?=$this->transEsc($currentSearch['label'])?></h2>
+<h2><?=$this->transEsc($this->currentSearch['label'])?></h2>
 
-<?php $permission = $currentSearch['permission'] ?? null ?>
+<?php $permission = $this->currentSearch['permission'] ?? null ?>
 <?php if (isset($permission) && !$this->permission()->allowDisplay($permission)): ?>
   <?php if ($block = $this->permission()->getAlternateContent($permission)): ?>
     <?=$block?>

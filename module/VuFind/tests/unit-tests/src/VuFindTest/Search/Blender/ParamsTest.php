@@ -30,7 +30,6 @@
 namespace VuFindTest\Search\Blender;
 
 use Laminas\Stdlib\Parameters;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
@@ -256,7 +255,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+        $this->assertSame('Blender', $this->getParams()->getSearchClassId());
     }
 
     /**
@@ -268,7 +267,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         // None by default:
         $params = $this->getParams();
-        $this->assertEquals([], $params->getCheckboxFacets());
+        $this->assertSame([], $params->getCheckboxFacets());
 
         // Adding one works:
         $params->addCheckboxFacet('format:bar', 'checkbox_label');
@@ -802,22 +801,22 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Make sure that a checkbox facet with correct value gets the label for the
         // checkbox:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Check that reset works:
         $params->resetFacetConfig();
-        $this->assertEquals([], $params->getFacetConfig());
+        $this->assertSame([], $params->getFacetConfig());
     }
 
     /**
@@ -1051,7 +1050,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'Base' => $baseParams,
             ],
-            new Config($this->config),
             $this->mappings
         );
 
@@ -1107,7 +1105,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
-            new Config($config ?? $this->config),
             $mappings ?? $this->mappings
         );
     }

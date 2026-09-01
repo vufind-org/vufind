@@ -1,6 +1,5 @@
 <?=$this->layout()->content?>
-<?=$this->piwik(['lightbox' => true])?>
-<?=$this->matomo(['context' => $this->layoutContext ?? 'lightbox'])?>
+<?=$this->matomo(['context' => $this->globals()['layoutContext'] ?? 'lightbox'])?>
 <?=$this->googleanalytics($this->serverUrl(true))?>
 <?php if ($this->session()->put('reset_account_status', null) && $this->auth()->getManager()->ajaxEnabled()) {
   echo $this->assetManager()->outputInlineScriptString(
