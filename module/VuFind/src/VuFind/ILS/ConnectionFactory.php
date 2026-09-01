@@ -72,7 +72,7 @@ class ConnectionFactory implements FactoryInterface
         $config = $configManager->getConfigArray('config');
         $request = $container->get('Request');
         $catalog = new $requestedName(
-            $config['Catalog'],
+            $config['Catalog'] ?? [],
             $container->get(\VuFind\ILS\Driver\PluginManager::class),
             $configManager,
             $request instanceof \Laminas\Http\Request ? $request : null
