@@ -637,7 +637,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $response = [];
 
         if (
-            ($this->config['cancel_ill_requests_enabled'] ?? false)
+            $this->config['cancel_ill_requests_enabled'] ?? false
         ) {
             $check = $this->checkCapability(
                 'cancelILLRequests',
