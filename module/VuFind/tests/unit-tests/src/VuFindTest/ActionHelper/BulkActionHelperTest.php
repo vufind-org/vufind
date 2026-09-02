@@ -151,8 +151,7 @@ class BulkActionHelperTest extends TestCase
     }
 
     /**
-     * Test that redirectToSource() routes a flash message to the correct messenger method for its namespace
-     * and the method returns early after setting this message.
+     * Test that redirectToSource() routes a flash message to the correct messenger method for its namespace.
      *
      * @param string $namespace      Flash namespace passed to redirectToSource()
      * @param string $expectedMethod Messenger method expected to receive the message
@@ -165,20 +164,13 @@ class BulkActionHelperTest extends TestCase
         $flashMessenger = $this->createMock(FlashMessengerInterface::class);
         $flashMessenger->expects($this->once())->method($expectedMethod)->with('a message');
 
-        $contextHelper = $this->createMock(ContextHelper::class);
-        $contextHelper->method('inLightbox')->willReturn(true);
-
-        $redirectHelper = $this->createMock(RedirectHelper::class);
-        $redirectHelper->expects($this->never())->method('redirectToUrl');
-
-        $helper = $this->getHelper(compact('flashMessenger', 'contextHelper', 'redirectHelper'));
-        $result = $helper->redirectToSource(
+        $helper = $this->getHelper(compact('flashMessenger'));
+        $helper->redirectToSource(
             new ServerRequest('POST', 'http://localhost/'),
             new Response(),
             $namespace,
             'a message'
         );
-        $this->assertNotInstanceOf(ResponseInterface::class, $result);
     }
 
     /**
@@ -219,18 +211,33 @@ class BulkActionHelperTest extends TestCase
     }
 
     /**
+     * Data provider for testRedirectToSourceUsesSessionUrl().
+     *
+     * @return \Iterator
+     */
+    public static function redirectInLightboxProvider(): \Iterator
+    {
+        yield 'not in lightbox' => [false];
+
+        yield 'in lightbox, redirect forced' => [true];
+    }
+
+    /**
      * Test that redirectToSource() redirects to the source URL stored in the followup session when present.
+     *
+     * @param bool $redirectInLightbox Whether we are in a lightbox and forcing a redirect anyway
      *
      * @return void
      */
-    public function testRedirectToSourceUsesSessionUrl(): void
+    #[DataProvider('redirectInLightboxProvider')]
+    public function testRedirectToSourceUsesSessionUrl(bool $redirectInLightbox): void
     {
         $sessionManager = $this->getSessionManager();
         $session = new Container('cart_followup', $sessionManager);
         $session->url = 'http://localhost/source';
 
         $contextHelper = $this->createMock(ContextHelper::class);
-        $contextHelper->method('inLightbox')->willReturn(false);
+        $contextHelper->method('inLightbox')->willReturn($redirectInLightbox);
 
         $expectedResponse = new Response();
         $redirectHelper = $this->createMock(RedirectHelper::class);
@@ -242,7 +249,11 @@ class BulkActionHelperTest extends TestCase
         $routeHelper->expects($this->never())->method('getUrlFromRoute');
 
         $helper = $this->getHelper(compact('sessionManager', 'contextHelper', 'redirectHelper', 'routeHelper'));
-        $result = $helper->redirectToSource(new ServerRequest('POST', 'http://localhost/'), new Response());
+        $result = $helper->redirectToSource(
+            new ServerRequest('POST', 'http://localhost/'),
+            new Response(),
+            redirectInLightbox: $redirectInLightbox
+        );
         $this->assertSame($expectedResponse, $result);
 
         $sessionAfter = new Container('cart_followup', $sessionManager);
