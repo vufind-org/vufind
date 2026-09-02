@@ -63,6 +63,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'default_sort' => 'relevance',
         ],
         'ItemGlobalOrder' => [],
+        'Cover' => [
+            'loadDirectly' => false,
+        ],
     ];
 
     /**
@@ -620,7 +623,19 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getThumbnail for a record.
+     * Data provider for testGetThumbnailDirect().
+     *
+     * @return \Iterator
+     */
+    public static function getThumbnailProviderDirect(): \Iterator
+    {
+        yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
+        yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
+        yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
+    }
+
+    /**
+     * Test getThumbnail for a record using the proxy image URL loader.
      *
      * @param string $size Size to request
      *
@@ -636,6 +651,21 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'source' => 'EDS',
         ];
         $this->assertEquals($results, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record when using direct URL loader.
+     *
+     * @param string $size     Size to request
+     * @param string $expected Expected result
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProviderDirect')]
+    public function testGetThumbnailDirect(string $size, string $expected): void
+    {
+        $driver = $this->getDriver('valid-eds-record', ['Cover' => ['loadDirectly' => true]]);
+        $this->assertEquals($expected, $driver->getThumbnail($size));
     }
 
     /**
