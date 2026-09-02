@@ -40,12 +40,9 @@ use Laminas\Cache\Storage\StorageInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EDS extends \VuFind\Content\AbstractCover implements
-    \Psr\Log\LoggerAwareInterface,
-    \VuFind\Http\CachingDownloaderAwareInterface
+class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-    use \VuFind\Http\CachingDownloaderAwareTrait;
     use \VuFind\Cache\CacheTrait;
 
     /**
@@ -55,7 +52,7 @@ class EDS extends \VuFind\Content\AbstractCover implements
      */
     public function __construct(StorageInterface $cache)
     {
-        $this->supportsRecordid = $this->cacheAllowed = true;
+        $this->supportsRecordid = true;
         $this->setCacheStorage($cache);
     }
 
@@ -105,8 +102,8 @@ class EDS extends \VuFind\Content\AbstractCover implements
         $recordId = $ids['recordid'] ?? '';
         $url = $this->getCachedData($recordId);
 
-        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
-            $this->debug('Returning Cover image URL: ' . $url);
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            $this->debug('Returning EDS Cover image URL: ' . $url);
             return $url;
         }
 

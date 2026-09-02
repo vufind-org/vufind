@@ -716,12 +716,18 @@ class EDS extends DefaultRecord
         // If EDS actually returned cover image data, use it.  EDS only provides this data
         // for certain ebook packages.
         if ($thumbnail) {
-            $this->putCachedData($this->getUniqueID(), $thumbnail);
-            return [
-                'recordid' => $this->getUniqueID(),
-                'size' => $size,
-                'source' => 'EDS',
-            ];
+            // Determine if we are using the cover loader method or direct load
+            $loadDirectly = $this->recordConfig?->Cover?->loadDirectly ?? true;
+            if ($loadDirectly) {
+                return $thumbnail;
+            } else {
+                $this->putCachedData($this->getUniqueID(), $thumbnail);
+                return [
+                    'recordid' => $this->getUniqueID(),
+                    'size' => $size,
+                    'source' => 'EDS',
+                ];
+            }
         }
 
         // Optionally use VuFind's default cover loader
