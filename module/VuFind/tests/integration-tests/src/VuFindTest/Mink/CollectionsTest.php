@@ -97,11 +97,27 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testPubDateVisAjax.
+     *
+     * @return \Iterator
+     */
+    public static function recommendationPositionProvider(): \Iterator
+    {
+        // Top:
+        yield ['top'];
+        // Bottom:
+        yield ['bottom'];
+    }
+
+    /**
      * Test that a collection can use the PubDateVisAjax recommendation module.
+     *
+     * @param string $recommendationPosition Position of PubDateVisAjax recommendation
      *
      * @return void
      */
-    public function testPubDateVisAjax(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('recommendationPositionProvider')]
+    public function testPubDateVisAjax(string $recommendationPosition): void
     {
         $this->changeConfigs(
             [
@@ -111,7 +127,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                 ],
                 'Collection' => [
-                    'Recommend' => ['top' => 'PubDateVisAjax:true:publishDate'],
+                    'Recommend' => [$recommendationPosition => 'PubDateVisAjax:true:publishDate'],
                 ],
             ]
         );

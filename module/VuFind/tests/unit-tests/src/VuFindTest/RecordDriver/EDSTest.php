@@ -1138,4 +1138,19 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver('valid-eds-record-2');
         $this->assertNull($driver->getScore());
     }
+
+    /**
+     * Test getHighlightedTitle().
+     *
+     * @return void
+     */
+    public function testGetHighlightedTitle(): void
+    {
+        $driver = $this->getDriver('eds-highlighting');
+        $this->assertEquals(
+            '{{{{START_HILITE}}}}highlighted part{{{{END_HILITE}}}} of text. '
+            . 'Also {{{{START_HILITE}}}}more highlights{{{{END_HILITE}}}}',
+            $driver->getHighlightedTitle()
+        );
+    }
 }

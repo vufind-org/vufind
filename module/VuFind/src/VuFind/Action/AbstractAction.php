@@ -49,7 +49,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractAction implements ActionInterface
+abstract class AbstractAction implements ActionInterface, AccessPermissionInterface
 {
     /**
      * Current request.
@@ -90,9 +90,9 @@ abstract class AbstractAction implements ActionInterface
      * Permission that must be granted to access this action (false for no restriction, null to use configured default
      * (which is usually the same as false)).
      *
-     * @var string|bool|null
+     * @var string|false|null
      */
-    protected $accessPermission = null;
+    protected string|false|null $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through permissionBehavior.ini). Valid values are
@@ -101,7 +101,7 @@ abstract class AbstractAction implements ActionInterface
      *
      * @var ?string
      */
-    protected $accessDeniedBehavior = null;
+    protected ?string $accessDeniedBehavior = null;
 
     /**
      * Constructor.
@@ -151,6 +151,60 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Get access permission.
+     *
+     * @return string|false|null
+     *
+     * @see AbstractAction::$accessPermission
+     */
+    public function getAccessPermission(): string|false|null
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Set access permission.
+     *
+     * @param string|false|null $permission Permission to require
+     *
+     * @return static
+     *
+     * @see AbstractAction::$accessPermission
+     */
+    public function setAccessPermission(string|false|null $permission): static
+    {
+        $this->accessPermission = $permission;
+        return $this;
+    }
+
+    /**
+     * Get access denied behavior.
+     *
+     * @return ?string
+     *
+     * @see AbstractAction::$accessDeniedBehavior
+     */
+    public function getAccessDeniedBehavior(): ?string
+    {
+        return $this->accessDeniedBehavior;
+    }
+
+    /**
+     * Set access denied behavior.
+     *
+     * @param ?string $behavior Access denied behavior
+     *
+     * @return static
+     *
+     * @see AbstractAction::$accessDeniedBehavior
+     */
+    public function setAccessDeniedBehavior(?string $behavior): static
+    {
+        $this->accessDeniedBehavior = $behavior;
+        return $this;
+    }
+
+    /**
      * Invoke the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -164,10 +218,16 @@ abstract class AbstractAction implements ActionInterface
     ): ResponseInterface {
         $this->request = $request;
         $this->response = $response;
+
         try {
+            if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
+                return $actionConfigResponse;
+            }
+
             if ($accessDeniedResponse = $this->validateAccessPermission()) {
                 return $accessDeniedResponse;
             }
+
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -182,6 +242,25 @@ abstract class AbstractAction implements ActionInterface
     protected function init(): void
     {
         // This function is called after constructor for any initialization required.
+    }
+
+    /**
+     * Check that everything is in order for the action to be executed.
+     *
+     * This method is executed in the very beginning of the action invocation before any permission checks etc.
+     * It is meant for technical checks such as route-based configuration being correctly applied.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
     }
 
     /**

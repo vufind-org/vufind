@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Emmanuel Afuadajo <afuadajoe@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -30,7 +31,6 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SummonResults;
-use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * SummonResults Test Class.
@@ -38,24 +38,39 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
  * @category VuFind
  * @package  Tests
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Emmanuel Afuadajo <afuadajoe@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SummonResultsTest extends \PHPUnit\Framework\TestCase
+class SummonResultsTest extends AbstractSearchObjectTestCase
 {
-    use ConfigRelatedServicesTrait;
+    /**
+     * Get the class name of the module.
+     *
+     * @return string
+     */
+    protected function getTestClass(): string
+    {
+        return SummonResults::class;
+    }
 
     /**
-     * Test getting search class id.
+     * Get search class id for the module.
      *
-     * @return void
+     * @return string
      */
-    public function testGetSearchClassId(): void
+    protected function getExpectedSearchClassId(): string
     {
-        $class = new \ReflectionClass(SummonResults::class);
-        $method = $class->getMethod('getSearchClassId');
-        $runner = $this->createMock(\VuFind\Search\SearchRunner::class);
-        $obj = new SummonResults($runner, $this->getMockConfigManager());
-        $this->assertSame('Summon', $method->invoke($obj));
+        return 'Summon';
+    }
+
+    /**
+     * Get the default heading for the module.
+     *
+     * @return string
+     */
+    protected function getExpectedDefaultHeading(): string
+    {
+        return 'Summon Results';
     }
 }

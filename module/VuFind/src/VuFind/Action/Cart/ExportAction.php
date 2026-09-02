@@ -45,7 +45,6 @@ use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\Helper\Root\Record;
 
 use function count;
-use function is_array;
 
 /**
  * Cart export form action.
@@ -104,7 +103,7 @@ class ExportAction extends AbstractCartAction
             ? $bulkActionHelper->getExportActionLimit($format)
             : $bulkActionHelper->getBulkActionLimit('export');
 
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
                 return $redirect;
             }

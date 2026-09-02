@@ -50,9 +50,9 @@ abstract class Explanation
     /**
      * Configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
-    protected \VuFind\Config\Config $config;
+    protected array $config;
 
     /**
      * Configuration file to read search settings from.
@@ -87,7 +87,7 @@ abstract class Explanation
         protected SearchService $searchService,
         ConfigManagerInterface $configManager
     ) {
-        $this->config = $configManager->getConfigObject($this->searchIni);
+        $this->config = $configManager->getConfigArray($this->searchIni);
     }
 
     /**
