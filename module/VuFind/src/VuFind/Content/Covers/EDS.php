@@ -103,7 +103,7 @@ class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareI
         $url = $this->getCachedData($recordId);
 
         if (filter_var($url, FILTER_VALIDATE_URL)) {
-            $this->debug('Returning EDS Cover image URL: ' . $url);
+            $this->debug('Returning EDS cover image URL: ' . $url);
             return $url;
         }
 
