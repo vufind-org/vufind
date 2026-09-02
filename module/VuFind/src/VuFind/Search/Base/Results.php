@@ -76,7 +76,7 @@ abstract class Results
      *
      * @var string
      */
-    protected string $backendId;
+    protected string $backendId = '';
 
     /**
      * Override (only for use in very rare cases).
