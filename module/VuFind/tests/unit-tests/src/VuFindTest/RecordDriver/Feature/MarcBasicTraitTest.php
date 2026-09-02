@@ -107,6 +107,32 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetCoverUrl.
+     *
+     * @return \Iterator
+     */
+    public static function getCoverUrlData(): \Iterator
+    {
+        yield 'cover present' => ['marccover.xml', 'https://example.org/cover.jpg'];
+        yield 'no 856 fields' => ['marctraitsempty.xml', false];
+    }
+
+    /**
+     * Test getCoverUrl() from MarcReaderTrait.
+     *
+     * @param string      $fixture  MARC fixture
+     * @param string|bool $expected Expected cover URL, or false if none
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCoverUrlData')]
+    public function testGetCoverUrl(string $fixture, string|bool $expected): void
+    {
+        $obj = $this->createMockRecord($fixture);
+        $this->assertSame($expected, $obj->getCoverUrl());
+    }
+
+    /**
      * Create mock record.
      *
      * @param string $fixture Record metadata fixture
