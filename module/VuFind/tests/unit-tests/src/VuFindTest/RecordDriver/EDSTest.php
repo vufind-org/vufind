@@ -31,6 +31,7 @@
 
 namespace VuFindTest\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
@@ -62,6 +63,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'default_sort' => 'relevance',
         ],
         'ItemGlobalOrder' => [],
+        'Cover' => [
+            'loadDirectly' => false,
+        ],
     ];
 
     /**
@@ -156,7 +160,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
-        $record = new EDS(null, new \VuFind\Config\Config($config ?? $this->defaultDriverConfig));
+        $cache = $this->createMock(StorageInterface::class);
+        $record = new EDS(new \VuFind\Config\Config($config ?? $this->defaultDriverConfig), $cache);
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);
@@ -612,23 +617,54 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     public static function getThumbnailProvider(): \Iterator
     {
+        yield 'thumb is upscaled to small' => ['small'];
+        yield 'medium is used as-is' => ['medium'];
+        yield 'medium is upscaled to large' => ['large'];
+    }
+
+    /**
+     * Data provider for testGetThumbnailDirect().
+     *
+     * @return \Iterator
+     */
+    public static function getThumbnailProviderDirect(): \Iterator
+    {
         yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
         yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
         yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
     }
 
     /**
-     * Test getThumbnail for a record.
+     * Test getThumbnail for a record using the proxy image URL loader.
+     *
+     * @param string $size Size to request
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
+    public function testGetThumbnail(string $size): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $results = [
+            'recordid' => 'edsgob,edsgob.14707011',
+            'size' => $size,
+            'source' => 'EDS',
+        ];
+        $this->assertEquals($results, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record when using direct URL loader.
      *
      * @param string $size     Size to request
      * @param string $expected Expected result
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
-    public function testGetThumbnail(string $size, string $expected): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProviderDirect')]
+    public function testGetThumbnailDirect(string $size, string $expected): void
     {
-        $driver = $this->getDriver('valid-eds-record');
+        $driver = $this->getDriver('valid-eds-record', ['Cover' => ['loadDirectly' => true]]);
         $this->assertEquals($expected, $driver->getThumbnail($size));
     }
 
