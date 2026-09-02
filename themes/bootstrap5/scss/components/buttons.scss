@@ -23,6 +23,27 @@ $btn-default-border:     #ccc !default;
   &:not(.facet) {
     @extend .toolbar-btn;
   }
+
+  // more/less buttons in facets need highlighting for accessibility.
+  // Bootstrap uses only :focus-visible on buttons, but truncate.js moves focus
+  // between less and more buttons, so :focus needs to be made visible too.
+  //
+  // Since @extend '.toolbar-btn' tries to make the more/less buttons use BS rules
+  // we use ':not(.facet)' / '.facet' to win on specificity over BS's 'text-decoration:none' and 'outline:0'
+  &:not(.facet):hover,
+  &:not(.facet):focus,
+  &.facet:hover,
+  &.facet:focus {
+    text-decoration: underline;
+  }
+
+  // Prevent clipping of focus outline in '.truncate-done { overflow: clip; }'
+  // (components/sidebar.scss) by drawing outline inside the button.
+  &:not(.facet):focus-visible,
+  &.facet:focus-visible {
+    outline: var(--#{$prefix}focus-ring-width) solid var(--#{$prefix}primary);
+    outline-offset: calc(-1 * var(--#{$prefix}focus-ring-width));
+  }
 }
 
 .btn-link:hover {
