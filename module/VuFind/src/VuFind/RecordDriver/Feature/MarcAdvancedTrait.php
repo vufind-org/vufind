@@ -38,6 +38,7 @@ use VuFind\XSLT\Processor as XSLTProcessor;
 use function count;
 use function in_array;
 use function is_array;
+use function stripos;
 
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
@@ -293,6 +294,26 @@ trait MarcAdvancedTrait
     public function getBibliographyNotes()
     {
         return $this->getFieldArray('504');
+    }
+
+    /**
+     * Get URL of cover image from MARC field 856.
+     *
+     * The method is intended to be used through the cover loader; the URL is
+     * identified by a "cover" description in subfield 3 of the 856 field.
+     *
+     * @return string|bool URL of the image, or false if no valid image is found
+     */
+    public function getExternalCoverImageUrl()
+    {
+        $fields856 = $this->getMarcReader()->getFields('856');
+        foreach ($fields856 as $field) {
+            $description = $this->getSubfield($field, '3');
+            if (stripos($description, 'cover') !== false) {
+                return $this->getSubfield($field, 'u');
+            }
+        }
+        return false;
     }
 
     /**

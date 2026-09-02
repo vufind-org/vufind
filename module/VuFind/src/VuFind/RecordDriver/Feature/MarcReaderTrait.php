@@ -104,25 +104,6 @@ trait MarcReaderTrait
     }
 
     /**
-     * Get URL of cover image from MARC field.
-     *
-     * @return string|bool URL of the image, or false if no valid image is found
-     */
-    public function getCoverUrl()
-    {
-        $marc = $this->getMarcReader();
-        $fields856 = $marc->getFields('856');
-        foreach ($fields856 as $field) {
-            $description = $marc->getSubfield($field, '3');
-            if (stripos($description, 'cover') !== false) {
-                $url = $marc->getSubfield($field, 'u');
-                return $url;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Return an array of all values extracted from the specified field/subfield
      * combination. If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array

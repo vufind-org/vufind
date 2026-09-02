@@ -33,7 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Content\Covers\RecordData;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\DefaultRecord;
-use VuFindTest\RecordDriver\MarcBasicTraitTestHarness;
+use VuFind\RecordDriver\SolrMarc;
 
 /**
  * Unit tests for the RecordData cover loader.
@@ -125,8 +125,8 @@ class RecordDataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that getUrl() returns false when the driver has no getCoverUrl()
-     * method (e.g. a non-MARC record driver).
+     * Test that getUrl() returns false when the driver has no
+     * getExternalCoverImageUrl() method (e.g. a non-MARC record driver).
      *
      * @return void
      */
@@ -142,19 +142,19 @@ class RecordDataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a MARC-based record driver mock from a fixture.
+     * Create a mock record driver from a MARC fixture.
      *
      * @param string $fixture Record metadata fixture
      *
-     * @return MarcBasicTraitTestHarness&MockObject
+     * @return SolrMarc&MockObject
      */
-    protected function createMarcDriver(string $fixture): MarcBasicTraitTestHarness&MockObject
+    protected function createMarcDriver(string $fixture): SolrMarc&MockObject
     {
-        $xml = $this->getFixture("marc/$fixture");
-        $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(MarcBasicTraitTestHarness::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
+        $record = new \VuFind\Marc\MarcReader($this->getFixture("marc/$fixture"));
+        $obj = $this->getMockBuilder(SolrMarc::class)
+            ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
         $obj->method('getMarcReader')->willReturn($record);
+        $obj->method('getUniqueId')->willReturn('123');
         return $obj;
     }
 }
