@@ -469,6 +469,40 @@ class LoginHelperTest extends TestCase
     }
 
     /**
+     * Test that a failed catalog login returns null rather than the false value produced by the ILS authenticator.
+     *
+     * @return void
+     */
+    public function testCatalogLoginFailedLoginReturnsNull(): void
+    {
+        $request = (new ServerRequest())
+            ->withParsedBody(['cat_username' => 'foo', 'cat_password' => 'bar']);
+        $response = new Response();
+
+        $ilsAuthenticator = $this->createMock(ILSAuthenticator::class);
+        $ilsAuthenticator->expects($this->once())
+            ->method('newCatalogLogin')
+            ->willReturn(false);
+
+        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger->expects($this->once())
+            ->method('addErrorMessage')
+            ->with('Invalid Patron Login');
+
+        $helper = $this->getAutowiredObject(
+            ActionHelperLoginHelper::class,
+            [
+                AuthManager::class => $this->getAuthManager($this->createMock(User::class), true),
+                ILSAuthenticator::class => $ilsAuthenticator,
+                FlashMessengerInterface::class => $flashMessenger,
+                ForwardHelper::class => $this->getForwardHelper(null),
+            ]
+        );
+
+        $this->assertNull($helper->catalogLogin($request, $response, false));
+    }
+
+    /**
      * Data provider for testGetILSLoginMethod().
      *
      * @return Generator<string, array>
