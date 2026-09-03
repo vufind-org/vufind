@@ -724,7 +724,7 @@ class Server
         $this->vufindApiFields = array_filter(
             explode(
                 ',',
-                $config['OAI']['vufind_api_format_fields'] ?? []
+                $config['OAI']['vufind_api_format_fields'] ?? ''
             )
         );
 
