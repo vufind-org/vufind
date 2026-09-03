@@ -1,11 +1,11 @@
 <?php
 
 /**
- * OAuth2 controller factory.
+ * OAuth2 server service factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,16 +21,18 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  OAuth2
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\OAuth2;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\CryptKey;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
@@ -42,8 +44,12 @@ use OpenIDConnectServer\Entities\ClaimSetEntity;
 use OpenIDConnectServer\IdTokenResponse;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\AccessTokenServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\ILS\Connection;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
 use VuFind\OAuth2\Repository\ClientRepository;
@@ -54,43 +60,43 @@ use VuFind\OAuth2\Repository\ScopeRepository;
 use function in_array;
 
 /**
- * OAuth2 controller factory.
+ * OAuth2 server service factory.
  *
  * @category VuFind
- * @package  Controller
+ * @package  OAuth2
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class OAuth2ControllerFactory extends AbstractBaseFactory
+class OAuth2ServerServiceFactory implements FactoryInterface
 {
     /**
      * Service manager.
      *
-     * @var ContainerInterface
+     * @var ?ContainerInterface
      */
-    protected $container;
+    protected ?ContainerInterface $container = null;
 
     /**
      * OAuth2 configuration.
      *
-     * @var array
+     * @var ?array
      */
-    protected $oauth2Config;
+    protected ?array $oauth2Config = null;
 
     /**
      * Config file path resolver.
      *
-     * @var PathResolver
+     * @var ?PathResolver
      */
-    protected $pathResolver;
+    protected ?PathResolver $pathResolver = null;
 
     /**
      * Claim extractor.
      *
-     * @var ClaimExtractor
+     * @var ?ClaimExtractor
      */
-    protected $claimExtractor = null;
+    protected ?ClaimExtractor $claimExtractor = null;
 
     /**
      * Create an object.
@@ -126,25 +132,27 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $this->checkIfUserIdentifierFieldIsValid();
 
         $session = new \Laminas\Session\Container(
-            OAuth2Controller::SESSION_NAME,
+            OAuth2ServerService::SESSION_NAME,
             $container->get(\Laminas\Session\SessionManager::class)
         );
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        $serverUrlHelper = $container->get(ServerUrlHelper::class);
+        $routeHelper = $container->get(RouteHelper::class);
+        $baseUrl = $serverUrlHelper->getUrlForPath($routeHelper->getUrlFromRoute('home'));
 
-        return $this->applyPermissions(
-            $container,
-            new $requestedName(
-                $container,
-                $this->oauth2Config,
-                $this->getAuthorizationServerFactory(),
-                $this->getResourceServerFactory(),
-                $container->get(\VuFind\Validator\CsrfInterface::class),
-                $session,
-                $container->get(IdentityRepository::class),
-                $dbPluginManager->get(AccessTokenServiceInterface::class),
-                $this->getClaimExtractor(),
-                $this->pathResolver
-            )
+        return new $requestedName(
+            Closure::fromCallable($this->getAuthorizationServerFactory()),
+            Closure::fromCallable($this->getResourceServerFactory()),
+            $container->get(\VuFind\Validator\CsrfInterface::class),
+            $session,
+            $container->get(IdentityRepository::class),
+            $dbPluginManager->get(AccessTokenServiceInterface::class),
+            $this->getClaimExtractor(),
+            $this->pathResolver,
+            $container->get(ILSAuthenticator::class),
+            $container->get(Connection::class),
+            $this->oauth2Config,
+            $baseUrl
         );
     }
 
