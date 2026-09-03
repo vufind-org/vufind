@@ -38,7 +38,6 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\Http\GuzzleService;
 use VuFindSearch\Backend\WorldCat2\Backend;
 use VuFindSearch\Backend\WorldCat2\Connector;
@@ -67,16 +66,16 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $config;
+    protected array $config;
 
     /**
      * WorldCat v2 configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $wcConfig;
+    protected array $wcConfig;
 
     /**
      * Create an object.
@@ -101,8 +100,8 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
-        $this->config = $configManager->getConfigObject('config');
-        $this->wcConfig = $configManager->getConfigObject('WorldCat2');
+        $this->config = $configManager->getConfigArray('config');
+        $this->wcConfig = $configManager->getConfigArray('WorldCat2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -162,7 +161,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      */
     protected function createConnector(): Connector
     {
-        $connectorOptions = $this?->wcConfig?->Connector?->toArray() ?? [];
+        $connectorOptions = $this->wcConfig['Connector'] ?? [];
         $connector = new Connector(
             $this->createHttpClient(),
             $this->createAuthProvider($connectorOptions),
@@ -180,7 +179,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      */
     protected function createQueryBuilder(): QueryBuilder
     {
-        $exclude = $this->wcConfig->General->exclude_code ?? null;
+        $exclude = $this->wcConfig['General']['exclude_code'] ?? null;
         return new QueryBuilder($exclude);
     }
 
