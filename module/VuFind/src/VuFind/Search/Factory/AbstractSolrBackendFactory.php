@@ -652,7 +652,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a custom filter listener for the backend (or null if not needed).
      *
      * @param BackendInterface $backend Search backend
-     * @param array           $facet   Configuration of facets
+     * @param array            $facet   Configuration of facets
      *
      * @return ?CustomFilterListener
      */
@@ -694,7 +694,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a highlighting listener for the backend.
      *
      * @param BackendInterface $backend Search backend
-     * @param array           $search  Search configuration
+     * @param array            $search  Search configuration
      *
      * @return InjectHighlightingListener
      */
@@ -711,7 +711,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a Conditional Filter Listener.
      *
      * @param BackendInterface $backend Search backend
-     * @param array           $search  Search configuration
+     * @param array            $search  Search configuration
      *
      * @return InjectConditionalFilterListener
      */

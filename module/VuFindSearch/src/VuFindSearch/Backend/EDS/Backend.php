@@ -163,7 +163,7 @@ class Backend extends AbstractBackend
      * @param RecordCollectionFactoryInterface $factory Record collection factory
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
-     * @param ?array                          $config  Object representing EDS.ini
+     * @param ?array                           $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(

@@ -83,8 +83,8 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param ?array  $searchConfig Search config
-     * @param string  $uniqueKey    Solr field used to store unique identifier
+     * @param ?array $searchConfig Search config
+     * @param string $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
