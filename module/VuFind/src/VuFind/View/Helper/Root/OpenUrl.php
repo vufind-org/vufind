@@ -111,7 +111,7 @@ class OpenUrl
         }
 
         if ($imagebased) {
-            if (!isset($this->config->dynamic_graphic)) {
+            if (!isset($this->config['dynamic_graphic'])) {
                 // if imagebased linking is forced by the template, but it is not
                 // configured properly, throw an exception
                 throw new \Exception(
