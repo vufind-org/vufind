@@ -452,7 +452,9 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         foreach ($this->config['Backends'] as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
             if (isset($collections[$backendId])) {
-                $result[$key] = $collections[$backendId]->getTotal();
+                if ($total = $collections[$backendId]->getTotal()) {
+                    $result[$key] = $total;
+                }
             } elseif ($isOrFacet) {
                 $result[$key] = null;
             }
