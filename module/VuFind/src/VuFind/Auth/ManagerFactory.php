@@ -69,7 +69,7 @@ class ManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         // Load dependencies:
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $userService = $dbServiceManager->get(\VuFind\Db\Service\UserServiceInterface::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
