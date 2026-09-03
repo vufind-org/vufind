@@ -141,8 +141,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        $setting = isset($this->config['Social']['lists'])
-            ? trim(strtolower($this->config['Social']['lists'])) : 'enabled';
+        $setting = trim(strtolower($this->config['Social']['lists'] ?? 'enabled'));
         if (!$setting) {
             $setting = 'disabled';
         }
