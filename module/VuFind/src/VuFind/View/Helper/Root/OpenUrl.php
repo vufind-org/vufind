@@ -157,7 +157,7 @@ class OpenUrl
             $base = false;
         }
 
-        $embed = (isset($this->config['embed']) ?? false);
+        $embed = (!empty($this->config['embed']));
 
         $embedAutoLoad = $this->config['embed_auto_load'] ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
