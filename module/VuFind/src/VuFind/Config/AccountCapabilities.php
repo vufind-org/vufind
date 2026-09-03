@@ -210,8 +210,7 @@ class AccountCapabilities
      */
     public function getSmsSetting()
     {
-        return isset($this->config['Mail']['sms'])
-            && $this->config['Mail']['sms'] === 'disabled'
+        return ($this->config['Mail']['sms'] ?? 'enabled') === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
