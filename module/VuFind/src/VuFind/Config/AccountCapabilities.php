@@ -84,8 +84,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config['Social']['comments'])
-            && $this->config['Social']['comments'] === 'disabled'
+        return ($this->config['Social']['comments'] ?? enabled) === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
