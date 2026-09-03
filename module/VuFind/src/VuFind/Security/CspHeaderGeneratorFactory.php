@@ -72,6 +72,6 @@ class CspHeaderGeneratorFactory implements FactoryInterface
             ->getConfigArray('contentsecuritypolicy');
         $nonceGenerator = $container->get(NonceGenerator::class);
 
-        return new $requestedName($nonceGenerator);
+        return new $requestedName($config, $nonceGenerator);
     }
 }
