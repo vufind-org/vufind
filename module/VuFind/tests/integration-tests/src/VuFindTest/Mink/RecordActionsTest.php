@@ -281,6 +281,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
         $this->assertSelectedSort($page, 'title');
+        // Click on a record to be sure that the results lead to the right place:
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
