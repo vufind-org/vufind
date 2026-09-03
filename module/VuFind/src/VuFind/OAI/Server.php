@@ -731,7 +731,7 @@ class Server
         // Initialize filters specific to requested metadataPrefix:
         if (isset($config['OAI']['record_format_filters'])) {
             $this->recordFormatFilters
-                = $config['OAI']['record_format_filters'];
+                = (array)$config['OAI']['record_format_filters'];
         }
 
         // Initialize delete lifetime, if set:
