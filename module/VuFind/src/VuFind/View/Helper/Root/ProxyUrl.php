@@ -32,8 +32,6 @@ namespace VuFind\View\Helper\Root;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
-use function intval;
-
 /**
  * Proxy URL view helper.
  *
@@ -54,7 +52,7 @@ class ProxyUrl implements
     /**
      * Constructor.
      *
-     * @param ?array       $config VuFind configuration
+     * @param ?array        $config VuFind configuration
      * @param ?CacheAdapter $cache  Cache for web service responses
      */
     public function __construct(protected ?array $config = null, ?CacheAdapter $cache = null)
