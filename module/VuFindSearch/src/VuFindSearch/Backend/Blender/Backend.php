@@ -126,7 +126,7 @@ class Backend extends AbstractBackend
         $this->mappings = $mappings;
         $this->setEventManager($events);
 
-        $boostMax = isset($this->config['-Blending']['initialResults'])
+        $boostMax = isset($this->config['Blending']['initialResults'])
             ? count($this->config['Blending']['initialResults'])
             : 0;
         $this->blendLimit = max(20, $boostMax);

@@ -182,11 +182,12 @@ class Backend extends AbstractBackend
         $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
-        $this->userName = $config['EBSCO_Account']['user_name'] ?? null;
-        $this->password = $this->getSecretFromConfig($config['EBSCO_Account'], 'password');
-        $this->ipAuth = $config['EBSCO_Account']['ip_auth'] ?? false;
-        $this->profile = $config['EBSCO_Account']['profile'] ?? null;
-        $this->orgId = $config['EBSCO_Account']['organization_id'] ?? null;
+        $accountConfig = $config['EBSCO_Account'] ?? [];
+        $this->userName = $accountConfig['user_name'] ?? null;
+        $this->password = $this->getSecretFromConfig($accountConfig, 'password');
+        $this->ipAuth = $accountConfig['ip_auth'] ?? false;
+        $this->profile = $accountConfig['profile'] ?? null;
+        $this->orgId = $accountConfig['organization_id'] ?? null;
         $this->validationConfig = $config['Validation'] ?? [];
 
         // Save default profile value, since profile property may be overridden:
