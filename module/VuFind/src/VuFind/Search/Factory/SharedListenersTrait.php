@@ -47,7 +47,7 @@ trait SharedListenersTrait
      * Get a hide facet value listener for the backend.
      *
      * @param BackendInterface $backend Search backend
-     * @param array           $facet   Configuration of facets
+     * @param array            $facet   Configuration of facets
      *
      * @return ?HideFacetValueListener
      */
@@ -55,10 +55,8 @@ trait SharedListenersTrait
         BackendInterface $backend,
         array $facet
     ): ?HideFacetValueListener {
-        $hideFacetValue = isset($facet['HideFacetValue'])
-            ? $facet['HideFacetValue'] : [];
-        $showFacetValue = isset($facet['ShowFacetValue'])
-            ? $facet['ShowFacetValue']: [];
+        $hideFacetValue = $facet['HideFacetValue'] ?? [];
+        $showFacetValue = $facet['ShowFacetValue'] ?? [];
         if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
         }
