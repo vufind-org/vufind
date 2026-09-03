@@ -736,7 +736,7 @@ class Server
 
         // Initialize delete lifetime, if set:
         if (isset($config['OAI']['delete_lifetime'])) {
-            $this->deleteLifetime = intval($config['OAI']['delete_lifetime']);
+            $this->deleteLifetime = (int)$config['OAI']['delete_lifetime'];
         }
 
         // Change cursormark behavior if necessary:
