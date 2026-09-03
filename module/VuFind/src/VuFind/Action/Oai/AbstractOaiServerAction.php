@@ -34,7 +34,6 @@ namespace VuFind\Action\Oai;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Config\Config;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -106,7 +105,7 @@ abstract class AbstractOaiServerAction extends AbstractTemplateRenderingAction i
                 $request->getQueryParams(),
                 $request->getParsedBody()
             );
-            $server->init(new Config($this->config), $baseURL, $params);
+            $server->init($this->config, $baseURL, $params);
             $server->setRecordLinkerHelper($this->recordLinkerViewHelper);
             $server->setRecordFormatter($this->recordFormatter);
             $xml = $server->getResponse();
