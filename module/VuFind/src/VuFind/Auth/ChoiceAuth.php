@@ -120,7 +120,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param   $config Configuration to set
+     * @param $config Configuration to set
      *
      * @throws AuthException
      * @return void

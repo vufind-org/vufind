@@ -120,7 +120,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param array                          $config            VuFind configuration
+     * @param array                           $config            VuFind configuration
      * @param UserServiceInterface            $userService       User database service
      * @param UserSessionPersistenceInterface $userSession       User session persistence service
      * @param SessionManager                  $sessionManager    Session manager

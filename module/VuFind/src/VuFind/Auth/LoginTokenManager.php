@@ -103,7 +103,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     /**
      * LoginToken constructor.
      *
-     * @param array                     $config            Configuration
+     * @param array                      $config            Configuration
      * @param UserServiceInterface       $userService       User database service
      * @param LoginTokenServiceInterface $loginTokenService Login Token database service
      * @param CookieManager              $cookieManager     Cookie manager
