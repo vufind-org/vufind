@@ -77,13 +77,12 @@ class CspHeaderGenerator implements
     /**
      * CspHeaderGenerator constructor.
      *
-     * @param \VuFind\Config\Config           $config         Configuration
+     * @param array                           $config         Configuration
      * @param \VuFind\Security\NonceGenerator $nonceGenerator Nonce generator
      */
-    public function __construct($config, $nonceGenerator)
+    public function __construct($nonceGenerator)
     {
         $this->nonce = $nonceGenerator->getNonce();
-        $this->config = $config->toArray();
     }
 
     /**
