@@ -176,8 +176,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config['Social']['tags'])
-            && $this->config['Social']['tags'] === 'disabled'
+        return ($this->config['Social']['tags'] ?? 'enabled') === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
