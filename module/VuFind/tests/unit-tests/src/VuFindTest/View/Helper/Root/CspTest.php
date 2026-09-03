@@ -47,7 +47,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspEnabled(): void
     {
-        $config = 
+        $config =
             [
                 'CSP' => [
                     'use_nonce' => true,

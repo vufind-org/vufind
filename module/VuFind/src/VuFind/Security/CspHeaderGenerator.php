@@ -82,6 +82,7 @@ class CspHeaderGenerator implements
      */
     public function __construct($config, $nonceGenerator)
     {
+        $this->config = $config;
         $this->nonce = $nonceGenerator->getNonce();
     }
 
