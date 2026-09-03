@@ -712,7 +712,7 @@ class Server
 
         // Initialize custom sets queries:
         if (isset($config['OAI']['set_query'])) {
-            $this->setQueries = $config['OAI']['set_query'];
+            $this->setQueries = (array)$config['OAI']['set_query'];
         }
 
         // Use a default query, if configured:
