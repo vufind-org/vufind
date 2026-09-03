@@ -56,10 +56,10 @@ class AccountCapabilities
     /**
      * Constructor.
      *
-     * @param Config   $config  Top-level configuration
+     * @param array    $config  Top-level configuration
      * @param callable $getAuth Function to fetch auth manager
      */
-    public function __construct(protected Config $config, callable $getAuth)
+    public function __construct(protected array $config, callable $getAuth)
     {
         $this->authCallback = $getAuth;
     }
@@ -84,8 +84,8 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config->Social->comments)
-            && $this->config->Social->comments === 'disabled'
+        return isset($this->config['Social']['comments'])
+            && $this->config['Social']['comments'] === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
@@ -96,8 +96,8 @@ class AccountCapabilities
      */
     public function getRatingSetting(): string
     {
-        return empty($this->config->Social->rating)
-            || $this->config->Social->rating === 'disabled'
+        return empty($this->config['Social']['rating'])
+            || $this->config['Social']['rating'] === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
@@ -108,7 +108,7 @@ class AccountCapabilities
      */
     public function getUserContentPageSize(): int
     {
-        return $this->config->Social->user_content_page_size ?? 50;
+        return $this->config['Social']['user_content_page_size'] ?? 50;
     }
 
     /**
@@ -142,8 +142,8 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        $setting = isset($this->config->Social->lists)
-            ? trim(strtolower($this->config->Social->lists)) : 'enabled';
+        $setting = isset($this->config['Social']['lists'])
+            ? trim(strtolower($this->config['Social']['lists'])) : 'enabled';
         if (!$setting) {
             $setting = 'disabled';
         }
@@ -164,8 +164,8 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config->Site->allowSavedSearches)
-            && !$this->config->Site->allowSavedSearches
+        return isset($this->config['Site']['allowSavedSearches'])
+            && !$this->config['Site']['allowSavedSearches']
             ? 'disabled' : 'enabled';
     }
 
@@ -179,8 +179,8 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config->Social->tags)
-            && $this->config->Social->tags === 'disabled'
+        return isset($this->config['Social']['tags'])
+            && $this->config['Social']['tags'] === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
@@ -194,7 +194,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return $this->config->Social->listTags ?? 'disabled';
+        return $this->config['Social']['listTags'] ?? 'disabled';
     }
 
     /**
@@ -204,7 +204,7 @@ class AccountCapabilities
      */
     public function isScheduledSearchEnabled(): bool
     {
-        return $this->config->Account->schedule_searches ?? false;
+        return $this->config['Account']['schedule_searches'] ?? false;
     }
 
     /**
@@ -214,8 +214,8 @@ class AccountCapabilities
      */
     public function getSmsSetting()
     {
-        return isset($this->config->Mail->sms)
-            && $this->config->Mail->sms === 'disabled'
+        return isset($this->config['Mail']['sms'])
+            && $this->config['Mail']['sms'] === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
@@ -226,8 +226,8 @@ class AccountCapabilities
      */
     public function getEmailActionSetting(): string
     {
-        return $this->config?->Mail?->email_action ??
-            (($this->config?->Mail?->require_login ?? true) ? 'require_login' : 'enabled');
+        return $this->config['Mail']['email_action'] ??
+            (($this->config['Mail']['require_login'] ?? true) ? 'require_login' : 'enabled');
     }
 
     /**
@@ -261,7 +261,7 @@ class AccountCapabilities
      */
     public function isRatingRemovalAllowed(): bool
     {
-        return (bool)($this->config->Social->remove_rating ?? true);
+        return (bool)($this->config['Social']['remove_rating'] ?? true);
     }
 
     /**
@@ -271,6 +271,6 @@ class AccountCapabilities
      */
     public function libraryCardsEnabled(): bool
     {
-        return ($this->config->Catalog->library_cards ?? false) && !$this->getAuth()->inPrivacyMode();
+        return ($this->config['Catalog']['library_cards'] ?? false) && !$this->getAuth()->inPrivacyMode();
     }
 }
