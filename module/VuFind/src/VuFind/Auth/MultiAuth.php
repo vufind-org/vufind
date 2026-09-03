@@ -115,7 +115,7 @@ class MultiAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (empty($this->config->MultiAuth->method_order)) {
+        if (empty($this->config['MultiAuth']['method_order'])) {
             throw new AuthException(
                 'One or more MultiAuth parameters are missing. ' .
                 'Check your config.ini!'
@@ -126,7 +126,7 @@ class MultiAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param array $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -134,19 +134,19 @@ class MultiAuth extends AbstractBase
     public function setConfig($config)
     {
         parent::setConfig($config);
-        if (isset($config->MultiAuth->method_order)) {
+        if (isset($config['MultiAuth']['method_order'])) {
             $this->methods = array_map(
                 'trim',
-                explode(',', $config->MultiAuth->method_order)
+                explode(',', $config['MultiAuth']['method_order'])
             );
         }
         if (
-            isset($config->MultiAuth->filters)
-            && strlen($config->MultiAuth->filters)
+            isset($config['MultiAuth']['filters'])
+            && strlen($config['MultiAuth']['filters'])
         ) {
             $this->filters = array_map(
                 'trim',
-                explode(',', $config->MultiAuth->filters)
+                explode(',', $config['MultiAuth']['filters'])
             );
         }
     }

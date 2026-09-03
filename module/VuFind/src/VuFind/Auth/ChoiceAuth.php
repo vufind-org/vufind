@@ -107,8 +107,8 @@ class ChoiceAuth extends AbstractBase
     protected function validateConfig()
     {
         if (
-            !isset($this->config->ChoiceAuth->choice_order)
-            || !strlen($this->config->ChoiceAuth->choice_order)
+            !isset($this->config['ChoiceAuth']['choice_order'])
+            || !strlen($this->config['ChoiceAuth']['choice_order'])
         ) {
             throw new AuthException(
                 'One or more ChoiceAuth parameters are missing. ' .
@@ -120,7 +120,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param   $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -130,7 +130,7 @@ class ChoiceAuth extends AbstractBase
         parent::setConfig($config);
         $this->strategies = array_map(
             'trim',
-            explode(',', $this->getConfig()->ChoiceAuth->choice_order)
+            explode(',', $this->getConfig()['ChoiceAuth']['choice_order'])
         );
     }
 

@@ -70,7 +70,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param \VuFind\Mailer\Mailer           $mailer          Mailer
      * @param PhpRenderer                     $viewRenderer    View Renderer
      * @param UserIpReader                    $userIpReader    User IP address reader
-     * @param \VuFind\Config\Config           $config          Configuration
+     * @param array                           $config          Configuration
      * @param AuthHashServiceInterface        $authHashService AuthHash database service
      */
     public function __construct(
@@ -79,7 +79,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         protected \VuFind\Mailer\Mailer $mailer,
         protected PhpRenderer $viewRenderer,
         protected UserIpReader $userIpReader,
-        protected \VuFind\Config\Config $config,
+        protected array $config,
         protected AuthHashServiceInterface $authHashService
     ) {
     }
@@ -113,7 +113,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $templateParams = []
     ) {
         // Make sure we've waited long enough
-        $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
+        $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;
         $sessionId = $this->sessionManager->getId();
 
         if (
@@ -145,7 +145,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $viewParams['url'] = $serverHelper(
             $urlHelper($linkRoute, $routeParams, ['query' => $urlParams])
         );
-        $viewParams['title'] = $this->config->Site->title;
+        $viewParams['title'] = $this->config['Site']['title'];
 
         $message = $this->viewRenderer->render($template, $viewParams);
         $from = $this->getEmailSenderAddress($this->config, $email);
@@ -236,7 +236,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $templateParams = []
     ): int {
         // Make sure we've waited long enough
-        $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
+        $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;
         $sessionId = $this->sessionManager->getId();
 
         if (
@@ -260,7 +260,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
 
         $viewParams = $templateParams;
         $viewParams['code'] = $otp;
-        $viewParams['title'] = $this->config->Site->title ?? '';
+        $viewParams['title'] = $this->config['Site']['title'] ?? '';
 
         $message = $this->viewRenderer->render($template, $viewParams);
         $from = $this->getEmailSenderAddress($this->config, $email);
@@ -310,7 +310,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             throw $e;
         }
         // Check the maximum attempt limit:
-        $maxAttempts = max($this->config->Authentication->otp_max_attempts ?? 3, 1);
+        $maxAttempts = max($this->config['Authentication']['otp_max_attempts'] ?? 3, 1);
         if ($attempts > $maxAttempts) {
             throw new AuthException('authentication_error_expired');
         }
