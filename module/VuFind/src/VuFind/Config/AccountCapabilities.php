@@ -162,8 +162,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config['Site']['allowSavedSearches'])
-            && !$this->config['Site']['allowSavedSearches']
+        return !($this->config['Site']['allowSavedSearches'] ?? true)
             ? 'disabled' : 'enabled';
     }
 
