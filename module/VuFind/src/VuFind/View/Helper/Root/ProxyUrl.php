@@ -31,7 +31,6 @@ namespace VuFind\View\Helper\Root;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use VuFind\Config\Config;
 
 use function intval;
 
@@ -55,13 +54,13 @@ class ProxyUrl implements
     /**
      * Constructor.
      *
-     * @param ?Config       $config VuFind configuration
+     * @param ?array        $config VuFind configuration
      * @param ?CacheAdapter $cache  Cache for web service responses
      */
-    public function __construct(protected ?Config $config = null, ?CacheAdapter $cache = null)
+    public function __construct(protected ?array $config = null, ?CacheAdapter $cache = null)
     {
         $this->setCacheStorage($cache);
-        $this->cacheLifetime = intval($config->EZproxy->prefixLinksWebServiceCacheLifetime ?? 600);
+        $this->cacheLifetime = intval($config['EZproxy']['prefixLinksWebServiceCacheLifetime'] ?? 600);
     }
 
     /**
@@ -73,13 +72,13 @@ class ProxyUrl implements
      */
     public function __invoke($url)
     {
-        $useWebService = $this->config->EZproxy->prefixLinksWebServiceUrl ?? false;
+        $useWebService = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? false;
         $usePrefix = $useWebService
             ? $this->checkUrl($url) ?? $this->checkConfig()
             : $this->checkConfig();
 
-        return ($usePrefix && isset($this->config->EZproxy->host))
-            ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)
+        return ($usePrefix && isset($this->config['EZproxy']['host']))
+            ? $this->config['EZproxy']['host'] . '/login?qurl=' . urlencode($url)
             : $url;
     }
 
@@ -90,7 +89,7 @@ class ProxyUrl implements
      */
     protected function checkConfig()
     {
-        return $this->config->EZproxy->prefixLinks ?? true;
+        return $this->config['EZproxy']['prefixLinks'] ?? true;
     }
 
     /**
@@ -123,7 +122,7 @@ class ProxyUrl implements
      */
     protected function queryWebService($domain)
     {
-        $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl ?? '';
+        $prefixLinksWebServiceUrl = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? '';
         try {
             $response = $this->httpService->get($prefixLinksWebServiceUrl, ['url' => $domain]);
             $responseData = trim($response->getContent());

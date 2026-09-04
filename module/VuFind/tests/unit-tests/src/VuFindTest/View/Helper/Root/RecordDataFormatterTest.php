@@ -205,7 +205,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'url' => $url,
             'usertags' => new \VuFind\View\Helper\Root\UserTags(
                 new \VuFind\Config\AccountCapabilities(
-                    new \VuFind\Config\Config([]),
+                    [],
                     fn () => $authManager
                 )
             ),
