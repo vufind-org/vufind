@@ -30,7 +30,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
-use VuFind\Config\Config;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
@@ -53,7 +52,7 @@ class Relais
      * @param TransEsc          $transEsc TransEsc view helper
      */
     public function __construct(
-        protected ?Config $config,
+        protected ?array $config,
         protected string $loginUrl,
         protected RendererInterface $view,
         protected TransEsc $transEsc
@@ -98,11 +97,11 @@ class Relais
     public function renderButtonIfActive($driver = null)
     {
         // Case 1: API enabled:
-        if ($this->config->apikey ?? false) {
+        if ($this->config['apikey'] ?? false) {
             return $this->view->render('relais/button.phtml');
         }
         // Case 2: Search links enabled:
-        if ($this->config->loginUrl ?? false && $driver) {
+        if ($this->config['loginUrl'] ?? false && $driver) {
             return '<a href="' . htmlspecialchars($this->getSearchLink($driver))
                 . '" target="new">' . ($this->transEsc)('relais_search')
                 . '</a>';
