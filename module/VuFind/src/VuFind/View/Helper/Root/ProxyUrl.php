@@ -32,6 +32,8 @@ namespace VuFind\View\Helper\Root;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
+use function intval;
+
 /**
  * Proxy URL view helper.
  *
@@ -120,7 +122,7 @@ class ProxyUrl implements
      */
     protected function queryWebService($domain)
     {
-        $prefixLinksWebServiceUrl = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? [];
+        $prefixLinksWebServiceUrl = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? '';
         try {
             $response = $this->httpService->get($prefixLinksWebServiceUrl, ['url' => $domain]);
             $responseData = trim($response->getContent());

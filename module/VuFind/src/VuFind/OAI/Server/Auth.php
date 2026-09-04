@@ -63,11 +63,11 @@ class Auth extends Base
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \VuFind\Config\Config $config VuFind configuration
+     * @param array $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\VuFind\Config\Config $config)
+    protected function initializeSettings(array $config)
     {
         // Use some of the same settings as the regular OAI server, but override
         // others:
