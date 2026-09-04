@@ -89,7 +89,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
     ): GetItemStatuses {
         return new GetItemStatuses(
             $settings ?? $this->createStub(Settings::class),
-            new Config($config),
+            $config,
             $ils ?? $this->createStub(Connection::class),
             $templateRenderer ?? $this->createStub(TemplateRendererInterface::class),
             $holdLogic ?? $this->createStub(Holds::class),
