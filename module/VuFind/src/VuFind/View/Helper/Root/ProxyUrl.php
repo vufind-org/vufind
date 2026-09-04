@@ -32,8 +32,6 @@ namespace VuFind\View\Helper\Root;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
-use function intval;
-
 /**
  * Proxy URL view helper.
  *
@@ -60,7 +58,7 @@ class ProxyUrl implements
     public function __construct(protected ?array $config = null, ?CacheAdapter $cache = null)
     {
         $this->setCacheStorage($cache);
-        $this->cacheLifetime = intval($config['EZproxy']['prefixLinksWebServiceCacheLifetime'] ?? 600);
+        $this->cacheLifetime = (int)($config['EZproxy']['prefixLinksWebServiceCacheLifetime'] ?? 600);
     }
 
     /**
