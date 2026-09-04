@@ -1,0 +1,67 @@
+# This is the search configuration for the GVI search handler.
+# It inherits common rules from the parent and adds GVI-specific overrides
+# tailored to the GVI Solr schema.
+"@parent_yaml": "searchspecs.yaml"
+
+# Override AllFields to use GVI Solr field names
+AllFields:
+  DismaxFields:
+    - title_short^750
+    - title_full_unstemmed^600
+    - title_full^400
+    - title^500
+    - title_alt^200
+    - title_new^100
+    - series^50
+    - series2^30
+    - author^300
+    - author2^100
+    - topic_unstemmed^550
+    - topic^500
+    - geographic^300
+    - genre^300
+    - allfields_unstemmed^10
+    - allfields
+    - isbn
+    - issn
+  DismaxHandler: dismax
+
+# Override Title search for GVI field names
+Title:
+  DismaxFields:
+    - title_short^500
+    - title_full_unstemmed^450
+    - title_full^400
+    - title^300
+    - title_alt^200
+    - title_new^100
+    - title_old
+    - series^100
+    - series2
+  DismaxHandler: dismax
+
+# Override Author search for GVI field names
+Author:
+  DismaxFields:
+    - author^100
+    - author2
+    - author_additional
+    - author_corporate
+  DismaxHandler: dismax
+
+# Override Subject search for GVI field names
+Subject:
+  DismaxFields:
+    - topic_unstemmed^150
+    - topic^100
+    - geographic^50
+    - genre^50
+    - era
+  DismaxHandler: dismax
+
+# Override ISN (ISBN/ISSN) search for GVI field names
+ISN:
+  DismaxFields:
+    - isbn
+    - issn
+  DismaxHandler: dismax
