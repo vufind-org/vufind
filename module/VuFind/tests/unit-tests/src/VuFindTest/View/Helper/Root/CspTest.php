@@ -47,7 +47,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspEnabled(): void
     {
-        $config = new \VuFind\Config\Config(
+        $config =
             [
                 'CSP' => [
                     'use_nonce' => true,
@@ -62,8 +62,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
                         "'unsafe-inline'",
                     ],
                 ],
-            ]
-        );
+            ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
         $cspHeaderGenerator
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
@@ -133,7 +132,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspDisabled(): void
     {
-        $config = new \VuFind\Config\Config(
+        $config =
             [
                 'CSP' => [
                     'use_nonce' => true,
@@ -148,8 +147,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
                         "'unsafe-inline'",
                     ],
                 ],
-            ]
-        );
+            ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
         $cspHeaderGenerator
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
