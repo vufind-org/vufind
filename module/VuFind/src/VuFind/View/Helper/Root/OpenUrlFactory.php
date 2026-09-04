@@ -83,7 +83,7 @@ class OpenUrlFactory implements FactoryInterface
             $helpers->get('context'),
             $openUrlRules,
             $resolverPluginManager,
-            $config->OpenURL ?? null
+            $config['OpenURL'] ?? null
         );
     }
 }
