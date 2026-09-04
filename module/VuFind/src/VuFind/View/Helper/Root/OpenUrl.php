@@ -149,7 +149,7 @@ class OpenUrl
      */
     public function renderTemplate($imagebased = null)
     {
-        if (null !== $this->config && isset($this->config['url'])) {
+        if (isset($this->config['url'])) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
             [$base] = explode('?', $this->config['url']);
@@ -157,7 +157,7 @@ class OpenUrl
             $base = false;
         }
 
-        $embed = (isset($this->config['embed']) && !empty($this->config['embed']));
+        $embed = (!empty($this->config['embed']));
 
         $embedAutoLoad = $this->config['embed_auto_load'] ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
