@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,8 @@
 
 namespace VuFindTest\I18n\Locale;
 
+use GuzzleHttp\Psr7\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
@@ -212,5 +214,167 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
 
         $settings = new LocaleSettings(new Config($config));
         $this->assertEquals($expected, $settings->getFallbackLocales());
+    }
+
+    /**
+     * Data provider for testDetectLocale.
+     *
+     * @return \Iterator
+     */
+    public static function detectLocaleProvider(): \Iterator
+    {
+        // Default:
+        yield 'default' => [
+            new ServerRequest('GET', 'http://localhost/'),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'en',
+        ];
+
+        yield 'query' => [
+            (new ServerRequest('GET', 'http://localhost/'))->withQueryParams(['lng' => 'de']),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'de',
+        ];
+        yield 'invalid query' => [
+            (new ServerRequest('GET', 'http://localhost/'))->withQueryParams(['lng' => 'demo']),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'en',
+        ];
+
+        yield 'cookie' => [
+            (new ServerRequest('GET', 'http://localhost/'))->withCookieParams(['language' => 'de']),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'de',
+        ];
+
+        yield 'invalid cookie' => [
+            (new ServerRequest('GET', 'http://localhost/'))->withCookieParams(['language' => 'boo']),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'en',
+        ];
+
+        yield 'Accept-Language without priority, en' => [
+            (new ServerRequest('GET', 'http://localhost/', ['Accept-Language' => 'en,de'])),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'en',
+        ];
+
+        yield 'Accept-Language without priority, de' => [
+            (new ServerRequest('GET', 'http://localhost/', ['Accept-Language' => 'de,en'])),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'de',
+        ];
+
+        yield 'Accept-Language with priority' => [
+            (new ServerRequest('GET', 'http://localhost/', ['Accept-Language' => 'en;0.8,de'])),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'de',
+        ];
+
+        yield 'Accept-Language with both priorities' => [
+            (new ServerRequest('GET', 'http://localhost/', ['Accept-Language' => 'en;0.8, de;0.5'])),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'en',
+        ];
+
+        yield 'Accept-Language with reversed priorities' => [
+            (new ServerRequest('GET', 'http://localhost/', ['Accept-Language' => 'en;0.5,de;0.8'])),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'de',
+        ];
+
+        yield 'Accept-Language with asterisk' => [
+            (new ServerRequest('GET', 'http://localhost/', ['Accept-Language' => 'de, *;1.1'])),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'en',
+        ];
+
+        yield 'invalid query and cookie' => [
+            (new ServerRequest('GET', 'http://localhost/'))
+                ->withQueryParams(['lng' => 'bat'])
+                ->withCookieParams(['language' => 'de']),
+            [
+                'en' => 'English',
+                'de' => 'German',
+            ],
+            'en',
+            'de',
+        ];
+    }
+
+    /**
+     * Test locale detection.
+     *
+     * @param ?ServerRequestInterface $request  Request
+     * @param array                   $enabled  Enabled locales
+     * @param string                  $default  Default locale
+     * @param string                  $expected Expected detection result
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('detectLocaleProvider')]
+    public function testDetectLocale(
+        ?ServerRequestInterface $request,
+        array $enabled,
+        string $default,
+        string $expected
+    ): void {
+        $settings = new LocaleSettings(
+            new Config(
+                [
+                    'Site' => ['language' => $default],
+                    'Languages' => $enabled,
+                ]
+            )
+        );
+
+        $this->assertSame(
+            $expected,
+            $settings->detectLocale($request)
+        );
     }
 }
