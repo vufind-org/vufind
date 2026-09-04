@@ -117,7 +117,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $mockConfigReader = $this->getMockConfigManager();
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
-                new \VuFind\Config\Config(['driver' => 'Sample']),
+                ['driver' => 'Sample'],
                 $driverManager,
                 $mockConfigReader
             ),

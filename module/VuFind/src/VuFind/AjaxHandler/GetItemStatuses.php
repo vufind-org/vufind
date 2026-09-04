@@ -37,7 +37,6 @@ use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
-use VuFind\Config\Config;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\GetThis\GetThisLoader;
@@ -89,7 +88,7 @@ class GetItemStatuses extends AbstractBase implements
      * Constructor.
      *
      * @param SessionSettings           $ss                        Session settings
-     * @param Config                    $config                    Top-level configuration
+     * @param array                     $config                    Top-level configuration
      * @param Connection                $ils                       ILS connection
      * @param TemplateRendererInterface $renderer                  Template renderer
      * @param Holds                     $holdLogic                 Holds logic
@@ -100,7 +99,7 @@ class GetItemStatuses extends AbstractBase implements
      */
     public function __construct(
         SessionSettings $ss,
-        protected Config $config,
+        protected array $config,
         protected Connection $ils,
         protected TemplateRendererInterface $renderer,
         protected Holds $holdLogic,
@@ -202,7 +201,7 @@ class GetItemStatuses extends AbstractBase implements
         if ($displaySetting == 'msg' && count($list) > 1) {
             return false;
         }
-        return $this->config->Item_Status->callnumber_handler ?? false;
+        return $this->config['Item_Status']['callnumber_handler'] ?? false;
     }
 
     /**
@@ -230,8 +229,8 @@ class GetItemStatuses extends AbstractBase implements
         }
 
         // Do we need to deal with a preferred service?
-        $preferred = isset($this->config->Item_Status->preferred_service)
-            ? $normalize($this->config->Item_Status->preferred_service) : false;
+        $preferred = isset($this->config['Item_Status']['preferred_service'])
+            ? $normalize($this->config['Item_Status']['preferred_service']) : false;
         if (false !== $preferred && in_array($preferred, $services)) {
             $services = [$preferred];
         }
@@ -483,11 +482,11 @@ class GetItemStatuses extends AbstractBase implements
         // Default case: no extra holdings fields are shown
         $holdingsTextFieldsToShow = [];
 
-        if ($this->config->Item_Status->include_holdings_text_fields ?? false) {
+        if ($this->config['Item_Status']['include_holdings_text_fields'] ?? false) {
             // If we are showing additional holdings text fields, the set of fields shown is
             // either config.ini's displayed_holdings_text_fields[] (if set), or the set of
             // all fields reported by the ILS driver otherwise.
-            $holdingsTextFieldsToShow = $this->config?->Item_Status?->displayed_holdings_text_fields?->toArray()
+            $holdingsTextFieldsToShow = $this->config['Item_Status']['displayed_holdings_text_fields']
                 ?? $this->ils->getHoldingsTextFieldNames();
         }
 
@@ -638,12 +637,12 @@ class GetItemStatuses extends AbstractBase implements
     ): array {
         if (
             isset($this->searchMemory)
-            && ($this->config->Record->getStatusesSorting ?? 'false') !== 'false'
+            && ($this->config['Record']['getStatusesSorting'] ?? 'false') !== 'false'
         ) {
             $filters = $this->searchMemory->getCurrentSearch()->getParams()->getFilterList() ?? [];
             $this->sortStatuses(
                 $record,
-                $this->config->Record->getStatusesSorting->toArray(),
+                $this->config['Record']['getStatusesSorting'],
                 $filters
             );
         }
@@ -779,9 +778,9 @@ class GetItemStatuses extends AbstractBase implements
         }
 
         // Load callnumber and location settings:
-        $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
-        $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
-        $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
+        $callnumberSetting = $this->config['Item_Status']['multiple_call_nos'] ?? 'msg';
+        $locationSetting = $this->config['Item_Status']['multiple_locations'] ?? 'msg';
+        $showFullStatus = $this->config['Item_Status']['show_full_status'] ?? false;
 
         $statuses = $this->parseRecordsStatusesFromIlsData(
             $ids,

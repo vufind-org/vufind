@@ -78,10 +78,24 @@ class Config
      * @param string $config Name of configuration
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use getArray().
      */
     public function get($config)
     {
         return $this->configManager->getConfigObject($config);
+    }
+
+    /**
+     * Get the specified configuration as an array.
+     *
+     * @param string $config Name of configuration
+     *
+     * @return array
+     */
+    public function getArray($config): array
+    {
+        return $this->configManager->getConfigArray($config);
     }
 
     /**
@@ -91,7 +105,7 @@ class Config
      */
     public function nonJavascriptSupportEnabled()
     {
-        return $this->get('config')->Site->nonJavascriptSupportEnabled ?? false;
+        return $this->getArray('config')['Site']['nonJavascriptSupportEnabled'] ?? false;
     }
 
     /**
@@ -101,7 +115,7 @@ class Config
      */
     public function ajaxCoversEnabled()
     {
-        return $this->get('config')->Content->ajaxcovers ?? false;
+        return $this->getArray('config')['Content']['ajaxcovers'] ?? false;
     }
 
     /**
@@ -111,7 +125,7 @@ class Config
      */
     public function getHoldingsItemLimit()
     {
-        $limit = $this->get('config')->Record->holdingsItemLimit;
+        $limit = $this->getArray('config')['Record']['holdingsItemLimit'] ?? null;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -122,7 +136,7 @@ class Config
      */
     public function getRecordSubjectLimit()
     {
-        $limit = $this->get('config')->Record->subjectLimit;
+        $limit = $this->getArray('config')['Record']['subjectLimit'] ?? null;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -134,8 +148,7 @@ class Config
      */
     public function alwaysDisplayIndexRecordInStaffView(): bool
     {
-        return (bool)($this->get('config')->Record
-            ->alwaysDisplayIndexRecordInStaffView ?? false);
+        return (bool)($this->getArray('config')['Record']['alwaysDisplayIndexRecordInStaffView'] ?? false);
     }
 
     /**
@@ -145,11 +158,11 @@ class Config
      */
     public function offcanvasSide(): ?string
     {
-        $config = $this->get('config');
-        if (!($config->Site->offcanvas ?? false)) {
+        $config = $this->getArray('config');
+        if (!($config['Site']['offcanvas'] ?? false)) {
             return null;
         }
-        return ($config->Site->sidebarOnLeft ?? false)
+        return ($config['Site']['sidebarOnLeft'] ?? false)
             ? 'left'
             : 'right';
     }
@@ -162,8 +175,8 @@ class Config
     public function dateFormat(): string
     {
         if (null === $this->displayDateFormat) {
-            $config = $this->get('config');
-            $this->displayDateFormat = $config->Site->displayDateFormat ?? 'm-d-Y';
+            $config = $this->getArray('config');
+            $this->displayDateFormat = $config['Site']['displayDateFormat'] ?? 'm-d-Y';
         }
         return $this->displayDateFormat;
     }
@@ -176,8 +189,8 @@ class Config
     public function timeFormat(): string
     {
         if (null === $this->displayTimeFormat) {
-            $config = $this->get('config');
-            $this->displayTimeFormat = $config->Site->displayTimeFormat ?? 'H:i';
+            $config = $this->getArray('config');
+            $this->displayTimeFormat = $config['Site']['displayTimeFormat'] ?? 'H:i';
         }
         return $this->displayTimeFormat;
     }
@@ -201,8 +214,7 @@ class Config
      */
     public function displayLoanType(): bool
     {
-        return (bool)($this->get('config')->Catalog
-            ->display_loan_type_in_holdings ?? false);
+        return (bool)($this->getArray('config')['Catalog']['display_loan_type_in_holdings'] ?? false);
     }
 
     /**

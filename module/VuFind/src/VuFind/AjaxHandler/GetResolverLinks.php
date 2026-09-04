@@ -32,6 +32,7 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Resolver\Connection;
 use VuFind\Resolver\Driver\PluginManager as ResolverManager;
@@ -89,7 +90,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         $resolver = new Connection($this->pluginManager->get($resolverType));

@@ -217,17 +217,21 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
-        $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        // Count tags with missing
-        $sum = 0;
-        foreach ($tags as $t) {
-            $link = $t->find('css', 'button');
-            if ($link) {
-                $sum += intval($link->getText());
+        $this->assertEqualsWithTimeout(
+            3,
+            function () use ($page): int {
+                $tags = $page->findAll('css', '.tagList .tag');
+                // Count tags with missing
+                $sum = 0;
+                foreach ($tags as $t) {
+                    $link = $t->find('css', 'button');
+                    if ($link) {
+                        $sum += intval($link->getText());
+                    }
+                }
+                return $sum;
             }
-        }
-        $this->assertSame(3, $sum);
+        );
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->waitForPageLoad($page);
@@ -277,6 +281,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
         $this->assertSelectedSort($page, 'title');
+        // Click on a record to be sure that the results lead to the right place:
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
