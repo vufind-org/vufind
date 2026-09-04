@@ -33,6 +33,7 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
@@ -57,6 +58,7 @@ class GetRecordDetails extends AbstractBase
      * @param TemplateRendererInterface $renderer     Template renderer
      */
     public function __construct(
+        #[Autowire(config: 'config')]
         protected array $config,
         protected Loader $recordLoader,
         protected TabManager $tabManager,
@@ -87,7 +89,7 @@ class GetRecordDetails extends AbstractBase
         $details = $this->tabManager->getTabDetailsForRecord(
             $driver,
             Psr7ServerRequest::toLaminas($request),
-            'Information'
+            $this->config['Site']['defaultRecordTab'] ?? 'Information'
         );
 
         $html = $this->renderer->renderTemplateAsString(
