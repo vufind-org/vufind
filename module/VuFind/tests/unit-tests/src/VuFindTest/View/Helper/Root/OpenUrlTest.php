@@ -30,7 +30,6 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use VuFind\Config\Config;
 use VuFind\View\Helper\Root\OpenUrl;
 
 /**
@@ -278,7 +277,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
             $mockContext = $this->getMockContext();
         }
         $mockPm = $this->createMock(\VuFind\Resolver\Driver\PluginManager::class);
-        $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
+        $openUrl = new OpenUrl($mockContext, $rules, $mockPm, $config);
         return $openUrl;
     }
 }
