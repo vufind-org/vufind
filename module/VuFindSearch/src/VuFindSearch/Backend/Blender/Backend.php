@@ -87,7 +87,7 @@ class Backend extends AbstractBackend
     /**
      * Blender configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $config;
 
@@ -108,16 +108,16 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param array                 $backends Actual backends
-     * @param \VuFind\Config\Config $config   Blender configuration
-     * @param array                 $mappings Mappings configuration
-     * @param EventManager          $events   Event manager
+     * @param array        $backends Actual backends
+     * @param array        $config   Blender configuration
+     * @param array        $mappings Mappings configuration
+     * @param EventManager $events   Event manager
      *
      * @return void
      */
     public function __construct(
         array $backends,
-        \VuFind\Config\Config $config,
+        array $config,
         $mappings,
         EventManager $events
     ) {
@@ -126,15 +126,14 @@ class Backend extends AbstractBackend
         $this->mappings = $mappings;
         $this->setEventManager($events);
 
-        $boostMax = isset($this->config->Blending->initialResults)
-            ? count($this->config->Blending->initialResults->toArray())
+        $boostMax = isset($this->config['Blending']['initialResults'])
+            ? count($this->config['Blending']['initialResults'])
             : 0;
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = intval($this->config->Blending->blockSize ?? 10);
+        $this->blockSize = intval($this->config['Blending']['blockSize'] ?? 10);
         $this->adaptiveBlockSizes
-            = isset($this->config->Blending->adaptiveBlockSizes)
-            ? $this->config->Blending->adaptiveBlockSizes->toArray()
-            : [];
+            = $this->config['Blending']['adaptiveBlockSizes']
+            ?? [];
     }
 
     /**
@@ -249,7 +248,7 @@ class Backend extends AbstractBackend
             }
             // Log the errors and collect a list to display to the user:
             $this->logError("Search in $backendId failed: " . (string)$exception);
-            $failedBackends[] = $this->config->Backends[$backendId];
+            $failedBackends[] = $this->config['Backends'][$backendId];
         }
         if ($failedBackends) {
             $mergedCollection->addError(

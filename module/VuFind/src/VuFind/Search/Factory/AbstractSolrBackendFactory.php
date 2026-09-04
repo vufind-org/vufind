@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
@@ -327,15 +326,15 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Load configurations:
         $config = $this->configManager->getConfigArray($this->mainConfig);
-        $search = $this->configManager->getConfigObject($this->searchConfig);
-        $facet = $this->configManager->getConfigObject($this->facetConfig);
+        $search = $this->configManager->getConfigArray($this->searchConfig);
+        $facet = $this->configManager->getConfigArray($this->facetConfig);
 
         // Attach default parameters listener first so that any other listeners can
         // override the parameters as necessary:
-        if (!empty($search->General->default_parameters)) {
+        if (!empty($search['General']['default_parameters'])) {
             $this->getDefaultParametersListener(
                 $backend,
-                $search->General->default_parameters->toArray()
+                $search['General']['default_parameters']
             )->attach($events);
         }
 
@@ -344,8 +343,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Conditional Filters
         if (
-            isset($search->ConditionalHiddenFilters)
-            && $search->ConditionalHiddenFilters->count() > 0
+            isset($search['ConditionalHiddenFilters'])
+            && count($search['ConditionalHiddenFilters']) > 0
         ) {
             $this->getInjectConditionalFilterListener($backend, $search)->attach($events);
         }
@@ -367,14 +366,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         }
 
         // Apply field stripping if applicable:
-        if (isset($search->StripFields) && isset($search->IndexShards)) {
-            $strip = $search->StripFields->toArray();
+        if (isset($search['StripFields']) && isset($search['IndexShards'])) {
+            $strip = $search['StripFields'];
             foreach ($strip as $k => $v) {
                 $strip[$k] = array_map('trim', explode(',', $v));
             }
             $mindexListener = new MultiIndexListener(
                 $backend,
-                $search->IndexShards->toArray(),
+                $search['IndexShards'],
                 $strip,
                 $this->loadSpecs()
             );
@@ -382,10 +381,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         }
 
         // Apply deduplication if applicable:
-        if (isset($search->Records->deduplication)) {
+        if (isset($search['Records']['deduplication'])) {
             $this->getDeduplicationListener(
                 $backend,
-                $search->Records->deduplication
+                $search['Records']['deduplication']
             )->attach($events);
         }
 
@@ -393,9 +392,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $this->getHierarchicalFacetListener($backend)->attach($events);
 
         // Apply legacy filter conversion if necessary:
-        if (!empty($facet->LegacyFields)) {
+        if (!empty($facet['LegacyFields'])) {
             $filterFieldConversionListener = new FilterFieldConversionListener(
-                $facet->LegacyFields->toArray()
+                $facet['LegacyFields']
             );
             $filterFieldConversionListener->attach($events);
         }
@@ -488,10 +487,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createConnector(): Connector
     {
         $timeout = $this->getIndexConfig('timeout', 30);
-        $searchConfig = $this->configManager->getConfigObject($this->searchConfig);
-        $defaultFields = $searchConfig->General->default_record_fields ?? '*';
+        $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
+        $defaultFields = $searchConfig['General']['default_record_fields'] ?? '*';
 
-        if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
+        if (($searchConfig['Explain']['enabled'] ?? false) && !str_contains($defaultFields, 'score')) {
             $defaultFields .= ',score';
         }
 
@@ -589,7 +588,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createSimilarBuilder(): SimilarBuilder
     {
         return new SimilarBuilder(
-            $this->configManager->getConfigObject($this->searchConfig),
+            $this->configManager->getConfigArray($this->searchConfig),
             $this->uniqueKey
         );
     }
@@ -653,21 +652,21 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a custom filter listener for the backend (or null if not needed).
      *
      * @param BackendInterface $backend Search backend
-     * @param Config           $facet   Configuration of facets
+     * @param array            $facet   Configuration of facets
      *
      * @return ?CustomFilterListener
      */
     protected function getCustomFilterListener(
         BackendInterface $backend,
-        Config $facet
+        array $facet
     ): ?CustomFilterListener {
-        $customField = $facet->CustomFilters->custom_filter_field ?? 'vufind';
+        $customField = $facet['CustomFilters']['custom_filter_field'] ?? 'vufind';
         $normal = $inverted = [];
 
-        foreach ($facet->CustomFilters->translated_filters ?? [] as $key => $val) {
+        foreach ($facet['CustomFilters']['translated_filters'] ?? [] as $key => $val) {
             $normal[$customField . ':"' . $key . '"'] = $val;
         }
-        foreach ($facet->CustomFilters->inverted_filters ?? [] as $key => $val) {
+        foreach ($facet['CustomFilters']['inverted_filters'] ?? [] as $key => $val) {
             $inverted[$customField . ':"' . $key . '"'] = $val;
         }
         return empty($normal) && empty($inverted)
@@ -695,16 +694,16 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a highlighting listener for the backend.
      *
      * @param BackendInterface $backend Search backend
-     * @param Config           $search  Search configuration
+     * @param array            $search  Search configuration
      *
      * @return InjectHighlightingListener
      */
     protected function getInjectHighlightingListener(
         BackendInterface $backend,
-        Config $search
+        array $search
     ): InjectHighlightingListener {
-        $fl = $search->General->highlighting_fields ?? '*';
-        $extras = $search->General->extra_hl_params ?? [];
+        $fl = $search['General']['highlighting_fields'] ?? '*';
+        $extras = $search['General']['extra_hl_params'] ?? [];
         return new InjectHighlightingListener($backend, $fl, $extras);
     }
 
@@ -712,17 +711,17 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a Conditional Filter Listener.
      *
      * @param BackendInterface $backend Search backend
-     * @param Config           $search  Search configuration
+     * @param array            $search  Search configuration
      *
      * @return InjectConditionalFilterListener
      */
     protected function getInjectConditionalFilterListener(
         BackendInterface $backend,
-        Config $search
+        array $search
     ): InjectConditionalFilterListener {
         $listener = new InjectConditionalFilterListener(
             $backend,
-            $search->ConditionalHiddenFilters->toArray()
+            $search['ConditionalHiddenFilters']
         );
         $listener->setAuthorizationService(
             $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
