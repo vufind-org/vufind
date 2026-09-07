@@ -41,6 +41,7 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Tags\TagsService;
 
 /**
  * Tag list action.
@@ -70,11 +71,13 @@ class UserListAction extends AbstractTemplateRenderingAction
      *
      * @param AuthManager                  $authManager         Authentication manager
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
+     * @param TagsService                  $tagsService         Tags service
      */
     public function __construct(
         protected AuthManager $authManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService,
+        protected TagsService $tagsService,
     ) {
         parent::__construct();
     }
@@ -107,6 +110,7 @@ class UserListAction extends AbstractTemplateRenderingAction
                 $paging['sort'],
                 $paging['page'],
                 $paging['limit'],
+                $this->tagsService->hasCaseSensitiveTags()
             )
         );
         return $this->renderTemplate(

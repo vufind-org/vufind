@@ -44,7 +44,7 @@ use VuFindTheme\View\Helper\AssetManager;
 class GoogleAnalytics
 {
     /**
-     * Options to pass to the ga() create command.
+     * Options to pass to the gtag() config command.
      *
      * @var string
      */
@@ -63,7 +63,7 @@ class GoogleAnalytics
         protected AssetManager $assetManager,
         array $options = []
     ) {
-        $this->createOptions = $options['create_options_js'] ?? "'auto'";
+        $this->createOptions = $options['create_options_js'] ?? '{}';
     }
 
     /**

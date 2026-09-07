@@ -31,6 +31,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Generator;
 
 use function count;
 use function intval;
@@ -216,17 +217,21 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
-        $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        // Count tags with missing
-        $sum = 0;
-        foreach ($tags as $t) {
-            $link = $t->find('css', 'button');
-            if ($link) {
-                $sum += intval($link->getText());
+        $this->assertEqualsWithTimeout(
+            3,
+            function () use ($page): int {
+                $tags = $page->findAll('css', '.tagList .tag');
+                // Count tags with missing
+                $sum = 0;
+                foreach ($tags as $t) {
+                    $link = $t->find('css', 'button');
+                    if ($link) {
+                        $sum += intval($link->getText());
+                    }
+                }
+                return $sum;
             }
-        }
-        $this->assertSame(3, $sum);
+        );
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->waitForPageLoad($page);
@@ -276,6 +281,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
         $this->assertSelectedSort($page, 'title');
+        // Click on a record to be sure that the results lead to the right place:
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
@@ -374,6 +382,49 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         $this->assertCount(6, $tags);
+    }
+
+    /**
+     * Data provider for testTagManagementTagDisplay.
+     *
+     * @return Generator<string, array>
+     */
+    public static function tagManagementTagDisplayProvider(): Generator
+    {
+        yield 'case sensitive' => [true, ['ONE', 'THREE 4', 'five', 'five', 'five', 'new tag', 'one', 'three 4']];
+        yield 'case insensitive' => [false, ['five', 'five', 'five', 'new tag', 'one', 'one', 'three 4', 'three 4']];
+    }
+
+    /**
+     * Test display of tags in user content management area.
+     *
+     * @param bool     $caseSensitive Use case sensitive tags?
+     * @param string[] $expected      Expected tag text
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('tagManagementTagDisplayProvider')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
+    public function testTagManagementTagDisplay(bool $caseSensitive, array $expected): void
+    {
+        if ($caseSensitive) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Social' => ['case_sensitive_tags' => 'true'],
+                    ],
+                ]
+            );
+        }
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Tag/UserList'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $tags = array_map(fn ($tag) => $tag->getText(), $page->findAll('css', 'td.user-tag div'));
+        // Sort tags to account for database platform and timing differences:
+        sort($tags);
+        $this->assertEquals($expected, $tags);
     }
 
     /**

@@ -48,8 +48,8 @@ class SearchParams
      *
      * @param PluginManager $manager Search manager
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire]
         protected PluginManager $manager
     ) {
     }

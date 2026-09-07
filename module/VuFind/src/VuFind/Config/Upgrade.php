@@ -271,6 +271,9 @@ class Upgrade implements LoggerAwareInterface
             $this->pathResolver->getBaseConfigDirPath()
         );
         $localConfigDir = $this->pathResolver->getLocalConfigDirPath();
+        if (null === $localConfigDir) {
+            throw new \Exception('Cannot find local configuration directory; is VUFIND_LOCAL_DIR unset?');
+        }
         foreach ($baseConfigLocations as $configLocation) {
             $configName = $configLocation->getConfigName();
             if ($configLocation instanceof ConfigDirectory) {
@@ -568,7 +571,7 @@ class Upgrade implements LoggerAwareInterface
                 = ['link' => $newConfig['Content']['GoogleOptions']];
         }
 
-        // Disable unused, obsolete settings:
+        // Remove unused, obsolete settings:
         unset($newConfig['Index']['local']);
         if (isset($newConfig['Cache']['umask'])) {
             unset($newConfig['Cache']['umask']);
@@ -577,6 +580,7 @@ class Upgrade implements LoggerAwareInterface
                 . 'if you need a custom umask, please configure it at the operating system level.'
             );
         }
+        unset($newConfig['Site']['loadInitialTabWithAjax']);
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');

@@ -119,7 +119,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         );
         $headers->addHeader($header);
         $added = $headers->get('Content-Security-Policy-Report-Only');
-        $this->assertFalse(is_iterable($added));
+        $this->assertIsNotIterable($added);
 
         $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
         $csp->disablePolicy();

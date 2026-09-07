@@ -22,8 +22,11 @@ return RectorConfig::configure()
         __DIR__ . '/../module',
         __DIR__ . '/../public',
     ])
+    ->withComposerBased(
+        doctrine: true,
+        phpunit: true,
+    )
     ->withSets([
-        PHPUnitSetList::PHPUNIT_110,
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
         PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     ])

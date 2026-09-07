@@ -52,7 +52,7 @@ class UserContentHelper implements HelperInterface
      * @param RecordLoader        $recordLoader        Record loader
      * @param AccountCapabilities $accountCapabilities Account capabilities helper
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected RecordLoader $recordLoader,
         protected AccountCapabilities $accountCapabilities,
@@ -89,6 +89,8 @@ class UserContentHelper implements HelperInterface
      */
     public function getUserContentRecordTitles(Paginator $contents): Paginator
     {
+        // Clone the object to avoid modifying the original data as a side-effect:
+        $contents = clone $contents;
         $ids = array_map(
             fn (array $content) => $content['source'] . '|' . $content['record_id'],
             iterator_to_array($contents)

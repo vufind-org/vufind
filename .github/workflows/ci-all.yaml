@@ -110,9 +110,9 @@ jobs:
 
       - name: Setup node
         if: ${{ inputs.phing_task_qa_console }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Debug list all package.json
         run: find $GITHUB_WORKSPACE -name package.json

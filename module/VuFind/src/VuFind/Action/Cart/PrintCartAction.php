@@ -37,7 +37,6 @@ use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\RedirectHelper;
 
 use function count;
-use function is_array;
 
 /**
  * Cart print action.
@@ -67,7 +66,7 @@ class PrintCartAction extends AbstractCartAction
         $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
         $ids = $bulkActionHelper->getSelectedIds($request);
 
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             return $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')
                 ?? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'Cart/Home');
         }

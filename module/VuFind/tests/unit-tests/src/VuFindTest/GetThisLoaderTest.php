@@ -99,11 +99,11 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Create a mock driver for solr.
+     * Create a mock record driver for Solr.
      *
-     * @return SolrDefault|MockObject
+     * @return SolrDefault&MockObject
      */
-    public function getMockRecordDriver(): SolrDefault|MockObject
+    public function getMockRecordDriver(): SolrDefault&MockObject
     {
         return $this->createMock(SolrDefault::class);
     }

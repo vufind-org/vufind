@@ -204,11 +204,11 @@ class ConfigManager implements ConfigManagerInterface
                 $forceReload,
                 $useLocalConfig
             );
+            if ($useAdvancedCache) {
+                $advancedCache->setItem($cacheKey, $config);
+            }
         }
 
-        if ($useAdvancedCache) {
-            $advancedCache->setItem($cacheKey, $config);
-        }
         return $config;
     }
 

@@ -8,9 +8,10 @@ if ($sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls, [], 
 } elseif ($this->businessId) {
   $titleEsc .= ' - ' . $this->escapeHtml($this->businessId);
 }
+$globals = $this->globals();
 ?>
 <!DOCTYPE html>
-<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+<html lang="<?=$globals['userLang']?>"<?php if ($globals['rtl']): ?> dir="rtl"<?php endif; ?>>
   <head>
     <title><?=$titleEsc?> - <?=$this->payment->getPaidDate()->format('Y-m-d H-i')?></title>
     <meta name="description" content="<?=$this->transEscAttr('Payment::breakdown_title')?>">

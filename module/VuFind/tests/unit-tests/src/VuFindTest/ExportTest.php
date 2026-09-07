@@ -369,6 +369,6 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     protected function getExport($main = [], $export = [], $renderer = null)
     {
-        return new Export($main, $export, $renderer ?? $this->createMock(PhpRenderer::class));
+        return new Export($main, $export, $renderer ?? $this->createStub(PhpRenderer::class));
     }
 }

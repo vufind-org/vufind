@@ -214,6 +214,24 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get a highlighted title string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedTitle()
+    {
+        // If highlighting is available, it will be in the item data; the raw data will
+        // include <highlight> tags, but these get converted into spans by deeper layers
+        // of the record driver and should be further translated into highlight markers
+        // for appropriate processing by the highlight view helper.
+        return preg_replace(
+            '|<span class="highlight">([^<]*)</span>|',
+            '{{{{START_HILITE}}}}$1{{{{END_HILITE}}}}',
+            $this->getItemsTitle()
+        );
+    }
+
+    /**
      * Get the short (pre-subtitle) title of the record.
      *
      * @return string

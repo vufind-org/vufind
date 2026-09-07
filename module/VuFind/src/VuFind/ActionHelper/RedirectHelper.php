@@ -49,7 +49,7 @@ class RedirectHelper implements HelperInterface
      *
      * @param RouteHelper $routeHelper Route helper
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected RouteHelper $routeHelper,
     ) {

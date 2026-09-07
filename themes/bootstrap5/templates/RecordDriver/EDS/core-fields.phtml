@@ -7,6 +7,8 @@
 ?>
 <?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
   <?=$this->render('error/restrictedViewWarning.phtml')?>
+<?php elseif ($this->driver->isPlaceholder()): ?>
+  <?=$this->render('error/guestRestriction.phtml')?>
 <?php endif; ?>
 <?php if (!empty($coreFields)): ?>
   <table <?php if (!empty($this->tableId)): ?>id="<?=$this->tableId ?>" <?php endif; ?>class="table table-striped">

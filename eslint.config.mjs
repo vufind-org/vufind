@@ -17,7 +17,7 @@ export default [
       "no-jquery": noJquery
     },
     languageOptions: {
-      ecmaVersion: 2015,
+      ecmaVersion: 2020,
       sourceType: "script",
       globals: {
         ...globals.browser,

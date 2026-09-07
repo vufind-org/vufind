@@ -31,7 +31,6 @@
 
 namespace VuFind\Mailer;
 
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -386,7 +385,6 @@ class Mailer implements
      * @param string|Address                $from    Sender name and email address
      * @param string                        $msg     User notes to include in message
      * @param AbstractBase                  $record  Record being emailed
-     * @param PhpRenderer                   $view    View object (used to render email templates)
      * @param ?string                       $subject Subject for email (optional)
      * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
      * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
@@ -399,7 +397,6 @@ class Mailer implements
         string|Address $from,
         string $msg,
         AbstractBase $record,
-        PhpRenderer $view,
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
@@ -407,12 +404,13 @@ class Mailer implements
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);
         }
-        $body = $view->partial(
-            'Email/record.phtml',
-            [
+        $body = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/record.phtml',
+            params: [
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg,
             ]
         );
+
         $this->send($to, $from, $subject, $body, $cc, $replyTo);
     }
 

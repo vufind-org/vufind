@@ -48,7 +48,7 @@ class Ratings
      *
      * @param RatingsService $service Ratings service
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(protected RatingsService $service)
     {
     }
