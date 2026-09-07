@@ -287,9 +287,7 @@ class LocaleSettings
 
         $locale = null;
         if ($request) {
-            if (!$locale) {
-                $locale = $this->getLocaleFromQueryString($request);
-            }
+            $locale = $this->getLocaleFromQueryString($request);
             if (!$locale) {
                 $locale = $this->getLocaleFromCookie($request);
             }
