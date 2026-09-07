@@ -45,7 +45,7 @@ VuFind.register('recordTabs', function RecordTabs() {
           let tabUrl = tabPane.dataset.tabUrl;
           // We only want to replace the browser URL when clicking a tab on a record page;
           // embedded search results should not change browser history to prevent confusion.
-          if (window.history.replaceState && tabUrl && !tabPane.closest('.result')) {
+          if (window.history.replaceState && tabUrl && !tabPane.closest('.result .long-view')) {
             window.history.replaceState({}, document.title, tabUrl);
           }
           _ajaxLoadTab(tabPane);
