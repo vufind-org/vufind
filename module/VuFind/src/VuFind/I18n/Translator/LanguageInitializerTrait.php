@@ -131,5 +131,7 @@ trait LanguageInitializerTrait
                 $language
             );
         }
+        // Enable translation of native language names:
+        $translator->addTranslationFile('ExtendedIni', null, 'default', 'native');
     }
 }

@@ -307,9 +307,6 @@ $config = [
             'Laminas\Mvc\I18n\Translator' => [
                 'VuFind\I18n\Translator\TranslatorFactory',
             ],
-            'SlmLocale\Locale\Detector' => [
-                'VuFind\I18n\Locale\LocaleDetectorFactory',
-            ],
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
