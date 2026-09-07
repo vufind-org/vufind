@@ -198,21 +198,6 @@ class Bootstrapper
     }
 
     /**
-     * Set up the initial globals.
-     *
-     * @return void
-     */
-    protected function initGlobals(): void
-    {
-        $settings = $this->container->get(LocaleSettings::class);
-        $locale = $settings->getUserLocale();
-        $globals = $this->container->get(GlobalsContainer::class);
-        $globals['userLang'] = $locale;
-        $globals['allLangs'] = $settings->getEnabledLocales();
-        $globals['rtl'] = $settings->isRightToLeftLocale($locale);
-    }
-
-    /**
      * Detect locale and update language in user account, as needed.
      *
      * @return void
@@ -240,6 +225,11 @@ class Bootstrapper
                 $user->setLastLanguage($language);
                 $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->persistEntity($user);
             }
+            // Populate language-related global values:
+            $globals = $this->container->get(GlobalsContainer::class);
+            $globals['userLang'] = $language;
+            $globals['allLangs'] = $settings->getEnabledLocales();
+            $globals['rtl'] = $settings->isRightToLeftLocale($language);
         };
         $this->events->attach('dispatch.error', $callback, 15000);
         $this->events->attach('dispatch', $callback, 15000);
