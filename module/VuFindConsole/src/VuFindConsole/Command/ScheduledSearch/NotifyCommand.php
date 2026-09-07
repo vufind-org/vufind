@@ -295,10 +295,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         }
         $searchObject = $minSO->deminify($this->resultsManager);
         if (!$searchObject->getOptions()->supportsScheduledSearch()) {
-            $this->err(
-                'Unsupported search backend ' . $searchObject->getBackendId()
-                . ' for search ' . $searchObject->getSearchId()
-            );
+            if (($backendId = $searchObject->getBackendId()) && ($searchId = $searchObject->getSearchId())) {
+                $this->err('Unsupported search backend ' . $backendId . ' for search ' . $searchId);
+            } else {
+                $this->err('Unsupported search object');
+            }
             return false;
         }
         return $searchObject;
