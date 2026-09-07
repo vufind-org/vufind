@@ -221,6 +221,12 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
   .facet {
     display: block;
     width: 100%;
+
+    // highlight with a background - for underline and focus see components/buttons.scss.
+    &:hover,
+    &:focus {
+      background-color: $list-group-hover-bg;
+    }
   }
 }
 

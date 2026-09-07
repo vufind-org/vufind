@@ -47,7 +47,8 @@
         $liClasses[] = 'hierarchy-tree__record';
         $icon = 'hierarchy-record';
       }
-      if ($selectedID === $node->id) {
+      $isSelected = $selectedID === $node->id;
+      if ($isSelected) {
         $liClasses[] = 'hierarchy-tree__selected';
       }
 
@@ -57,6 +58,12 @@
         . ' <a class="js-record-link"'
         . ' href="' . $escapeAttr($node->href) . '"'
         . ' title="' . $escapeAttr($node->title) . '"'
+
+        // Accessibility: Mark the record the tree was opened for screen readers.
+        // 'aria-selected' fails as it is only allowed on treeitem and co.
+        // 'aria-current="page"' also fails when the tree is rendered in a lightbox.
+        // Therefore, we use aria-current which announces 'current element' after the element.
+        . ($isSelected ? ' aria-current="true"' : '')
         . ' data-lightbox-ignore'
         . ' data-record-id="' . $escapeAttr($node->id) . '"'
         . '>'
