@@ -96,6 +96,11 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.language.dropdown');
         $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
+        // Check the active language name:
+        $this->assertSame(
+            'Deutsch',
+            $this->findCssAndGetText($page, '.language.dropdown li a.active')
+        );
         // Check footer help-link
         $this->assertNotSame(
             'Search Tips',
