@@ -45,6 +45,7 @@ use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindSearch\Command\AbstractBase as AbstractCommand;
+use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -64,6 +65,13 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
      * @var array
      */
     protected array $capturedTemplateParams = [];
+
+    /**
+     * Command captured from the search service invoke() call.
+     *
+     * @var ?CommandInterface
+     */
+    protected ?CommandInterface $capturedCommand = null;
 
     /**
      * Build a Collections action and wire up its setter-injected dependencies.
@@ -105,9 +113,11 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
      */
     protected function getHelperPluginManager(array $helpers = []): HelperPluginManager
     {
-        $permissionHelper = $this->createMock(PermissionHelper::class);
-        $permissionHelper->method('getPermissionBehaviorConfig')->willReturn([]);
-        $helpers[PermissionHelper::class] ??= $permissionHelper;
+        if (!isset($helpers[PermissionHelper::class])) {
+            $permissionHelper = $this->createMock(PermissionHelper::class);
+            $permissionHelper->method('getPermissionBehaviorConfig')->willReturn([]);
+            $helpers[PermissionHelper::class] = $permissionHelper;
+        }
 
         $manager = $this->createMock(HelperPluginManager::class);
         $manager->method('get')->willReturnCallback(
@@ -139,7 +149,8 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
     }
 
     /**
-     * Get a mock search service that returns a command with the given result when invoked.
+     * Get a mock search service that returns a command with the given result when invoked. The command passed to
+     * invoke() is captured so tests can assert on the query that was built.
      *
      * @param mixed $result Result to return from the executed command
      *
@@ -147,10 +158,15 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
      */
     protected function getMockSearchService(mixed $result): SearchService
     {
-        $command = $this->createMock(AbstractCommand::class);
-        $command->method('getResult')->willReturn($result);
+        $executedCommand = $this->createMock(AbstractCommand::class);
+        $executedCommand->method('getResult')->willReturn($result);
         $searchService = $this->createMock(SearchService::class);
-        $searchService->method('invoke')->willReturn($command);
+        $searchService->method('invoke')->willReturnCallback(
+            function (CommandInterface $command) use ($executedCommand): CommandInterface {
+                $this->capturedCommand = $command;
+                return $executedCommand;
+            }
+        );
         return $searchService;
     }
 

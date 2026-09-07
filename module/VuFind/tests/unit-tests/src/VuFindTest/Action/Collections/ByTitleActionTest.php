@@ -34,6 +34,8 @@ use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Collections\ByTitleAction;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\Query\Query;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -111,6 +113,36 @@ class ByTitleActionTest extends AbstractCollectionsActionTestCase
 
         $this->invokeAction($action, ['title' => 'Common Title']);
         $this->assertSame($records, $this->capturedTemplateParams['collections']);
+    }
+
+    /**
+     * Test that the title input is turned into a hierachy_title search command with the configured browse limit,
+     * and it escapes embedded quotes.
+     *
+     * @return void
+     */
+    public function testTitleBuildsExpectedSearchCommand(): void
+    {
+        $searchService = $this->getSearchServiceReturningRecords([]);
+        $action = $this->buildAction(
+            ByTitleAction::class,
+            ['Collections' => ['browseLimit' => 50]],
+            $searchService,
+            [RedirectHelper::class => $this->createMock(RedirectHelper::class)]
+        );
+
+        $this->invokeAction($action, ['title' => 'Quoth the "Raven"']);
+
+        $command = $this->capturedCommand;
+        $this->assertInstanceOf(SearchCommand::class, $command);
+        $this->assertSame(DEFAULT_SEARCH_BACKEND, $command->getTargetIdentifier());
+        $this->assertSame(0, $command->getOffset());
+        $this->assertSame(50, $command->getLimit());
+
+        $query = $command->getQuery();
+        $this->assertInstanceOf(Query::class, $query);
+        $this->assertSame('is_hierarchy_title:"Quoth the \"Raven\""', $query->getString());
+        $this->assertSame('AllFields', $query->getHandler());
     }
 
     /**
