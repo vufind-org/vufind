@@ -2475,9 +2475,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $statusKey = $code . ($data['status'] ?? '-');
         // Replace ':' in status key if used as status since ':' is
         // the namespace separator in translatable strings:
-        return $this->itemStatusMappings[$statusKey]
-            ?? $this->getPrefixedMessage($data['code'])
-            ?? $this->getPrefixedMessage(str_replace(':', '_', $statusKey));
+        if (null !== ($status = $this->itemStatusMappings[$statusKey] ?? null)) {
+            return $status;
+        }
+        return $this->getPrefixedMessage($data['code'] ?? str_replace(':', '_', $statusKey));
     }
 
     /**
