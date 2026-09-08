@@ -262,7 +262,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     {
         foreach ($collections as $backendId => $collection) {
             foreach ($collection->getErrors() as $error) {
-                $label = $this->config['Backends'][$backendId];
+                $label = $this->config['Backends'][$backendId] ?? null;
                 if (is_string($error) && $label) {
                     $error = [
                         'msg' => '%%error%% -- %%label%%',
