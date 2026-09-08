@@ -33,7 +33,6 @@ namespace VuFindTest\I18n\Locale;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -79,7 +78,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testDefaultConfigs(): void
     {
         $settings = new LocaleSettings(
-                [
+            [
                     'Site' => ['language' => 'en'],
                     'Languages' => ['en' => 'English'],
                 ]
@@ -96,7 +95,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testDisablingBrowserLanguageDetection(): void
     {
         $settings = new LocaleSettings(
-                [
+            [
                     'Site' => ['language' => 'en', 'browserDetectLanguage' => 0],
                     'Languages' => ['en' => 'English'],
                 ]
@@ -112,7 +111,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testRightToLeft(): void
     {
         $settings = new LocaleSettings(
-                [
+            [
                     'Site' => ['language' => 'en'],
                     'Languages' => ['en' => 'English', 'ar' => 'Arabic'],
                     'LanguageSettings' => ['rtl_langs' => 'ar'],
@@ -130,7 +129,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testInitializationStatusFlagging(): void
     {
         $settings = new LocaleSettings(
-                [
+            [
                     'Site' => ['language' => 'en'],
                     'Languages' => ['en' => 'English'],
                 ]
@@ -356,7 +355,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
         string $expected
     ): void {
         $settings = new LocaleSettings(
-                [
+            [
                     'Site' => ['language' => $default],
                     'Languages' => $enabled,
                 ]
