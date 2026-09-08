@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Action\Collections;
 
+use VuFind\Action\AbstractAction;
 use VuFind\Action\Collections\HomeAction;
 use VuFind\I18n\Sorter;
 use VuFind\Search\Base\Params;
@@ -239,20 +240,7 @@ class HomeActionTest extends AbstractCollectionsActionTestCase
      */
     public function testIndexBrowsePaginates(): void
     {
-        $searchResults = $this->getMockSearchResults([
-            ['value' => 'Alpha{{{_ID_}}}a', 'count' => 1],
-            ['value' => 'Beta{{{_ID_}}}b', 'count' => 1],
-            ['value' => 'Gamma{{{_ID_}}}g', 'count' => 1],
-        ]);
-        $action = $this->buildAction(
-            HomeAction::class,
-            ['Collections' => ['browseLimit' => 1]],
-            $this->createStub(\VuFindSearch\Service::class),
-            searchResults: $searchResults,
-            sorter: new Sorter(new \Collator('en'))
-        );
-
-        $this->invokeAction($action, ['page' => 1]);
+        $this->invokeAction($this->buildThreeItemIndexBrowseAction(), ['page' => 1]);
         $params = $this->capturedTemplateParams;
 
         $this->assertSame(2, $params['nextpage']);
@@ -264,26 +252,24 @@ class HomeActionTest extends AbstractCollectionsActionTestCase
     }
 
     /**
-     * Build a three-item index browse action for out-of-range page tests.
+     * Build a three-item index browse action (browse limit 1).
      *
-     * @return HomeAction
+     * @return AbstractAction
      */
-    protected function buildThreeItemIndexBrowseAction(): HomeAction
+    protected function buildThreeItemIndexBrowseAction(): AbstractAction
     {
         $searchResults = $this->getMockSearchResults([
             ['value' => 'Alpha{{{_ID_}}}a', 'count' => 1],
             ['value' => 'Beta{{{_ID_}}}b', 'count' => 1],
             ['value' => 'Gamma{{{_ID_}}}g', 'count' => 1],
         ]);
-        $action = $this->buildAction(
+        return $this->buildAction(
             HomeAction::class,
             ['Collections' => ['browseLimit' => 1]],
             $this->createStub(\VuFindSearch\Service::class),
             searchResults: $searchResults,
             sorter: new Sorter(new \Collator('en'))
         );
-        $this->assertInstanceOf(HomeAction::class, $action);
-        return $action;
     }
 
     /**
@@ -300,6 +286,7 @@ class HomeActionTest extends AbstractCollectionsActionTestCase
             [['value' => 'a', 'count' => 1, 'displayText' => 'Alpha']],
             $params['result']
         );
+        $this->assertSame(0, $params['nextpage']);
         $this->assertArrayNotHasKey('prevpage', $params);
     }
 
@@ -317,6 +304,7 @@ class HomeActionTest extends AbstractCollectionsActionTestCase
             [['value' => 'g', 'count' => 1, 'displayText' => 'Gamma']],
             $params['result']
         );
+        $this->assertSame(9, $params['prevpage']);
         $this->assertArrayNotHasKey('nextpage', $params);
     }
 }
