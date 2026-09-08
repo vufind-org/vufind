@@ -131,8 +131,7 @@ class Backend extends AbstractBackend
         $this->blendLimit = max(20, $boostMax);
         $this->blockSize = intval($this->config['Blending']['blockSize'] ?? 10);
         $this->adaptiveBlockSizes
-            = $this->config['Blending']['adaptiveBlockSizes']
-            ?? [];
+            = $this->config['Blending']['adaptiveBlockSizes'] ?? [];
     }
 
     /**
