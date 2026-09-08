@@ -30,7 +30,6 @@
 namespace VuFindTest\Sitemap;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Sitemap\Generator;
 use VuFind\Sitemap\PluginManager;
 use VuFind\Sitemap\SitemapIndex;

@@ -268,8 +268,7 @@ class Generator
         };
 
         // If no plugins are defined, use the Index plugin by default:
-        $plugins = isset($this->config['Sitemap']['plugins'])
-            ? $this->config['Sitemap']['plugins']: ['Index'];
+        $plugins = $this->config['Sitemap']['plugins'] ?? ['Index'];
         $pluginSitemaps = [];
         foreach ($plugins as $pluginName) {
             $plugin = $this->getPlugin($pluginName);
