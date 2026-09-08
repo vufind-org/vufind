@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Session;
 
-use VuFind\Config\Config;
 use VuFind\Session\Memcache;
 
 /**
