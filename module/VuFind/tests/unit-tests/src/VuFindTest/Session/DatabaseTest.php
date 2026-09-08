@@ -67,7 +67,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testReadWithNonDefaultLifetime(): void
     {
-        $handler = $this->getHandler(new Config(['lifetime' => 1000]));
+        $handler = $this->getHandler(['lifetime' => 1000]);
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
             ->with('foo', 1000)
@@ -123,11 +123,11 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param ?Config $config Optional configuration
+     * @param ?array $config Optional configuration
      *
      * @return Database
      */
-    protected function getHandler(?Config $config = null): Database
+    protected function getHandler(?array $config = null): Database
     {
         $handler = new Database($config);
         $this->injectMockDatabaseDependencies($handler);
