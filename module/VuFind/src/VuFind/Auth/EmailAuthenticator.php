@@ -145,7 +145,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $viewParams['url'] = $serverHelper(
             $urlHelper($linkRoute, $routeParams, ['query' => $urlParams])
         );
-        $viewParams['title'] = $this->config['Site']['title'];
+        $viewParams['title'] = $this->config['Site']['title'] ?? '';
 
         $message = $this->viewRenderer->render($template, $viewParams);
         $from = $this->getEmailSenderAddress($this->config, $email);
