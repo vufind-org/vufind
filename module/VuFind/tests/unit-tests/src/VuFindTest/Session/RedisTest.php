@@ -130,9 +130,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
                     return null;
                 }
             );
-        $config = new \VuFind\Config\Config(
-            ['redis_version' => 4]
-        );
+        $config = ['redis_version' => 4];
         $handler = $this->getHandler($client, $config);
         $this->setUpDestroyExpectations('foo');
 
@@ -142,8 +140,8 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Credis_Client        $client Client object
-     * @param \VuFind\Config\Config $config Optional configuration
+     * @param \Credis_Client $client Client object
+     * @param array          $config Optional configuration
      *
      * @return Database
      */

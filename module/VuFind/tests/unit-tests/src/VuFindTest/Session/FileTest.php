@@ -130,16 +130,14 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \VuFind\Config\Config $config Optional configuration
+     * @param array $config Optional configuration
      *
      * @return Database
      */
     protected function getHandler($config = null)
     {
         if (null === $config) {
-            $config = new \VuFind\Config\Config(
-                ['file_save_path' => $this->path]
-            );
+            $config = ['file_save_path' => $this->path];
         }
         $handler = new File($config);
         $this->injectMockDatabaseDependencies($handler);
