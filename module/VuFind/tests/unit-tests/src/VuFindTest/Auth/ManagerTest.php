@@ -35,6 +35,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
@@ -560,6 +561,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         ?SessionManager $sessionManager = null,
         ?PluginManager $pm = null
     ): Manager {
+        $config = new Config($config);
         $cookies = new \VuFind\Cookie\CookieManager([]);
         $csrf = new \VuFind\Validator\SessionCsrf(
             [
