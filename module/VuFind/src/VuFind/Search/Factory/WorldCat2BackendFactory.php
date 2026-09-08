@@ -100,7 +100,6 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
-        $this->config = $configManager->getConfigArray('config');
         $this->wcConfig = $configManager->getConfigArray('WorldCat2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
