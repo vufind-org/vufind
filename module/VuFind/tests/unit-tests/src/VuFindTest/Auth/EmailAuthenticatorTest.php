@@ -37,6 +37,7 @@ use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
@@ -88,7 +89,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             $mailer ?? $this->createStub(Mailer::class),
             $renderer ?? $this->createStub(PhpRenderer::class),
             $userIpReader ?? $this->createStub(UserIpReader::class),
-            $config,
+            new Config($config),
             $authHashService ?? $this->createStub(AuthHashServiceInterface::class)
         );
         $authenticator->setTranslator($this->getMockTranslator([]));
