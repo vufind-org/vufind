@@ -64,13 +64,6 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * VuFind configuration.
-     *
-     * @var array
-     */
-    protected array $config;
-
-    /**
      * WorldCat v2 configuration.
      *
      * @var array
