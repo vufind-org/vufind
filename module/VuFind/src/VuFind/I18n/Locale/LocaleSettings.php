@@ -34,7 +34,6 @@
 namespace VuFind\I18n\Locale;
 
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
 
 use function array_key_exists;
 use function floatval;
@@ -106,12 +105,12 @@ class LocaleSettings
     /**
      * Constructor.
      *
-     * @param Config $config Configuration object
+     * @param array $config Configuration object
      */
-    public function __construct(Config $config)
+    public function __construct(array $config)
     {
-        $this->enabledLocales = $config->Languages ? $config->Languages->toArray() : [];
-        $this->browserDetectLanguage = (bool)($config->Site->browserDetectLanguage ?? true);
+        $this->enabledLocales = $config['Languages'] ?? [];
+        $this->browserDetectLanguage = (bool)($config['Site']['browserDetectLanguage'] ?? true);
         $this->defaultLocale = $this->parseDefaultLocale($config);
         $this->fallbackLocales = $this->parseFallbackLocales($config);
         $this->rightToLeftLocales = $this->parseRightToLeftLocales($config);
@@ -197,14 +196,14 @@ class LocaleSettings
     /**
      * Extract and validate default locale from configuration.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return string
      * @throws \Exception
      */
-    protected function parseDefaultLocale(Config $config): string
+    protected function parseDefaultLocale(array $config): string
     {
-        $locale = $config->Site->language ?? null;
+        $locale = $config['Site']['language'] ?? null;
         if (empty($locale)) {
             throw new \Exception('Default locale not configured!');
         }
@@ -217,18 +216,18 @@ class LocaleSettings
     /**
      * Parses the configured language fallbacks.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return string[]
      */
-    protected function parseFallbackLocales(Config $config): array
+    protected function parseFallbackLocales(array $config): array
     {
-        $value = trim($config->Site->fallback_languages ?? '', ',');
+        $value = trim($config['Site']['fallback_languages'] ?? '', ',');
         $languages = $value ? array_map('trim', explode(',', $value)) : [];
         return array_unique(
             [
                 ...$languages,
-                $config->Site->language,
+                $config['Site']['language'],
                 'en',
             ]
         );
@@ -237,13 +236,13 @@ class LocaleSettings
     /**
      * Parses the right-to-left language configuration.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return string[]
      */
-    protected function parseRightToLeftLocales(Config $config): array
+    protected function parseRightToLeftLocales(array $config): array
     {
-        $value = trim($config->LanguageSettings->rtl_langs ?? '', ',');
+        $value = trim($config['LanguageSettings']['rtl_langs'] ?? '', ',');
         return $value ? array_map('trim', explode(',', $value)) : [];
     }
 
