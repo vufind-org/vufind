@@ -29,7 +29,6 @@
 
 namespace VuFind\Search\Params;
 
-
 use function in_array;
 
 /**
