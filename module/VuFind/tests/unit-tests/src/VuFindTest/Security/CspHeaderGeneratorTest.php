@@ -174,7 +174,6 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
      */
     protected function buildGenerator(array $config): CspHeaderGenerator
     {
-        $generator = new CspHeaderGenerator($config, $this->createStub(\VuFind\Security\NonceGenerator::class));
-        return $generator;
+        return new CspHeaderGenerator($config, $this->createStub(\VuFind\Security\NonceGenerator::class));
     }
 }
