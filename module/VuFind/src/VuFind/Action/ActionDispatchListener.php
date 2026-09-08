@@ -36,18 +36,14 @@ use Laminas\Mvc\Application;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
-use Laminas\Router\RouteMatch;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
-use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
 
-use function is_string;
-
 /**
- * Copyright (C) The National Library of Finland 2026.
+ * Action dispatch listener.
  *
  * @category VuFind
  * @package  Action
@@ -58,164 +54,19 @@ use function is_string;
 class ActionDispatchListener
 {
     /**
-     * Route-specific action configuration.
-     *
-     * The configuration is an array of associative arrays of configuration entries.
-     *
-     * Valid keys for each configuration entry:
-     *  - routes                An array of route names the configuration applies to
-     *  - accessPermission      Set access permission (string|false|null, see AccessPermissionInterface)
-     *  - accessDeniedBehavior  Set behavior when access is denied (string|null, see AccessPermissionInterface)
-     *  - backendId             Set search backend identifier (string)
-     *  - defaultTab            Set default tab (string|null)
-     *  - fallbackDefaultTab    Set fallback default tab (string; empty string to use Site/defaultRecordTab from config)
-     *  - poweredBy             Set "Powered by" displayed in page footer
-     *
-     * @var array
-     */
-    protected array $actionConfig = [
-        // EDS:
-        [
-            'routes' => [
-                'edsrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'edsrecord-',
-                ],
-            ],
-            'accessPermission' => 'access.EDSModule',
-            'backendId' => 'EDS',
-            'fallbackDefaultTab' => 'Description',
-        ],
-        // EIT:
-        [
-            'routes' => [
-                'eitrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'eitrecord-',
-                ],
-            ],
-            'accessPermission' => 'access.EITModule',
-            'backendId' => 'EIT',
-            'fallbackDefaultTab' => 'Description',
-        ],
-        [
-            'routes' => [
-                'epfrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'epfrecord-',
-                ],
-            ],
-            'accessPermission' => 'access.EPFModule',
-            'backendId' => 'EPF',
-        ],
-        // Record, Collection (Default backend):
-        [
-            'routes' => [
-                'collection',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'collection-',
-                ],
-                'missingrecord',
-                'missingrecord-home',
-                'record',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'record-',
-                ],
-            ],
-            'backendId' => DEFAULT_SEARCH_BACKEND,
-            'fallbackDefaultTab' => '',
-        ],
-        // Primo:
-        [
-            'routes' => [
-                'primorecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'primorecord-',
-                ],
-            ],
-            'accessPermission' => 'access.PrimoModule',
-            'backendId' => 'Primo',
-            'fallbackDefaultTab' => 'Description',
-        ],
-        // ProquestFSG:
-        [
-            'routes' => [
-                'proquestfsgrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'proquestfsgrecord-',
-                ],
-            ],
-            'backendId' => 'ProQuestFSG',
-        ],
-        // Search2, Search2Collection:
-        [
-            'routes' => [
-                'search2collection',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'search2collection-',
-                ],
-                'search2record',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'search2record-',
-                ],
-            ],
-            'backendId' => 'Search2',
-            'fallbackDefaultTab' => 'Description',
-        ],
-        // Summon:
-        [
-            'routes' => [
-                'summonrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'summonrecord-',
-                ],
-            ],
-            'backendId' => 'Summon',
-            'fallbackDefaultTab' => 'Description',
-            'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
-        ],
-        // WorldCat2 and legacy WorldCat routes:
-        [
-            'routes' => [
-                // Legacy WorldCat routes:
-                'worldcatrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'worldcatrecord-',
-                ],
-                // Current WorldCat2 routes:
-                'worldcat2record',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'worldcat2record-',
-                ],
-            ],
-            'backendId' => 'WorldCat2',
-        ],
-    ];
-
-    /**
      * Constructor.
      *
-     * @param PluginManager    $actionPluginManager Action plugin manager
-     * @param RouteHelper      $routeHelper         Route helper
-     * @param GlobalsContainer $globalsContainer    Global data container
-     * @param array            $config              VuFind configuration
+     * @param PluginManager       $actionPluginManager Action plugin manager
+     * @param RouteHelper         $routeHelper         Route helper
+     * @param GlobalsContainer    $globalsContainer    Global data container
+     * @param ActionConfigManager $actionConfigManager Action configuration manager
+     * @param array               $config              VuFind configuration
      */
     public function __construct(
         protected PluginManager $actionPluginManager,
         protected RouteHelper $routeHelper,
         protected GlobalsContainer $globalsContainer,
+        protected ActionConfigManager $actionConfigManager,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {
@@ -257,7 +108,7 @@ class ActionDispatchListener
         $action = $this->actionPluginManager->get($id);
 
         $routeMatch = $e->getRouteMatch();
-        $this->applyRouteBasedConfig($routeMatch, $action);
+        $this->actionConfigManager->applyActionConfig($action, $routeMatch);
 
         $request = Psr7ServerRequest::fromLaminas($e->getRequest())
             ->withAttribute('action-id', $id)
@@ -318,116 +169,5 @@ class ActionDispatchListener
             $laminasResponse->setStream(fopen($uri, 'rb'));
         }
         return $laminasResponse;
-    }
-
-    /**
-     * Apply route-based configuration to the action.
-     *
-     * @param ?RouteMatch     $routeMatch Route match
-     * @param ActionInterface $action     Action
-     *
-     * @return void
-     */
-    protected function applyRouteBasedConfig(
-        ?RouteMatch $routeMatch,
-        ActionInterface $action
-    ): void {
-        if (!$routeMatch || !($action instanceof ActionConfigInterface)) {
-            return;
-        }
-
-        $routeName = $routeMatch->getMatchedRouteName();
-        foreach ($this->actionConfig as $currentConfig) {
-            if ($this->routeNameMatchesConfig($routeName, $currentConfig)) {
-                // Apply configuration:
-                foreach ($currentConfig as $key => $value) {
-                    switch ($key) {
-                        case 'routes':
-                            break;
-                        case 'accessPermission':
-                        case 'accessDeniedBehavior':
-                            if (!($action instanceof AccessPermissionInterface)) {
-                                throw new ConfigException(
-                                    $action::class . ' (route ' . $routeName . ')'
-                                    . " does not implement AccessPermissionInterface for $key configuration"
-                                );
-                            }
-                            if ('accessDeniedBehavior' === $key) {
-                                $action->setAccessDeniedBehavior($value);
-                            } else {
-                                $action->setAccessPermission($value);
-                            }
-                            break;
-                        case 'backendId':
-                            if (!($action instanceof BackendIdInterface)) {
-                                throw new ConfigException(
-                                    $action::class . ' (route ' . $routeName . ')'
-                                    . " does not implement BackendIdInterface for $key configuration"
-                                );
-                            }
-                            $action->setBackendId($value);
-                            break;
-                        case 'defaultTab':
-                        case 'fallbackDefaultTab':
-                            if (!($action instanceof DefaultTabInterface)) {
-                                throw new ConfigException(
-                                    $action::class . ' (route ' . $routeName . ')'
-                                    . " does not implement DefaultTabInterface for $key configuration"
-                                );
-                            }
-                            if ('fallbackDefaultTab' === $key) {
-                                if ('' === $value) {
-                                    // Load default tab setting:
-                                    if (!($value = $this->config['Site']['defaultRecordTab'] ?? null)) {
-                                        break;
-                                    }
-                                }
-                                $action->setFallbackDefaultTab($value);
-                            } else {
-                                $action->setDefaultTab($value);
-                            }
-                            break;
-                        case 'poweredBy':
-                            $this->globalsContainer['poweredBy'] = $value;
-                            break;
-                        default:
-                            throw new ConfigException(
-                                $action::class . ' (route ' . $routeName . "): Invalid configuration key $key"
-                            );
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-    /**
-     * Check if route name matches the given config.
-     *
-     * @param string $routeName Route name
-     * @param array  $config    Route-based config entry
-     *
-     * @return bool
-     */
-    protected function routeNameMatchesConfig(string $routeName, array $config): bool
-    {
-        foreach ($config['routes'] as $route) {
-            if (is_string($route)) {
-                if ($routeName === $route) {
-                    return true;
-                }
-            } else {
-                switch ($route['type']) {
-                    case 'prefix':
-                        if (str_starts_with($routeName, $route['prefix'])) {
-                            return true;
-                        }
-                        break;
-                    default:
-                        throw new ConfigException(('Invalid routes entry: ' . var_export($route, true)));
-                }
-            }
-        }
-        return false;
     }
 }
