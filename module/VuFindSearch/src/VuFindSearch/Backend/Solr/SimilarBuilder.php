@@ -96,8 +96,7 @@ class SimilarBuilder implements SimilarBuilderInterface
         if (isset($searchConfig['MoreLikeThis'])) {
             $mlt = $searchConfig['MoreLikeThis'];
             if (
-                isset($mlt['useMoreLikeThisHandler'])
-                && $mlt['useMoreLikeThisHandler']
+                $mlt['useMoreLikeThisHandler'] ?? false
             ) {
                 $this->useHandler = true;
                 $this->handlerParams = $mlt['params'] ?? '';
