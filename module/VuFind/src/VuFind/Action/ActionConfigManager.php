@@ -126,6 +126,15 @@ class ActionConfigManager
                             }
                             $action->setBackendId($value);
                             break;
+                        case 'checkEnabled':
+                            if (!($action instanceof CheckEnabledInterface)) {
+                                throw new ConfigException(
+                                    $action::class . ' (action ' . $actionIdentifier . ')'
+                                    . " does not implement CheckEnabledInterface for $key configuration"
+                                );
+                            }
+                            $action->setCheckEnabled($value);
+                            break;
                         case 'defaultTab':
                         case 'fallbackDefaultTab':
                             if (!($action instanceof DefaultTabInterface)) {

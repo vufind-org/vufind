@@ -40,6 +40,7 @@ use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Http\RouteHelper;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
@@ -95,6 +96,7 @@ class HomeActionTest extends TestCase
             $searchMemory ?? $this->createStub(SearchMemory::class),
             $this->createStub(TabManager::class),
             $this->createStub(AuthManager::class),
+            $this->createStub(ConfigManager::class),
             $recordLoader,
             $recordRouter ?? $this->createStub(RecordRouter::class),
             $this->createStub(ResultScroller::class),

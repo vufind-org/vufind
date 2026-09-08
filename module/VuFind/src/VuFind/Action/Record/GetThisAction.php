@@ -34,6 +34,7 @@ namespace VuFind\Action\Record;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 use VuFind\Record\Loader as RecordLoader;
@@ -42,7 +43,6 @@ use VuFind\RecordTab\TabManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\ResultScroller;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Helper\Root\Record;
 
 /**
  * Record "get this" action.
@@ -62,6 +62,7 @@ class GetThisAction extends AbstractRecordAction
      * @param SearchMemory   $searchMemory   Search memory
      * @param TabManager     $tabManager     Tab manager
      * @param AuthManager    $authManager    Authentication manager
+     * @param ConfigManager  $configManager  Configuration manager
      * @param RecordLoader   $recordLoader   Record loader
      * @param RecordRouter   $recordRouter   Record router
      * @param ResultScroller $resultScroller Result scroller
@@ -73,6 +74,7 @@ class GetThisAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -85,6 +87,7 @@ class GetThisAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,
