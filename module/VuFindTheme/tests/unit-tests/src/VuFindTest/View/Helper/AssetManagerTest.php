@@ -77,7 +77,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
                 return $currentlyAllowed;
             });
         $inlineScriptHelper->method('setAllowArbitraryAttributes')
-            ->willReturnCallback(function ($flag) use (&$currentlyAllowed) {
+            ->willReturnCallback(function ($flag) use (&$currentlyAllowed): void {
                 $currentlyAllowed = $flag;
             });
         // Note that the invoke method returns the helper itself -- not a string.
