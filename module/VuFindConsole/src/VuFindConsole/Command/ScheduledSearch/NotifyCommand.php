@@ -298,7 +298,10 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             if (($backendId = $searchObject->getBackendId()) && ($searchId = $searchObject->getSearchId())) {
                 $this->err('Unsupported search backend ' . $backendId . ' for search ' . $searchId);
             } else {
-                $this->err('Unsupported search object');
+                $errorMessage = $backendId
+                    ? "Cannot get search ID from $backendId"
+                    : 'Cannot get backend ID from ' . $searchObject::class;
+                $this->err($errorMessage);
             }
             return false;
         }
