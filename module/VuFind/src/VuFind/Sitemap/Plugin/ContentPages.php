@@ -30,7 +30,6 @@
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\Router\RouteStackInterface;
-use VuFind\Config\Config;
 use VuFindTheme\ThemeInfo;
 use Webmozart\Glob\Glob;
 
@@ -72,7 +71,7 @@ class ContentPages extends AbstractGeneratorPlugin
     /**
      * Main VuFind configuration (config.ini).
      *
-     * @var Config
+     * @var array
      */
     protected $config;
 
@@ -111,12 +110,12 @@ class ContentPages extends AbstractGeneratorPlugin
      *
      * @param ThemeInfo           $themeInfo Theme info
      * @param RouteStackInterface $router    Router
-     * @param Config              $config    Main VuFind configuration
+     * @param array               $config    Main VuFind configuration
      */
     public function __construct(
         ThemeInfo $themeInfo,
         RouteStackInterface $router,
-        Config $config
+        array $config
     ) {
         $this->themeInfo = $themeInfo;
         $this->router = $router;
@@ -156,8 +155,8 @@ class ContentPages extends AbstractGeneratorPlugin
     public function getUrls(): \Generator
     {
         $nonLanguageFiles = [];
-        $languages = isset($this->config->Languages)
-            ? array_keys($this->config->Languages->toArray())
+        $languages = isset($this->config['Languages'])
+            ? array_keys($this->config['Languages'])
             : [];
         foreach ($this->includedFiles as $fileSpec) {
             $files = $this->themeInfo->findInThemes([$fileSpec['path'] . $fileSpec['pattern']]);
