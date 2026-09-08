@@ -32,7 +32,6 @@ namespace VuFind\Recommend;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use VuFind\Connection\LibGuides;
 
-use function intval;
 use function is_string;
 use function strlen;
 
