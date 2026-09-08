@@ -43,7 +43,7 @@ class Results extends \VuFind\Search\Solr\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'SolrAuth';
+    protected ?string $backendId = 'SolrAuth';
 }
