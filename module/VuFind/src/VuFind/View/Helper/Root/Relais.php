@@ -101,7 +101,7 @@ class Relais
             return $this->view->render('relais/button.phtml');
         }
         // Case 2: Search links enabled:
-        if ($this->config['loginUrl'] ?? false && $driver) {
+        if (($this->config['loginUrl'] ?? false) && $driver) {
             return '<a href="' . htmlspecialchars($this->getSearchLink($driver))
                 . '" target="new">' . ($this->transEsc)('relais_search')
                 . '</a>';
