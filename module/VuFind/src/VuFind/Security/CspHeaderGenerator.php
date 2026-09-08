@@ -54,13 +54,6 @@ class CspHeaderGenerator implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Configuration for generator from contensecuritypolicy.ini.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Generated nonce used for one request.
      *
      * @var string
@@ -80,9 +73,8 @@ class CspHeaderGenerator implements
      * @param array                           $config         Configuration
      * @param \VuFind\Security\NonceGenerator $nonceGenerator Nonce generator
      */
-    public function __construct($config, $nonceGenerator)
+    public function __construct(protected array $config, $nonceGenerator)
     {
-        $this->config = $config;
         $this->nonce = $nonceGenerator->getNonce();
     }
 
