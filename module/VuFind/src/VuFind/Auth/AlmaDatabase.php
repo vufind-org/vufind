@@ -88,7 +88,7 @@ class AlmaDatabase extends Database
     {
         // When in privacy mode, don't create an Alma account and delegate
         // further code execution to the parent.
-        if ($this->getConfig()->Authentication->privacy) {
+        if ($this->getConfig()['Authentication']['privacy']) {
             return parent::create($request);
         }
 
