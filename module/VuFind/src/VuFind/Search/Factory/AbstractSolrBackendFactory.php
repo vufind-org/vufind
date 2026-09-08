@@ -720,7 +720,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     ): InjectConditionalFilterListener {
         $listener = new InjectConditionalFilterListener(
             $backend,
-            $search['ConditionalHiddenFilters']
+            $search['ConditionalHiddenFilters'] ?? []
         );
         $listener->setAuthorizationService(
             $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
