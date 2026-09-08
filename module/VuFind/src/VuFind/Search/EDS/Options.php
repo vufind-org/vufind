@@ -659,11 +659,6 @@ class Options extends AbstractEDSOptions
         $settings = $this->apiInfo['ViewResultSettings'] ?? [];
         // default result Limit
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
-
-        // default view
-        if (null === $this->defaultView) {
-            $this->setConfiguredDefaultView('list_' . ($settings['ResultListView'] ?? 'brief'));
-        }
     }
 
     /**
@@ -755,16 +750,5 @@ class Options extends AbstractEDSOptions
             }
         }
         return $this->defaultFilters;
-    }
-
-    /**
-     * Get default view setting.
-     *
-     * @return string
-     */
-    protected function getConfiguredDefaultView(): string
-    {
-        // Note that getApiProperty() will retrieve any defaultView value set by setConfiguredDefaultView().
-        return $this->getApiProperty('defaultView');
     }
 }
