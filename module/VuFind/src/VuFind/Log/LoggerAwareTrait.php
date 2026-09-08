@@ -88,9 +88,9 @@ trait LoggerAwareTrait
     /**
      * Log an exception.
      *
-     * @param \Exception                 $exception Exception to log
-     * @param \Laminas\Stdlib\Parameters $server    Optional server metadata
-     * @param mixed                      $level     Optional log level. Will determine from the
+     * @param \Exception                            $exception Exception to log
+     * @param \Laminas\Stdlib\Parameters|array|null $server    Optional server metadata
+     * @param mixed                                 $level     Optional log level. Will determine from the
      * exception if not provided. (e.g., 'err', 'warn')
      *
      * @return void

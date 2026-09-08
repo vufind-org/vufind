@@ -34,7 +34,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use VuFind\Net\UserIpReader;
 
-use function array_key_exists;
 use function in_array;
 use function is_array;
 use function is_bool;
@@ -286,7 +285,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      */
     protected function fillInMissingDetails(array $context = []): array
     {
-        if (!array_key_exists('details', $context) || !is_array($context['details'])) {
+        if (!is_array($context['details'] ?? null)) {
             return $context;
         }
         $details = $context['details'];
@@ -295,19 +294,19 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
 
         foreach ($levels as $level) {
             // This level has data, no need to look further
-            if (isset($details[$level]) && $details[$level] !== '') {
+            if (($details[$level] ?? '') !== '') {
                 $filledDetails[$level] = $details[$level];
                 continue;
             }
 
             // Try prior index (Backfill)
-            if (isset($details[$level - 1]) && $details[$level - 1] !== '') {
+            if (($details[$level - 1] ?? '') !== '') {
                 $filledDetails[$level] = $details[$level - 1];
                 continue;
             }
 
             // Try next index (Frontfill)
-            if (isset($details[$level + 1]) && $details[$level + 1] !== '') {
+            if (($details[$level + 1] ?? '') !== '') {
                 $filledDetails[$level] = $details[$level + 1];
                 continue;
             }
@@ -353,9 +352,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
         $this->log(
             $level ?? $this->getSeverityFromException($error),
             $details[1] ?? 'Exception/Detailed log. See context for levels.',
-            [
-                'details' => $details,
-            ]
+            compact('details')
         );
     }
 
