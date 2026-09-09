@@ -31,6 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
+use VuFind\Http\HttpStatus;
 
 /**
  * Abstract base class for fetching information about user requests.
@@ -64,10 +65,10 @@ abstract class AbstractUserRequestAction extends AbstractIlsUserAndRendererActio
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
+            return $this->formatResponse('', HttpStatus::NEED_AUTH);
         }
         if (!$this->ils->checkCapability($this->lookupMethod, [$patron])) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);
         if (isset($requests['records'])) {

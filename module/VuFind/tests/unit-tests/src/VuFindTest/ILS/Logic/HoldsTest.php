@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
@@ -70,7 +69,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             $ilsAuth ?? $this->createStub(ILSAuthenticator::class),
             $catalog ?? $this->createStub(Connection::class),
             $hmac ?? $this->createStub(HMAC::class),
-            new Config($config)
+            $config
         );
     }
 
