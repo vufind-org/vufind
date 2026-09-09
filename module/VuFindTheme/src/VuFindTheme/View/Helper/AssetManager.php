@@ -400,7 +400,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setScript($script, $type, $attrs);
-        $result = ($inlineScript)();
+        $result = (string)($inlineScript)();
         if ($resetArbitraryAttributes !== null) {
             $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
@@ -432,7 +432,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $inlineScript->setFile($src, $type, $attrs);
-        $result = ($inlineScript)();
+        $result = (string)($inlineScript)();
         if ($resetArbitraryAttributes !== null) {
             $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }

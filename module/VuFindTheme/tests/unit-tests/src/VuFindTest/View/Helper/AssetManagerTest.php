@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper;
 
 use Exception;
 use Laminas\View\Helper\InlineScript;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTest\Feature\ViewTrait;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
@@ -64,6 +65,34 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Mock the Laminas InlineScript helper with functional "allow arbitrary attribute" support to
+     * test behavior that could lead to subtle bugs.
+     *
+     * @return InlineScript&MockObject
+     */
+    public function getMockInlineScriptHelper(): InlineScript&MockObject
+    {
+        $inlineScriptHelper = $this->createMock(InlineScript::class);
+        $currentlyAllowed = false;
+        $inlineScriptHelper->method('arbitraryAttributesAllowed')
+            ->willReturnCallback(function () use (&$currentlyAllowed) {
+                return $currentlyAllowed;
+            });
+        $inlineScriptHelper->method('setAllowArbitraryAttributes')
+            ->willReturnCallback(function ($flag) use (&$currentlyAllowed): void {
+                $currentlyAllowed = $flag;
+            });
+        // Note that the invoke method returns the helper itself -- not a string.
+        // This matches the actual helper's behavior.
+        $inlineScriptHelper->method('__invoke')->willReturnSelf();
+        $inlineScriptHelper->method('__toString')
+            ->willReturnCallback(function () use (&$currentlyAllowed) {
+                return 'output:' . ($currentlyAllowed ? '1' : '0');
+            });
+        return $inlineScriptHelper;
+    }
+
+    /**
      * Test that outputInlineScriptLink() behaves as expected.
      *
      * @param array  $attrs        Attributes array
@@ -76,8 +105,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     public function testOutputInlineScriptLink(array $attrs, bool $arbitrary, string $expectedType): void
     {
         $script = 'foo.js';
-        $inlineScriptHelper = $this->createMock(InlineScript::class);
-        $inlineScriptHelper->method('arbitraryAttributesAllowed')->willReturn(false);
+        $inlineScriptHelper = $this->getMockInlineScriptHelper();
         $inlineScriptHelper
             ->expects($arbitrary ? $this->exactly(2) : $this->never())
             ->method('setAllowArbitraryAttributes');
@@ -86,11 +114,11 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             ->expects($this->once())
             ->method('__call')
             ->with('setFile', [$script, $expectedType, $expectedAttrs]);
-        $inlineScriptHelper->method('__invoke')->willReturn('output');
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
         $assetManager = $view->plugin('assetManager');
         $options = ['allow_arbitrary_attributes' => $arbitrary];
-        $this->assertEquals('output', $assetManager->outputInlineScriptLink($script, $attrs, $options));
+        $expected = 'output:' . ($arbitrary ? '1' : '0');
+        $this->assertEquals($expected, $assetManager->outputInlineScriptLink($script, $attrs, $options));
     }
 
     /**
@@ -106,8 +134,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     public function testOutputInlineScriptString(array $attrs, bool $arbitrary, string $expectedType): void
     {
         $script = 'foo';
-        $inlineScriptHelper = $this->createMock(InlineScript::class);
-        $inlineScriptHelper->method('arbitraryAttributesAllowed')->willReturn(false);
+        $inlineScriptHelper = $this->getMockInlineScriptHelper();
         $inlineScriptHelper
             ->expects($arbitrary ? $this->exactly(2) : $this->never())
             ->method('setAllowArbitraryAttributes');
@@ -116,11 +143,11 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             ->expects($this->once())
             ->method('__call')
             ->with('setScript', [$script, $expectedType, $expectedAttrs]);
-        $inlineScriptHelper->method('__invoke')->willReturn('output');
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
         $assetManager = $view->plugin('assetManager');
         $options = ['allow_arbitrary_attributes' => $arbitrary];
-        $this->assertEquals('output', $assetManager->outputInlineScriptString($script, $attrs, $options));
+        $expected = 'output:' . ($arbitrary ? '1' : '0');
+        $this->assertEquals($expected, $assetManager->outputInlineScriptString($script, $attrs, $options));
     }
 
     /**
