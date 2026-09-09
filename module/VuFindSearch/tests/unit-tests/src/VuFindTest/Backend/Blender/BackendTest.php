@@ -34,6 +34,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
@@ -617,7 +618,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            static::$config,
+            new Config(static::$config),
             $this->mappings,
             $eventManager
         );
@@ -1073,7 +1074,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            $config ?? static::$config,
+            new Config($config ?? static::$config),
             $mappings ?? $this->mappings,
             $eventManager
         );
@@ -1233,7 +1234,7 @@ class BackendTest extends TestCase
             $this->getEDSRecordCollectionFactory(),
             $cache,
             $container,
-            [],
+            new Config([]),
         ];
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->onlyMethods(['getAuthenticationToken', 'getSessionToken'])
