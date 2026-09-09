@@ -67,13 +67,6 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
     protected $limit = 5;
 
     /**
-     * Connection to consortial VuFind API.
-     *
-     * @var Connection
-     */
-    protected $connection;
-
-    /**
      * Base URL of a search results page.
      *
      * @var string
@@ -116,9 +109,8 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      */
     public function __construct(
         protected array $config,
-        Connection $connection
+        protected Connection $connection
     ) {
-        $this->connection = $connection;
     }
 
     /**
