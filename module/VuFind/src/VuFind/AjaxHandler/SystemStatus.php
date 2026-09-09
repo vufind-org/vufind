@@ -75,6 +75,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @param ResultsManager          $resultsManager Results manager
      * @param array                   $config         Top-level VuFind configuration (config.ini)
      * @param SessionServiceInterface $sessionService Session database service
+     * @param SearchService           $searchService  Search service
      * @param Connection              $ils            ILS connection
      */
     public function __construct(

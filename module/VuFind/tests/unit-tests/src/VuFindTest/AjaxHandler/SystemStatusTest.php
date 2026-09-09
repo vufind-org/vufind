@@ -32,10 +32,11 @@ namespace VuFindTest\AjaxHandler;
 use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use VuFind\AjaxHandler\SystemStatus;
-use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFindSearch\Backend\EDS\Command\GetInfoCommand;
+use VuFindSearch\Service as SearchService;
 use VuFindTest\Unit\AjaxHandlerTestCase;
 
 /**
@@ -56,6 +57,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
      * @param ?ResultsManager          $resultsManager Results plugin manager
      * @param array                    $config         Config
      * @param ?SessionServiceInterface $sessionService Session service
+     * @param ?SearchService           $searchService  Search service
      * @param ?Connection              $ilsConnection  ILS connection
      * @param bool                     $accessGranted  If access is granted
      *
@@ -66,18 +68,21 @@ class SystemStatusTest extends AjaxHandlerTestCase
         ?ResultsManager $resultsManager = null,
         array $config = [],
         ?SessionServiceInterface $sessionService = null,
+        ?SearchService $searchService = null,
         ?Connection $ilsConnection = null,
         bool $accessGranted = true
     ): SystemStatus {
         $sessionManager ??= $this->createMock(SessionManager::class);
         $resultsManager ??= $this->createMock(ResultsManager::class);
         $sessionService ??= $this->createMock(SessionServiceInterface::class);
+        $searchService ??= $this->createMock(SearchService::class);
         $ilsConnection ??= $this->createMock(Connection::class);
         $handler = new SystemStatus(
             $sessionManager,
             $resultsManager,
             $config,
             $sessionService,
+            $searchService,
             $ilsConnection
         );
         $mockAuth = $this->createMock(AuthorizationService::class);
@@ -143,14 +148,10 @@ class SystemStatusTest extends AjaxHandlerTestCase
      */
     public function testEDSFailure(): void
     {
-        $resultsManager = $this->createMock(ResultsManager::class);
-        $results = $this->createMock(\VuFind\Search\EDS\Results::class);
+        $searchService = $this->createMock(SearchService::class);
         $e = new \Exception('kaboom');
-        $results->expects($this->once())->method('performAndProcessSearch')->willThrowException($e);
-        $resultsManager->expects($this->once())->method('get')->with('EDS')->willReturn($results);
-        $params = $this->createMock(\VuFind\Search\EDS\Params::class);
-        $results->expects($this->once())->method('getParams')->willReturn($params);
-        $handler = $this->getHandler(resultsManager: $resultsManager);
+        $searchService->expects($this->once())->method('invoke')->willThrowException($e);
+        $handler = $this->getHandler(searchService: $searchService);
         $response = $handler->handleRequest($this->getRequest(['index' => '0']));
         $this->assertSame([''], $response);
         // Enable EDS check:
@@ -205,31 +206,24 @@ class SystemStatusTest extends AjaxHandlerTestCase
         $sessionManager->expects($this->exactly(2))->method('destroy');
         $resultsManager = $this->createMock(ResultsManager::class);
 
-        $solrResults = $this->createMock(\VuFind\Search\Solr\Results::class);
-        $solrResults->expects($this->exactly(2))->method('performAndProcessSearch');
-        $solrParams = $this->createMock(\VuFind\Search\Solr\Params::class);
-        $solrResults->expects($this->exactly(2))->method('getParams')->willReturn($solrParams);
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->expects($this->exactly(2))->method('performAndProcessSearch');
+        $resultsManager->expects($this->exactly(2))->method('get')->with('Solr')->willReturn($results);
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $results->expects($this->exactly(2))->method('getParams')->willReturn($params);
 
-        $edsResults = $this->createMock(\VuFind\Search\EDS\Results::class);
-        $edsResults->expects($this->once())->method('performAndProcessSearch');
-        $edsParams = $this->createMock(\VuFind\Search\EDS\Params::class);
-        $edsResults->expects($this->once())->method('getParams')->willReturn($edsParams);
-
-        $resultsManager->expects($this->exactly(3))
-            ->method('get')
-            ->willReturnCallback(
-                fn (string $type) => match ($type) {
-                    'Solr' => $solrResults,
-                    'EDS' => $edsResults,
-                }
-            );
+        $getInfoCommand = $this->createMock(GetInfoCommand::class);
+        $getInfoCommand->expects($this->once())->method('getResult')->willReturn([]);
+        $searchService = $this->createMock(SearchService::class);
+        $searchService->expects($this->once())->method('invoke')->willReturn($getInfoCommand);
 
         $sessionService = $this->createMock(SessionServiceInterface::class);
         $sessionService->expects($this->exactly(2))->method('getSessionById');
         $handler = $this->getHandler(
             sessionManager: $sessionManager,
             resultsManager: $resultsManager,
-            sessionService: $sessionService
+            sessionService: $sessionService,
+            searchService: $searchService
         );
         $response = $handler->handleRequest($this->getRequest());
         $this->assertSame([''], $response);
