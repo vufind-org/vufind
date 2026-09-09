@@ -64,7 +64,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock the Laminas InlineScript helper.
+     * Mock the Laminas InlineScript helper with functional "allow arbitrary attribute" support to
+     * test behavior that could lead to subtle bugs.
      *
      * @return InlineScript&\PHPUnit\Framework\MockObject\MockObject
      */
