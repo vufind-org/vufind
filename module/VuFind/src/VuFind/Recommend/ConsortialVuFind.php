@@ -135,14 +135,14 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
             $this->recordBaseUrl = $configSection['record_base_url'] ?? null;
             $this->searchFilters = $configSection['filters'] ?? [];
 
-            // Configure connection
-            $this->connection->setBaseUrl($configSection['api_base_url']);
-
             // Confirm that required configuration is present
             $this->hasMinimumConfig = $this->resultsBaseUrl
                 && $this->recordBaseUrl
                 && ($configSection['api_base_url'] ?? null);
-            if (!$this->hasMinimumConfig) {
+            if ($this->hasMinimumConfig) {
+                // Configure connection
+                $this->connection->setBaseUrl($configSection['api_base_url']);
+            } else {
                 $this->logError("Required configuration missing in '$configSectionName'
                     section of ConsortialVuFind.ini.");
             }
