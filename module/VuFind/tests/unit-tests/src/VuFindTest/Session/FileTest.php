@@ -78,7 +78,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testWriteReadAndDestroy()
+    public function testWriteReadAndDestroy(): void
     {
         $handler = $this->getHandler();
         $this->assertTrue($handler->write('foo', 'bar'));
@@ -93,7 +93,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testDisabledWrites()
+    public function testDisabledWrites(): void
     {
         $handler = $this->getHandler();
         $handler->disableWrites();
@@ -116,7 +116,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testGarbageCollector()
+    public function testGarbageCollector(): void
     {
         $handler = $this->getHandler();
         $this->assertTrue($handler->write('foo', 'bar'));
