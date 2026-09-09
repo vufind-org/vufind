@@ -30,6 +30,7 @@
 
 namespace VuFindTest\Recommend;
 
+use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Connection\ExternalVuFind;
 use VuFind\Recommend\ConsortialVuFind;
@@ -143,7 +144,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
      */
     protected function buildConsortialVuFind(array $config): ConsortialVuFind
     {
-        $consortialVuFind = new ConsortialVuFind($config, $this->connector);
+        $consortialVuFind = new ConsortialVuFind(new Config($config), $this->connector);
         $consortialVuFind->setConfig('lookfor:3:ReShare');
 
         $queryResults = $this->buildQueryResults('civil war');
