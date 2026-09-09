@@ -739,14 +739,15 @@ class Backend extends AbstractBackend
      * Obtain data from the INFO method.
      *
      * @param string $sessionToken Session token (optional)
+     * @param string $bustCache    Bust the request cache
      *
      * @return array
      */
-    public function getInfo($sessionToken = null)
+    public function getInfo($sessionToken = null, $bustCache = false)
     {
         // Use a different cache key for guests, just in case info differs:
         $cacheKey = $this->isGuest ? 'edsGuestInfo' : 'edsLoggedInInfo';
-        if ($data = $this->cache->getItem($cacheKey)) {
+        if (!$bustCache && ($data = $this->cache->getItem($cacheKey))) {
             return $data;
         }
         $authenticationToken = $this->getAuthenticationToken();

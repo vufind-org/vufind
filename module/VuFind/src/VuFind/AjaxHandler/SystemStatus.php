@@ -39,6 +39,7 @@ use VuFind\Exception\Forbidden;
 use VuFind\Http\HttpStatus;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFindSearch\Service as SearchService;
 
 /**
  * "System Status" AJAX handler.
@@ -81,6 +82,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         protected ResultsManager $resultsManager,
         protected array $config,
         protected SessionServiceInterface $sessionService,
+        protected SearchService $searchService,
         protected Connection $ils
     ) {
         parent::__construct(null);
@@ -169,9 +171,8 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     protected function edsCheck(): array
     {
         try {
-            $results = $this->resultsManager->get('EDS');
-            $results->getParams()->setBasicSearch('*');
-            $results->performAndProcessSearch();
+            $command = new \VuFindSearch\Backend\EDS\Command\GetInfoCommand(bustCache: true);
+            $this->searchService->invoke($command)->getResult();
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'EDS connection error: ' . $e->getMessage(),
