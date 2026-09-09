@@ -59,10 +59,10 @@ class CopyToClipboardButton
     /**
      * This helper creates button for copying content of an element into clipboard.
      *
-     * @param string $elementSelector css selector for element to copy
-     * @param bool   $hideButtonText  controls whether the description of the button's purpose
+     * @param string  $elementSelector css selector for element to copy
+     * @param bool    $hideButtonText  controls whether the description of the button's purpose
      * is displayed as text or only with a title attribute
-     * @param ?string $buttonText     Optional alternative description of the button
+     * @param ?string $buttonText      Optional alternative description of the button
      *
      * @return string HTML string
      */
