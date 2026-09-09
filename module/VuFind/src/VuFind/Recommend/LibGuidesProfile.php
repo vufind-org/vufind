@@ -117,7 +117,7 @@ class LibGuidesProfile implements
         // Cache the data related to profiles for up to 10 minutes:
         $this->cacheLifetime = (int)($config['GetAccounts']['cache_lifetime'] ?? 600);
 
-        if ($profile = $config['Profile']) {
+        if ($profile = $config['Profile'] ?? []) {
             $strategies = $profile['strategies'] ?? [];
             $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 
