@@ -49,7 +49,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      * Constructor.
      *
      * @param Client $client HTTP client
-     * @param array $config Relais configuration
+     * @param array  $config Relais configuration
      */
     public function __construct(protected Client $client, protected array $config)
     {
