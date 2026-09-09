@@ -130,11 +130,11 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param array $config Optional configuration
+     * @param ?array $config Optional configuration
      *
-     * @return Database
+     * @return File
      */
-    protected function getHandler($config = null)
+    protected function getHandler(?array $config = null): File
     {
         if (null === $config) {
             $config = ['file_save_path' => $this->path];
