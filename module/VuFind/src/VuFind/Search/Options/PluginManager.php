@@ -54,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'epf' => \VuFind\Search\EPF\Options::class,
         'emptyset' => \VuFind\Search\EmptySet\Options::class,
         'favorites' => \VuFind\Search\Favorites\Options::class,
+        'gvi' => \VuFind\Search\GVI\Options::class,
         'libguides' => \VuFind\Search\LibGuides\Options::class,
         'libguidesaz' => \VuFind\Search\LibGuidesAZ\Options::class,
         'mixedlist' => \VuFind\Search\MixedList\Options::class,

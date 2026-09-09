@@ -504,10 +504,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             'terms' => [
                 'functions' => ['terms'],
             ],
-            'morelikethis' => [
-                'functions' => ['similar'],
-            ],
         ];
+
+        // Only route similar() to /morelikethis if not using legacy qt= approach.
+        if (!$this->createSimilarBuilder()->usesQtParam()) {
+            $handlers['morelikethis'] = [
+                'functions' => ['similar'],
+            ];
+        }
 
         foreach ($this->getHiddenFilters() as $filter) {
             array_push($handlers['select']['appends']['fq'], $filter);
