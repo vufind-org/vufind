@@ -111,7 +111,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
     /**
      * Constructor.
      *
-     * @param array     $config     ConsortialVuFind.ini configuration
+     * @param array      $config     ConsortialVuFind.ini configuration
      * @param Connection $connection Connection to consortial VuFind API
      */
     public function __construct(
