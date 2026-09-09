@@ -74,9 +74,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
         array $config,
         protected Mailer $mailer
     ) {
-        $this->viewRenderer = $viewRenderer;
         $this->mainConfig = $config;
-        $this->mailer = $mailer;
     }
 
     /**
