@@ -48,32 +48,11 @@ use function strlen;
 class ContentPages extends AbstractGeneratorPlugin
 {
     /**
-     * Theme informations.
-     *
-     * @var ThemeInfo
-     */
-    protected $themeInfo;
-
-    /**
-     * Router.
-     *
-     * @var RouteStackInterface
-     */
-    protected $router;
-
-    /**
      * Base URL for site.
      *
      * @var string
      */
     protected $baseUrl;
-
-    /**
-     * Main VuFind configuration (config.ini).
-     *
-     * @var array
-     */
-    protected $config;
 
     /**
      * Patterns of files to be included.
@@ -110,16 +89,13 @@ class ContentPages extends AbstractGeneratorPlugin
      *
      * @param ThemeInfo           $themeInfo Theme info
      * @param RouteStackInterface $router    Router
-     * @param array               $config    Main VuFind configuration
+     * @param array               $config    Main VuFind configuration (config.ini)
      */
     public function __construct(
-        ThemeInfo $themeInfo,
-        RouteStackInterface $router,
-        array $config
+        protected ThemeInfo $themeInfo,
+        protected RouteStackInterface $router,
+        protected array $config
     ) {
-        $this->themeInfo = $themeInfo;
-        $this->router = $router;
-        $this->config = $config;
     }
 
     /**
