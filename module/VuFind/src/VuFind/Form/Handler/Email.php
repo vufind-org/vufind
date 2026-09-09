@@ -56,37 +56,23 @@ class Email implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * View renderer.
-     *
-     * @var RendererInterface
-     */
-    protected $viewRenderer;
-
-    /**
      * Main config.
      *
-     * @var Config
+     * @var array
      */
     protected $mainConfig;
-
-    /**
-     * Mailer.
-     *
-     * @var Mailer
-     */
-    protected $mailer;
 
     /**
      * Constructor.
      *
      * @param RendererInterface $viewRenderer View renderer
-     * @param Config            $config       Main config
+     * @param array            $config       Main config
      * @param Mailer            $mailer       Mailer
      */
     public function __construct(
-        RendererInterface $viewRenderer,
-        Config $config,
-        Mailer $mailer
+        protected RendererInterface $viewRenderer,
+        array $config,
+        protected Mailer $mailer
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->mainConfig = $config;
@@ -155,9 +141,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
     {
         $config = $this->mainConfig;
         $email = $form->getEmailFromAddress()
-            ?: $config->Feedback->sender_email ?? 'noreply@vufind.org';
+            ?: $config['Feedback']['sender_email'] ?? 'noreply@vufind.org';
         $name = $form->getEmailFromName()
-            ?: $config->Feedback->sender_name ?? 'VuFind Feedback';
+            ?: $config['Feedback']['sender_name'] ?? 'VuFind Feedback';
 
         return [$name, $email];
     }
