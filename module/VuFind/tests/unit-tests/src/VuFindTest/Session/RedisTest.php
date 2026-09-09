@@ -61,7 +61,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 }
             );
         $handler = $this->getHandler($client);
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**
