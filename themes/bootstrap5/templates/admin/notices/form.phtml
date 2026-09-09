@@ -21,7 +21,7 @@
     $content = ob_get_contents();
     ob_end_clean();
     $tabs[$language] = [
-      'description' => $this->displayLanguageOption($this->config()->get('config')->toArray()['Languages'][$language]),
+      'description' => $this->displayLanguageOption($this->config()->getArray('config')['Languages'][$language]),
       'content' => $content,
     ];
   ?>

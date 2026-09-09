@@ -217,17 +217,21 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
-        $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        // Count tags with missing
-        $sum = 0;
-        foreach ($tags as $t) {
-            $link = $t->find('css', 'button');
-            if ($link) {
-                $sum += intval($link->getText());
+        $this->assertEqualsWithTimeout(
+            3,
+            function () use ($page): int {
+                $tags = $page->findAll('css', '.tagList .tag');
+                // Count tags with missing
+                $sum = 0;
+                foreach ($tags as $t) {
+                    $link = $t->find('css', 'button');
+                    if ($link) {
+                        $sum += intval($link->getText());
+                    }
+                }
+                return $sum;
             }
-        }
-        $this->assertSame(3, $sum);
+        );
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->waitForPageLoad($page);
@@ -277,6 +281,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
         $this->assertSelectedSort($page, 'title');
+        // Click on a record to be sure that the results lead to the right place:
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
@@ -314,6 +321,26 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 3, $expectedFirst, $expectedLast);
         $this->assertSelectedSort($page, $expectedSort);
+    }
+
+    /**
+     * Test sorting persists in last search link.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearchSort')]
+    public function testTagSearchSortPersistsInLastSearchLink(): void
+    {
+        $page = $this->performSearch('five', 'tag');
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 1);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'author');
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
+        // Click on search results in breadcrumb to go back to search and check that
+        // author sort is still selected
+        $page->clickLink('Search Results');
+        $this->assertSelectedSort($page, 'author');
     }
 
     /**

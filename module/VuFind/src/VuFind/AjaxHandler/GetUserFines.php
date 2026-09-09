@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\ILS\Connection;
 use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
@@ -84,10 +85,10 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
+            return $this->formatResponse('', HttpStatus::NEED_AUTH);
         }
         if (!$this->ils->checkCapability('getMyFines')) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
         $fines = $this->ils->getMyFines($patron);
         $result = $this->getFineSummary($fines, $this->currencyFormatter);

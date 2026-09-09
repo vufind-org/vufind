@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Cover;
 
-use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFindHttp\HttpService;
 use VuFindTheme\ThemeInfo;
@@ -182,7 +181,6 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         ?HttpService $httpService = null,
         array|false $mock = false
     ): Loader {
-        $config = new Config($config);
         $manager ??= $this->createMock(\VuFind\Content\Covers\PluginManager::class);
         $theme ??= new ThemeInfo($this->getThemeDir(), $this->testTheme);
         $httpService ??= $this->createMock(\VuFindHttp\HttpService::class);

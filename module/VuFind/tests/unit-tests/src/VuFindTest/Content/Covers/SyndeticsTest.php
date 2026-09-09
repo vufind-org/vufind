@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Content\Covers;
 
-use VuFind\Config\Config;
 use VuFind\Content\Covers\Syndetics;
 use VuFind\Http\CachingDownloader;
 use VuFindCode\ISBN;
@@ -61,9 +60,9 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
         ?string $isbn = '',
         ?bool $useSyndeticsCoverImageFallback = true
     ): Syndetics {
-        $loader = new Syndetics(new Config([
+        $loader = new Syndetics([
             'use_syndetics_cover_image_fallback' => $useSyndeticsCoverImageFallback,
-        ]));
+        ]);
         if ($fixtureFile) {
             $mockDownloader = $this->createMock(CachingDownloader::class);
             $fixture = $this->getFixture($fixtureFile);

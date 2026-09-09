@@ -131,10 +131,10 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
         bool $useHeaders = false,
         bool $requiredAttributes = true
     ): Shibboleth {
-        $config = new Config($config ?? $this->getAuthConfig($useHeaders, $requiredAttributes));
+        $config ??= $this->getAuthConfig($useHeaders, $requiredAttributes);
         $loader = ($shibConfig === null)
             ? new SingleIdPConfigurationLoader($config)
-            : new MultiIdPConfigurationLoader($config, new Config($shibConfig));
+            : new MultiIdPConfigurationLoader($config, $shibConfig);
         $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
             $loader,
@@ -142,7 +142,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
         $obj->setDbServiceManager($this->getLiveDbServiceManager());
-        $obj->setConfig($config);
+        $obj->setConfig(new Config($config));
         return $obj;
     }
 
