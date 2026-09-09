@@ -129,7 +129,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
         $configSectionName = $settings[2] ?? 'ReShare';
 
         // Read config file
-        $configSection = $this->config[$configSectionName];
+        $configSection = $this->config[$configSectionName] ?? [];
         if ($configSection) {
             $this->resultsBaseUrl = $configSection['results_base_url'];
             $this->recordBaseUrl = $configSection['record_base_url'];
