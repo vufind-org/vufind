@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper;
 
 use Exception;
 use Laminas\View\Helper\InlineScript;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTest\Feature\ViewTrait;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
