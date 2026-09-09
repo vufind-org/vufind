@@ -12,7 +12,7 @@
       $this->searchClassId = $params->getSearchClassId();
     } else {
       $params = null;
-      $this->searchClassId ??= $this->config()->get('config')->Site->defaultSearchBackend
+      $this->searchClassId ??= $this->config()->getArray('config')['Site']['defaultSearchBackend']
         ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
@@ -228,7 +228,7 @@
           echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '">';
         }
         /* Load hidden limit preference from Session */
-        if (!empty($lastLimit)) {
+        if (!empty($lastLimit) && $lastLimit !== $options->getDefaultLimit()) {
           echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
         }
         if (

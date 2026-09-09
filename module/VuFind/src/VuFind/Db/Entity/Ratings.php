@@ -122,7 +122,7 @@ class Ratings implements RatingsEntityInterface
     /**
      * Get user.
      *
-     * @return ?UserEntityInterface;
+     * @return ?UserEntityInterface
      */
     public function getUser(): ?UserEntityInterface
     {

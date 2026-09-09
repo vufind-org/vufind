@@ -56,11 +56,23 @@ class LoginAction extends AbstractTemplateRenderingAction
      *
      * @param AuthManager $authManager Authentication manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected AuthManager $authManager,
     ) {
         parent::__construct();
+    }
+
+    /**
+     * Initialize the action.
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+        // Default to false rather than null because we don't want a default setting to override the action's
+        // accessibility and break the login process!
+        $this->accessPermission = false;
     }
 
     /**

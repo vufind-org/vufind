@@ -32,6 +32,7 @@ namespace VuFind\Action\ShortLink;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
@@ -97,7 +98,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
      */
     protected function redirectViaHttp($url): ResponseInterface
     {
-        return $this->getRedirectResponse($this->response, $url);
+        return $this->getHelper(RedirectHelper::class)->redirectToUrl($this->response, $url);
     }
 
     /**

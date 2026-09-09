@@ -50,7 +50,6 @@ class DateTime
      * @param \VuFind\Date\Converter $converter Date converter
      * @param Translate              $translate Translate view helper
      */
-    #[Autowire]
     public function __construct(
         protected \VuFind\Date\Converter $converter,
         #[Autowire(container: 'ViewHelperManager')]

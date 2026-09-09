@@ -65,7 +65,7 @@ class SearchResultsBulkAction extends AbstractCartAction
         // from a previous instance of this action (for example, because of a login screen), or if we have an external
         // site in the referer, we should ignore that!
         $referer = $request->getHeader('Referer')[0] ?? '';
-        $bulk = $this->getUrlFromRoute('cart-searchresultsbulk');
+        $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
         if ($referer && $this->getHelper(UrlHelper::class)->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referer;
         }

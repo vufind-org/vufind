@@ -71,6 +71,7 @@
           <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
           <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
           <?php if ($setParams = $current['setQueryParams'] ?? null): ?> data-click-set-query-params="<?=$this->escapeHtmlAttr(http_build_query($setParams))?>"<?php endif; ?>
+          <?php if ($current['selected'] ?? false): ?> aria-current="true"<?php endif; ?>
           rel="nofollow"
         >
           <span><?=$this->transEsc($current['label']) ?></span>

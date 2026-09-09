@@ -36,7 +36,7 @@ use Throwable;
 use VuFind\ActionHelper\HelperInterface;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
-use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -49,7 +49,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractAction implements ActionInterface
+abstract class AbstractAction implements ActionInterface, AccessPermissionInterface
 {
     /**
      * Current request.
@@ -87,21 +87,21 @@ abstract class AbstractAction implements ActionInterface
     protected ?SessionSettings $sessionSettings = null;
 
     /**
-     * Permission that must be granted to access this module (false for no restriction, null to use configured default
+     * Permission that must be granted to access this action (false for no restriction, null to use configured default
      * (which is usually the same as false)).
      *
-     * @var string|bool|null
+     * @var string|false|null
      */
-    protected $accessPermission = null;
+    protected string|false|null $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through permissionBehavior.ini). Valid values are
-     * 'promptLogin' and 'exception'. Leave at null to use the defaultDeniedControllerBehavior set in
+     * 'promptLogin' and 'exception'. Leave at null to use the defaultDeniedActionBehavior set in
      * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var ?string
      */
-    protected $accessDeniedBehavior = null;
+    protected ?string $accessDeniedBehavior = null;
 
     /**
      * Constructor.
@@ -151,6 +151,60 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Get access permission.
+     *
+     * @return string|false|null
+     *
+     * @see AbstractAction::$accessPermission
+     */
+    public function getAccessPermission(): string|false|null
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Set access permission.
+     *
+     * @param string|false|null $permission Permission to require
+     *
+     * @return static
+     *
+     * @see AbstractAction::$accessPermission
+     */
+    public function setAccessPermission(string|false|null $permission): static
+    {
+        $this->accessPermission = $permission;
+        return $this;
+    }
+
+    /**
+     * Get access denied behavior.
+     *
+     * @return ?string
+     *
+     * @see AbstractAction::$accessDeniedBehavior
+     */
+    public function getAccessDeniedBehavior(): ?string
+    {
+        return $this->accessDeniedBehavior;
+    }
+
+    /**
+     * Set access denied behavior.
+     *
+     * @param ?string $behavior Access denied behavior
+     *
+     * @return static
+     *
+     * @see AbstractAction::$accessDeniedBehavior
+     */
+    public function setAccessDeniedBehavior(?string $behavior): static
+    {
+        $this->accessDeniedBehavior = $behavior;
+        return $this;
+    }
+
+    /**
      * Invoke the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -164,10 +218,16 @@ abstract class AbstractAction implements ActionInterface
     ): ResponseInterface {
         $this->request = $request;
         $this->response = $response;
+
         try {
+            if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
+                return $actionConfigResponse;
+            }
+
             if ($accessDeniedResponse = $this->validateAccessPermission()) {
                 return $accessDeniedResponse;
             }
+
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -182,6 +242,25 @@ abstract class AbstractAction implements ActionInterface
     protected function init(): void
     {
         // This function is called after constructor for any initialization required.
+    }
+
+    /**
+     * Check that everything is in order for the action to be executed.
+     *
+     * This method is executed in the very beginning of the action invocation before any permission checks etc.
+     * It is meant for technical checks such as route-based configuration being correctly applied.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
     }
 
     /**
@@ -305,36 +384,6 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
-     * Get a 302 redirect response.
-     *
-     * @param ResponseInterface $response Response
-     * @param string            $url      Target URL
-     *
-     * @return ResponseInterface
-     */
-    protected function getRedirectResponse(ResponseInterface $response, string $url): ResponseInterface
-    {
-        return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
-    }
-
-    /**
-     * Generate a URL given the name of a route.
-     *
-     * @param string $name        Name of the route
-     * @param array  $routeParams Path parameters
-     * @param array  $queryParams Query parameters
-     *
-     * @return string Url For the link href attribute
-     */
-    protected function getUrlFromRoute(
-        string $name,
-        array $routeParams = [],
-        array $queryParams = []
-    ): string {
-        return $this->getRouteHelper()->getUrlFromRoute($name, $routeParams, $queryParams);
-    }
-
-    /**
      * Get route helper.
      *
      * @return RouteHelper
@@ -367,8 +416,61 @@ abstract class AbstractAction implements ActionInterface
      */
     public function validateAccessPermission(): ?ResponseInterface
     {
-        // If there is an access permission set for this action, pass it through the permission helper, and if the
-        // helper returns a custom response, use that instead of the normal behavior.
+        $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
+        $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
+        // If controllerAccess is defined, make sure it's not configured for a controller that no longer exists,
+        // and any controllerAccess['*'] matches actionAccess['*']:
+        if ($controllerAccess = $permissionBehaviorConfig['global']['controllerAccess'] ?? null) {
+            foreach ($controllerAccess as $controller => $permission) {
+                // TODO: remove the conditions when controllers are no longer supported.
+                if ('*' === $controller) {
+                    if ($permission !== ($actionPermissions['*'] ?? null)) {
+                        throw new ConfigException(
+                            "actionAccess['*'] and controllerAccess['*'] must match in permissionBehavior configuration"
+                        );
+                    }
+                } elseif (!class_exists($controller)) {
+                    throw new ConfigException(
+                        "permissionBehavior configuration defines controllerAccess for controller '$controller'"
+                        . ' that does not exist. Please review configuration and replace controllerAccess with'
+                        . ' actionAccess where appropriate.'
+                    );
+                }
+            }
+        }
+
+        // If the current permission is null (as opposed to false or a string), that means it has no internally
+        // configured default; thus, we should apply the default value:
+        if (null === $this->accessPermission) {
+            if ($actionPermissions) {
+                // Iterate through parent classes until we find the most specific class access permission defined
+                // (if any):
+                $class = static::class;
+                $categoryPermission = null;
+                do {
+                    if (null !== ($classPermission = $actionPermissions[$class] ?? null)) {
+                        $this->accessPermission = $classPermission;
+                        break;
+                    }
+
+                    // Check for action category specific configuration:
+                    if (null === $categoryPermission) {
+                        $categoryName = preg_replace('/\\\\Action\\\\(.+?)\\\\.*/', '\\Action\\\$1', $class);
+                        $categoryPermission = $actionPermissions[$categoryName] ?? null;
+                    }
+
+                    $class = get_parent_class($class);
+                } while ($class);
+
+                $this->accessPermission ??= $categoryPermission;
+            }
+
+            // Check for a default permission if a more specific permission was not found above:
+            $this->accessPermission ??= $actionPermissions['*'] ?? null;
+        }
+
+        // If there is an access permission set for this action, pass it through to the permission helper and return the
+        // response:
         if ($this->accessPermission) {
             return $this->getHelper(PermissionHelper::class)
                 ->check($this->request, $this->response, $this->accessPermission, $this->accessDeniedBehavior);

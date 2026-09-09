@@ -31,6 +31,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
+use Iterator;
 
 /**
  * Test class for holds-related functionality.
@@ -50,6 +51,20 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
+     * Sample record titles.
+     *
+     * @var array
+     */
+    protected array $sampleRecordTitles = [
+        'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
+        'Rational living.',
+        'Psychotherapy in private practice.',
+        'Journal of quantitative criminology.',
+        'The Journal of parapsychology.',
+        'Journal of mathematics and mechanics.',
+    ];
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -62,17 +77,42 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing ILS functions.
      *
+     * @param bool $pagination If pagination on holds is enabled
+     *
      * @return array
      */
-    public function getConfigIniOverrides(): array
+    public function getConfigIniOverrides(bool $pagination = false): array
     {
         return [
             'Catalog' => [
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',
                 'title_level_holds_mode' => 'driver',
+                'holds_page_size' => $pagination ? 2 : 0,
             ],
         ];
+    }
+
+    /**
+     * Get Demo.ini override settings for testing myHolds with multiple items.
+     *
+     * @param int  $itemCount Number of items to be set up
+     * @param bool $ilsPaging If ils paging should be enabled
+     *
+     * @return array
+     */
+    public function getDemoIniOverridesForTestsWithMultipleItems(int $itemCount = 1, bool $ilsPaging = false): array
+    {
+        $config = $this->getDemoIniOverrides();
+        // first two records are already set
+        for ($i = 3; $i <= $itemCount; $i++) {
+            $config['StaticHoldings']['testsample' . $i] = json_encode([$this->getFakeItem()]);
+        }
+        if ($ilsPaging) {
+            $config['Holds']['paging'] = true;
+            $config['Holds']['max_page_size'] = 2;
+        }
+        return $config;
     }
 
     /**
@@ -152,6 +192,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndSetValue($page, $selector, $value);
         }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
+        // Ensure that the page has loaded and the "place hold" dialog is no longer present:
+        $this->waitForPageLoad($page);
     }
 
     /**
@@ -448,61 +490,42 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling a request.
+     * Data provider for tests with multiple items and pagination.
      *
-     * @param Element $page Page element.
-     * @param string  $type Request type being tested.
-     *
-     * @return void
+     * @return Iterator
      */
-    protected function cancelProcedure(Element $page, string $type): void
+    public static function multipleItemsAndPaginationTestProvider(): Iterator
     {
-        // Test that control is disabled upon empty selection
-        $this->clickCss($page, '#cancelSelected');
-        $this->unFindCss($page, '.btn-group.open');
-
-        // Test "cancel all" button -- first make sure item is there before
-        // cancel is pushed:
-        $this->assertSame(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCssAndGetText($page, 'a.title')
-        );
-
-        // Click cancel but bail out with no... item should still be there.
-        $this->clickCss($page, '#cancelAll');
-        $this->clickButtonGroupLink($page, 'No');
-        $this->assertSame(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCssAndGetText($page, 'a.title')
-        );
-
-        // Now cancel for real:
-        $this->clickCss($page, '#cancelAll');
-        $this->clickButtonGroupLink($page, 'Yes');
-        $this->assertSame(
-            '1 request(s) were successfully canceled',
-            $this->findCssAndGetText($page, '.alert.alert-success')
-        );
-        $this->unFindCss($page, 'a.title');
+        yield 'single' => [false, false, false];
+        yield 'multiple' => [true, false, false];
+        yield 'single-with-pagination' => [false, true, false];
+        yield 'multiple-with-pagination' => [true, true, false];
+        yield 'single-with-ils-pagination' => [false, true, true];
+        yield 'multiple-with-ils-pagination' => [true, true, true];
     }
 
     /**
      * Test canceling a hold.
      *
+     * @param bool $testWithMultipleItems If testing with multiple items
+     * @param bool $pagination            If pagination on holds is enabled
+     * @param bool $ilsPaging             If ILS paging should be enabled
+     *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
-    public function testCancelHold(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
+    public function testCancelHold(bool $testWithMultipleItems, bool $pagination, bool $ilsPaging): void
     {
+        $itemCount = $testWithMultipleItems ? 6 : 1;
+
         // Turn on "cancel holds" in addition to normal defaults:
-        $config = $this->getConfigIniOverrides();
+        $config = $this->getConfigIniOverrides($pagination);
         $config['Catalog']['cancel_holds_enabled'] = 1;
         $this->changeConfigs(
             [
                 'config' => $config,
-                'Demo' => $this->getDemoIniOverrides(),
+                'Demo' => $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging),
             ]
         );
 
@@ -514,20 +537,175 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
-        // Place the hold:
+        // Place hold on first items
+        for ($i = 2; $i <= $itemCount; $i++) {
+            $this->placeHold($page);
+            $this->closeLightbox($page);
+            $page = $this->gotoRecordById('testsample' . $i);
+        }
+
+        // Place the hold on last item:
         $this->placeHoldAndGoToHoldsScreen($page);
 
-        // Test canceling the hold:
-        $this->cancelProcedure($page, 'holds');
+        if (!$testWithMultipleItems) {
+            // Test canceling one hold:
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->unFindCss($page, '.pagination');
+
+            // Test "cancel all" button -- first make sure item is there before
+            // cancel is pushed:
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+
+            // Click cancel but bail out with no... item should still be there.
+            $this->clickCss($page, '#cancelAll');
+            $this->clickButtonGroupLink($page, 'No');
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+
+            // Now cancel for real:
+            $this->clickCss($page, '#cancelAll');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+            $this->unFindCss($page, 'a.title');
+        } elseif (!$pagination) {
+            // Test canceling multiple items without pagination:
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->unFindCss($page, '.pagination');
+
+            for ($i = 0; $i < $itemCount; $i++) {
+                $this->assertSame(
+                    $this->sampleRecordTitles[$i],
+                    $this->findCssAndGetText($page, 'a.title', index: $i)
+                );
+            }
+
+            $this->clickCss($page, '.checkbox-select-item', index: 2);
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $reducedRecords = $this->sampleRecordTitles;
+            unset($reducedRecords[2]);
+            for ($i = 0; $i < $itemCount - 1; $i++) {
+                $this->assertSame(
+                    array_values($reducedRecords)[$i],
+                    $this->findCssAndGetText($page, 'a.title', index: $i)
+                );
+            }
+
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '5 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+            $this->unFindCss($page, 'a.title');
+        } else {
+            // Test canceling multiple items with pagination:
+            $this->assertStringStartsWith(
+                'Showing 1 - 2 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[1],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+
+            $this->clickCss($page, '.page-next .page-link');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[2],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[3],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+
+            $this->clickCss($page, '.checkbox-select-item', index: 1);
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 5 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[2],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[4],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '2 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $this->assertStringStartsWith(
+                'Showing 3 - 3 of 3 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[5],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->unFindCss($page, 'a.title', index: 1);
+            if ($ilsPaging) {
+                $this->unFindCss($page, '#cancelAll');
+            } else {
+                $this->clickCss($page, '#cancelAll');
+                $this->clickButtonGroupLink($page, 'Yes');
+                $this->assertSame(
+                    '3 request(s) were successfully canceled',
+                    $this->findCssAndGetText($page, '.alert.alert-success')
+                );
+                $this->unFindCss($page, 'a.title');
+            }
+        }
     }
 
     /**
      * Create a frozen hold and navigate to the holds list. Return the page
      * object that was set up during the process.
      *
+     * @param int $itemCount Number of items to place holds on
+     *
      * @return DocumentElement
      */
-    protected function setUpFrozenHold(): DocumentElement
+    protected function setUpFrozenHold(int $itemCount = 1): DocumentElement
     {
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
@@ -540,6 +718,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Place the hold:
         $futureDate = date('m-d-Y', strtotime('+2 days'));
         $expectedDate = date('m-d-Y', strtotime('+1 day'));
+
+        // Place hold on first items
+        for ($i = 2; $i <= $itemCount; $i++) {
+            $this->placeHold($page, ['#startDate' => $futureDate]);
+            $this->closeLightbox($page);
+            $page = $this->gotoRecordById('testsample' . $i);
+        }
+
         $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
 
         // Confirm that the hold is frozen, as expected (note that the expected
@@ -585,21 +771,28 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating, and then editing, a frozen hold.
      *
+     * @param bool $testWithMultipleItems If testing with multiple items
+     * @param bool $pagination            If pagination on holds is enabled
+     * @param bool $ilsPaging             If ils paging should be enabled
+     *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
-    public function testFrozenHoldEditing(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
+    public function testFrozenHoldEditing(bool $testWithMultipleItems, bool $pagination, bool $ilsPaging): void
     {
-        $demoConfig = $this->getDemoIniOverrides();
+        $itemCount = $testWithMultipleItems ? 6 : 1;
+
+        $demoConfig = $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging);
         $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(),
+                'config' => $this->getConfigIniOverrides($pagination),
                 'Demo' => $demoConfig,
             ]
         );
 
-        $page = $this->setUpFrozenHold();
+        $page = $this->setUpFrozenHold($itemCount);
 
         // Confirm that no cancel buttons appear, since they are not configured:
         $this->unFindCss($page, '#cancelSelected');
@@ -608,6 +801,16 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that there are edit controls on the page:
         $this->findCss($page, '#update_selected');
 
+        if ($pagination && $itemCount > 1) {
+            $this->clickCss($page, '.page-next .page-link');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+        }
+
+        // Test editing one hold
         // Open the edit dialog box using the link:
         $this->clickCss($page, '.hold-edit');
 
@@ -619,9 +822,43 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that the values have changed
         $this->waitForPageLoad($page);
         $this->assertNotFalse(strstr($page->getContent(), 'Campus A'));
-        $this->assertFalse(
-            strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
+        $expectedFrozenCount = $itemCount - 1;
+        if ($pagination && $itemCount > 1) {
+            $expectedFrozenCount = 1;
+        }
+        $this->assertSame(
+            $expectedFrozenCount,
+            substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
         );
+
+        if ($itemCount > 1) {
+            if ($pagination) {
+                $this->clickCss($page, '.page-next .page-link');
+                $this->waitForPageLoad($page);
+                $this->assertStringStartsWith(
+                    'Showing 5 - 6 of 6 Items',
+                    trim($this->findCssAndGetText($page, '.search-stats'))
+                );
+                $this->assertSame(
+                    2,
+                    substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
+                );
+            }
+
+            // Edit all holds on page
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#update_selected');
+
+            // Release the hold and change the pickup location
+            $this->findCssAndSetValue($page, '#frozen', '0');
+            $this->findCss($page, '#modal .btn.btn-primary')->click();
+            $this->waitForPageLoad($page);
+
+            $this->assertSame(
+                0,
+                substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
+            );
+        }
     }
 
     /**

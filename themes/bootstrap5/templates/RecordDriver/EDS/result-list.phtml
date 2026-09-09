@@ -5,7 +5,6 @@
   $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
   $cover = $coverDetails['html'];
-  $edsConfig = $this->config()->get('EDS');
   $supportsRtac = $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled();
 ?>
 <?php
@@ -66,17 +65,14 @@
         </div>
       <?php endforeach; ?>
 
-      <?php if (
-        $this->driver->isPlaceholder()
-        || ($this->params->getOptions()->showRestrictedViewWarning('result_list_entry') && $this->driver->isRestrictedView())
-        ): ?>
+      <?php if ($this->driver->isPlaceholder()): ?>
+        <div class="resultItemLine1">
+          <?=$this->render('error/guestRestriction.phtml')?>
+        </div>
+      <?php elseif ($this->params->getOptions()->showRestrictedViewWarning('result_list_entry') && $this->driver->isRestrictedView()): ?>
         <div class="resultItemLine1">
           <p>
-            <?=$this->transEsc(
-              $this->driver->isPlaceholder()
-                ? 'This result is not displayed to guests'
-                : 'This result has a restricted view for guests'
-            )?>
+            <?=$this->transEsc('This result has a restricted view for guests')?>
             <br>
             <?=$this->render('error/loginForAccess.phtml')?>
           </p>

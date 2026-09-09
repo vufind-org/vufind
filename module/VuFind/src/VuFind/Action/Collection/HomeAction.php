@@ -34,6 +34,7 @@ namespace VuFind\Action\Collection;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Record\AbstractRecordAction;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\RecordTab\TabManager;
 
 /**
@@ -76,8 +77,12 @@ class HomeAction extends AbstractRecordAction
                     if ($sid = $this->searchMemory->getCurrentSearchId()) {
                         $queryParams = compact('sid');
                     }
-                    $collectionUrl = $this->getUrlFromRoute($collectionRoute, $routeParams, $queryParams);
-                    return $this->getRedirectResponse($response, $collectionUrl);
+                    return $this->getHelper(RedirectHelper::class)->redirectToRoute(
+                        $response,
+                        $collectionRoute,
+                        $routeParams,
+                        $queryParams
+                    );
                 }
             }
         }

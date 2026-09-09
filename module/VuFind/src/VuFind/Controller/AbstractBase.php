@@ -56,6 +56,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\FlashMessenger\FlashMessengerInterface;
+use VuFind\View\GlobalsContainer;
 
 use function intval;
 use function is_object;
@@ -97,7 +98,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Behavior when access is denied (used unless overridden through
      * permissionBehavior.ini). Valid values are 'promptLogin' and 'exception'.
-     * Leave at null to use the defaultDeniedControllerBehavior set in
+     * Leave at null to use the defaultDeniedActionBehavior set in
      * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var string
@@ -218,9 +219,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $query = $lightboxParentUrl->getQueryAsArray();
         unset($query['lightboxChild']);
         $lightboxParentUrl->setQuery($query);
-        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
+        $globals = $this->getService(GlobalsContainer::class);
+        $globals['lightboxParent'] = $lightboxParentUrl->toString();
         if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
-            $this->layout()->lightboxChild = $lightboxChild;
+            $globals['lightboxChild'] = $lightboxChild;
         }
         return new ViewModel($params);
     }

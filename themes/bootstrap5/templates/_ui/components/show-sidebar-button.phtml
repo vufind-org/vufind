@@ -18,10 +18,11 @@
     if ($side) {
         $aAttrs['class'] .= ' icon-link';
         $aAttrs['data-toggle'] = 'vufind-offcanvas';
+        $rtl = $this->globals()['rtl'];
         if ($side === 'left') {
-            $iconBefore = $this->icon($this->layout()->rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon');
+            $iconBefore = $this->icon($rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon');
         } else {
-            $iconAfter = $this->icon($this->layout()->rtl ? 'offcanvas-show-left' : 'offcanvas-show-right', 'icon-link__icon');
+            $iconAfter = $this->icon($rtl ? 'offcanvas-show-left' : 'offcanvas-show-right', 'icon-link__icon');
         }
         $spanAttrs = [
             'class' => 'icon-link__label',

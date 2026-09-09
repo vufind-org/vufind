@@ -30,7 +30,6 @@
 namespace VuFind\Search\Solr;
 
 use Closure;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryInterface;
@@ -90,15 +89,15 @@ class SpellingProcessor
     /**
      * Constructor.
      *
-     * @param ?Config   $config     Spelling configuration (optional)
+     * @param ?array    $config     Spelling configuration (optional)
      * @param ?callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct(?Config $config = null, ?callable $normalizer = null)
+    public function __construct(?array $config = null, ?callable $normalizer = null)
     {
-        $this->spellingLimit = $config->limit ?? 3;
-        $this->spellSkipNumeric = $config->skip_numeric ?? true;
-        $this->expand = $config->expand ?? true;
-        $this->phrase = $config->phrase ?? false;
+        $this->spellingLimit = $config['limit'] ?? 3;
+        $this->spellSkipNumeric = $config['skip_numeric'] ?? true;
+        $this->expand = $config['expand'] ?? true;
+        $this->phrase = $config['phrase'] ?? false;
         $this->normalizer = ($normalizer !== null) ? $normalizer(...) : null;
     }
 

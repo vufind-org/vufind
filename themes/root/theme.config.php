@@ -71,6 +71,7 @@ return [
             'feedback' => 'VuFind\View\Helper\Root\Feedback',
             'flashmessages' => 'VuFind\View\Helper\Root\Flashmessages',
             'geocoords' => 'VuFind\View\Helper\Root\GeoCoords',
+            'globals' => 'VuFind\View\Helper\Root\Globals',
             'googleanalytics' => 'VuFind\View\Helper\Root\GoogleAnalytics',
             'googleTagManager' => 'VuFind\View\Helper\Root\GoogleTagManager',
             'helpText' => 'VuFind\View\Helper\Root\HelpText',

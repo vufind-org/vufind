@@ -95,7 +95,7 @@ class PermissionHelperTest extends TestCase
             ->willReturnCallback(fn ($perm) => isset($permissions[$perm]));
 
         $permissionDeniedManager = $this->createMock(PermissionDeniedManager::class);
-        $permissionDeniedManager->method('getDeniedControllerBehavior')
+        $permissionDeniedManager->method('getDeniedActionBehavior')
             ->willReturn(['action' => $accessDeniedBehavior, 'value' => 'Messsage!']);
 
         $forceLoginResponse = new Response(302, ['Location' => '/MyResearch/Home']);

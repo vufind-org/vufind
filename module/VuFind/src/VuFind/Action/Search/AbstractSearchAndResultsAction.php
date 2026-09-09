@@ -479,7 +479,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     {
         // Only save search URL if the property tells us to...
         if ($this->rememberSearch) {
-            $searchUrl = $this->routeHelper->getUrlFromRoute(
+            $searchUrl = $this->getRouteHelper()->getUrlFromRoute(
                 $results->getOptions()->getSearchAction(),
                 $results->getUrlQuery()->getParamArray()
             );
@@ -574,7 +574,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
                 'tokens' => ['%%page%%' => $page],
             ]
         );
-        return $this->getRedirectResponse($this->response, '?' . http_build_query($request));
+        return $this->getHelper(RedirectHelper::class)
+            ->redirectToUrl($this->response, '?' . http_build_query($request));
     }
 
     /**

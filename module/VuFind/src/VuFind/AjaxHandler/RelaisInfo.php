@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * Relais: Check if logged-in patron can order an item.
@@ -61,7 +62,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
@@ -69,7 +70,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($allowLoan == false) {
             return $this->formatResponse(
                 'AllowLoan was false',
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
 

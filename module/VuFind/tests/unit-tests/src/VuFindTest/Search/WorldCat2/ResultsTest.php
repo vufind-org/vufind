@@ -156,8 +156,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
-            $search ?? $this->createMock(\VuFindSearch\Service::class),
-            $loader ?? $this->createMock(Loader::class)
+            $search ?? $this->createStub(\VuFindSearch\Service::class),
+            $loader ?? $this->createStub(Loader::class)
         );
     }
 }

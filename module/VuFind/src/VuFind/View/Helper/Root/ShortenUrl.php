@@ -48,8 +48,8 @@ class ShortenUrl
      *
      * @param UrlShortenerInterface $shortener URL shortener
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire()]
         protected UrlShortenerInterface $shortener
     ) {
     }

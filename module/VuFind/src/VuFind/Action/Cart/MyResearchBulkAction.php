@@ -63,9 +63,10 @@ class MyResearchBulkAction extends AbstractCartAction
         // We came in from the MyResearch section -- let's remember which list (if any) we came from so we can redirect
         // there when we're done:
         $listID = $this->getPostParam('listID');
+        $routeHelper = $this->getRouteHelper();
         $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = empty($listID)
-            ? $this->getUrlFromRoute('myresearch-favorites')
-            : $this->getUrlFromRoute('userList', ['id' => $listID]);
+            ? $routeHelper->getUrlFromRoute('myresearch-favorites')
+            : $routeHelper->getUrlFromRoute('userList', ['id' => $listID]);
 
         // Now forward to the requested controller/action:
         $action = null;

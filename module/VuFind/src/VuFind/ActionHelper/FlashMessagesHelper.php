@@ -48,7 +48,7 @@ class FlashMessagesHelper implements HelperInterface
      *
      * @param FlashMessenger $flashMessenger Flash messenger
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected FlashMessenger $flashMessenger,
     ) {

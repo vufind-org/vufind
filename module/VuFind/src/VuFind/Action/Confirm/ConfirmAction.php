@@ -34,7 +34,7 @@ namespace VuFind\Action\Confirm;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Record\AbstractRecordAction;
+use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\FlashMessagesHelper;
 
 use function is_array;
@@ -50,7 +50,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ConfirmAction extends AbstractRecordAction
+class ConfirmAction extends AbstractTemplateRenderingAction
 {
     /**
      * Confirm an operation.

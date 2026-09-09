@@ -62,7 +62,7 @@ class ProcessorAction extends AbstractCartAction
     ): ResponseInterface {
         // We came in from the cart -- let's remember this so we can redirect there when we're done:
         $session = $this->getHelper(BulkActionHelper::class)->getCartFollowupSession();
-        $session->url = $this->getUrlFromRoute('cart-home');
+        $session->url = $this->getRouteHelper()->getUrlFromRoute('cart-home');
 
         // Now forward to the requested action:
         return $this->getHelper(ForwardHelper::class)

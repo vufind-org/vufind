@@ -95,6 +95,16 @@ $config = [
                     ],
                 ],
             ],
+            'devtools-translate' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/translate',
+                    'defaults' => [
+                        'controller' => 'DevTools',
+                        'action'     => 'Translate',
+                    ],
+                ],
+            ],
         ],
     ],
 ];

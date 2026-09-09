@@ -34,9 +34,9 @@ namespace VuFind\Action\Cart;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\BulkActionHelper;
+use VuFind\ActionHelper\RedirectHelper;
 
 use function count;
-use function is_array;
 
 /**
  * Cart print action.
@@ -66,9 +66,9 @@ class PrintCartAction extends AbstractCartAction
         $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
         $ids = $bulkActionHelper->getSelectedIds($request);
 
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             return $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')
-                ?? $this->getRedirectResponse($response, $this->getUrlFromRoute('Cart/Home'));
+                ?? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'Cart/Home');
         }
 
         // Check if id limit is exceeded
@@ -85,7 +85,7 @@ class PrintCartAction extends AbstractCartAction
             return 'id[]=' . urlencode($i);
         };
         $query = '?print=true&' . implode('&', array_map($callback, $ids));
-        $url = $this->getUrlFromRoute('records-home') . $query;
-        return $this->getRedirectResponse($response, $url);
+        $url = $this->getRouteHelper()->getUrlFromRoute('records-home') . $query;
+        return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
     }
 }

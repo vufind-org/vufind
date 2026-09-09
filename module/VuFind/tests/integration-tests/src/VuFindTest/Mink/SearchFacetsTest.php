@@ -32,6 +32,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Generator;
 use VuFindTest\Feature\RetryClickTrait;
 use VuFindTest\Feature\SearchFacetFilterTrait;
 use VuFindTest\Feature\SearchLimitTrait;
@@ -442,6 +443,52 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .js-facet-item.active');
         // facet removed
         $this->unFindCss($page, $this->activeFilterSelector);
+    }
+
+    /**
+     * Data provider for testBypassingFacetLightbox().
+     *
+     * @return Generator
+     */
+    public static function bypassFacetLightboxProvider(): \Generator
+    {
+        yield ['/Search'];
+        yield ['/Search2'];
+    }
+
+    /**
+     * Test bypassing the facet lightbox and opening the target facet list URL directly.
+     *
+     * @param string $searchPath Search path to test (must be /Search or /Search2, since the test is built
+     * on assumptions about the Solr index shared by these two paths in the test configuration).
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('bypassFacetLightboxProvider')]
+    public function testBypassingFacetLightbox(string $searchPath): void
+    {
+        $limit = 4;
+        $key = $searchPath === '/Search' ? 'facets' : 'Search2';
+        $this->changeConfigs(
+            [
+                $key => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => $limit,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc', path: $searchPath);
+        $link = $this->findCss($page, '#side-collapse-genre_facet a.more-facets');
+        $url = $this->getVuFindUrl($link->getAttribute('href'), relative: false);
+        $this->assertStringContainsString($searchPath, $url);
+        $this->getMinkSession()->visit($url);
+        $page->clickLink('Weird IDs');
+        $this->assertEquals(
+            'Applied Filters: Genre: Remove Filter Weird IDs',
+            $this->findCss($page, '.filters')->getText()
+        );
     }
 
     /**
