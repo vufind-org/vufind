@@ -149,10 +149,7 @@ class OverdriveConnector implements
      * checkout etc.).
      * This is stored and retrieved from the session.
      *
-     * @       $this->mainConfig = $mainConfig;
-     * $this->recordConfig = $recordConfig;
-     * $this->ilsAuth = $ilsAuth;
-     * $this->sessionContainer = $sessionContainer;param bool $refresh Force a check instead of checking cache
+     * @param bool $refresh Force a check instead of checking cache
      *
      * @return object
      */
