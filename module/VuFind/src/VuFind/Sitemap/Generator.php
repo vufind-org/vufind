@@ -336,7 +336,7 @@ class Generator
 
             // Add a <sitemap /> group for a static sitemap file.
             // See sitemap.ini for more information on this option.
-            $indexSettings = $this->config['SitemapIndex'];
+            $indexSettings = $this->config['SitemapIndex'] ?? [];
             $baseSitemapFileNames = (array)($indexSettings['baseSitemapFileName'] ?? []);
             foreach ($baseSitemapFileNames as $baseSitemapFileName) {
                 // Is the value already a fully-formed URL? If so, use it as-is; otherwise,
