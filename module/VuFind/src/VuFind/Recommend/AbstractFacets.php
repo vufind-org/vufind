@@ -132,7 +132,7 @@ abstract class AbstractFacets implements RecommendInterface
      * @return void
      */
     protected function loadBooleanConfigs(
-        $config,
+        array $config,
         $allFacets,
         $section = 'Results_Settings'
     ) {
