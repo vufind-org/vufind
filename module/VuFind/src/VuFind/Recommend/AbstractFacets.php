@@ -137,17 +137,17 @@ abstract class AbstractFacets implements RecommendInterface
         $section = 'Results_Settings'
     ) {
         // Which facets are excludable?
-        if (isset($config['$section']['exclude'])) {
-            $this->excludableFacets = ($config['$section']['exclude'] === '*')
+        if (isset($config[$section]['exclude'])) {
+            $this->excludableFacets = ($config[$section]['exclude'] === '*')
                 ? $allFacets
-                : array_map('trim', explode(',', $config['$section']['exclude']));
+                : array_map('trim', explode(',', $config[$section]['exclude']));
         }
 
         // Which facets are ORed?
-        if (isset($config['$section']['orFacets'])) {
-            $this->orFacets = ($config['$section']['orFacets'] === '*')
+        if (isset($config[$section]['orFacets'])) {
+            $this->orFacets = ($config[$section]['orFacets'] === '*')
                 ? $allFacets
-                : array_map('trim', explode(',', $config['$section']['orFacets']));
+                : array_map('trim', explode(',', $config[$section]['orFacets']));
         }
     }
 }
