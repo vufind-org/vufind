@@ -155,9 +155,7 @@ class ContentPages extends AbstractGeneratorPlugin
     public function getUrls(): \Generator
     {
         $nonLanguageFiles = [];
-        $languages = isset($this->config['Languages'])
-            ? array_keys($this->config['Languages'])
-            : [];
+        $languages = array_keys($this->config['Languages'] ?? []);
         foreach ($this->includedFiles as $fileSpec) {
             $files = $this->themeInfo->findInThemes([$fileSpec['path'] . $fileSpec['pattern']]);
             // Check each file for language suffix and combine the files into a
