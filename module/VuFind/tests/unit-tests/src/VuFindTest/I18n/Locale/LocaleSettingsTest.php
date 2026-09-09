@@ -79,9 +79,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     {
         $settings = new LocaleSettings(
             [
-                    'Site' => ['language' => 'en'],
-                    'Languages' => ['en' => 'English'],
-                ]
+                'Site' => ['language' => 'en'],
+                'Languages' => ['en' => 'English'],
+            ]
         );
         $this->assertTrue($settings->browserLanguageDetectionEnabled());
         $this->assertSame(['en'], $settings->getFallbackLocales());
@@ -96,9 +96,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     {
         $settings = new LocaleSettings(
             [
-                    'Site' => ['language' => 'en', 'browserDetectLanguage' => 0],
-                    'Languages' => ['en' => 'English'],
-                ]
+                'Site' => ['language' => 'en', 'browserDetectLanguage' => 0],
+                'Languages' => ['en' => 'English'],
+            ]
         );
         $this->assertFalse($settings->browserLanguageDetectionEnabled());
     }
@@ -112,10 +112,10 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     {
         $settings = new LocaleSettings(
             [
-                    'Site' => ['language' => 'en'],
-                    'Languages' => ['en' => 'English', 'ar' => 'Arabic'],
-                    'LanguageSettings' => ['rtl_langs' => 'ar'],
-                ]
+                'Site' => ['language' => 'en'],
+                'Languages' => ['en' => 'English', 'ar' => 'Arabic'],
+                'LanguageSettings' => ['rtl_langs' => 'ar'],
+            ]
         );
         $this->assertFalse($settings->isRightToLeftLocale('en'));
         $this->assertTrue($settings->isRightToLeftLocale('ar'));
@@ -130,9 +130,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     {
         $settings = new LocaleSettings(
             [
-                    'Site' => ['language' => 'en'],
-                    'Languages' => ['en' => 'English'],
-                ]
+                'Site' => ['language' => 'en'],
+                'Languages' => ['en' => 'English'],
+            ]
         );
         $this->assertFalse($settings->isLocaleInitialized('en'));
         $settings->markLocaleInitialized('en');
@@ -356,9 +356,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     ): void {
         $settings = new LocaleSettings(
             [
-                    'Site' => ['language' => $default],
-                    'Languages' => $enabled,
-                ]
+                'Site' => ['language' => $default],
+                'Languages' => $enabled,
+            ]
         );
 
         $this->assertSame(
