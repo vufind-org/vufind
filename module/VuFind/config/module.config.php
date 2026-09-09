@@ -292,7 +292,6 @@ $config = [
             \VuFind\I18n\Locale\LocaleSettings::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
-            \VuFind\OAuth2\OAuth2ServerService::class => \VuFind\OAuth2\OAuth2ServerServiceFactory::class,
             \VuFind\Record\Router::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\SMS\SMSInterface::class => \VuFind\SMS\Factory::class,
             \VuFind\UrlShortener\UrlShortenerInterface::class => \VuFind\UrlShortener\ServiceFactory::class,
