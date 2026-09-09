@@ -141,7 +141,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
             // Confirm that required configuration is present
             $this->hasMinimumConfig = $this->resultsBaseUrl
                 && $this->recordBaseUrl
-                && $configSection['api_base_url'];
+                && ($configSection['api_base_url'] ?? null);
             if (!$this->hasMinimumConfig) {
                 $this->logError("Required configuration missing in '$configSectionName'
                     section of ConsortialVuFind.ini.");
