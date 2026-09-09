@@ -79,8 +79,7 @@ class TopFacets extends AbstractFacets
 
         // Load the desired facet information:
         $config = $this->configManager->getConfigArray($iniName);
-        $this->facets = isset($config[$mainSection])
-            ? $config[$mainSection] : [];
+        $this->facets = $config[$mainSection] ?? [];
 
         // Load other relevant settings:
         $this->baseSettings = [
