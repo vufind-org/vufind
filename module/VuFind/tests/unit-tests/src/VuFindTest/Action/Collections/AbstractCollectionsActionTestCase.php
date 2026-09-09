@@ -41,6 +41,8 @@ use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\Http\RouteHelper;
 use VuFind\I18n\Sorter;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results as SearchResults;
 use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
@@ -80,6 +82,8 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
      * @param array             $config        VuFind configuration
      * @param SearchService     $searchService Search service
      * @param HelperInterface[] $helpers       Extra action helpers
+     * @param ?SearchResults    $searchResults Search results returned by the results plugin manager (index browse)
+     * @param ?Sorter           $sorter        Sorter (defaults to a stub; pass a real one when sorting matters)
      *
      * @return AbstractAction
      */
@@ -87,13 +91,21 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
         string $class,
         array $config,
         SearchService $searchService,
-        array $helpers = []
+        array $helpers = [],
+        ?SearchResults $searchResults = null,
+        ?Sorter $sorter = null
     ): AbstractAction {
+        if (null !== $searchResults) {
+            $resultsManager = $this->createMock(SearchResultsPluginManager::class);
+            $resultsManager->method('get')->willReturn($searchResults);
+        } else {
+            $resultsManager = $this->createStub(SearchResultsPluginManager::class);
+        }
         $action = new $class(
             $config,
             $searchService,
-            $this->createStub(SearchResultsPluginManager::class),
-            $this->createStub(Sorter::class),
+            $resultsManager,
+            $sorter ?? $this->createStub(Sorter::class),
         );
         $action->setHelperPluginManager($this->getHelperPluginManager($helpers));
         $action->setRouteHelper($this->createStub(RouteHelper::class));
@@ -168,6 +180,26 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
             }
         );
         return $searchService;
+    }
+
+    /**
+     * Get a mock search results object that returns the hierarchy_browse facet values, for the index browse path.
+     *
+     * @param array $facetList  Facet entries to return from getFullFieldFacets()
+     * @param array $filterList Filter list to return from getParams()->getFilterList()
+     *
+     * @return SearchResults
+     */
+    protected function getMockSearchResults(array $facetList, array $filterList = []): SearchResults
+    {
+        $params = $this->createMock(Params::class);
+        $params->method('getFilterList')->willReturn($filterList);
+        $results = $this->createMock(SearchResults::class);
+        $results->method('getParams')->willReturn($params);
+        $results->method('getFullFieldFacets')->willReturn(
+            ['hierarchy_browse' => ['data' => ['list' => $facetList]]]
+        );
+        return $results;
     }
 
     /**
