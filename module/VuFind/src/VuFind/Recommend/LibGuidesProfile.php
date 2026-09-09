@@ -30,8 +30,10 @@
 namespace VuFind\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
+use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
+use function intval;
 use function is_string;
 use function strlen;
 
@@ -103,21 +105,21 @@ class LibGuidesProfile implements
      * Constructor.
      *
      * @param LibGuides    $libGuides LibGuides API connection
-     * @param array        $config    LibGuides API configuration object
+     * @param Config       $config    LibGuides API configuration object
      * @param CacheAdapter $cache     Object cache
      */
     public function __construct(
         LibGuides $libGuides,
-        array $config,
+        Config $config,
         CacheAdapter $cache
     ) {
         $this->libGuides = $libGuides;
         $this->setCacheStorage($cache);
 
         // Cache the data related to profiles for up to 10 minutes:
-        $this->cacheLifetime = (int)($config['GetAccounts']['cache_lifetime'] ?? 600);
+        $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
 
-        if ($profile = $config['Profile']) {
+        if ($profile = $config->Profile->toArray()) {
             $strategies = $profile['strategies'] ?? [];
             $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 
