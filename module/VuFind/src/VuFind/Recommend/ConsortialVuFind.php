@@ -131,7 +131,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
         // Read config file
         $configSection = $this->config[$configSectionName] ?? [];
         if ($configSection) {
-            $this->resultsBaseUrl = $configSection['results_base_url'];
+            $this->resultsBaseUrl = $configSection['results_base_url'] ?? null;
             $this->recordBaseUrl = $configSection['record_base_url'];
             $this->searchFilters = $configSection['filters'] ?? [];
 
