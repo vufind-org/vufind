@@ -2468,16 +2468,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusCodeItemNotForLoanOrLost($code, $data, $item)
     {
-        // NotForLoan and Lost are special: status has a library-specific
-        // status number. Allow mapping of different status numbers
-        // separately (e.g. Item::NotForLoan with status number 4
-        // is mapped with key Item::NotForLoan4):
+        // NotForLoan and Lost are special: status has a library-specific status number. Allow mapping of different
+        // status numbers separately (e.g. Item::NotForLoan with status number 4 is mapped with key Item::NotForLoan4):
         $statusKey = $code . ($data['status'] ?? '-');
-        // Replace ':' in status key if used as status since ':' is
-        // the namespace separator in translatable strings:
-        return $this->itemStatusMappings[$statusKey]
-            ?? $this->getPrefixedMessage($data['code'])
-            ?? $this->getPrefixedMessage(str_replace(':', '_', $statusKey));
+        if (null !== ($status = $this->itemStatusMappings[$statusKey] ?? null)) {
+            return $status;
+        }
+        // Replace ':' in status key if used as status since ':' is the namespace separator in translatable strings:
+        return $this->getPrefixedMessage($data['code'] ?? str_replace(':', '_', $statusKey));
     }
 
     /**
