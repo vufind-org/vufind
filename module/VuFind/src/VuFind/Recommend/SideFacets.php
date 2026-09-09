@@ -179,8 +179,7 @@ class SideFacets extends AbstractFacets
         $config = $this->configManager->getConfigArray($iniName);
 
         // All standard facets to display:
-        $this->mainFacets = isset($config[$mainSection]) ?
-            $config[$mainSection] : [];
+        $this->mainFacets = $config[$mainSection] ?? [];
 
         // Load boolean configurations:
         $this->loadBooleanConfigs($config, array_keys($this->mainFacets));
