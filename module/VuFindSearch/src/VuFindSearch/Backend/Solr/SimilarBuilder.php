@@ -83,26 +83,27 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param ?array $searchConfig Search config
-     * @param string $uniqueKey    Solr field used to store unique identifier
+     * @param ?\VuFind\Config\Config $searchConfig Search config
+     * @param string                 $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        ?array $searchConfig = null,
+        ?\VuFind\Config\Config $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
-        if (isset($searchConfig['MoreLikeThis'])) {
-            $mlt = $searchConfig['MoreLikeThis'];
+        if (isset($searchConfig->MoreLikeThis)) {
+            $mlt = $searchConfig->MoreLikeThis;
             if (
-                $mlt['useMoreLikeThisHandler'] ?? false
+                isset($mlt->useMoreLikeThisHandler)
+                && $mlt->useMoreLikeThisHandler
             ) {
                 $this->useHandler = true;
-                $this->handlerParams = $mlt['params'] ?? '';
+                $this->handlerParams = $mlt->params ?? '';
             }
-            if (isset($mlt['count'])) {
-                $this->count = $mlt['count'];
+            if (isset($mlt->count)) {
+                $this->count = $mlt->count;
             }
         }
     }
