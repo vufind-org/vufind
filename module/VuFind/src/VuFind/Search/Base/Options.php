@@ -1302,29 +1302,12 @@ abstract class Options implements TranslatorAwareInterface
         // otherwise:
         $recommend = [];
 
-        if (
-            null !== $handler
-            && isset($searchSettings['TopRecommendations'][$handler])
-        ) {
-            $recommend['top'] = $searchSettings['TopRecommendations'][$handler];
-        } else {
-            $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? [];
-        }
-        if (
-            null !== $handler
-            && isset($searchSettings['SideRecommendations'][$handler])
-        ) {
-            $recommend['side'] = $searchSettings['SideRecommendations'][$handler];
-        } else {
-            $recommend['side'] = $searchSettings['General']['default_side_recommend'] ?? [];
-        }
-        if (
-            null !== $handler
-            && isset($searchSettings['NoResultsRecommendations'][$handler])
-        ) {
-            $recommend['noresults'] = $searchSettings['NoResultsRecommendations'][$handler];
-        } else {
-            $recommend['noresults'] = $searchSettings['General']['default_noresults_recommend'] ?? [];
+        foreach (['Top', 'Bottom', 'Side', 'NoResults'] as $position) {
+            $lcPosition = strtolower($position);
+            $recommend[$lcPosition]
+                = (null !== $handler ? $searchSettings[$position . 'Recommendations'][$handler] ?? null : null)
+                ?? $searchSettings['General']['default_' . $lcPosition . '_recommend']
+                ?? [];
         }
 
         return $recommend;

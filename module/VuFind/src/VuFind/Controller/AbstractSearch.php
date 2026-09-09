@@ -391,12 +391,9 @@ class AbstractSearch extends AbstractBase
         }
         $view->params = $params = $results->getParams();
 
-        // For page parameter being out of results list, we want to redirect to correct page
-        $page = $params->getPage();
-        $totalResults = $results->getResultTotal();
-        $limit = $params->getLimit();
-        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
-        if ($totalResults > 0 && $page > $lastPage) {
+        // For a page parameter being out of the results list, we want to redirect to the correct page
+        $lastPage = $results->getLastAvailablePage();
+        if ($results->getResultTotal() > 0 && $params->getPage() > $lastPage) {
             $queryParams = $request;
             $queryParams['page'] = $lastPage;
             return $this->redirect()->toRoute(

@@ -30,8 +30,6 @@
 namespace VuFindTest\Unit;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\Mvc\View\Http\ViewManager;
-use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
@@ -52,6 +50,7 @@ use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
+use VuFind\View\GlobalsContainer;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
@@ -377,13 +376,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(Manager::class, $mockAuthManager);
 
         $checkThemeOptions = $checkMethods['checkThemeOptions'] ?? true;
-        $mockViewModel = $this->createMock(ViewModel::class);
-        $mockViewModel->method('getVariable')->with('themeOptions')
-            ->willReturn($checkThemeOptions ? [[], []] : []);
-        $mockViewManager = $this->createMock(ViewManager::class);
-        $mockViewManager->method('getViewModel')
-            ->willReturn($mockViewModel);
-        $container->set('ViewManager', $mockViewManager);
+        $globalsContainer = new GlobalsContainer();
+        $globalsContainer['themeOptions'] = $checkThemeOptions ? [[], []] : [];
+        $container->set(GlobalsContainer::class, $globalsContainer);
 
         $checkAllLangs = $checkMethods['checkAllLangs'] ?? true;
         $mockLocaleSettings = $this->createMock(LocaleSettings::class);
@@ -394,7 +389,6 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockRequest = $this->createMock(Request::class);
         $container->set('Request', $mockRequest);
 
-        $configManager = $container->get(ConfigManagerInterface::class);
         $header = $this->getAutowiredObject(HeaderBar::class, $container);
         $this->setSectionPlugin($container, $header, 'header');
         return $header;

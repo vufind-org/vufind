@@ -39,6 +39,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 use VuFindTheme\InjectTemplateListener;
 
 use function strlen;
@@ -64,6 +65,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param bool                   $displayExceptions      Display exceptions?
      * @param string                 $notFoundTemplate       Template for 404 errors
      * @param string                 $errorTemplate          Template for errors
+     * @param GlobalsContainer       $globalsContainer       Global data container
      */
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
@@ -78,6 +80,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         protected string $notFoundTemplate,
         #[Autowire(service: 'config', path: 'view_manager/exception_template', default: 'error/index')]
         protected string $errorTemplate,
+        protected GlobalsContainer $globalsContainer,
     ) {
     }
 
@@ -186,8 +189,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         $layout = $this->getLayout($request);
 
         $templateParts = explode('/', $viewModel->getTemplate());
-        $layout->setVariable('templateDir', $templateParts[0]);
-        $layout->setVariable('templateName', $templateParts[1] ?? null);
+        $this->globalsContainer['templateDir'] = $templateParts[0];
+        $this->globalsContainer['templateName'] = $templateParts[1] ?? null;
         $this->setupRenderingInLightbox($request, $layout);
 
         // Clear any previous children (e.g. when rendering an error):
@@ -318,9 +321,9 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         $query = $lightboxParentUrl->getQueryAsArray();
         unset($query['lightboxChild']);
         $lightboxParentUrl->setQuery($query);
-        $layout->setVariable('lightboxParent', $lightboxParentUrl->toString());
+        $this->globalsContainer['lightboxParent'] = $lightboxParentUrl->toString();
         if ($lightboxChild = $request->getQueryParams()['lightboxChild'] ?? null) {
-            $layout->setVariable('lightboxChild', $lightboxChild);
+            $this->globalsContainer['lightboxChild'] = $lightboxChild;
         }
     }
 }

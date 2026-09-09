@@ -30,7 +30,6 @@
 namespace VuFindTest\Search\Blender;
 
 use Laminas\Stdlib\Parameters;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
@@ -1051,7 +1050,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'Base' => $baseParams,
             ],
-            new Config($this->config),
             $this->mappings
         );
 
@@ -1107,7 +1105,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
-            new Config($config ?? $this->config),
             $mappings ?? $this->mappings
         );
     }

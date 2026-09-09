@@ -89,6 +89,41 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that loading an out-of-bounds page with JS results in an in-bounds page.
+     *
+     * @return void
+     */
+    public function testOutOfBoundsPageWithJS()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=Author&type=AllFields&limit=5');
+        $page = $session->getPage();
+        $this->assertStringStartsWith(
+            'Showing 1 - 5 results of 16',
+            trim($this->findCssAndGetText($page, '.search-stats'))
+        );
+        // Change searchspecs.yaml to reduce total results to 14.
+        $this->changeYamlConfigs(
+            [
+                'searchspecs' => [
+                    'AllFields' => [
+                        'DismaxFields' => [
+                            'author',
+                        ],
+                    ],
+                ],
+            ],
+            ['searchspecs']
+        );
+        $this->clickCss($page, '.pagination .page-last a');
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString(
+            'Showing 11 - 14 results of 14',
+            trim($this->findCssAndGetText($page, '.search-stats'))
+        );
+    }
+
+    /**
      * Data provider for testDefaultTopPagination.
      *
      * @return \Iterator

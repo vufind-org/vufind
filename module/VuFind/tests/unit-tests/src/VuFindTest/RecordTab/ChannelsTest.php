@@ -60,8 +60,8 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
         ?ChannelLoader $mockLoader = null,
         ?RecordDriver $mockDriver = null
     ): Channels {
-        $channels = new Channels($mockLoader ?? $this->createMock(ChannelLoader::class), $options);
-        $channels->setRecordDriver($mockDriver ?? $this->createMock(RecordDriver::class));
+        $channels = new Channels($mockLoader ?? $this->createStub(ChannelLoader::class), $options);
+        $channels->setRecordDriver($mockDriver ?? $this->createStub(RecordDriver::class));
         return $channels;
     }
 

@@ -46,13 +46,13 @@ class Metadata
      * Constructor.
      *
      * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager Plugin manager
-     * @param \VuFind\Config\Config                    $config        Configuration
+     * @param array                                    $config        Configuration
      * @param \Laminas\View\Helper\HeadMeta            $metaHelper    Head meta helper
      */
     public function __construct(
         protected \VuFind\MetadataVocabulary\PluginManager $pluginManager,
-        #[Autowire(config: 'metadata', configType: 'object')]
-        protected \VuFind\Config\Config $config,
+        #[Autowire(config: 'metadata', configType: 'array')]
+        protected array $config,
         #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\HeadMeta $metaHelper
     ) {
@@ -67,8 +67,7 @@ class Metadata
      */
     protected function getVocabularies(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        $recordDriverConfigs = isset($this->config->Vocabularies)
-            ? $this->config->Vocabularies->toArray() : [];
+        $recordDriverConfigs = $this->config['Vocabularies'] ?? [];
         $retVal = [];
         foreach ($recordDriverConfigs as $className => $vocabs) {
             if ($driver instanceof $className) {

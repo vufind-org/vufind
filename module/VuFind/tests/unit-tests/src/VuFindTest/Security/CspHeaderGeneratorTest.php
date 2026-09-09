@@ -168,14 +168,12 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     /**
      * Build the CspHeaderGenerator object.
      *
-     * @param array $configData The contentsecuritypolicy.ini config data as an array
+     * @param array $config The contentsecuritypolicy.ini config data as an array
      *
      * @return CspHeaderGenerator
      */
-    protected function buildGenerator($configData)
+    protected function buildGenerator(array $config): CspHeaderGenerator
     {
-        $config = new \VuFind\Config\Config($configData);
-        $generator = new CspHeaderGenerator($config, $this->createStub(\VuFind\Security\NonceGenerator::class));
-        return $generator;
+        return new CspHeaderGenerator($config, $this->createStub(\VuFind\Security\NonceGenerator::class));
     }
 }

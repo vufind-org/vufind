@@ -32,9 +32,7 @@ namespace VuFind\Action\Combined;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Action\AjaxResponseTrait;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ActionHelper\ResponseHelper;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -46,14 +44,9 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ResultAction extends AbstractCombinedSearchAndResultsAction implements
-    LoggerAwareInterface,
-    TranslatorAwareInterface
+class ResultAction extends AbstractCombinedSearchAndResultsAction implements LoggerAwareInterface
 {
-    use AjaxResponseTrait;
     use LoggerAwareTrait;
-    // For AjaxResponseTrait:
-    use TranslatorAwareTrait;
 
     /**
      * Get a single result list (used for AJAX-loaded results).
@@ -118,6 +111,6 @@ class ResultAction extends AbstractCombinedSearchAndResultsAction implements
                 $templateParams
             );
         }
-        return $this->getAjaxResponse($response, 'text/html', $html);
+        return $this->getHelper(ResponseHelper::class)->getAjaxResponse($response, 'text/html', $html);
     }
 }

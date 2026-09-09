@@ -36,6 +36,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
+use VuFind\Http\HttpStatus;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
@@ -109,7 +110,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         ) {
             return $this->formatResponse(
                 'Health check file exists',
-                self::STATUS_HTTP_UNAVAILABLE
+                HttpStatus::UNAVAILABLE
             );
         }
 
@@ -154,7 +155,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'Search index error: ' . $e->getMessage(),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         return [];
@@ -174,7 +175,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'EDS connection error: ' . $e->getMessage(),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         return [];
@@ -192,7 +193,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'Database error: ' . $e->getMessage(),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         return [];
@@ -212,7 +213,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'ILS connection error: ' . $e->getMessage(),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         return [];

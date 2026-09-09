@@ -8,9 +8,10 @@
         'class' => 'close-offcanvas btn btn-link ' . $this->_componentClass,
         'data-toggle' => 'vufind-offcanvas',
     ];
+    $rtl = $this->globals()['rtl'];
 ?>
 <button<?=$this->htmlAttributes($buttonAttrs)?>>
-    <?='right' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-hide-left' : 'offcanvas-hide-right') : ''?>
+    <?='right' === $side ? $this->icon($rtl ? 'offcanvas-hide-left' : 'offcanvas-hide-right') : ''?>
     <span class="btn-link__label"><?=$this->transEsc('navigate_back') ?></span>
-    <?='left' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-hide-right' : 'offcanvas-hide-left') : ''?>
+    <?='left' === $side ? $this->icon($rtl ? 'offcanvas-hide-right' : 'offcanvas-hide-left') : ''?>
 </button>

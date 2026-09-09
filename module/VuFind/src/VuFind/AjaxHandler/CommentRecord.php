@@ -34,6 +34,7 @@ use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
@@ -109,14 +110,14 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -126,7 +127,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (empty($id) || empty($comment)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $driver = $this->recordLoader->load($id, $source, false);
@@ -134,7 +135,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->checkCaptcha($request)) {
             return $this->formatResponse(
                 $this->translate('captcha_not_passed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
