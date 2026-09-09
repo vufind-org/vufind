@@ -32,6 +32,13 @@
       </li>
     <?php endforeach; ?>
   </ul>
+  <div class="citation copy-to-clipboard-container">
+    <span id="all-citations" class="hidden">
+      <?=implode("\n", $formatCitations)?>
+    </span>
+    <?=$this->copyToClipboardButton('#all-citations', hideButtonText: false, buttonText: 'copy_all_to_clipboard_button_label')?>
+  </div>
+  <div class="text-muted text-center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</div>
   <?php
   $content = ob_get_contents();
   ob_end_clean();

@@ -62,20 +62,17 @@ class CopyToClipboardButton
      * @param string $elementSelector css selector for element to copy
      * @param bool   $hideButtonText  controls whether the description of the button's purpose
      * is displayed as text or only with a title attribute
+     * @param ?string $buttonText     Optional alternative description of the button
      *
      * @return string HTML string
      */
-    public function __invoke(string $elementSelector, bool $hideButtonText = true)
+    public function __invoke(string $elementSelector, bool $hideButtonText = true, ?string $buttonText = null)
     {
         static $buttonNumber = 0;
         $buttonNumber++;
         return $this->view->render(
             'Helpers/copy-to-clipboard-button.phtml',
-            [
-                'selector' => $elementSelector,
-                'buttonNumber' => $buttonNumber,
-                'hideButtonText' => $hideButtonText,
-            ]
+            compact('elementSelector', 'buttonNumber', 'hideButtonText', 'buttonText')
         );
     }
 }
