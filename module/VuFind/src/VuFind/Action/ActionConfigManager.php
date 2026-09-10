@@ -48,173 +48,18 @@ use function is_string;
 class ActionConfigManager
 {
     /**
-     * Action-specific configuration.
-     *
-     * The configuration is an array of associative arrays of configuration entries.
-     *
-     * Valid keys for each configuration entry:
-     *  - actionIds             An array of action identifiers or prefixes the configuration applies to
-     *                          (format: category/action in lowercase)
-     *  - accessPermission      Set access permission (string|false|null, see AccessPermissionInterface)
-     *  - accessDeniedBehavior  Set behavior when access is denied (string|null, see AccessPermissionInterface)
-     *  - backendId             Set search backend identifier (string)
-     *  - defaultTab            Set default tab (string|null)
-     *  - fallbackDefaultTab    Set fallback default tab (string; empty string to use Site/defaultRecordTab from config)
-     *  - poweredBy             Set "Powered by" displayed in page footer
-     *
-     * @var array
-     */
-    protected array $actionConfig = [
-        // EDS:
-        [
-            'actionIds' => [
-                'edsrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'edsrecord/',
-                ],
-            ],
-            'accessPermission' => 'access.EDSModule',
-            'backendId' => 'EDS',
-            'fallbackDefaultTab' => 'Description',
-        ],
-
-        // EIT:
-        [
-            'actionIds' => [
-                'eitrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'eitrecord/',
-                ],
-            ],
-            'accessPermission' => 'access.EITModule',
-            'backendId' => 'EIT',
-            'fallbackDefaultTab' => 'Description',
-        ],
-
-        // EPF:
-        [
-            'actionIds' => [
-                'epfrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'epfrecord/',
-                ],
-            ],
-            'accessPermission' => 'access.EPFModule',
-            'backendId' => 'EPF',
-        ],
-
-        // Record, Collection (Default backend):
-        [
-            'actionIds' => [
-                'collection',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'collection/',
-                ],
-                'missingrecord',
-                'missingrecord/home',
-                'record',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'record/',
-                ],
-            ],
-            'backendId' => DEFAULT_SEARCH_BACKEND,
-            'fallbackDefaultTab' => '',
-        ],
-
-        // Primo:
-        [
-            'actionIds' => [
-                'primorecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'primorecord/',
-                ],
-            ],
-            'accessPermission' => 'access.PrimoModule',
-            'backendId' => 'Primo',
-            'fallbackDefaultTab' => 'Description',
-        ],
-
-        // ProquestFSG:
-        [
-            'actionIds' => [
-                'proquestfsgrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'proquestfsgrecord/',
-                ],
-            ],
-            'backendId' => 'ProQuestFSG',
-            'checkEnabled' => true,
-        ],
-
-        // Search2Record, Search2Collection:
-        [
-            'actionIds' => [
-                'search2collection',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'search2collection/',
-                ],
-                'search2record',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'search2record/',
-                ],
-            ],
-            'backendId' => 'Search2',
-            'fallbackDefaultTab' => 'Description',
-        ],
-
-        // Summon:
-        [
-            'actionIds' => [
-                'summonrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'summonrecord/',
-                ],
-            ],
-            'backendId' => 'Summon',
-            'fallbackDefaultTab' => 'Description',
-            'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
-        ],
-
-        // WorldCat2 and legacy WorldCat actions:
-        [
-            'actionIds' => [
-                // Legacy WorldCat actions:
-                'worldcatrecord',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'worldcatrecord/',
-                ],
-                // Current WorldCat2 actions:
-                'worldcat2record',
-                [
-                    'type' => 'prefix',
-                    'prefix' => 'worldcat2record/',
-                ],
-            ],
-            'backendId' => 'WorldCat2',
-        ],
-    ];
-
-    /**
      * Constructor.
      *
      * @param GlobalsContainer $globalsContainer Global data container
      * @param array            $config           VuFind configuration
+     * @param array            $appConfig        Application config
      */
     public function __construct(
         protected GlobalsContainer $globalsContainer,
         #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(service: 'Config')]
+        protected array $appConfig,
     ) {
     }
 
@@ -249,7 +94,7 @@ class ActionConfigManager
             }
         }
         $actionIdentifier = strtolower($actionIdentifier);
-        foreach ($this->actionConfig as $currentConfig) {
+        foreach ($this->appConfig['vufind']['action_config'] ?? [] as $currentConfig) {
             if ($this->actionIdentifierMatchesConfig($actionIdentifier, $currentConfig)) {
                 // Apply configuration:
                 foreach ($currentConfig as $key => $value) {
