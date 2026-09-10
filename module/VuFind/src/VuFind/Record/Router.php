@@ -97,8 +97,7 @@ class Router
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
         if ($this->config['Collections']['collections'] ?? false) {
-            $routeConfig = isset($this->config['Collections']['route'])
-                ? $this->config['Collections']['route'] : [];
+            $routeConfig = $this->config['Collections']['route'] ?? [];
             $collectionRoutes
                 = array_merge(
                     ['record' => 'collection',
