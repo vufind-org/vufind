@@ -203,7 +203,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
-        $auth->setConfig($this->config);
+        $auth->setConfig(new Config($this->config));
         return $auth;
     }
 

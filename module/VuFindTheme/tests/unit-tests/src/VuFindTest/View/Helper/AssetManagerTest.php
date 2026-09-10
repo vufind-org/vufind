@@ -124,7 +124,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         );
         $options = ['allow_arbitrary_attributes' => $arbitrary];
         $expected = 'output:' . ($arbitrary ? '1' : '0');
-        $this->assertEquals($expected, $assetManager->outputInlineScriptLink($script, $attrs, $options));
+        $this->assertSame($expected, $assetManager->outputInlineScriptLink($script, $attrs, $options));
     }
 
     /**
@@ -160,7 +160,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         );
         $options = ['allow_arbitrary_attributes' => $arbitrary];
         $expected = 'output:' . ($arbitrary ? '1' : '0');
-        $this->assertEquals($expected, $assetManager->outputInlineScriptString($script, $attrs, $options));
+        $this->assertSame($expected, $assetManager->outputInlineScriptString($script, $attrs, $options));
     }
 
     /**

@@ -407,8 +407,8 @@ class AssetManager
         $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $inlineScript->setScript($script, $type, $attrs);
-        $result = (string)($inlineScript)();
+        $this->inlineScript->setScript($script, $type, $attrs);
+        $result = (string)($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
             $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
@@ -438,8 +438,8 @@ class AssetManager
         $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $inlineScript->setFile($src, $type, $attrs);
-        $result = (string)($inlineScript)();
+        $this->inlineScript->setFile($src, $type, $attrs);
+        $result = (string)($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
             $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
