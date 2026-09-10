@@ -36,16 +36,7 @@ namespace VuFindTest\Action\Install;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Action\Install\AbstractInstallAction;
 use VuFind\Action\Install\HomeAction;
-use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\ConfigManagerInterface;
-use VuFind\Config\PathResolver;
-use VuFind\Db\Service\TagServiceInterface;
-use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Http\ServerUrlHelper;
-use VuFind\ILS\Connection;
-use VuFindHttp\HttpService;
-use VuFindSearch\Service as SearchService;
+use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
@@ -60,6 +51,7 @@ use VuFindTest\Feature\ReflectionTrait;
  */
 class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
 {
+    use AutowireTrait;
     use ReflectionTrait;
 
     /**
@@ -70,19 +62,7 @@ class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
     public function testGetMinimalPhpVersionWithActualData(): void
     {
         // Test the method in the abstract base class by instantiating a concrete class extending it:
-        $action = new HomeAction(
-            $this->createMock(CacheManager::class),
-            $this->createMock(Connection::class),
-            $this->createMock(SearchService::class),
-            $this->createMock(PathResolver::class),
-            $this->createMock(ConfigManagerInterface::class),
-            $this->createMock(ServerUrlHelper::class),
-            $this->createMock(HttpService::class),
-            $this->createMock(TagServiceInterface::class),
-            $this->createMock(UserServiceInterface::class),
-            $this->createMock(UserCardServiceInterface::class),
-            []
-        );
+        $action = $this->getAutowiredObject(HomeAction::class);
         $this->assertEquals(
             '8.2.0',
             $this->callMethod($action, 'getMinimalPhpVersion')
