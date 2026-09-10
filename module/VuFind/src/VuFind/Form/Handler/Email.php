@@ -71,7 +71,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
      */
     public function __construct(
         protected RendererInterface $viewRenderer,
-        array $config,
+        protected array $mainConfig,
         protected Mailer $mailer
     ) {
         $this->mainConfig = $config;
