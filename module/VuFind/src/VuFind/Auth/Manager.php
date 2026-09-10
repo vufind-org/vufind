@@ -35,7 +35,6 @@ use Laminas\View\Renderer\RendererInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
 use Lmc\Rbac\Mvc\Identity\IdentityProviderInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
@@ -204,7 +203,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
-        $auth->setConfig(new Config($this->config));
+        $auth->setConfig($this->config);
         return $auth;
     }
 
