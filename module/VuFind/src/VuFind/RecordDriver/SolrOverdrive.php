@@ -32,7 +32,6 @@
 namespace VuFind\RecordDriver;
 
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 
 use function in_array;
@@ -64,20 +63,20 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Overdrive Configuration Object.
      *
-     * @var object
+     * @var array
      */
     protected $config;
 
     /**
      * Constructor.
      *
-     * @param ?Config             $mainConfig   VuFind main configuration
-     * @param ?Config             $recordConfig Record-specific configuration
+     * @param ?array              $mainConfig   VuFind main configuration
+     * @param ?array              $recordConfig Record-specific configuration
      * @param ?OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        ?Config $mainConfig = null,
-        $recordConfig = null,
+        ?array $mainConfig = null,
+        ?array $recordConfig = null,
         ?OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
@@ -245,7 +244,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        return $this->config->enableAjaxStatus ?? true;
+        return $this->config['enableAjaxStatus'] ?? true;
     }
 
     /**
@@ -288,8 +287,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if ($this->config) {
             if ($this->getIsMarc()) {
-                $field = $this->config->idField;
-                $subfield = $this->config->idSubfield;
+                $field = $this->config['idField'];
+                $subfield = $this->config['idSubfield'];
                 $result = strtolower(
                     $this->getFieldArray($field, $subfield)[0] ?? ''
                 );
@@ -320,7 +319,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsPatronActions()
     {
-        return $this->config->usePatronAPI;
+        return $this->config['usePatronAPI'];
     }
 
     /**
@@ -504,7 +503,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getIsMarc()
     {
-        return $this->config->isMarc;
+        return $this->config['isMarc'];
     }
 
     /**
@@ -596,7 +595,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getPermanentLink()
     {
-        if (!empty($libraryURL = $this->config->libraryURL)) {
+        if (!empty($libraryURL = $this->config['libraryURL'])) {
             $data = json_decode($this->fields['fullrecord'], false);
             $desc = $this->translate('od_resource_page');
             $permlink = "$libraryURL/media/" . $data->crossRefId;

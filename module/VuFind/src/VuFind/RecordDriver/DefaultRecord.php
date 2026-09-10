@@ -62,11 +62,11 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param array $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
+     * @param array $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
+     * @param array $searchSettings Search-specific configuration
      * file
      */
     public function __construct(
@@ -75,7 +75,7 @@ class DefaultRecord extends AbstractBase
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
-        $this->highlight = $searchSettings->General->highlighting ?? false;
+        $this->highlight = $searchSettings['General']['highlighting'] ?? false;
 
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -791,16 +791,16 @@ class DefaultRecord extends AbstractBase
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
         if (
-            isset($this->mainConfig->OpenURL->rfr_id)
-            && !empty($this->mainConfig->OpenURL->rfr_id)
+            isset($this->mainConfig['OpenURL']['rfr_id'])
+            && !empty($this->mainConfig['OpenURL']['rfr_id'])
         ) {
-            return $this->mainConfig->OpenURL->rfr_id;
+            return $this->mainConfig['OpenURL']['rfr_id'];
         }
         if (
-            isset($this->mainConfig->COinS->identifier)
-            && !empty($this->mainConfig->COinS->identifier)
+            isset($this->mainConfig['COinS']['identifier'])
+            && !empty($this->mainConfig['COinS']['identifier'])
         ) {
-            return $this->mainConfig->COinS->identifier;
+            return $this->mainConfig['COinS']['identifier'];
         }
         return 'vufind.svn.sourceforge.net';
     }
@@ -948,7 +948,7 @@ class DefaultRecord extends AbstractBase
         // If we're working with the SFX or Alma resolver, we should add a
         // special parameter to ensure that electronic holdings links
         // are shown even though no specific date or issue is specified:
-        $resolver = strtolower($this->mainConfig->OpenURL->resolver ?? '');
+        $resolver = strtolower($this->mainConfig['OpenURL']['resolver'] ?? '');
         if ('sfx' === $resolver) {
             $params['sfx.ignore_date_threshold'] = 1;
         } elseif ('alma' === $resolver) {
