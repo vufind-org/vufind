@@ -685,8 +685,8 @@ class Record implements DbServiceAwareInterface
     public function getThumbnailAlignment($context = 'result')
     {
         $configField = $context . 'ThumbnailsOnLeft';
-        $left = !isset($this->config['Site']['$configField'])
-            ? true : $this->config['Site']['$configField'];
+        $left = !isset($this->config['Site'][$configField])
+            ? true : $this->config['Site'][$configField];
         $mirror = !isset($this->config['Site']['mirrorThumbnailsRTL'])
             ? true : $this->config['Site']['mirrorThumbnailsRTL'];
         if ($this->globalsContainer['rtl'] && !$mirror) {
@@ -727,8 +727,8 @@ class Record implements DbServiceAwareInterface
         }
 
         if (
-            !isset($this->config['QRCode']['$key'])
-            || !$this->config['QRCode']['$key']
+            !isset($this->config['QRCode'][$key])
+            || !$this->config['QRCode'][$key]
         ) {
             return false;
         }
