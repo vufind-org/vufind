@@ -288,7 +288,7 @@ class ComposerPackageTemplateCommand extends AbstractCommand
             $targetArray['extra']['vufind']['themes'][$this->mixinTargetDirRelative] = $this->mixinName;
         }
         if ($this->input->getOption('qa')) {
-            // We might need to insert all standard vufind require-dev entries to run checks / workflows later
+            // We might need to insert all standard vufind require-dev entries to run QA / workflows later
             foreach ($templateArray['require-dev'] as $dependency => $version) {
                 $targetArray['require-dev'][$dependency] = $version;
             }
@@ -414,7 +414,7 @@ class ComposerPackageTemplateCommand extends AbstractCommand
         $this->qaTargetDirAbsolute =
             $this->targetDirAbsolute . DIRECTORY_SEPARATOR . $this->qaTargetDirRelative;
 
-        $this->output->writeln('Generating checks in ' . $this->qaTargetDirRelative . '...');
+        $this->output->writeln('Generating QA settings in ' . $this->qaTargetDirRelative . '...');
 
         $this->filesystem->mirror($this->qaTemplateDirAbsolute, $this->qaTargetDirAbsolute);
         $this->filesystem->remove($this->qaTargetDirAbsolute . DIRECTORY_SEPARATOR . 'data');
