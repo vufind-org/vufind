@@ -32,8 +32,6 @@
 
 namespace VuFind\Session;
 
-use VuFind\Config\Config;
-
 use function get_class;
 use function in_array;
 
@@ -58,10 +56,10 @@ class Memcache extends AbstractBase
     /**
      * Constructor.
      *
-     * @param ?Config                   $config Session configuration ([Session] section of config.ini)
+     * @param ?array                    $config Session configuration ([Session] section of config.ini)
      * @param \Memcache|\Memcached|null $client Optional Memcache client object
      */
-    public function __construct(?Config $config = null, ?object $client = null)
+    public function __construct(?array $config = null, ?object $client = null)
     {
         parent::__construct($config);
         $this->connect($config, $client);
@@ -70,18 +68,18 @@ class Memcache extends AbstractBase
     /**
      * Set up the connection to Memcache.
      *
-     * @param ?Config                   $config Session configuration ([Session] section of config.ini)
+     * @param ?array                    $config Session configuration ([Session] section of config.ini)
      * @param \Memcache|\Memcached|null $client Optional Memcache client object
      *
      * @return void
      */
-    protected function connect(?Config $config, ?object $client): void
+    protected function connect(?array $config, ?object $client): void
     {
         // Set defaults if nothing set in config file.
-        $host = $config->memcache_host ?? 'localhost';
-        $port = $config->memcache_port ?? 11211;
-        $timeout = $config->memcache_connection_timeout ?? 1;
-        $clientClass = $config->memcache_client ?? \Memcache::class;
+        $host = $config['memcache_host'] ?? 'localhost';
+        $port = $config['memcache_port'] ?? 11211;
+        $timeout = $config['memcache_connection_timeout'] ?? 1;
+        $clientClass = $config['memcache_client'] ?? \Memcache::class;
 
         // Create/validate client object:
         if (!in_array($clientClass, [\Memcache::class, \Memcached::class])) {
