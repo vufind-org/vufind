@@ -73,6 +73,6 @@ class RelaisFactory implements FactoryInterface
         $client = $container->get(\VuFindHttp\HttpService::class)
             ->createClient($url);
         $client->setOptions(['timeout' => $config['Relais']['timeout'] ?? 500]);
-        return new $requestedName($client, $config['Relais'] ?? null);
+        return new $requestedName($client, $config['Relais'] ?? []);
     }
 }
