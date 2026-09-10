@@ -448,7 +448,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         $orFacetList = array_map('trim', explode(',', $orFacets));
         $isOrFacet = '*' === $orFacets || in_array('blender_backend', $orFacetList);
         $result = [];
-        foreach ($this->config['Backends'] as $backendId => $name) {
+        foreach ($this->config['Backends'] ?? [] as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
             if (isset($collections[$backendId])) {
                 if ($total = $collections[$backendId]->getTotal()) {
