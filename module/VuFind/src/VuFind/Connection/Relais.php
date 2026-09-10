@@ -170,7 +170,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      */
     public function search($oclc, $auth, $patron = null)
     {
-        $uri = $this->config->availableurl ?? null;
+        $uri = $this->config['availableurl'] ?? null;
         if (empty($uri)) {
             throw new \Exception('availableurl not configured!');
         }
