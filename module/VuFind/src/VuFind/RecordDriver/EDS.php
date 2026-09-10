@@ -408,8 +408,7 @@ class EDS extends DefaultRecord
      */
     protected function itemIsIncluded(array $item, array $filter): bool
     {
-        $globalFilter = isset($this->recordConfig['ItemGlobalFilter'])
-            ? $this->recordConfig['ItemGlobalFilter'] : [];
+        $globalFilter = $this->recordConfig['ItemGlobalFilter'] ?? [];
 
         $filter['exclude']['Label'] =
             array_merge($globalFilter['excludeLabel'] ?? [], $filter['exclude']['Label'] ?? []);
