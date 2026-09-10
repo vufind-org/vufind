@@ -80,7 +80,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Constructor.
      *
-     * @param array $config   Configuration
+     * @param ?array $config   Configuration
      * @param array $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
