@@ -89,7 +89,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         $this->mappings = $mappings;
         $this->response = static::$template;
         $this->initialResultsBackends
-            = $this->config['Blending']['initialResults'] ?? [];
+            = $config['Blending']['initialResults'] ?? [];
     }
 
     /**
