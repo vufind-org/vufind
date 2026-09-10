@@ -35,7 +35,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\ProQuestFSG\Backend;
 use VuFindSearch\Backend\ProQuestFSG\Connector;
 use VuFindSearch\Backend\ProQuestFSG\Response\XML\RecordCollectionFactory;
@@ -62,16 +61,16 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $config;
+    protected array $config;
 
     /**
      * ProQuestFSG configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $proQuestFSGConfig;
+    protected array $proQuestFSGConfig;
 
     /**
      * Create an object.
@@ -96,8 +95,8 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
-        $this->config = $configManager->getConfigObject('config');
-        $this->proQuestFSGConfig = $configManager->getConfigObject('ProQuestFSG');
+        $this->config = $configManager->getConfigArray('config');
+        $this->proQuestFSGConfig = $configManager->getConfigArray('ProQuestFSG');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -127,7 +126,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector(): Connector
     {
-        $connector = new Connector($this->createHttpClient(), $this->proQuestFSGConfig->toArray());
+        $connector = new Connector($this->createHttpClient(), $this->proQuestFSGConfig);
         $connector->setLogger($this->logger);
         if ($cache = $this->createConnectorCache($this->proQuestFSGConfig)) {
             $connector->setCache($cache);
