@@ -46,16 +46,16 @@ class Router
     /**
      * VuFind configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $config;
 
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config VuFind configuration
+     * @param array $config VuFind configuration
      */
-    public function __construct(\VuFind\Config\Config $config)
+    public function __construct(array $config)
     {
         $this->config = $config;
     }
@@ -100,9 +100,9 @@ class Router
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
-        if ($this->config->Collections->collections ?? false) {
-            $routeConfig = isset($this->config->Collections->route)
-                ? $this->config->Collections->route->toArray() : [];
+        if ($this->config['Collections']['collections'] ?? false) {
+            $routeConfig = isset($this->config['Collections']['route'])
+                ? $this->config['Collections']['route'] : [];
             $collectionRoutes
                 = array_merge(
                     ['record' => 'collection',
