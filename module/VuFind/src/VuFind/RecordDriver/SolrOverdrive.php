@@ -80,7 +80,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         ?OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
-        $this->config = $connector->getConfig();
+        $this->config = (array)$connector->getConfig();
         parent::__construct($mainConfig, $recordConfig, null);
     }
 
