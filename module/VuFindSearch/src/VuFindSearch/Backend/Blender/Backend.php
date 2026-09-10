@@ -57,13 +57,6 @@ class Backend extends AbstractBackend
     use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
 
     /**
-     * Actual backends.
-     *
-     * @var array
-     */
-    protected $backends;
-
-    /**
      * Limit for number of records to blend.
      *
      * @var int
@@ -85,20 +78,6 @@ class Backend extends AbstractBackend
     protected $adaptiveBlockSizes;
 
     /**
-     * Blender configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration.
-     *
-     * @var array
-     */
-    protected $mappings;
-
-    /**
      * Event manager.
      *
      * @var EventManager
@@ -116,9 +95,9 @@ class Backend extends AbstractBackend
      * @return void
      */
     public function __construct(
-        array $backends,
-        array $config,
-        $mappings,
+        protected array $backends,
+        protected array $config,
+        protected array $mappings,
         EventManager $events
     ) {
         $this->backends = $backends;
@@ -129,8 +108,7 @@ class Backend extends AbstractBackend
         $boostMax = count($this->config['Blending']['initialResults'] ?? []);
         $this->blendLimit = max(20, $boostMax);
         $this->blockSize = intval($this->config['Blending']['blockSize'] ?? 10);
-        $this->adaptiveBlockSizes
-            = $this->config['Blending']['adaptiveBlockSizes'] ?? [];
+        $this->adaptiveBlockSizes = $this->config['Blending']['adaptiveBlockSizes'] ?? [];
     }
 
     /**
