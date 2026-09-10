@@ -57,13 +57,6 @@ class Backend extends AbstractBackend
     use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
 
     /**
-     * Actual backends.
-     *
-     * @var array
-     */
-    protected $backends;
-
-    /**
      * Limit for number of records to blend.
      *
      * @var int
@@ -85,20 +78,6 @@ class Backend extends AbstractBackend
     protected $adaptiveBlockSizes;
 
     /**
-     * Blender configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration.
-     *
-     * @var array
-     */
-    protected $mappings;
-
-    /**
      * Event manager.
      *
      * @var EventManager
@@ -108,17 +87,17 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param array                 $backends Actual backends
-     * @param \VuFind\Config\Config $config   Blender configuration
-     * @param array                 $mappings Mappings configuration
-     * @param EventManager          $events   Event manager
+     * @param array        $backends Actual backends
+     * @param array        $config   Blender configuration
+     * @param array        $mappings Mappings configuration
+     * @param EventManager $events   Event manager
      *
      * @return void
      */
     public function __construct(
-        array $backends,
-        \VuFind\Config\Config $config,
-        $mappings,
+        protected array $backends,
+        protected array $config,
+        protected array $mappings,
         EventManager $events
     ) {
         $this->backends = $backends;
@@ -126,15 +105,10 @@ class Backend extends AbstractBackend
         $this->mappings = $mappings;
         $this->setEventManager($events);
 
-        $boostMax = isset($this->config->Blending->initialResults)
-            ? count($this->config->Blending->initialResults->toArray())
-            : 0;
+        $boostMax = count($this->config['Blending']['initialResults'] ?? []);
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = intval($this->config->Blending->blockSize ?? 10);
-        $this->adaptiveBlockSizes
-            = isset($this->config->Blending->adaptiveBlockSizes)
-            ? $this->config->Blending->adaptiveBlockSizes->toArray()
-            : [];
+        $this->blockSize = intval($this->config['Blending']['blockSize'] ?? 10);
+        $this->adaptiveBlockSizes = $this->config['Blending']['adaptiveBlockSizes'] ?? [];
     }
 
     /**
@@ -249,7 +223,7 @@ class Backend extends AbstractBackend
             }
             // Log the errors and collect a list to display to the user:
             $this->logError("Search in $backendId failed: " . (string)$exception);
-            $failedBackends[] = $this->config->Backends[$backendId];
+            $failedBackends[] = $this->config['Backends'][$backendId];
         }
         if ($failedBackends) {
             $mergedCollection->addError(
