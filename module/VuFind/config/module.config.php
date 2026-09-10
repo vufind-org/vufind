@@ -289,7 +289,6 @@ $config = [
         'factories' => [
             \League\CommonMark\MarkdownConverter::class => \VuFind\Service\MarkdownFactory::class,
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
-            \VuFind\I18n\Locale\LocaleSettings::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\Record\Router::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
