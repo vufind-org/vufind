@@ -193,12 +193,10 @@ class SideFacets extends AbstractFacets
             $this->fullDateFacets = $config['SpecialFacets']['fullDateRange'];
         }
         if (isset($config['SpecialFacets']['genericRange'])) {
-            $this->genericRangeFacets
-                = $config['SpecialFacets']['genericRange'];
+            $this->genericRangeFacets = $config['SpecialFacets']['genericRange'];
         }
         if (isset($config['SpecialFacets']['numericRange'])) {
-            $this->numericRangeFacets
-                = $config['SpecialFacets']['numericRange'];
+            $this->numericRangeFacets = $config['SpecialFacets']['numericRange'];
         }
 
         // Checkbox facets:
@@ -207,8 +205,7 @@ class SideFacets extends AbstractFacets
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }
-        $this->checkboxFacets
-            = ($checkboxSection && isset($config[$checkboxSection]))
+        $this->checkboxFacets = ($checkboxSection && isset($config[$checkboxSection]))
             ? $config[$checkboxSection] : [];
         if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
@@ -223,12 +220,10 @@ class SideFacets extends AbstractFacets
 
         // Show more settings:
         if (isset($config['Results_Settings']['showMore'])) {
-            $this->showMoreSettings
-                = $config['Results_Settings']['showMore'];
+            $this->showMoreSettings = $config['Results_Settings']['showMore'];
         }
         if (isset($config['Results_Settings']['showMoreInLightbox'])) {
-            $this->showInLightboxSettings
-                = $config['Results_Settings']['showMoreInLightbox'];
+            $this->showInLightboxSettings = $config['Results_Settings']['showMoreInLightbox'];
         }
 
         // Collapsed facets:
@@ -238,14 +233,12 @@ class SideFacets extends AbstractFacets
 
         // Hierarchical facets:
         if (isset($config['SpecialFacets']['hierarchical'])) {
-            $this->hierarchicalFacets
-                = $config['SpecialFacets']['hierarchical'];
+            $this->hierarchicalFacets = $config['SpecialFacets']['hierarchical'];
         }
 
         // Hierarchical facet sort options:
         if (isset($config['SpecialFacets']['hierarchicalFacetSortOptions'])) {
-            $this->hierarchicalFacetSortOptions
-                = $config['SpecialFacets']['hierarchicalFacetSortOptions'];
+            $this->hierarchicalFacetSortOptions = $config['SpecialFacets']['hierarchicalFacetSortOptions'];
         }
     }
 
