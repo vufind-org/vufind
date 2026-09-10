@@ -74,7 +74,7 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($this->searchIni);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($this->searchIni);
         $finalOptions = [null, $config];
         return parent::__invoke($container, $requestedName, $finalOptions);
     }

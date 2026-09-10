@@ -36,7 +36,7 @@ use function in_array;
  * Hierarchy support for record drivers.
  *
  * Assumption: Hierarchy fields found in $this->fields.
- * Assumption: Config object found in $this->mainConfig.
+ * Assumption: Config array found in $this->mainConfig.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -133,8 +133,8 @@ trait HierarchyAwareTrait
         // If collections are disabled or this record is not part of a hierarchy, go
         // no further....
         if (
-            !isset($this->mainConfig->Collections->collections)
-            || !$this->mainConfig->Collections->collections
+            !isset($this->mainConfig['Collections']['collections'])
+            || !$this->mainConfig['Collections']['collections']
             || !($hierarchyDriver = $this->getHierarchyDriver())
         ) {
             return false;
@@ -242,7 +242,7 @@ trait HierarchyAwareTrait
         if (isset($this->fields['hierarchy_top_id'])) {
             $hierarchyType = $this->fields['hierarchytype'] ?? false;
             if (!$hierarchyType) {
-                $hierarchyType = $this->mainConfig->Hierarchy->driver ?? false;
+                $hierarchyType = $this->mainConfig['Hierarchy']['driver'] ?? false;
             }
             return $hierarchyType;
         }
