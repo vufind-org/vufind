@@ -71,7 +71,7 @@ interface AuthInterface
     /**
      * Set configuration.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param array $config Configuration to set
      *
      * @return void
      */

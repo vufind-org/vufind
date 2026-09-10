@@ -52,7 +52,7 @@ class PasswordAccess extends AbstractBase
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \VuFind\Config\Config
+     * @return array
      */
     public function getConfig()
     {
@@ -76,7 +76,7 @@ class PasswordAccess extends AbstractBase
      */
     public function authenticate($request)
     {
-        $config = $this->getConfig()->toArray();
+        $config = $this->getConfig();
         $requestPassword = trim($request->getPost()->get('password', ''));
         foreach ($config['PasswordAccess']['access_user_hashed'] ?? [] as $username => $passwordHash) {
             if (password_verify($requestPassword, $passwordHash)) {
