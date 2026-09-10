@@ -78,9 +78,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'Solr';
+    protected ?string $backendId = 'Solr';
 
     /**
      * Currently used spelling query, if any.
