@@ -176,30 +176,27 @@ class SideFacets extends AbstractFacets
         $showDynamicCheckboxFacets = $settings[3] ?? true;
 
         // Load the desired facet information...
-        $config = $this->configManager->getConfigObject($iniName);
+        $config = $this->configManager->getConfigArray($iniName);
 
         // All standard facets to display:
-        $this->mainFacets = isset($config->$mainSection) ?
-            $config->$mainSection->toArray() : [];
+        $this->mainFacets = $config[$mainSection] ?? [];
 
         // Load boolean configurations:
         $this->loadBooleanConfigs($config, array_keys($this->mainFacets));
 
         // Get a list of fields that should be displayed as ranges rather than
         // standard facet lists.
-        if (isset($config->SpecialFacets->dateRange)) {
-            $this->dateFacets = $config->SpecialFacets->dateRange->toArray();
+        if (isset($config['SpecialFacets']['dateRange'])) {
+            $this->dateFacets = $config['SpecialFacets']['dateRange'];
         }
-        if (isset($config->SpecialFacets->fullDateRange)) {
-            $this->fullDateFacets = $config->SpecialFacets->fullDateRange->toArray();
+        if (isset($config['SpecialFacets']['fullDateRange'])) {
+            $this->fullDateFacets = $config['SpecialFacets']['fullDateRange'];
         }
-        if (isset($config->SpecialFacets->genericRange)) {
-            $this->genericRangeFacets
-                = $config->SpecialFacets->genericRange->toArray();
+        if (isset($config['SpecialFacets']['genericRange'])) {
+            $this->genericRangeFacets = $config['SpecialFacets']['genericRange'];
         }
-        if (isset($config->SpecialFacets->numericRange)) {
-            $this->numericRangeFacets
-                = $config->SpecialFacets->numericRange->toArray();
+        if (isset($config['SpecialFacets']['numericRange'])) {
+            $this->numericRangeFacets = $config['SpecialFacets']['numericRange'];
         }
 
         // Checkbox facets:
@@ -208,9 +205,8 @@ class SideFacets extends AbstractFacets
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }
-        $this->checkboxFacets
-            = ($checkboxSection && isset($config->$checkboxSection))
-            ? $config->$checkboxSection->toArray() : [];
+        $this->checkboxFacets = ($checkboxSection && isset($config[$checkboxSection]))
+            ? $config[$checkboxSection] : [];
         if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
@@ -220,33 +216,29 @@ class SideFacets extends AbstractFacets
         ) {
             $this->showDynamicCheckboxFacets = false;
         }
-        $this->showCheckboxFacetCounts = (bool)($config->Results_Settings->checkboxFacetCounts ?? false);
+        $this->showCheckboxFacetCounts = (bool)($config['Results_Settings']['checkboxFacetCounts'] ?? false);
 
         // Show more settings:
-        if (isset($config->Results_Settings->showMore)) {
-            $this->showMoreSettings
-                = $config->Results_Settings->showMore->toArray();
+        if (isset($config['Results_Settings']['showMore'])) {
+            $this->showMoreSettings = $config['Results_Settings']['showMore'];
         }
-        if (isset($config->Results_Settings->showMoreInLightbox)) {
-            $this->showInLightboxSettings
-                = $config->Results_Settings->showMoreInLightbox->toArray();
+        if (isset($config['Results_Settings']['showMoreInLightbox'])) {
+            $this->showInLightboxSettings = $config['Results_Settings']['showMoreInLightbox'];
         }
 
         // Collapsed facets:
-        if (isset($config->Results_Settings->collapsedFacets)) {
-            $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
+        if (isset($config['Results_Settings']['collapsedFacets'])) {
+            $this->collapsedFacets = $config['Results_Settings']['collapsedFacets'];
         }
 
         // Hierarchical facets:
-        if (isset($config->SpecialFacets->hierarchical)) {
-            $this->hierarchicalFacets
-                = $config->SpecialFacets->hierarchical->toArray();
+        if (isset($config['SpecialFacets']['hierarchical'])) {
+            $this->hierarchicalFacets = $config['SpecialFacets']['hierarchical'];
         }
 
         // Hierarchical facet sort options:
-        if (isset($config->SpecialFacets->hierarchicalFacetSortOptions)) {
-            $this->hierarchicalFacetSortOptions
-                = $config->SpecialFacets->hierarchicalFacetSortOptions->toArray();
+        if (isset($config['SpecialFacets']['hierarchicalFacetSortOptions'])) {
+            $this->hierarchicalFacetSortOptions = $config['SpecialFacets']['hierarchicalFacetSortOptions'];
         }
     }
 
