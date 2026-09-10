@@ -32,9 +32,11 @@ namespace VuFindTest\Action\Collection;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Router\RouteMatch;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Collection\HomeAction;
+use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
@@ -70,30 +72,43 @@ class HomeActionTest extends TestCase
      * @param ?RecordRouter   $recordRouter   Record router (defaults to a stub)
      * @param ?RouteHelper    $routeHelper    Route helper (defaults to a stub)
      * @param ?RedirectHelper $redirectHelper Redirect helper for HelperPluginManager to return
+     * @param ?RecordDriver   $driver         Record returned by RecordLoader's load()
      *
      * @return HomeAction
      */
     protected function buildAction(
-        array $config,
+        array $config = [],
         ?SearchMemory $searchMemory = null,
         ?RecordRouter $recordRouter = null,
         ?RouteHelper $routeHelper = null,
-        ?RedirectHelper $redirectHelper = null
+        ?RedirectHelper $redirectHelper = null,
+        ?RecordDriver $driver = null
     ): HomeAction {
+        if (null !== $driver) {
+            $recordLoader = $this->createMock(RecordLoader::class);
+            $recordLoader->method('load')->willReturn($driver);
+        } else {
+            $recordLoader = $this->createStub(RecordLoader::class);
+        }
+
         $action = new HomeAction(
             $searchMemory ?? $this->createStub(SearchMemory::class),
             $this->createStub(TabManager::class),
             $this->createStub(AuthManager::class),
-            $this->createStub(RecordLoader::class),
+            $recordLoader,
             $recordRouter ?? $this->createStub(RecordRouter::class),
             $this->createStub(ResultScroller::class),
             $config
         );
+        $action->setBackendId('Solr');
 
+        $permissionHelper = $this->createMock(PermissionHelper::class);
+        $permissionHelper->method('getPermissionBehaviorConfig')->willReturn([]);
         $redirectHelper ??= $this->createStub(RedirectHelper::class);
         $manager = $this->createMock(HelperPluginManager::class);
         $manager->method('get')->willReturnCallback(
             fn ($name) => match ($name) {
+                PermissionHelper::class => $permissionHelper,
                 RedirectHelper::class => $redirectHelper,
                 default => throw new \Exception("Unexpected helper requested: $name"),
             }
@@ -135,39 +150,59 @@ class HomeActionTest extends TestCase
             ->with($this->isInstanceOf(ResponseInterface::class), '/Record/coll1')->willReturn($expectedResponse);
 
         $action = $this->buildAction(
-            [],
             recordRouter: $recordRouter,
             routeHelper: $routeHelper,
-            redirectHelper: $redirectHelper
+            redirectHelper: $redirectHelper,
+            driver: $this->createStub(RecordDriver::class)
         );
-        $this->setProperty($action, 'driver', $this->createStub(RecordDriver::class));
-        $this->setProperty($action, 'response', new Response());
 
-        $this->assertSame($expectedResponse, $this->callMethod($action, 'showTab', ['description']));
+        $routeMatch = new RouteMatch(['tab' => 'description']);
+        $request = (new ServerRequest())->withParsedBody([])->withAttribute('route-match', $routeMatch);
+
+        $this->assertSame($expectedResponse, $action($request, new Response()));
     }
 
     /**
-     * Build a collection-redirect action.
+     * Data provider for testActionRedirectsToCollectionRoute().
      *
-     * @param ?int           $currentSearchId Current search id from search memory
-     * @param RedirectHelper $redirectHelper  Redirect helper
-     *
-     * @return ResponseInterface
+     * @return \Iterator
      */
-    protected function runCollectionRedirect(?int $currentSearchId, RedirectHelper $redirectHelper): ResponseInterface
+    public static function collectionRedirectProvider(): \Iterator
+    {
+        yield 'no active search' => [null, []];
+
+        yield 'active search passes sid' => [42, ['sid' => 42]];
+    }
+
+    /**
+     * Test that when collections are active and the loaded record is a collection, the action redirects to the
+     * collection route, carrying the current search id through as a "sid" query parameter when one is present.
+     *
+     * @param ?int  $currentSearchId     Current search id reported by search memory
+     * @param array $expectedQueryParams Query parameters expected on the redirect
+     *
+     * @return void
+     */
+    #[DataProvider('collectionRedirectProvider')]
+    public function testActionRedirectsToCollectionRoute(?int $currentSearchId, array $expectedQueryParams): void
     {
         $searchMemory = $this->createMock(SearchMemory::class);
         $searchMemory->method('getCurrentSearchId')->willReturn($currentSearchId);
+        $expectedResponse = new Response();
+        $redirectHelper = $this->createMock(RedirectHelper::class);
+        $redirectHelper->expects($this->once())->method('redirectToRoute')
+            ->with($this->isInstanceOf(ResponseInterface::class), 'collection', $this->anything(), $expectedQueryParams)
+            ->willReturn($expectedResponse);
+
+        $driver = $this->createMock(RecordDriver::class);
+        $driver->method('tryMethod')->with('isCollection')->willReturn(true);
 
         $action = $this->buildAction(
             ['Collections' => ['collections' => true]],
             searchMemory: $searchMemory,
-            redirectHelper: $redirectHelper
+            redirectHelper: $redirectHelper,
+            driver: $driver
         );
-
-        $driver = $this->createMock(RecordDriver::class);
-        $driver->method('tryMethod')->with('isCollection')->willReturn(true);
-        $this->setProperty($action, 'driver', $driver);
 
         $routeMatch = new RouteMatch(['id' => 'coll1']);
         $routeMatch->setMatchedRouteName('record');
@@ -175,41 +210,7 @@ class HomeActionTest extends TestCase
             ->withQueryParams(['checkRoute' => '1'])
             ->withParsedBody([])
             ->withAttribute('route-match', $routeMatch);
-        $this->setProperty($action, 'request', $request);
 
-        return $this->callMethod($action, 'action', [$request, new Response()]);
-    }
-
-    /**
-     * Test that when collections are active and the loaded record is a collection, the action redirects to the
-     * collection route.
-     *
-     * @return void
-     */
-    public function testActionRedirectsToCollectionRouteForCollectionRecord(): void
-    {
-        $expectedResponse = new Response();
-        $redirectHelper = $this->createMock(RedirectHelper::class);
-        $redirectHelper->expects($this->once())->method('redirectToRoute')
-            ->with($this->isInstanceOf(ResponseInterface::class), 'collection', $this->anything(), [])
-            ->willReturn($expectedResponse);
-
-        $this->assertSame($expectedResponse, $this->runCollectionRedirect(null, $redirectHelper));
-    }
-
-    /**
-     * Test that the current search id is carried through as a "sid" query parameter on the collection redirect.
-     *
-     * @return void
-     */
-    public function testActionPassesCurrentSearchIdWhenRedirectingToCollection(): void
-    {
-        $expectedResponse = new Response();
-        $redirectHelper = $this->createMock(RedirectHelper::class);
-        $redirectHelper->expects($this->once())->method('redirectToRoute')
-            ->with($this->isInstanceOf(ResponseInterface::class), 'collection', $this->anything(), ['sid' => 42])
-            ->willReturn($expectedResponse);
-
-        $this->assertSame($expectedResponse, $this->runCollectionRedirect(42, $redirectHelper));
+        $this->assertSame($expectedResponse, $action($request, new Response()));
     }
 }
