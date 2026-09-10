@@ -36,7 +36,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
@@ -112,7 +111,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param PhpRenderer            $renderer         View renderer
      * @param ResultsManager         $resultsManager   Search results plugin manager
      * @param array                  $scheduleOptions  Configured schedule options
-     * @param Config                 $mainConfig       Top-level VuFind configuration
+     * @param array                 $mainConfig       Top-level VuFind configuration
      * @param Mailer                 $mailer           Mail service
      * @param SearchServiceInterface $searchService    Search table
      * @param LocaleSettings         $localeSettings   Locale settings object
@@ -124,7 +123,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         protected PhpRenderer $renderer,
         protected ResultsManager $resultsManager,
         protected array $scheduleOptions,
-        protected Config $mainConfig,
+        protected array $mainConfig,
         protected Mailer $mailer,
         protected SearchServiceInterface $searchService,
         protected LocaleSettings $localeSettings,
@@ -381,7 +380,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         $unsubscribeUrl = $s->getNotificationBaseUrl()
             . ($this->urlHelper)('myresearch-unsubscribe')
             . "?id={$s->getId()}&key=$secret";
-        $userInstitution = $this->mainConfig->Site->institution;
+        $userInstitution = $this->mainConfig['Site']['institution'];
         $params = $searchObject->getParams();
         // Filter function to only pass along selected checkboxes:
         $selectedCheckboxes = function ($data) {
@@ -419,7 +418,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      */
     protected function sendEmail($user, $message)
     {
-        $subject = $this->mainConfig->Site->title
+        $subject = $this->mainConfig['Site']['title']
             . ': ' . $this->translate('Scheduled Alert Results');
         $from = $this->getEmailSenderAddress($this->mainConfig);
         $to = $user->getEmail();

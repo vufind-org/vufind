@@ -318,9 +318,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             $container = $this->createMock(\Laminas\Session\Container::class);
         }
         if (null === $mock) {
-            return new Backend($connector, $factory, $cache, $container, new \VuFind\Config\Config($settings));
+            return new Backend($connector, $factory, $cache, $container, $settings);
         } else {
-            $params = [$connector, $factory, $cache, $container, new \VuFind\Config\Config($settings)];
+            $params = [$connector, $factory, $cache, $container, $settings];
             return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
                 ->onlyMethods($mock)
                 ->setConstructorArgs($params)
