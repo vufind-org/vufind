@@ -56,17 +56,10 @@ class Email implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Main config.
-     *
-     * @var array
-     */
-    protected $mainConfig;
-
-    /**
      * Constructor.
      *
      * @param RendererInterface $viewRenderer View renderer
-     * @param array             $config       Main config
+     * @param array             $mainConfig       Main config
      * @param Mailer            $mailer       Mailer
      */
     public function __construct(
@@ -74,7 +67,6 @@ class Email implements HandlerInterface, LoggerAwareInterface
         protected array $mainConfig,
         protected Mailer $mailer
     ) {
-        $this->mainConfig = $config;
     }
 
     /**
