@@ -87,10 +87,10 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? [];
 
-        $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
-        $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
+        $regexArray = $this->recordConfig['Catalog']['CatalogANRegex'] ?? [];
+        $replaceArray = $this->recordConfig['Catalog']['CatalogANReplace'] ?? [];
 
         if ($dbid === $catId && $this->pubTypeRtacEnabled()) {
             $returnValue = $an;
@@ -111,8 +111,8 @@ class EDS extends DefaultRecord
     public function hasCatalog()
     {
         $dbid = $this->fields['Header']['DbId'];
-        $hasCatalog = $this->recordConfig?->Catalog?->EDSHasCatalog ?? false;
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+        $hasCatalog = $this->recordConfig['Catalog']['EDSHasCatalog'] ?? false;
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? [];
 
         // if config empty or false, return false
         if (!$hasCatalog) {
@@ -408,8 +408,8 @@ class EDS extends DefaultRecord
      */
     protected function itemIsIncluded(array $item, array $filter): bool
     {
-        $globalFilter = isset($this->recordConfig->ItemGlobalFilter)
-            ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
+        $globalFilter = isset($this->recordConfig['ItemGlobalFilter'])
+            ? $this->recordConfig['ItemGlobalFilter'] : [];
 
         $filter['exclude']['Label'] =
             array_merge($globalFilter['excludeLabel'] ?? [], $filter['exclude']['Label'] ?? []);
@@ -462,7 +462,7 @@ class EDS extends DefaultRecord
     ): array {
         $items = [];
         if (is_array($this->fields['Items'] ?? null)) {
-            $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
+            $itemGlobalOrderConfig = $this->recordConfig['ItemGlobalOrder'] ?? [];
             $origItems = $this->fields['Items'];
             // Only sort by label if we have a sort config:
             if (!empty($itemGlobalOrderConfig)) {
@@ -683,7 +683,7 @@ class EDS extends DefaultRecord
         }
 
         // Optionally use VuFind's default cover loader
-        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        $fallBackToCoverLoader = $this->recordConfig['Cover']['fallBackToCoverLoader'] ?? [];
         if ($fallBackToCoverLoader) {
             $parentThumbnail = parent::getThumbnail($size);
 
