@@ -34,6 +34,7 @@
 namespace VuFind\I18n\Locale;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function floatval;
@@ -107,8 +108,10 @@ class LocaleSettings
      *
      * @param array $config Configuration object
      */
-    public function __construct(array $config)
-    {
+    public function __construct(
+        #[Autowire(config: 'config')]
+        array $config
+    ) {
         $this->enabledLocales = $config['Languages'] ?? [];
         $this->browserDetectLanguage = (bool)($config['Site']['browserDetectLanguage'] ?? true);
         $this->defaultLocale = $this->parseDefaultLocale($config);
