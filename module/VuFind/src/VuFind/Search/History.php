@@ -123,8 +123,6 @@ class History
             ];
         }
         // If we have a setting, make sure it is properly formatted as an array:
-        return $this->config['Account']['scheduled_search_frequencies']
-            ? $this->config['Account']['scheduled_search_frequencies']
-            : (array)$this->config['Account']['scheduled_search_frequencies'];
+        return (array)$this->config['Account']['scheduled_search_frequencies'];
     }
 }
