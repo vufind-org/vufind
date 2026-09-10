@@ -357,9 +357,9 @@ class ComposerPackageTemplateCommand extends AbstractCommand
     }
 
     /**
-     * Generate config.ini (or mymodule.ini).
+     * Generate mymodule.ini.
      *
-     * This method so far only creates a sample config folder with a config.ini file.
+     * This method so far only creates a sample config folder with a mymodule.ini file.
      * - How will the file be accessed from the module, themes, ...?
      * - Should we also add a sample config reader to the module? (is adding a module a prerequisite)?
      *
