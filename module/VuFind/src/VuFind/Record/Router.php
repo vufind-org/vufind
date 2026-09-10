@@ -29,6 +29,8 @@
 
 namespace VuFind\Record;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 use function is_object;
 
@@ -44,20 +46,14 @@ use function is_object;
 class Router
 {
     /**
-     * VuFind configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
      * @param array $config VuFind configuration
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**

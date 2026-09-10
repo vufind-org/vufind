@@ -291,7 +291,6 @@ $config = [
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
-            \VuFind\Record\Router::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\SMS\SMSInterface::class => \VuFind\SMS\Factory::class,
             \VuFind\UrlShortener\UrlShortenerInterface::class => \VuFind\UrlShortener\ServiceFactory::class,
             \VuFindHttp\HttpService::class => \VuFind\Service\HttpServiceFactory::class,
