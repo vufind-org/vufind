@@ -1,25 +1,28 @@
 <?php
-    $this->headTitle($this->translate('checkout_self'));
+  // Disable top search box -- this page has a special layout.
+  $this->globals()['searchbox'] = false;
 
-    $this->jsTranslations()->addStrings([
-        'checkout_scan_aim' => 'checkout_scan_aim',
-        'checkout_scan_failed' => 'checkout_scan_failed',
-        'checkout_scan_start' => 'checkout_scan_start',
-        'checkout_scan_starting' => 'checkout_scan_starting',
-        'checkout_scan_stop' => 'checkout_scan_stop',
-        'checkout_scan_success' => 'checkout_scan_success',
-    ]);
+  $this->headTitle($this->translate('checkout_self'));
 
-    // zxing-js provides the global `ZXing` that checkout-scanner.js needs, so
-    // it has to be registered first. @zxing/library rather than
-    // @zxing/browser because we squash each frame before decoding it, and
-    // @zxing/browser's ready-made loop offers no way in: the hooks it
-    // documents for exactly that are statics its own call sites reference on
-    // the base class, so a subclass cannot override them.
-    $this->assetManager()->appendScriptLink(
-        'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js'
-    );
-    $this->assetManager()->appendScriptLink('checkout-scanner.js');
+  $this->jsTranslations()->addStrings([
+      'checkout_scan_aim' => 'checkout_scan_aim',
+      'checkout_scan_failed' => 'checkout_scan_failed',
+      'checkout_scan_start' => 'checkout_scan_start',
+      'checkout_scan_starting' => 'checkout_scan_starting',
+      'checkout_scan_stop' => 'checkout_scan_stop',
+      'checkout_scan_success' => 'checkout_scan_success',
+  ]);
+
+  // zxing-js provides the global `ZXing` that checkout-scanner.js needs, so
+  // it has to be registered first. @zxing/library rather than
+  // @zxing/browser because we squash each frame before decoding it, and
+  // @zxing/browser's ready-made loop offers no way in: the hooks it
+  // documents for exactly that are statics its own call sites reference on
+  // the base class, so a subclass cannot override them.
+  $this->assetManager()->appendScriptLink(
+      'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js'
+  );
+  $this->assetManager()->appendScriptLink('checkout-scanner.js');
 ?>
 
 <h1><?= $this->transEsc('checkout_item') ?></h1>
