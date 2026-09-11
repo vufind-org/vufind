@@ -95,7 +95,7 @@ VuFind.register('checkoutScanner', function checkoutScanner() {
       return reader.decode(
         new ZXing.BinaryBitmap(new ZXing.GlobalHistogramBinarizer(source)), hints
       ).getText().trim();
-    } catch (e) {
+    } catch {
       // NotFoundException on almost every frame, plus Format and Checksum
       // exceptions on a partial read. None are worth reporting.
       return null;
