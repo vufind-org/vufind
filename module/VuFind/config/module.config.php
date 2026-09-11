@@ -553,6 +553,7 @@ $recordRoutes = [
 $nonTabRecordActions = [
     'AddTag',
     'AjaxTab',
+    'Checkout',
     'Cite',
     'DeleteTag',
     'Email',

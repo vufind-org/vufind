@@ -482,6 +482,27 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get an item record by its barcode.
+     *
+     * @param string $barcode Barcode
+     *
+     * @return \stdClass The item
+     */
+    protected function getItemByBarcode($barcode)
+    {
+        $queryParams = [
+            'query' => '(barcode=="' . $barcode . '")',
+        ];
+        $response = $this->makeRequest(
+            'GET',
+            '/inventory/items',
+            $queryParams
+        );
+        $item = json_decode($response->getBody())?->items[0] ?? null;
+        return $item;
+    }
+
+    /**
      * Given an instance object or identifier, or a holding or item identifier,
      * determine an appropriate value to use as VuFind's bibliographic ID.
      *
@@ -2809,6 +2830,242 @@ class Folio extends AbstractAPI implements
             'valid' => $valid,
             'status' => $valid ? 'request_place_text' : 'No pickup locations available',
         ];
+    }
+
+    /**
+     * Return the allowed self-checkout service points for this item, based on
+     * both the item's location and the config settings.
+     *
+     * @param object $item Item
+     *
+     * @return array Array of allowed servicePointIds
+     */
+    protected function getAllowedCheckoutServicePointsForItem($item): array
+    {
+        $allowedServicePointIds = $this->config['Checkout']['allowedServicePointIds'] ?? [];
+        $itemLocationId = $item->effectiveLocation->id;
+        $location = $this->getLocationData($itemLocationId);
+        return array_intersect($allowedServicePointIds, $location['servicePointIds']);
+    }
+
+    /**
+     * Check if checkout is valid.
+     *
+     * This is responsible for determining if an item can be self-checked out
+     *
+     * @param string $id     The record id
+     * @param array  $data   An array of item data
+     * @param array  $patron An array of patron data
+     *
+     * @return array Two entries: 'valid' (boolean) plus 'status' (message to display to user)
+     */
+    public function checkCheckoutIsValid($id, $data, $patron)
+    {
+        // Check if self-checkout is enabled at all
+        if (!($this->config['Checkout']['enabled'] ?? false)) {
+            $this->logWarning('Self checkout is disabled.');
+            return ['valid' => false, 'status' => 'checkout_error_blocked'];
+        }
+
+        $itemBarcode = $data['barcode'] ?? null;
+        if (!$itemBarcode) {
+            $this->logWarning('No item barcode');
+            return ['valid' => false, 'status' => 'checkout_error_blocked'];
+        }
+
+        $item = $this->getItemByBarcode($itemBarcode);
+        if (!$item) {
+            $this->logWarning('No item found for barcode ' . $data['barcode']);
+            return ['valid' => false, 'status' => 'checkout_error_blocked'];
+        }
+
+        // Check that the item is available
+        if ('Available' !== $item?->status?->name) {
+            $this->logWarning('Item is not available.');
+            return ['valid' => false, 'status' => 'checkout_error_blocked'];
+        }
+
+        // Check that the location is active
+        $itemLocationId = $item->effectiveLocation->id;
+        $location = $this->getLocations()[$itemLocationId];
+        if (!$location['isActive']) {
+            $this->logWarning('Location is inactive.');
+            return ['valid' => false, 'status' => 'checkout_error_blocked'];
+        }
+
+        // Check that the item's location is eligible to be serviced at the defined service points
+        $allowedServicePointIds = $this->getAllowedCheckoutServicePointsForItem($item);
+        if (!$allowedServicePointIds) {
+            $this->logWarning('Checkout not allowed for this item at this service point.');
+            return ['valid' => false, 'status' => 'checkout_error_blocked'];
+        }
+
+        // Check manual patron blocks
+        $manualBlocks = $this->getManualPatronBlocks($patron['id']);
+        foreach ($manualBlocks as $block) {
+            if ($block?->borrowing) {
+                $this->logWarning('Patron ' . $patron['id'] . ' has a manual block on borrowing.');
+                return ['valid' => false, 'status' => 'checkout_error_blocked'];
+            }
+        }
+
+        // Check automated patron blocks
+        $automatedBlocks = $this->getAutomatedPatronBlocks($patron['id']);
+        foreach ($automatedBlocks as $block) {
+            if ($block?->blockBorrowing) {
+                $this->logWarning('Patron ' . $patron['id'] . ' has an automated block on borrowing.');
+                return ['valid' => false, 'status' => 'checkout_error_blocked'];
+            }
+        }
+
+        // Optionally, respect a maximum number of self-checkout items
+        $selfCheckoutLimit = $this->config['Checkout']['limit'] ?? 0;
+        if ($selfCheckoutLimit > 0) {
+            $servicePointsQueryString = implode(' OR ', $allowedServicePointIds);
+            $query =
+                'userId==' . $patron['id']
+                . ' and status.name==Open'
+                . ' and checkoutServicePointId==(' . $servicePointsQueryString . ')';
+            $selfCheckoutCount = $this->getResultCount('/circulation/loans', compact('query'));
+            if ($selfCheckoutCount >= $selfCheckoutLimit) {
+                $this->logWarning('Patron ' . $patron['id'] . ' has reached the self-checkout limit.');
+                return ['valid' => false, 'status' => 'checkout_error_blocked'];
+            }
+        }
+
+        return ['valid' => true];
+    }
+
+    /**
+     * Place Checkout.
+     *
+     * Attempts to place a checkout on a particular item and returns
+     * an array with result details.
+     *
+     * @param array $checkoutDetails An array of item and patron data
+     *
+     * @return mixed An array of data on the checkout including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeCheckout($checkoutDetails)
+    {
+        if (
+            empty($id = $checkoutDetails['id'] ?? null)
+            || empty($barcode = $checkoutDetails['barcode'] ?? null)
+            || empty($patron = $checkoutDetails['patron'] ?? null)
+        ) {
+            $this->logError('Missing required info from checkoutDetails: ', $checkoutDetails);
+            throw new ILSException('checkout_failure');
+        }
+
+        $item = $this->getItemByBarcode($barcode);
+        if (!$item) {
+            $this->logError('No item found for barcoee ' . $barcode);
+            throw new ILSException('checkout_failure');
+        }
+
+        // Confirm the item belongs to this bib record
+        $holdingsArray = $this->getHoldings([$id]);
+        $holdingsItem = array_find($holdingsArray[0]['holdings'] ?? [], fn ($item) => $item['barcode'] === $barcode);
+        if (!$holdingsItem) {
+            $this->logError('No matching barcode ' . $barcode . ' found for id ' . $id);
+            throw new ILSException('checkout_failure');
+        }
+
+        // Determine the service point to use. If multiple are possible, use the first.
+        $allowedServicePointsForItem = $this->getAllowedCheckoutServicePointsForItem($item);
+        if (!$allowedServicePointsForItem) {
+            $this->logError('No allowed checkout service points for barcode ' . $barcode);
+            throw new ILSException('checkout_failure');
+        }
+        $servicePointId = $allowedServicePointsForItem[0];
+
+        $requestBody = [
+            'itemBarcode' => $barcode,
+            // TODO: the barcode is not always the username
+            'userBarcode' => $patron['username'],
+            'servicePointId' => $servicePointId,
+        ];
+        $result = $this->performCheckoutRequest($requestBody);
+
+        if (!$result['success']) {
+            $this->logError('Checkout failed for barcode ' . $barcode . ' for id ' . $id, $result);
+        }
+        return $result;
+    }
+
+    /**
+     * Helper method for placeCheckout(): send the request and process the response.
+     *
+     * @param array $requestBody Request body
+     *
+     * @return array
+     * @throws ILSException
+     */
+    protected function performCheckoutRequest(array $requestBody): array
+    {
+        // Need permission 'circulation.check-out-by-barcode.post'
+        // Also maybe need 'audit.all' for it to appear in circ log.
+        $response = $this->makeRequest(
+            'POST',
+            '/circulation/check-out-by-barcode',
+            json_encode($requestBody),
+            [],
+            true
+        );
+        try {
+            $json = json_decode($response->getBody());
+        } catch (Exception $e) {
+            $this->throwAsIlsException($e, $response->getBody());
+        }
+        if ($response->isSuccess()) {
+            return ['success' => true];
+        }
+        $this->debug('Checkout response ' . $response->getStatusCode() . ': ' . $response->getBody());
+        return [
+            'success' => false,
+            'status' => $json->errors[0]->message ?? 'checkout_failure',
+        ];
+    }
+
+    /**
+     * Retrieve any manual patron blocks for the given user.
+     *
+     * @param string $userId User UUID
+     *
+     * @return array The manual patron blocks
+     */
+    protected function getManualPatronBlocks($userId)
+    {
+        // manualblocks.collection.get
+        $queryParams = [
+            'query' => '(userId=="' . $userId . '")',
+        ];
+        $response = $this->makeRequest(
+            'GET',
+            '/manualblocks',
+            $queryParams
+        );
+        $manualBlocks = json_decode($response->getBody())?->manualblocks ?? [];
+        return $manualBlocks;
+    }
+
+    /**
+     * Retrieve any automatic patron blocks for the given user.
+     *
+     * @param string $userId User UUID
+     *
+     * @return array The automatic patron blocks
+     */
+    protected function getAutomatedPatronBlocks($userId)
+    {
+        // patron-blocks.automated-patron-blocks.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/automated-patron-blocks/' . $userId
+        );
+        $automatedBlocks = json_decode($response->getBody())?->automatedPatronBlocks ?? [];
+        return $automatedBlocks;
     }
 
     /**
