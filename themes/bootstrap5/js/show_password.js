@@ -1,4 +1,4 @@
-/*global VuFind, bootstrap */
+/*global VuFind */
 
 VuFind.register('showPassword', () => {
 
