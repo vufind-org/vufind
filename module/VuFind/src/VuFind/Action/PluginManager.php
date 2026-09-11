@@ -122,6 +122,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'install/fixdatabase' => Install\FixDatabaseAction::class,
         'install/fixdependencies' => Install\FixDependenciesAction::class,
         'install/fixils' => Install\FixIlsAction::class,
+        'install/fixsolr' => Install\FixSolrAction::class,
+        'install/fixsecurity' => Install\FixSecurityAction::class,
+        'install/performsecurityfix' => Install\PerformSecurityFixAction::class,
         'install/fixsslcerts' => Install\FixSslCertsAction::class,
 
         'missingrecord/home' => MissingRecord\HomeAction::class,

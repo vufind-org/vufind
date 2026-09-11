@@ -36,7 +36,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\RedirectHelper;
 
 use function dirname;
-use function function_exists;
 
 /**
  * Install "fix basic configuration" action.
@@ -80,13 +79,7 @@ class FixBasicConfigAction extends AbstractInstallAction
         } catch (\Exception $e) {
             $templateParams['configDir'] = dirname($this->getForcedLocalConfigPath('config'));
             $templateParams['errorMessage'] = $e->getMessage();
-            if (
-                function_exists('posix_getpwuid')
-                && function_exists('posix_geteuid')
-            ) {
-                $processUser = posix_getpwuid(posix_geteuid());
-                $templateParams['runningUser'] = $processUser['name'];
-            }
+            $templateParams['runningUser'] = $this->getProcessUserName();
         }
         return $this->renderTemplate($request, $response, $templateParams);
     }

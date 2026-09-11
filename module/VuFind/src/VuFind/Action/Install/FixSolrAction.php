@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Install "fix cache" action.
+ * Install "fix Solr" action.
  *
  * PHP version 8
  *
@@ -33,9 +33,11 @@ namespace VuFind\Action\Install;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\ForwardHelper;
+use VuFind\ActionHelper\RedirectHelper;
 
 /**
- * Install "fix cache" action.
+ * Install "fix Solr" action.
  *
  * @category VuFind
  * @package  Action
@@ -44,10 +46,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FixCacheAction extends AbstractInstallAction
+class FixSolrAction extends AbstractInstallAction
 {
     /**
-     * Display instructions for fixing cache issues.
+     * Display repair instructions for Solr problems.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -58,9 +60,38 @@ class FixCacheAction extends AbstractInstallAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
+        // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
+        $indexUrl = $this->config['Index']['url'] ?? '';
+        if (stristr($indexUrl, 'localhost')) {
+            $newUrl = str_replace('localhost', '127.0.0.1', $indexUrl);
+            try {
+                $this->testSearchService();
+                try {
+                    $this->changeConfig(
+                        'config',
+                        ['Index' => ['url' => $newUrl]]
+                    );
+                } catch (\Exception $e) {
+                    return $this->getHelper(ForwardHelper::class)
+                        ->forwardTo($request, $response, 'Install/fixbasicconfig');
+                }
+                return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
+            } catch (\Exception $e) {
+                // Didn't work!
+            }
+        }
+
+        // If we got this far, the automatic fix didn't work, so let's just assign some variables to use in offering
+        // troubleshooting advice:
         $templateParams = [
-            'cacheDir' => $this->cacheManager->getCacheDir(),
-            'runningUser' => $this->getProcessUserName(),
+            'rawUrl' => $indexUrl,
+            'userUrl' => str_replace(
+                ['localhost', '127.0.0.1'],
+                $request->getServerParams()['HTTP_HOST'] ?? '',
+                $indexUrl
+            ),
+            'core' => $this->config['Index']['default_core'] ?? 'biblio',
+            'configFile' => $this->getForcedLocalConfigPath('config'),
         ];
         return $this->renderTemplate($request, $response, $templateParams);
     }

@@ -35,10 +35,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 
-use function defined;
-use function function_exists;
-use function is_callable;
-
 /**
  * Install "fix dependencies" action.
  *
@@ -73,32 +69,8 @@ class FixDependenciesAction extends AbstractInstallAction
             $problems++;
         }
 
-        $missingExtensions = [];
-        // Is the mbstring library missing?
-        if (!function_exists('mb_substr')) {
-            $missingExtensions[] = 'mbstring';
-        }
-
-        // Is the GD library missing?
-        if (!is_callable('imagecreatefromstring')) {
-            $missingExtensions[] = 'GD';
-        }
-
-        // Is the openssl library missing?
-        if (!function_exists('openssl_encrypt')) {
-            $missingExtensions[] = 'openssl';
-        }
-
-        // Is the XSL library missing?
-        if (!class_exists('XSLTProcessor')) {
-            $missingExtensions[] = 'XSL';
-        }
-
-        // Is the sodium extension missing?
-        if (!defined('SODIUM_LIBRARY_VERSION')) {
-            $missingExtensions[] = 'sodium';
-        }
-        if ($missingExtensions) {
+        // Are we missing extensions?
+        if ($missingExtensions = $this->getMissingExtensions()) {
             ++$problems;
         }
 

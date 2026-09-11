@@ -33,12 +33,8 @@ namespace VuFind\Action\Install;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFindSearch\Command\RetrieveCommand;
 
-use function defined;
-use function function_exists;
 use function in_array;
-use function is_callable;
 
 /**
  * Install home action.
@@ -142,15 +138,9 @@ class HomeAction extends AbstractInstallAction
      */
     protected function checkMethodDependencies(): array
     {
-        $requiredFunctionsExist
-            = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('openssl_encrypt')
-              && class_exists('XSLTProcessor')
-              && defined('SODIUM_LIBRARY_VERSION');
-
         return [
             'title' => 'Dependencies',
-            'status' => $requiredFunctionsExist && $this->phpVersionIsNewEnough(),
+            'status' => $this->phpVersionIsNewEnough() && !$this->getMissingExtensions(),
             'fix' => 'fixdependencies',
         ];
     }
@@ -176,39 +166,6 @@ class HomeAction extends AbstractInstallAction
             'title' => 'ILS',
             'status' => $status,
             'fix' => 'fixils',
-        ];
-    }
-
-    /**
-     * Support method to test the search service.
-     *
-     * @return void
-     * @throws \Exception
-     */
-    protected function testSearchService(): void
-    {
-        // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
-        $command = new RetrieveCommand('Solr', '1');
-        $this->searchService->invoke($command)->getResult();
-    }
-
-    /**
-     * Check if the Solr index is working.
-     *
-     * @return array
-     */
-    protected function checkMethodSolr(): array
-    {
-        try {
-            $this->testSearchService();
-            $status = true;
-        } catch (\Exception $e) {
-            $status = false;
-        }
-        return [
-            'title' => 'Solr',
-            'status' => $status,
-            'fix' => 'fixsolr',
         ];
     }
 

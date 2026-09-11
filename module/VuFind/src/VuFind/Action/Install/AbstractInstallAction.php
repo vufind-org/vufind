@@ -45,10 +45,13 @@ use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindHttp\HttpService;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service as SearchService;
 
 use function count;
 use function defined;
+use function function_exists;
+use function is_callable;
 use function sprintf;
 
 /**
@@ -343,5 +346,91 @@ abstract class AbstractInstallAction extends AbstractTemplateRenderingAction
             // Any exception means we have a problem!
             return false;
         }
+    }
+
+    /**
+     * Support method to test the search service.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function testSearchService(): void
+    {
+        // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
+        $command = new RetrieveCommand('Solr', '1');
+        $this->searchService->invoke($command)->getResult();
+    }
+
+    /**
+     * Check if the Solr index is working.
+     *
+     * @return array
+     */
+    protected function checkMethodSolr(): array
+    {
+        try {
+            $this->testSearchService();
+            $status = true;
+        } catch (\Exception $e) {
+            $status = false;
+        }
+        return [
+            'title' => 'Solr',
+            'status' => $status,
+            'fix' => 'fixsolr',
+        ];
+    }
+
+    /**
+     * Get a list of missing extensions required for proper operation.
+     *
+     * @return array
+     */
+    protected function getMissingExtensions(): array
+    {
+        $missingExtensions = [];
+        // Is the mbstring library missing?
+        if (!function_exists('mb_substr')) {
+            $missingExtensions[] = 'mbstring';
+        }
+
+        // Is the GD library missing?
+        if (!is_callable('imagecreatefromstring')) {
+            $missingExtensions[] = 'GD';
+        }
+
+        // Is the openssl library missing?
+        if (!function_exists('openssl_encrypt')) {
+            $missingExtensions[] = 'openssl';
+        }
+
+        // Is the XSL library missing?
+        if (!class_exists('XSLTProcessor')) {
+            $missingExtensions[] = 'XSL';
+        }
+
+        // Is the sodium extension missing?
+        if (!defined('SODIUM_LIBRARY_VERSION')) {
+            $missingExtensions[] = 'sodium';
+        }
+
+        return $missingExtensions;
+    }
+
+    /**
+     * Get effective user name for the current process.
+     *
+     * @return ?string
+     */
+    protected function getProcessUserName(): ?string
+    {
+        if (
+            function_exists('posix_getpwuid')
+            && function_exists('posix_geteuid')
+            && ($processUser = posix_getpwuid(posix_geteuid()))
+        ) {
+            return $processUser['name'];
+        }
+        return null;
     }
 }
