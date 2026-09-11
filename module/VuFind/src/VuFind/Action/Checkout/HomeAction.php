@@ -125,8 +125,6 @@ class HomeAction extends AbstractTemplateRenderingAction
             return $this->renderTemplate($request, $response, $templateParams, 'checkout/home');
         }
 
-        // RecordController::checkoutAction() takes the barcode from the query
-        // string, not the post: it forms part of the HMAC-validated request.
         return $this->getHelper(RedirectHelper::class)->redirectToRoute(
             $response,
             'record-checkout',
