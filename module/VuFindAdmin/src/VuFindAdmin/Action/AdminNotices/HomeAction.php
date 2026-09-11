@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Edit notice action.
+ * Notices home action.
  *
  * PHP version 8
  *
@@ -29,13 +29,13 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindAdmin\Action\Notices;
+namespace VuFindAdmin\Action\AdminNotices;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Edit notice action.
+ * Notices home action.
  *
  * @category VuFind
  * @package  Action
@@ -44,10 +44,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EditAction extends AbstractNoticeAction
+class HomeAction extends AbstractNoticeAction
 {
     /**
-     * Edit notice.
+     * List notices.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -58,28 +58,29 @@ class EditAction extends AbstractNoticeAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if ($this->getPostParam('cancel') !== null) {
-            return $this->returnToNoticesAdminHome();
+        $noticeList = $this->noticeManager->getAdminList();
+        foreach ($noticeList as &$notice) {
+            $restrictions = $this->getDateTimeRestrictions($notice);
+            if (isset($restrictions['start_date_time']) || isset($restrictions['end_date_time'])) {
+                $notice['start'] = $restrictions['start_date_time'] ?? null;
+                $notice['end'] = $restrictions['end_date_time'] ?? null;
+                $notice['dateTimeType'] = 'date_time';
+                $notice['dateTimeFormat'] = 'Y-m-d H:i:s';
+                $notice['dateTimeDisplayFunction'] = 'convertToDisplayDateAndTime';
+            } elseif (isset($restrictions['start_date']) || isset($restrictions['end_date'])) {
+                $notice['start'] = $restrictions['start_date'] ?? null;
+                $notice['end'] = $restrictions['end_date'] ?? null;
+                $notice['dateTimeType'] = 'date';
+                $notice['dateTimeFormat'] = 'Y-m-d';
+                $notice['dateTimeDisplayFunction'] = 'convertToDisplayDate';
+            } elseif (isset($restrictions['start_time']) || isset($restrictions['end_time'])) {
+                $notice['start'] = $restrictions['start_time'] ?? null;
+                $notice['end'] = $restrictions['end_time'] ?? null;
+                $notice['dateTimeType'] = 'time';
+                $notice['dateTimeFormat'] = 'H:i:s';
+                $notice['dateTimeDisplayFunction'] = 'convertToDisplayTime';
+            }
         }
-
-        $notice = $this->getNoticeByQueryParam();
-
-        $formData = $this->getFormData($notice);
-
-        if (!$this->isPost()) {
-            return $this->renderTemplate(
-                $request,
-                $response,
-                compact('formData'),
-                'admin/notices/edit'
-            );
-        }
-
-        $this->noticeManager->editDatabaseNotice(
-            $notice['id'],
-            $this->formDataToNotice()
-        );
-
-        return $this->returnToNoticesAdminHome();
+        return $this->renderTemplate($request, $response, compact('noticeList'), 'admin/notices/home');
     }
 }

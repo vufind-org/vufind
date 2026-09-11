@@ -3,28 +3,6 @@
 namespace VuFindAdmin\Module\Configuration;
 
 $config = [
-    'controllers' => [
-        'factories' => [
-            'VuFindAdmin\Controller\AdminController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\ConfigController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\MaintenanceController' => 'VuFindAdmin\Controller\MaintenanceControllerFactory',
-            'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\OnlinePaymentController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
-        ],
-        'aliases' => [
-            'Admin' => 'VuFindAdmin\Controller\AdminController',
-            'AdminConfig' => 'VuFindAdmin\Controller\ConfigController',
-            'AdminFeedback' => 'VuFindAdmin\Controller\FeedbackController',
-            'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
-            'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
-            'AdminTags' => 'VuFindAdmin\Controller\TagsController',
-            'AdminPayment' => 'VuFindAdmin\Controller\OnlinePaymentController',
-            'AdminOverdrive' => 'VuFindAdmin\Controller\OverdriveController',
-        ],
-    ],
     'router' => [
         'routes' => [
             'admin' => [
@@ -39,16 +17,6 @@ $config = [
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
-                    'disabled' => [
-                        'type' => 'Laminas\Router\Http\Literal',
-                        'options' => [
-                            'route'    => '/Disabled',
-                            'defaults' => [
-                                'controller' => 'Admin',
-                                'action'     => 'Disabled',
-                            ],
-                        ],
-                    ],
                     'config' => [
                         'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
@@ -174,13 +142,83 @@ $config = [
         ],
     ],
     'vufind' => [
+        'action_config' => [
+            'vufindadmin_admin' => [
+                'actionIds' => [
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'admin/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminconfig/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminfeedback/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminmaintenance/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminnotices/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminpayment/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminoverdrive/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminsocial/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'admintags/',
+                    ],
+                ],
+                'accessPermission' => 'access.AdminModule',
+            ],
+            'vufindadmin_notices' => [
+                'actionIds' => [
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'notices/',
+                    ],
+                ],
+                'accessPermission' => 'access.AdminModule',
+            ],
+        ],
         'plugin_managers' => [
             'action' => [
                 'autodiscovery_namespaces' => [
                     'VuFindAdmin\Action' => true,
                 ],
+                'aliases' => [
+                    'config/enableautoconfig' => \VuFindAdmin\Action\AdminConfig\EnableAutoConfigAction::class,
+                    'feedback/updatestatus' => \VuFindAdmin\Action\AdminFeedback\UpdateStatusAction::class,
+                    'maintenance/clearcache' => \VuFindAdmin\Action\AdminMaintenance\ClearCacheAction::class,
+                    'maintenance/deleteexpiredsearches'
+                        => \VuFindAdmin\Action\AdminMaintenance\DeleteExpiredSearchesAction::class,
+                    'maintenance/deleteexpiredsessions'
+                        => \VuFindAdmin\Action\AdminMaintenance\DeleteExpiredSessionsAction::class,
+                    'maintenance/updatebrowscapcache'
+                        => \VuFindAdmin\Action\AdminMaintenance\UpdateBrowscapCacheAction::class,
+                ],
                 'category_aliases' => [
-                    'Adminnotices' => 'Notices',
+                    'Adminconfig' => 'AdminConfig',
+                    'Adminfeedback' => 'AdminFeedback',
+                    'Adminmaintenance' => 'AdminMaintenance',
+                    'Adminnotices' => 'AdminNotices',
+                    'Adminoverdrive' => 'AdminOverdrive',
+                    'Adminpayment' => 'AdminPayment',
+                    'Adminsocial' => 'AdminSocial',
+                    'Admintags' => 'AdminTags',
                 ],
             ],
         ],

@@ -315,13 +315,22 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     /**
      * Get a parameter from POST fields or query string.
      *
-     * @param string            $param   Param name
-     * @param array|string|null $default Default value
+     * @param string            $param       Param name
+     * @param array|string|null $default     Default value
+     * @param bool              $preferQuery Prefer query param if both POST and query param is available?
      *
      * @return array|string|null
      */
-    protected function getPostOrQueryParam(string $param, array|string|null $default = null): array|string|null
-    {
+    protected function getPostOrQueryParam(
+        string $param,
+        array|string|null $default = null,
+        bool $preferQuery = false
+    ): array|string|null {
+        if ($preferQuery) {
+            return $this->getQueryParam($param)
+                ?? $this->getPostParam($param)
+                ?? $default;
+        }
         return $this->getPostParam($param)
             ?? $this->getQueryParam($param)
             ?? $default;
