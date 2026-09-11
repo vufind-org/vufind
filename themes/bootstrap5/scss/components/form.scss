@@ -179,6 +179,21 @@ form {
   line-height: 1.5;
 }
 
+/* used when config buttonToShowPasswords is enabled */
+.password-section {
+   position: relative;
+
+  .fa-eye, .fa-eye-slash {
+    position: absolute;
+    top: 50%;
+    right: 0.5em;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background-color: white;
+    z-index: 100;
+  }
+}
+
 /* hide result/list checkboxes (but NOT cart checkboxes) on mobile search/favorites */
 
 @media (max-width: 767px) {
