@@ -239,15 +239,19 @@ class OAuth2ServerService
     /**
      * Get the OpenID Connect well-known configuration information.
      *
+     * @param ServerRequestInterface $request Request
+     *
      * @return array
      *
      * @see https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest
      */
-    public function getWellKnownConfiguration(): array
+    public function getWellKnownConfiguration(ServerRequestInterface $request): array
     {
         $baseUrl = rtrim($this->baseUrl, '/');
+        // This must be same as OpenIDConnectServer\IdTokenResponse:
+        $issuer = 'https://' . $request->getServerParams()['HTTP_HOST'] ?? '';
         $configuration = [
-            'issuer' => 'https://' . $_SERVER['HTTP_HOST'], // Same as OpenIDConnectServer\IdTokenResponse
+            'issuer' => $issuer,
             'authorization_endpoint' => "$baseUrl/OAuth2/Authorize",
             'token_endpoint' => "$baseUrl/OAuth2/Token",
             'userinfo_endpoint' => "$baseUrl/OAuth2/UserInfo",

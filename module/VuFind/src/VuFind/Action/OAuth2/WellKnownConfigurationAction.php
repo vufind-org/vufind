@@ -61,7 +61,10 @@ class WellKnownConfigurationAction extends AbstractOAuth2Action
         }
 
         $responseHelper = $this->getHelper(ResponseHelper::class);
-        $response = $responseHelper->getJsonResponse($response, $this->oauth2Service->getWellKnownConfiguration());
+        $response = $responseHelper->getJsonResponse(
+            $response,
+            $this->oauth2Service->getWellKnownConfiguration($request)
+        );
         return $responseHelper->addCorsHeaders($response);
     }
 }
