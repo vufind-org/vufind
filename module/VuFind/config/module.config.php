@@ -460,8 +460,14 @@ $config = [
         // an underscore and the actual identifier (e.g. 'vufindadmin_admin').
         //
         // Valid keys for each configuration entry:
-        //   - actionIds             An array of action identifiers or prefixes the configuration applies to
-        //                           (format: category/action in lowercase)
+        //   - actionIds             An array of action identifiers or prefixes the configuration applies to. This can
+        //                           be a simple string in format 'category/action' (all lowercase) or an array for
+        //                           matching the beginning of the action identifier (again all lowercase):
+        //                           [
+        //                             'type' => 'prefix',
+        //                              'prefix' => 'category/',
+        //                           ],
+        //
         //   - accessPermission      Set access permission (string|false|null, see AccessPermissionInterface)
         //   - accessDeniedBehavior  Set behavior when access is denied (string|null, see AccessPermissionInterface)
         //   - backendId             Set search backend identifier (string)
