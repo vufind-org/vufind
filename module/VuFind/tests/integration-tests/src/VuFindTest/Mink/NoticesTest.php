@@ -566,11 +566,135 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test notices with date or time restriction in admin module.
+     * Test disabling and enabling notices in admin module.
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testDeletingNoticesInAdminModule')]
+    public function testDisablingAndEnablingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // add disabled notice
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '#enabled-checkbox');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Test'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        // check notice is disabled
+        $this->unFindCss($page, '#content > .notices .alert-success');
+        $this->checkToggleButtonDisabled($page);
+
+        // enable in list
+        $this->clickCss($page, '.notice-list .notice-enabled-toggle');
+
+        // wait for processing
+        sleep(1);
+        $this->checkToggleButtonEnabled($page);
+
+        // reload page and check that the notice is enabled
+        $session->reload();
+        $this->assertSame(
+            'Test',
+            $this->findCssAndGetText($page, '#content > .notices .alert-success')
+        );
+        $this->checkToggleButtonEnabled($page);
+
+        // disable in list
+        $this->clickCss($page, '.notice-list .notice-enabled-toggle');
+
+        // wait for processing
+        sleep(1);
+        $this->checkToggleButtonDisabled($page);
+
+        // reload page and check that the notice is disabled
+        $session->reload();
+        $this->unFindCss($page, '#content > .notices .alert-success');
+        $this->checkToggleButtonDisabled($page);
+
+        // enable in edit form
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->assertFalse(
+            $this->findCss($page, '#enabled-checkbox')->isChecked(),
+            'Enabled checkbox should not be checked'
+        );
+        $this->clickCss($page, '#enabled-checkbox');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        // check notice is enabled
+        $this->assertSame(
+            'Test',
+            $this->findCssAndGetText($page, '#content > .notices .alert-success')
+        );
+        $this->checkToggleButtonEnabled($page);
+
+        // Delete notice
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notice-row');
+    }
+
+    /**
+     * Check that the toggle button is in disabled state.
+     *
+     * @param Element $page Page element
+     *
+     * @return void
+     */
+    protected function checkToggleButtonDisabled(Element $page): void
+    {
+        $this->findCss($page, '.notice-list .disabled-icon');
+        $this->unFindCss($page, '.notice-list .disabled-icon.hidden');
+        $this->findCss($page, '.notice-list .enabled-icon.hidden');
+        $this->assertSame(
+            'Enable',
+            $this->findCss($page, '.notice-list .notice-enabled-toggle')->getAttribute('title'),
+        );
+    }
+
+    /**
+     * Check that the toggle button is in enabled state.
+     *
+     * @param Element $page Page element
+     *
+     * @return void
+     */
+    protected function checkToggleButtonEnabled(Element $page): void
+    {
+        $this->findCss($page, '.notice-list .enabled-icon');
+        $this->unFindCss($page, '.notice-list .enabled-icon.hidden');
+        $this->findCss($page, '.notice-list .disabled-icon.hidden');
+        $this->assertSame(
+            'Disable',
+            $this->findCss($page, '.notice-list .notice-enabled-toggle')->getAttribute('title'),
+        );
+    }
+
+    /**
+     * Test notices with date or time restriction in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testDisablingAndEnablingNoticesInAdminModule')]
     public function testNoticesWithDateOrTimeRestrictionsInAdminModule(): void
     {
         $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
