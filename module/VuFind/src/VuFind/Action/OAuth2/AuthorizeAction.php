@@ -137,9 +137,8 @@ class AuthorizeAction extends AbstractOAuth2Action
                 throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             }
 
-            // Store OpenID nonce (or null if not present to clear any existing one)
-            // in the access token table so that it can be retrieved for token or
-            // user info action:
+            // Store OpenID nonce (or null if not present to clear any existing one) in the access
+            // token table so that it can be retrieved for token or user info action:
             $this->accessTokenService->storeNonce($user->getId(), $this->getQueryParam('nonce'));
 
             $authRequest->setUser($this->oauth2Service->getOAuth2UserEntity($user));
