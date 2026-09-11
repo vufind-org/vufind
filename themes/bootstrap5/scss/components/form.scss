@@ -193,6 +193,14 @@ form {
     z-index: 100;
   }
 }
+@include media-breakpoint-up(sm) {
+  .password-section {
+    max-width: 400px;
+  }
+}
+#modal .password-section {
+  max-width: none;
+}
 
 /* hide result/list checkboxes (but NOT cart checkboxes) on mobile search/favorites */
 
