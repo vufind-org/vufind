@@ -61,8 +61,7 @@ class FixSslCertsAction extends AbstractInstallAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Bail out if we've fixed the problem:
-        $result = $this->testSslConnection();
-        if ($result) {
+        if ($result = $this->testSslConnection()) {
             $this->getHelper(FlashMessagesHelper::class)->addInfoMessage('SSL configuration fixed.');
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
         }
