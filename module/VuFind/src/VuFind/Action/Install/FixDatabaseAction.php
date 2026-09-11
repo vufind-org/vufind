@@ -182,7 +182,7 @@ class FixDatabaseAction extends AbstractInstallAction
                         return $this->getHelper(ForwardHelper::class)
                             ->forwardTo($request, $response, 'Install/FixBasicConfig');
                     }
-                }
+
                     return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
                 } catch (\Exception $e) {
                     $flashMessagesHelper->addErrorMessage($e->getMessage());
