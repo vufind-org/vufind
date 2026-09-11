@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\ServiceManager\FactoryDetector;
 
 /**
  * Generator tools factory.
@@ -68,6 +69,6 @@ class GeneratorToolsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('config'));
+        return new $requestedName($container->get('config'), new FactoryDetector());
     }
 }
