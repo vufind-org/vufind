@@ -169,20 +169,20 @@ class FixDatabaseAction extends AbstractInstallAction
                             ['sql' => $omnisql],
                             'install/showsql'
                         );
-                    } else {
-                        // If we made it this far, we can update the config file and forward back to the home action!
-                        $string = $dbSettings['driver'] . '://' . $dbSettings['dbuser'] . ':' . $newpass . '@'
-                            . $dbSettings['dbhost'] . '/' . $dbSettings['dbname'];
-                        try {
-                            $this->changeConfig(
-                                'config',
-                                ['Database' => ['database' => $string]]
-                            );
-                        } catch (\Exception $e) {
-                            return $this->getHelper(ForwardHelper::class)
-                                ->forwardTo($request, $response, 'Install/FixBasicConfig');
-                        }
                     }
+                    // If we made it this far, we can update the config file and forward back to the home action!
+                    $string = $dbSettings['driver'] . '://' . $dbSettings['dbuser'] . ':' . $newpass . '@'
+                        . $dbSettings['dbhost'] . '/' . $dbSettings['dbname'];
+                    try {
+                        $this->changeConfig(
+                            'config',
+                            ['Database' => ['database' => $string]]
+                        );
+                    } catch (\Exception $e) {
+                        return $this->getHelper(ForwardHelper::class)
+                            ->forwardTo($request, $response, 'Install/FixBasicConfig');
+                    }
+                }
                     return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
                 } catch (\Exception $e) {
                     $flashMessagesHelper->addErrorMessage($e->getMessage());
