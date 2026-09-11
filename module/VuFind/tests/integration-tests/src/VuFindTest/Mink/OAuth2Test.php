@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -250,6 +250,15 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertArrayHasKey('state', $queryParams);
         $this->assertSame($state, $queryParams['state']);
 
+        // Test an OPTIONS request:
+        $tokenEndpointUrl = $this->getVuFindUrl() . '/OAuth2/token';
+        $response = $this->getHttpService()->createGuzzleClient($tokenEndpointUrl)
+            ->request('OPTIONS', $tokenEndpointUrl);
+        $this->assertSame(204, $response->getStatusCode());
+        $this->assertSame('GET, POST, OPTIONS', $response->getHeader('Access-Control-Allow-Methods')[0] ?? null);
+        $this->assertSame('*', $response->getHeader('Access-Control-Allow-Origin')[0] ?? null);
+        $this->assertSame('86400', $response->getHeader('Access-Control-Max-Age')[0] ?? null);
+
         // Fetch and check idToken with back-channel requests:
         $tokenParams = [
             'code' => $queryParams['code'],
@@ -259,7 +268,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'client_secret' => 'mysecret',
         ];
         $response = $this->httpPost(
-            $this->getVuFindUrl() . '/OAuth2/token',
+            $tokenEndpointUrl,
             http_build_query($tokenParams),
             'application/x-www-form-urlencoded'
         );

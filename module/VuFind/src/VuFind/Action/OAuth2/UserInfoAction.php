@@ -66,9 +66,9 @@ class UserInfoAction extends AbstractOAuth2Action
             );
             return $responseHelper->addCorsHeaders($response);
         } catch (OAuthServerException $e) {
-            return $this->handleOAuth2Exception($response, 'User info request', $e);
-        } catch (\Exception $e) {
             return $this->handleOAuth2ServerException($response, 'User info request', $e);
+        } catch (\Exception $e) {
+            return $this->handleOAuth2GenericException($response, 'User info request', $e);
         }
     }
 }

@@ -29,9 +29,9 @@
 
 namespace VuFind\Action\OAuth2;
 
-use Laminas\Http\Response;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\OAuth2\OAuth2ServerService;
@@ -61,29 +61,50 @@ abstract class AbstractOAuth2Action extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Create a server error response.
+     * Preprocess a request before the actual action is executed.
      *
-     * @param ResponseInterface $response Response
-     * @param string            $function Function description
-     * @param \Exception        $e        Exception
+     * This method is executed just before the actual action (i.e. after permission checks etc.).
+     * It is meant for preprocessing of requests in a shared base class of multiple actions.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function preprocessRequest(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        if ($request->getMethod() === 'OPTIONS') {
+            // Disable session writes
+            $this->disableSessionWrites();
+            return $this->getHelper(ResponseHelper::class)->addCorsHeaders($response->withStatus(204));
+        }
+        return null;
+    }
+
+    /**
+     * Create a server error response from a returnable OAuth2 exception.
+     *
+     * @param ResponseInterface    $response Response
+     * @param string               $function Function description
+     * @param OAuthServerException $e        Exception
      *
      * @return ResponseInterface
      */
     protected function handleOAuth2ServerException(
         ResponseInterface $response,
         string $function,
-        \Exception $e
+        OAuthServerException $e
     ): ResponseInterface {
         $this->logError("$function failed: " . (string)$e);
 
-        return $this->convertOAuthServerExceptionToResponse(
-            $response,
-            OAuthServerException::serverError('Server side issue')
-        );
+        return $this->convertOAuthServerExceptionToResponse($response, $e);
     }
 
     /**
-     * Create a server error response from a returnable exception.
+     * Create a server error response from a non-OAuth2 exception.
      *
      * @param ResponseInterface $response Response
      * @param string            $function Function description
@@ -91,14 +112,17 @@ abstract class AbstractOAuth2Action extends AbstractTemplateRenderingAction
      *
      * @return ResponseInterface
      */
-    protected function handleOAuth2Exception(
+    protected function handleOAuth2GenericException(
         ResponseInterface $response,
         string $function,
         \Exception $e
     ): ResponseInterface {
         $this->logError("$function exception: " . (string)$e);
 
-        return $this->convertOAuthServerExceptionToResponse($response, $e);
+        return $this->convertOAuthServerExceptionToResponse(
+            $response,
+            OAuthServerException::serverError('Server side issue')
+        );
     }
 
     /**

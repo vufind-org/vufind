@@ -108,9 +108,9 @@ class AuthorizeAction extends AbstractOAuth2Action
         try {
             $authRequest = $authServer->validateAuthorizationRequest($request);
         } catch (OAuthServerException $e) {
-            return $this->handleOAuth2Exception($response, 'Authorization request', $e);
-        } catch (\Exception $e) {
             return $this->handleOAuth2ServerException($response, 'Authorization request', $e);
+        } catch (\Exception $e) {
+            return $this->handleOAuth2GenericException($response, 'Authorization request', $e);
         }
 
         // Hide any scopes not allowed by a client-specific filter (see also ScopeRepository for the actual filtering):
@@ -148,9 +148,9 @@ class AuthorizeAction extends AbstractOAuth2Action
             try {
                 return $authServer->completeAuthorizationRequest($authRequest, $response);
             } catch (OAuthServerException $e) {
-                return $this->handleOAuth2Exception($response, 'Authorization request', $e);
-            } catch (\Exception $e) {
                 return $this->handleOAuth2ServerException($response, 'Authorization request', $e);
+            } catch (\Exception $e) {
+                return $this->handleOAuth2GenericException($response, 'Authorization request', $e);
             }
         }
 

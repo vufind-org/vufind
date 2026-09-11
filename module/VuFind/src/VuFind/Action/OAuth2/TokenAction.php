@@ -63,9 +63,9 @@ class TokenAction extends AbstractOAuth2Action
             $response = $server->respondToAccessTokenRequest($request, $response);
             return $this->getHelper(ResponseHelper::class)->addCorsHeaders($response);
         } catch (OAuthServerException $e) {
-            return $this->handleOAuth2Exception($response, 'Access token request', $e);
-        } catch (\Exception $e) {
             return $this->handleOAuth2ServerException($response, 'Access token request', $e);
+        } catch (\Exception $e) {
+            return $this->handleOAuth2GenericException($response, 'Access token request', $e);
         }
     }
 }
