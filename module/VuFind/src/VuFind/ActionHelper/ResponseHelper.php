@@ -157,11 +157,10 @@ class ResponseHelper implements HelperInterface, TranslatorAwareInterface
      * @param array             $allowedMethods   Allowed HTTP methods
      * @param array             $allowedHeaders   Allowed HTTP headers
      * @param string            $allowedOrigin    Allowed origin (see
-     *                                            https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-     *                                            for details)
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin for details)
      * @param bool              $allowCredentials Whether credentials are allowed
-     * @param int               $maxAge           Maximum time in seconds the information
-     *                                            from a preflight request can be cached
+     * @param int               $maxAge           Maximum time in seconds the information from a preflight request
+	 * can be cached
      *
      * @return ResponseInterface
      */
