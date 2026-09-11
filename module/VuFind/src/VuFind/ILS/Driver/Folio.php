@@ -503,6 +503,22 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Find the bib id of the record an item barcode belongs to.
+     *
+     * @param string $barcode Item barcode
+     *
+     * @return ?string Bib id, or null if no item has that barcode
+     */
+    public function getBibIdByItemBarcode($barcode)
+    {
+        $item = $this->getItemByBarcode($barcode);
+        if (!$item) {
+            return null;
+        }
+        return $this->getBibId(null, $item->holdingsRecordId);
+    }
+
+    /**
      * Given an instance object or identifier, or a holding or item identifier,
      * determine an appropriate value to use as VuFind's bibliographic ID.
      *
