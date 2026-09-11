@@ -84,8 +84,8 @@ class ActionConfigManager
         if (!$actionIdentifier) {
             // Try to use lowercase controller-action or just action if available, with route name as a fallback:
             if ($actionName = $routeMatch->getParam('action')) {
-                if ($controllerName = $routeMatch->getParam('controller')) {
-                    $actionIdentifier = $controllerName . '/' . $actionName;
+                if ($categoryName = $routeMatch->getParam('category') ?? $routeMatch->getParam('controller')) {
+                    $actionIdentifier = $categoryName . '/' . $actionName;
                 } else {
                     $actionIdentifier = $actionName;
                 }
@@ -100,6 +100,8 @@ class ActionConfigManager
                 foreach ($currentConfig as $key => $value) {
                     switch ($key) {
                         case 'actionIds':
+                            // This is used for identifying the actions to apply the configs on, so no need for further
+                            // processing here.
                             break;
                         case 'accessPermission':
                         case 'accessDeniedBehavior':
