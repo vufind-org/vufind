@@ -180,6 +180,7 @@ return [
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',
             'cart-remove' => 'FontAwesome:minus-circle',
+            'checkout' => 'FontAwesome:cart-shopping',
             'cite' => 'FontAwesome:asterisk',
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',

@@ -807,6 +807,33 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check Checkout.
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports self-checkout.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodCheckout(array $functionConfig, array $params): array
+    {
+        $response = [];
+
+        if (
+            $this->checkCapability('placeCheckout', [$params ?: []])
+            && isset($functionConfig['HMACKeys'])
+        ) {
+            $response = ['function' => 'placeCheckout'];
+            $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
+        }
+        return $response;
+    }
+
+    /**
      * Check Patron login.
      *
      * A support method for checkFunction(). This is responsible for checking
@@ -958,6 +985,40 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         }
         // If the driver has no checkILLRequestIsValid method, we
         // will assume that the request is not valid
+        return false;
+    }
+
+    /**
+     * Check Checkout is Valid.
+     *
+     * This is responsible for checking if a checkout attempt is valid
+     *
+     * @param string $id     A Bibliographic ID
+     * @param array  $data   Collected Data
+     * @param array  $patron Patron related data
+     *
+     * @return mixed The result of the checkCheckoutIsValid function if it
+     * exists, true if it does not
+     */
+    public function checkCheckoutIsValid($id, $data, $patron)
+    {
+        try {
+            $params = [$id, $data, $patron];
+            if ($this->checkCapability('checkCheckoutIsValid', $params)) {
+                return $this->getDriver()->checkCheckoutIsValid(
+                    $id,
+                    $data,
+                    $patron
+                );
+            }
+        } catch (\Exception $e) {
+            if ($this->failOverToNoILS($e)) {
+                return call_user_func_array([$this, __METHOD__], func_get_args());
+            }
+            throw $e;
+        }
+        // If the driver has no checkCheckoutIsValid method, we
+        // will assume that the checkout is not valid
         return false;
     }
 

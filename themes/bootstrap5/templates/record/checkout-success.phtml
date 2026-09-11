@@ -1,0 +1,22 @@
+<h2><?=$this->transEsc('checkout_item')?></h2>
+
+<?=$this->flashmessages()?>
+
+<?php // TODO real date ?>
+<p>Due Date: Smarch 32, 2027</p>
+
+<p>
+  <a class="btn btn-primary" data-lightbox-ignore href="<?=$this->escapeHtmlAttr($this->checkedOutUrl)?>">
+    <?=$this->transEsc('Your Checked Out Items')?>
+  </a>
+</p>
+<?php
+  // Dismissing the dialog any other way (the X, Esc, a backdrop click) should land
+  // in the same place.
+  echo $this->assetManager()->outputInlineScriptString(
+      script: 'VuFind.listen("lightbox.closed", () => window.location.assign('
+          . json_encode($this->checkedOutUrl) . '), { once: true });',
+      attrs: ['data-lightbox-run' => 'true'],
+      options: ['allow_arbitrary_attributes' => true]
+  );
+?>
