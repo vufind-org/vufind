@@ -14,6 +14,8 @@
 /downloads
 /Gruntfile.local.js
 /solr/vendor
+# Generated at startup by solr.sh (see solr.sh for details)
+/solr/vufind/biblio/lib/
 /themes/minktest
 /vendor
 ChangeLog
