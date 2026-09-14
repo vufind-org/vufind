@@ -66,7 +66,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public static function viewOptionsProvider(): \Iterator
     {
-        yield [
+        yield 'all defaults' => [
             [],
             [],
             'brief',
