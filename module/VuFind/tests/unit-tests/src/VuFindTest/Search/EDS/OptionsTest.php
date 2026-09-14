@@ -82,7 +82,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             'title',
             ['list_title' => 'list_title'],
         ];
-        yield [
+        yield 'options set in EDS.ini' => [
             [
                 'Views' => [
                     'list_title' => 'Title View',
