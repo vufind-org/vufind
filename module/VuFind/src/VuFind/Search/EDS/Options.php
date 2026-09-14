@@ -313,7 +313,6 @@ class Options extends AbstractEDSOptions
         // file, use them as 'overrides', but only if they are available (ie. are
         // returned in the INFO method)
         $this->populateViewSettings();
-        $this->initViewOptions($this->searchSettings);
         $this->populateSearchCriteria();
 
         // Search handler setup. Only valid values set in the config files are used.
@@ -657,10 +656,14 @@ class Options extends AbstractEDSOptions
         // default result Limit
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
+        $searchSettings = $this->searchSettings ?? [];
+
         // default view
         if ($defaultView = $settings['ResultListView'] ?? null) {
-            $this->searchSettings['General']['default_view'] = 'list_' . $defaultView;
+            $searchSettings['General']['default_view'] = 'list_' . $defaultView;
         }
+
+        $this->initViewOptions($searchSettings);
     }
 
     /**
