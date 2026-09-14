@@ -89,6 +89,12 @@ class DeletesCommand extends AbstractSolrCommand
                 InputOption::VALUE_REQUIRED,
                 'Prefix to prepend to all IDs',
                 ''
+            )->addOption(
+                'rm-prefix',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Prefix to remove from all IDs',
+                ''
             );
     }
 
@@ -164,6 +170,7 @@ class DeletesCommand extends AbstractSolrCommand
         $mode = $input->getArgument('format');
         $index = $input->getArgument('index');
         $prefix = $input->getOption('id-prefix');
+        $rmprefix = $input->getOption('rm-prefix');
 
         // File doesn't exist?
         if (!file_exists($filename)) {
@@ -191,6 +198,12 @@ class DeletesCommand extends AbstractSolrCommand
             if (!empty($prefix)) {
                 $callback = function ($id) use ($prefix) {
                     return $prefix . $id;
+                };
+                $ids = array_map($callback, $ids);
+            }
+            if (!empty($rmprefix)) {
+                $callback = function($id) use ($rmprefix) {
+                    return str_starts_with($id, $rmprefix) ? substr($id, strlen($rmprefix)) : $id;
                 };
                 $ids = array_map($callback, $ids);
             }
