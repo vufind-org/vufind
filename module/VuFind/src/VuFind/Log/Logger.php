@@ -294,19 +294,19 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
 
         foreach ($levels as $level) {
             // This level has data, no need to look further
-            if (($details[$level] ?? '') !== '') {
+            if (!empty(($details[$level] ?? ''))) {
                 $filledDetails[$level] = $details[$level];
                 continue;
             }
 
             // Try prior index (Backfill)
-            if (($details[$level - 1] ?? '') !== '') {
+            if (!empty(($details[$level - 1] ?? ''))) {
                 $filledDetails[$level] = $details[$level - 1];
                 continue;
             }
 
             // Try next index (Frontfill)
-            if (($details[$level + 1] ?? '') !== '') {
+            if (!empty(($details[$level + 1] ?? ''))) {
                 $filledDetails[$level] = $details[$level + 1];
                 continue;
             }
