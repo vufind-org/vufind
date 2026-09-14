@@ -200,14 +200,14 @@ $config = [
                     'VuFindAdmin\Action' => true,
                 ],
                 'aliases' => [
-                    'config/enableautoconfig' => \VuFindAdmin\Action\AdminConfig\EnableAutoConfigAction::class,
-                    'feedback/updatestatus' => \VuFindAdmin\Action\AdminFeedback\UpdateStatusAction::class,
-                    'maintenance/clearcache' => \VuFindAdmin\Action\AdminMaintenance\ClearCacheAction::class,
-                    'maintenance/deleteexpiredsearches'
+                    'adminconfig/enableautoconfig' => \VuFindAdmin\Action\AdminConfig\EnableAutoConfigAction::class,
+                    'adminfeedback/updatestatus' => \VuFindAdmin\Action\AdminFeedback\UpdateStatusAction::class,
+                    'adminmaintenance/clearcache' => \VuFindAdmin\Action\AdminMaintenance\ClearCacheAction::class,
+                    'adminmaintenance/deleteexpiredsearches'
                         => \VuFindAdmin\Action\AdminMaintenance\DeleteExpiredSearchesAction::class,
-                    'maintenance/deleteexpiredsessions'
+                    'adminmaintenance/deleteexpiredsessions'
                         => \VuFindAdmin\Action\AdminMaintenance\DeleteExpiredSessionsAction::class,
-                    'maintenance/updatebrowscapcache'
+                    'adminmaintenance/updatebrowscapcache'
                         => \VuFindAdmin\Action\AdminMaintenance\UpdateBrowscapCacheAction::class,
                 ],
                 'category_aliases' => [
