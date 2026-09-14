@@ -72,7 +72,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             'brief',
             ['list_brief' => 'list_brief'],
         ];
-        yield [
+        yield 'default set in EDS.ini' => [
             [
                 'General' => [
                     'default_view' => 'list_title',
