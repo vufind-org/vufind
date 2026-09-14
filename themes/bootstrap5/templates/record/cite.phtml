@@ -26,18 +26,9 @@
 <?php else: ?>
   <?php foreach ($citations as $format => $citation): ?>
     <?php
-      // Some language files only contain translations for a short caption;
-      // let's try to detect whether or not long captions are getting translated
-      // properly and display the appropriate one accordingly. This logic can be
-      // removed once all of the language files contain the "Edition Citation"
-      // version of the relevant strings.
-      $shortCaption = $this->translate($format . ' Citation');
-      $longCaption = $this->translate($format . ' Edition Citation');
-      $caption = (strpos($longCaption, 'Citation') > 0 && !str_contains($shortCaption, 'Citation'))
-        ? $shortCaption : $longCaption;
       $elementId = 'citation-' . $this->escapeHtmlAttr($format);
     ?>
-    <strong><?=$this->escapeHtml($caption)?></strong>
+    <strong><?=$this->transEsc($format . ' Edition Citation')?></strong>
     <div class="citation copy-to-clipboard-container">
       <span id="<?=$elementId?>">
         <?=$citation?>

@@ -192,7 +192,7 @@
       <?=$this->record($this->driver)->renderTemplate('controls/qrcode.phtml', ['driver' => $this->driver, 'context' => 'results'])?>
 
       <?php if ($this->cart()->isActiveInSearch() && isset($this->params) && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
       <?php endif; ?>
 
       <?php /* This link is hidden by default but is displayed in embedded record (tab/accordion) mode */ ?>
@@ -200,6 +200,13 @@
         <?=$this->icon('link', 'icon-link__icon') ?>
         <span class="icon-link__label"><?=$this->transEsc('standalone_record_link')?></span>
       </a>
+
+      <?php if (count($this->driver->getCitationFormats('search_single')) > 0): ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="cite result-link icon-link">
+          <?=$this->icon('cite', 'icon-link__icon')?>
+          <span class="icon-link__label"><?=$this->transEsc('Cite this')?></span>
+        </a>
+      <?php endif; ?>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>

@@ -6,18 +6,18 @@
     'role' => 'button',
     'tabindex' => '0',
     'data-number' => $this->buttonNumber,
-    'data-target' => $this->selector,
+    'data-target' => $this->elementSelector,
   ];
-  $buttonText = $this->icon('clone');
+  $buttonText = $this->buttonText ?? 'copy_to_clipboard_button_label';
   if ($this->hideButtonText) {
-    $buttonAttributes['title'] = $this->transEscAttr('copy_to_clipboard_button_label');
+    $buttonAttributes['title'] = $this->transEscAttr($buttonText);
   }
 ?>
 <span class="copy-to-clipboard">
   <button<?=$this->htmlAttributes($buttonAttributes)?>>
     <?=$this->icon('clone')?>
     <span class="icon-link__label <?=$this->hideButtonText ? 'visually-hidden' : ''?>">
-      <?=$this->transEsc('copy_to_clipboard_button_label')?>
+      <?=$this->transEsc($buttonText)?>
     </span>
   </button>
   <span id="copySuccessMessage<?=$this->buttonNumber?>" class="hidden">
