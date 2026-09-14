@@ -117,7 +117,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                 'list_detailed' => 'Detailed View',
             ],
         ];
-        yield [
+        yield 'default set in API response' => [
             [],
             ['ViewResultSettings' => ['ResultListView' => 'detailed']],
             'detailed',
