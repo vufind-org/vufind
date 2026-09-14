@@ -98,7 +98,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                 'list_detailed' => 'Detailed View',
             ],
         ];
-        yield [
+        yield 'options and default set in EDS.ini' => [
             [
                 'General' => [
                     'default_view' => 'list_title',
