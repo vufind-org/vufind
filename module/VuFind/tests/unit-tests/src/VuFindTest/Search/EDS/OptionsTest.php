@@ -149,7 +149,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                 'list_detailed' => 'Detailed View',
             ],
         ];
-        yield [
+        yield 'API default overrides EDS.ini default, and EDS.ini options are respected' => [
             [
                 'General' => [
                     'default_view' => 'list_title',
