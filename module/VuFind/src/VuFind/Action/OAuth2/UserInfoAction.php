@@ -29,7 +29,6 @@
 
 namespace VuFind\Action\OAuth2;
 
-use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ResponseHelper;
@@ -65,10 +64,8 @@ class UserInfoAction extends AbstractOAuth2Action
                 $this->oauth2Service->getUserInfo($request)
             );
             return $responseHelper->addCorsHeaders($response);
-        } catch (OAuthServerException $e) {
-            return $this->handleOAuth2ServerException($response, 'User info request', $e);
         } catch (\Exception $e) {
-            return $this->handleOAuth2GenericException($response, 'User info request', $e);
+            return $this->handleOAuth2Exception($response, 'User info request', $e);
         }
     }
 }

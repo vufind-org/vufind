@@ -29,7 +29,6 @@
 
 namespace VuFind\Action\OAuth2;
 
-use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ResponseHelper;
@@ -62,10 +61,8 @@ class TokenAction extends AbstractOAuth2Action
         try {
             $response = $server->respondToAccessTokenRequest($request, $response);
             return $this->getHelper(ResponseHelper::class)->addCorsHeaders($response);
-        } catch (OAuthServerException $e) {
-            return $this->handleOAuth2ServerException($response, 'Access token request', $e);
         } catch (\Exception $e) {
-            return $this->handleOAuth2GenericException($response, 'Access token request', $e);
+            return $this->handleOAuth2Exception($response, 'Access token request', $e);
         }
     }
 }

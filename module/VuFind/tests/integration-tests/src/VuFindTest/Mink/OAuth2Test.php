@@ -83,15 +83,21 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing ILS functions.
      *
+     * @param bool $disableLog Disable error logging?
+     *
      * @return array
      */
-    protected function getConfigIniOverrides(): array
+    protected function getConfigIniOverrides(bool $disableLog): array
     {
-        return [
+        $config = [
             'Catalog' => [
                 'driver' => 'Demo',
             ],
         ];
+        if ($disableLog) {
+            $config['Logging'] = ['file' => null];
+        }
+        return $config;
     }
 
     /**
@@ -135,14 +141,15 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      * Set up a test.
      *
      * @param string $redirectUri Redirect URI
+     * @param bool   $disableLog  Disable error logging due to expected exceptions?
      *
      * @return void
      */
-    protected function setUpTest(string $redirectUri): void
+    protected function setUpTest(string $redirectUri, bool $disableLog = false): void
     {
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(),
+                'config' => $this->getConfigIniOverrides($disableLog),
                 'Demo' => $this->getDemoIniOverrides(),
             ]
         );
@@ -194,7 +201,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
-        $this->setUpTest($redirectUri);
+        $this->setUpTest($redirectUri, true);
 
         static::removeUsers(['username1']);
 
@@ -371,7 +378,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
-        $this->setUpTest($redirectUri);
+        $this->setUpTest($redirectUri, true);
 
         $nonce = time();
         $state = md5((string)$nonce);
@@ -418,7 +425,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
-        $this->setUpTest($redirectUri);
+        $this->setUpTest($redirectUri, true);
 
         $nonce = time();
         $state = md5((string)$nonce);

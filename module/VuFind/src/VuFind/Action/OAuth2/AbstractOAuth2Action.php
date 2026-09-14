@@ -85,25 +85,6 @@ abstract class AbstractOAuth2Action extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Create a server error response from a returnable OAuth2 exception.
-     *
-     * @param ResponseInterface    $response Response
-     * @param string               $function Function description
-     * @param OAuthServerException $e        Exception
-     *
-     * @return ResponseInterface
-     */
-    protected function handleOAuth2ServerException(
-        ResponseInterface $response,
-        string $function,
-        OAuthServerException $e
-    ): ResponseInterface {
-        $this->logError("$function failed: " . (string)$e);
-
-        return $this->convertOAuthServerExceptionToResponse($response, $e);
-    }
-
-    /**
      * Create a server error response from a non-OAuth2 exception.
      *
      * @param ResponseInterface $response Response
@@ -112,17 +93,16 @@ abstract class AbstractOAuth2Action extends AbstractTemplateRenderingAction
      *
      * @return ResponseInterface
      */
-    protected function handleOAuth2GenericException(
+    protected function handleOAuth2Exception(
         ResponseInterface $response,
         string $function,
         \Exception $e
     ): ResponseInterface {
         $this->logError("$function exception: " . (string)$e);
 
-        return $this->convertOAuthServerExceptionToResponse(
-            $response,
-            OAuthServerException::serverError('Server side issue')
-        );
+        $finalException = $e instanceof OAuthServerException
+            ? $e : OAuthServerException::serverError('Server side issue');
+        return $this->convertOAuthServerExceptionToResponse($response, $finalException);
     }
 
     /**
