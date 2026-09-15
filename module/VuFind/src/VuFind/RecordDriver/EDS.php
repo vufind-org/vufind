@@ -112,7 +112,7 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $hasCatalog = $this->recordConfig['Catalog']['EDSHasCatalog'] ?? false;
-        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? [];
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? '';
 
         // if config empty or false, return false
         if (!$hasCatalog) {
