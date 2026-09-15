@@ -140,7 +140,7 @@ class CAS extends AbstractBase
         $casauth->forceAuthentication();
 
         // Check if username is set.
-        if (isset($cas['username']) && !empty($cas['username'])) {
+        if (!empty($cas['username'])) {
             $username = $casauth->getAttribute($cas['username']);
         } else {
             $username = $casauth->getUser();
