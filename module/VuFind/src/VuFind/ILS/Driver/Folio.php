@@ -933,6 +933,32 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Gets service points from the /service-point endpoint and sets
+     * an array of service point codes to details.
+     *
+     * @return array
+     */
+    protected function getServicePointsByCode()
+    {
+        $cacheKey = 'servicePointsByCode';
+        $servicePointsByCodeMap = $this->getCachedData($cacheKey);
+        if (null === $servicePointsByCodeMap) {
+            $servicePointsByCodeMap = [];
+            foreach (
+                $this->getPagedResults(
+                    'servicepoints',
+                    '/service-points',
+                ) as $servicePoint
+            ) {
+                $code = $servicePoint->code;
+                $servicePointsByCodeMap[$code] = $servicePoint;
+            }
+            $this->putCachedData($cacheKey, $servicePointsByCodeMap);
+        }
+        return $servicePointsByCodeMap;
+    }
+
+    /**
      * Get Inventory Location Name.
      *
      * @param string $locationId UUID of item location
@@ -2858,7 +2884,9 @@ class Folio extends AbstractAPI implements
      */
     protected function getAllowedCheckoutServicePointsForItem($item): array
     {
-        $allowedServicePointIds = $this->config['Checkout']['allowedServicePointIds'] ?? [];
+        $allowedServicePointCodes = $this->config['Checkout']['allowedServicePointCodes'] ?? [];
+        $servicePointsByCode = $this->getServicePointsByCode();
+        $allowedServicePointIds = array_map(fn($servicePointCode) => $servicePointsByCode[$servicePointCode]?->id ?? null, $allowedServicePointCodes);
         $itemLocationId = $item->effectiveLocation->id;
         $location = $this->getLocationData($itemLocationId);
         return array_intersect($allowedServicePointIds, $location['servicePointIds']);
