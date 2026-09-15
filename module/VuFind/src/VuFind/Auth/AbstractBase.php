@@ -70,7 +70,7 @@ abstract class AbstractBase implements
     /**
      * Configuration settings.
      *
-     * @var array
+     * @var ?array
      */
     protected $config = null;
 
