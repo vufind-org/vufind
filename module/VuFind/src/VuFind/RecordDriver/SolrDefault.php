@@ -148,8 +148,7 @@ class SolrDefault extends DefaultRecord implements
     ) {
         $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
-        $this->snippet = !isset($searchSettings['General']['snippets'])
-            ? false : $searchSettings['General']['snippets'];
+        $this->snippet = $searchSettings['General']['snippets'] ?? false;
         if (
             isset($searchSettings['Snippet_Captions'])
             && count($searchSettings['Snippet_Captions']) > 0
