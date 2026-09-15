@@ -153,7 +153,7 @@ class SolrDefault extends DefaultRecord implements
             isset($searchSettings['Snippet_Captions'])
             && count($searchSettings['Snippet_Captions']) > 0
         ) {
-            foreach ($searchSettings['Snippet_Captions'] as $key => $value) {
+            foreach ($searchSettings['Snippet_Captions'] ?? [] as $key => $value) {
                 $this->snippetCaptions[$key] = $value;
             }
         }
