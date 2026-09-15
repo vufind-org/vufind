@@ -50,20 +50,6 @@ use function is_string;
 class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
-     * Blender configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration.
-     *
-     * @var array
-     */
-    protected $mappings;
-
-    /**
      * Backends to be used for initial results.
      *
      * @var array
@@ -83,7 +69,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      * @param ?array $config   Configuration
      * @param array  $mappings Mappings configuration
      */
-    public function __construct($config = null, $mappings = [])
+    public function __construct( protected ?array $config = null, protected array $mappings = [])
     {
         $this->config = $config;
         $this->mappings = $mappings;
