@@ -3079,7 +3079,9 @@ class Folio extends AbstractAPI implements
             $this->throwAsIlsException($e, $response->getBody());
         }
         if ($response->isSuccess()) {
-            return ['success' => true];
+            $date = $this->getDateTimeFromString($json->dueDate);
+            $dueDateTimestamp = $date->getTimestamp();
+            return ['success' => true, 'dueDate' => $this->dateConverter->convertToDisplayDate('U', $dueDateTimestamp)];
         }
         $this->debug('Checkout response ' . $response->getStatusCode() . ': ' . $response->getBody());
         return [

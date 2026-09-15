@@ -218,6 +218,7 @@ class CheckoutAction extends AbstractRecordAction
         // Success: Go to Display Checkouts
         if ($results['success'] ?? false) {
             $checkedOutUrl = $this->routeHelper->getUrlFromRoute('myresearch-checkedout');
+            $dueDate = $results['dueDate'] ?? null;
             $msg = [
                 'html' => true,
                 'msg' => 'checkout_place_success_html',
@@ -244,7 +245,12 @@ class CheckoutAction extends AbstractRecordAction
                     'details' => $checkoutDetails,
                 ]
             );
-            return $this->renderTemplate($request, $response, compact('checkedOutUrl'), 'record/checkout-success');
+            return $this->renderTemplate(
+                $request,
+                $response,
+                compact('checkedOutUrl', 'dueDate'),
+                'record/checkout-success'
+            );
         } else {
             // Failure: use flash messenger to display messages, stay on
             // the current form.

@@ -2,8 +2,9 @@
 
 <?=$this->flashmessages()?>
 
-<?php // TODO real date ?>
-<p>Due Date: Smarch 32, 2027</p>
+<?php if ($this->dueDate): ?>
+  <p><?=$this->translate('Due Date')?>: <?=$this->dueDate ?></p>
+<?php endif; ?>
 
 <p>
   <a class="btn btn-primary" data-lightbox-ignore href="<?=$this->escapeHtmlAttr($this->checkedOutUrl)?>">
