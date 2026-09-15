@@ -664,9 +664,7 @@ class Record implements DbServiceAwareInterface
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (
-            !($this->config['Content']['coversize'] ?? true)
-        ) {
+        if (!($this->config['Content']['coversize'] ?? true)) {
             // covers disabled entirely
             return false;
         }
@@ -723,9 +721,7 @@ class Record implements DbServiceAwareInterface
                 return false;
         }
 
-        if (
-            !($this->config['QRCode'][$key] ?? false)
-        ) {
+        if (!($this->config['QRCode'][$key] ?? false)) {
             return false;
         }
 
