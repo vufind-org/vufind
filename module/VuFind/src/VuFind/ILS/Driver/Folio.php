@@ -2895,6 +2895,19 @@ class Folio extends AbstractAPI implements
             return ['valid' => false, 'status' => 'checkout_error_blocked'];
         }
 
+        // Check if the item is checked out; display a different message if this patron is the borrower.
+        if ('Checked out' === $item->status->name) {
+            $currentLoan = $this->getCurrentLoan($item->id);
+            if ($currentLoan->userId === $patron['id']) {
+                $this->debug("Current user already has item checked out with barcode " . $data['barcode']);
+                return ['valid' => false, 'status' => 'checkout_error_same_user'];
+            }
+            else {
+                $this->debug("Another user already has item checked out with barcode " . $data['barcode']);
+                return ['valid' => false, 'status' => 'checkout_error_blocked'];
+            }
+        }
+
         // Check that the item is available
         if ('Available' !== $item?->status?->name) {
             $this->logWarning('Item is not available.');
