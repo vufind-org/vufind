@@ -786,14 +786,10 @@ class DefaultRecord extends AbstractBase
         // Get the COinS ID -- it should be in the OpenURL section of config.ini,
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
-        if (
-            !empty($this->mainConfig['OpenURL']['rfr_id'])
-        ) {
+        if (!empty($this->mainConfig['OpenURL']['rfr_id'])) {
             return $this->mainConfig['OpenURL']['rfr_id'];
         }
-        if (
-            !empty($this->mainConfig['COinS']['identifier'])
-        ) {
+        if (!empty($this->mainConfig['COinS']['identifier'])) {
             return $this->mainConfig['COinS']['identifier'];
         }
         return 'vufind.svn.sourceforge.net';

@@ -149,17 +149,11 @@ class SolrDefault extends DefaultRecord implements
         $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
         $this->snippet = $searchSettings['General']['snippets'] ?? false;
-        if (
-            isset($searchSettings['Snippet_Captions'])
-            && count($searchSettings['Snippet_Captions']) > 0
-        ) {
-            foreach ($searchSettings['Snippet_Captions'] ?? [] as $key => $value) {
-                $this->snippetCaptions[$key] = $value;
-            }
+        foreach ($searchSettings['Snippet_Captions'] ?? [] as $key => $value) {
+            $this->snippetCaptions[$key] = $value;
         }
         // Container-contents linking
-        $this->containerLinking
-            = $mainConfig['Hierarchy']['simpleContainerLinks'] ?? false;
+        $this->containerLinking = $mainConfig['Hierarchy']['simpleContainerLinks'] ?? false;
 
         $this->explainEnabled = $searchSettings['Explain']['enabled'] ?? false;
 
