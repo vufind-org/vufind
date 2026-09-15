@@ -100,9 +100,6 @@ class Backend extends AbstractBackend
         protected array $mappings,
         EventManager $events
     ) {
-        $this->backends = $backends;
-        $this->config = $config;
-        $this->mappings = $mappings;
         $this->setEventManager($events);
 
         $boostMax = count($this->config['Blending']['initialResults'] ?? []);
