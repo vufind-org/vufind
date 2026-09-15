@@ -101,7 +101,7 @@ abstract class AbstractBase implements
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return array
+     * @return ?array
      */
     public function getConfig()
     {
