@@ -204,6 +204,13 @@ class Holds
             !empty($blocks),
             $linkOverrides
         );
+        $holdings = $this->processDigitizationRequests(
+            $holdings,
+            $id,
+            $patron,
+            !empty($blocks),
+            $linkOverrides
+        );
 
         $result['blocks'] = $blocks;
         $result['holdings'] = $this->formatHoldings($holdings);
@@ -484,6 +491,55 @@ class Holds
                     // available, set a flag so we can check later via AJAX:
                     $copy['checkILLRequest']
                         = $copy['addILLRequestLink'] === 'check';
+                }
+            }
+        }
+        return $holdings;
+    }
+
+    /**
+     * Process digitization request information in holdings and set the links accordingly.
+     *
+     * @param array  $holdings        Holdings
+     * @param string $id              Record ID
+     * @param array  $patron          Patron
+     * @param bool   $requestsBlocked Are user requests blocked?
+     * @param array  $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
+     *
+     * @return array Modified holdings
+     */
+    protected function processDigitizationRequests($holdings, $id, $patron, $requestsBlocked, array $linkOverrides = [])
+    {
+        if (!is_array($holdings)) {
+            return $holdings;
+        }
+
+        $requestConfig = $this->catalog->checkFunction(
+            'DigitizationRequests',
+            compact('id', 'patron')
+        );
+
+        if (!$requestConfig) {
+            return $holdings;
+        }
+
+        foreach ($holdings as &$location) {
+            foreach ($location as &$copy) {
+                if (
+                    !$requestsBlocked
+                    && isset($copy['addDigitizationRequestLink'])
+                    && $copy['addDigitizationRequestLink']
+                ) {
+                    $copy['digitizationRequestLink'] = $this->getRequestDetails(
+                        $copy,
+                        $requestConfig['HMACKeys'],
+                        'DigitizationRequest',
+                        $linkOverrides
+                    );
+                    $copy['checkDigitizationRequest']
+                        = $copy['addDigitizationRequestLink'] === 'check';
                 }
             }
         }

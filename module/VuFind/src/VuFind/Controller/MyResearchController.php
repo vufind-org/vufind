@@ -1364,6 +1364,63 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Send list of digitization requests to view.
+     *
+     * @return mixed
+     */
+    public function digitizationRequestsAction()
+    {
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        $catalog = $this->getILS();
+
+        $cancelStatus = $catalog->checkFunction(
+            'cancelDigitizationRequests',
+            compact('patron')
+        );
+        $view = $this->createViewModel();
+        $view->cancelResults = $cancelStatus
+            ? $this->digitizationRequests()->cancelDigitizationRequests(
+                $catalog,
+                $patron
+            )
+            : [];
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
+
+        $view->cancelForm = false;
+
+        $result = $catalog->getMyDigitizationRequests($patron);
+        $driversNeeded = [];
+        $this->digitizationRequests()->resetValidation();
+        foreach ($result as $current) {
+            $current = $this->digitizationRequests()->addCancelDetails(
+                $catalog,
+                $current,
+                $cancelStatus,
+                $patron
+            );
+            if (
+                $cancelStatus
+                && $cancelStatus['function'] != 'getCancelDigitizationRequestLink'
+                && isset($current['cancel_details'])
+            ) {
+                $view->cancelForm = true;
+            }
+
+            $driversNeeded[] = $current;
+        }
+
+        $recordsHelper = $this->getService(RecordsHelper::class);
+        $view->recordList = $recordsHelper->getDrivers($driversNeeded);
+        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
+        return $view;
+    }
+
+    /**
      * Send list of ill requests to view.
      *
      * @return mixed
