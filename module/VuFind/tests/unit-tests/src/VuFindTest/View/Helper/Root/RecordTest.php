@@ -47,8 +47,6 @@ use VuFind\View\Helper\Root\SearchTabs;
 use VuFind\View\Helper\Root\Url;
 use VuFindTheme\ThemeInfo;
 
-use function is_array;
-
 /**
  * Record view helper Test Class.
  *
@@ -789,7 +787,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         $view->method('resolver')->willReturn($resolver);
-
 
         $serverUrlHelper = $this->getMockServerUrl($serverurl);
         $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(\VuFind\View\Helper\Root\Url::class);
