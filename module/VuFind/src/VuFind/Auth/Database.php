@@ -126,7 +126,7 @@ class Database extends AbstractBase
     protected function passwordHashingEnabled()
     {
         $config = $this->getConfig();
-        return $config->Authentication->hash_passwords ?? false;
+        return $config['Authentication']['hash_passwords'] ?? false;
     }
 
     /**
@@ -275,7 +275,7 @@ class Database extends AbstractBase
     protected function checkEmailVerified($user)
     {
         $config = $this->getConfig();
-        $verify_email = $config->Authentication->verify_email ?? false;
+        $verify_email = $config['Authentication']['verify_email'] ?? false;
         if ($verify_email && !$user->getEmailVerified()) {
             throw new AuthEmailNotVerifiedException(
                 $user,
@@ -322,8 +322,8 @@ class Database extends AbstractBase
     {
         // If no inclusion list is configured, all emails are allowed:
         $fullConfig = $this->getConfig();
-        $config = isset($fullConfig->Authentication)
-            ? $fullConfig->Authentication->toArray() : [];
+        $config = isset($fullConfig['Authentication'])
+            ? $fullConfig['Authentication'] : [];
         $rawIncludeList = $config['legal_domains']
             ?? $config['domain_whitelist']  // deprecated configuration
             ?? null;
