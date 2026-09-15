@@ -322,8 +322,7 @@ class Database extends AbstractBase
     {
         // If no inclusion list is configured, all emails are allowed:
         $fullConfig = $this->getConfig();
-        $config = isset($fullConfig['Authentication'])
-            ? $fullConfig['Authentication'] : [];
+        $config = $fullConfig['Authentication'] ?? [];
         $rawIncludeList = $config['legal_domains']
             ?? $config['domain_whitelist']  // deprecated configuration
             ?? null;
