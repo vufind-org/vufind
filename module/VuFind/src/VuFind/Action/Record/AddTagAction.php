@@ -37,6 +37,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\UserContentHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
@@ -64,6 +65,7 @@ class AddTagAction extends AbstractRecordAction
      * @param SearchMemory   $searchMemory   Search memory
      * @param TabManager     $tabManager     Tab manager
      * @param AuthManager    $authManager    Authentication manager
+     * @param ConfigManager  $configManager  Configuration manager
      * @param RecordLoader   $recordLoader   Record loader
      * @param RecordRouter   $recordRouter   Record router
      * @param ResultScroller $resultScroller Result scroller
@@ -74,6 +76,7 @@ class AddTagAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -85,6 +88,7 @@ class AddTagAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

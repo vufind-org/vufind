@@ -46,29 +46,13 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * HTTP client.
-     *
-     * @var Client
-     */
-    protected $client;
-
-    /**
-     * Relais configuration.
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
      * @param Client $client HTTP client
-     * @param Config $config Relais configuration
+     * @param array  $config Relais configuration
      */
-    public function __construct(Client $client, Config $config)
+    public function __construct(protected Client $client, protected array $config)
     {
-        $this->client = $client;
-        $this->config = $config;
     }
 
     /**
@@ -79,10 +63,10 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     protected function getDefaultData()
     {
         return [
-            'ApiKey' => $this->config->apikey ?? null,
+            'ApiKey' => $this->config['apikey'] ?? null,
             'UserGroup' => 'PATRON',
-            'PartnershipId' => $this->config->group ?? null,
-            'LibrarySymbol' => $this->config->symbol ?? null,
+            'PartnershipId' => $this->config['group'] ?? null,
+            'LibrarySymbol' => $this->config['symbol'] ?? null,
         ];
     }
 
@@ -97,9 +81,9 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     protected function getOclcRequestData($oclc, $patron)
     {
         return [
-            'PickupLocation' => $this->config->pickupLocation ?? null,
+            'PickupLocation' => $this->config['pickupLocation'] ?? null,
             'Notes' => 'This request was made through the VuFind Catalog interface',
-            'PatronId' => $patron ?? $this->config->patronForLookup ?? null,
+            'PatronId' => $patron ?? $this->config['patronForLookup'] ?? null,
             'ExactSearch' => [
                 [
                     'Type' => 'OCLC',
@@ -145,11 +129,11 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      */
     public function authenticatePatron($patron = null, $returnFullObject = false)
     {
-        $uri = $this->config->authenticateurl ?? null;
+        $uri = $this->config['authenticateurl'] ?? null;
         if (empty($uri)) {
             throw new \Exception('authenticateurl not configured!');
         }
-        $data = ['PatronId' => $patron ?? $this->config->patronForLookup ?? null];
+        $data = ['PatronId' => $patron ?? $this->config['patronForLookup'] ?? null];
         $result = json_decode($this->request($uri, $data));
         return $returnFullObject ? $result : ($result->AuthorizationId ?? null);
     }
@@ -166,7 +150,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      */
     public function placeRequest($oclc, $auth, $patron = null)
     {
-        $uri = $this->config->addurl ?? null;
+        $uri = $this->config['addurl'] ?? null;
         if (empty($uri)) {
             throw new \Exception('addurl not configured!');
         }
@@ -186,7 +170,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      */
     public function search($oclc, $auth, $patron = null)
     {
-        $uri = $this->config->availableurl ?? null;
+        $uri = $this->config['availableurl'] ?? null;
         if (empty($uri)) {
             throw new \Exception('availableurl not configured!');
         }
