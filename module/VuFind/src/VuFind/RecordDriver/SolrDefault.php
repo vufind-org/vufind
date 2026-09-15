@@ -159,8 +159,7 @@ class SolrDefault extends DefaultRecord implements
         }
         // Container-contents linking
         $this->containerLinking
-            = !isset($mainConfig['Hierarchy']['simpleContainerLinks'])
-            ? false : $mainConfig['Hierarchy']['simpleContainerLinks'];
+            = $mainConfig['Hierarchy']['simpleContainerLinks'] ?? false;
 
         $this->explainEnabled = $searchSettings['Explain']['enabled'] ?? false;
 
