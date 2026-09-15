@@ -71,8 +71,6 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function __construct(protected ?array $config = null, protected array $mappings = [])
     {
-        $this->config = $config;
-        $this->mappings = $mappings;
         $this->response = static::$template;
         $this->initialResultsBackends = $config['Blending']['initialResults'] ?? [];
     }
