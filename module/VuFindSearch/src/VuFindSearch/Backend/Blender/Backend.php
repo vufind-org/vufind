@@ -102,10 +102,10 @@ class Backend extends AbstractBackend
     ) {
         $this->setEventManager($events);
 
-        $boostMax = count($this->config['Blending']['initialResults'] ?? []);
+        $boostMax = count($config['Blending']['initialResults'] ?? []);
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = intval($this->config['Blending']['blockSize'] ?? 10);
-        $this->adaptiveBlockSizes = $this->config['Blending']['adaptiveBlockSizes'] ?? [];
+        $this->blockSize = (int)($config['Blending']['blockSize'] ?? 10);
+        $this->adaptiveBlockSizes = $config['Blending']['adaptiveBlockSizes'] ?? [];
     }
 
     /**
