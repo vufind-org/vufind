@@ -87,7 +87,7 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? [];
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? '';
 
         $regexArray = $this->recordConfig['Catalog']['CatalogANRegex'] ?? [];
         $replaceArray = $this->recordConfig['Catalog']['CatalogANReplace'] ?? [];
