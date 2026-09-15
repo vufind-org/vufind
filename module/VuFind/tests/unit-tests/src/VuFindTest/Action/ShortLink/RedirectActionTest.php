@@ -163,7 +163,7 @@ class RedirectActionTest extends TestCase
     public function testExplicitHttpMethodRedirectsViaHttp(): void
     {
         $shortener = $this->createMock(UrlShortenerInterface::class);
-        $shortener->method('resolve')->willReturn('https://vufind.org');
+        $shortener->method('resolve')->with('abc')->willReturn('https://vufind.org');
         $expectedResponse = new Response();
         $redirectHelper = $this->createMock(RedirectHelper::class);
         $redirectHelper->expects($this->once())->method('redirectToUrl')
