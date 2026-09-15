@@ -172,11 +172,9 @@ class DefaultRecord extends AbstractBase
      *                           used to construct a method name for retrieving
      *                           author data (e.g. getPrimaryAuthors).
      * @param array  $dataFields An array of fields to used to construct method
-     *                           names for retrieving author-related data
-     *                           (e.g., if you pass 'role' the data method will
-     *                           be similar to getPrimaryAuthorsRoles). This
-     *                           value will also be used as a key associated
-     *                           with each author in the resulting data array.
+     * names for retrieving author-related data (e.g., if you pass 'role' the data method will
+     * be similar to getPrimaryAuthorsRoles). This value will also be used as a key associated
+     * with each author in the resulting data array.
      *
      * @return array
      */
