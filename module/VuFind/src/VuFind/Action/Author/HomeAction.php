@@ -31,7 +31,6 @@ namespace VuFind\Action\Author;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
 use VuFind\ActionHelper\ForwardHelper;
 
 /**
@@ -43,7 +42,7 @@ use VuFind\ActionHelper\ForwardHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HomeAction extends AbstractSearchAndResultsAction
+class HomeAction extends \VuFind\Action\Search\HomeAction
 {
     /**
      * Display home page.
@@ -62,6 +61,6 @@ class HomeAction extends AbstractSearchAndResultsAction
         $author = $this->getQueryParam('author');
         return !empty($author)
             ? $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Author/Results')
-            : $this->renderHomePage();
+            : parent::action($request, $response);
     }
 }
