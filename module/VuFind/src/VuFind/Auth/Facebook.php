@@ -78,7 +78,7 @@ class Facebook extends AbstractBase implements
     {
         // Throw an exception if the required username setting is missing.
         $fb = $this->config['Facebook'] ?? [];
-        if (!isset($fb['appId']) || empty($fb['appId'])) {
+        if (empty($fb['appId'])) {
             throw new AuthException(
                 'Facebook app ID is missing in your configuration file.'
             );
