@@ -2976,7 +2976,7 @@ class Folio extends AbstractAPI implements
         }
 
         // Optionally, respect a maximum number of self-checkout items
-        $selfCheckoutLimit = $this->config['Checkout']['limit'] ?? 0;
+        $selfCheckoutLimit = intval($this->config['Checkout']['limit'] ?? 0);
         if ($selfCheckoutLimit > 0) {
             $servicePointsQueryString = implode(' OR ', $allowedServicePointIds);
             $query =
