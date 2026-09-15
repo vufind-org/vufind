@@ -160,8 +160,8 @@ class CAS extends AbstractBase
         ];
         $catPassword = null;
         foreach ($attribsToCheck as $attribute) {
-            if (isset($cas['$attribute'])) {
-                $value = $casauth->getAttribute($cas['$attribute']);
+            if (isset($cas[$attribute])) {
+                $value = $casauth->getAttribute($cas[$attribute]);
                 if ($attribute == 'email') {
                     $userService->updateUserEmail($user, $value);
                 } elseif ($attribute != 'cat_password') {
