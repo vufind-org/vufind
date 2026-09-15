@@ -790,7 +790,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $view->method('resolver')->willReturn($resolver);
 
-        $config = is_array($config) ? $config : [];
 
         $serverUrlHelper = $this->getMockServerUrl($serverurl);
         $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(\VuFind\View\Helper\Root\Url::class);
