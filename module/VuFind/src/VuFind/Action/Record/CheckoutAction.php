@@ -37,6 +37,7 @@ use VuFind\ActionHelper\CheckoutHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Service\AuditEventService;
@@ -72,6 +73,7 @@ class CheckoutAction extends AbstractRecordAction
      * @param SearchMemory      $searchMemory      Search memory
      * @param TabManager        $tabManager        Tab manager
      * @param AuthManager       $authManager       Authentication manager
+     * @param ConfigManager     $configManager     Configuration manager
      * @param RecordLoader      $recordLoader      Record loader
      * @param RecordRouter      $recordRouter      Record router
      * @param ResultScroller    $resultScroller    Result scroller
@@ -86,6 +88,7 @@ class CheckoutAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -102,6 +105,7 @@ class CheckoutAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,
