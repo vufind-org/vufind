@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
+
 use function count;
 use function floatval;
 use function in_array;
@@ -48,6 +50,8 @@ use function strlen;
 class EDS extends DefaultRecord
 {
     use Feature\IlsAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
+    use \VuFind\Cache\CacheTrait;
 
     /**
      * Document types that are treated as ePub links.
@@ -62,6 +66,33 @@ class EDS extends DefaultRecord
      * @var array
      */
     protected $pdfTypes = ['ebook-pdf', 'pdflink'];
+
+    /**
+     * Constructor.
+     *
+     * @param \VuFind\Config\Config $mainConfig VuFind main configuration (omit
+     * for built-in defaults)
+     * @param StorageInterface      $cache      Cache
+     */
+    public function __construct(
+        $mainConfig = null,
+        StorageInterface $cache = null,
+    ) {
+        $this->setCacheStorage($cache);
+        parent::__construct($mainConfig);
+    }
+
+    /**
+     * Set the key to store in the cache to share between EDS cover loader and record driver.
+     *
+     * @param string $key Key to put in the cache
+     *
+     * @return string The determined key
+     */
+    protected function getCacheKey($key = '')
+    {
+        return 'EDS_Shared_' . md5($key);
+    }
 
     /**
      * Return the unique identifier of this record within EDS API;
@@ -653,6 +684,7 @@ class EDS extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
+        $thumbnail = null;
         // Create a ranked list of sizes so we can use "best available" when appropriate.
         // Note that "thumb" is a value used by EBSCO, not by VuFind; it is included so
         // it can be matched up with requests for "small."
@@ -665,7 +697,8 @@ class EDS extends DefaultRecord
             $target = $image['Target'] ?? '';
             if ($target) {
                 if ($currentFit === $desiredFit) {
-                    return $target;
+                    $thumbnail = $target;
+                    break;
                 }
                 // Aim for the best match that is smaller than the requested size; we
                 // don't want to overflow, but something small is better than nothing.
@@ -676,10 +709,25 @@ class EDS extends DefaultRecord
             }
         }
 
+        if (!$thumbnail && $closestMatch) {
+            $thumbnail = $closestMatch;
+        }
+
         // If EDS actually returned cover image data, use it.  EDS only provides this data
         // for certain ebook packages.
-        if ($closestMatch) {
-            return $closestMatch;
+        if ($thumbnail) {
+            // Determine if we are using the cover loader method or direct load
+            $loadDirectly = $this->recordConfig?->Cover?->loadDirectly ?? true;
+            if ($loadDirectly) {
+                return $thumbnail;
+            } else {
+                $this->putCachedData($this->getUniqueID(), $thumbnail);
+                return [
+                    'recordid' => $this->getUniqueID(),
+                    'size' => $size,
+                    'source' => 'EDS',
+                ];
+            }
         }
 
         // Optionally use VuFind's default cover loader
