@@ -77,7 +77,7 @@ class Facebook extends AbstractBase implements
     protected function validateConfig()
     {
         // Throw an exception if the required username setting is missing.
-        $fb = $this->config['Facebook'];
+        $fb = $this->config['Facebook'] ?? [];
         if (!isset($fb['appId']) || empty($fb['appId'])) {
             throw new AuthException(
                 'Facebook app ID is missing in your configuration file.'
