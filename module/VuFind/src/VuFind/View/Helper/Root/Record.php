@@ -726,8 +726,7 @@ class Record implements DbServiceAwareInterface
         }
 
         if (
-            !isset($this->config['QRCode'][$key])
-            || !$this->config['QRCode'][$key]
+            !($this->config['QRCode'][$key] ?? false)
         ) {
             return false;
         }
