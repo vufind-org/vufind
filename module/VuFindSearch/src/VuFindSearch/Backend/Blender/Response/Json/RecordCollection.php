@@ -69,7 +69,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      * @param ?array $config   Configuration
      * @param array  $mappings Mappings configuration
      */
-    public function __construct( protected ?array $config = null, protected array $mappings = [])
+    public function __construct(protected ?array $config = null, protected array $mappings = [])
     {
         $this->config = $config;
         $this->mappings = $mappings;
