@@ -133,8 +133,7 @@ trait HierarchyAwareTrait
         // If collections are disabled or this record is not part of a hierarchy, go
         // no further....
         if (
-            !isset($this->mainConfig['Collections']['collections'])
-            || !$this->mainConfig['Collections']['collections']
+            !($this->mainConfig['Collections']['collections'] ?? false)
             || !($hierarchyDriver = $this->getHierarchyDriver())
         ) {
             return false;
