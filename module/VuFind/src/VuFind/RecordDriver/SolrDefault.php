@@ -137,7 +137,7 @@ class SolrDefault extends DefaultRecord implements
      * for built-in defaults)
      * @param ?array $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param array $searchSettings Search-specific configuration
+     * @param ?array $searchSettings Search-specific configuration
      * file
      */
     #[DefaultFactory(name: SolrDefaultFactory::class)]
