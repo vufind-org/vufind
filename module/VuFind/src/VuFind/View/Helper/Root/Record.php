@@ -665,8 +665,7 @@ class Record implements DbServiceAwareInterface
     protected function getCoverSize($context, $default = 'medium')
     {
         if (
-            isset($this->config['Content']['coversize'])
-            && !$this->config['Content']['coversize']
+            !($this->config['Content']['coversize'] ?? true)
         ) {
             // covers disabled entirely
             return false;
