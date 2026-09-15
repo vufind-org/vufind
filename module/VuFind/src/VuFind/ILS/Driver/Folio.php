@@ -44,6 +44,7 @@ use function array_key_exists;
 use function array_slice;
 use function count;
 use function in_array;
+use function intval;
 use function is_callable;
 use function is_int;
 use function is_object;
@@ -2886,7 +2887,10 @@ class Folio extends AbstractAPI implements
     {
         $allowedServicePointCodes = $this->config['Checkout']['allowedServicePointCodes'] ?? [];
         $servicePointsByCode = $this->getServicePointsByCode();
-        $allowedServicePointIds = array_map(fn($servicePointCode) => $servicePointsByCode[$servicePointCode]?->id ?? null, $allowedServicePointCodes);
+        $allowedServicePointIds = array_map(
+            fn ($servicePointCode) => $servicePointsByCode[$servicePointCode]?->id ?? null,
+            $allowedServicePointCodes
+        );
         $itemLocationId = $item->effectiveLocation->id;
         $location = $this->getLocationData($itemLocationId);
         return array_intersect($allowedServicePointIds, $location['servicePointIds']);
@@ -2927,11 +2931,10 @@ class Folio extends AbstractAPI implements
         if ('Checked out' === $item->status->name) {
             $currentLoan = $this->getCurrentLoan($item->id);
             if ($currentLoan->userId === $patron['id']) {
-                $this->debug("Current user already has item checked out with barcode " . $data['barcode']);
+                $this->debug('Current user already has item checked out with barcode ' . $data['barcode']);
                 return ['valid' => false, 'status' => 'checkout_error_same_user'];
-            }
-            else {
-                $this->debug("Another user already has item checked out with barcode " . $data['barcode']);
+            } else {
+                $this->debug('Another user already has item checked out with barcode ' . $data['barcode']);
                 return ['valid' => false, 'status' => 'checkout_error_blocked'];
             }
         }
