@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Logic;
 
 use PHPUnit\Framework\TestCase;
-use VuFind\Config\Config;
 use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\AbstractBase;
@@ -53,7 +52,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testGetDriversWithEmptyArray(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $loader->expects($this->never())
@@ -72,7 +71,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testGetDriversWithValidRecords(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
@@ -123,7 +122,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testGetDriversWithMissingId(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
@@ -159,7 +158,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testGetDriversWithDefaultSearchBackend(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
@@ -213,7 +212,7 @@ class RecordsHelperTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('ajaxConfigProvider')]
     public function testCollectRequestStatsWithAjaxEnabled(array $configData): void
     {
-        $config = new Config($configData);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $ilsDetails1 = ['id' => 'record1', 'status' => 'available'];
@@ -253,7 +252,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testCollectRequestStatsWithAjaxDisabled(): void
     {
-        $config = new Config(['Authentication' => ['enableAjax' => false]]);
+        $config = ['Authentication' => ['enableAjax' => false]];
         $loader = $this->createMock(Loader::class);
 
         $driver = $this->createMock(AbstractBase::class);
@@ -275,7 +274,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testCollectRequestStatsWithEmptyRecords(): void
     {
-        $config = new Config(['Authentication' => ['enableAjax' => true]]);
+        $config = ['Authentication' => ['enableAjax' => true]];
         $loader = $this->createMock(Loader::class);
 
         $helper = new RecordsHelper($config, $loader);
@@ -296,7 +295,7 @@ class RecordsHelperTest extends TestCase
      */
     public function testGetDriversMaintainsOrder(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
