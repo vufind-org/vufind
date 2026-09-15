@@ -133,7 +133,7 @@ class SolrDefault extends DefaultRecord implements
     /**
      * Constructor.
      *
-     * @param array $mainConfig     VuFind main configuration (omit
+     * @param ?array $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
      * @param array $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
