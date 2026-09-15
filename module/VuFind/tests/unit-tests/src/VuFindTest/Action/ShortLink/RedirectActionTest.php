@@ -139,7 +139,7 @@ class RedirectActionTest extends TestCase
     {
         $longUrl = 'https://vufind.org/' . str_repeat('a', 50);
         $shortener = $this->createMock(UrlShortenerInterface::class);
-        $shortener->method('resolve')->willReturn($longUrl);
+        $shortener->method('resolve')->with('abc')->willReturn($longUrl);
         $captured = [];
         $renderer = $this->createMock(TemplateRendererInterface::class);
         $renderer->method('renderTemplate')->willReturnCallback(
