@@ -79,7 +79,7 @@ class CAS extends AbstractBase
      */
     protected function validateConfig()
     {
-        $cas = $this->config['CAS'];
+        $cas = $this->config['CAS'] ?? [];
         // Throw an exception if the required server setting is missing.
         if (!isset($cas['server'])) {
             throw new AuthException(
