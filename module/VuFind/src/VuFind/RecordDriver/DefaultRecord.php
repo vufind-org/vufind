@@ -794,8 +794,7 @@ class DefaultRecord extends AbstractBase
             return $this->mainConfig['OpenURL']['rfr_id'];
         }
         if (
-            isset($this->mainConfig['COinS']['identifier'])
-            && !empty($this->mainConfig['COinS']['identifier'])
+            !empty($this->mainConfig['COinS']['identifier'])
         ) {
             return $this->mainConfig['COinS']['identifier'];
         }
