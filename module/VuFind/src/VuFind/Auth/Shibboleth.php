@@ -140,7 +140,7 @@ class Shibboleth extends AbstractBase
     protected function validateConfig()
     {
         // Throw an exception if the required username setting is missing.
-        $shib = $this->config['Shibboleth'];
+        $shib = $this->config['Shibboleth'] ?? [];
         if (!isset($shib['username']) || empty([$shib['username']])) {
             throw new AuthException(
                 'Shibboleth username is missing in your configuration file.'
