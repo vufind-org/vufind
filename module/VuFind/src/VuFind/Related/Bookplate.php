@@ -102,7 +102,7 @@ class Bookplate implements RelatedInterface
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
         $configSection = !empty($config[1]) ? $config[1] : 'Record';
-        $this->config = $this->configManager->getConfigArray($configFile)[$configSection];
+        $this->config = $this->configManager->getConfigArray($configFile)[$configSection] ?? [];
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
             $this->getBookplateTitlesField()
