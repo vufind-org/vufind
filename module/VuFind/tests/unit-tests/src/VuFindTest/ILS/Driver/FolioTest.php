@@ -789,6 +789,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'in_transit' => false,
                     'last_pickup_date' => null,
                     'position' => 3,
+					'location' => 'psp-id',
                 ],
             ],
             'count' => 1,
