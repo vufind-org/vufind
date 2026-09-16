@@ -205,14 +205,13 @@ class RecordsHelperTest extends TestCase
     /**
      * Test collectRequestStats when ajax is enabled.
      *
-     * @param array $configData Configuration data
+     * @param array $config Configuration data
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('ajaxConfigProvider')]
-    public function testCollectRequestStatsWithAjaxEnabled(array $configData): void
+    public function testCollectRequestStatsWithAjaxEnabled(array $config): void
     {
-        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $ilsDetails1 = ['id' => 'record1', 'status' => 'available'];
