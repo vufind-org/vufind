@@ -222,11 +222,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = new Config(
-            [
-                'Authentication' => $authConfig,
-            ]
-        );
+        $config = ['Authentication' => $authConfig,];
         $db = new Database();
         $db->setConfig($config);
         $arr = $this->getCreateParams();
@@ -244,13 +240,9 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreateWithBadPasswordPolicyPattern(): void
     {
-        $config = new Config(
-            [
-                'Authentication' => [
-                    'password_pattern' => 'a/',
-                ],
-            ]
-        );
+        $config = ['Authentication' => 
+            ['password_pattern' => 'a/',],
+        ];
         $db = new Database();
         $db->setConfig($config);
         $arr = $this->getCreateParams();
@@ -411,11 +403,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = new Config(
-            [
-                'Authentication' => $authConfig,
-            ]
-        );
+        $config = ['Authentication' => $authConfig,];
         $db = new Database();
         $db->setConfig($config);
         $arr = $this->getCreateParams();

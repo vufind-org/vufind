@@ -122,7 +122,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
         $this->strategies = array_map(

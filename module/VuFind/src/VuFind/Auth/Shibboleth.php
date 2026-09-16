@@ -120,7 +120,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
         $this->useHeaders = $this->config['Shibboleth']['use_headers'] ?? false;
