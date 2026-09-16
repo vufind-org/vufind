@@ -37,6 +37,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Export;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\Record\Loader as RecordLoader;
@@ -65,6 +66,7 @@ class ExportAction extends AbstractRecordAction
      * @param SearchMemory    $searchMemory     Search memory
      * @param TabManager      $tabManager       Tab manager
      * @param AuthManager     $authManager      Authentication manager
+     * @param ConfigManager   $configManager    Configuration manager
      * @param RecordLoader    $recordLoader     Record loader
      * @param RecordRouter    $recordRouter     Record router
      * @param ResultScroller  $resultScroller   Result scroller
@@ -77,6 +79,7 @@ class ExportAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -91,6 +94,7 @@ class ExportAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

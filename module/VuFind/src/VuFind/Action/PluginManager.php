@@ -113,6 +113,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eitrecord/save' => Record\SaveAction::class,
         'eitrecord/sms' => Record\SmsAction::class,
 
+        'error/permissiondenied' => Error\PermissionDeniedAction::class,
+
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
 
         'missingrecord/home' => MissingRecord\HomeAction::class,
@@ -120,6 +122,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
 
         'oai/authserver' => Oai\AuthServerAction::class,
+
+        'oauth2/userinfo' => OAuth2\UserInfoAction::class,
+        'oauth2/wellknownconfiguration' => OAuth2\WellKnownConfigurationAction::class,
 
         'primorecord/addtag' => Record\AddTagAction::class,
         'primorecord/deletetag' => Record\DeleteTagAction::class,
@@ -234,6 +239,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
         'Myresearch' => 'MyResearch',
+        'Oauth2' => 'OAuth2',
         'Shortlink' => 'ShortLink',
     ];
 

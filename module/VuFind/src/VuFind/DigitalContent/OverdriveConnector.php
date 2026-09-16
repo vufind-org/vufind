@@ -81,34 +81,6 @@ class OverdriveConnector implements
     use KeyGeneratorTrait;
 
     /**
-     * Session Container.
-     *
-     * @var ?Container
-     */
-    protected $sessionContainer;
-
-    /**
-     * OverDrive-specific configuration.
-     *
-     * @var Config
-     */
-    protected $recordConfig;
-
-    /**
-     * Main VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $mainConfig;
-
-    /**
-     * ILS Authorization.
-     *
-     * @var ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
      * HTTP Client.
      *
      * Client for making calls to the API
@@ -127,21 +99,17 @@ class OverdriveConnector implements
     /**
      * Constructor.
      *
-     * @param Config           $mainConfig       VuFind main conf
-     * @param Config           $recordConfig     Record-specific conf file
+     * @param array            $mainConfig       VuFind main conf
+     * @param array            $recordConfig     Record-specific conf file
      * @param ILSAuthenticator $ilsAuth          ILS Authenticator
      * @param ?Container       $sessionContainer container
      */
     public function __construct(
-        Config $mainConfig,
-        Config $recordConfig,
-        ILSAuthenticator $ilsAuth,
-        ?Container $sessionContainer = null
+        protected array $mainConfig,
+        protected array $recordConfig,
+        protected ILSAuthenticator $ilsAuth,
+        protected ?Container $sessionContainer = null
     ) {
-        $this->mainConfig = $mainConfig;
-        $this->recordConfig = $recordConfig;
-        $this->ilsAuth = $ilsAuth;
-        $this->sessionContainer = $sessionContainer;
     }
 
     /**
@@ -931,41 +899,41 @@ class OverdriveConnector implements
             );
             return false;
         }
-        if ($this->recordConfig->API->productionMode == false) {
+        if ($this->recordConfig['API']['productionMode'] == false) {
             $conf->productionMode = false;
-            $conf->discURL = $this->recordConfig->API->integrationDiscoveryURL;
-            $conf->circURL = $this->recordConfig->API->integrationCircURL;
-            $conf->libraryID = $this->recordConfig->API->integrationLibraryID;
-            $conf->websiteID = $this->recordConfig->API->integrationWebsiteID;
+            $conf->discURL = $this->recordConfig['API']['integrationDiscoveryURL'];
+            $conf->circURL = $this->recordConfig['API']['integrationCircURL'];
+            $conf->libraryID = $this->recordConfig['API']['integrationLibraryID'];
+            $conf->websiteID = $this->recordConfig['API']['integrationWebsiteID'];
         } else {
             $conf->productionMode = true;
-            $conf->discURL = $this->recordConfig->API->productionDiscoveryURL;
-            $conf->circURL = $this->recordConfig->API->productionCircURL;
-            $conf->libraryID = $this->recordConfig->API->productionLibraryID;
-            $conf->websiteID = $this->recordConfig->API->productionWebsiteID;
+            $conf->discURL = $this->recordConfig['API']['productionDiscoveryURL'];
+            $conf->circURL = $this->recordConfig['API']['productionCircURL'];
+            $conf->libraryID = $this->recordConfig['API']['productionLibraryID'];
+            $conf->websiteID = $this->recordConfig['API']['productionWebsiteID'];
         }
 
-        $conf->clientKey = $this->recordConfig->API->clientKey;
-        $conf->clientSecret = $this->recordConfig->API->clientSecret;
-        $conf->tokenURL = $this->recordConfig->API->tokenURL;
-        $conf->patronTokenURL = $this->recordConfig->API->patronTokenURL;
-        $conf->usePatronAPI = (bool)($this->recordConfig->API->usePatronAPI ?? true);
-        $conf->idField = $this->recordConfig->Overdrive->overdriveIdMarcField;
+        $conf->clientKey = $this->recordConfig['API']['clientKey'];
+        $conf->clientSecret = $this->recordConfig['API']['clientSecret'];
+        $conf->tokenURL = $this->recordConfig['API']['tokenURL'];
+        $conf->patronTokenURL = $this->recordConfig['API']['patronTokenURL'];
+        $conf->usePatronAPI = (bool)($this->recordConfig['API']['usePatronAPI'] ?? true);
+        $conf->idField = $this->recordConfig['Overdrive']['overdriveIdMarcField'];
         $conf->idSubfield
-            = $this->recordConfig->Overdrive->overdriveIdMarcSubfield;
-        $conf->ILSname = $this->recordConfig->API->ILSname;
-        $conf->isMarc = $this->recordConfig->Overdrive->isMarc;
-        $conf->displayDateFormat = $this->mainConfig->Site->displayDateFormat;
+            = $this->recordConfig['Overdrive']['overdriveIdMarcSubfield'];
+        $conf->ILSname = $this->recordConfig['API']['ILSname'];
+        $conf->isMarc = $this->recordConfig['Overdrive']['isMarc'];
+        $conf->displayDateFormat = $this->mainConfig['Site']['displayDateFormat'];
         $conf->consortiumSupport
-            = $this->recordConfig->Overdrive->consortiumSupport;
+            = $this->recordConfig['Overdrive']['consortiumSupport'];
         $conf->showMyContent
-            = strtolower($this->recordConfig->Overdrive->showMyContent);
-        $conf->noAccessString = $this->recordConfig->Overdrive->noAccessString;
+            = strtolower($this->recordConfig['Overdrive']['showMyContent']);
+        $conf->noAccessString = $this->recordConfig['Overdrive']['noAccessString'];
         $conf->tokenCacheLifetime
-            = $this->recordConfig->API->tokenCacheLifetime;
-        $conf->libraryURL = $this->recordConfig->Overdrive->overdriveLibraryURL;
-        $conf->enableAjaxStatus = $this->recordConfig->Overdrive->enableAjaxStatus;
-        $conf->showOverdriveAdminMenu = $this->recordConfig->Overdrive->showOverdriveAdminMenu;
+            = $this->recordConfig['API']['tokenCacheLifetime'];
+        $conf->libraryURL = $this->recordConfig['Overdrive']['overdriveLibraryURL'];
+        $conf->enableAjaxStatus = $this->recordConfig['Overdrive']['enableAjaxStatus'];
+        $conf->showOverdriveAdminMenu = $this->recordConfig['Overdrive']['showOverdriveAdminMenu'];
         return $conf;
     }
 

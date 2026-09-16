@@ -31,11 +31,8 @@ namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\Container as SessionContainer;
-use VuFind\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-
-use function intval;
 
 /**
  * Interval CAPTCHA (requires an interval between actions or from start of session).
@@ -82,14 +79,14 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
      * Constructor.
      *
      * @param SessionContainer $sc     Session data container
-     * @param Config           $config VuFind main configuration
+     * @param array            $config VuFind main configuration
      */
-    public function __construct(SessionContainer $sc, Config $config)
+    public function __construct(SessionContainer $sc, array $config)
     {
         $this->sessionData = $sc;
-        $this->actionInterval = intval($config->Captcha->action_interval ?? 60);
-        $this->timeFromSessionStart = intval(
-            $config->Captcha->time_from_session_start ?? $this->actionInterval
+        $this->actionInterval = (int)($config['Captcha']['action_interval'] ?? 60);
+        $this->timeFromSessionStart = (int)(
+            $config['Captcha']['time_from_session_start'] ?? $this->actionInterval
         );
     }
 

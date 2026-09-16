@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Error Controller.
+ * "Unavailable" error action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,48 +22,43 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Error;
 
-use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractTemplateRenderingAction;
 
 /**
- * Error Controller.
+ * "Unavailable" error action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ErrorController extends AbstractActionController
+class UnavailableAction extends AbstractTemplateRenderingAction
 {
     /**
-     * Display unavailable message.
+     * Display error page.
      *
-     * @return mixed
-     */
-    public function unavailableAction()
-    {
-        $this->getResponse()->setStatusCode(503);
-        return new \Laminas\View\Model\ViewModel();
-    }
-
-    /**
-     * Display permission denied message.
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    public function permissionDeniedAction()
-    {
-        $this->getResponse()->setStatusCode(403);
-        return new \Laminas\View\Model\ViewModel(
-            ['msg' => $this->params()->fromQuery('msg')]
-        );
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        return $this->renderTemplate($request, $response->withStatus(503));
     }
 }

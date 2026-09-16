@@ -69,9 +69,9 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Primo configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $primoConfig;
+    protected array $primoConfig;
 
     /**
      * Primo backend class.
@@ -145,7 +145,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
         ?array $options = null
     ) {
         $this->setup($container);
-        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('Primo');
+        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -191,7 +191,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
 
         // Attach hide facet value listener:
         $hfvListener = $this
-            ->getHideFacetValueListener($backend, $this->primoConfig);
+            ->getHideFacetValueListener($backend, new Config($this->primoConfig));
         if ($hfvListener) {
             $hfvListener->attach($events);
         }
@@ -208,7 +208,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
         $permHandler = $this->getPermissionHandler();
 
         // Load URLs and credentials:
-        if (empty($this->primoConfig->General->search_url)) {
+        if (empty($this->primoConfig['General']['search_url'])) {
             throw new \Exception('Missing search_url in Primo.ini');
         }
         $instCode = isset($permHandler)
@@ -221,10 +221,10 @@ class PrimoBackendFactory extends AbstractBackendFactory
         );
 
         // Create connector:
-        $timeout = $this->primoConfig->General->timeout ?? 30;
+        $timeout = $this->primoConfig['General']['timeout'] ?? 30;
         $connector = new $this->restConnectorClass(
-            $this->primoConfig->General->jwt_url ?? '',
-            $this->primoConfig->General->search_url,
+            $this->primoConfig['General']['jwt_url'] ?? '',
+            $this->primoConfig['General']['search_url'],
             $instCode,
             function (string $url) use ($timeout) {
                 return $this->createHttpClient(
@@ -236,7 +236,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
             $session
         );
         $connector->setLogger($this->logger);
-        if ($cache = $this->createConnectorCache($this->primoConfig)) {
+        if ($cache = $this->createConnectorCache(new Config($this->primoConfig))) {
             $connector->setCache($cache);
         }
         return $connector;
@@ -263,7 +263,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
-            if ($this->primoConfig->display_cdi_attributes ?? true) {
+            if ($this->primoConfig['display_cdi_attributes'] ?? true) {
                 foreach ($this->attributeLabelTypeMappings as $key => $config) {
                     if (in_array($key, $data['attributes'] ?? [])) {
                         $driver->addLabel($config['display'], $config['type']);
@@ -292,9 +292,9 @@ class PrimoBackendFactory extends AbstractBackendFactory
      */
     protected function getPermissionHandler(): ?PrimoPermissionHandler
     {
-        if (isset($this->primoConfig->Institutions)) {
+        if (isset($this->primoConfig['Institutions'])) {
             $permHandler = new PrimoPermissionHandler(
-                $this->primoConfig->Institutions
+                $this->primoConfig['Institutions']
             );
             $permHandler->setAuthorizationService(
                 $this->getService(AuthorizationService::class)
