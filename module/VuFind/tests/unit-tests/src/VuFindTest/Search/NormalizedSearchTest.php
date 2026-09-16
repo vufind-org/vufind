@@ -53,7 +53,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&ResultsManager
      */
-    protected function getResultsManager(): ResultsManager
+    protected function getResultsManager(): MockObject&ResultsManager
     {
         return $this->createMock(\VuFind\Search\Results\PluginManager::class);
     }
