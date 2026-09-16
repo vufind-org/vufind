@@ -43,12 +43,9 @@ class SolrWeb extends SolrDefault
     /**
      * Constructor.
      *
-     * @param array $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param array $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param array $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
         $mainConfig = null,
