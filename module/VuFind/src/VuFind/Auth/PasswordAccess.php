@@ -47,7 +47,6 @@ use function in_array;
  */
 class PasswordAccess extends AbstractBase
 {
-
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
