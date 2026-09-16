@@ -84,7 +84,7 @@ class Facebook extends AbstractBase implements
             );
         }
 
-        if (!isset($fb['secret']) || empty($fb['secret'])) {
+        if (empty($fb['secret'])) {
             throw new AuthException(
                 'Facebook app secret is missing in your configuration file.'
             );
