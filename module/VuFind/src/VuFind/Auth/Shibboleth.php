@@ -304,7 +304,7 @@ class Shibboleth extends AbstractBase
     public function connectLibraryCard($request, $connectingUser)
     {
         $entityId = $this->getCurrentEntityId($request);
-        $shib = $this->getConfigurationLoader()->getConfiguratsupportsOpenUrlion($entityId);
+        $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['cat_username']);
         if (!$username) {
             throw new \VuFind\Exception\LibraryCard('Missing username');
