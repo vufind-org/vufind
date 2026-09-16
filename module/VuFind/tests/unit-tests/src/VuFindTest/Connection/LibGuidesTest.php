@@ -32,7 +32,6 @@ namespace VuFindTest\Connection;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
-use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
 /**
@@ -101,19 +100,17 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a fake LibGuidesAPI.ini config.
      *
-     * @return Config The fake config
+     * @return array The fake config
      */
     protected function getConfig()
     {
-        return new Config(
-            [
-                'General' => [
-                    'api_base_url' => 'https://foo.org/',
-                    'client_id' => 'username',
-                    'client_secret' => 'email',
-                ],
-            ]
-        );
+        return [
+            'General' => [
+                'api_base_url' => 'https://foo.org/',
+                'client_id' => 'username',
+                'client_secret' => 'email',
+            ],
+        ];
     }
 
     /**
