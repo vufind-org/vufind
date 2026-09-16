@@ -773,7 +773,7 @@ class Options extends AbstractEDSOptions
      *
      * @return array
      */
-    public function getViewOptions(): array
+    public function getViewOptions()
     {
         return $this->getApiProperty('viewOptions');
     }
