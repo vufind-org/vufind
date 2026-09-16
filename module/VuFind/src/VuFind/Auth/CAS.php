@@ -327,7 +327,7 @@ class CAS extends AbstractBase
                 false
             );
 
-            if (isset($cas['CACert']) && !empty($cas['CACert'])) {
+            if (!empty($cas['CACert'])) {
                 $casauth->setCasServerCACert($cas['CACert']);
             } else {
                 $casauth->setNoCasServerValidation();
