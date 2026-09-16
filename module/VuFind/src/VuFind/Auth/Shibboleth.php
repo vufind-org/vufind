@@ -148,7 +148,7 @@ class Shibboleth extends AbstractBase
         }
 
         // Throw an exception if no login endpoint is available.
-        if (!isset($shib->login)) {
+        if (!isset($shib['login'])) {
             throw new AuthException(
                 'Shibboleth login configuration parameter is not set.'
             );
@@ -304,7 +304,7 @@ class Shibboleth extends AbstractBase
     public function connectLibraryCard($request, $connectingUser)
     {
         $entityId = $this->getCurrentEntityId($request);
-        $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
+        $shib = $this->getConfigurationLoader()->getConfiguratsupportsOpenUrlion($entityId);
         $username = $this->getAttribute($request, $shib['cat_username']);
         if (!$username) {
             throw new \VuFind\Exception\LibraryCard('Missing username');
