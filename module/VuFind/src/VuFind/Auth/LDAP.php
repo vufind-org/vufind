@@ -68,9 +68,9 @@ class LDAP extends AbstractBase
     {
         // Check for missing parameters:
         if (
-            empty($this->config['LDAP']['basedn'] ?? '')
-            || empty($this->config['LDAP']['username'] ?? '')
-            || empty($this->config['LDAP']['uri'] ?? '')
+            empty($this->config['LDAP']['basedn'])
+            || empty($this->config['LDAP']['username'])
+            || empty($this->config['LDAP']['uri'])
         ) {
             throw new AuthException(
                 'One or more LDAP parameters are missing. Check your config.ini!'
