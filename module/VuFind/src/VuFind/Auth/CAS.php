@@ -320,15 +320,15 @@ class CAS extends AbstractBase
 
             $casauth->client(
                 $protocol,
-                $cas->server,
-                (int)$cas->port,
-                $cas->context,
+                $cas['server'],
+                (int)$cas['port'],
+                $cas['context'],
                 $this->getServiceBaseUrl(),
                 false
             );
 
-            if (isset($cas->CACert) && !empty($cas->CACert)) {
-                $casauth->setCasServerCACert($cas->CACert);
+            if (isset($cas['CACert']) && !empty($cas['CACert'])) {
+                $casauth->setCasServerCACert($cas['CACert']);
             } else {
                 $casauth->setNoCasServerValidation();
             }
