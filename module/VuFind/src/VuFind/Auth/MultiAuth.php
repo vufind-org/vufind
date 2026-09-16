@@ -126,7 +126,7 @@ class MultiAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param array $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @throws AuthException
      * @return void
