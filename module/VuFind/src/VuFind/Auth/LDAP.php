@@ -173,8 +173,7 @@ class LDAP extends AbstractBase
         // if the uri parameter is not specified as ldaps://
         // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
-        $disableTls = isset($this->config['LDAP']['disable_tls'])
-            && $this->config['LDAP']['disable_tls'];
+        $disableTls = $this->config['LDAP']['disable_tls'] ?? false;
         if (!str_starts_with($uri, 'ldaps://') && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
