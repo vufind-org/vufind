@@ -292,7 +292,7 @@ class LDAP extends AbstractBase
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $value = $data[$i][$configValue];
-                        $separator = $this->config['LDAP']['separator'];
+                        $separator = $this->config['LDAP']['separator'] ?? null;
                         // if no separator is given map only the first value
                         if (isset($separator)) {
                             $tmp = [];
