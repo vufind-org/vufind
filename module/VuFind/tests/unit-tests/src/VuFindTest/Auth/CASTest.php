@@ -30,7 +30,6 @@
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\CAS;
-use VuFind\Config\Config;
 
 /**
  * CAS authentication test class.
@@ -55,7 +54,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     public function getAuthObject(?array $config = null): CAS
     {
         $obj = new CAS($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
-        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
