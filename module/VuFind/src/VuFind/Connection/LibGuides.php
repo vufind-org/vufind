@@ -102,19 +102,19 @@ class LibGuides implements
     /**
      * Constructor.
      *
-     * @param Config               $config LibGuides API configuration object
+     * @param array                $config LibGuides API configuration object
      * @param \Laminas\Http\Client $client HTTP client
      *
      * @link https://ask.springshare.com/libguides/faq/873#api-auth
      */
     public function __construct(
-        $config,
+        array $config,
         $client
     ) {
         $this->client = $client;
-        $this->baseUrl = $config->General->api_base_url;
-        $this->clientId = $config->General->client_id;
-        $this->clientSecret = $config->General->client_secret;
+        $this->baseUrl = $config['General']['api_base_url'];
+        $this->clientId = $config['General']['client_id'];
+        $this->clientSecret = $config['General']['client_secret'];
     }
 
     /**
