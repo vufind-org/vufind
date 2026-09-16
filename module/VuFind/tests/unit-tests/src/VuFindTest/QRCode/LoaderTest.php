@@ -29,7 +29,6 @@
 
 namespace VuFindTest\QRCode;
 
-use VuFind\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 
@@ -110,7 +109,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      */
     protected function getLoader($config = [], $theme = null, $mock = false): Loader
     {
-        $config = new Config($config);
+        $config = [];
         if (null === $theme) {
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
