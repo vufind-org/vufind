@@ -618,7 +618,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config(static::$config),
+            static::$config,
             $this->mappings,
             $eventManager
         );
@@ -1074,7 +1074,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config($config ?? static::$config),
+            $config ?? static::$config,
             $mappings ?? $this->mappings,
             $eventManager
         );

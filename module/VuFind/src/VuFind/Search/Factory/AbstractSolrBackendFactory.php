@@ -589,7 +589,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createSimilarBuilder(): SimilarBuilder
     {
         return new SimilarBuilder(
-            $this->configManager->getConfigObject($this->searchConfig),
+            $this->configManager->getConfigArray($this->searchConfig),
             $this->uniqueKey
         );
     }

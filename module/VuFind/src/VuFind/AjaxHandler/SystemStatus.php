@@ -34,7 +34,6 @@ use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
 use VuFind\Http\HttpStatus;
@@ -60,13 +59,13 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @param SessionManager          $sessionManager Session manager
      * @param ResultsManager          $resultsManager Results manager
-     * @param Config                  $config         Top-level VuFind configuration (config.ini)
+     * @param array                   $config         Top-level VuFind configuration (config.ini)
      * @param SessionServiceInterface $sessionService Session database service
      */
     public function __construct(
         protected SessionManager $sessionManager,
         protected ResultsManager $resultsManager,
-        protected Config $config,
+        protected array $config,
         protected SessionServiceInterface $sessionService
     ) {
         parent::__construct(null);
@@ -90,8 +89,8 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
 
         // Check system status
         if (
-            !empty($this->config->System->healthCheckFile)
-            && file_exists($this->config->System->healthCheckFile)
+            !empty($this->config['System']['healthCheckFile'])
+            && file_exists($this->config['System']['healthCheckFile'])
         ) {
             return $this->formatResponse(
                 'Health check file exists',

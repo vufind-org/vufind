@@ -30,7 +30,6 @@
 namespace VuFind\Search\Primo;
 
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
-use VuFind\Config\Config;
 
 use function in_array;
 use function is_array;
@@ -66,16 +65,13 @@ class PrimoPermissionHandler
     /**
      * Constructor.
      *
-     * @param Config|array $primoPermConfig Primo-Config for
+     * @param array $primoPermConfig Primo-Config for
      * Institutions
      *
      * @return void
      */
-    public function __construct(Config|array $primoPermConfig)
+    public function __construct(array $primoPermConfig)
     {
-        if ($primoPermConfig instanceof Config) {
-            $primoPermConfig = $primoPermConfig->toArray();
-        }
         $this->primoConfig = is_array($primoPermConfig) ? $primoPermConfig : [];
         $this->checkLegacySettings();
         $this->checkConfig();

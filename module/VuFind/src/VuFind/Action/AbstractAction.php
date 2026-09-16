@@ -228,6 +228,10 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
                 return $accessDeniedResponse;
             }
 
+            if ($preprocessResponse = $this->preprocessRequest($request, $response)) {
+                return $preprocessResponse;
+            }
+
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -257,6 +261,25 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      * @return ?ResponseInterface
      */
     protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
+    }
+
+    /**
+     * Preprocess a request before the actual action is executed.
+     *
+     * This method is executed just before the actual action (i.e. after permission checks etc.).
+     * It is meant for preprocessing of requests in a shared base class of multiple actions.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function preprocessRequest(
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ?ResponseInterface {
