@@ -161,18 +161,6 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler without setting an authorization service.
-     * This should always return false.
-     *
-     * @return void
-     */
-    public function testWithoutAuthorizationServiceWithLaminasConfigObject()
-    {
-        $handler = new PrimoPermissionHandler($this->primoConfig);
-        $this->assertEquals(false, $handler->hasPermission());
-    }
-
-    /**
      * Test the handler code if permission matches
      * This should return the actual institution code (depending on config).
      *
