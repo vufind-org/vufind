@@ -35,7 +35,6 @@ use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFindSearch\Backend\Primo\Backend;
