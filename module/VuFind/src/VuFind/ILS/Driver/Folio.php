@@ -2411,6 +2411,7 @@ class Folio extends AbstractAPI implements
                 ),
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position ?? null,
+				'location' => $hold->pickupServicePointId ?? null,									  
             ];
             // If this request was created by a proxy user, and the proxy user
             // is not the current user, we need to indicate their name.
