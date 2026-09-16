@@ -179,8 +179,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
         if (!isset($this->cacheConfig['$context'])) {
             $context = Cache::CONTEXT_DEFAULT;
         }
-        $this->cachableSources = isset($this->cacheConfig['$context'])
-            ? $this->cacheConfig['$context'] : [];
+        $this->cachableSources = $this->cacheConfig['$context'] ?? [];
         if (
             $context != Cache::CONTEXT_DEFAULT
             && isset($this->cacheConfig[Cache::CONTEXT_DEFAULT])
