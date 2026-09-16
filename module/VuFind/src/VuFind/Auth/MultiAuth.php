@@ -140,9 +140,7 @@ class MultiAuth extends AbstractBase
                 explode(',', $config['MultiAuth']['method_order'])
             );
         }
-        if (
-            strlen($config['MultiAuth']['filters'] ?? '')
-        ) {
+        if (strlen($config['MultiAuth']['filters'] ?? '')) {
             $this->filters = array_map(
                 'trim',
                 explode(',', $config['MultiAuth']['filters'])
