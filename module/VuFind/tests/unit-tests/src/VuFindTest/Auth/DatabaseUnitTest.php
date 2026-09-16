@@ -32,7 +32,6 @@ namespace VuFindTest\Auth;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Http\PhpEnvironment\Request;
@@ -240,7 +239,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreateWithBadPasswordPolicyPattern(): void
     {
-        $config = ['Authentication' => 
+        $config = ['Authentication' =>
             ['password_pattern' => 'a/',],
         ];
         $db = new Database();
