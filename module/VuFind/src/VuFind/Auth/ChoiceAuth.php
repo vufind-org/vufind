@@ -106,9 +106,7 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (
-            !strlen($this->config['ChoiceAuth']['choice_order'] ?? '')
-        ) {
+        if (!strlen($this->config['ChoiceAuth']['choice_order'] ?? '')) {
             throw new AuthException(
                 'One or more ChoiceAuth parameters are missing. ' .
                 'Check your config.ini!'
