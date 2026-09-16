@@ -170,6 +170,10 @@ class Shibboleth extends AbstractBase
         // Check if username is set.
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
+        if (!isset($shib['username'])) {
+            $this->debug('Username attribute configuration missing.');
+            throw new AuthException('authentication_error_admin');
+        }
         $username = $this->getAttribute($request, $shib['username']);
         if (empty($username)) {
             $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
