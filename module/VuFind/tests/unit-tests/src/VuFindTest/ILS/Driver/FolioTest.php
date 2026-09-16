@@ -1046,6 +1046,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getHolding with HRID-based lookup and ID prefix.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testGetHoldingWithHridLookup')]
+    public function testGetHoldingWithHridLookupAndIdPrefix(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $driverConfig['IDs']['prefix'] = 'testPrefix-';
+        $this->createConnector('get-holding', $driverConfig);
+        $expectedResult = $this->getExpectedGetHoldingResult();
+        $expectedResult['holdings']['0']['id'] = 'testPrefix-foo';
+        $this->assertEquals($expectedResult, $this->driver->getHolding('testPrefix-foo'));
+    }
+
+    /**
      * Get expected result of getHoldings(), used by testGetHoldingsWithMultipleIds().
      *
      * @return array
