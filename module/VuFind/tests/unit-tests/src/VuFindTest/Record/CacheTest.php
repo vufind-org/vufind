@@ -239,7 +239,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        return [];
+        return $configArr;
     }
 
     /**

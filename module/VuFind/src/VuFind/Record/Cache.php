@@ -176,10 +176,10 @@ class Cache implements \Psr\Log\LoggerAwareInterface
             return;
         }
         $context = ucfirst($context);
-        if (!isset($this->cacheConfig['$context'])) {
+        if (!isset($this->cacheConfig[$context])) {
             $context = Cache::CONTEXT_DEFAULT;
         }
-        $this->cachableSources = $this->cacheConfig['$context'] ?? [];
+        $this->cachableSources = $this->cacheConfig[$context] ?? [];
         if (
             $context != Cache::CONTEXT_DEFAULT
             && isset($this->cacheConfig[Cache::CONTEXT_DEFAULT])
