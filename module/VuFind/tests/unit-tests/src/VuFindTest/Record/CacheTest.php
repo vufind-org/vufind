@@ -32,7 +32,6 @@
 namespace VuFindTest\Record;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\Record\Cache;
@@ -223,9 +222,9 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     /**
      * Create configuration.
      *
-     * @return Config
+     * @return array
      */
-    protected function getConfig(): Config
+    protected function getConfig(): array
     {
         $configArr = [
             'Default' => [
@@ -240,7 +239,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        return new Config($configArr);
+        return [];
     }
 
     /**
