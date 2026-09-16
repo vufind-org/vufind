@@ -29,8 +29,6 @@
 
 namespace VuFind\Config\Feature;
 
-use VuFind\Config\Config;
-
 /**
  * Trait providing email settings.
  *
@@ -47,16 +45,13 @@ trait EmailSettingsTrait
     /**
      * Get sender email address.
      *
-     * @param array|Config $config    VuFind configuration
+     * @param array        $config    VuFind configuration
      * @param ?string      $userEmail User's own email address that is used if permitted by settings
      *
      * @return string
      */
-    protected function getEmailSenderAddress(array|Config $config, ?string $userEmail = null): string
+    protected function getEmailSenderAddress(array $config, ?string $userEmail = null): string
     {
-        if ($config instanceof Config) {
-            $config = $config->toArray();
-        }
         if ($userEmail && ($config['Mail']['user_email_in_from'] ?? false)) {
             return $userEmail;
         }

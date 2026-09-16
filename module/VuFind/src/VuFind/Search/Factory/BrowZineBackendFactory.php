@@ -64,9 +64,9 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     /**
      * BrowZine configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $browzineConfig;
+    protected array $browzineConfig;
 
     /**
      * Create an object.
@@ -91,7 +91,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $this->browzineConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject('BrowZine');
+            ->getConfigArray('BrowZine');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -124,20 +124,20 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector(): Connector
     {
-        $token = $this->getSecretFromConfig($this->browzineConfig?->General, 'access_token');
+        $token = $this->getSecretFromConfig($this->browzineConfig['General'], 'access_token');
         // Validate configuration:
         if ($token === null) {
             throw new \Exception('Missing access token in BrowZine.ini');
         }
-        if (empty($this->browzineConfig->General->library_id)) {
+        if (empty($this->browzineConfig['General']['library_id'])) {
             throw new \Exception('Missing library ID in BrowZine.ini');
         }
 
         // Create connector:
         $connector = new Connector(
-            $this->createHttpClient($this->browzineConfig->General->timeout ?? 30),
+            $this->createHttpClient($this->browzineConfig['General']['timeout'] ?? 30),
             $token,
-            $this->browzineConfig->General->library_id
+            $this->browzineConfig['General']['library_id']
         );
         $connector->setLogger($this->logger);
         return $connector;
