@@ -123,15 +123,15 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             'detailed',
             ['list_detailed' => 'list_detailed'],
         ];
-        yield 'API default overrides EDS.ini default' => [
+        yield 'EDS.ini default overrides API default ' => [
             [
                 'General' => [
                     'default_view' => 'list_title',
                 ],
             ],
             ['ViewResultSettings' => ['ResultListView' => 'detailed']],
-            'detailed',
-            ['list_detailed' => 'list_detailed'],
+            'title',
+            ['list_title' => 'list_title'],
         ];
         yield 'options in EDS.ini / default in API response' => [
             [
@@ -149,7 +149,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                 'list_detailed' => 'Detailed View',
             ],
         ];
-        yield 'API default overrides EDS.ini default, and EDS.ini options are respected' => [
+        yield 'EDS.ini default overrides API default, and EDS.ini options are respected' => [
             [
                 'General' => [
                     'default_view' => 'list_title',
@@ -161,7 +161,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             ['ViewResultSettings' => ['ResultListView' => 'detailed']],
-            'detailed',
+            'title',
             [
                 'list_title' => 'Title View',
                 'list_brief' => 'Brief View',

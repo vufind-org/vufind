@@ -659,7 +659,7 @@ class Options extends AbstractEDSOptions
         $searchSettings = $this->searchSettings ?? [];
 
         // default view
-        if ($defaultView = $settings['ResultListView'] ?? null) {
+        if (!isset($searchSettings['General']['default_view']) && $defaultView = $settings['ResultListView'] ?? null) {
             $searchSettings['General']['default_view'] = 'list_' . $defaultView;
         }
 
