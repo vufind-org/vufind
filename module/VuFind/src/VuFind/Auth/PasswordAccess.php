@@ -47,23 +47,6 @@ use function in_array;
  */
 class PasswordAccess extends AbstractBase
 {
-    /**
-     * Get configuration (load automatically if not previously set). Throw an
-     * exception if the configuration is invalid.
-     *
-     * @throws AuthException
-     * @return array
-     */
-    public function getConfig()
-    {
-        // Validate configuration if not already validated:
-        if (!$this->configValidated) {
-            $this->validateConfig();
-            $this->configValidated = true;
-        }
-
-        return $this->config;
-    }
 
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
