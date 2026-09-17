@@ -55,10 +55,8 @@ trait SharedListenersTrait
         BackendInterface $backend,
         array $facet
     ): ?HideFacetValueListener {
-        $hideFacetValue = isset($facet['HideFacetValue'])
-            ? $facet['HideFacetValue'] : [];
-        $showFacetValue = isset($facet['ShowFacetValue'])
-            ? $facet['ShowFacetValue'] : [];
+        $hideFacetValue = $facet['HideFacetValue'] ?? [];
+        $showFacetValue = $facet['ShowFacetValue'] ?? [];
         if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
         }
