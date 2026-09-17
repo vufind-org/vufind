@@ -149,7 +149,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         $this->config = $config;
         $this->configValidated = false;
