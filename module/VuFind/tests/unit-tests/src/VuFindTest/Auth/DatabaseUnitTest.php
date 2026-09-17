@@ -240,7 +240,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     public function testCreateWithBadPasswordPolicyPattern(): void
     {
         $config = ['Authentication' =>
-            ['password_pattern' => 'a/',],
+            ['password_pattern' => 'a/'],
         ];
         $db = new Database();
         $db->setConfig($config);
