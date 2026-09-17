@@ -30,7 +30,6 @@
 namespace VuFind\Auth;
 
 use Closure;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;

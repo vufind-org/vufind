@@ -120,7 +120,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
         $this->useHeaders = $this->config['Shibboleth']['use_headers'] ?? false;
@@ -141,7 +141,7 @@ class Shibboleth extends AbstractBase
     {
         // Throw an exception if the required username setting is missing.
         $shib = $this->config['Shibboleth'] ?? [];
-        if (empty([$shib['username']])) {
+        if (empty($shib['username'])) {
             throw new AuthException(
                 'Shibboleth username is missing in your configuration file.'
             );
