@@ -77,7 +77,7 @@ class Overdrive
             return false;
         }
         $config = $this->connector->getConfig();
-        return (bool)($config['showOverdriveAdminMenu'] ?? false);
+        return (bool)($config->showOverdriveAdminMenu ?? false);
     }
 
     /**
