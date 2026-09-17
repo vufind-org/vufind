@@ -488,10 +488,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createConnector(): Connector
     {
         $timeout = $this->getIndexConfig('timeout', 30);
-        $searchConfig = $this->configManager->getConfigObject($this->searchConfig);
-        $defaultFields = $searchConfig->General->default_record_fields ?? '*';
+        $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
+        $defaultFields = $searchConfig['General']['default_record_fields'] ?? '*';
 
-        if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
+        if (($searchConfig['Explain']['enabled'] ?? false) && !str_contains($defaultFields, 'score')) {
             $defaultFields .= ',score';
         }
 
