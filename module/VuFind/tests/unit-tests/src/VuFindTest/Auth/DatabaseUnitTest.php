@@ -402,7 +402,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = ['Authentication' => $authConfig,];
+        $config = ['Authentication' => $authConfig];
         $db = new Database();
         $db->setConfig($config);
         $arr = $this->getCreateParams();
