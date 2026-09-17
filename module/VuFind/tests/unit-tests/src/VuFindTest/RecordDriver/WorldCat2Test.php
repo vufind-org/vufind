@@ -29,6 +29,7 @@
 
 namespace VuFindTest\RecordDriver;
 
+use VuFind\Config\Config;
 use VuFind\RecordDriver\WorldCat2;
 
 /**
@@ -275,8 +276,8 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('methodTests')]
     public function testMethod(string $method, $expected, ?string $fixture = null, array $config = [])
     {
-        $configArr = $config;
-        $driver = new WorldCat2($configArr, $configArr, $configArr);
+        $configObj = new Config($config);
+        $driver = new WorldCat2($configObj, $configObj, $configObj);
         if ($fixture) {
             $driver->setRawData(
                 json_decode($this->getFixture($fixture), true)
@@ -292,8 +293,8 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
      */
     public function testMissingIdentifier(): void
     {
-        $configArr = [];
-        $driver = new WorldCat2($configArr, $configArr, $configArr);
+        $configObj = new Config([]);
+        $driver = new WorldCat2($configObj, $configObj, $configObj);
         $this->expectExceptionMessage('ID not set!');
         $driver->getOCLC();
     }
