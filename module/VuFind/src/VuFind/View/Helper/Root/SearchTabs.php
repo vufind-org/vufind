@@ -124,12 +124,19 @@ class SearchTabs implements LoggerAwareInterface
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
             $selected = $class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
+            $tab = [
+                'id' => $key,
+                'class' => $class,
+                'label' => $label,
+                'permission' => $permissionName,
+                'selected' => $selected,
+            ];
             try {
                 if ($type == 'basic') {
                     if (!isset($activeOptions)) {
                         $activeOptions = $this->results->get($activeSearchClass)->getOptions();
                     }
-                    $url = $this->remapBasicSearch(
+                    $tab['url'] = $this->remapBasicSearch(
                         $activeOptions,
                         $class,
                         $query,
@@ -137,12 +144,12 @@ class SearchTabs implements LoggerAwareInterface
                         $filters,
                     );
                 } elseif ($type == 'advanced') {
-                    $url = $this->getAdvancedTabUrl(
+                    $tab['url'] = $this->getAdvancedTabUrl(
                         $class,
                         $filters,
                     );
                 } else {
-                    $url = $this->getHomeTabUrl(
+                    $tab['url'] = $this->getHomeTabUrl(
                         $class,
                         $filters,
                     );
@@ -164,16 +171,8 @@ class SearchTabs implements LoggerAwareInterface
                         ],
                     ]
                 );
-                continue;
+                $tab['disabled'] = true;
             }
-            $tab = [
-                'id' => $key,
-                'class' => $class,
-                'label' => $label,
-                'permission' => $permissionName,
-                'selected' => $selected,
-                'url' => $url,
-            ];
             $retVal['tabs'][] = $tab;
             if ($selected) {
                 $retVal['selected'] = $tab;
