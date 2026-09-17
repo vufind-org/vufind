@@ -65,13 +65,6 @@ class LibGuides implements
     }
 
     /**
-     * HTTP Client.
-     *
-     * @var \Laminas\Http\HttpClient
-     */
-    protected $client;
-
-    /**
      * Base URL of the LibGuides API.
      *
      * @var string
@@ -109,9 +102,13 @@ class LibGuides implements
      */
     public function __construct(
         array $config,
-        $client
+        protected \Laminas\Http\Client $client
     ) {
-        $this->client = $client;
+        foreach (['client_id', 'client_secret', 'api_base_url'] as $required) {
+            if (!isset($config['General'][$required])) {
+                throw new \Exception($required . ' key missing from configuration.');
+            }
+        }
         $this->baseUrl = $config['General']['api_base_url'];
         $this->clientId = $config['General']['client_id'];
         $this->clientSecret = $config['General']['client_secret'];
