@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
@@ -653,18 +652,18 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a custom filter listener for the backend (or null if not needed).
      *
      * @param BackendInterface $backend Search backend
-     * @param Config           $facet   Configuration of facets
+     * @param array           $facet   Configuration of facets
      *
      * @return ?CustomFilterListener
      */
     protected function getCustomFilterListener(
         BackendInterface $backend,
-        Config $facet
+        array $facet
     ): ?CustomFilterListener {
-        $customField = $facet->CustomFilters->custom_filter_field ?? 'vufind';
+        $customField = $facet['CustomFilters']['custom_filter_field'] ?? 'vufind';
         $normal = $inverted = [];
 
-        foreach ($facet->CustomFilters->translated_filters ?? [] as $key => $val) {
+        foreach ($facet['CustomFilters']['translated_filters'] ?? [] as $key => $val) {
             $normal[$customField . ':"' . $key . '"'] = $val;
         }
         foreach ($facet->CustomFilters->inverted_filters ?? [] as $key => $val) {
@@ -695,16 +694,16 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a highlighting listener for the backend.
      *
      * @param BackendInterface $backend Search backend
-     * @param Config           $search  Search configuration
+     * @param array           $search  Search configuration
      *
      * @return InjectHighlightingListener
      */
     protected function getInjectHighlightingListener(
         BackendInterface $backend,
-        Config $search
+        array $search
     ): InjectHighlightingListener {
-        $fl = $search->General->highlighting_fields ?? '*';
-        $extras = $search->General->extra_hl_params ?? [];
+        $fl = $search['General']['highlighting_fields'] ?? '*';
+        $extras = $search['General']['extra_hl_params'] ?? [];
         return new InjectHighlightingListener($backend, $fl, $extras);
     }
 
@@ -712,17 +711,17 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * Get a Conditional Filter Listener.
      *
      * @param BackendInterface $backend Search backend
-     * @param Config           $search  Search configuration
+     * @param array           $search  Search configuration
      *
      * @return InjectConditionalFilterListener
      */
     protected function getInjectConditionalFilterListener(
         BackendInterface $backend,
-        Config $search
+        array $search
     ): InjectConditionalFilterListener {
         $listener = new InjectConditionalFilterListener(
             $backend,
-            $search->ConditionalHiddenFilters->toArray()
+            $search['ConditionalHiddenFilters']
         );
         $listener->setAuthorizationService(
             $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
