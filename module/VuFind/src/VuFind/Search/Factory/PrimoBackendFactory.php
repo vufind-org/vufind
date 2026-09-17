@@ -236,7 +236,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
             $session
         );
         $connector->setLogger($this->logger);
-        if ($cache = $this->createConnectorCache(new Config($this->primoConfig))) {
+        if ($cache = $this->createConnectorCache($this->primoConfig)) {
             $connector->setCache($cache);
         }
         return $connector;
