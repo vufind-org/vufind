@@ -31,7 +31,6 @@ namespace VuFind\Action\Author;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
 
 /**
  * Author search results action.
@@ -42,7 +41,7 @@ use VuFind\Action\Search\AbstractSearchAndResultsAction;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ResultsAction extends AbstractSearchAndResultsAction
+class ResultsAction extends \VuFind\Action\Search\ResultsAction
 {
     /**
      * Display results.
@@ -56,8 +55,6 @@ class ResultsAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->searchClassId = 'SolrAuthor';
-
         // Save author searches if next_prev_navigation is enabled - otherwise
         // there are wacky results when trying to page through results (the
         // next/prev links only appear for records which were included in the
@@ -65,6 +62,6 @@ class ResultsAction extends AbstractSearchAndResultsAction
         // iterate you through that search).
         $this->saveToHistory = $this->getOptionsForClass()->resultScrollerActive();
 
-        return $this->renderSearchResults($request, $response);
+        return parent::action($request, $response);
     }
 }

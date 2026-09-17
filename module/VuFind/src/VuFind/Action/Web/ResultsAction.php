@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tag home action.
+ * SolrWeb results action.
  *
  * PHP version 8
  *
@@ -29,16 +29,14 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Tag;
+namespace VuFind\Action\Web;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
-use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Search\Base\Results;
 
 /**
- * Tag home action.
+ * SolrWeb results action.
  *
  * @category VuFind
  * @package  Action
@@ -47,24 +45,32 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HomeAction extends AbstractSearchAndResultsAction
+class ResultsAction extends \VuFind\Action\Search\ResultsAction
 {
     /**
-     * Display tag list.
+     * Process the jumpto parameter -- either redirect to a specific record, or ignore the parameter and return null.
      *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
+     * @param Results $results Search results object.
      *
-     * @return ResponseInterface
+     * @return ?ResponseInterface
      */
-    public function action(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        $userContentHelper = $this->getHelper(UserContentHelper::class);
-        if (!$userContentHelper->tagsEnabled()) {
-            throw new ForbiddenException('Tags disabled');
+    protected function processJumpTo(Results $results): ?ResponseInterface
+    {
+        // Missing/invalid parameter?  Ignore it:
+        $jumpto = $this->getQueryParam('jumpto');
+        if (empty($jumpto) || !is_numeric($jumpto)) {
+            return null;
         }
-        return $this->renderSearchResults($request, $response);
+
+        // Parameter out of range?  Ignore it:
+        $recordList = $results->getResults();
+        if (!isset($recordList[$jumpto - 1])) {
+            return null;
+        }
+
+        // If we got this far, we have a valid parameter so we should redirect
+        // and report success:
+        $url = $recordList[$jumpto - 1]->getUrl();
+        return $url ? $this->getHelper(RedirectHelper::class)->redirectToUrl($this->response, $url) : null;
     }
 }

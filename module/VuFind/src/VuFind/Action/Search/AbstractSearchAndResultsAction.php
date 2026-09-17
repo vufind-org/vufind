@@ -38,6 +38,8 @@ use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Action\BackendIdInterface;
+use VuFind\Action\CheckEnabledInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
@@ -46,6 +48,8 @@ use VuFind\ContentBlock\BlockLoader;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Exception\ConfigException;
+use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Results;
@@ -78,14 +82,16 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingAction
+abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingAction implements
+    BackendIdInterface,
+    CheckEnabledInterface
 {
     /**
-     * Search class family to use.
+     * Search backend to use.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $searchClassId = DEFAULT_SEARCH_BACKEND;
+    protected ?string $backendId = null;
 
     /**
      * Should we save searches to history?
@@ -100,6 +106,11 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @var bool
      */
     protected bool $rememberSearch = true;
+
+    /**
+     * Should we check the config that the backend is enabled?
+     */
+    protected bool $checkEnabled = false;
 
     /**
      * Constructor.
@@ -145,13 +156,103 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     }
 
     /**
+     * Get backend identifier.
+     *
+     * @return string
+     */
+    public function getBackendId(): string
+    {
+        if (null === $this->backendId) {
+            throw new ConfigException('Backend ID not properly configured.');
+        }
+        return $this->backendId;
+    }
+
+    /**
+     * Set backend identifier.
+     *
+     * @param string $id Backend identifier
+     *
+     * @return static
+     */
+    public function setBackendId(string $id): static
+    {
+        $this->backendId = $id;
+        return $this;
+    }
+
+    /**
+     * Get "check enabled" flag.
+     *
+     * @return bool
+     */
+    public function getCheckEnabled(): bool
+    {
+        return $this->checkEnabled;
+    }
+
+    /**
+     * Set "check enabled" flag.
+     *
+     * @param bool $checkEnabled Check enabled?
+     *
+     * @return static
+     */
+    public function setCheckEnabled(bool $checkEnabled): static
+    {
+        $this->checkEnabled = true;
+        return $this;
+    }
+
+    /**
+     * Check that everything is in order for the action to be executed.
+     *
+     * This method is executed in the very beginning of the action invocation before any permission checks etc.
+     * It is meant for technical checks such as route-based configuration being correctly applied.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        if ($result = parent::validateActionConfig($request, $response)) {
+            return $result;
+        }
+
+        if (null === $this->backendId) {
+            $actionId = $request->getAttribute('action-id') ?? '<unknown>';
+            $routeMatch = $request->getAttribute('route-match');
+            $routeName = $routeMatch?->getMatchedRouteName() ?? '<unknown>';
+            $routeParams = $routeMatch?->getParams() ?? [];
+            throw new ConfigException(
+                "backendId not properly configured for action $actionId, route $routeName (params "
+                . var_export($routeParams, true) . ')'
+            );
+        }
+
+        if ($this->checkEnabled) {
+            $config = $this->configManager->getConfigArray($this->getBackendId());
+            if (!($config['General']['enabled'] ?? false)) {
+                throw new ForbiddenException($this->getBackendId() . ' is not enabled');
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Render search home page.
      *
      * @return ResponseInterface
      */
     protected function renderHomePage(): ResponseInterface
     {
-        $blocks = $this->blockLoader->getFromSearchClassId($this->searchClassId);
+        $blocks = $this->blockLoader->getFromSearchClassId($this->getBackendId());
         return $this->renderTemplate(
             $this->request,
             $this->response,
@@ -189,7 +290,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // If we have default filters, set them up as a fake "saved" search
         // to properly populate special controls on the advanced screen.
         if (!$templateParams['saved'] && count($templateParams['options']->getDefaultFilters()) > 0) {
-            $templateParams['saved'] = $this->resultsPluginManager->get($this->searchClassId);
+            $templateParams['saved'] = $this->resultsPluginManager->get($this->getBackendId());
             $templateParams['saved']->getParams()->initFromRequest(
                 new \Laminas\Stdlib\Parameters([])
             );
@@ -222,7 +323,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             return $this->redirectToSavedSearch((int)$savedId);
         }
 
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->searchClassId, $setupCallback);
+        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getBackendId(), $setupCallback);
 
         // For page parameter being out of results list, we want to redirect to correct page
         $page = $templateParams['params']->getPage();
@@ -349,7 +450,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // Get results
-        $results = $this->resultsPluginManager->get($this->searchClassId);
+        $results = $this->resultsPluginManager->get($this->getBackendId());
         $params = $results->getParams();
         $params->initFromRequest(new Parameters($this->request->getQueryParams()));
         // Get parameters
@@ -359,7 +460,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // Has the request been sent in an AJAX context?
         $ajax = (int)$this->getQueryParam('ajax', 0);
         $urlBase = $this->getQueryParam('urlBase', '');
-        $searchAction = $this->getQueryParam('searchAction', '');
+        $searchAction = $this->getQueryParam('searchAction')
+            ?? $this->routeHelper->getUrlFromRoute($params->getOptions()->getSearchAction());
         // $urlBase and $searchAction should be relative URLs; if there is an
         // absolute URL passed in, this may be a sign of malicious activity and
         // we should fail.
@@ -387,7 +489,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             $limit,
             $sort,
             $page,
-            $this->getQueryParam('facetop', 'AND') == 'OR'
+            $this->getQueryParam('facetop', 'AND') === 'OR'
         );
         $list = $facets[$facet]['data']['list'] ?? [];
         $facetLabel = $params->getFacetLabel($facet);
@@ -429,7 +531,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function createTemplateParams(array $params = []): array
     {
-        $params['searchClassId'] = $this->searchClassId;
+        $params['searchClassId'] = $this->getBackendId();
         return $params;
     }
 
@@ -481,7 +583,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         if ($this->rememberSearch) {
             $searchUrl = $this->getRouteHelper()->getUrlFromRoute(
                 $results->getOptions()->getSearchAction(),
-                $results->getUrlQuery()->getParamArray()
+                queryParams: $results->getUrlQuery()->getParamArray()
             );
             $this->searchMemory->rememberSearch($searchUrl, $results->getSearchId());
         }
@@ -1026,6 +1128,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function getOptionsForClass(): \VuFind\Search\Base\Options
     {
-        return $this->searchOptionsPluginManager->get($this->searchClassId);
+        return $this->searchOptionsPluginManager->get($this->getBackendId());
     }
 }

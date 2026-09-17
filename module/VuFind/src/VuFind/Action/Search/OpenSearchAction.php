@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Author search action.
+ * OpenSearch handler action.
  *
  * PHP version 8
  *
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,30 +23,45 @@
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\Search;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\ResponseHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Author search action.
+ * OpenSearch handler action.
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class OpenSearchAction extends AbstractTemplateRenderingAction
 {
     /**
-     * Display author facet results.
+     * Constructor.
+     *
+     * @param array $config VuFind configuration
+     */
+    public function __construct(
+        #[Autowire(config: 'config')] protected array $config,
+    ) {
+        parent::__construct();
+    }
+
+    /**
+     * Handle an OpenSearch request.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -56,8 +72,22 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
+        switch ($this->getQueryParam('method')) {
+            case 'describe':
+                $xml = $this->getTemplateRenderer()->renderTemplateAsString(
+                    template: 'search/opensearch-describe.phtml',
+                    params: ['site' => $this->config['Site'] ?? '']
+                );
+                break;
+            default:
+                $xml = $this->getTemplateRenderer()->renderTemplateAsString(template: 'search/opensearch-error.phtml');
+                break;
+        }
+
+        return $this->getHelper(ResponseHelper::class)->getAjaxResponse(
+            $response,
+            'text/xml',
+            $xml
+        );
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Author search action.
+ * "Cites" action.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2026.
+ * Copyright (C) The National Library of Finland 2023-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,14 +27,15 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\Primo;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\ActionHelper\FlashMessagesHelper;
+use VuFind\Search\Base\Results;
 
 /**
- * Author search action.
+ * "Cites" action.
  *
  * @category VuFind
  * @package  Action
@@ -42,10 +43,10 @@ use VuFind\Action\Search\AbstractSearchAndResultsAction;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class CitedByAction extends AbstractCitationAction
 {
     /**
-     * Display author facet results.
+     * Display results of "cites" search.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -56,8 +57,7 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
+        $this->getHelper(FlashMessagesHelper::class)->addInfoMessage('results_cited_by_title_note');
+        return $this->performCitationSearch($request, $response);
     }
 }

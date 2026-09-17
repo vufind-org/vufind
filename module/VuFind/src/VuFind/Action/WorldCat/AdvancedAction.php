@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author search action.
+ * Legacy WorldCat advanced search action.
  *
  * PHP version 8
  *
@@ -22,30 +22,33 @@
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\WorldCat;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\ActionHelper\RedirectHelper;
 
 /**
- * Author search action.
+ * Legacy WorldCat advanced search action.
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class AdvancedAction extends AbstractSearchAndResultsAction
 {
     /**
-     * Display author facet results.
+     * Redirect to WorldCat2.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -56,8 +59,7 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
+        return $this->getHelper(RedirectHelper::class)
+            ->redirectToRoute($response, 'worldcat2-advanced', queryParams: $request->getQueryParams());
     }
 }

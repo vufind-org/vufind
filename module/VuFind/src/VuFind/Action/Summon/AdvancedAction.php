@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Author search action.
+ * Summon advanced search action.
  *
  * PHP version 8
  *
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,30 +23,32 @@
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\Summon;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\Action\Search\AbstractSearchAndResultsFacetingAction;
 
 /**
- * Author search action.
+ * Summon advanced search action.
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class AdvancedAction extends AbstractSearchAndResultsFacetingAction
 {
     /**
-     * Display author facet results.
+     * Display advanced search page.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -56,8 +59,27 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
+        return $this->renderAdvancedSearch(
+            function (array $templateParams): array {
+                $facets = $this->facetCachePluginManager->get('Summon')->getList('Advanced');
+                $templateParams['facetList'] = $this->processAdvancedFacets($facets, $templateParams['saved']);
+
+                $specialFacets = $this->parseSpecialFacetsSetting(
+                    $templateParams['options']->getSpecialAdvancedFacets()
+                );
+                if ($checkboxes = $specialFacets['checkboxes'] ?? null) {
+                    $templateParams['checkboxFacets'] = $this->processAdvancedCheckboxes(
+                        $checkboxes,
+                        $templateParams['saved']
+                    );
+                }
+                $templateParams['ranges'] = $this->getAllRangeSettings(
+                    $specialFacets,
+                    $templateParams['saved'],
+                    'Summon'
+                );
+                return $templateParams;
+            }
+        );
     }
 }

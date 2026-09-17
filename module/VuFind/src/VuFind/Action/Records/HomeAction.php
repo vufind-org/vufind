@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author search action.
+ * Records home action.
  *
  * PHP version 8
  *
@@ -27,14 +27,17 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\Records;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\ActionHelper\RedirectHelper;
+
+use function count;
 
 /**
- * Author search action.
+ * Records home action.
  *
  * @category VuFind
  * @package  Action
@@ -42,10 +45,10 @@ use VuFind\Action\Search\AbstractSearchAndResultsAction;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class HomeAction extends AbstractSearchAndResultsAction
 {
     /**
-     * Display author facet results.
+     * Display records.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -56,8 +59,22 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
+        // If there is exactly one record, send the user directly there:
+        $ids = $this->getQueryParam('id', []);
+        $print = $this->getQueryParam('print');
+        if (count($ids) == 1) {
+            $details = $this->recordRouter->getTabRouteDetails($ids[0]);
+            $target = $this->routeHelper->getUrlFromRoute($details['route'], $details['params']);
+            // forward print param, if necessary:
+            $params = $print ? '?print=' . urlencode($print) : '';
+            return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $target . $params);
+        }
+        // Ignore Print for Search History:
+        if ($print) {
+            $this->saveToHistory = false;
+        }
+
+        // Not exactly one record -- show search results:
         return $this->renderSearchResults($request, $response);
     }
 }
