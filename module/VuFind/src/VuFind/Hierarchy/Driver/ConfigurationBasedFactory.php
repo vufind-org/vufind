@@ -76,7 +76,7 @@ class ConfigurationBasedFactory
         ];
 
         // Load driver-specific configuration:
-        $driverConfig = $configManager->getConfigObject($config);
+        $driverConfig = $configManager->getConfigArray($config);
 
         // Build object:
         return new ConfigurationBased(
