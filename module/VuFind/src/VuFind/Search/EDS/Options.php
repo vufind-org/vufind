@@ -442,9 +442,6 @@ class Options extends AbstractEDSOptions
                 : (bool)$highlighting;
         }
 
-        // View preferences
-        $this->initViewOptions($this->searchSettings);
-
         // Load autocomplete preferences:
         $this->configureAutocomplete($this->searchSettings);
 
@@ -660,10 +657,14 @@ class Options extends AbstractEDSOptions
         // default result Limit
         $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
+        $searchSettings = $this->searchSettings ?? [];
+
         // default view
-        if (null === $this->defaultView) {
-            $this->setConfiguredDefaultView('list_' . ($settings['ResultListView'] ?? 'brief'));
+        if (!isset($searchSettings['General']['default_view']) && $defaultView = $settings['ResultListView'] ?? null) {
+            $searchSettings['General']['default_view'] = 'list_' . $defaultView;
         }
+
+        $this->initViewOptions($searchSettings);
     }
 
     /**
@@ -766,5 +767,15 @@ class Options extends AbstractEDSOptions
     {
         // Note that getApiProperty() will retrieve any defaultView value set by setConfiguredDefaultView().
         return $this->getApiProperty('defaultView');
+    }
+
+    /**
+     * Get an array of view options.
+     *
+     * @return array
+     */
+    public function getViewOptions(): array
+    {
+        return $this->getApiProperty('viewOptions');
     }
 }

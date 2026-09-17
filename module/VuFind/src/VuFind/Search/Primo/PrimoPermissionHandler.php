@@ -292,7 +292,7 @@ class PrimoPermissionHandler
             return $onCampusRule;
         }
 
-        // If primoConfig->onCampusRule[] is not set
+        // If primoConfig['onCampusRule'][] is not set
         // no rule can get applied.
         // So return null to indicate that nothing can get matched.
         return null;
