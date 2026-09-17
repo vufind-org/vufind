@@ -57,7 +57,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUtterFailure()
+    public function testUtterFailure(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Could not load default fail image.');
@@ -77,7 +77,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultLoadingForBlankText()
+    public function testDefaultLoadingForBlankText(): void
     {
         $loader = $this->getLoader();
         $loader->loadQRCode('');
@@ -90,7 +90,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultLoadingForTooSmallImage()
+    public function testDefaultLoadingForTooSmallImage(): void
     {
         $loader = $this->getLoader();
         $loader->loadQRCode('foofoofoofoofoofoofoofoofoofoofoofoo', ['size' => 1]);
@@ -101,18 +101,15 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a loader object to test.
      *
-     * @param array      $config Configuration
-     * @param ThemeInfo  $theme  Theme info object (null to create default)
-     * @param array|bool $mock   Array of functions to mock, or false for real object
+     * @param array       $config Configuration
+     * @param ?ThemeInfo  $theme  Theme info object (null to create default)
+     * @param array|false $mock   Array of functions to mock, or false for real object
      *
      * @return Loader
      */
-    protected function getLoader($config = [], $theme = null, $mock = false): Loader
+    protected function getLoader(array $config = [], ?ThemeInfo $theme = null, array|false $mock = false): Loader
     {
-        $config = [];
-        if (null === $theme) {
-            $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
-        }
+        $theme ??= new ThemeInfo($this->getThemeDir(), $this->testTheme);
         if ($mock) {
             return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
                 ->onlyMethods($mock)
@@ -127,7 +124,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getThemeDir()
+    protected function getThemeDir(): string
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
     }
