@@ -146,8 +146,7 @@ class PerformSecurityFixAction extends AbstractInstallAction
             return $redirectHelper->redirectToRoute($response, 'install-performsecurityfix');
         }
 
-        // Now we want to loop through the database and update passwords (if
-        // necessary).
+        // Now we want to loop through the database and update passwords (if necessary).
         $userRows = $this->userService->getInsecureRows();
         if (count($userRows) > 0) {
             foreach ($userRows as $row) {
