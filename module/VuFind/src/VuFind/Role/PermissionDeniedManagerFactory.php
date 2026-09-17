@@ -68,7 +68,7 @@ class PermissionDeniedManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('permissionBehavior');
+        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissionBehavior');
         return new $requestedName($cfg);
     }
 }
