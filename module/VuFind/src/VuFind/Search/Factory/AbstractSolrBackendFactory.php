@@ -326,15 +326,15 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Load configurations:
         $config = $this->configManager->getConfigArray($this->mainConfig);
-        $search = $this->configManager->getConfigObject($this->searchConfig);
-        $facet = $this->configManager->getConfigObject($this->facetConfig);
+        $search = $this->configManager->getConfigArray($this->searchConfig);
+        $facet = $this->configManager->getConfigArray($this->facetConfig);
 
         // Attach default parameters listener first so that any other listeners can
         // override the parameters as necessary:
-        if (!empty($search->General->default_parameters)) {
+        if (!empty($search['General']['default_parameters'])) {
             $this->getDefaultParametersListener(
                 $backend,
-                $search->General->default_parameters->toArray()
+                $search['General']['default_parameters']
             )->attach($events);
         }
 
@@ -343,8 +343,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Conditional Filters
         if (
-            isset($search->ConditionalHiddenFilters)
-            && $search->ConditionalHiddenFilters->count() > 0
+            isset($search['ConditionalHiddenFilters'])
+            && count($search['ConditionalHiddenFilters']) > 0
         ) {
             $this->getInjectConditionalFilterListener($backend, $search)->attach($events);
         }
@@ -366,14 +366,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         }
 
         // Apply field stripping if applicable:
-        if (isset($search->StripFields) && isset($search->IndexShards)) {
-            $strip = $search->StripFields->toArray();
+        if (isset($search['StripFields']) && isset($search['IndexShards'])) {
+            $strip = $search['StripFields'];
             foreach ($strip as $k => $v) {
                 $strip[$k] = array_map('trim', explode(',', $v));
             }
             $mindexListener = new MultiIndexListener(
                 $backend,
-                $search->IndexShards->toArray(),
+                $search['IndexShards'],
                 $strip,
                 $this->loadSpecs()
             );
@@ -381,10 +381,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         }
 
         // Apply deduplication if applicable:
-        if (isset($search->Records->deduplication)) {
+        if (isset($search['Records']['deduplication'])) {
             $this->getDeduplicationListener(
                 $backend,
-                $search->Records->deduplication
+                $search['Records']['deduplication']
             )->attach($events);
         }
 
@@ -392,9 +392,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $this->getHierarchicalFacetListener($backend)->attach($events);
 
         // Apply legacy filter conversion if necessary:
-        if (!empty($facet->LegacyFields)) {
+        if (!empty($facet['LegacyFields'])) {
             $filterFieldConversionListener = new FilterFieldConversionListener(
-                $facet->LegacyFields->toArray()
+                $facet['LegacyFields']
             );
             $filterFieldConversionListener->attach($events);
         }
