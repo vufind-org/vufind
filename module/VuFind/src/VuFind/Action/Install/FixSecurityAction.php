@@ -68,8 +68,7 @@ class FixSecurityAction extends AbstractInstallAction
         // If the user doesn't want to proceed, abort now:
         $userConfirmation = $this->getPostParam('fix-user-table');
         if ($userConfirmation === 'No') {
-            $msg = 'Security upgrade aborted.';
-            $flashMessagesHelper->addErrorMessage($msg);
+            $flashMessagesHelper->addErrorMessage('Security upgrade aborted.');
             return $redirectHelper->redirectToRoute($response, 'install-home');
         }
 
