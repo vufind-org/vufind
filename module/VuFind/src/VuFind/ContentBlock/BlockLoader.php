@@ -117,13 +117,11 @@ class BlockLoader
         $setting = 'content'
     ) {
         $blocks = [];
-        if (isset($config[$section][$setting])) {
-            foreach ($config[$section][$setting] as $current) {
-                $parts = explode(':', $current, 2);
-                $block = $this->blockManager->get($parts[0]);
-                $block->setConfig($parts[1] ?? '');
-                $blocks[] = $block;
-            }
+        foreach ($config[$section][$setting] ?? [] as $current) {
+            $parts = explode(':', $current, 2);
+            $block = $this->blockManager->get($parts[0]);
+            $block->setConfig($parts[1] ?? '');
+            $blocks[] = $block;
         }
         return $blocks;
     }
