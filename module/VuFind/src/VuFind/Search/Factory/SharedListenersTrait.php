@@ -29,6 +29,7 @@
 
 namespace VuFind\Search\Factory;
 
+use VuFind\Config\Config;
 use VuFind\Search\Base\HideFacetValueListener;
 use VuFindSearch\Backend\BackendInterface;
 
@@ -47,16 +48,18 @@ trait SharedListenersTrait
      * Get a hide facet value listener for the backend.
      *
      * @param BackendInterface $backend Search backend
-     * @param array            $facet   Configuration of facets
+     * @param Config           $facet   Configuration of facets
      *
      * @return ?HideFacetValueListener
      */
     protected function getHideFacetValueListener(
         BackendInterface $backend,
-        array $facet
+        Config $facet
     ): ?HideFacetValueListener {
-        $hideFacetValue = $facet['HideFacetValue'] ?? [];
-        $showFacetValue = $facet['ShowFacetValue'] ?? [];
+        $hideFacetValue = isset($facet->HideFacetValue)
+            ? $facet->HideFacetValue->toArray() : [];
+        $showFacetValue = isset($facet->ShowFacetValue)
+            ? $facet->ShowFacetValue->toArray() : [];
         if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
         }
