@@ -418,7 +418,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      */
     protected function sendEmail($user, $message)
     {
-        $subject = $this->mainConfig['Site']['title']
+        $subject = ($this->mainConfig['Site']['title'] ?? '')
             . ': ' . $this->translate('Scheduled Alert Results');
         $from = $this->getEmailSenderAddress($this->mainConfig);
         $to = $user->getEmail();
