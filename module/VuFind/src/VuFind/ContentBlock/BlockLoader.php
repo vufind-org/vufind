@@ -111,7 +111,7 @@ class BlockLoader
      *
      * @return array
      */
-    public function getFromConfigArray(
+    protected function getFromConfigArray(
         array $config,
         $section = 'HomePage',
         $setting = 'content'
