@@ -147,7 +147,7 @@ class LoggerFactory implements FactoryInterface
         $mailHandler = new MailHandler(
             $email,
             'VuFind Log Message',
-            $this->getEmailSenderAddress($config),
+            $this->getEmailSenderAddress($config->toArray()),
             $container->get(Mailer::class)
         );
 

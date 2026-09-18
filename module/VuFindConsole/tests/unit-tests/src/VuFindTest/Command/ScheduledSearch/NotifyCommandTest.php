@@ -494,15 +494,13 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
-            new \VuFind\Config\Config(
-                $options['configArray'] ?? [
-                    'Site' => [
-                        'institution' => 'My Institution',
-                        'title' => 'My Site',
-                        'email' => 'admin@myuniversity.edu',
-                    ],
-                ]
-            ),
+            $options['configArray'] ?? [
+                'Site' => [
+                    'institution' => 'My Institution',
+                    'title' => 'My Site',
+                    'email' => 'admin@myuniversity.edu',
+                ],
+            ],
             $options['mailer'] ?? $this->createStub(\VuFind\Mailer\Mailer::class),
             $options['searchService'] ?? $this->createStub(SearchServiceInterface::class),
             $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class)
