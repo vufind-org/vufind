@@ -78,10 +78,11 @@ class Factory implements FactoryInterface
             case 'mailer':
                 $options = [
                     'mailer' => $container->get(\VuFind\Mailer\Mailer::class),
+                    'defaultFrom' => $smsConfig['General']['default_from']
+                        ?? $mainConfig['Mail']['default_from']
+                        ?? $mainConfig['Site']['email']
+                        ?? null,
                 ];
-                if (isset($mainConfig['Site']['email'])) {
-                    $options['defaultFrom'] = $mainConfig['Site']['email'];
-                }
                 return new Mailer($smsConfig, $options);
             default:
                 throw new \Exception('Unrecognized SMS type: ' . $type);
