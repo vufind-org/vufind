@@ -117,6 +117,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
 
+        'install/fixbasicconfig' => Install\FixBasicConfigAction::class,
+        'install/fixcache' => Install\FixCacheAction::class,
+        'install/fixdatabase' => Install\FixDatabaseAction::class,
+        'install/fixdependencies' => Install\FixDependenciesAction::class,
+        'install/fixils' => Install\FixIlsAction::class,
+        'install/fixsolr' => Install\FixSolrAction::class,
+        'install/fixsecurity' => Install\FixSecurityAction::class,
+        'install/performsecurityfix' => Install\PerformSecurityFixAction::class,
+        'install/fixsslcerts' => Install\FixSslCertsAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
