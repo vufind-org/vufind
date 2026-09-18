@@ -283,7 +283,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'unsubscribeUrl' => 'http://foo?id=1&key=',
                 'checkboxFilters' => [],
                 'filters' => [],
-                'userInstitution' => 'My Institution',
             ],
         ];
         $renderer = $this->container->createMock(
@@ -496,7 +495,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
             $options['configArray'] ?? [
                 'Site' => [
-                    'institution' => 'My Institution',
                     'title' => 'My Site',
                     'email' => 'admin@myuniversity.edu',
                 ],
