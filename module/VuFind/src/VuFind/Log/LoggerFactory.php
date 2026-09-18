@@ -43,6 +43,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Connection;
@@ -83,14 +84,14 @@ class LoggerFactory implements FactoryInterface
      * Configure Database handler.
      *
      * @param MonologLogger      $logger    The Monolog logger instance to add handlers to.
-     * @param array              $config    Configuration
+     * @param Config             $config    Configuration
      * @param ContainerInterface $container Service manager
      *
      * @return void
      */
-    protected function addDbHandler(MonologLogger $logger, array $config, ContainerInterface $container)
+    protected function addDbHandler(MonologLogger $logger, Config $config, ContainerInterface $container)
     {
-        $parts = explode(':', $config['Logging']['database']);
+        $parts = explode(':', $config->Logging->database);
         $table_name = $parts[0];
         $error_types = $parts[1] ?? '';
         $filters = explode(',', $error_types);
@@ -132,21 +133,21 @@ class LoggerFactory implements FactoryInterface
      * Configure Mail handler.
      *
      * @param MonologLogger      $monologLogger The Monolog logger instance to add handlers to.
-     * @param array              $config        Configuration
+     * @param Config             $config        Configuration
      * @param ContainerInterface $container     Service manager
      *
      * @return void
      */
-    protected function addMailHandler(MonologLogger $monologLogger, array $config, ContainerInterface $container): void
+    protected function addMailHandler(MonologLogger $monologLogger, Config $config, ContainerInterface $container): void
     {
-        $parts = explode(':', $config['Logging']['email']);
+        $parts = explode(':', $config->Logging->email);
         $email = $parts[0];
         $error_types = $parts[1] ?? '';
 
         $mailHandler = new MailHandler(
             $email,
             'VuFind Log Message',
-            $this->getEmailSenderAddress($config),
+            $this->getEmailSenderAddress($config->toArray()),
             $container->get(Mailer::class)
         );
 
@@ -157,22 +158,22 @@ class LoggerFactory implements FactoryInterface
      * Configure Office365 writers.
      *
      * @param Logger             $logger    Logger object
-     * @param array              $config    Configuration
+     * @param Config             $config    Configuration
      * @param ContainerInterface $container Service manager
      *
      * @return void
      */
-    protected function addOffice365Handler(MonologLogger $logger, array $config, ContainerInterface $container)
+    protected function addOffice365Handler(MonologLogger $logger, Config $config, ContainerInterface $container)
     {
         $options = [];
-        $error_types = $config['Logging']['office365'];
-        if (isset($config['Logging']['office365_title'])) {
-            $options['title'] = $config['Logging']['office365_title'];
+        $error_types = $config->Logging->office365;
+        if (isset($config->Logging->office365_title)) {
+            $options['title'] = $config->Logging->office365_title;
         }
         $filters = explode(',', $error_types);
 
         $handler = new Office365Handler(
-            $config['Logging']['office365_url'],
+            $config->Logging->office365_url,
             $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $options
         );
@@ -183,20 +184,20 @@ class LoggerFactory implements FactoryInterface
      * Configure Slack webhook handler.
      *
      * @param MonologLogger $monologLogger The Monolog logger instance to add handlers to.
-     * @param array         $config        VuFind configuration
+     * @param Config        $config        VuFind configuration
      *
      * @return void
      */
-    protected function addSlackHandler(MonologLogger $monologLogger, array $config): void
+    protected function addSlackHandler(MonologLogger $monologLogger, Config $config): void
     {
-        [$channel, $error_types] = explode(':', $config['Logging']['slack']);
+        [$channel, $error_types] = explode(':', $config->Logging->slack);
         if ($error_types == null) {
             $error_types = $channel;
             $channel = null;
         }
 
-        $username = $config['Logging']['slackname'];
-        $webhookUrl = $config['Logging']['slackurl'];
+        $username = $config->Logging->slackname;
+        $webhookUrl = $config->Logging->slackurl;
 
         $baseSlackHandler = new SlackWebhookHandler(
             $webhookUrl,
@@ -307,19 +308,19 @@ class LoggerFactory implements FactoryInterface
      * Add common Monolog processors to the logger.
      *
      * @param MonologLogger      $monologLogger The Monolog logger instance
-     * @param array              $config        VuFind configuration
+     * @param Config             $config        VuFind configuration
      * @param ContainerInterface $container     Service manager
      *
      * @return void
      */
     protected function addCommonProcessors(
         MonologLogger $monologLogger,
-        array $config,
+        Config $config,
         ContainerInterface $container
     ): void {
         $monologLogger->pushProcessor(new PsrLogMessageProcessor());
-        $logConfig = $config['Logging'];
-        if ($referenceId = $logConfig['reference_id'] ?? false) {
+        $logConfig = $config->Logging;
+        if ($referenceId = $logConfig->reference_id ?? false) {
             if ('username' === $referenceId) {
                 try {
                     $authManager = $container->get(AuthManager::class);
