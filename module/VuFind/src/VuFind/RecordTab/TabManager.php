@@ -201,6 +201,43 @@ class TabManager
     }
 
     /**
+     * Get the default tab for embedded (search result) view by looking up the
+     * provided record driver in the tab configuration array.
+     *
+     * @param AbstractRecordDriver $driver   Record driver
+     * @param ?string              $fallback Fallback to use if no tab configured.
+     *
+     * @return ?string
+     */
+    public function getDefaultEmbeddedTabForRecord(
+        AbstractRecordDriver $driver,
+        ?string $fallback = null
+    ): ?string {
+        $default = $this->getConfigByClass($driver, 'defaultEmbeddedTab', null);
+        if (!$default) {
+            $default = $this->getConfigByClass($driver, 'defaultTab', null);
+        }
+        return $default ?: $fallback;
+    }
+
+    /**
+     * Get the configured tab order for embedded (search result) view.
+     * Returns null if no custom order is configured.
+     *
+     * @param AbstractRecordDriver $driver Record driver
+     *
+     * @return ?array
+     */
+    public function getEmbeddedTabs(AbstractRecordDriver $driver): ?array
+    {
+        $config = $this->getConfigByClass($driver, 'embeddedTabs', null);
+        if (empty($config)) {
+            return null;
+        }
+        return array_values(array_filter(array_map('trim', explode(',', $config))));
+    }
+
+    /**
      * Get an array of extra JS scripts by looking up the provided record driver in
      * the provided tab configuration array.
      *
