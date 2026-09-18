@@ -263,6 +263,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'VuFind\Controller\Plugin\DigitizationRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
@@ -272,6 +273,7 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'digitizationRequests' => 'VuFind\Controller\Plugin\DigitizationRequests',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'permission' => 'VuFind\Controller\Plugin\Permission',
@@ -288,6 +290,7 @@ $config = [
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
+            \VuFind\ILS\Logic\TitleDigitization::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\SMS\SMSInterface::class => \VuFind\SMS\Factory::class,
             \VuFind\UrlShortener\UrlShortenerInterface::class => \VuFind\UrlShortener\ServiceFactory::class,
             \VuFindHttp\HttpService::class => \VuFind\Service\HttpServiceFactory::class,
@@ -336,6 +339,7 @@ $config = [
             'VuFind\ILSHoldLogic' => 'VuFind\ILS\Logic\Holds',
             'VuFind\ILSHoldSettings' => 'VuFind\ILS\HoldSettings',
             'VuFind\ILSTitleHoldLogic' => 'VuFind\ILS\Logic\TitleHolds',
+            'VuFind\ILSTitleDigitizationLogic' => 'VuFind\ILS\Logic\TitleDigitization',
             'VuFind\IpAddressUtils' => 'VuFind\Net\IpAddressUtils',
             'VuFind\Logger' => 'VuFind\Log\Logger',
             'VuFind\Mailer' => 'VuFind\Mailer\Mailer',
@@ -716,6 +720,7 @@ $nonTabRecordActions = [
     'AjaxTab',
     'Cite',
     'DeleteTag',
+    'DigitizationRequest',
     'Email',
     'Epub',
     'Explain',
@@ -857,6 +862,7 @@ $staticRoutes = [
     'MyResearch/SaveSearch',
     'MyResearch/ScheduleSearch',
     'MyResearch/StorageRetrievalRequests',
+    'MyResearch/DigitizationRequests',
     'MyResearch/Unsubscribe',
     'MyResearch/UserLogin',
     'MyResearch/UserContent',

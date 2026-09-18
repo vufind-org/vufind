@@ -76,22 +76,32 @@ trait IlsAwareTrait
     protected $titleHoldLogic = null;
 
     /**
+     * Title digitization logic.
+     *
+     * @var \VuFind\ILS\Logic\TitleDigitization
+     */
+    protected $titleDigitizationLogic = null;
+
+    /**
      * Attach an ILS connection and related logic to the driver.
      *
-     * @param \VuFind\ILS\Connection       $ils            ILS connection
-     * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
-     * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
+     * @param \VuFind\ILS\Connection            $ils                      ILS connection
+     * @param \VuFind\ILS\Logic\Holds           $holdLogic                Hold logic handler
+     * @param \VuFind\ILS\Logic\TitleHolds      $titleHoldLogic           Title hold logic handler
+     * @param \VuFind\ILS\Logic\TitleDigitization $titleDigitizationLogic Title digitization logic handler
      *
      * @return void
      */
     public function attachILS(
         \VuFind\ILS\Connection $ils,
         \VuFind\ILS\Logic\Holds $holdLogic,
-        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
+        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic,
+        \VuFind\ILS\Logic\TitleDigitization $titleDigitizationLogic
     ) {
         $this->ils = $ils;
         $this->holdLogic = $holdLogic;
         $this->titleHoldLogic = $titleHoldLogic;
+        $this->titleDigitizationLogic = $titleDigitizationLogic;
     }
 
     /**
@@ -150,6 +160,25 @@ trait IlsAwareTrait
             if ('monograph' == $biblioLevel || strstr($biblioLevel, 'part')) {
                 if ($this->ils->getTitleHoldsMode() != 'disabled') {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get a link for placing a title level digitization request.
+     *
+     * @return mixed A url if a digitization request is possible, boolean false if not
+     */
+    public function getRealTimeTitleDigitizationRequest()
+    {
+        if ($this->hasILS()) {
+            $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
+            if ('monograph' == $biblioLevel || strstr($biblioLevel, 'part')) {
+                if ($this->ils->getTitleDigitizationMode() != 'disabled') {
+                    return $this->titleDigitizationLogic->getDigitizationRequest($this->getUniqueID());
                 }
             }
         }

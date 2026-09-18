@@ -160,6 +160,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'record/addtag' => Record\AddTagAction::class,
         'record/deletetag' => Record\DeleteTagAction::class,
         'record/ajaxtab' => Record\AjaxTabAction::class,
+        'record/digitizationrequest' => Record\DigitizationRequestAction::class,
         'record/getthis' => Record\GetThisAction::class,
         'record/illrequest' => Record\IllRequestAction::class,
         'record/storageretrievalrequest' => Record\StorageRetrievalRequestAction::class,

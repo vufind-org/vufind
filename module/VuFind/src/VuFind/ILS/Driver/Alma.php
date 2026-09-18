@@ -337,6 +337,22 @@ class Alma extends AbstractBase implements
     }
 
     /**
+     * Get HoldingsList.
+     *
+     * This is responsible for retrieving the holdings list a certain record.
+     *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @return simple_xml_element On success an array with the key "total" containing the total
+     * number of holdings for the given bib id, and the key "holding" containing an
+     * array of holding information
+     */
+    public function getHoldingsList($id, array $options = [])
+    {
+        return $this->makeRequest('/bibs/' . rawurlencode($id) . '/holdings/');
+    }
+
+    /**
      * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
@@ -407,6 +423,7 @@ class Alma extends AbstractBase implements
                     'source' => 'Solr',
                     'availability' => $available,
                     'status' => $status,
+                    'library' => $this->getItemLibrary($item),
                     'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
                     'callnumber' => (string)($callnumber->desc ?? $callnumber),
@@ -420,6 +437,7 @@ class Alma extends AbstractBase implements
                     'holding_id' => $holdingId, // deprecated, retained for legacy backward compatibility
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
+                    'addDigitizationRequestLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
                     'description' => $description ?? null,
                 ];
@@ -455,10 +473,11 @@ class Alma extends AbstractBase implements
      * @param string $id     The record id
      * @param array  $data   An array of item data
      * @param array  $patron An array of patron data
+     * @param string $type   The type of request to be validated
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkRequestIsValid($id, $data, $patron)
+    public function checkRequestIsValid($id, $data, $patron, $type = 'HOLD')
     {
         $patronId = $patron['id'];
         $level = $data['level'] ?? 'copy';
@@ -492,7 +511,7 @@ class Alma extends AbstractBase implements
             '/request_options/request_option//type'
         );
         foreach ($requestTypes as $requestType) {
-            if ('HOLD' === (string)$requestType) {
+            if ($type === (string)$requestType) {
                 return true;
             }
         }
@@ -1589,6 +1608,85 @@ class Alma extends AbstractBase implements
     }
 
     /**
+     * Request from /conf/departments.
+     *
+     * @return array of departments
+     */
+    public function getDepartments($type = 'ALL', $libraryCode = null, $view = 'FULL')
+    {
+        $departments = [];
+        $params = [
+            'type' => $type,
+            'library' => $libraryCode,
+            'view' => $view,
+        ];
+        $xml = $this->makeRequest('/conf/departments' . '?' . http_build_query($params));
+        foreach ($xml->department as $department) {
+            $code = (string)$department->code;
+            $servedLibraries = [];
+            foreach ($department->served_libraries->library as $lib) {
+                $servedLibraries[] = (string)$lib;
+            }
+            $departments[] = [
+                'code' => $code,
+                'servedLibraries' => $servedLibraries,
+            ];
+        }
+        return $departments;
+    }
+
+    /**
+     * Get digitization department for digitization requests.
+     *
+     * @return string with code of digitization department
+     */
+    public function getDigitizationDepartment($mmsId, $item = null)
+    {
+        $departments = [];
+        $libraryCodes = [];
+
+        if (!empty($item)) {
+            // Get library that holds this item
+            $libraryCodes[] = (string)$item->library;
+        } else {
+            // Get all libraries that hold this title
+            $holdingsList = $this->getHoldingsList($mmsId);
+            foreach ($holdingsList->holding as $holdingsListEntry) {
+                $libraryCodes[] = (string)$holdingsListEntry->library;
+            }
+            // filter duplicates
+            $libraryCodes = array_unique($libraryCodes);
+        }
+
+        // Get library-level digitization departments
+        foreach ($libraryCodes as $libraryCode) {
+            foreach ($this->getDepartments('DIGI', $libraryCode) as $libDigiDept) {
+                $departments[] = $libDigiDept;
+            }
+        }
+
+        // Get institution-level digitization departments
+        foreach ($this->getDepartments($type = 'DIGI') as $department) {
+            $departments[] = $department;
+        }
+
+        // Filter out departments that don't serve the libraries
+        $filteredDepartments = array_values(array_filter($departments, function ($dept) use ($libraryCodes) {
+            return !empty(array_intersect($dept['servedLibraries'], $libraryCodes));
+        }));
+
+        $departmentCode = '';
+        if (count($filteredDepartments) == 1) {
+            $departmentCode = $filteredDepartments[0]['code'];
+        } elseif (count($filteredDepartments) > 1) {
+            // take random code if multiple departments are left
+            // TODO: is there a better way than picking one randomly?
+            $departmentCode = $filteredDepartments[array_rand($filteredDepartments)]['code'];
+        }
+        return $departmentCode;
+    }
+
+    /**
      * Request from /courses.
      *
      * @return array with key = course ID, value = course name
@@ -1940,6 +2038,18 @@ class Alma extends AbstractBase implements
     }
 
     /**
+     * Get library for an item.
+     *
+     * @param SimpleXMLElement $item Item
+     *
+     * @return TranslatableString|string
+     */
+    protected function getItemLibrary($item)
+    {
+        return $this->getTranslatableString($item->item_data->library);
+    }
+
+    /**
      * Get location type for an item.
      *
      * @param SimpleXMLElement $item Item
@@ -1974,6 +2084,278 @@ class Alma extends AbstractBase implements
     {
         $locations = $this->getLocations($library);
         return $locations[$location]['type'] ?? '';
+    }
+
+    /**
+     * Check if a digitization request is valid.
+     *
+     * This is responsible for determining if an item is requestable for digitization
+     *
+     * @param string $id     The record id
+     * @param array  $data   An array of item data
+     * @param array  $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkDigitizationRequestIsValid($id, $data, $patron)
+    {
+        $requestIsValid = $this->checkRequestIsValid($id, $data, $patron, 'DIGITIZATION');
+        $digitizationDepartment = $this->getDigitizationDepartment($id);
+        return $requestIsValid && !empty($digitizationDepartment);
+    }
+
+    /**
+     * Place a digitization request via Alma API.
+     *
+     * @param array $digitizationDetails An associative array with digitization request details
+     *
+     * @return array success: bool, sysMessage: string
+     *
+     * @link https://developers.exlibrisgroup.com/alma/apis
+     */
+    public function placeDigitizationRequest($digitizationDetails)
+    {
+        // Check for title or item level request
+        $level = $digitizationDetails['level'] ?? 'item';
+
+        // Get information that is valid for both, item level requests and title
+        // level requests.
+        $mmsId = $digitizationDetails['id'];
+        // The holding_id value is deprecated but retained for legacy back-compatibility
+        $holId = $digitizationDetails['digitizationings_id'] ?? $digitizationDetails['digitizationing_id'];
+        $itmId = $digitizationDetails['item_id'];
+        $patronId = $digitizationDetails['patron']['id'];
+        $digitizationDepartment = $digitizationDetails['digitizationDepartment'] ?? $this->getDigitizationDepartment($mmsId, $digitizationDetails['requestedItem']);
+        $requiredBy = (isset($digitizationDetails['requiredBy']))
+        ? $this->dateConverter->convertFromDisplayDate(
+            'Y-m-d',
+            $digitizationDetails['requiredBy']
+        ) . 'Z'
+        : null;
+        $partialDigitization = $digitizationDetails['digitizationType'] == 'partial';
+        $fullChapterOrArticle = $digitizationDetails['partialDigitizationType'] == 'full';
+
+        // Create body for API request
+        $body = [];
+        $body['request_type'] = 'DIGITIZATION';
+        $body['target_destination']['value'] = $digitizationDepartment;
+        $body['comment'] = $digitizationDetails['comment'] ?? null;
+        $body['last_interest_date'] = $requiredBy;
+        $body['volume'] = $digitizationDetails['volume'] ?? null;
+        $body['issue'] = $digitizationDetails['issue'] ?? null;
+        $body['part'] = $digitizationDetails['part'] ?? null;
+        $body['description'] = $digitizationDetails['description'] ?? null;
+        $body['partial_digitization'] =  $partialDigitization ? 'true' : 'false';
+        if ($partial_digitization) {
+            // This is a quirk of the Alma API: while partial_digitization is a bool, full_chapter is actually a string of either 'true' or 'false'.
+            $body['full_chapter'] = $fullChapterOrArticle ? 'true' : 'false';
+            $body['chapter_or_article_title'] = $digitizationDetails['chapterArticleTitle'] ?? null;
+            $body['chapter_or_article_author'] = $digitizationDetails['chapterArticleAuthor'] ?? null;
+            if (!$fullChapterOrArticle) {
+                $body['required_pages_range'] = [
+                        [
+                            'from_page' => (string)$digitizationDetails['startPage'],
+                            'to_page' => (string)$digitizationDetails['endPage'],
+                        ],
+                ];
+            }
+        }
+
+        // Remove "null" values from body array
+        $body = array_filter($body);
+
+        if ($level === 'title') {
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . rawurlencode($mmsId)
+                . '/requests?apikey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronId)
+                . '&format=json'
+            );
+        } else {
+            $holId = $digitizationDetails['holdings_id'] ?? $digitizationDetails['holding_id'];
+            $itmId = $digitizationDetails['item_id'];
+            $client = $this->httpService->createClient(
+                $this->baseUrl . '/bibs/' . rawurlencode($mmsId)
+                . '/holdings/' . rawurlencode($holId)
+                . '/items/' . rawurlencode($itmId)
+                . '/requests?apikey=' . urlencode($this->apiKey)
+                . '&user_id=' . urlencode($patronId)
+                . '&format=json'
+            );
+        }
+
+        $client->setHeaders(
+            [
+            'Content-type: application/json',
+            'Accept: application/json',
+            ]
+        );
+        $client->setMethod(\Laminas\Http\Request::METHOD_POST);
+        $client->setRawBody(json_encode($body));
+
+        $response = $client->send();
+
+        if ($response->isSuccess()) {
+            return ['success' => true];
+        }
+
+        $this->logError(
+            "Alma error for digitization request POST request '"
+            . $client->getRequest()->getUriString() . "': "
+            . $response->getBody()
+        );
+
+        $error = json_decode($response->getBody());
+        if (!$error) {
+            $error = simplexml_load_string($response->getBody());
+        }
+
+        return [
+            'success' => false,
+            'sysMessage' => $error->errorList->error[0]->errorMessage
+                ?? 'digitization_request_error_fail',
+        ];
+    }
+
+    /**
+     * Get the user's digitization requests.
+     *
+     * @param array $patron Patron information
+     * @param array $params Additional parameters
+     *
+     * @return array Array of digitization requests
+     */
+    public function getMyDigitizationRequests($patron)
+    {
+        $digiList = [];
+        $offset = 0;
+        $totalCount = 1;
+        while ($offset < $totalCount) {
+            $xml = $this->makeRequest(
+                '/users/' . rawurlencode($patron['id']) . '/requests',
+                ['request_type' => 'DIGITIZATION', 'offset' => $offset, 'limit' => 100]
+            );
+            $offset += 100;
+            $totalCount = (int)$xml->attributes()->{'total_record_count'};
+            foreach ($xml as $request) {
+                $lastInterestDate = $request->last_interest_date
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-dT',
+                        (string)$request->last_interest_date
+                    ) : null;
+                $requestStatus = (string)$request->request_status;
+                $updateDetails = (!$available || $allowCancelingAvailableRequests)
+                    ? (string)$request->request_id : '';
+
+                $digi = [
+                    'create' => $this->parseDate((string)$request->request_time),
+                    'expire' => $lastInterestDate,
+                    'reqnum' => (string)$request->request_id,
+                    'id' => (string)($request->mms_id ?? ''),
+                    'holding_id' => (string)($request->holding_id ?? ''),
+                    'item_id' => (string)$request->item_id,
+                    'processed' => $request->item_policy === 'InterlibraryLoan'
+                        && $requestStatus !== 'Not Started',
+                    'title' => (string)$request->title,
+                    'cancel_details' => $updateDetails,
+                    'updateDetails' => $updateDetails,
+                    'digitizationType' => (string)$request->partial_digitization ? 'partial' : 'full',
+                    'volume' => (string)$request->volume,
+                    'issue' => (string)$request->issue,
+                    'number' => (string)$request->number,
+                    'part' => (string)$request->part,
+                    'description' => (string)$request->description,
+                    'chapter_or_article_title' => (string)$request->chapter_or_article_title,
+                    'chapter_or_article_author' => (string)$request->chapter_or_article_author,
+                    'comment' => (string)$request->comment,
+                ];
+                $digiList[] = $digi;
+            }
+        }
+        return $digiList;
+    }
+
+    /**
+     * Cancel digitization requests.
+     *
+     * @param array $cancelDetails Cancellation details including patron and request IDs
+     *
+     * @return array Array with success status and count
+     */
+    public function cancelDigitizationRequests($cancelDetails)
+    {
+        $returnArray = [];
+        $patronId = $cancelDetails['patron']['id'];
+        $count = 0;
+
+        foreach ($cancelDetails['details'] as $requestId) {
+            $item = [];
+            try {
+                // Delete the request in Alma
+                $apiResult = $this->makeRequest(
+                    '/users/' . rawurlencode($patronId) .
+                    '/requests/' . rawurlencode($requestId),
+                    ['reason' => 'CancelledAtPatronRequest'],
+                    [],
+                    'DELETE'
+                );
+
+                // Adding to "count" variable and setting values to return array
+                $count++;
+                $item[$requestId] = [
+                    'success' => true,
+                    'status' => 'digitization_request_cancel_success',
+                ];
+            } catch (ILSException $e) {
+                if (isset($apiResult['xml'])) {
+                    $almaErrorCode = $apiResult['xml']->errorList->error->errorCode;
+                    $sysMessage = $apiResult['xml']->errorList->error->errorMessage;
+                } else {
+                    $almaErrorCode = 'No error code available';
+                    $sysMessage = 'HTTP status code: ' .
+                         ($e->getCode() ?? 'Code not available');
+                }
+                $item[$requestId] = [
+                    'success' => false,
+                    'status' => 'digitization_request_cancel_fail',
+                    'sysMessage' => $sysMessage . '. ' .
+                         'Alma request ID: ' . $requestId . '. ' .
+                         'Alma error code: ' . $almaErrorCode,
+                ];
+            }
+
+            $returnArray['items'] = $item;
+        }
+
+        $returnArray['count'] = $count;
+
+        return $returnArray;
+    }
+
+    /**
+     * Get cancellation details for a digitization request.
+     *
+     * @param array $requestDetails Request details
+     * @param array $patron         Patron information
+     *
+     * @return string Cancellation details
+     */
+    public function getCancelDigitizationRequestDetails($requestDetails, $patron)
+    {
+        return $requestDetails['id'] ?? '';
+    }
+
+    /**
+     * Get cancellation link for a digitization request (for OPAC URL-based cancellation).
+     *
+     * @param array $requestDetails Request details
+     * @param array $patron         Patron information
+     *
+     * @return string|false Cancellation URL or false if not supported
+     */
+    public function getCancelDigitizationRequestLink($requestDetails, $patron)
+    {
+        return false;
     }
 
     /**
