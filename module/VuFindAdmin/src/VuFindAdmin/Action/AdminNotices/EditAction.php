@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Add notice action.
+ * Edit notice action.
  *
  * PHP version 8
  *
@@ -29,13 +29,13 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindAdmin\Action\Notices;
+namespace VuFindAdmin\Action\AdminNotices;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Add notice action.
+ * Edit notice action.
  *
  * @category VuFind
  * @package  Action
@@ -44,10 +44,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AddAction extends AbstractNoticeAction
+class EditAction extends AbstractNoticeAction
 {
     /**
-     * Add notice.
+     * Edit notice.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -62,17 +62,21 @@ class AddAction extends AbstractNoticeAction
             return $this->returnToNoticesAdminHome();
         }
 
+        $notice = $this->getNoticeByQueryParam();
+
+        $formData = $this->getFormData($notice);
+
         if (!$this->isPost()) {
-            $formData = $this->getFormData();
             return $this->renderTemplate(
                 $request,
                 $response,
                 compact('formData'),
-                'admin/notices/add'
+                'admin/notices/edit'
             );
         }
 
-        $this->noticeManager->addNoticeToDatabase(
+        $this->noticeManager->editDatabaseNotice(
+            $notice['id'],
             $this->formDataToNotice()
         );
 
