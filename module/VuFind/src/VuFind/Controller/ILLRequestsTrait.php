@@ -158,7 +158,7 @@ trait ILLRequestsTrait
             ->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
-        $pickupLibraries = $catalog->getILLPickUpLibraries(
+        $pickupLibraries = $catalog->getILLPickupLibraries(
             $driver->getUniqueID(),
             $patron,
             $gatheredDetails
