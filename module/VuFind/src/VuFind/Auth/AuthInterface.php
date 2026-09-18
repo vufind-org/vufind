@@ -75,7 +75,7 @@ interface AuthInterface
      *
      * @return void
      */
-    public function setConfig($config);
+    public function setConfig(?array $config): void;
 
     /**
      * Whether this authentication method needs CSRF checking for the request.

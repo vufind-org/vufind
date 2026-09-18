@@ -60,7 +60,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('One or more ChoiceAuth parameters are missing.');
 
         $ca = new ChoiceAuth($this->getSessionContainer());
-        $ca->setConfig(new Config([]));
+        $ca->setConfig([]);
     }
 
     /**
@@ -258,7 +258,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     ): ChoiceAuth {
         $ca = new ChoiceAuth($session ?: $this->getSessionContainer());
         $ca->setConfig(
-            new Config(['ChoiceAuth' => ['choice_order' => $strategies]])
+            ['ChoiceAuth' => ['choice_order' => $strategies]]
         );
         $ca->setPluginManager($pm ?: $this->getMockPluginManager());
         return $ca;

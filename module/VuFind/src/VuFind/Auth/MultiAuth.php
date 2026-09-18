@@ -131,7 +131,7 @@ class MultiAuth extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
         if (isset($config['MultiAuth']['method_order'])) {
