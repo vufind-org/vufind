@@ -86,7 +86,7 @@ class HomeAction extends AbstractAdminAction
             $this->convertFilter($this->getPostOrQueryParam('form_name')),
             $this->convertFilter($this->getPostOrQueryParam('site_url')),
             $this->convertFilter($this->getPostOrQueryParam('status')),
-            intval($this->getPostOrQueryParam('page', default: '1'))
+            (int)($this->getPostOrQueryParam('page', default: '1'))
         );
         $templateParams = [
             'feedback' => $feedback,
