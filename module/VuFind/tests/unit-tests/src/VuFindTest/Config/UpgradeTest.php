@@ -801,8 +801,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Test migration of the [Logging] reference_id setting to reference_ids.
      *
-     * @param string  $fixture  Fixture to load
-     * @param ?array  $expected Expected migrated reference_ids setting (null if none expected)
+     * @param string $fixture  Fixture to load
+     * @param ?array $expected Expected migrated reference_ids setting (null if none expected)
      *
      * @return void
      */
