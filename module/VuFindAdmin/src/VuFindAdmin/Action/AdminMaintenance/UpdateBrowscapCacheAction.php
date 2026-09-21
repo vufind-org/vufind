@@ -90,18 +90,13 @@ class UpdateBrowscapCacheAction extends AbstractMaintenanceAction implements
     {
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         ini_set('memory_limit', '1024M');
-        $type = $this->getQueryParam('cacheType', 'standard');
-        switch ($type) {
-            case 'full':
-                $type = \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_FULL;
-                break;
-            case 'lite':
-                $type = \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_LITE;
-                break;
-            case 'standard':
-                $type = \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI;
-                break;
-            default:
+        $type = match ($this->getQueryParam('cacheType', 'standard')) {
+            'full' => \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_FULL,
+            'lite' => \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI_LITE,
+            'standard' =>  \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI,
+            default => null,
+        };
+        if (!$type) {
                 $flashMessagesHelper->addErrorMessage('Invalid browscap file-type specified');
                 return;
         }
