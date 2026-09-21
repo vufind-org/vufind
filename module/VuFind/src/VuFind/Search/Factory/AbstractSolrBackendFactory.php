@@ -343,8 +343,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
 
         // Conditional Filters
         if (
-            isset($search['ConditionalHiddenFilters'])
-            && count($search['ConditionalHiddenFilters']) > 0
+            count($search['ConditionalHiddenFilters'] ?? []) > 0
         ) {
             $this->getInjectConditionalFilterListener($backend, $search)->attach($events);
         }
