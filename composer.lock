@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33637ef6331e810de6a514d045acea50",
+    "content-hash": "d7d1e46c3cadc67dcd243272398fceaf",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -9514,16 +9514,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.32.15",
+            "version": "v5.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "eb37d16243388857e5b7c68c93fd04635c7c96fa"
+                "reference": "cfd4a6c3cbaeeb7c13a8bada7c754de42d78cd5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/eb37d16243388857e5b7c68c93fd04635c7c96fa",
-                "reference": "eb37d16243388857e5b7c68c93fd04635c7c96fa",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/cfd4a6c3cbaeeb7c13a8bada7c754de42d78cd5b",
+                "reference": "cfd4a6c3cbaeeb7c13a8bada7c754de42d78cd5b",
                 "shasum": ""
             },
             "type": "library",
@@ -9569,9 +9569,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.32.15"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.33.0"
             },
-            "time": "2026-09-04T10:12:25+00:00"
+            "time": "2026-09-16T09:18:16+00:00"
         },
         {
             "name": "symfony/console",
