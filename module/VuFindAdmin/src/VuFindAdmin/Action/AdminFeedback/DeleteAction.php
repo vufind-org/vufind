@@ -185,7 +185,7 @@ class DeleteAction extends AbstractAdminAction implements TranslatorAwareInterfa
         $params = ['form_name', 'site_url', 'status'];
         $paramMessages = [];
         foreach ($params as $param) {
-            $value = $this->getPostOrQueryParam($param, true);
+            $value = $this->getPostOrQueryParam($param);
             $message = $value ?: $allMessage;
             $message = $message === 'ALL' ? $allMessage : $message;
             $paramMessages[$param] = $message;
