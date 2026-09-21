@@ -67,7 +67,7 @@ class Shibboleth extends ServerParam
      * @param Request $request Request object
      * @param array   $config  VuFind configuration
      */
-    public function __construct(Request $request, $config)
+    public function __construct(Request $request, array $config)
     {
         parent::__construct($request);
 
