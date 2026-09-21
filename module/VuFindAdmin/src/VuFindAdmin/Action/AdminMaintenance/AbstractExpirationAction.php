@@ -69,7 +69,7 @@ abstract class AbstractExpirationAction extends AbstractAdminAction
         int $minAge = 2
     ): void {
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
-        $daysOld = intval($this->getQueryParam('daysOld', $minAge));
+        $daysOld = (int)($this->getQueryParam('daysOld', $minAge));
         if ($daysOld < $minAge) {
             $flashMessagesHelper
                 ->addErrorMessage(str_replace('%%age%%', $minAge, 'Expiration age must be at least %%age%% days.'));
