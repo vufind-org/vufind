@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
@@ -254,7 +253,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         $events = $this->getService('SharedEventManager');
 
         // Attach hide facet value listener:
-        $hfvListener = $this->getHideFacetValueListener($backend, new Config($this->edsConfig));
+        $hfvListener = $this->getHideFacetValueListener($backend, $this->edsConfig);
         if ($hfvListener) {
             $hfvListener->attach($events);
         }
