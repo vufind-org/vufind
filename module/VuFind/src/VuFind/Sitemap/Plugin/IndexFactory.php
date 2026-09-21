@@ -85,7 +85,7 @@ class IndexFactory implements FactoryInterface
      *
      * @return array
      */
-    protected function getBackendSettings($config): array
+    protected function getBackendSettings(array $config): array
     {
         // Process backend configuration:
         $backendConfig = $config['Sitemap']['index'] ?? ['Solr,/Record/'];
