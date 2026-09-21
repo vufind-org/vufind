@@ -126,19 +126,24 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
-     * to load (if omitted, all channels will be loaded)
+     * @param ?string      $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded) -- not used in this provider
+     * @param string       $context      Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null)
-    {
+    public function getFromRecord(
+        RecordDriver $driver,
+        ?string $channelToken = null,
+        string $context = 'default'
+    ): array {
         // If we have a token and it doesn't match the record driver, we can't
         // fetch any results!
         if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
             return [];
         }
-        $channel = $this->buildChannelFromRecord($driver);
+        $channel = $this->buildChannelFromRecord($driver, context: $context);
         return (count($channel['contents']) > 0) ? [$channel] : [];
     }
 
@@ -146,12 +151,12 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      * Return channel information derived from a search results object.
      *
      * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param ?string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromSearch(Results $results, $channelToken = null)
+    public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         $driver = null;
         $channels = [];
@@ -235,13 +240,16 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      * @param RecordDriver $driver    Record driver
      * @param bool         $tokenOnly Create full channel (false) or return a
      * token for future loading (true)?
+     * @param string       $context   Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      */
     protected function buildChannelFromRecord(
         RecordDriver $driver,
-        $tokenOnly = false
-    ) {
+        bool $tokenOnly = false,
+        string $context = 'default'
+    ): array {
         $retVal = [
             'title' => $this->translate(
                 'nearby_items',
@@ -273,11 +281,13 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             $details = $this->searchService->invoke($command)->getResult();
             $retVal['contents'] = $this->summarizeBrowseDetails($details);
             $route = $this->recordRouter->getRouteDetails($driver);
-            $retVal['links'][] = [
-                'label' => 'View Record',
-                'icon' => 'format-default',
-                'url' => $this->routeHelper->getUrlFromRoute($route['route'], $route['params']),
-            ];
+            if ($context !== 'tab') {
+                $retVal['links'][] = [
+                    'label' => 'View Record',
+                    'icon' => 'format-default',
+                    'url' => $this->routeHelper->getUrlFromRoute($route['route'], $route['params']),
+                ];
+            }
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'ui-add',
