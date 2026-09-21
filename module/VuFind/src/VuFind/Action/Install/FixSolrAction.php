@@ -33,7 +33,6 @@ namespace VuFind\Action\Install;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\RedirectHelper;
 
 /**
