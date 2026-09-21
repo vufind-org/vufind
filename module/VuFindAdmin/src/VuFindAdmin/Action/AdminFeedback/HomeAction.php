@@ -107,7 +107,7 @@ class HomeAction extends AbstractAdminAction
      */
     protected function convertFilter(?string $value): ?string
     {
-        return ('ALL' !== $value && null !== $value) ? $value : null;
+        return 'ALL' === $value ? null : $value;
     }
 
     /**
