@@ -71,7 +71,7 @@ class ScriptAction extends AbstractMaintenanceAction
         } else {
             $code = $output = null;
             exec($details['command'], $output, $code);
-            $successCode = intval($details['successCode'] ?? 0);
+            $successCode = (int)($details['successCode'] ?? 0);
             if ($code !== $successCode) {
                 $flashMessagesHelper->addErrorMessage("Command failed; expected $successCode but received $code");
             } else {
