@@ -92,7 +92,7 @@ class UpdateStatusAction extends AbstractAdminAction implements TranslatorAwareI
         ResponseInterface $response,
     ): ResponseInterface {
         $newStatus = $this->getPostOrQueryParam('new_status');
-        $id = intval($this->getPostOrQueryParam('id'));
+        $id = (int)($this->getPostOrQueryParam('id'));
         $success = false;
         try {
             $feedback = $this->feedbackService->getFeedbackById($id);
