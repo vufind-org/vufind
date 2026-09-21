@@ -665,7 +665,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         foreach ($facet['CustomFilters']['translated_filters'] ?? [] as $key => $val) {
             $normal[$customField . ':"' . $key . '"'] = $val;
         }
-        foreach ($facet->CustomFilters->inverted_filters ?? [] as $key => $val) {
+        foreach ($facet['CustomFilters']['inverted_filters'] ?? [] as $key => $val) {
             $inverted[$customField . ':"' . $key . '"'] = $val;
         }
         return empty($normal) && empty($inverted)
