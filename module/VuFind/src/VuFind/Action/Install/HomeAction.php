@@ -189,6 +189,26 @@ class HomeAction extends AbstractInstallAction
     }
 
     /**
+     * Check if the Solr index is working.
+     *
+     * @return array
+     */
+    protected function checkMethodSolr(): array
+    {
+        try {
+            $this->testSearchService();
+            $status = true;
+        } catch (\Exception $e) {
+            $status = false;
+        }
+        return [
+            'title' => 'Solr',
+            'status' => $status,
+            'fix' => 'fixsolr',
+        ];
+    }
+
+    /**
      * Check if SSL configuration is set properly.
      *
      * @return array

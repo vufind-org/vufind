@@ -362,26 +362,6 @@ abstract class AbstractInstallAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Check if the Solr index is working.
-     *
-     * @return array
-     */
-    protected function checkMethodSolr(): array
-    {
-        try {
-            $this->testSearchService();
-            $status = true;
-        } catch (\Exception $e) {
-            $status = false;
-        }
-        return [
-            'title' => 'Solr',
-            'status' => $status,
-            'fix' => 'fixsolr',
-        ];
-    }
-
-    /**
      * Get a list of missing extensions required for proper operation.
      *
      * @return array
