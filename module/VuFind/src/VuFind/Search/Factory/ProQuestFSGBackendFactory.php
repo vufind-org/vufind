@@ -59,13 +59,6 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * VuFind configuration.
-     *
-     * @var array
-     */
-    protected array $config;
-
-    /**
      * ProQuestFSG configuration.
      *
      * @var array
