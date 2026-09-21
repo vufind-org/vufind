@@ -102,8 +102,7 @@ class EnableAutoConfigAction extends AbstractAdminAction
         if ($success) {
             $flashMessagesHelper->addSuccessMessage('Auto-configuration enabled.');
 
-            // Reload config now that it has been edited (otherwise, old setting
-            // will persist in cache):
+            // Reload config now that it has been edited (otherwise, old setting will persist in cache):
             $this->configManager->getConfig('config', forceReload: true);
         } else {
             $flashMessagesHelper
