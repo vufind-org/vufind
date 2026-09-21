@@ -60,29 +60,16 @@ class FixSolrAction extends AbstractInstallAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
-        $indexUrl = $this->config['Index']['url'] ?? '';
-        if (stristr($indexUrl, 'localhost')) {
-            $newUrl = str_replace('localhost', '127.0.0.1', $indexUrl);
-            try {
-                $this->testSearchService();
-                try {
-                    $this->changeConfig(
-                        'config',
-                        ['Index' => ['url' => $newUrl]]
-                    );
-                } catch (\Exception $e) {
-                    return $this->getHelper(ForwardHelper::class)
-                        ->forwardTo($request, $response, 'Install/fixbasicconfig');
-                }
-                return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
-            } catch (\Exception $e) {
-                // Didn't work!
-            }
+        // Check if Solr can be accessed:
+        try {
+            $this->testSearchService();
+            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'install-home');
+        } catch (\Exception $e) {
+            // Solr unavailable, so fall through to display troubleshooting advice.
         }
 
-        // If we got this far, the automatic fix didn't work, so let's just assign some variables to use in offering
-        // troubleshooting advice:
+        // Assign some variables to use in offering troubleshooting advice:
+        $indexUrl = $this->config['Index']['url'] ?? '';
         $templateParams = [
             'rawUrl' => $indexUrl,
             'userUrl' => str_replace(
