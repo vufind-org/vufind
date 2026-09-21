@@ -44,8 +44,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
 use VuFindAdmin\Action\Admin\AbstractAdminAction;
 
-use function intval;
-
 /**
  * Update feedback status action.
  *

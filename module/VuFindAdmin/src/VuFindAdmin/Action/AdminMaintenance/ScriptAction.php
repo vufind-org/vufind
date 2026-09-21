@@ -36,8 +36,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 
-use function intval;
-
 /**
  * Run maintenance script action.
  *

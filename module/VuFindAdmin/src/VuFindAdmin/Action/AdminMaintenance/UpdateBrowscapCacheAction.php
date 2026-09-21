@@ -97,8 +97,8 @@ class UpdateBrowscapCacheAction extends AbstractMaintenanceAction implements
             default => null,
         };
         if (!$type) {
-                $flashMessagesHelper->addErrorMessage('Invalid browscap file-type specified');
-                return;
+            $flashMessagesHelper->addErrorMessage('Invalid browscap file-type specified');
+            return;
         }
 
         $cache = new SimpleCacheDecorator($this->cacheManager->getCache('browscap'));

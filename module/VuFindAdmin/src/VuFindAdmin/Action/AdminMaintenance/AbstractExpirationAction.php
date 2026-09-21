@@ -37,8 +37,6 @@ use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFindAdmin\Action\Admin\AbstractAdminAction;
 
-use function intval;
-
 /**
  * Abtract base class for expiration actions.
  *
