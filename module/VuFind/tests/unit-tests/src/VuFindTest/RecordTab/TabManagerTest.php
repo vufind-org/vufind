@@ -84,20 +84,17 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?RecordTabPluginManager $recordTabPluginManager Plugin manager to use (null for default)
      * @param ?ConfigManagerInterface $configManager          Config manager to use (null for default)
-     * @param array                   $legacyConfig           Legacy config
      *
      * @return TabManager
      */
     protected function getTabManager(
         ?RecordTabPluginManager $recordTabPluginManager = null,
         ?ConfigManagerInterface $configManager = null,
-        array $legacyConfig = []
     ): TabManager {
         return new TabManager(
             $recordTabPluginManager ?? $this->getMockRecordTabPluginManager(),
             $configManager
-                ?? $this->getMockConfigManager($this->defaultConfig),
-            $legacyConfig
+                ?? $this->getMockConfigManager($this->defaultConfig)
         );
     }
 
@@ -129,26 +126,6 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $errorCallback = function (int $code, string $msg): void {
             throw new \Exception($msg, $code);
         };
-        $legacyConfig = [
-            'vufind' => [
-                'recorddriver_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'foo' => 'bar',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-            ],
-        ];
-        set_error_handler($errorCallback, E_USER_WARNING);
-        try {
-            $this->getTabManager(legacyConfig: $legacyConfig);
-        } catch (\Throwable $e) {
-            throw $e;
-        } finally {
-            restore_error_handler();
-        }
     }
 
     /**
