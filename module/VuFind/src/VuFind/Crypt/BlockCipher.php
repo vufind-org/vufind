@@ -527,7 +527,7 @@ class BlockCipher
         $iv = mb_substr($ciphertext, 0, $this->getSaltSize(), '8bit');
         $hmacNew = $this->setOpenSslKeyAndGetValidationHmac($ciphertext, $iv, $keySize);
         if ($hmacNew !== $hmac) {
-                return false;
+            return false;
         }
         return $this->openSslDecrypt($ciphertext);
     }
