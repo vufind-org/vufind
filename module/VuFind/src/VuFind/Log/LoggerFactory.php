@@ -58,6 +58,7 @@ use VuFind\Net\UserIpReader;
 use function constant;
 use function error_log;
 use function explode;
+use function in_array;
 use function is_array;
 use function is_int;
 use function method_exists;
