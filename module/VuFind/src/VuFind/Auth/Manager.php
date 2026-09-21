@@ -176,14 +176,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         $name = empty($name) ? $this->activeAuth : $name;
         if (!isset($this->auth[$name])) {
             $this->auth[$name] = $this->makeAuth($name);
-            // check if authentication handler still has the legacy methods "logout" or "resetState" that
-            // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
-            if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
-                throw new \Exception(
-                    'Deprecated methods "logout" and "resetState" need '
-                    . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
-                );
-            }
         }
         return $this->auth[$name];
     }
@@ -555,25 +547,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     {
         // Assume dropdown is disabled unless explicitly turned on:
         return $this->config['Authentication']['enableDropdown'] ?? false;
-    }
-
-    /**
-     * Legacy method that logs out the current user.
-     *
-     * @param string $url     URL to redirect user to after logging out.
-     * @param bool   $destroy Should we destroy the session (true) or just reset it
-     * (false); destroy is for log out, reset is for expiration.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     *
-     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
-     */
-    public function logout(string $url, bool $destroy = true): string
-    {
-        $url = $this->getLogoutRedirectUrl($url);
-        $this->clearLoginState($destroy);
-        return $url;
     }
 
     /**
