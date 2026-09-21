@@ -203,6 +203,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         $retVal['contents'] = $this->summarizeRecordDrivers($similar);
 
         $route = $this->recordRouter->getRouteDetails($driver);
+        // If we're in a tab, we're already on the record page, so no need for this link:
         if ($context !== 'tab') {
             $retVal['links'][] = [
                 'label' => 'View Record',
