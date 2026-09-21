@@ -41,39 +41,6 @@ import org.solrmarc.index.SolrIndexer;
 public class CallNumberTools
 {
     /**
-     * Extract the first call number label from a record
-     * @deprecated Please use getCallNumberLabels instead
-     * @param record MARC record
-     * @return Call number label
-     */
-    @Deprecated
-    public String getCallNumberLabel(final Record record) {
-        return getCallNumberLabel(record, "090a:050a");
-    }
-
-    /**
-     * Extract the first call number label from a record.
-     * @deprecated Please use getCallNumberLabels instead
-     * @param record MARC record
-     * @param fieldSpec taglist for call number fields
-     * @return Call number label
-     */
-    @Deprecated
-    public String getCallNumberLabel(final Record record, String fieldSpec) {
-        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
-
-        if (val != null) {
-            int dotPos = val.indexOf(".");
-            if (dotPos > 0) {
-                val = val.substring(0, dotPos);
-            }
-            return val.toUpperCase();
-        } else {
-            return val;
-        }
-    }
-
-    /**
      * Extract the call number labels from a record
      * @param record MARC record
      * @return Call number labels
