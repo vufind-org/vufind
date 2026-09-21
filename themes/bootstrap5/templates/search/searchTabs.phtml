@@ -11,7 +11,15 @@
             'data-source' => $tab['class'],
             'class' => 'nav-link',
           ];
-          if ($tab['selected']) {
+          $liAttributes = [
+            'class' => 'nav-item',
+          ];
+          if ($tab['disabled'] ?? false) {
+            $linkAttributes['class'] .= ' disabled';
+            $linkAttributes['aria-disabled'] = 'true';
+            $linkAttributes['tabindex'] = '-1';
+            $liAttributes['title'] = $this->translate('search_tab_unavailable');
+          } elseif ($tab['selected']) {
             $hasSelectedTab = true;
             $linkAttributes['class'] .= ' active';
             $linkAttributes['aria-current'] = 'page';
@@ -23,8 +31,11 @@
           } else {
             $linkAttributes['href'] = $tab['url'];
           }
+          if ($this->showCounts) {
+            $liAttributes['data-show-counts'] = true;
+          }
         ?>
-        <li class="nav-item"<?=$this->showCounts ? ' data-show-counts' : ''?>>
+        <li<?=$this->htmlAttributes($liAttributes)?>>
           <a<?=$this->htmlAttributes($linkAttributes)?>><?=$this->transEsc($tab['label']); ?></a>
         </li>
       <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
