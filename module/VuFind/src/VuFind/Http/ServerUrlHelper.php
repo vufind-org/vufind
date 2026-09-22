@@ -32,6 +32,7 @@ namespace VuFind\Http;
 
 use Closure;
 use Laminas\View\Helper\ServerUrl;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Server URL Helper class.  Wrapper around Laminas ServerUrlHelper.
@@ -59,6 +60,7 @@ class ServerUrlHelper
      *
      * @return void
      */
+    #[Autowire]
     public function __construct(protected Closure $serverUrlHelperFactory)
     {
     }
