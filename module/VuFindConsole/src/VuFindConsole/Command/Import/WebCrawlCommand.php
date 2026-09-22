@@ -34,7 +34,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Config\Config;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
@@ -70,14 +69,14 @@ class WebCrawlCommand extends Command
      *
      * @param Importer    $importer XSLT importer
      * @param Writer      $solr     Solr writer
-     * @param Config      $config   Configuration from webcrawl.ini
+     * @param array       $config   Configuration from webcrawl.ini
      * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
     public function __construct(
         protected Importer $importer,
         protected Writer $solr,
-        protected Config $config,
+        protected array $config,
         $name = null
     ) {
         parent::__construct($name);
@@ -156,7 +155,7 @@ class WebCrawlCommand extends Command
      */
     protected function getTransformCachePath(string $url): ?string
     {
-        if ($dir = $this->config->Cache->transform_cache_dir ?? null) {
+        if ($dir = $this->config['Cache']['transform_cache_dir'] ?? null) {
             return $dir . '/' . md5($url);
         }
         return null;
@@ -198,7 +197,7 @@ class WebCrawlCommand extends Command
         bool $verbose
     ): ?string {
         // If cache is write-only, don't retrieve data!
-        if ($this->config->Cache->transform_cache_write_only ?? false) {
+        if ($this->config['Cache']['transform_cache_write_only'] ?? false) {
             return null;
         }
         // If we can't find the data in the cache, we can't proceed.
@@ -395,12 +394,12 @@ class WebCrawlCommand extends Command
         $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
 
         // Are we in verbose mode?
-        $verbose = ($this->config->General->verbose ?? false)
+        $verbose = ($this->config['General']['verbose'] ?? false)
             || ($input->hasOption('verbose') && $input->getOption('verbose'));
 
         // Loop through sitemap URLs in the config file.
         $error = false;
-        foreach ($this->config->Sitemaps->url as $current) {
+        foreach ($this->config['Sitemaps']['url'] as $current) {
             $error = $error || !$this->harvestSitemap(
                 $output,
                 $current,
