@@ -65,10 +65,10 @@ class Cart
     /**
      * Constructor.
      *
-     * @param \VuFind\Record\Loader $recordLoader    Object for loading records
-     * @param CookieManager         $cookieManager   Cookie manager
-     * @param int                   $maxSize         Maximum size of cart contents
-     * @param bool                  $active          Is cart enabled?
+     * @param \VuFind\Record\Loader $recordLoader        Object for loading records
+     * @param CookieManager         $cookieManager       Cookie manager
+     * @param int                   $maxSize             Maximum size of cart contents
+     * @param bool                  $active              Is cart enabled?
      * @param bool                  $showTogglesInSearch Is cart configured to toggles
      * in search results?
      */
