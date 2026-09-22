@@ -164,7 +164,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function warning($msg)
+    protected function warn($msg)
     {
         $this->msg('WARNING: ' . $msg);
     }
@@ -176,7 +176,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function error($msg)
+    protected function err($msg)
     {
         $this->msg('ERROR: ' . $msg);
     }
@@ -214,7 +214,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $schedule = $s->getNotificationFrequency();
         if (!isset($this->scheduleOptions[$schedule])) {
-            $this->error('Search ' . $s->getId() . ": unknown schedule: $schedule");
+            $this->err('Search ' . $s->getId() . ": unknown schedule: $schedule");
             return false;
         }
         $diff = $todayTime->diff($lastTime);
@@ -240,11 +240,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function getUserForSearch($s)
     {
         if (!$user = $s->getUser()) {
-            $this->warning('Search ' . $s->getId() . ': is missing user data.');
+            $this->warn('Search ' . $s->getId() . ': is missing user data.');
             return null;
         }
         if (!$user->getEmail()) {
-            $this->warning(
+            $this->warn(
                 'User ' . $user->getUsername() . ' does not have an email address, bypassing alert ' . $s->getId()
             );
             return null;
@@ -289,14 +289,14 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $minSO = $s->getSearchObject();
         if (!$minSO) {
-            $this->error("Problem getting search object from search {$s->getId()}.");
+            $this->err("Problem getting search object from search {$s->getId()}.");
             return false;
         }
         $searchObject = $minSO->deminify($this->resultsManager);
         if (!$searchObject->getOptions()->supportsScheduledSearch()) {
             $backendId = $searchObject->getBackendId();
             $searchId = $searchObject->getSearchId();
-            $this->error(
+            $this->err(
                 'Unsupported search backend ' . ($backendId ?? '<unknown>')
                 . ' for search ' . ($searchId ?? '<unknown>')
             );
@@ -324,7 +324,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         try {
             $records = $searchObject->getResults();
         } catch (\Exception $e) {
-            $this->error("Error processing search $searchId: " . $e->getMessage());
+            $this->err("Error processing search $searchId: " . $e->getMessage());
             return false;
         }
         if (empty($records)) {
@@ -434,7 +434,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         try {
             $this->mailer->send($to, $from, $subject, $message);
         } catch (\Exception $e) {
-            $this->error(
+            $this->err(
                 "Failed to send message to {$user->getEmail()}: " . $e->getMessage()
             );
             return false;
@@ -477,7 +477,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 $s->setLastNotificationSent(new DateTime());
                 $this->searchService->persistEntity($s);
             } catch (Exception) {
-                $this->error("Error updating last_executed date for search {$s->getId()}");
+                $this->err("Error updating last_executed date for search {$s->getId()}");
             }
         }
         $this->msg('Done processing searches');
