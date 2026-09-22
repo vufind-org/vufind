@@ -761,11 +761,11 @@ $config = [
             ],
             'vufind_summon_search' => [
                 'actionIds' => [
-                    'summon',
-                    [
-                        'type' => 'prefix',
-                        'prefix' => 'summon/',
-                    ],
+                    'summon/advanced',
+                    'summon/facetlist',
+                    'summon/home',
+                    'summon/search',
+                    'summon/results',
                 ],
                 'backendId' => 'Summon',
                 'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
