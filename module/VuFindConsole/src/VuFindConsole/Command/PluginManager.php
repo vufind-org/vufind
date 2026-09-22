@@ -93,7 +93,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/lint_marc' => Util\LintMarcCommand::class,
         'util/optimize' => Util\OptimizeCommand::class,
         'util/purge_cached_record' => Util\PurgeCachedRecordCommand::class,
-        'util/scssBuilder' => Util\ScssBuilderCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
