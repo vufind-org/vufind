@@ -249,7 +249,7 @@ class LoggerFactory implements FactoryInterface
 
         // Add specific handlers based on config:
         // DEBUGGER
-        if (!$config['System']['debug'] == false || $this->hasDynamicDebug($container)) {
+        if (($config['System']['debug'] ?? false) != false || $this->hasDynamicDebug($container)) {
             $this->addDebugHandler($monologLogger, $config['System']['debug']);
         }
 
