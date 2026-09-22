@@ -185,8 +185,7 @@ class Params extends \VuFind\Search\Base\Params
             $this->facetAliases = $config['LegacyFields'];
         }
         if (
-            isset($config['Results_Settings']['sorted_by_index'])
-            && count($config['Results_Settings']['sorted_by_index']) > 0
+            count($config['Results_Settings']['sorted_by_index'] ?? []) > 0
         ) {
             $this->setIndexSortedFacets(
                 $config['Results_Settings']['-sorted_by_index']
