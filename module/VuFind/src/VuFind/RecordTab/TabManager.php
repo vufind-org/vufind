@@ -114,7 +114,7 @@ class TabManager
     {
         if (!isset($this->config[$this->context])) {
             $configFile = $this->contextSettings[$this->context]['configFile'];
-            $iniConfig = $this->configManager->getConfigArray(
+            $this->config[$this->context] = $this->configManager->getConfigArray(
                 $configFile
             );
         }
