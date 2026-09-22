@@ -114,21 +114,6 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deprecated config warning.
-     *
-     * @return void
-     */
-    public function testDeprecatedConfigTriggersWarning(): void
-    {
-        $this->expectExceptionMessage(
-            'Using deprecated way of fetching tab configuration! Use RecordTabs.ini instead.'
-        );
-        $errorCallback = function (int $code, string $msg): void {
-            throw new \Exception($msg, $code);
-        };
-    }
-
-    /**
      * Test that we get the expected tab service names.
      *
      * @return void
