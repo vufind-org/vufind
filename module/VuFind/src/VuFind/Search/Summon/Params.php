@@ -88,8 +88,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         parent::__construct($options, $configManager);
         $config = $configManager->getConfigArray($options->getFacetsIni());
-        $facetSettings = isset($config['Facet_Settings'])
-            ? $config['Facet_Settings'] : null;
+        $facetSettings = $config['Facet_Settings'] ?? null;
         $this->initFacetLimitsFromConfig($facetSettings);
     }
 
@@ -407,8 +406,7 @@ class Params extends \VuFind\Search\Base\Params
         // can be found in Facet_Settings.
         $limitSection = ($facetSettings === 'Results_Settings')
             ? 'Facet_Settings' : $facetSettings;
-        $facetLimitConfig = isset($config['$limitSection'])
-            ? $config['$limitSection'] : null;
+        $facetLimitConfig = $config['$limitSection'] ?? null;
         $this->initFacetLimitsFromConfig($facetLimitConfig);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }

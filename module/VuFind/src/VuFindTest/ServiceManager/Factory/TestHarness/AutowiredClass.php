@@ -33,7 +33,6 @@ namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
 use Laminas\View\HelperPluginManager;
 use VuFind\Auth\Manager;
-use VuFind\Config\Config;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Url;

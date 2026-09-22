@@ -178,8 +178,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Use basic facet limit by default, if set:
         $config = $configManager->getConfigArray($options->getFacetsIni());
-        $resultsSettings = isset($config['Results_Settings'])
-            ? $config['Results_Settings'] : null;
+        $resultsSettings = $config['Results_Settings'] ?? null;
         $this->initFacetLimitsFromConfig($resultsSettings);
         $this->initFacetRestrictionsFromConfig($resultsSettings);
         if (isset($config['LegacyFields'])) {
@@ -444,8 +443,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
         $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
-        $facetSettingsConfig = isset($config['$facetSettings'])
-            ? $config['$facetSettings'] : null;
+        $facetSettingsConfig = $config['$facetSettings'] ?? null;
         $this->initFacetLimitsFromConfig($facetSettingsConfig);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
