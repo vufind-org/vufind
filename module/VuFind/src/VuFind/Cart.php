@@ -69,7 +69,7 @@ class Cart
      * @param CookieManager         $cookieManager   Cookie manager
      * @param int                   $maxSize         Maximum size of cart contents
      * @param bool                  $active          Is cart enabled?
-     * @param bool                  $togglesInSearch Is cart configured to toggles
+     * @param bool                  $showTogglesInSearch Is cart configured to toggles
      * in search results?
      */
     public function __construct(
@@ -80,7 +80,7 @@ class Cart
         #[Autowire(config: 'config', path: 'Site/showBookBag', default: false)]
         protected bool $active = true,
         #[Autowire(config: 'config', path: 'Site/bookbagTogglesInSearch', default: true)]
-        protected bool $togglesInSearch = true
+        protected bool $showTogglesInSearch = true
     ) {
         // Initialize contents
         $this->init($this->cookieManager->getCookies());
