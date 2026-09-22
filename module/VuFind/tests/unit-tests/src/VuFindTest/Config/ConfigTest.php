@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Config;
 
+use VuFind\Config\Config;
+
 /**
  * Configuration Wrapper Test Class.
  *
@@ -43,7 +45,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     /**
      * Config object to test.
      *
-     * @var ?array
+     * @var ?Config
      */
     protected $config = null;
 
@@ -69,7 +71,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->config = self::$configArray;
+        $this->config = new Config(self::$configArray);
     }
 
     /**
@@ -79,7 +81,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function testToArray(): void
     {
-        $this->assertEquals(self::$configArray, $this->config);
+        $this->assertEquals(self::$configArray, $this->config->toArray());
     }
 
     /**
@@ -89,7 +91,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsetValue(): void
     {
-        $this->assertFalse(isset($this->config['section3']['doesNotExist']));
+        $this->assertFalse(isset($this->config->section3->doesNotExist));
     }
 
     /**
@@ -99,7 +101,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function testObjectNotation(): void
     {
-        $this->assertEquals('value1', $this->config['section1']['setting1']);
+        $this->assertEquals('value1', $this->config->section1->setting1);
     }
 
     /**
@@ -119,6 +121,6 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function testNestedArray(): void
     {
-        $this->assertEquals(['foo', 'bar'], $this->config['section2']['setting3']);
+        $this->assertEquals(['foo', 'bar'], $this->config->section2->setting3->toArray());
     }
 }
