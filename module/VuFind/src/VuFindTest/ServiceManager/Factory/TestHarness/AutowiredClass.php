@@ -54,7 +54,6 @@ class AutowiredClass
      *
      * @param array      $config          Configuration
      * @param array      $configArray     Configuration (same as $config)
-     * @param Config     $configObject    Configuration object (same configuration as $config)
      * @param array      $yamlConfig      YAML-based configuration
      * @param Url        $url             URL helper
      * @param Manager    $authManager     Authentication manager
@@ -69,8 +68,6 @@ class AutowiredClass
         protected array $config,
         #[Autowire(config: 'config', configType: 'array')]
         protected array $configArray,
-        #[Autowire(config: 'config', configType: 'object')]
-        protected Config $configObject,
         #[Autowire(config: 'config2', configType: 'yaml')]
         protected array $yamlConfig,
         #[Autowire(container: HelperPluginManager::class)]
@@ -95,9 +92,6 @@ class AutowiredClass
         }
         if (!isset($configArray['Foo'])) {
             throw new \Exception('Invalid array configuration');
-        }
-        if (!isset($configObject->Foo)) {
-            throw new \Exception('Invalid object configuration');
         }
         if (!isset($yamlConfig['YAML'])) {
             throw new \Exception('Invalid YAML configuration');

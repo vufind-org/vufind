@@ -164,11 +164,8 @@ class AutowiringFactory implements FactoryInterface
         $type = $autowireArgs['configType'] ?? 'array';
         switch ($type) {
             case 'array':
-            case 'object':
                 $this->configManager ??= $container->get(ConfigManagerInterface::class);
-                return 'object' === $type
-                    ? $this->configManager->getConfigObject($config)
-                    : $this->configManager->getConfigArray($config);
+                return $this->configManager->getConfigArray($config);
             case 'yaml':
                 $this->yamlReader ??= $container->get(YamlReader::class);
                 return $this->yamlReader->get("$config.yaml");
