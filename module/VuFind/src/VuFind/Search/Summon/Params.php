@@ -30,7 +30,6 @@
 namespace VuFind\Search\Summon;
 
 use SerialsSolutions_Summon_Query as SummonQuery;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\ParamBag;
