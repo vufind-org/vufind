@@ -74,11 +74,11 @@ class OverdriveConnectorFactory implements
         }
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $config = $configManager->getConfigObject('config');
-        $odConfig = $configManager->getConfigObject('Overdrive');
+        $config = $configManager->getConfigArray('config');
+        $odConfig = $configManager->getConfigArray('Overdrive');
 
         // Allow simulated connection if configured:
-        if ($odConfig->API->simulateConnection ?? false) {
+        if ($odConfig['API']['simulateConnection'] ?? false) {
             return new FakeOverdriveConnector($config, $odConfig);
         }
         $auth = $container->get(\VuFind\Auth\ILSAuthenticator::class);

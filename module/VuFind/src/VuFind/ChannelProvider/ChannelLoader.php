@@ -279,6 +279,7 @@ class ChannelLoader
      * @param string $activeChannel  Channel being requested (optional, used w/ token)
      * @param string $source         Search backend to use
      * @param array  $configSections Prioritized list of configuration sections to check
+     * @param string $context        Context of channel load ('default' for normal Channels page, 'tab' for record tab)
      *
      * @return array
      */
@@ -287,7 +288,8 @@ class ChannelLoader
         $token = null,
         $activeChannel = null,
         $source = DEFAULT_SEARCH_BACKEND,
-        array $configSections = ['record']
+        array $configSections = ['record'],
+        string $context = 'default'
     ) {
         // Load record:
         $driver = $this->recordLoader->load($recordId, $source);
@@ -306,7 +308,7 @@ class ChannelLoader
         foreach ($providers as $provider) {
             $channels = array_merge(
                 $channels,
-                $provider->getFromRecord($driver, $token)
+                $provider->getFromRecord($driver, $token, $context)
             );
         }
 

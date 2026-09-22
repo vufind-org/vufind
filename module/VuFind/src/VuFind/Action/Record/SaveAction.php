@@ -41,6 +41,7 @@ use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UrlHelper;
 use VuFind\ActionHelper\UserContentHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -79,6 +80,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
      * @param SearchMemory                 $searchMemory        Search memory
      * @param TabManager                   $tabManager          Tab manager
      * @param AuthManager                  $authManager         Authentication manager
+     * @param ConfigManager                $configManager       Configuration manager
      * @param RecordLoader                 $recordLoader        Record loader
      * @param RecordRouter                 $recordRouter        Record router
      * @param ResultScroller               $resultScroller      Result scroller
@@ -92,6 +94,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -108,6 +111,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
@@ -63,9 +62,9 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * EDS configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $edsConfig;
+    protected array $edsConfig;
 
     /**
      * Default URL for the EDS Backend.  Set here for the EDS API.
@@ -108,7 +107,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $this->edsConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->getServiceName());
+            ->getConfigArray($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -161,12 +160,12 @@ class EdsBackendFactory extends AbstractBackendFactory
         $options = $this->createConnectorOptions();
         $httpOptions = [
             'sslverifypeer'
-                => (bool)($this->edsConfig->General->sslverifypeer ?? true),
+                => (bool)($this->edsConfig['General']['sslverifypeer'] ?? true),
         ];
         $connector = new Connector(
             $options,
             $this->createHttpClient(
-                $this->edsConfig->General->timeout ?? 120,
+                $this->edsConfig['General']['timeout'] ?? 120,
                 $httpOptions
             )
         );
@@ -186,24 +185,24 @@ class EdsBackendFactory extends AbstractBackendFactory
     {
         $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $options = [
-            'search_http_method' => $this->edsConfig->General->search_http_method
+            'search_http_method' => $this->edsConfig['General']['search_http_method']
                 ?? 'POST',
-            'api_url' => $this->edsConfig->General->api_url
+            'api_url' => $this->edsConfig['General']['api_url']
                 ?? $this->defaultApiUrl,
             'is_guest' => !$auth->isGranted('access.EDSExtendedResults'),
-            'send_user_ip' => $this->edsConfig->AdditionalHeaders->send_user_ip ?? false,
+            'send_user_ip' => $this->edsConfig['AdditionalHeaders']['send_user_ip'] ?? false,
         ];
-        if (isset($this->edsConfig->General->auth_url)) {
-            $options['auth_url'] = $this->edsConfig->General->auth_url;
+        if (isset($this->edsConfig['General']['auth_url'])) {
+            $options['auth_url'] = $this->edsConfig['General']['auth_url'];
         }
-        if (isset($this->edsConfig->General->session_url)) {
-            $options['session_url'] = $this->edsConfig->General->session_url;
+        if (isset($this->edsConfig['General']['session_url'])) {
+            $options['session_url'] = $this->edsConfig['General']['session_url'];
         }
-        if (!empty($this->edsConfig->EBSCO_Account->api_key)) {
-            $options['api_key'] = $this->edsConfig->EBSCO_Account->api_key;
+        if (!empty($this->edsConfig['EBSCO_Account']['api_key'])) {
+            $options['api_key'] = $this->edsConfig['EBSCO_Account']['api_key'];
         }
-        if (!empty($this->edsConfig->EBSCO_Account->api_key_guest)) {
-            $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
+        if (!empty($this->edsConfig['EBSCO_Account']['api_key_guest'])) {
+            $options['api_key_guest'] = $this->edsConfig['EBSCO_Account']['api_key_guest'];
         }
         if ($options['send_user_ip']) {
             $options['ip_to_report'] = $this->getService(\VuFind\Net\UserIpReader::class)->getUserIp();

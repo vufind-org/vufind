@@ -276,21 +276,6 @@ class RecordLinker
     }
 
     /**
-     * Given a record driver, generate HTML to link to the record from breadcrumbs.
-     *
-     * @param AbstractRecord $driver Record to link to.
-     *
-     * @return string
-     *
-     * @deprecated Use getBreadcrumbParams()
-     */
-    public function getBreadcrumbHtml($driver)
-    {
-        [$text, $url] = $this->getBreadcrumbParams($driver);
-        return '<a href="' . $url . '">' . ($this->escapeHtml)($text) . '</a>';
-    }
-
-    /**
      * Given a record driver, generate an array of parameters that can be sent to
      * a breadcrumb helper method ([text, href]).
      *

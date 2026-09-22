@@ -64,14 +64,14 @@ class Shibboleth extends ServerParam
     /**
      * Constructor.
      *
-     * @param Request               $request Request object
-     * @param \VuFind\Config\Config $config  VuFind configuration
+     * @param Request $request Request object
+     * @param array   $config  VuFind configuration
      */
-    public function __construct(Request $request, $config)
+    public function __construct(Request $request, array $config)
     {
         parent::__construct($request);
 
-        $this->idpServerParam = $config->Shibboleth->idpserverparam
+        $this->idpServerParam = $config['Shibboleth']['idpserverparam']
             ?? ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
 
         $this->aliases = ['idpentityid' => $this->idpServerParam];

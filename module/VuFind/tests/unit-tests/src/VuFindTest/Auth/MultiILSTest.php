@@ -194,7 +194,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \VuFind\Config\Config($config));
+        $auth->setConfig($config);
         $auth->authenticate($this->getLoginRequest());
     }
 
