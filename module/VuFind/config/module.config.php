@@ -441,7 +441,7 @@ $config = [
                 'actionIds' => [
                     'author/home',
                 ],
-                'backendId' => DEFAULT_SEARCH_BACKEND,
+                'backendId' => 'Solr',
             ],
             'vufind_author_search_results' => [
                 'actionIds' => [
