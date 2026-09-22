@@ -68,7 +68,7 @@ class CartFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')['Site'];
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')['Site'];
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
