@@ -203,14 +203,6 @@ trait ConfigRelatedServicesTrait
                     return $configsCallback()[$config] ?? $defaultCallback();
                 }
             );
-        $manager->expects($getConfigObjectExpect ?? $this->any())
-            ->method('getConfigObject')
-            ->with($this->isType('string'))
-            ->willReturnCallback(
-                function ($config) use ($configsCallback, $defaultCallback): array {
-                    return $configsCallback()[$config] ?? $defaultCallback();
-                }
-            );
         return $manager;
     }
 
