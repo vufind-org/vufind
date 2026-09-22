@@ -195,8 +195,8 @@ class LoggerFactory implements FactoryInterface
             $channel = null;
         }
 
-        $username = $config['Logging']['slackname'];
-        $webhookUrl = $config['Logging']['slackurl'];
+        $username = $config['Logging']['slackname'] ?? '';
+        $webhookUrl = $config['Logging']['slackurl'] ?? '';
 
         $baseSlackHandler = new SlackWebhookHandler(
             $webhookUrl,
