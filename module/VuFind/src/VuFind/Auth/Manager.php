@@ -176,6 +176,14 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         $name = empty($name) ? $this->activeAuth : $name;
         if (!isset($this->auth[$name])) {
             $this->auth[$name] = $this->makeAuth($name);
+            // check if authentication handler still has the legacy methods "logout" or "resetState" that
+            // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
+            if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
+                throw new \Exception(
+                    'Deprecated methods "logout" and "resetState" need '
+                    . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
+                );
+            }
         }
         return $this->auth[$name];
     }
