@@ -72,7 +72,7 @@ class FixSolrAction extends AbstractInstallAction
         $templateParams = [
             'rawUrl' => $indexUrl,
             'userUrl' => str_replace(
-                ['localhost', '127.0.0.1'],
+                ['localhost', '127.0.0.1', '::1'],
                 $request->getServerParams()['HTTP_HOST'] ?? '',
                 $indexUrl
             ),
