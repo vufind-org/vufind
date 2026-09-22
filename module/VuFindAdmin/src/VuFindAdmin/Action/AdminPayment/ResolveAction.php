@@ -31,7 +31,6 @@
 
 namespace VuFindAdmin\Action\AdminPayment;
 
-use DateTime;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ContextHelper;
@@ -40,7 +39,6 @@ use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\Db\Type\AuditEventSubtype;
-use VuFind\Db\Type\PaymentStatus;
 
 /**
  * Online payment resolve action.
@@ -99,105 +97,5 @@ class ResolveAction extends AbstractPaymentAction
         ];
 
         return $this->renderTemplate($request, $response, $templateParams, 'admin/payment/resolve');
-    }
-
-    /**
-     * Get a status set filter.
-     *
-     * @return array
-     */
-    protected function getStatusFilter(): array
-    {
-        $statuses = [];
-        foreach ((array)($this->getPostOrQueryParam('statuses') ?? $this->getDefaultSelectedStatuses()) as $current) {
-            if (null !== ($status = PaymentStatus::tryFrom((int)$current))) {
-                $statuses[] = $status;
-            }
-        }
-        return $statuses;
-    }
-
-    /**
-     * Converts wildcards and null and "ALL" params to null.
-     *
-     * @param string $param Parameter name
-     *
-     * @return ?string
-     */
-    protected function getStringFilter(string $param): ?string
-    {
-        if ('' === ($result = $this->getPostOrQueryParam($param, ''))) {
-            return null;
-        }
-        if (str_starts_with($result, '*')) {
-            $result = '%' . substr($result, 1);
-        }
-        if (str_ends_with($result, '*')) {
-            $result = substr($result, 0, -1) . '%';
-        }
-        return $result;
-    }
-
-    /**
-     * Get a date filter.
-     *
-     * @param string $param Parameter name
-     *
-     * @return ?DateTime
-     */
-    protected function getDateFilter(string $param): ?DateTime
-    {
-        if (!($value = $this->getPostOrQueryParam($param))) {
-            return null;
-        }
-        return new DateTime($value);
-    }
-
-    /**
-     * Get available payment statuses.
-     *
-     * @return array
-     */
-    protected function getStatuses(): array
-    {
-        return [
-            PaymentStatus::InProgress->value => 'In Progress',
-            PaymentStatus::Completed->value => 'Completed',
-            PaymentStatus::Canceled->value => 'Canceled',
-            PaymentStatus::Paid->value => 'Waiting for ILS Registration',
-            PaymentStatus::PaymentFailed->value => 'Payment Failed',
-            PaymentStatus::RegistrationFailed->value => 'ILS Registration Failed',
-            PaymentStatus::RegistrationExpired->value => 'ILS Registration Expired',
-            PaymentStatus::RegistrationResolved->value => 'ILS Registration Resolved',
-            PaymentStatus::FinesUpdated->value => 'ILS Fines Updated',
-        ];
-    }
-
-    /**
-     * Get list of statuses to display by default.
-     *
-     * @return array
-     */
-    protected function getDefaultSelectedStatuses(): array
-    {
-        return [
-            PaymentStatus::RegistrationFailed->value,
-            PaymentStatus::RegistrationExpired->value,
-            PaymentStatus::FinesUpdated->value,
-        ];
-    }
-
-    /**
-     * Get list of statuses that can be marked as resolved.
-     *
-     * @return array
-     */
-    protected function getResolvableStatuses(): array
-    {
-        return [
-            PaymentStatus::RegistrationFailed->value,
-            PaymentStatus::RegistrationExpired->value,
-            PaymentStatus::FinesUpdated->value,
-        ];
     }
 }
