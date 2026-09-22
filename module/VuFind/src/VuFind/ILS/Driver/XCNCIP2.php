@@ -33,6 +33,7 @@ use VuFind\Config\PathResolver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
@@ -85,20 +86,6 @@ class XCNCIP2 extends AbstractBase implements
      * @var array
      */
     protected $pickupLocations = null;
-
-    /**
-     * Date converter object.
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
-
-    /**
-     * Config file path resolver.
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
 
     /**
      * From agency id.
@@ -309,9 +296,10 @@ class XCNCIP2 extends AbstractBase implements
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      * @param PathResolver           $pathResolver  Config file path resolver
      */
+    #[Autowire]
     public function __construct(
-        \VuFind\Date\Converter $dateConverter,
-        PathResolver $pathResolver
+        protected \VuFind\Date\Converter $dateConverter,
+        protected PathResolver $pathResolver
     ) {
         $this->dateConverter = $dateConverter;
         $this->pathResolver = $pathResolver;
