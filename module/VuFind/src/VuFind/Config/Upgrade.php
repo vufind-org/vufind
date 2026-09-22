@@ -209,28 +209,6 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Support function -- merge the contents of two arrays parsed from ini files.
-     *
-     * @param array $config_ini The base config array.
-     * @param array $custom_ini Overrides to apply on top of the base array.
-     *
-     * @return array             The merged results.
-     *
-     * @deprecated
-     */
-    public static function iniMerge($config_ini, $custom_ini)
-    {
-        foreach ($custom_ini as $k => $v) {
-            // Make a recursive call if we need to merge array values into an
-            // existing key... otherwise just drop the value in place.
-            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
-                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
-                : $v;
-        }
-        return $config_ini;
-    }
-
-    /**
      * Move configuration that was renamed to new location.
      *
      * @param string $from Relative path of source
