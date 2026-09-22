@@ -166,7 +166,7 @@ class AutowiringFactory implements FactoryInterface
             case 'array':
             case 'object':
                 $this->configManager ??= $container->get(ConfigManagerInterface::class);
-                return 'object' === $type 
+                return 'object' === $type
                     ? $this->configManager->getConfigObject($config)
                     : $this->configManager->getConfigArray($config);
             case 'yaml':
