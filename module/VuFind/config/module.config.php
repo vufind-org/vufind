@@ -437,28 +437,22 @@ $config = [
         //   - poweredBy             Set "Powered by" displayed in page footer
         'action_config' => [
             // Author (multiple backends!):
-            'vufind_author_search_home' => [
-                'actionIds' => [
-                    'author/home',
-                ],
-                'backendId' => 'Solr',
-            ],
-            'vufind_author_search_results' => [
-                'actionIds' => [
-                    'author/facetlist',
-                    'author/results',
-                ],
-                'backendId' => 'SolrAuthor',
-            ],
             'vufind_author_search_author_facets' => [
                 'actionIds' => [
                     'author/search',
                 ],
                 'backendId' => 'SolrAuthorFacets',
             ],
-            'vufind_author_search_facets' => [
+            'vufind_author_search_home' => [
+                'actionIds' => [
+                    'author/home',
+                ],
+                'backendId' => 'Solr',
+            ],
+            'vufind_author_search_facets_and_results' => [
                 'actionIds' => [
                     'author/facetlist',
+                    'author/results',
                 ],
                 'backendId' => 'SolrAuthor',
             ],
@@ -530,15 +524,6 @@ $config = [
             ],
 
             // EDS:
-            'vufind_eds_search' => [
-                'actionIds' => [
-                    'eds/advanced',
-                    'eds/home',
-                    'eds/search',
-                ],
-                'accessPermission' => 'access.EDSModule',
-                'backendId' => 'EDS',
-            ],
             'vufind_eds_record' => [
                 'actionIds' => [
                     'edsrecord',
@@ -551,17 +536,17 @@ $config = [
                 'backendId' => 'EDS',
                 'fallbackDefaultTab' => 'Description',
             ],
+            'vufind_eds_search' => [
+                'actionIds' => [
+                    'eds/advanced',
+                    'eds/home',
+                    'eds/search',
+                ],
+                'accessPermission' => 'access.EDSModule',
+                'backendId' => 'EDS',
+            ],
 
             // EIT:
-            'vufind_eit_search' => [
-                'actionIds' => [
-                    'eit/advanced',
-                    'eit/home',
-                    'eit/search',
-                ],
-                'accessPermission' => 'access.EITModule',
-                'backendId' => 'EIT',
-            ],
             'vufind_eit_record' => [
                 'actionIds' => [
                     'eitrecord',
@@ -574,16 +559,17 @@ $config = [
                 'backendId' => 'EIT',
                 'fallbackDefaultTab' => 'Description',
             ],
+            'vufind_eit_search' => [
+                'actionIds' => [
+                    'eit/advanced',
+                    'eit/home',
+                    'eit/search',
+                ],
+                'accessPermission' => 'access.EITModule',
+                'backendId' => 'EIT',
+            ],
 
             // EPF:
-            'vufind_epf_search' => [
-                'actionIds' => [
-                    'epf/home',
-                    'epf/search',
-                ],
-                'accessPermission' => 'access.EPFModule',
-                'backendId' => 'EPF',
-            ],
             'vufind_epf_record' => [
                 'actionIds' => [
                     'epfrecord',
@@ -591,6 +577,14 @@ $config = [
                         'type' => 'prefix',
                         'prefix' => 'epfrecord/',
                     ],
+                ],
+                'accessPermission' => 'access.EPFModule',
+                'backendId' => 'EPF',
+            ],
+            'vufind_epf_search' => [
+                'actionIds' => [
+                    'epf/home',
+                    'epf/search',
                 ],
                 'accessPermission' => 'access.EPFModule',
                 'backendId' => 'EPF',
@@ -614,6 +608,62 @@ $config = [
                 'backendId' => 'LibGuidesAZ',
             ],
 
+            // Pazpar2 (only search -- no record view!):
+            'vufind_pazpar2_search' => [
+                'actionIds' => [
+                    'pazpar2/home',
+                    'pazpar2/search',
+                ],
+                'backendId' => 'Pazpar2',
+            ],
+
+            // Primo:
+            'vufind_primo_record' => [
+                'actionIds' => [
+                    'primorecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'primorecord/',
+                    ],
+                ],
+                'accessPermission' => 'access.PrimoModule',
+                'backendId' => 'Primo',
+                'fallbackDefaultTab' => 'Description',
+            ],
+            'vufind_primo_search' => [
+                'actionIds' => [
+                    'primo/advanced',
+                    'primo/citedby',
+                    'primo/cites',
+                    'primo/home',
+                    'primo/search',
+                ],
+                'accessPermission' => 'access.PrimoModule',
+                'backendId' => 'Primo',
+            ],
+
+            // ProquestFSG:
+            'vufind_proquestfsg_record' => [
+                'actionIds' => [
+                    'proquestfsgrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'proquestfsgrecord/',
+                    ],
+                ],
+                'backendId' => 'ProQuestFSG',
+                'checkEnabled' => true,
+            ],
+            'vufind_proquestfsg_search' => [
+                'actionIds' => [
+                    'proquestfsg/advanced',
+                    'proquestfsg/home',
+                    'proquestfsg/results',
+                ],
+                'backendId' => 'ProQuestFSG',
+                'checkEnabled' => true,
+            ],
+
             // Record, Collection (Default backend):
             'vufind_record' => [
                 'actionIds' => [
@@ -630,64 +680,8 @@ $config = [
                         'prefix' => 'record/',
                     ],
                 ],
-                'backendId' => DEFAULT_SEARCH_BACKEND,
+                'backendId' => 'Solr',
                 'fallbackDefaultTab' => '',
-            ],
-
-            // Pazpar2 (only search -- no record view!):
-            'vufind_pazpar2_search' => [
-                'actionIds' => [
-                    'pazpar2/home',
-                    'pazpar2/search',
-                ],
-                'backendId' => 'Pazpar2',
-            ],
-
-            // Primo:
-            'vufind_primo_search' => [
-                'actionIds' => [
-                    'primo/advanced',
-                    'primo/citedby',
-                    'primo/cites',
-                    'primo/home',
-                    'primo/search',
-                ],
-                'accessPermission' => 'access.PrimoModule',
-                'backendId' => 'Primo',
-            ],
-            'vufind_primo_record' => [
-                'actionIds' => [
-                    'primorecord',
-                    [
-                        'type' => 'prefix',
-                        'prefix' => 'primorecord/',
-                    ],
-                ],
-                'accessPermission' => 'access.PrimoModule',
-                'backendId' => 'Primo',
-                'fallbackDefaultTab' => 'Description',
-            ],
-
-            // ProquestFSG:
-            'vufind_proquestfsg_search' => [
-                'actionIds' => [
-                    'proquestfsg/advanced',
-                    'proquestfsg/home',
-                    'proquestfsg/results',
-                ],
-                'backendId' => 'ProQuestFSG',
-                'checkEnabled' => true,
-            ],
-            'vufind_proquestfsg_record' => [
-                'actionIds' => [
-                    'proquestfsgrecord',
-                    [
-                        'type' => 'prefix',
-                        'prefix' => 'proquestfsgrecord/',
-                    ],
-                ],
-                'backendId' => 'ProQuestFSG',
-                'checkEnabled' => true,
             ],
 
             // Records:
@@ -709,7 +703,7 @@ $config = [
                     'search/results',
                     'search/versions',
                 ],
-                'backendId' => DEFAULT_SEARCH_BACKEND,
+                'backendId' => 'Solr',
             ],
             'vufind_default_search_collectionfacets' => [
                 'actionIds' => [
@@ -725,16 +719,6 @@ $config = [
             ],
 
             // Search2:
-            'vufind_search2_search' => [
-                'actionIds' => [
-                    'search2/advanced',
-                    'search2/facetlist',
-                    'search2/home',
-                    'search2/results',
-                    'search2/versions',
-                ],
-                'backendId' => 'Search2',
-            ],
             'vufind_search2_record' => [
                 'actionIds' => [
                     'search2collection',
@@ -751,19 +735,18 @@ $config = [
                 'backendId' => 'Search2',
                 'fallbackDefaultTab' => 'Description',
             ],
+            'vufind_search2_search' => [
+                'actionIds' => [
+                    'search2/advanced',
+                    'search2/facetlist',
+                    'search2/home',
+                    'search2/results',
+                    'search2/versions',
+                ],
+                'backendId' => 'Search2',
+            ],
 
             // Summon:
-            'vufind_summon_search' => [
-                'actionIds' => [
-                    'summon',
-                    [
-                        'type' => 'prefix',
-                        'prefix' => 'summon/',
-                    ],
-                ],
-                'backendId' => 'Summon',
-                'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
-            ],
             'vufind_summon_record' => [
                 'actionIds' => [
                     'summonrecord',
@@ -774,6 +757,17 @@ $config = [
                 ],
                 'backendId' => 'Summon',
                 'fallbackDefaultTab' => 'Description',
+                'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
+            ],
+            'vufind_summon_search' => [
+                'actionIds' => [
+                    'summon',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'summon/',
+                    ],
+                ],
+                'backendId' => 'Summon',
                 'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
             ],
 
@@ -796,19 +790,6 @@ $config = [
             ],
 
             // WorldCat2 and legacy WorldCat actions:
-            'vufind_worldcat2_search' => [
-                'actionIds' => [
-                    // Legacy WorldCat actions:
-                    'worldcat/advanced',
-                    'worldcat/home',
-                    'worldcat/results',
-                    // Current WorldCat2 actions:
-                    'worldcat2/advanced',
-                    'worldcat2/home',
-                    'worldcat2/results',
-                ],
-                'backendId' => 'WorldCat2',
-            ],
             'vufind_worldcat2_record' => [
                 'actionIds' => [
                     // Legacy WorldCat actions:
@@ -823,6 +804,19 @@ $config = [
                         'type' => 'prefix',
                         'prefix' => 'worldcat2record/',
                     ],
+                ],
+                'backendId' => 'WorldCat2',
+            ],
+            'vufind_worldcat2_search' => [
+                'actionIds' => [
+                    // Legacy WorldCat actions:
+                    'worldcat/advanced',
+                    'worldcat/home',
+                    'worldcat/results',
+                    // Current WorldCat2 actions:
+                    'worldcat2/advanced',
+                    'worldcat2/home',
+                    'worldcat2/results',
                 ],
                 'backendId' => 'WorldCat2',
             ],
