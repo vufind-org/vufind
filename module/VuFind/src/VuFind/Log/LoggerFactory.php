@@ -318,7 +318,7 @@ class LoggerFactory implements FactoryInterface
         ContainerInterface $container
     ): void {
         $monologLogger->pushProcessor(new PsrLogMessageProcessor());
-        $logConfig = $config['Logging'];
+        $logConfig = $config['Logging'] ?? [];
         if ($referenceId = $logConfig['reference_id'] ?? false) {
             if ('username' === $referenceId) {
                 try {
