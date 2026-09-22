@@ -32,6 +32,7 @@ namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
+use VuFind\Config\Config;
 use VuFind\Config\ConfigLoader;
 use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
@@ -254,8 +255,8 @@ trait ConfigRelatedServicesTrait
             ->method('get')
             ->with($this->isType('string'))
             ->willReturnCallback(
-                function ($config) use ($configs, $default): array {
-                    return $configs[$config] ?? $default;
+                function ($config) use ($configs, $default): Config {
+                    return new Config($configs[$config] ?? $default);
                 }
             );
         $manager->expects($hasExpect ?? $this->any())
