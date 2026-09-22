@@ -306,7 +306,7 @@ class MonitorCommand extends Command
             if (!($recipient = $this->getErrorEmail($source))) {
                 $msg = "No error email for expired payments defined for $source ($errorCount errors)";
                 $this->msg($msg);
-                $this->err($msg);
+                $this->error($msg);
                 continue;
             }
             $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
@@ -330,7 +330,7 @@ class MonitorCommand extends Command
                 $this->msg(
                     "Failed to send error email to staff at $recipient (source: $source): " . (string)$e
                 );
-                $this->err('Failed to send error email to staff');
+                $this->error('Failed to send error email to staff');
                 continue;
             }
         }
@@ -369,7 +369,7 @@ class MonitorCommand extends Command
      *
      * @return void
      */
-    protected function err($msg)
+    protected function error($msg)
     {
         if ($this->output instanceof ConsoleOutputInterface) {
             $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";

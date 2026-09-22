@@ -301,14 +301,14 @@ class MaintenanceController extends AbstractAdmin
             return;
         } catch (\BrowscapPHP\Exception\FetcherException $e) {
             $this->getFlashMessenger()->addErrorMessage($e->getMessage());
-            $this->logger->err((string)$e);
+            $this->logger->error((string)$e);
             return;
         } catch (\BrowscapPHP\Exception\NoCachedVersionException $e) {
             // Fall through...
         } catch (\Exception $e) {
             // Output the exception and continue (assume we don't have a current version):
             $this->getFlashMessenger()->addWarningMessage($e->getMessage());
-            $this->logger->warn((string)$e);
+            $this->logger->warning((string)$e);
         }
         try {
             $bc->update($type);
@@ -316,7 +316,7 @@ class MaintenanceController extends AbstractAdmin
             $this->getFlashMessenger()->addSuccessMessage('Browscap cache successfully updated.');
         } catch (\Exception $e) {
             $this->getFlashMessenger()->addErrorMessage($e->getMessage());
-            $this->logger->warn((string)$e);
+            $this->logger->warning((string)$e);
         }
     }
 }
