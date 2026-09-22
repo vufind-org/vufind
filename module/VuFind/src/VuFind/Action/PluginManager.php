@@ -223,6 +223,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'record/storageretrievalrequest' => Record\StorageRetrievalRequestAction::class,
 
         'search/collectionfacetlist' => Search\FacetListAction::class,
+        'search/editmemory' => Search\EditMemoryAction::class,
+        'search/facetlist' => Search\FacetListAction::class,
+        'search/newitem' => Search\NewItemAction::class,
+        'search/newitemresults' => Search\NewItemResultsAction::class,
         'search/opensearch' => Search\OpenSearchAction::class,
         'search/reservesfacetlist' => Search\FacetListAction::class,
         'search/reservesresults' => Search\ReservesResultsAction::class,
