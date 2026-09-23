@@ -145,8 +145,7 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
             $userMsg = "{$user->getUsername()} ({$user->getId()})";
         }
 
-        $tagId = intval($this->getPostOrQueryParam('tag_id'));
-        if ($tagId) {
+        if ($tagId = (int)($this->getPostOrQueryParam('tag_id'))) {
             if (!($tag = $this->tagDbService->getTagById($tagId))) {
                 throw new \Exception("Unexpected error retrieving tag $tagId");
             }
