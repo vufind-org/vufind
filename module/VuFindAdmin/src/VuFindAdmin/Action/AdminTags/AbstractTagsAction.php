@@ -132,6 +132,6 @@ abstract class AbstractTagsAction extends AbstractAdminAction
      */
     protected function convertFilter(?string $value): ?string
     {
-        return ('ALL' !== $value && '' !== $value && null !== $value) ? $value : null;
+        return ('ALL' !== $value && '' !== $value) ? $value : null;
     }
 }
