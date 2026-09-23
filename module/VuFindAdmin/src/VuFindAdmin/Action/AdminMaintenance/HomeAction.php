@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Admin Social Statistics Controller.
+ * Maintenance home action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,43 +22,48 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindAdmin\Controller;
+namespace VuFindAdmin\Action\AdminMaintenance;
 
-use VuFind\Db\Service\CommentsServiceInterface;
-use VuFind\Db\Service\RatingsServiceInterface;
-use VuFind\Db\Service\UserResourceServiceInterface;
-use VuFind\Tags\TagsService;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class controls VuFind social statistical data.
+ * Maintenance home action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SocialstatsController extends AbstractAdmin
+class HomeAction extends AbstractMaintenanceAction
 {
     /**
-     * Social statistics reporting.
+     * Display maintenance home page.
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function homeAction()
-    {
-        $view = $this->createViewModel();
-        $view->setTemplate('admin/socialstats/home');
-        $view->comments = $this->getDbService(CommentsServiceInterface::class)->getStatistics();
-        $view->ratings = $this->getDbService(RatingsServiceInterface::class)->getStatistics();
-        $view->favorites = $this->getDbService(UserResourceServiceInterface::class)->getStatistics();
-        $view->tags = $this->getService(TagsService::class)->getStatistics();
-        return $view;
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        $templateParams = [
+            'caches' => $this->cacheManager->getCacheList(),
+            'nonPersistentCaches' => $this->cacheManager->getNonPersistentCacheList(),
+            'scripts' => $this->getScripts(),
+        ];
+
+        return $this->renderTemplate($request, $response, $templateParams, 'admin/maintenance/home');
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Edit notice action.
+ * List tags action.
  *
  * PHP version 8
  *
- * Copyright (C) effective WEBWORK GmbH 2023.
- * Copyright (C) Hebis Verbundzentrale 2026.
+ * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,31 +23,31 @@
  *
  * @category VuFind
  * @package  Action
- * @author   Johannes Schultze <schultze@effective-webwork.de>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindAdmin\Action\Notices;
+namespace VuFindAdmin\Action\AdminTags;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Edit notice action.
+ * List tags action.
  *
  * @category VuFind
  * @package  Action
- * @author   Johannes Schultze <schultze@effective-webwork.de>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EditAction extends AbstractNoticeAction
+class ListAction extends AbstractTagsAction
 {
     /**
-     * Edit notice.
+     * List tags.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -58,28 +58,21 @@ class EditAction extends AbstractNoticeAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if ($this->getPostParam('cancel') !== null) {
-            return $this->returnToNoticesAdminHome();
-        }
-
-        $notice = $this->getNoticeByQueryParam();
-
-        $formData = $this->getFormData($notice);
-
-        if (!$this->isPost()) {
-            return $this->renderTemplate(
-                $request,
-                $response,
-                compact('formData'),
-                'admin/notices/edit'
-            );
-        }
-
-        $this->noticeManager->editDatabaseNotice(
-            $notice['id'],
-            $this->formDataToNotice()
+        $page = (int)($this->getPostOrQueryParam('page', '1', preferQuery: true));
+        $results = $this->tagsService->getResourceTagsPaginator(
+            $this->convertFilter($this->getPostOrQueryParam('user_id', preferQuery: true)),
+            $this->convertFilter($this->getPostOrQueryParam('resource_id', preferQuery: true)),
+            $this->convertFilter($this->getPostOrQueryParam('tag_id', preferQuery: true)),
+            $this->getPostOrQueryParam('order', preferQuery: true),
+            $page
         );
-
-        return $this->returnToNoticesAdminHome();
+        $templateParams = [
+            'uniqueTags' => $this->getUniqueTags(),
+            'uniqueUsers' => $this->getUniqueUsers(),
+            'uniqueResources' => $this->getUniqueResources(),
+            'params' => $request->getQueryParams(),
+            'results' => $results,
+        ];
+        return $this->renderTemplate($request, $response, $templateParams, 'admin/tags/list');
     }
 }
