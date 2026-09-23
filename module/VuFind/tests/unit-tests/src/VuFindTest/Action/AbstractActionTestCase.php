@@ -82,7 +82,8 @@ abstract class AbstractActionTestCase extends TestCase
     }
 
     /**
-     * Get a helper plugin manager returning the provided helpers, plus a permissive access-granting PermissionHelper.
+     * Get a helper plugin manager returning the provided helpers. A permissive access-granting PermissionHelper
+     * will be added if no PermissionHelper is already provided.
      *
      * @param HelperInterface[] $helpers Extra helpers keyed by class name
      *
