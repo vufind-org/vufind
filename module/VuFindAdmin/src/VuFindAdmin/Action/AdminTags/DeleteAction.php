@@ -138,8 +138,7 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
         // Default all messages to "All"; we'll make them more specific as needed:
         $userMsg = $tagMsg = $resourceMsg = $this->translate('All');
 
-        $userId = intval($this->getPostOrQueryParam('user_id'));
-        if ($userId) {
+        if ($userId = (int)($this->getPostOrQueryParam('user_id'))) {
             if (!($user = $this->userService->getUserById($userId))) {
                 throw new \Exception("Unexpected error retrieving user $userId");
             }
