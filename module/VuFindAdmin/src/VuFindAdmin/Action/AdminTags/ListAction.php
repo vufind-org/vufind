@@ -34,8 +34,6 @@ namespace VuFindAdmin\Action\AdminTags;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use function intval;
-
 /**
  * List tags action.
  *
