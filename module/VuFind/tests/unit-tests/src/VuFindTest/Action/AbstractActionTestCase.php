@@ -108,7 +108,7 @@ abstract class AbstractActionTestCase extends TestCase
      *
      * @param array   $routeParams      Route match parameters
      * @param array   $queryParams      Query parameters
-     * @param array   $parsedBody       Parsed request body
+     * @param array   $parsedBody       Parsed request body (i.e. POST parameters)
      * @param ?string $matchedRouteName Matched route name to set on the route match
      *
      * @return ServerRequestInterface
