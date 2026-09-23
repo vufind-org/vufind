@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class Search2RecordFormatterFactory.
+ * Additional functionality for API controllers.
  *
  * PHP version 8
  *
- * Copyright (C) Moravian Library 2020.
+ * Copyright (C) The National Library 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,29 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
-namespace VuFindApi\Formatter;
+namespace VuFindApi\Action;
 
 /**
- * Record Formatter factory.
+ * Additional functionality for API actions.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class Search2RecordFormatterFactory extends RecordFormatterFactory
+interface ApiInterface
 {
     /**
-     * Record fields configuration file name.
+     * Get API specification fragment for services provided by the action.
      *
-     * @var string
+     * @return array|string An array or a JSON string
      */
-    protected $configFile = 'Search2ApiRecordFields';
+    public function getApiSpecFragment(): array|string;
 }

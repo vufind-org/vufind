@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Additional functionality for API controllers.
+ * Custom Config Interface -- provides a setter for custom configuration array.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library 2015.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,35 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFindApi\Controller;
+namespace VuFind\Action;
 
 /**
- * Additional functionality for API controllers.
+ * Custom Config Interface -- provides a setter for custom configuration array.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+ * @link     https://vufind.org Main Page
  */
-interface ApiInterface
+interface CustomConfigInterface extends ActionConfigInterface
 {
-    // define some status constants
-    public const STATUS_OK = 'OK';                  // good
-    public const STATUS_ERROR = 'ERROR';            // bad
-    public const STATUS_UNAUTHORIZED = 'UNAUTHORIZED';
-
     /**
-     * Get API specification JSON fragment for services provided by the
-     * controller.
+     * Set custom configuration.
      *
-     * @return string
+     * @param array $config Configuration
+     *
+     * @return static
      */
-    public function getApiSpecFragment();
+    public function setCustomConfig(array $config): static;
 }

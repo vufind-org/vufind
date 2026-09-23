@@ -220,6 +220,8 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
         $this->response = $response;
 
         try {
+            $this->configureDefaultAccessPermission();
+
             if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
                 return $actionConfigResponse;
             }
@@ -442,11 +444,11 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     }
 
     /**
-     * Validate any access permission for the action.
+     * Configure default access permission for the action.
      *
-     * @return ?ResponseInterface A response if access is denied, null otherwise
+     * @return void
      */
-    public function validateAccessPermission(): ?ResponseInterface
+    protected function configureDefaultAccessPermission(): void
     {
         $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
         $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
@@ -500,7 +502,15 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
             // Check for a default permission if a more specific permission was not found above:
             $this->accessPermission ??= $actionPermissions['*'] ?? null;
         }
+    }
 
+    /**
+     * Validate any access permission for the action.
+     *
+     * @return ?ResponseInterface A response if access is denied, null otherwise
+     */
+    protected function validateAccessPermission(): ?ResponseInterface
+    {
         // If there is an access permission set for this action, pass it through to the permission helper and return the
         // response:
         if ($this->accessPermission) {
