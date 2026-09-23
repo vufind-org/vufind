@@ -107,7 +107,7 @@ class Results extends \VuFind\Search\Base\Results
         $params = $this->getParams();
         $backendParams = $params->getBackendParameters();
         if ($allTerms === '') {
-            if (!$this->config['General']['limiter_only'] ?? false) {
+            if (!($this->config['General']['limiter_only'] ?? false)) {
                 $this->storeErrorResponse('empty_search_disallowed');
                 return;
             } elseif (!$this->paramsIncludeLimiter($backendParams)) {

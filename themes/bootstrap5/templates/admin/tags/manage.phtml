@@ -1,8 +1,8 @@
 <?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Maintenance')]);?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h3><?=$this->transEsc('Manage Tags')?></h3>
-
   <?=$this->render('admin/tags/menu.phtml', ['active' => 'manage'])?>
+
+  <h3><?=$this->transEsc('Manage Tags')?></h3>
 
   <?=$this->flashmessages()?>
 
@@ -14,6 +14,8 @@
         <option value="tag" <?=('tag' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Tag')?></option>
         <option value="resource" <?=('resource' == $this->type) ? ' selected=selected' : ''?>><?=$this->transEsc('Title')?></option>
       </select>
+    </div>
+    <div class="form-group">
       <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-primary">
     </div>
   </form>
@@ -22,7 +24,7 @@
     <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="origin" value="manage">
       <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($this->type) ?>">
-      <?php if ('user' == $type):?>
+      <?php if ('user' == $this->type):?>
         <div class="form-group">
           <label for="user_id" class="form-label"><?=$this->transEsc('Username')?></label>
           <select name="user_id" id="user_id" class="form-select">
@@ -32,9 +34,11 @@
               </option>
             <?php endforeach;?>
           </select>
+        </div>
+        <div class="form-group">
           <input type="submit"  name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary">
         </div>
-      <?php elseif ('tag' == $type):?>
+      <?php elseif ('tag' == $this->type):?>
         <div class="form-group">
           <label for="tag_id" class="form-label"><?=$this->transEsc('Tag')?></label>
           <select name="tag_id" id="tag_id" class="form-select">
@@ -44,9 +48,11 @@
               </option>
             <?php endforeach;?>
           </select>
+        </div>
+        <div class="form-group">
           <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary">
         </div>
-      <?php elseif ('resource' == $type):?>
+      <?php elseif ('resource' == $this->type):?>
         <div class="form-group">
           <label for="resource_id" class="form-label"><?=$this->transEsc('Title')?></label>
           <select name="resource_id" id="resource_id" class="form-select">
@@ -56,6 +62,8 @@
               </option>
             <?php endforeach;?>
           </select>
+        </div>
+        <div class="form-group">
           <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_tags')?>" class="btn btn-primary">
         </div>
       <?php endif;?>
