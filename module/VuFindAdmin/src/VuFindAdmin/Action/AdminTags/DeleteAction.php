@@ -72,27 +72,21 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
         $origin = $this->getPostOrQueryParam('origin');
         $action = 'list' === $origin ? 'List' : 'Manage';
 
-        $originUrl = $this->routeHelper->getUrlFromRoute('admin/tags', compact('action'));
-        if ($action === 'List') {
-            $originUrl .= '?' . http_build_query(
-                [
-                    'user_id' => $this->getPostOrQueryParam('user_id'),
-                    'resource_id' => $this->getPostOrQueryParam('resource_id'),
-                    'tag_id' => $this->getPostOrQueryParam('tag_id'),
-                ]
-            );
-        }
-        $newUrl = $this->routeHelper->getUrlFromRoute('admin/tags', ['action' => 'Delete']);
+        $queryParams = 'List' === $action
+            ? [
+                'user_id' => $this->getPostOrQueryParam('user_id'),
+                'resource_id' => $this->getPostOrQueryParam('resource_id'),
+                'tag_id' => $this->getPostOrQueryParam('tag_id'),
+            ] : [];
 
+        $originUrl = $this->routeHelper->getUrlFromRoute('admin/tags', compact('action'), $queryParams);
+        $newUrl = $this->routeHelper->getUrlFromRoute('admin/tags', ['action' => 'Delete']);
         $confirm = (bool)$this->getPostParam('confirm', '0');
 
         // Delete All
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         $redirectHelper = $this->getHelper(RedirectHelper::class);
-        if (
-            'manage' === $origin
-            || null !== $this->getPostOrQueryParam('deleteFilter')
-        ) {
+        if ('manage' === $origin || null !== $this->getPostOrQueryParam('deleteFilter')) {
             if (false === $confirm) {
                 return $this->confirmTagsDeleteByFilter($originUrl, $newUrl);
             }
