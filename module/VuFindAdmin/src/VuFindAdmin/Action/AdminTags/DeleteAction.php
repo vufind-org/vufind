@@ -152,8 +152,7 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
             $tagMsg = "{$tag->getTag()} ({$tag->getId()})";
         }
 
-        $resourceId = intval($this->getPostOrQueryParam('resource_id'));
-        if ($resourceId) {
+        if ($resourceId = (int)($this->getPostOrQueryParam('resource_id'))) {
             if (!($resource = $this->resourceService->getResourceById($resourceId))) {
                 throw new \Exception("Unexpected error retrieving resource $resourceId");
             }
