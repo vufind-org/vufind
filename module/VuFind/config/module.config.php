@@ -450,7 +450,7 @@ $config = [
                     'author/facetlist',
                     'author/results',
                 ],
-                'backendId' => 'SolrAuthor',
+                'searchClassId' => 'SolrAuthor',
             ],
 
             // Authority:
