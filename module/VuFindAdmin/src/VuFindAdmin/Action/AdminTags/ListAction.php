@@ -73,7 +73,6 @@ class ListAction extends AbstractTagsAction
             'uniqueUsers' => $this->getUniqueUsers(),
             'uniqueResources' => $this->getUniqueResources(),
             'params' => $request->getQueryParams(),
-            'page' => $page,
             'results' => $results,
         ];
         return $this->renderTemplate($request, $response, $templateParams, 'admin/tags/list');
