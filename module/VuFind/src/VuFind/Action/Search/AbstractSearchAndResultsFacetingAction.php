@@ -33,7 +33,6 @@
 namespace VuFind\Action\Search;
 
 use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
 use VuFind\ContentBlock\BlockLoader;
@@ -172,11 +171,11 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      */
     protected function addFacetDetails(array $templateParams, $list = 'Advanced'): array
     {
-        if (!$this->facetCachePluginManager->has($this->getBackendId())) {
+        if (!$this->facetCachePluginManager->has($this->getSearchClassId())) {
             return $templateParams;
         }
         $facets = $this->facetCachePluginManager
-            ->get($this->getBackendId())
+            ->get($this->getSearchClassId())
             ->getList($list);
         $facetsIni = $templateParams['options']->getFacetsIni();
         $templateParams['hierarchicalFacets'] = $this->getHierarchicalFacets($facetsIni);

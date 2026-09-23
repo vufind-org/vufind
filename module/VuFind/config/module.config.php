@@ -685,7 +685,7 @@ $config = [
                 'actionIds' => [
                     'records/home',
                 ],
-                'backendId' => 'MixedList',
+                'searchClassId' => 'MixedList',
             ],
 
             // Search (Default backend) including collection facets and reserves:
@@ -772,7 +772,7 @@ $config = [
                 'actionIds' => [
                     'tag/home',
                 ],
-                'backendId' => 'Tags',
+                'searchClassId' => 'Tags',
             ],
 
             // Web:

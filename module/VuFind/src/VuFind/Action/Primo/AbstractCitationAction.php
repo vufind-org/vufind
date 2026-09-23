@@ -145,7 +145,7 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
         if (!($id = trim($this->getQueryParam('lookfor', ''), '"'))) {
             return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Primo/Home');
         }
-        $driver = $this->recordLoader->load($id, $this->getBackendId());
+        $driver = $this->recordLoader->load($id, $this->getSearchClassId());
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
@@ -154,12 +154,12 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
             $options = $params->getOptions();
             $options->disableHighlighting();
             $options->spellcheckEnabled(false);
-            if ($lastLimit = $this->searchMemory->retrieveLastSetting($this->getBackendId(), 'limit')) {
+            if ($lastLimit = $this->searchMemory->retrieveLastSetting($this->getSearchClassId(), 'limit')) {
                 $params->setLimit($lastLimit);
             }
         };
 
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getBackendId(), $callback);
+        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $callback);
         $templateParams['driver'] = $driver;
         return $this->renderTemplate($request, $response, $templateParams);
     }

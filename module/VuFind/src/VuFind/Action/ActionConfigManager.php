@@ -158,6 +158,15 @@ class ActionConfigManager
                         case 'poweredBy':
                             $this->globalsContainer['poweredBy'] = $value;
                             break;
+                        case 'searchClassId':
+                            if (!($action instanceof SearchClassIdInterface)) {
+                                throw new ConfigException(
+                                    $action::class . ' (action ' . $actionIdentifier . ')'
+                                    . " does not implement SearchClassIdInterface for $key configuration"
+                                );
+                            }
+                            $action->setSearchClassId($value);
+                            break;
                         default:
                             throw new ConfigException(
                                 $action::class . ' (action ' . $actionIdentifier . "): Invalid configuration key $key"

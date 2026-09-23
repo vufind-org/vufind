@@ -185,7 +185,7 @@ class VersionsAction extends AbstractSearchAndResultsAction
     ): array {
         $templateParams = parent::getSearchResultsTemplateParams($request, $searchClassId, $setupCallback);
         if (null !== $this->recordId) {
-            $templateParams['driver'] = $this->recordLoader->load($this->recordId, $this->getBackendId());
+            $templateParams['driver'] = $this->recordLoader->load($this->recordId, $this->getSearchClassId());
         }
         return $templateParams;
     }

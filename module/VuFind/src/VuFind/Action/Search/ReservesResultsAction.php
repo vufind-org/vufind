@@ -164,7 +164,7 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
         $bibIDs = array_unique(array_map($callback, $this->resultReserves));
 
         // Truncate the list if it is too long:
-        $limit = $this->resultsPluginManager->get($this->getBackendId())->getParams()->getQueryIDLimit();
+        $limit = $this->resultsPluginManager->get($this->getSearchClassId())->getParams()->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
             $this->getHelper(FlashMessagesHelper::class)->addInfoMessage('too_many_reserves');

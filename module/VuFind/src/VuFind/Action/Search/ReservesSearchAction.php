@@ -143,7 +143,7 @@ class ReservesSearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getBackendId(), null);
+        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), null);
         $templateParams['params'] = $templateParams['results']->getParams();
         return $this->renderTemplate($request, $response, $templateParams);
     }

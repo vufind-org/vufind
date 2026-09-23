@@ -40,6 +40,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\BackendIdInterface;
 use VuFind\Action\CheckEnabledInterface;
+use VuFind\Action\SearchClassIdInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
@@ -84,7 +85,8 @@ use function is_array;
  */
 abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingAction implements
     BackendIdInterface,
-    CheckEnabledInterface
+    CheckEnabledInterface,
+    SearchClassIdInterface
 {
     /**
      * Search backend to use.
@@ -92,6 +94,13 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @var ?string
      */
     protected ?string $backendId = null;
+
+    /**
+     * Search class to use.
+     *
+     * @var ?string
+     */
+    protected ?string $searchClassId = null;
 
     /**
      * Should we save searches to history?
@@ -182,6 +191,30 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     }
 
     /**
+     * Get search class identifier.
+     *
+     * @return string
+     */
+    public function getSearchClassId(): string
+    {
+        // Return backend id if search class id is not set:
+        return $this->searchClassId ?? $this->backendId;
+    }
+
+    /**
+     * Set search class identifier.
+     *
+     * @param string $id Search class identifier
+     *
+     * @return static
+     */
+    public function setSearchClassId(string $id): static
+    {
+        $this->searchClassId = $id;
+        return $this;
+    }
+
+    /**
      * Get "check enabled" flag.
      *
      * @return bool
@@ -224,21 +257,21 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             return $result;
         }
 
-        if (null === $this->backendId) {
+        if (null === $this->backendId && null === $this->searchClassId) {
             $actionId = $request->getAttribute('action-id') ?? '<unknown>';
             $routeMatch = $request->getAttribute('route-match');
             $routeName = $routeMatch?->getMatchedRouteName() ?? '<unknown>';
             $routeParams = $routeMatch?->getParams() ?? [];
             throw new ConfigException(
-                "backendId not properly configured for action $actionId, route $routeName (params "
+                "backendId or searchClassId not properly configured for action $actionId, route $routeName (params "
                 . var_export($routeParams, true) . ')'
             );
         }
 
         if ($this->checkEnabled) {
-            $config = $this->configManager->getConfigArray($this->getBackendId());
+            $config = $this->configManager->getConfigArray($this->getSearchClassId());
             if (!($config['General']['enabled'] ?? false)) {
-                throw new ForbiddenException($this->getBackendId() . ' is not enabled');
+                throw new ForbiddenException($this->getSearchClassId() . ' is not enabled');
             }
         }
 
@@ -252,7 +285,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function renderHomePage(): ResponseInterface
     {
-        $blocks = $this->blockLoader->getFromSearchClassId($this->getBackendId());
+        $blocks = $this->blockLoader->getFromSearchClassId($this->getSearchClassId());
         return $this->renderTemplate(
             $this->request,
             $this->response,
@@ -290,10 +323,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // If we have default filters, set them up as a fake "saved" search
         // to properly populate special controls on the advanced screen.
         if (!$templateParams['saved'] && count($templateParams['options']->getDefaultFilters()) > 0) {
-            $templateParams['saved'] = $this->resultsPluginManager->get($this->getBackendId());
-            $templateParams['saved']->getParams()->initFromRequest(
-                new \Laminas\Stdlib\Parameters([])
-            );
+            $templateParams['saved'] = $this->resultsPluginManager->get($this->getSearchClassId());
+            $templateParams['saved']->getParams()->initFromRequest(new \Laminas\Stdlib\Parameters([]));
         }
 
         if ($setupCallback) {
@@ -323,7 +354,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             return $this->redirectToSavedSearch((int)$savedId);
         }
 
-        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getBackendId(), $setupCallback);
+        $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $setupCallback);
 
         // For page parameter being out of results list, we want to redirect to correct page
         $page = $templateParams['params']->getPage();
@@ -450,7 +481,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // Get results
-        $results = $this->resultsPluginManager->get($this->getBackendId());
+        $results = $this->resultsPluginManager->get($this->getSearchClassId());
         $params = $results->getParams();
         $params->initFromRequest(new Parameters($this->request->getQueryParams()));
         // Get parameters
@@ -531,7 +562,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function createTemplateParams(array $params = []): array
     {
-        $params['searchClassId'] = $this->getBackendId();
+        $params['searchClassId'] = $this->getSearchClassId();
         return $params;
     }
 
@@ -1107,8 +1138,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         $formatted = [];
         foreach ($checkboxFacets as $filter => $desc) {
             $current = compact('desc', 'filter');
-            $current['selected']
-                = $savedSearch && $savedSearch->getParams()->hasFilter($filter);
+            $current['selected'] = $savedSearch && $savedSearch->getParams()->hasFilter($filter);
             // We don't want to double-display checkboxes on advanced search, so
             // if they are checked, we should remove them from the object to
             // prevent display in the "other filters" area.
@@ -1128,6 +1158,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function getOptionsForClass(): \VuFind\Search\Base\Options
     {
-        return $this->searchOptionsPluginManager->get($this->getBackendId());
+        return $this->searchOptionsPluginManager->get($this->getSearchClassId());
     }
 }
