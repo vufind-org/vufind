@@ -437,7 +437,7 @@ $config = [
                 'actionIds' => [
                     'author/search',
                 ],
-                'backendId' => 'SolrAuthorFacets',
+                'searchClassId' => 'SolrAuthorFacets',
             ],
             'vufind_author_search_home' => [
                 'actionIds' => [
