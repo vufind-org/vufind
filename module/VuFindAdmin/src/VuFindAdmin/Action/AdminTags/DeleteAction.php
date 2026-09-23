@@ -40,7 +40,6 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 use function count;
-use function intval;
 use function is_array;
 
 /**
@@ -187,9 +186,9 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function confirmTagsDelete($ids, $originUrl, $newUrl)
+    protected function confirmTagsDelete(array $ids, string $originUrl, string $newUrl): ResponseInterface
     {
         $count = count($ids);
 
@@ -216,9 +215,9 @@ class DeleteAction extends AbstractTagsAction implements TranslatorAwareInterfac
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function confirmTagsDeleteByFilter($originUrl, $newUrl)
+    protected function confirmTagsDeleteByFilter(string $originUrl, string $newUrl): ResponseInterface
     {
         $count = $this->tagsService->getResourceTagsPaginator(
             $this->convertFilter($this->getPostOrQueryParam('user_id')),
