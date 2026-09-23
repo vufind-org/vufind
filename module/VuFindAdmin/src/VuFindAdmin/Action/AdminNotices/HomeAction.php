@@ -29,7 +29,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindAdmin\Action\Notices;
+namespace VuFindAdmin\Action\AdminNotices;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

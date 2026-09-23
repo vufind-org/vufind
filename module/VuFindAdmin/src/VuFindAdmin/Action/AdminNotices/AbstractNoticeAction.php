@@ -29,10 +29,9 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFindAdmin\Action\Notices;
+namespace VuFindAdmin\Action\AdminNotices;
 
 use Psr\Http\Message\ResponseInterface;
-use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Content\NoticeManager;
 use VuFind\Exception\BadRequest;
@@ -40,6 +39,8 @@ use VuFind\Exception\NotFound;
 use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
+use VuFindAdmin\Action\Admin\AbstractAdminAction;
 
 use function count;
 use function in_array;
@@ -54,20 +55,27 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction implements LocaleSettingsAwareInterface
+abstract class AbstractNoticeAction extends AbstractAdminAction implements LocaleSettingsAwareInterface
 {
     use LocaleSettingsAwareTrait;
 
     /**
      * Constructor.
      *
-     * @param NoticeManager $noticeManager Notice manager
+     * @param GlobalsContainer $globalsContainer Globals container
+     * @param array            $config           VuFind configuration
+     * @param NoticeManager    $noticeManager    Notice manager
      */
     #[Autowire]
     public function __construct(
+        GlobalsContainer $globalsContainer,
+        #[Autowire(config: 'config')]
+        array $config,
         protected NoticeManager $noticeManager,
     ) {
-        parent::__construct();
+        parent::__construct($globalsContainer, $config);
+        // Notice management may be enabled even without the full admin module:
+        $this->checkAdminEnabled = false;
     }
 
     /**
