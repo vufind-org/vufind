@@ -89,7 +89,7 @@ class ResolveAction extends AbstractPaymentAction
             }
             return $redirectHelper->redirectToRoute($response, 'Admin/Payment');
         }
-        $loginHelper->setFollowupUrlToReferer($request);
+        $loginHelper->setFollowupUrlToReferrer($request);
 
         $templateParams = [
             'paymentEntity' => $paymentEntity,

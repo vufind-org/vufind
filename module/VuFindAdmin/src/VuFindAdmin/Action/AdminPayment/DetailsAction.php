@@ -60,7 +60,7 @@ class DetailsAction extends AbstractPaymentAction
         ResponseInterface $response,
     ): ResponseInterface {
         $id = (int)$this->getRouteParam('id');
-        $this->getHelper(LoginHelper::class)->setFollowupUrlToReferer($request);
+        $this->getHelper(LoginHelper::class)->setFollowupUrlToReferrer($request);
 
         $paymentEntity = $this->paymentService->getPaymentById($id);
 
