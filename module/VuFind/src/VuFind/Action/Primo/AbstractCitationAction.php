@@ -145,7 +145,7 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
         if (!($id = trim($this->getQueryParam('lookfor', ''), '"'))) {
             return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Primo/Home');
         }
-        $driver = $this->recordLoader->load($id, $this->getSearchClassId());
+        $driver = $this->recordLoader->load($id, $this->getBackendId());
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
