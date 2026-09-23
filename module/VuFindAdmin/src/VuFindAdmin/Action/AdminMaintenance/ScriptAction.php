@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart search results bulk action.
+ * Run maintenance script action.
  *
  * PHP version 8
  *
@@ -29,17 +29,15 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Cart;
+namespace VuFindAdmin\Action\AdminMaintenance;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\ActionHelper\BulkActionHelper;
-use VuFind\ActionHelper\ContextHelper;
-use VuFind\ActionHelper\ForwardHelper;
-use VuFind\ActionHelper\UrlHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
+use VuFind\ActionHelper\RedirectHelper;
 
 /**
- * Cart search results bulk action.
+ * Run maintenance script action.
  *
  * @category VuFind
  * @package  Action
@@ -48,10 +46,10 @@ use VuFind\ActionHelper\UrlHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchResultsBulkAction extends AbstractCartAction
+class ScriptAction extends AbstractMaintenanceAction
 {
     /**
-     * Process a search results bulk action.
+     * Run a maintenance script.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -62,21 +60,22 @@ class SearchResultsBulkAction extends AbstractCartAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // We came in from a search, so let's remember that context so we can return to it later. However, if we came in
-        // from a previous instance of this action (for example, because of a login screen), or if we have an external
-        // site in the referrer, we should ignore that!
-        $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
-        $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
-        if (
-            $referrer
-            && !str_ends_with($referrer, $bulk)
-            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
-        ) {
-            $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referrer;
+        $script = $this->getRouteParam('name');
+        $scripts = $this->getScripts();
+        $details = $scripts[$script] ?? null;
+        $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
+        if (empty($details['command'])) {
+            $flashMessagesHelper->addErrorMessage('Unknown command: ' . $script);
+        } else {
+            $code = $output = null;
+            exec($details['command'], $output, $code);
+            $successCode = (int)($details['successCode'] ?? 0);
+            if ($code !== $successCode) {
+                $flashMessagesHelper->addErrorMessage("Command failed; expected $successCode but received $code");
+            } else {
+                $flashMessagesHelper->addSuccessMessage("Success ($script)! Output = " . implode("\n", $output));
+            }
         }
-
-        // Now forward to the requested action:
-        return $this->getHelper(ForwardHelper::class)
-            ->forwardTo($request, $response, 'Cart/' . $this->getCartActionFromRequest());
+        return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'admin/maintenance');
     }
 }

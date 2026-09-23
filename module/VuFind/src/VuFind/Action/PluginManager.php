@@ -247,6 +247,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2/results' => Search\ResultsAction::class,
         'search2/versions' => Search\VersionsAction::class,
 
+        'search2collection/home' => Collection\HomeAction::class,
         // At least hierarchy tree links use the collection AjaxTab route:
         'search2collection/ajaxtab' => Record\AjaxTabAction::class,
 

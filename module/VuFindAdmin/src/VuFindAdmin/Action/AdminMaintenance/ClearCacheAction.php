@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart search results bulk action.
+ * Clear cache action.
  *
  * PHP version 8
  *
@@ -29,17 +29,16 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Cart;
+namespace VuFindAdmin\Action\AdminMaintenance;
 
+use Laminas\Cache\Storage\FlushableInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\ActionHelper\BulkActionHelper;
-use VuFind\ActionHelper\ContextHelper;
-use VuFind\ActionHelper\ForwardHelper;
-use VuFind\ActionHelper\UrlHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
+use VuFind\ActionHelper\RedirectHelper;
 
 /**
- * Cart search results bulk action.
+ * Clear cache action.
  *
  * @category VuFind
  * @package  Action
@@ -48,10 +47,10 @@ use VuFind\ActionHelper\UrlHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchResultsBulkAction extends AbstractCartAction
+class ClearCacheAction extends AbstractMaintenanceAction
 {
     /**
-     * Process a search results bulk action.
+     * Clear caches.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -62,21 +61,16 @@ class SearchResultsBulkAction extends AbstractCartAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // We came in from a search, so let's remember that context so we can return to it later. However, if we came in
-        // from a previous instance of this action (for example, because of a login screen), or if we have an external
-        // site in the referrer, we should ignore that!
-        $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
-        $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
-        if (
-            $referrer
-            && !str_ends_with($referrer, $bulk)
-            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
-        ) {
-            $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referrer;
+        $flushed = false;
+        foreach ((array)$this->getQueryParam('cache', []) as $cacheName) {
+            $cache = $this->cacheManager->getCache($cacheName);
+            if ($cache instanceof FlushableInterface) {
+                $cache->flush();
+                $flushed = true;
+            }
         }
-
-        // Now forward to the requested action:
-        return $this->getHelper(ForwardHelper::class)
-            ->forwardTo($request, $response, 'Cart/' . $this->getCartActionFromRequest());
+        $this->getHelper(FlashMessagesHelper::class)
+            ->addSuccessMessage($flushed ? 'Cache(s) cleared.' : 'No cache(s) cleared');
+        return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'admin/maintenance');
     }
 }

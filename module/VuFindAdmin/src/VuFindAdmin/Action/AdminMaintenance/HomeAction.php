@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Search2 collection tab action.
+ * Maintenance home action.
  *
  * PHP version 8
  *
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,32 +23,47 @@
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Search2collection;
+namespace VuFindAdmin\Action\AdminMaintenance;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Search2 collection tab action.
+ * Maintenance home action.
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HomeAction extends \VuFind\Action\Collection\HomeAction
+class HomeAction extends AbstractMaintenanceAction
 {
     /**
-     * Initialize the action.
+     * Display maintenance home page.
      *
-     * @return void
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    protected function init(): void
-    {
-        $this->sourceId = 'Search2';
-        parent::init();
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        $templateParams = [
+            'caches' => $this->cacheManager->getCacheList(),
+            'nonPersistentCaches' => $this->cacheManager->getNonPersistentCacheList(),
+            'scripts' => $this->getScripts(),
+        ];
+
+        return $this->renderTemplate($request, $response, $templateParams, 'admin/maintenance/home');
     }
 }

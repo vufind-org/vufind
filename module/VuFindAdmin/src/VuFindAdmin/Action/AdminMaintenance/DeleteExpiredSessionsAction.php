@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart search results bulk action.
+ * Delete expired sessions action.
  *
  * PHP version 8
  *
@@ -29,17 +29,18 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Cart;
+namespace VuFindAdmin\Action\AdminMaintenance;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\ActionHelper\BulkActionHelper;
-use VuFind\ActionHelper\ContextHelper;
-use VuFind\ActionHelper\ForwardHelper;
-use VuFind\ActionHelper\UrlHelper;
+use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\Db\Service\SessionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 
 /**
- * Cart search results bulk action.
+ * Delete expired sessions action.
  *
  * @category VuFind
  * @package  Action
@@ -48,10 +49,27 @@ use VuFind\ActionHelper\UrlHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchResultsBulkAction extends AbstractCartAction
+class DeleteExpiredSessionsAction extends AbstractExpirationAction
 {
     /**
-     * Process a search results bulk action.
+     * Constructor.
+     *
+     * @param GlobalsContainer        $globalsContainer Globals container
+     * @param array                   $config           VuFind configuration
+     * @param SessionServiceInterface $sessionService   Session service
+     */
+    public function __construct(
+        GlobalsContainer $globalsContainer,
+        #[Autowire(config: 'config')]
+        array $config,
+        #[Autowire(container: DbServicePluginManager::class)]
+        protected SessionServiceInterface $sessionService,
+    ) {
+        parent::__construct($globalsContainer, $config);
+    }
+
+    /**
+     * Delete expired sessions.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -62,21 +80,12 @@ class SearchResultsBulkAction extends AbstractCartAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // We came in from a search, so let's remember that context so we can return to it later. However, if we came in
-        // from a previous instance of this action (for example, because of a login screen), or if we have an external
-        // site in the referrer, we should ignore that!
-        $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
-        $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
-        if (
-            $referrer
-            && !str_ends_with($referrer, $bulk)
-            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
-        ) {
-            $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referrer;
-        }
-
-        // Now forward to the requested action:
-        return $this->getHelper(ForwardHelper::class)
-            ->forwardTo($request, $response, 'Cart/' . $this->getCartActionFromRequest());
+        // Delete the expired sessions--this cleans up any junk left in the database by the session garbage collector.
+        $this->expire(
+            $this->sessionService,
+            '%%count%% expired sessions deleted.',
+            'No expired sessions to delete.'
+        );
+        return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'admin/maintenance');
     }
 }
