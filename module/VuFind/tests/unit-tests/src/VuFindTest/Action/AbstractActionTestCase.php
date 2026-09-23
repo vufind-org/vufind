@@ -62,7 +62,7 @@ abstract class AbstractActionTestCase extends TestCase
      * @param HelperInterface[]          $helpers     Extra action helpers keyed by class name
      * @param ?RouteHelper               $routeHelper Route helper (defaults to a stub)
      * @param ?TemplateRendererInterface $renderer    Template renderer for template-rendering actions (defaults to a
-     *                                                stub)
+     * stub)
      *
      * @return AbstractAction
      */
