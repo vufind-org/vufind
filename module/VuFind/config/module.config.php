@@ -500,7 +500,7 @@ $config = [
                     'combined/results',
                     'combined/searchbox',
                 ],
-                'backendId' => 'Combined',
+                'searchClassId' => 'Combined',
             ],
 
             // Course reserves (two backends!):
