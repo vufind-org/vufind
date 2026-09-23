@@ -30,21 +30,15 @@
 namespace VuFindTest\Action\ShortLink;
 
 use Laminas\Diactoros\Response;
-use Laminas\Diactoros\ServerRequest;
-use Laminas\Router\RouteMatch;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ShortLink\RedirectAction;
-use VuFind\ActionHelper\PermissionHelper;
-use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Exception\BadConfig;
-use VuFind\Http\RouteHelper;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\UrlShortener\UrlShortenerInterface;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFindTest\Action\AbstractActionTestCase;
 
 /**
  * ShortLink RedirectAction test class.
@@ -55,7 +49,7 @@ use VuFind\View\Renderer\TemplateRendererInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RedirectActionTest extends TestCase
+class RedirectActionTest extends AbstractActionTestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
@@ -79,22 +73,8 @@ class RedirectActionTest extends TestCase
             $shortener ?? $this->createStub(UrlShortenerInterface::class),
             $redirectMethod
         );
-
-        $permissionHelper = $this->createMock(PermissionHelper::class);
-        $permissionHelper->method('getPermissionBehaviorConfig')->willReturn([]);
-        $redirectHelper ??= $this->createStub(RedirectHelper::class);
-        $manager = $this->createMock(HelperPluginManager::class);
-        $manager->method('get')->willReturnCallback(
-            fn ($name) => match ($name) {
-                PermissionHelper::class => $permissionHelper,
-                RedirectHelper::class => $redirectHelper,
-                default => throw new \Exception("Unexpected helper requested: $name"),
-            }
-        );
-        $action->setHelperPluginManager($manager);
-        $action->setRouteHelper($this->createStub(RouteHelper::class));
-        $action->setSessionSettings($this->createStub(SessionSettings::class));
-        $action->setTemplateRenderer($renderer ?? $this->createStub(TemplateRendererInterface::class));
+        $helpers = null === $redirectHelper ? [] : [RedirectHelper::class => $redirectHelper];
+        $this->initializeAction($action, $helpers, renderer: $renderer);
         return $action;
     }
 
@@ -107,8 +87,7 @@ class RedirectActionTest extends TestCase
      */
     protected function requestWithId(?string $id): ServerRequestInterface
     {
-        $routeMatch = new RouteMatch(null === $id ? [] : ['id' => $id]);
-        return (new ServerRequest())->withAttribute('route-match', $routeMatch);
+        return $this->getServerRequest(null === $id ? [] : ['id' => $id]);
     }
 
     /**
