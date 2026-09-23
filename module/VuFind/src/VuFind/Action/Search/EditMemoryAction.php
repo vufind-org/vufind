@@ -34,6 +34,7 @@ namespace VuFind\Action\Search;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
+use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UrlHelper;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
@@ -81,9 +82,8 @@ class EditMemoryAction extends AbstractAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // Get the user's referer, with the home page as a fallback; we'll
-        // redirect here after the work is done.
-        $from = $request->getHeader('Referer')[0] ?? null;
+        // Get the user's referrer, with the home page as a fallback; we'll redirect here after the work is done.
+        $from = $this->getHelper(ContextHelper::class)->getReferrer($request);
         if ($from || !$this->getHelper(UrlHelper::class)->isLocalUrl($from)) {
             $from = $this->routeHelper->getUrlFromRoute('home');
         }

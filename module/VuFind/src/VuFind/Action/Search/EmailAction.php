@@ -34,6 +34,7 @@ namespace VuFind\Action\Search;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
@@ -95,7 +96,7 @@ class EmailAction extends AbstractTemplateRenderingAction
     ): ResponseInterface {
         // If a URL was explicitly passed in, use that; otherwise, try to find the HTTP referrer:
         $url = $this->getPostOrQueryParam('url')
-            ?? $request->getHeader('Referer')[0]
+            ?? $this->getHelper(ContextHelper::class)->getReferrer($request)
             ?? null;
         if (!$url || !$this->getHelper(UrlHelper::class)->isLocalUrl($url)) {
             throw new \Exception('Unexpected value passed to emailAction: ' . ($url ?? '<null>'));
@@ -123,8 +124,8 @@ class EmailAction extends AbstractTemplateRenderingAction
                 ->forceLogin($request, $response, extras: ['emailurl' => $url]);
         }
 
-        // Check if we have a URL in login followup data -- this should override
-        // any existing referer to avoid emailing a login-related URL!
+        // Check if we have a URL in login followup data -- this should override any existing referrer to avoid emailing
+        // a login-related URL!
         $followupUrl = $this->followupHelper->retrieveAndClear('emailurl');
         if ($followupUrl) {
             $url = $followupUrl;
