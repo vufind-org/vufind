@@ -60,7 +60,7 @@ class ListAction extends AbstractTagsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $page = intval($this->getPostOrQueryParam('page', '1', preferQuery: true));
+        $page = (int)($this->getPostOrQueryParam('page', '1', preferQuery: true));
         $results = $this->tagsService->getResourceTagsPaginator(
             $this->convertFilter($this->getPostOrQueryParam('user_id', preferQuery: true)),
             $this->convertFilter($this->getPostOrQueryParam('resource_id', preferQuery: true)),
