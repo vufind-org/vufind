@@ -69,7 +69,7 @@ class Cart
      * @param CookieManager         $cookieManager       Cookie manager
      * @param int                   $maxSize             Maximum size of cart contents
      * @param bool                  $active              Is cart enabled?
-     * @param bool                  $showTogglesInSearch Is cart configured to toggles
+     * @param bool                  $showTogglesInSearch Is cart configured to show toggles
      * in search results?
      */
     public function __construct(
