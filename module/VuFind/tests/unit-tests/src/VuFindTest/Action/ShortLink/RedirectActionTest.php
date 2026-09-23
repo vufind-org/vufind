@@ -58,7 +58,7 @@ class RedirectActionTest extends AbstractActionTestCase
      *
      * @param string                     $redirectMethod Configured redirect method
      * @param ?UrlShortenerInterface     $shortener      URL shortener (defaults to a stub)
-     * @param ?RedirectHelper            $redirectHelper Redirect helper for HelperPluginManager to return
+     * @param ?RedirectHelper            $redirectHelper Redirect helper to register (null for none)
      * @param ?TemplateRendererInterface $renderer       Template renderer (defaults to a stub)
      *
      * @return RedirectAction

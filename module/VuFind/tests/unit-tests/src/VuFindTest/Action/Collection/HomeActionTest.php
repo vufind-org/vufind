@@ -66,7 +66,7 @@ class HomeActionTest extends AbstractActionTestCase
      * @param ?SearchMemory   $searchMemory   Search memory (defaults to a stub)
      * @param ?RecordRouter   $recordRouter   Record router (defaults to a stub)
      * @param ?RouteHelper    $routeHelper    Route helper (defaults to a stub)
-     * @param ?RedirectHelper $redirectHelper Redirect helper for HelperPluginManager to return
+     * @param ?RedirectHelper $redirectHelper Redirect helper to register (null for none)
      * @param ?RecordDriver   $driver         Record returned by RecordLoader's load()
      *
      * @return HomeAction
