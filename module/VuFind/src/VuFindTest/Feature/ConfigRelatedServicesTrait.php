@@ -38,6 +38,7 @@ use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Handler\PluginManager as ConfigHandlerPluginManager;
 use VuFind\Config\PathResolver;
+use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFindTest\Container\MockContainer;
 
 use function defined;
@@ -165,6 +166,9 @@ trait ConfigRelatedServicesTrait
 
         $configManager = new ConfigManager($configLoader, $configHandlerPluginManager, $cacheManager);
         $container->set(ConfigManagerInterface::class, $configManager);
+
+        $configPluginManager = new ConfigPluginManager($container, $moduleConfig['vufind']['config_reader']);
+        $container->set(ConfigPluginManager::class, $configPluginManager);
     }
 
     /**
@@ -224,6 +228,72 @@ trait ConfigRelatedServicesTrait
         $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($this->any())
             ->method('getConfig')
+            ->with($this->isType('string'))
+            ->willThrowException($exception);
+        return $manager;
+    }
+
+    /**
+     * Get a mock configuration plugin manager with the given configuration "files"
+     * available.
+     *
+     * @param array            $configs   An associative array of configurations
+     * where key is the file (e.g. 'config') and value an array of configuration
+     * sections and directives
+     * @param array            $default   Default configuration to return when no
+     * entry is found in $configs
+     * @param ?InvocationOrder $getExpect The expected invocation order for the get()
+     * method (null for any)
+     * @param ?InvocationOrder $hasExpect The expected invocation order for the has()
+     * method (null for any)
+     *
+     * @return MockObject&ConfigPluginManager
+     *
+     * @deprecated \VuFind\Config\PluginManager was deprecated and replaced by \VuFind\Config\ConfigManager.
+     * Use that and getMockConfigManager instead.
+     */
+    protected function getMockConfigPluginManager(
+        array $configs,
+        array $default = [],
+        ?InvocationOrder $getExpect = null,
+        ?InvocationOrder $hasExpect = null
+    ): ConfigPluginManager {
+        $manager = $this->createMock(ConfigPluginManager::class);
+        $manager->expects($getExpect ?? $this->any())
+            ->method('get')
+            ->with($this->isType('string'))
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): Config {
+                    return new Config($configs[$config] ?? $default);
+                }
+            );
+        $manager->expects($hasExpect ?? $this->any())
+            ->method('has')
+            ->with($this->isType('string'))
+            ->willReturnCallback(
+                function ($config) use ($configs): bool {
+                    return isset($configs[$config]);
+                }
+            );
+        return $manager;
+    }
+
+    /**
+     * Get a mock configuration plugin manager that will throw an exception.
+     *
+     * @param \Throwable $exception Exception to throw
+     *
+     * @return MockObject&ConfigPluginManager
+     *
+     * @deprecated \VuFind\Config\PluginManager was deprecated and replaced by \VuFind\Config\ConfigManager.
+     * Use that and getMockFailingConfigManager instead.
+     */
+    protected function getMockFailingConfigPluginManager(
+        \Throwable $exception
+    ): ConfigPluginManager {
+        $manager = $this->createMock(ConfigPluginManager::class);
+        $manager->expects($this->any())
+            ->method('get')
             ->with($this->isType('string'))
             ->willThrowException($exception);
         return $manager;
