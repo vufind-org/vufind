@@ -165,9 +165,6 @@ trait ConfigRelatedServicesTrait
 
         $configManager = new ConfigManager($configLoader, $configHandlerPluginManager, $cacheManager);
         $container->set(ConfigManagerInterface::class, $configManager);
-
-        $configPluginManager = new ConfigPluginManager($container, $moduleConfig['vufind']['config_reader']);
-        $container->set(ConfigPluginManager::class, $configPluginManager);
     }
 
     /**
