@@ -33,6 +33,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Authentication class for Alma. The VuFind database and the Alma API are
@@ -68,9 +69,9 @@ class AlmaDatabase extends Database
      * @param ?PasswordHasher               $hasher        Password hash service (null to create one)
      */
     public function __construct(
-        protected \VuFind\ILS\Connection $catalog,
-        protected \VuFind\Auth\ILSAuthenticator $authenticator,
-        ?PasswordHasher $hasher = null
+        #[Autowire] protected \VuFind\ILS\Connection $catalog,
+        #[Autowire] protected \VuFind\Auth\ILSAuthenticator $authenticator,
+        #[Autowire] ?PasswordHasher $hasher = null
     ) {
         $this->almaDriver = $catalog->getDriver();
         $this->almaConfig = $catalog->getDriverConfig();

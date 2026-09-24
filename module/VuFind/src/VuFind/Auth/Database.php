@@ -39,6 +39,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\DuplicateKeyException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_object;
@@ -82,7 +83,7 @@ class Database extends AbstractBase
      *
      * @param ?PasswordHasher $hasher Password hash service (null to create one)
      */
-    public function __construct(?PasswordHasher $hasher = null)
+    public function __construct(#[Autowire] ?PasswordHasher $hasher = null)
     {
         $this->hasher = $hasher ?? new PasswordHasher();
     }
