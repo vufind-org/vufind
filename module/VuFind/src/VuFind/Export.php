@@ -67,7 +67,7 @@ class Export
         protected array $mainConfig,
         #[Autowire(config: 'export')]
         protected array $exportConfig,
-        #[Autowire(config: 'ViewRenderer')]
+        #[Autowire(service: 'ViewRenderer')]
         protected PhpRenderer $viewRenderer
     ) {
     }
