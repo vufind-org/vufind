@@ -346,6 +346,6 @@ class Paytrail extends AbstractBase
         if (null === $str) {
             return null;
         }
-        return mb_substr($str, 0, $maxLength);
+        return mb_substr($str, 0, $maxLength, 'UTF-8');
     }
 }
