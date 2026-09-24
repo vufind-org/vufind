@@ -59,16 +59,13 @@ class ThemeCommand extends AbstractThemeCommand
      *
      * @param ThemeGenerator $generator Generator to call
      * @param array          $config    Configuration from config.ini
-     * @param string|null    $name      The name of the command; passing null
-     * means it must be set in configure()
      */
     public function __construct(
         ThemeGenerator $generator,
         #[Autowire(config: 'config')]
         protected array $config,
-        $name = null
     ) {
-        parent::__construct($generator, $name);
+        parent::__construct($generator);
     }
 
     /**
