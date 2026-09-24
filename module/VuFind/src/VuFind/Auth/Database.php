@@ -83,7 +83,8 @@ class Database extends AbstractBase
      *
      * @param ?PasswordHasher $hasher Password hash service (null to create one)
      */
-    public function __construct(#[Autowire] ?PasswordHasher $hasher = null)
+    #[Autowire]
+    public function __construct(?PasswordHasher $hasher = null)
     {
         $this->hasher = $hasher ?? new PasswordHasher();
     }

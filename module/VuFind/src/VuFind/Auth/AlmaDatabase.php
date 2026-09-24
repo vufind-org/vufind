@@ -68,10 +68,11 @@ class AlmaDatabase extends Database
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator
      * @param ?PasswordHasher               $hasher        Password hash service (null to create one)
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire] protected \VuFind\ILS\Connection $catalog,
-        #[Autowire] protected \VuFind\Auth\ILSAuthenticator $authenticator,
-        #[Autowire] ?PasswordHasher $hasher = null
+        protected \VuFind\ILS\Connection $catalog,
+        protected \VuFind\Auth\ILSAuthenticator $authenticator,
+        ?PasswordHasher $hasher = null
     ) {
         $this->almaDriver = $catalog->getDriver();
         $this->almaConfig = $catalog->getDriverConfig();

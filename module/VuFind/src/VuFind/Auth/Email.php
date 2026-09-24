@@ -52,9 +52,10 @@ class Email extends AbstractBase
      * @param EmailAuthenticator $emailAuthenticator Email authenticator
      * @param ILSAuthenticator   $ilsAuthenticator   ILS authenticator
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire] protected EmailAuthenticator $emailAuthenticator,
-        #[Autowire] protected ILSAuthenticator $ilsAuthenticator
+        protected EmailAuthenticator $emailAuthenticator,
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
     }
 
