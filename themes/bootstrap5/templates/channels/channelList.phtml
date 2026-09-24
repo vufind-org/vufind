@@ -21,10 +21,9 @@
         $groupId = $channel['groupId'] ?? $channel['providerId'];
         $channelID = 'channel-' . md5(serialize($channel));
         $providerData = $this->htmlAttributes([
-          'data-batch-size' => $channel['config']['batchSize'],
-          'data-page-size' => $channel['config']['pageSize'],
-          'data-row-size' => $channel['config']['rowSize'],
           'id' => $channelID,
+          'data-page-size' => $channel['config']['pageSize'],
+          'data-batch-size' => $channel['config']['batchSize'],
         ]);
       ?>
       <div class="channel" <?=$providerData ?>>
@@ -96,11 +95,11 @@
                 ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
                 : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']);
               $channelItemAttrs = [
+                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
                 'class' => 'channel-item' . ($index < $channel['config']['pageSize'] ? '' : ' hidden-batch-item'),
                 'data-channel-id' => $channelID,
                 'data-record-id' => $item['id'],
                 'data-record-source' => $item['source'],
-                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
               ];
             ?>
             <li<?=$this->htmlAttributes($channelItemAttrs) ?>>

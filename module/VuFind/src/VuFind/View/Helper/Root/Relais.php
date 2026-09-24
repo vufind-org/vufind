@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\Config;
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * Relais view helper.
@@ -40,38 +41,28 @@ use VuFind\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Relais extends \Laminas\View\Helper\AbstractHelper
+class Relais
 {
-    /**
-     * Relais configuration (or null if none found).
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Login URL.
-     *
-     * @var string
-     */
-    protected $loginUrl;
-
     /**
      * Constructor.
      *
-     * @param Config $config   Relais configuration (or null if none found)
-     * @param string $loginUrl Login base URL
+     * @param ?Config           $config   Relais configuration (or null if none found)
+     * @param string            $loginUrl Login base URL
+     * @param RendererInterface $view     View renderer
+     * @param TransEsc          $transEsc TransEsc view helper
      */
-    public function __construct($config, $loginUrl)
-    {
-        $this->config = $config;
-        $this->loginUrl = $loginUrl;
+    public function __construct(
+        protected ?array $config,
+        protected string $loginUrl,
+        protected RendererInterface $view,
+        protected TransEsc $transEsc
+    ) {
     }
 
     /**
      * Create a Relais search link from a record driver.
      *
-     * @param object $driver Record driver
+     * @param RecordDriver $driver Record driver
      *
      * @return string
      */
@@ -99,23 +90,33 @@ class Relais extends \Laminas\View\Helper\AbstractHelper
     /**
      * Render a button if Relais is active.
      *
-     * @param object $driver Record driver
+     * @param ?RecordDriver $driver Record driver
      *
      * @return string
      */
     public function renderButtonIfActive($driver = null)
     {
         // Case 1: API enabled:
-        if ($this->config->apikey ?? false) {
-            return $this->getView()->render('relais/button.phtml');
+        if ($this->config['apikey'] ?? false) {
+            return $this->view->render('relais/button.phtml');
         }
         // Case 2: Search links enabled:
-        if ($this->config->loginUrl ?? false) {
+        if (($this->config['loginUrl'] ?? false) && $driver) {
             return '<a href="' . htmlspecialchars($this->getSearchLink($driver))
-                . '" target="new">' . $this->getView()->transEsc('relais_search')
+                . '" target="new">' . ($this->transEsc)('relais_search')
                 . '</a>';
         }
         // Case 3: Nothing enabled:
         return '';
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

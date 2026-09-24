@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class NumberFormat
@@ -41,7 +42,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LocalizedNumber extends AbstractHelper
+class LocalizedNumber
 {
     /**
      * Default decimal point character.
@@ -58,6 +59,20 @@ class LocalizedNumber extends AbstractHelper
     protected $defaultThousandSep = ',';
 
     /**
+     * Constructor.
+     *
+     * @param Translate  $translate  Translate helper
+     * @param EscapeHtml $escapeHtml EscapeHtml helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+    ) {
+    }
+
+    /**
      * Localize number.
      *
      * @param int|float $number     Number to format
@@ -66,16 +81,14 @@ class LocalizedNumber extends AbstractHelper
      *
      * @return string
      */
-    public function __invoke($number, $decimals = 0, $escapeHtml = true)
+    public function __invoke($number, $decimals = 0, $escapeHtml = true): string
     {
-        $translator = $this->getView()->plugin('translate');
-
-        $decimalPoint = $translator(
+        $decimalPoint = ($this->translate)(
             'number_decimal_point',
             [],
             $this->defaultDecimalPoint
         );
-        $thousandSep = $translator(
+        $thousandSep = ($this->translate)(
             'number_thousands_separator',
             [],
             $this->defaultThousandSep
@@ -87,10 +100,8 @@ class LocalizedNumber extends AbstractHelper
             $thousandSep
         );
         if ($escapeHtml) {
-            $escaper = $this->getView()->plugin('escapeHtml');
-            $formattedNumber = $escaper($formattedNumber);
+            $formattedNumber = ($this->escapeHtml)($formattedNumber);
         }
-
         return $formattedNumber;
     }
 }

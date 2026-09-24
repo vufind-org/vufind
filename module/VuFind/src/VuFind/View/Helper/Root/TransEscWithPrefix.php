@@ -31,8 +31,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Translate with prefix + escape view helper.
@@ -46,9 +47,20 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterface
+class TransEscWithPrefix implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param EscapeHtml $escapeHtml EscapeHtml view helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
+    }
 
     /**
      * Translate and escape a value while applying a prefix.
@@ -74,8 +86,7 @@ class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterf
         $useIcuFormatter = false,
         $fallbackDomains = []
     ) {
-        $escaper = $this->getView()->plugin('escapeHtml');
-        return $escaper(
+        return ($this->escapeHtml)(
             $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter, $fallbackDomains)
         );
     }

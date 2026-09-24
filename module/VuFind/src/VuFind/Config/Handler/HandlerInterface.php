@@ -67,6 +67,16 @@ interface HandlerInterface
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array;
 
     /**
+     * Handle an include statement.
+     *
+     * @param string $includeSetting Settings of the include statement
+     * @param string $basePath       Base path used for relative includes
+     *
+     * @return mixed
+     */
+    public function handleInclude(string $includeSetting, string $basePath): mixed;
+
+    /**
      * Write configuration to a specific location.
      *
      * @param ConfigLocationInterface  $destinationLocation Destination location for the config

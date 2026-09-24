@@ -68,10 +68,9 @@ class LDAP extends AbstractBase
     {
         // Check for missing parameters:
         if (
-            empty($this->config->LDAP->basedn ?? '')
-            || empty($this->config->LDAP->username ?? '')
-            || (empty($this->config->LDAP->uri ?? '')
-                && empty($this->config->LDAP->host ?? ''))
+            empty($this->config['LDAP']['basedn'])
+            || empty($this->config['LDAP']['username'])
+            || empty($this->config['LDAP']['uri'])
         ) {
             throw new AuthException(
                 'One or more LDAP parameters are missing. Check your config.ini!'
@@ -89,7 +88,7 @@ class LDAP extends AbstractBase
     protected function getSetting($name)
     {
         $config = $this->getConfig();
-        $value = $config->LDAP->$name ?? '';
+        $value = $config['LDAP'][$name] ?? '';
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
@@ -159,20 +158,6 @@ class LDAP extends AbstractBase
         // is unavailable -- we need to check for bad return values again at search
         // time!
         $uri = $this->getSetting('uri');
-        if (!$uri) {
-            // Use deprecated old settings.
-            $host = $this->getSetting('host');
-            if (str_starts_with($host, 'ldap://') || str_starts_with($host, 'ldaps://')) {
-                $uri = $host;
-            } else {
-                $port = $this->getSetting('port');
-                if ($port === '') {
-                    $port = 389;
-                }
-                $uri = 'ldap://' . $host . ':' . $port;
-            }
-        }
-
         $this->debug("connecting to URI=$uri");
         $connection = @ldap_connect($uri);
         if (!$connection) {
@@ -188,8 +173,7 @@ class LDAP extends AbstractBase
         // if the uri parameter is not specified as ldaps://
         // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
-        $disableTls = isset($this->config->LDAP->disable_tls)
-            && $this->config->LDAP->disable_tls;
+        $disableTls = $this->config['LDAP']['disable_tls'] ?? false;
         if (!str_starts_with($uri, 'ldaps://') && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
@@ -308,7 +292,7 @@ class LDAP extends AbstractBase
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $value = $data[$i][$configValue];
-                        $separator = $this->config->LDAP->separator;
+                        $separator = $this->config['LDAP']['separator'] ?? null;
                         // if no separator is given map only the first value
                         if (isset($separator)) {
                             $tmp = [];

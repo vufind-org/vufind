@@ -106,10 +106,7 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (
-            !isset($this->config->ChoiceAuth->choice_order)
-            || !strlen($this->config->ChoiceAuth->choice_order)
-        ) {
+        if (!strlen($this->config['ChoiceAuth']['choice_order'] ?? '')) {
             throw new AuthException(
                 'One or more ChoiceAuth parameters are missing. ' .
                 'Check your config.ini!'
@@ -120,17 +117,17 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @throws AuthException
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
         $this->strategies = array_map(
             'trim',
-            explode(',', $this->getConfig()->ChoiceAuth->choice_order)
+            explode(',', $this->getConfig()['ChoiceAuth']['choice_order'])
         );
     }
 
@@ -323,7 +320,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         return $this->proxyAuthMethod('supportsPasswordChange', func_get_args());
     }
@@ -335,7 +332,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }

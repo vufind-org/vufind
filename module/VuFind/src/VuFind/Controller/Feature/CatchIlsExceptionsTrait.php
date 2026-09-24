@@ -76,10 +76,10 @@ trait CatchIlsExceptionsTrait
             return parent::onDispatch($event);
         } catch (ILSException $exception) {
             // Always display generic message:
-            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
             // In development mode, also show technical failure message:
             if ('development' == APPLICATION_ENV) {
-                $this->flashMessenger()->addErrorMessage($exception->getMessage());
+                $this->getFlashMessenger()->addErrorMessage($exception->getMessage());
             }
             $actionResponse = $this->ilsExceptionResponse ?? $this->createViewModel();
             $event->setResult($actionResponse);

@@ -103,7 +103,7 @@ class AuditEvent implements AuditEventEntityInterface
      * @var ?Payment
      */
     #[ORM\JoinColumn(name: 'payment_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Payment::class)]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\PaymentEntityInterface::class)]
     protected ?PaymentEntityInterface $payment = null;
 
     /**

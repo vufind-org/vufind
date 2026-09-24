@@ -1,6 +1,9 @@
 <footer class="hidden-print">
   <?=$this->section('FooterMenu')->render()?>
-  <div class="poweredby">
-    <?=$this->layout()->poweredBy ?>
-  </div>
+  <?php if ($poweredBy = $this->globals()['poweredBy']): ?>
+    <div class="poweredby">
+      <?php // HTML intentionally allowed in the message! ?>
+      <?=$this->translate($poweredBy) ?>
+    </div>
+  <?php endif; ?>
 </footer>

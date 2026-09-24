@@ -655,7 +655,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected = [];
+        $expected = ['records' => [], 'count' => 0];
         $this->assertEquals($expected, $result);
     }
 
@@ -672,18 +672,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Page',
-            'create' => '12-20-2022',
-            'expire' => '',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
-            'available' => true,
-            'in_transit' => false,
-            'last_pickup_date' => '12-29-2022',
-            'position' => 1,
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Page',
+                    'create' => '12-20-2022',
+                    'expire' => '',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+                    'available' => true,
+                    'in_transit' => false,
+                    'last_pickup_date' => '12-29-2022',
+                    'position' => 1,
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -701,19 +706,24 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'bar',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Page',
-            'create' => '12-20-2022',
-            'expire' => '',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
-            'available' => true,
-            'in_transit' => false,
-            'last_pickup_date' => '12-29-2022',
-            'position' => 1,
-            'proxiedFor' => 'TestuserJohn, John',
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Page',
+                    'create' => '12-20-2022',
+                    'expire' => '',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+                    'available' => true,
+                    'in_transit' => false,
+                    'last_pickup_date' => '12-29-2022',
+                    'position' => 1,
+                    'proxiedFor' => 'TestuserJohn, John',
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -731,18 +741,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Page',
-            'create' => '11-07-2022',
-            'expire' => '',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Basic economics : a common sense guide to the economy ',
-            'available' => false,
-            'in_transit' => true,
-            'last_pickup_date' => null,
-            'position' => 1,
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Page',
+                    'create' => '11-07-2022',
+                    'expire' => '',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Basic economics : a common sense guide to the economy ',
+                    'available' => false,
+                    'in_transit' => true,
+                    'last_pickup_date' => null,
+                    'position' => 1,
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -760,18 +775,23 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
-        $expected[0] = [
-            'type' => 'Hold',
-            'create' => '12-20-2022',
-            'expire' => '12-28-2022',
-            'id' => 'fake-instance-id',
-            'item_id' => 'fake-item-id',
-            'reqnum' => 'fake-request-num',
-            'title' => 'Organic farming : everything you need to know ',
-            'available' => false,
-            'in_transit' => false,
-            'last_pickup_date' => null,
-            'position' => 3,
+        $expected = [
+            'records' => [
+                [
+                    'type' => 'Hold',
+                    'create' => '12-20-2022',
+                    'expire' => '12-28-2022',
+                    'id' => 'fake-instance-id',
+                    'item_id' => 'fake-item-id',
+                    'reqnum' => 'fake-request-num',
+                    'title' => 'Organic farming : everything you need to know ',
+                    'available' => false,
+                    'in_transit' => false,
+                    'last_pickup_date' => null,
+                    'position' => 3,
+                ],
+            ],
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }

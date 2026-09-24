@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Export view helper.
  *
@@ -38,23 +40,16 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Export extends \Laminas\View\Helper\AbstractHelper
+class Export
 {
-    /**
-     * VuFind Export Tools.
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
     /**
      * Constructor.
      *
      * @param \VuFind\Export $export Export tools
      */
-    public function __construct(\VuFind\Export $export)
+    #[Autowire]
+    public function __construct(protected \VuFind\Export $export)
     {
-        $this->export = $export;
     }
 
     /**

@@ -31,6 +31,8 @@
 
 namespace VuFind\Search\Explanation;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
  * Explanation plugin manager.
  *
@@ -63,6 +65,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Solr\Explanation::class => ExplanationFactory::class,
         \VuFind\Search\Search2\Explanation::class => ExplanationFactory::class,
     ];
+
+    /**
+     * Constructor.
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

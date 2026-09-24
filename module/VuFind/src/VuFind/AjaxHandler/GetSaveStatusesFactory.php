@@ -35,6 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\PluginManager as DbServiceManager;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * Factory for GetSaveStatuses AJAX handler.
@@ -74,7 +75,7 @@ class GetSaveStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
-            $container->get('ControllerPluginManager')->get('url'),
+            $container->get(RouteHelper::class),
             $container->get(DbServiceManager::class)->get(UserResourceServiceInterface::class)
         );
     }

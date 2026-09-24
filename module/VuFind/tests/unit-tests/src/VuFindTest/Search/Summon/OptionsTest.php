@@ -54,7 +54,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFacetListAction(): void
     {
-        $this->assertEquals('summon-facetlist', $this->getOptions()->getFacetListAction());
+        $this->assertSame('summon-facetlist', $this->getOptions()->getFacetListAction());
     }
 
     /**
@@ -64,7 +64,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchAction(): void
     {
-        $this->assertEquals('summon-search', $this->getOptions()->getSearchAction());
+        $this->assertSame('summon-search', $this->getOptions()->getSearchAction());
     }
 
     /**
@@ -74,7 +74,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetAdvancedSearchAction(): void
     {
-        $this->assertEquals('summon-advanced', $this->getOptions()->getAdvancedSearchAction());
+        $this->assertSame('summon-advanced', $this->getOptions()->getAdvancedSearchAction());
     }
 
     /**
@@ -86,7 +86,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     {
         $facets = ['foo', 'bar'];
         $config = ['Advanced_Facet_Settings' => ['translated_facets' => $facets]];
-        $this->assertEquals(
+        $this->assertSame(
             $facets,
             $this->getOptions($config)->getTranslatedFacets()
         );
@@ -101,7 +101,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     {
         $facets = 'foo,bar';
         $config = ['Advanced_Facet_Settings' => ['special_facets' => $facets]];
-        $this->assertEquals(
+        $this->assertSame(
             $facets,
             $this->getOptions($config)->getSpecialAdvancedFacets()
         );
@@ -115,8 +115,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testLimits(): void
     {
         $options = $this->getOptions(['General' => ['default_limit' => 10, 'limit_options' => '10,20']]);
-        $this->assertEquals(10, $options->getDefaultLimit());
-        $this->assertEquals([10, 20], $options->getLimitOptions());
+        $this->assertSame(10, $options->getDefaultLimit());
+        $this->assertSame([10, 20], $options->getLimitOptions());
     }
 
     /**
@@ -144,7 +144,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     {
         $filters = ['foo', 'bar'];
         $config = ['General' => ['default_filters' => $filters]];
-        $this->assertEquals($filters, $this->getOptions($config)->getDefaultFilters());
+        $this->assertSame($filters, $this->getOptions($config)->getDefaultFilters());
     }
 
     /**
@@ -172,8 +172,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             'Advanced_Searches' => ['afoo' => 'abar', 'abaz' => 'axyzzy'],
         ];
         $options = $this->getOptions($config);
-        $this->assertEquals($config['Basic_Searches'], $options->getBasicHandlers());
-        $this->assertEquals($config['Advanced_Searches'], $options->getAdvancedHandlers());
+        $this->assertSame($config['Basic_Searches'], $options->getBasicHandlers());
+        $this->assertSame($config['Advanced_Searches'], $options->getAdvancedHandlers());
     }
 
     /**
@@ -189,9 +189,9 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             'DefaultSortingByType' => ['type' => 'baz'],
         ];
         $options = $this->getOptions($config);
-        $this->assertEquals($config['Sorting'], $options->getSortOptions());
-        $this->assertEquals('baz', $options->getDefaultSortByHandler('type'));
-        $this->assertEquals('foo', $options->getDefaultSortByHandler('test'));
+        $this->assertSame($config['Sorting'], $options->getSortOptions());
+        $this->assertSame('baz', $options->getDefaultSortByHandler('type'));
+        $this->assertSame('foo', $options->getDefaultSortByHandler('test'));
     }
 
     /**
@@ -202,7 +202,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testEmptySearchRelevanceOverride(): void
     {
         $options = $this->getOptions(['General' => ['empty_search_relevance_override' => 'foo']]);
-        $this->assertEquals('foo', $options->getEmptySearchRelevanceOverride());
+        $this->assertSame('foo', $options->getEmptySearchRelevanceOverride());
     }
 
     /**
@@ -213,7 +213,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testListView(): void
     {
         $config = ['List' => ['view' => 'foo']];
-        $this->assertEquals('foo', $this->getOptions($config)->getListViewOption());
+        $this->assertSame('foo', $this->getOptions($config)->getListViewOption());
     }
 
     /**

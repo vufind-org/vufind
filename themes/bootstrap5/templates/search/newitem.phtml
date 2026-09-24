@@ -47,16 +47,6 @@
     </div>
   </div>
   <?=$this->render('search/advanced/solr-facets.phtml')?>
-  <?php if (is_array($this->fundList) && !empty($this->fundList)): ?>
-    <div class="form-group">
-      <label class="form-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
-      <select id="newitem_department" name="department" size="10" class="form-select form-select">
-      <?php foreach ($this->fundList as $fundId => $fund): ?>
-        <option value="<?=$this->escapeHtmlAttr($fundId)?>"><?=$this->transEsc($fund)?></option>
-      <?php endforeach; ?>
-      </select>
-    </div>
-  <?php endif; ?>
   <div class="adv-submit">
     <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
     <input class="clear-btn btn btn-default" type="button" value="<?= $this->transEscAttr('Clear')?>">

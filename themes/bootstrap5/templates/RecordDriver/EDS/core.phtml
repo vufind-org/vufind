@@ -20,42 +20,43 @@
           </a>
         </span>
       <?php endif; ?>
-      <?php if ($this->permission()->isAuthorized('access.EDSExtendedResults')): ?>
-        <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
-          <span>
-            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext">
-              <?=$this->transEsc('HTML Full Text')?>
-            </a>
-          </span>
+      <?php if (!$this->driver->isPlaceholder()): // don't show full text links on placeholders; they won't work ?>
+        <?php if ($this->permission()->isAuthorized('access.EDSExtendedResults')): ?>
+          <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
+            <span>
+              <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext">
+                <?=$this->transEsc('HTML Full Text')?>
+              </a>
+            </span>
+          <?php endif; ?>
+          <?php if ($ftLink = $this->driver->getLinkedFullTextLink()): ?>
+            <span>
+              <a href="<?=$ftLink?>" class="fulltext">
+                <?=$this->transEsc('Linked Full Text')?>
+              </a>
+            </span>
+          <?php endif; ?>
+          <?php if ($pdfLink = $this->driver->getPdfLink()): ?>
+            <span>
+              <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext">
+                <?=$this->transEsc('PDF Full Text')?>
+              </a>
+            </span>
+          <?php endif; ?>
+          <?php if ($epubLink = $this->driver->getEpubLink()): ?>
+            <span>
+              <a href="<?=$epubLink?>" class="icon--eds epub fulltext">
+                <?=$this->transEsc('ePub Full Text')?>
+              </a>
+            </span>
+          <?php endif; ?>
+        <?php else: ?>
+          <?=$this->render('RecordDriver/EDS/result-list/full-text-links.phtml', ['driver' => $this->driver, 'recordLinker' => $this->recordLinker()])?>
         <?php endif; ?>
-        <?php if ($ftLink = $this->driver->getLinkedFullTextLink()): ?>
-          <span>
-            <a href="<?=$ftLink?>" class="fulltext">
-              <?=$this->transEsc('Linked Full Text')?>
-            </a>
-          </span>
-        <?php endif; ?>
-        <?php if ($pdfLink = $this->driver->getPdfLink()): ?>
-          <span>
-            <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext">
-              <?=$this->transEsc('PDF Full Text')?>
-            </a>
-          </span>
-        <?php endif; ?>
-        <?php if ($epubLink = $this->driver->getEpubLink()): ?>
-          <span>
-            <a href="<?=$epubLink?>" class="icon--eds epub fulltext">
-              <?=$this->transEsc('ePub Full Text')?>
-            </a>
-          </span>
-        <?php endif; ?>
-      <?php else: ?>
-        <?=$this->render('RecordDriver/EDS/result-list/full-text-links.phtml', ['driver' => $this->driver, 'recordLinker' => $this->recordLinker()])?>
       <?php endif; ?>
     </div>
   </div>
   <div class="media-body">
-
     <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->driver->getTitle()?></h1>
 
     <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>

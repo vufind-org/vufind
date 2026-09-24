@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Ratings\RatingsService;
+use VuFind\View\Helper\Root\Record;
 
 /**
  * Factory for GetRecordRating AJAX handler.
@@ -72,7 +73,7 @@ class GetRecordRatingFactory implements \Laminas\ServiceManager\Factory\FactoryI
         }
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get('ViewRenderer')->plugin('record'),
+            $container->get('ViewHelperManager')->get(Record::class),
             $container->get(RatingsService::class)
         );
     }

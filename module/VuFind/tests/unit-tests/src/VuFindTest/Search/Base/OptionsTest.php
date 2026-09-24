@@ -61,9 +61,9 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
         ];
         $configManager = $this->getMockConfigManager($configs);
         $options = $this->getBaseOptionsObject($configManager);
-        $this->assertEquals($handlers, $options->getBasicHandlers());
-        $this->assertEquals('foo_label', $options->getLabelForBasicHandler('foo'));
-        $this->assertEquals('bar_label', $options->getLabelForBasicHandler('bar'));
+        $this->assertSame($handlers, $options->getBasicHandlers());
+        $this->assertSame('foo_label', $options->getLabelForBasicHandler('foo'));
+        $this->assertSame('bar_label', $options->getLabelForBasicHandler('bar'));
         $this->assertEmpty($options->getLabelForBasicHandler('baz'));
     }
 }

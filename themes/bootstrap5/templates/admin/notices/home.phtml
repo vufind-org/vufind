@@ -1,0 +1,79 @@
+<?php
+  $this->headTitle($this->translate('Notices'));
+
+  $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
+    ->add($this->translate('Notices'), active: true);
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h1><?=$this->transEsc('Notices')?></h1>
+  <?=$this->flashmessages()?>
+  <table class="table table-striped content-list notice-list">
+    <thead>
+    <tr>
+      <th class="content-list-edit-col"><?=$this->transEsc('Edit')?></th>
+      <th><?=$this->transEsc('Notice')?></th>
+    </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($this->noticeList ?? [] as $notice): ?>
+        <tr class="notice-row" data-notice-id="<?=$this->escapeHtmlAttr($notice['id'])?>">
+          <td>
+            <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Edit'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Edit')?>"><?=$this->icon('content-edit')?></a>
+            <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Delete'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('content-delete')?></a>
+          </td>
+          <td>
+            <?php
+              $start = $notice['start'] ?? null;
+              $end = $notice['end'] ?? null;
+              $dateTimeType = $notice['dateTimeType'] ?? null;
+              $dateTimeFormat = $notice['dateTimeFormat'] ?? null;
+              $dateTimeDisplayFunction = $notice['dateTimeDisplayFunction'] ?? null
+            ?>
+            <?php if (($dateTimeType !== null) && (($start !== null) || ($end !== null))): ?>
+              <?php
+                $isActive = false;
+                if ($dateTimeFormat !== null) {
+                  $now = date($dateTimeFormat);
+                  $isActive = (($start === null) || $start <= $now)
+                    && (($end === null) || $end >= $now);
+                  if ($start !== null && $dateTimeDisplayFunction !== null) {
+                    try {
+                      $start = $this->dateTime()->$dateTimeDisplayFunction($dateTimeFormat, $start);
+                    } catch (\VuFind\Date\DateException $e) {
+                      // Even if we can not parse the value, because it is not in the correct format,
+                      // it might still be valid and we still want to display it.
+                    }
+                  }
+                  if ($end !== null && $dateTimeDisplayFunction !== null) {
+                    try {
+                      $end = $this->dateTime()->$dateTimeDisplayFunction($dateTimeFormat, $end);
+                    } catch (\VuFind\Date\DateException $e) {
+                      // Even if we can not parse the value, because it is not in the correct format,
+                      // it might still be valid and we still want to display it.
+                    }
+                  }
+                }
+              ?>
+              <div class="<?=$isActive ? 'text-success' : 'text-danger'?>">
+                <?php if ($start !== null): ?>
+                  <?=$this->transEsc('start_' . $dateTimeType)?>: <?=$this->escapeHtml($start)?>
+                <?php endif; ?>
+
+                <?php if ($end !== null): ?>
+                  <?=$this->transEsc('end_' . $dateTimeType)?>: <?=$this->escapeHtml($end)?>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
+            <?=$this->notices()->renderNotice($notice);?>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  <a href="<?=$this->url('admin/notices', ['action' => 'Add'])?>"><?=$this->transEsc('Add New Notice')?></a>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
+</div>

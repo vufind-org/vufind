@@ -55,7 +55,7 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
      *
      * @var string
      */
-    protected $defaultView = 'list_brief';
+    protected string $defaultView = 'list_brief';
 
     /**
      * Extract a component from the defaultView API property.
@@ -82,9 +82,9 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     /**
      * Get default view setting.
      *
-     * @return int
+     * @return string
      */
-    public function getDefaultView()
+    public function getDefaultView(): string
     {
         return $this->getDefaultViewPart(0, 'list');
     }
@@ -94,7 +94,7 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getEbscoView()
+    public function getEbscoView(): string
     {
         return $this->getDefaultViewPart(1, $this->getConfiguredDefaultView());
     }

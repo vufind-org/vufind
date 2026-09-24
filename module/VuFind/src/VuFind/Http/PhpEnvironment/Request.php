@@ -29,6 +29,9 @@
 
 namespace VuFind\Http\PhpEnvironment;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\Factory\DefaultFactory;
+
 use function is_array;
 use function is_string;
 
@@ -41,6 +44,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[DefaultFactory(name: InvokableFactory::class)]
 class Request extends \Laminas\Http\PhpEnvironment\Request
 {
     /**

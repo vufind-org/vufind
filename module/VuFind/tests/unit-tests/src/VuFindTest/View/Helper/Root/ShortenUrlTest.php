@@ -30,9 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\UrlShortener\Database;
-use VuFind\UrlShortener\UrlShortenerInterface;
 use VuFind\View\Helper\Root\ShortenUrl;
-use VuFind\View\Helper\Root\ShortenUrlFactory;
 
 /**
  * ShortenUrl view helper Test Class.
@@ -56,9 +54,7 @@ class ShortenUrlTest extends \PHPUnit\Framework\TestCase
         $service = $container->createMock(Database::class, ['shorten']);
         $service->expects($this->once())->method('shorten')
             ->with('foo')->willReturn('bar');
-        $container->set(UrlShortenerInterface::class, $service);
-        $factory = new ShortenUrlFactory();
-        $helper = $factory($container, ShortenUrl::class);
-        $this->assertEquals('bar', $helper('foo'));
+        $helper = new ShortenUrl($service);
+        $this->assertSame('bar', $helper('foo'));
     }
 }

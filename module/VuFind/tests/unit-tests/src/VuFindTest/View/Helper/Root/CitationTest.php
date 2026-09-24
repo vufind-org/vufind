@@ -389,8 +389,11 @@ class CitationTest extends \PHPUnit\Framework\TestCase
      */
     public function testCitations()
     {
-        $citation = new Citation(new \VuFind\Date\Converter(), ['Site' => ['language' => 'en']]);
-        $citation->setView($this->getPhpRenderer());
+        $citation = new Citation(
+            new \VuFind\Date\Converter(),
+            $this->getPhpRenderer()->plugin('partial'),
+            ['Site' => ['language' => 'en']]
+        );
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
             $driver->setRawData($current['raw']);

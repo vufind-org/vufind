@@ -169,8 +169,17 @@ class NormalizedSearch
      */
     public function isEquivalentToMinifiedSearch(Minified $otherSearch): bool
     {
+        // Check class to avoid deminification if they don't match:
+        if ($otherSearch->cl !== $this->minified->cl) {
+            return false;
+        }
         // Deminify the other search:
-        $searchToCheck = $otherSearch->deminify($this->resultsManager);
+        try {
+            $searchToCheck = $otherSearch->deminify($this->resultsManager);
+        } catch (\Exception $e) {
+            // If we can't deminify a search, assume it's not equivalent:
+            return false;
+        }
         // Check if classes and URLs match:
         return $searchToCheck::class === get_class($this->raw)
             && $this->url === $searchToCheck->getUrlQuery()->getParams();

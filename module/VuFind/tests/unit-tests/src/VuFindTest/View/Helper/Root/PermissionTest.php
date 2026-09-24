@@ -30,6 +30,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use VuFind\Role\PermissionDeniedManager;
+use VuFind\Role\PermissionManager;
 use VuFind\View\Helper\Root\Permission;
 
 /**
@@ -54,28 +56,46 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
             'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest:param1=noValue',
-            'deniedControllerBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
+            'deniedActionBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
         ],
         'permissionDeniedTemplateNoParams' => [
             'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest',
-            'deniedControllerBehavior' => 'showTemplate:record/ActionTest',
+            'deniedActionBehavior' => 'showTemplate:record/ActionTest',
         ],
         'permissionDeniedMessage' => [
             'deniedTemplateBehavior' => 'showMessage:dl_translatable_test',
-            'deniedControllerBehavior' => 'showTemplate:action_translatable_test',
+            'deniedActionBehavior' => 'showTemplate:action_translatable_test',
         ],
         'permissionDeniedLogin' => [
-            'deniedControllerBehavior' => 'promptLogin',
+            'deniedActionBehavior' => 'promptLogin',
         ],
         'permissionDeniedException' => [
-            'deniedControllerBehavior' => 'exception:ForbiddenException:exception_message',
+            'deniedActionBehavior' => 'exception:ForbiddenException:exception_message',
         ],
         'permissionDeniedNonExistentException' => [
-            'deniedControllerBehavior' => 'exception:NonExistentException:exception_message',
+            'deniedActionBehavior' => 'exception:NonExistentException:exception_message',
         ],
         'permissionDeniedNothing' => [
         ],
     ];
+
+    /**
+     * Convenience method to get permission helper.
+     *
+     * @param PermissionDeniedManager $mockPdm Mock permission denied manager
+     *
+     * @return Permission
+     */
+    protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
+    {
+        $view = $this->getMockView();
+        return new Permission(
+            $this->getMockPm(false),
+            $mockPdm,
+            $view->plugin('transEsc'),
+            $view->plugin('context')
+        );
+    }
 
     /**
      * Test the message display.
@@ -84,7 +104,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     public function testMessageDisplay()
     {
-        $mockPmdMessage = $this->getMockPmd(
+        $mockPdmMessage = $this->getMockPdm(
             [
                 'deniedTemplateBehavior' => [
                     'action' => 'showMessage',
@@ -94,8 +114,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = new Permission($this->getMockPm(false), $mockPmdMessage);
-        $helper->setView($this->getMockView());
+        $helper = $this->getPermissionHelper($mockPdmMessage);
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
@@ -111,7 +130,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
 
         // Template does not exist, expect an exception, though
-        $mockPmd = $this->getMockPmd(
+        $mockPdm = $this->getMockPdm(
             [
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
@@ -121,8 +140,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = new Permission($this->getMockPm(false), $mockPmd);
-        $helper->setView($this->getMockView());
+        $helper = $this->getPermissionHelper($mockPdm);
 
         $helper->getAlternateContent('permissionDeniedTemplate');
     }
@@ -134,7 +152,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     public function testExistingTemplateDisplay()
     {
-        $mockPmd = $this->getMockPmd(
+        $mockPdm = $this->getMockPdm(
             [
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
@@ -144,8 +162,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = new Permission($this->getMockPm(false), $mockPmd);
-        $helper->setView($this->getMockView());
+        $helper = $this->getPermissionHelper($mockPdm);
 
         $this->assertSame(
             '<span class="label label-success">Available</span>',
@@ -158,15 +175,15 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config Config containing DeniedTemplateBehavior to return
      *
-     * @return \VuFind\Role\PermissionDeniedManager
+     * @return PermissionDeniedManager
      */
-    protected function getMockPmd($config = false)
+    protected function getMockPdm($config = false): PermissionDeniedManager
     {
-        $mockPmd = $this->getMockBuilder(\VuFind\Role\PermissionDeniedManager::class)
+        $mockPdm = $this->getMockBuilder(PermissionDeniedManager::class)
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
-        $mockPmd->method('getDeniedTemplateBehavior')->willReturn($config['deniedTemplateBehavior']);
-        return $mockPmd;
+        $mockPdm->method('getDeniedTemplateBehavior')->willReturn($config['deniedTemplateBehavior']);
+        return $mockPdm;
     }
 
     /**
@@ -174,11 +191,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $isAuthorized isAuthorized value to return
      *
-     * @return \VuFind\Role\PermissionManager
+     * @return PermissionManager
      */
     protected function getMockPm($isAuthorized = false)
     {
-        $mockPm = $this->createMock(\VuFind\Role\PermissionManager::class);
+        $mockPm = $this->createMock(PermissionManager::class);
         $mockPm->method('isAuthorized')->willReturn($isAuthorized);
         $mockPm->method('permissionRuleExists')->willReturn(true);
 
@@ -204,12 +221,12 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     {
         $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();
-        $transEsc = new \VuFind\View\Helper\Root\TransEsc();
-        $context = new \VuFind\View\Helper\Root\Context();
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
         $realView = $this->getPhpRenderer(
-            compact('translate', 'transEsc', 'context', 'escapehtml')
+            compact('translate', 'transEsc', 'escapehtml')
         );
-        $transEsc->setView($realView);
+        $context = new \VuFind\View\Helper\Root\Context($realView);
+        $realView->getHelperPluginManager()->setService('context', $context);
         return $realView;
     }
 }

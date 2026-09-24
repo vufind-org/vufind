@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
@@ -84,7 +84,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         Record $rp,
         TabManager $tm
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
         $this->recordLoader = $loader;
         $this->recordPlugin = $rp;
         $this->tabManager = $tm;
@@ -114,17 +114,17 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites(); // avoid session write timing bug
 
-        $id = $params->fromPost('id') ?: $params->fromQuery('id');
-        $source = $params->fromPost('source') ?: $params->fromQuery('source');
-        $searchId = $params->fromPost('sid') ?: $params->fromQuery('sid');
+        $id = $this->getPostOrQueryParam($request, 'id');
+        $source = $this->getPostOrQueryParam($request, 'source');
+        $searchId = $this->getPostOrQueryParam($request, 'sid');
 
         if (!is_array($id)) {
             return $this->formatResponse(

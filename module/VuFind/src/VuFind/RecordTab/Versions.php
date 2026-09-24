@@ -46,13 +46,6 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     use TranslatorAwareTrait;
 
     /**
-     * Main configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Search options plugin manager.
      *
      * @var \VuFind\Search\Options\PluginManager
@@ -62,15 +55,11 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config                $config Configuration
-     * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
-     * manager
+     * @param \VuFind\Search\Options\PluginManager $som Search options plugin manager
      */
     public function __construct(
-        \VuFind\Config\Config $config,
         \VuFind\Search\Options\PluginManager $som
     ) {
-        $this->config = $config;
         $this->searchOptionsManager = $som;
     }
 

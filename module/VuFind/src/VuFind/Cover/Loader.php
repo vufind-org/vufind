@@ -76,13 +76,6 @@ class Loader extends \VuFind\ImageLoader
     protected $validSizes = ['small', 'medium', 'large'];
 
     /**
-     * VuFind configuration settings.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Plugin manager for API handlers.
      *
      * @var ApiManager
@@ -190,7 +183,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config   $config      VuFind configuration
+     * @param array                   $config      VuFind configuration
      * @param ApiManager              $manager     Plugin manager for API handlers
      * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
      * @param \VuFindHttp\HttpService $httpService HTTP client factory
@@ -198,15 +191,14 @@ class Loader extends \VuFind\ImageLoader
      * images (set to system temp dir if not otherwise specified)
      */
     public function __construct(
-        $config,
+        protected array $config,
         ApiManager $manager,
         \VuFindTheme\ThemeInfo $theme,
         \VuFindHttp\HttpService $httpService,
         $baseDir = null
     ) {
         $this->setThemeInfo($theme);
-        $this->config = $config;
-        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
+        $this->configuredFailImage = $config['Content']['noCoverAvailableImage'] ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
@@ -221,13 +213,12 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getCoverGeneratorSettings()
     {
-        $settings = isset($this->config->DynamicCovers)
-            ? $this->config->DynamicCovers->toArray() : [];
+        $settings = $this->config['DynamicCovers'] ?? [];
         if (
             !isset($settings['backgroundMode'])
-            && isset($this->config->Content->makeDynamicCovers)
+            && isset($this->config['Content']['makeDynamicCovers'])
         ) {
-            $settings['backgroundMode'] = $this->config->Content->makeDynamicCovers;
+            $settings['backgroundMode'] = $this->config['Content']['makeDynamicCovers'];
         }
         $size = $this->size;
         $pickSize = function ($setting) use ($size) {
@@ -635,8 +626,8 @@ class Loader extends \VuFind\ImageLoader
         // configured....
         if ($allowCache) {
             // All other services cache based on configuration:
-            $conf = isset($this->config->Content->coverimagesCache)
-                ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
+            $conf = isset($this->config['Content']['coverimagesCache'])
+                ? trim(strtolower($this->config['Content']['coverimagesCache'])) : true;
             if (in_array($conf, [true, 1, '1', 'true'], true)) {
                 $cache = true;
             } elseif (in_array($conf, [false, 0, '0', 'false'], true)) {
@@ -757,10 +748,10 @@ class Loader extends \VuFind\ImageLoader
      */
     public function getHandlers()
     {
-        if (!isset($this->config->Content->coverimages)) {
+        if (!isset($this->config['Content']['coverimages'])) {
             return [];
         }
-        $providers = explode(',', $this->config->Content->coverimages);
+        $providers = explode(',', $this->config['Content']['coverimages']);
         foreach ($providers as $provider) {
             $provider = explode(':', trim($provider));
             $apiName = strtolower(trim($provider[0]));

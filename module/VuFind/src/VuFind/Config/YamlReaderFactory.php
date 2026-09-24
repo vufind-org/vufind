@@ -68,9 +68,6 @@ class YamlReaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(PathResolver::class),
-            $container->get(\VuFind\Cache\Manager::class),
-        );
+        return new $requestedName($container->get(ConfigManagerInterface::class));
     }
 }

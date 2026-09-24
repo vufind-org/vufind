@@ -11,6 +11,7 @@ $rules = [
     '@PHPUnit10x0Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
+    'attribute_empty_parentheses' => ['use_parentheses' => false],
     'binary_operator_spaces' => [
         'default' => 'single_space',
         'operators' => ['=' => null, '=>' => null],

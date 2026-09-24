@@ -62,6 +62,6 @@ abstract class AbstractIlsAndUserAction extends AbstractBase implements Translat
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?UserEntityInterface $user
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 }

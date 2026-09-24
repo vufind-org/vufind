@@ -112,7 +112,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Solr', $this->getParams()->getSearchClassId());
+        $this->assertSame('Solr', $this->getParams()->getSearchClassId());
     }
 
     /**

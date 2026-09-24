@@ -243,7 +243,7 @@ class AutowiringFactory implements FactoryInterface
             }
         }
         if (null !== $value && null !== ($explode = $autowireArgs['explode'] ?? null)) {
-            return $this->explodeSetting((string)$value, true, $explode);
+            return $this->explodeSetting((string)$value, 'trim', $explode);
         }
         $value ??= $autowireArgs['default'] ?? null;
         if (null !== $value) {

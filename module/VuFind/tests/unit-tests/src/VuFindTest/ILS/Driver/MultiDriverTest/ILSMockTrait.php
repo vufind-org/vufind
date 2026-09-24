@@ -206,7 +206,7 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig(string $function, array $params = []): array
     {
         return [];
     }

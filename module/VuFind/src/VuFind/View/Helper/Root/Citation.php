@@ -30,10 +30,14 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\Partial;
 use Seboettg\CiteProc\CiteProc;
 use Seboettg\CiteProc\StyleSheet;
+use VuFind\Date\Converter;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 
 use function count;
 use function function_exists;
@@ -52,16 +56,9 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
+class Citation implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * VuFind configuration
-     *
-     * @var array
-     */
-    protected $config;
 
     /**
      * Citation details.
@@ -76,13 +73,6 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $driver;
-
-    /**
-     * Date converter.
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
 
     /**
      * List of words to never capitalize when using title case.
@@ -116,13 +106,19 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter $converter Date converter
-     * @param array                  $config    VuFind configuration
+     * @param Converter        $dateConverter    Date converter
+     * @param Partial          $partial          Partial view helper
+     * @param array            $config           VuFind configuration
+     * @param GlobalsContainer $globalsContainer Globals container
      */
-    public function __construct(\VuFind\Date\Converter $converter, array $config)
-    {
-        $this->dateConverter = $converter;
-        $this->config = $config;
+    public function __construct(
+        protected Converter $dateConverter,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Partial $partial,
+        #[Autowire(config: 'config')]
+        protected array $config,
+        protected ?GlobalsContainer $globalsContainer = null
+    ) {
     }
 
     /**
@@ -286,12 +282,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $data = $this->getDataCSL();
 
         $locale = $this->config['Site']['language']; //'en';
-
-        try {
-            // will fail during unit tests
-            $locale = $this->getView()->layout()->userLang;
-        } catch (\Exception $e) {
-            // pass
+        if ($this->globalsContainer && $this->globalsContainer['userLang']) {
+            $locale = $this->globalsContainer['userLang'];
         }
 
         $processor = new CiteProc(StyleSheet::loadStyleSheet($format), $locale);
@@ -316,7 +308,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Remove punctuation from both ends
+     * Remove punctuation from both ends.
      *
      * @param string|number $text text to be trimmed
      *
@@ -328,7 +320,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * From hyphenated date ranges (XXXX-XXXX)
+     * From hyphenated date ranges (XXXX-XXXX).
      *
      * @param string $name text with a date range
      *
@@ -340,7 +332,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Split author string into given and family parts
+     * Split author string into given and family parts.
      *
      * @param string $name full name with given and family name
      *
@@ -369,7 +361,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Util function to normalize and add data to citation object if non-empty
+     * Util function to normalize and add data to citation object if non-empty.
      *
      * @param array $item  item reference to add data to
      * @param array $pairs citation name => value (array|string) from driver
@@ -475,7 +467,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
 
         // authors
         if (!empty($this->details['authors'])) {
-            foreach ($this->details['authors'] as $i => $author) {
+            foreach ($this->details['authors'] as $author) {
                 $item['author'][] = array_merge(
                     ['literal' => $author],
                     $this->nameToGivenFamily($author)
@@ -520,12 +512,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $apa['doi'] = $doi;
         }
 
-        $partial = $this->getView()->plugin('partial');
         // Behave differently for books vs. journals:
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
-            return $partial('Citation/apa.phtml', $apa);
+            return ($this->partial)('Citation/apa.phtml', $apa);
         }
 
         // If we got this far, it's the default article case:
@@ -533,7 +524,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
-        return $partial('Citation/apa-article.phtml', $apa);
+        return ($this->partial)('Citation/apa-article.phtml', $apa);
     }
 
     /**
@@ -609,12 +600,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         }
 
         // Behave differently for books vs. journals:
-        $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
             $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return $partial('Citation/mla.phtml', $mla);
+            return ($this->partial)('Citation/mla.phtml', $mla);
         }
         // If we got this far, we should add other journal-specific details:
         $mla['doiArticleComma'] = $doiArticleComma;
@@ -625,7 +615,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $volPrefix,
             $yearFormat
         );
-        return $partial('Citation/mla-article.phtml', $mla);
+        return ($this->partial)('Citation/mla-article.phtml', $mla);
     }
 
     /**
@@ -796,7 +786,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 // Use the multi-byte substring function if available to avoid
                 // problems with accented characters:
                 $fnameParts[$i] = function_exists('mb_substr')
-                    ? mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.'
+                    ? mb_substr($fnameParts[$i], 0, 1, 'UTF-8') . '.'
                     : substr($fnameParts[$i], 0, 1) . '.';
             }
             $name .= ', ' . implode(' ', $fnameParts);

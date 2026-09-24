@@ -285,12 +285,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->exactly(3))->method('save')->with(
             'Solr',
-            $this->callback(
-                function ($doc) {
-                    $this->assertInstanceOf(\VuFindSearch\Backend\Solr\Document\RawJSONDocument::class, $doc);
-                    return true;
-                }
-            ),
+            $this->isInstanceOf(\VuFindSearch\Backend\Solr\Document\RawJSONDocument::class),
             'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);

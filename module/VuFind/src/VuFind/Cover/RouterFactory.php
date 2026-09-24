@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * Cover router factory.
@@ -68,14 +69,7 @@ class RouterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        // Try to get the base URL from the controller plugin; fail over to
-        // the view helper if that doesn't work.
-        try {
-            $base = $container->get('ControllerPluginManager')->get('url')
-                ->fromRoute('cover-show');
-        } catch (\Exception $e) {
-            $base = ($container->get('ViewRenderer')->plugin('url'))('cover-show');
-        }
+        $base = $container->get(RouteHelper::class)->getUrlFromRoute('cover-show');
         $coverLoader = $container->get(\VuFind\Cover\Loader::class);
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray('config')['Content'] ?? [];

@@ -29,9 +29,9 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * "Get Cookie Consent Overlay" AJAX handler.
@@ -49,24 +49,24 @@ class GetCookieConsent extends AbstractBase
     /**
      * Constructor.
      *
-     * @param RendererInterface $renderer View renderer
+     * @param TemplateRendererInterface $renderer Template renderer
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire(service: 'ViewRenderer')]
-        protected RendererInterface $renderer
+        protected TemplateRendererInterface $renderer
     ) {
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
-        $html = $this->renderer->render('CookieConsent/cookie-consent-overlay.phtml');
+        $html = $this->renderer->renderTemplateAsString($request, 'CookieConsent/cookie-consent-overlay.phtml');
         return $this->formatResponse(compact('html'));
     }
 }

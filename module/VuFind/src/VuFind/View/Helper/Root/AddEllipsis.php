@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 use function strlen;
 
 /**
@@ -42,7 +40,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AddEllipsis extends AbstractHelper
+class AddEllipsis
 {
     /**
      * Adds "..." to the beginning and/or end of a highlighted phrase when

@@ -32,8 +32,10 @@ namespace VuFind\View\Helper\Bootstrap5;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Helper\Layout;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
  * LayoutClass helper factory.
@@ -72,13 +74,13 @@ class LayoutClassFactory implements FactoryInterface
         $sidebarOnLeft = $config['sidebarOnLeft'] ?? false;
         $mirror = $config['mirrorSidebarInRTL'] ?? true;
         $offcanvas = $config['offcanvas'] ?? false;
-        // The right-to-left setting is injected into the layout by the Bootstrapper;
-        // pull it back out here to avoid duplicate effort, then use it to apply
-        // the mirror setting appropriately.
-        $layout = $container->get('ViewManager')->getViewModel();
-        if ($layout->rtl && $mirror) {
+        // The right-to-left setting is injected into the globals by the Bootstrapper; pull it back out here to avoid
+        // duplicate effort, then use it to apply the mirror setting appropriately.
+        $globals = $container->get(GlobalsContainer::class);
+        if ($globals['rtl'] && $mirror) {
             $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new $requestedName($sidebarOnLeft, $offcanvas, $layout->rtl);
+        $layoutHelper = $container->get('ViewHelperManager')->get(Layout::class);
+        return new $requestedName($sidebarOnLeft, $offcanvas, $globals['rtl'], $layoutHelper);
     }
 }

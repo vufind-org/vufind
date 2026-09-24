@@ -32,6 +32,8 @@
 namespace VuFind\Content;
 
 use VuFind\Condition\Manager as ConditionManager;
+use VuFind\Db\Entity\NoticeEntityInterface;
+use VuFind\Db\Service\NoticeServiceInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -60,14 +62,17 @@ class NoticeManager implements LocaleSettingsAwareInterface
     /**
      * Constructor.
      *
-     * @param array            $config           Config
-     * @param ConditionManager $conditionManager Condition manager
+     * @param array                  $noticeConfig     Notice config
+     * @param ConditionManager       $conditionManager Condition manager
+     * @param NoticeServiceInterface $noticeService    Notice service
      */
     public function __construct(
         #[Autowire(config: 'Notices', configType: 'yaml')]
-        protected array $config,
+        protected array $noticeConfig,
         #[Autowire(service: ConditionManager::class)]
         protected ConditionManager $conditionManager,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
+        protected NoticeServiceInterface $noticeService
     ) {
     }
 
@@ -76,9 +81,37 @@ class NoticeManager implements LocaleSettingsAwareInterface
      *
      * @return array
      */
-    public function getConfig(): array
+    public function getNoticeConfig(): array
     {
-        return $this->config;
+        return $this->noticeConfig;
+    }
+
+    /**
+     * Get notice defaults.
+     *
+     * @return array
+     */
+    public function getDefaults(): array
+    {
+        $noticeFormConfig = $this->noticeConfig['adminForm'] ?? [];
+        $contexts = $noticeFormConfig['contexts'] ?? [];
+        $context = $contexts[array_key_first($contexts)] ?? [];
+        return [
+            'position' => $context['position'] ?? 'default',
+            'conditions' => $context['conditions'] ?? [],
+            'contentType' => $noticeFormConfig['contentTypes'][0] ?? 'text',
+            'style' => array_keys($this->noticeConfig['styles'] ?? [])[0] ?? null,
+        ];
+    }
+
+    /**
+     * Get notice list to be changed by admins.
+     *
+     * @return array
+     */
+    public function getAdminList(): array
+    {
+        return $this->getNoticesFromDatabase();
     }
 
     /**
@@ -123,7 +156,8 @@ class NoticeManager implements LocaleSettingsAwareInterface
     protected function loadNotices(): void
     {
         $this->notices = [];
-        foreach ($this->config['notices'] ?? [] as $notice) {
+        foreach ($this->noticeConfig['notices'] ?? [] as $index => $notice) {
+            $notice['id'] = 'config_' . $index;
             if (!isset($notice['content'])) {
                 $content = $this->getActiveTranslation($notice['translations'] ?? [], true);
                 if ($content !== null) {
@@ -132,5 +166,101 @@ class NoticeManager implements LocaleSettingsAwareInterface
             }
             $this->notices[] = $notice;
         }
+        $this->notices = array_merge($this->notices, $this->getNoticesFromDatabase());
+    }
+
+    /**
+     * Get notices from the database.
+     *
+     * @return array
+     */
+    protected function getNoticesFromDatabase(): array
+    {
+        return array_map(
+            fn ($noticeEntity) => $this->noticeEntityToArray($noticeEntity),
+            $this->noticeService->getNotices()
+        );
+    }
+
+    /**
+     * Get notice from the database by id.
+     *
+     * @param int $id Notice id
+     *
+     * @return ?array
+     */
+    public function getByDatabaseId(int $id): ?array
+    {
+        $noticeEntity = $this->noticeService->getById($id);
+        if ($noticeEntity === null) {
+            return null;
+        }
+        return $this->noticeEntityToArray($noticeEntity);
+    }
+
+    /**
+     * Add notice to the database.
+     *
+     * @param array $notice Notice data
+     *
+     * @return void
+     */
+    public function addNoticeToDatabase(array $notice): void
+    {
+        $this->noticeService->insert($notice);
+    }
+
+    /**
+     * Edit notice in the database.
+     *
+     * @param int   $id     Notice id
+     * @param array $notice Notice data
+     *
+     * @return void
+     */
+    public function editDatabaseNotice(int $id, array $notice): void
+    {
+        $this->noticeService->update($id, $notice);
+    }
+
+    /**
+     * Delete notice from the database by id.
+     *
+     * @param int $id Notice id
+     *
+     * @return void
+     */
+    public function deleteByDatabaseId(int $id): void
+    {
+        $this->noticeService->delete($id);
+    }
+
+    /**
+     * Map a notice db entity to the array format.
+     *
+     * @param NoticeEntityInterface $noticeEntity Notice entity
+     *
+     * @return array
+     */
+    protected function noticeEntityToArray(NoticeEntityInterface $noticeEntity): array
+    {
+        $translations = [];
+        foreach ($noticeEntity->getTranslations() as $translationEntity) {
+            $translations[$translationEntity->getLanguage()] = $translationEntity->getContent();
+        }
+        $notice = [
+            'id' => $noticeEntity->getId(),
+            'enabled' => $noticeEntity->isEnabled(),
+            'position' => $noticeEntity->getPosition(),
+            'style' => $noticeEntity->getStyle(),
+            'contentType' => $noticeEntity->getContentType(),
+            'conditions' => $noticeEntity->getConditions() ?? [],
+            'translations' => $translations,
+        ];
+        $content = $this->getActiveTranslation($translations);
+        if ($content !== null) {
+            $notice['content'] = $content;
+        }
+        return $notice;
     }
 }

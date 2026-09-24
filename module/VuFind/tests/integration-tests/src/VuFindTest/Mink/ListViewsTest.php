@@ -101,8 +101,15 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->gotoRecord();
 
-        // Open the user comments tab and confirm that login is required:
-        $this->clickCss($page, '#usercomments_cd588d8723d65ca0ce9439e79755fa0a');
+        // Assert that we are on the search results screen; we want to make sure that clicking on the comments
+        // tab doesn't manipulate the search URL inappropriately.
+        $session = $this->getMinkSession();
+        $initialUrl = $session->getCurrentUrl();
+        $this->assertStringEndsWith('/Search/Results?lookfor=id%3Atestdeweybrowse&type=AllFields', $initialUrl);
+
+        // Open the user comments tab and confirm that URL is unchanged and login is required:
+        $this->clickCss($page, '#tab-button-usercomments-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->assertSame($initialUrl, $session->getCurrentUrl());
         $this->assertSame(
             'You must be logged in first',
             $this->findCssAndGetText($page, '.comment-form .btn-primary')
@@ -167,8 +174,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
 
         // Click save inside the tools tab
-        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
+        $this->clickCss($page, '#tab-button-tools-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->clickCss($page, '#tab-pane-tools-cd588d8723d65ca0ce9439e79755fa0a .save-record');
         // Make an account
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
@@ -179,8 +186,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         $this->waitForPageLoad($page);
         // Check saved items status
-        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
+        $this->clickCss($page, '#tab-button-information-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->findCss($page, '#tab-pane-information-cd588d8723d65ca0ce9439e79755fa0a .savedLists ul');
     }
 
     /**

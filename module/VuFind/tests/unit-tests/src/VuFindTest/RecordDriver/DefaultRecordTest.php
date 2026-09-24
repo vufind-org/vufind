@@ -30,7 +30,6 @@
 
 namespace VuFindTest\RecordDriver;
 
-use VuFind\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
@@ -456,7 +455,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Convert new format to old format for the test
+     * Convert new format to old format for the test.
      *
      * @param array $arr new configuration of citation formats
      *
@@ -507,7 +506,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         ];
         foreach ($tests as $current) {
             [$input, $output] = $current;
-            $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+            $cfg = ['Record' => ['citation_formats' => $input]];
             $this->assertEquals(
                 $output,
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
@@ -518,24 +517,21 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Deliver various citation configurations.
      *
-     * @return array list of citation formats
+     * @return \Iterator<(int | string), mixed> list of citation formats
      */
-    public static function citationConfigs()
+    public static function citationConfigs(): \Iterator
     {
         $driver = self->getDriver();
         $supported = self->callMethod($driver, 'getSupportedCitationFormats');
-
-        return [
-            // No results:
-            [false, []],
-            ['false', []],
-            // All results:
-            [true, $supported],
-            ['true', $supported],
-            // Filtered results:
-            ['MLA,foo', ['MLA', 'foo']],
-            ['bar ,     APA,MLA', ['bar', 'APA', 'MLA']],
-        ];
+        // No results:
+        yield [false, []];
+        yield ['false', []];
+        // All results:
+        yield [true, $supported];
+        yield ['true', $supported];
+        // Filtered results:
+        yield ['MLA,foo', ['MLA', 'foo']];
+        yield ['bar ,     APA,MLA', ['bar', 'APA', 'MLA']];
     }
 
     /**
@@ -544,10 +540,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string|boolean $input  citation formats from config
      * @param array          $output list of valid citation formats
      *
-     * @dataProvider citationConfigs
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('citationConfigs')]
     public function testCitationConfigs($input, $output)
     {
         $cfg = new Config(['Record' => ['citation_formats' => $input]]);
@@ -561,7 +556,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetCleanISBNs
+     * Data provider for testGetCleanISBNs.
      *
      * @return array list of citation formats
      */
@@ -589,10 +584,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string|boolean $input  citation formats from config
      * @param array          $output list of valid citation formats
      *
-     * @dataProvider citationConfigs
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('citationConfigs')]
     public function testCitationConfigs($input, $output)
     {
         $cfg = new Config(['Record' => ['citation_formats' => $input]]);
@@ -696,12 +690,12 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a record driver with fake data.
      *
-     * @param array   $overrides  Fixture fields to override.
-     * @param ?Config $mainConfig Main configuration (optional).
+     * @param array  $overrides  Fixture fields to override.
+     * @param ?array $mainConfig Main configuration (optional).
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], ?Config $mainConfig = null)
+    protected function getDriver($overrides = [], ?array $mainConfig = null)
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

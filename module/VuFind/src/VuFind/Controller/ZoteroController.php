@@ -98,11 +98,11 @@ class ZoteroController extends AbstractBase implements LoggerAwareInterface, Tra
             if (is_string($result)) {
                 return $this->redirect()->toUrl($result);
             }
-            $this->flashMessenger()->addSuccessMessage(
+            $this->getFlashMessenger()->addSuccessMessage(
                 $this->translate('export_records_complete', ['count' => $result], null, true)
             );
         } catch (ZoteroException $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($e->getMessage());
         }
 
         if ($url = $this->getAndClearReferrer()) {
@@ -128,11 +128,11 @@ class ZoteroController extends AbstractBase implements LoggerAwareInterface, Tra
             if (is_string($result)) {
                 return $this->redirect()->toUrl($result);
             }
-            $this->flashMessenger()->addSuccessMessage(
+            $this->getFlashMessenger()->addSuccessMessage(
                 $this->translate('export_records_complete', ['count' => $result], null, true)
             );
         } catch (ZoteroException $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($e->getMessage());
         }
 
         if ($url = $this->getAndClearReferrer()) {

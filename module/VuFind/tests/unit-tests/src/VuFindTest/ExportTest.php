@@ -30,7 +30,6 @@
 namespace VuFindTest;
 
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\Config\Config;
 use VuFind\Export;
 
 /**
@@ -369,6 +368,6 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     protected function getExport($main = [], $export = [], $renderer = null)
     {
-        return new Export($main, $export, $renderer ?? $this->createMock(PhpRenderer::class));
+        return new Export($main, $export, $renderer ?? $this->createStub(PhpRenderer::class));
     }
 }

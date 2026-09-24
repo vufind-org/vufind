@@ -42,7 +42,6 @@ use VuFindApi\Formatter\RecordFormatter;
 
 use function count;
 use function in_array;
-use function intval;
 use function strlen;
 
 /**
@@ -249,13 +248,13 @@ class Server
     /**
      * Initialize settings.
      *
-     * @param \VuFind\Config\Config $config  VuFind configuration
-     * @param string                $baseURL The base URL for the OAI server
-     * @param array                 $params  The incoming OAI-PMH parameters (i.e. $_GET)
+     * @param array  $config  VuFind configuration
+     * @param string $baseURL The base URL for the OAI server
+     * @param array  $params  The incoming OAI-PMH parameters (i.e. $_GET)
      *
      * @return void
      */
-    public function init(\VuFind\Config\Config $config, $baseURL, array $params)
+    public function init(array $config, $baseURL, array $params)
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -681,66 +680,66 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \VuFind\Config\Config $config VuFind configuration
+     * @param array $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\VuFind\Config\Config $config)
+    protected function initializeSettings(array $config)
     {
         // Override default repository name if configured:
-        if (isset($config->OAI->repository_name)) {
-            $this->repositoryName = $config->OAI->repository_name;
+        if (isset($config['OAI']['repository_name'])) {
+            $this->repositoryName = $config['OAI']['repository_name'];
         }
 
         // Override default ID namespace if configured:
-        if (isset($config->OAI->identifier)) {
-            $this->idNamespace = $config->OAI->identifier;
+        if (isset($config['OAI']['identifier'])) {
+            $this->idNamespace = $config['OAI']['identifier'];
         }
 
         // Override page size if configured:
-        if (isset($config->OAI->page_size)) {
-            $this->pageSize = $config->OAI->page_size;
+        if (isset($config['OAI']['page_size'])) {
+            $this->pageSize = $config['OAI']['page_size'];
         }
 
         // Use either OAI-specific or general email address; we must have SOMETHING.
-        $this->adminEmail = $config->OAI->admin_email ?? $config->Site->email;
+        $this->adminEmail = $config['OAI']['admin_email'] ?? $config['Site']['email'];
 
         // Use a Solr field to determine sets, if configured:
-        if (isset($config->OAI->set_field)) {
-            $this->setField = $config->OAI->set_field;
+        if (isset($config['OAI']['set_field'])) {
+            $this->setField = $config['OAI']['set_field'];
         }
 
         // Initialize custom sets queries:
-        if (isset($config->OAI->set_query)) {
-            $this->setQueries = $config->OAI->set_query->toArray();
+        if (isset($config['OAI']['set_query'])) {
+            $this->setQueries = (array)$config['OAI']['set_query'];
         }
 
         // Use a default query, if configured:
-        if (isset($config->OAI->default_query)) {
-            $this->defaultQuery = $config->OAI->default_query;
+        if (isset($config['OAI']['default_query'])) {
+            $this->defaultQuery = $config['OAI']['default_query'];
         }
 
         // Initialize VuFind API format fields:
         $this->vufindApiFields = array_filter(
             explode(
                 ',',
-                $config->OAI->vufind_api_format_fields ?? ''
+                $config['OAI']['vufind_api_format_fields'] ?? ''
             )
         );
 
         // Initialize filters specific to requested metadataPrefix:
-        if (isset($config->OAI->record_format_filters)) {
+        if (isset($config['OAI']['record_format_filters'])) {
             $this->recordFormatFilters
-                = $config->OAI->record_format_filters->toArray();
+                = (array)$config['OAI']['record_format_filters'];
         }
 
         // Initialize delete lifetime, if set:
-        if (isset($config->OAI->delete_lifetime)) {
-            $this->deleteLifetime = intval($config->OAI->delete_lifetime);
+        if (isset($config['OAI']['delete_lifetime'])) {
+            $this->deleteLifetime = (int)$config['OAI']['delete_lifetime'];
         }
 
         // Change cursormark behavior if necessary:
-        $cursor = $config->OAI->use_cursor ?? true;
+        $cursor = $config['OAI']['use_cursor'] ?? true;
         if (!$cursor || strtolower($cursor) === 'false') {
             $this->useCursorMark = false;
         }

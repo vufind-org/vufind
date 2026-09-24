@@ -42,9 +42,9 @@ jobs:
 
       - name: Setup node
         if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Get composer cache directory
         id: composer-cache

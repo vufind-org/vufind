@@ -6,7 +6,7 @@
     ->add($pageTitle, active: true);
 
   $uLangs = [];
-  foreach ($this->layout()->allLangs ?? [] as $c => $n) {
+  foreach ($this->globals()['allLangs'] ?? [] as $c => $n) {
     $uLangs[] = $c;
   }
 

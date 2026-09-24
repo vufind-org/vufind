@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * Summon support functions.
  *
@@ -40,7 +38,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Summon extends AbstractHelper
+class Summon
 {
     /**
      * Export support function to convert Summon format to EndNote format.
@@ -112,5 +110,15 @@ class Summon extends AbstractHelper
             default:
                 return 'Generic';
         }
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

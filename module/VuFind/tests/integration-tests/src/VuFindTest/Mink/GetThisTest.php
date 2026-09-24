@@ -486,6 +486,51 @@ class GetThisTest extends MinkTestCase
     }
 
     /**
+     * Test the record page with standard and extended template.
+     *
+     * @return void
+     */
+    public function testRecordPage(): void
+    {
+        $config = [
+            'config' => [
+                'Site' => ['holdingsTemplate' => 'extended'],
+            ],
+        ];
+        $this->changeConfigs($config);
+
+        $page = $this->loadRecordPage('0000183626-0');
+        $this->findAndAssertLink($page, 'Get This');
+
+        $config = [
+            'config' => [
+                'Site' => ['holdingsTemplate' => 'standard'],
+            ],
+        ];
+        $this->changeConfigs($config);
+
+        $page = $this->loadRecordPage('0000183626-0');
+        $this->findAndAssertLink($page, 'Get This');
+    }
+
+    /**
+     * For a given record id, load and wait for the page.
+     *
+     * @param string $record Record id
+     *
+     * @return DocumentElement
+     * @throws Exception
+     */
+    public function loadRecordPage(string $record): DocumentElement
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Record/' . $record);
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
      * Perform a search and wait until the status are displayed.
      *
      * @param string $search String to search for

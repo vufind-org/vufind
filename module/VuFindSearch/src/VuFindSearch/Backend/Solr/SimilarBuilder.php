@@ -83,27 +83,26 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param ?\VuFind\Config\Config $searchConfig Search config
-     * @param string                 $uniqueKey    Solr field used to store unique identifier
+     * @param ?array $searchConfig Search config
+     * @param string $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        ?\VuFind\Config\Config $searchConfig = null,
+        ?array $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
-        if (isset($searchConfig->MoreLikeThis)) {
-            $mlt = $searchConfig->MoreLikeThis;
+        if (isset($searchConfig['MoreLikeThis'])) {
+            $mlt = $searchConfig['MoreLikeThis'];
             if (
-                isset($mlt->useMoreLikeThisHandler)
-                && $mlt->useMoreLikeThisHandler
+                $mlt['useMoreLikeThisHandler'] ?? false
             ) {
                 $this->useHandler = true;
-                $this->handlerParams = $mlt->params ?? '';
+                $this->handlerParams = $mlt['params'] ?? '';
             }
-            if (isset($mlt->count)) {
-                $this->count = $mlt->count;
+            if (isset($mlt['count'])) {
+                $this->count = $mlt['count'];
             }
         }
     }
@@ -113,13 +112,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string $id Record Id
+     * @param string    $id     Record Id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
-    public function build($id)
+    public function build(string $id, ?ParamBag $params = null): ParamBag
     {
-        $params = new ParamBag();
+        $params = $params ?: new ParamBag();
         if ($this->useHandler) {
             $mltParams = $this->handlerParams
                 ? $this->handlerParams

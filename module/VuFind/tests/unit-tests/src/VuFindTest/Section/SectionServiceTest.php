@@ -55,7 +55,7 @@ class SectionServiceTest extends AbstractSectionTestCase
     {
         yield 'Missing section key from default configuration' => [
             'MissingSectionKey',
-            SectionServiceInterface::DEFAULT_CONFIG_PATH,
+            SectionServiceInterface::DEFAULT_CONFIG_NAME,
             BadConfig::class,
             'Section not found: MissingSectionKey',
         ];
@@ -63,7 +63,7 @@ class SectionServiceTest extends AbstractSectionTestCase
             'MissingConfiguration',
             'MissingConfiguration',
             ConfigException::class,
-            'Configuration path not found or empty: MissingConfiguration',
+            'Configuration not found or empty: MissingConfiguration',
         ];
     }
 
@@ -71,7 +71,7 @@ class SectionServiceTest extends AbstractSectionTestCase
      * Test getting section configuration.
      *
      * @param string  $key                    Section key in configuration
-     * @param string  $configPath             Configuration path
+     * @param string  $configName             Configuration name
      * @param string  $expectedExceptionClass Expected exception class
      * @param ?string $expectedExceptionMsg   Expected exception message
      *
@@ -80,7 +80,7 @@ class SectionServiceTest extends AbstractSectionTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('getSectionConfigurationProvider')]
     public function testGetSectionConfiguration(
         string $key,
-        string $configPath,
+        string $configName,
         string $expectedExceptionClass,
         ?string $expectedExceptionMsg = null
     ): void {
@@ -88,7 +88,7 @@ class SectionServiceTest extends AbstractSectionTestCase
         if ($expectedExceptionMsg) {
             $this->expectExceptionMessage($expectedExceptionMsg);
         }
-        $this->getSectionService()->getSectionConfig($key, $configPath);
+        $this->getSectionService()->getSectionConfig($key, $configName);
     }
 
     /**

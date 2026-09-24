@@ -29,11 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Http\PhpEnvironment\Request;
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * "Get Record Details" AJAX handler.
@@ -49,87 +49,49 @@ use VuFind\RecordTab\TabManager;
 class GetRecordDetails extends AbstractBase
 {
     /**
-     * Framework configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Request.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Record loader.
-     *
-     * @var Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Record tab plugin manager.
-     *
-     * @var TabManager
-     */
-    protected $tabManager;
-
-    /**
-     * View renderer.
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
      * Constructor.
      *
-     * @param array             $config   Framework configuration
-     * @param Request           $request  HTTP request
-     * @param Loader            $loader   Record loader
-     * @param TabManager        $tm       Record Tab manager
-     * @param RendererInterface $renderer Renderer
+     * @param array                     $config       Framework configuration
+     * @param Loader                    $recordLoader Record loader
+     * @param TabManager                $tabManager   Record Tab manager
+     * @param TemplateRendererInterface $renderer     Template renderer
      */
     public function __construct(
-        array $config,
-        Request $request,
-        Loader $loader,
-        TabManager $tm,
-        RendererInterface $renderer
+        protected array $config,
+        protected Loader $recordLoader,
+        protected TabManager $tabManager,
+        protected TemplateRendererInterface $renderer,
     ) {
-        $this->config = $config;
-        $this->request = $request;
-        $this->recordLoader = $loader;
-        $this->tabManager = $tm;
-        $this->renderer = $renderer;
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
-        $driver = $this->recordLoader
-            ->load($params->fromQuery('id'), $params->fromQuery('source'));
+        $driver = $this->recordLoader->load(
+            $this->getQueryParam($request, 'id'),
+            $this->getQueryParam($request, 'source')
+        );
         $viewtype = preg_replace(
             '/\W/',
             '',
-            trim(strtolower($params->fromQuery('type')))
+            trim(strtolower($this->getQueryParam($request, 'type')))
         );
 
         $details = $this->tabManager->getTabDetailsForRecord(
             $driver,
-            $this->request,
+            Psr7ServerRequest::toLaminas($request),
             'Information'
         );
 
-        $html = $this->renderer->render(
+        $html = $this->renderer->renderTemplateAsString(
+            $request,
             'record/ajaxview-' . $viewtype . '.phtml',
             [
                 'defaultTab' => $details['default'],

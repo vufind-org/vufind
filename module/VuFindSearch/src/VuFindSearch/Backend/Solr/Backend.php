@@ -324,8 +324,8 @@ class Backend extends AbstractBackend implements
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
-        $params->mergeWith($this->getSimilarBuilder()->build($id));
-        $response   = $this->connector->similar($id, $params);
+        $params = $this->getSimilarBuilder()->build($id, $params);
+        $response = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;

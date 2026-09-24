@@ -146,23 +146,23 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config                 $config        Configuration
+     * @param array                                 $config        Configuration
      * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager      $driverManager Driver plugin manager
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      * @param ?\Laminas\Http\Request                $request       Request object
      */
     public function __construct(
-        protected \VuFind\Config\Config $config,
+        protected array $config,
         protected \VuFind\ILS\Driver\PluginManager $driverManager,
         protected \VuFind\Config\ConfigManagerInterface $configManager,
         protected ?\Laminas\Http\Request $request = null
     ) {
-        if (!isset($config->driver)) {
+        if (!isset($config['driver'])) {
             throw new \Exception('ILS driver setting missing.');
         }
-        if (!$driverManager->has($config->driver)) {
-            throw new \Exception('ILS driver missing: ' . $config->driver);
+        if (!$driverManager->has($config['driver'])) {
+            throw new \Exception('ILS driver missing: ' . $config['driver']);
         }
     }
 
@@ -243,8 +243,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected function hasNoILSFailover()
     {
         // If we're configured to fail over to the NoILS driver, do so now:
-        return isset($this->config->loadNoILSOnFailure)
-            && $this->config->loadNoILSOnFailure;
+        return $this->config['loadNoILSOnFailure'] ?? false;
     }
 
     /**
@@ -292,7 +291,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function getDriver($init = true)
     {
         if (null === $this->driver) {
-            $this->setDriver($this->driverManager->get($this->config->driver));
+            $this->setDriver($this->driverManager->get($this->config['driver']));
         }
         if (!$this->driverInitialized && $init) {
             try {
@@ -341,29 +340,27 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param ?array $params   (optional) An array of function-specific parameters
+     * @param array  $params   (optional) An array of function-specific parameters
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values; on failure, false.
+     * @return array
      */
-    public function checkFunction($function, $params = null)
+    public function checkFunction(string $function, array $params = []): array
     {
         try {
             // Extract the configuration from the driver if available:
-            $paramsArray = $params ?? [];
             $functionConfig = $this->checkCapability(
                 'getConfig',
-                [$function, $paramsArray],
+                [$function, $params],
                 true
-            ) ? $this->getDriver()->getConfig($function, $paramsArray) : false;
+            ) ? $this->getDriver()->getConfig($function, $params) : [];
 
             // See if we have a corresponding check method to analyze the response:
             $checkMethod = 'checkMethod' . $function;
             if (!method_exists($this, $checkMethod)) {
-                return false;
+                return [];
             }
-            if (!empty($this->getMethodBlock($function, $paramsArray))) {
-                return false;
+            if (!empty($this->getMethodBlock($function, $params))) {
+                return [];
             }
 
             // Send back the settings:
@@ -373,7 +370,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 "checkFunction($function) with params: " . $this->varDump($params)
                 . ' failed: ' . $e->getMessage()
             );
-            return false;
+            return [];
         }
     }
 
@@ -383,15 +380,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Holds.
      *
-     * @param array  $functionConfig The Hold configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The Hold configuration values
+     * @param array $params         An array of function-specific params
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for placing holds via a form or a URL; on failure, false.
+     * @return array
      */
-    protected function checkMethodHolds($functionConfig, $params)
+    protected function checkMethodHolds(array $functionConfig, array $params): array
     {
-        $response = false;
+        $response = [];
 
         // We pass an array containing $params to checkCapability since $params
         // should contain 'id' and 'patron' keys; this isn't exactly the same as
@@ -441,31 +437,27 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling Holds.
      *
-     * @param array  $functionConfig The Cancel Hold configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The Cancel Hold configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for cancelling holds via a form or a URL;
-     * on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodcancelHolds($functionConfig, $params)
+    protected function checkMethodcancelHolds(array $functionConfig, array $params): array
     {
-        $response = false;
+        $response = [];
 
         // We can't pass exactly accurate parameters to checkCapability in this
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config->cancel_holds_enabled)
-            && $this->config->cancel_holds_enabled == true
+            ($this->config['cancel_holds_enabled'] ?? false)
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => 'cancelHolds'];
         } elseif (
-            isset($this->config->cancel_holds_enabled)
-            && $this->config->cancel_holds_enabled == true
+            ($this->config['cancel_holds_enabled'] ?? false)
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
             $response = ['function' => 'getCancelHoldLink'];
@@ -479,30 +471,27 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Renewing Items.
      *
-     * @param array  $functionConfig The Renewal configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The Renewal configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for renewing items via a form or a URL; on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodRenewals($functionConfig, $params)
+    protected function checkMethodRenewals(array $functionConfig, array $params): array
     {
-        $response = false;
+        $response = [];
 
         // We can't pass exactly accurate parameters to checkCapability in this
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config->renewals_enabled)
-            && $this->config->renewals_enabled == true
+            ($this->config['renewals_enabled'] ?? false)
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItems'];
         } elseif (
-            isset($this->config->renewals_enabled)
-            && $this->config->renewals_enabled == true
+            ($this->config['renewals_enabled'] ?? false)
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItemsLink'];
@@ -517,15 +506,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array  $functionConfig The storage retrieval request configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The storage retrieval request configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for placing requests via a form; on failure, false.
+     * @return array
      */
-    protected function checkMethodStorageRetrievalRequests($functionConfig, $params)
+    protected function checkMethodStorageRetrievalRequests(array $functionConfig, array $params): array
     {
-        $response = false;
+        $response = [];
 
         // $params doesn't include all of the keys used by
         // placeStorageRetrievalRequest, but it is the best we can do in the context.
@@ -552,24 +540,21 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports Cancelling
      * Storage Retrieval Requests.
      *
-     * @param array  $functionConfig The Cancel function configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The Cancel function configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for cancelling requests via a form or a URL;
-     * on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodcancelStorageRetrievalRequests(
-        $functionConfig,
-        $params
-    ) {
-        $response = false;
+        array $functionConfig,
+        array $params
+    ): array {
+        $response = [];
 
         if (
-            isset($this->config->cancel_storage_retrieval_requests_enabled)
-            && $this->config->cancel_storage_retrieval_requests_enabled
+            $this->config['cancel_storage_retrieval_requests_enabled'] ?? false
         ) {
             $check = $this->checkCapability(
                 'cancelStorageRetrievalRequests',
@@ -603,15 +588,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array  $functionConfig The ILL request configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The ILL request configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for placing requests via a form; on failure, false.
+     * @return array
      */
-    protected function checkMethodILLRequests($functionConfig, $params)
+    protected function checkMethodILLRequests(array $functionConfig, array $params): array
     {
-        $response = false;
+        $response = [];
 
         // $params doesn't include all of the keys used by
         // placeILLRequest, but it is the best we can do in the context.
@@ -641,22 +625,19 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports Cancelling
      * ILL Requests.
      *
-     * @param array  $functionConfig The Cancel function configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The Cancel function configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for cancelling requests via a form or a URL;
-     * on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodcancelILLRequests($functionConfig, $params)
+    protected function checkMethodcancelILLRequests(array $functionConfig, array $params): array
     {
-        $response = false;
+        $response = [];
 
         if (
-            isset($this->config->cancel_ill_requests_enabled)
-            && $this->config->cancel_ill_requests_enabled
+            $this->config['cancel_ill_requests_enabled'] ?? false
         ) {
             $check = $this->checkCapability(
                 'cancelILLRequests',
@@ -693,50 +674,48 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $functionConfig The password change configuration values
      * @param array $params         Patron data
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values either for cancelling requests via a form or a URL;
-     * on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodchangePassword($functionConfig, $params)
+    protected function checkMethodchangePassword(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('changePassword', [$params ?: []])) {
             return ['function' => 'changePassword'];
         }
-        return false;
+        return [];
     }
 
     /**
      * Check if initiating of password recovery is supported.
      *
-     * @param array  $functionConfig Function configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return array|false
+     * @return array
      */
-    protected function checkMethodgetPasswordRecoveryData($functionConfig, $params)
+    protected function checkMethodgetPasswordRecoveryData(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('getPasswordRecoveryData', [$params ?: []])) {
             return $functionConfig;
         }
-        return false;
+        return [];
     }
 
     /**
      * Check if password recovery is supported.
      *
-     * @param array  $functionConfig Function configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return array|false
+     * @return array
      */
-    protected function checkMethodresetPassword($functionConfig, $params)
+    protected function checkMethodresetPassword(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('resetPassword', [$params ?: []])) {
             return $functionConfig;
         }
-        return false;
+        return [];
     }
 
     /**
@@ -749,17 +728,16 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $functionConfig Function configuration
      * @param array $params         Patron data
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values; on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodgetMyTransactions($functionConfig, $params)
+    protected function checkMethodgetMyTransactions(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('getMyTransactions', [$params ?: []])) {
             return $functionConfig;
         }
-        return false;
+        return [];
     }
 
     /**
@@ -772,17 +750,16 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $functionConfig Function configuration
      * @param array $params         Patron data
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values; on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodgetMyTransactionHistory($functionConfig, $params)
+    protected function checkMethodgetMyTransactionHistory(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('getMyTransactionHistory', [$params ?: []])) {
             return $functionConfig;
         }
-        return false;
+        return [];
     }
 
     /**
@@ -795,17 +772,38 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $functionConfig Function configuration
      * @param array $params         Patron data
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values; on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodpurgeTransactionHistory($functionConfig, $params)
+    protected function checkMethodpurgeTransactionHistory(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('purgeTransactionHistory', [$params ?: []])) {
             return $functionConfig;
         }
-        return false;
+        return [];
+    }
+
+    /**
+     * Check Current Holds.
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports current
+     * holds.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetMyHolds(array $functionConfig, array $params): array
+    {
+        if ($this->checkCapability('getMyHolds', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return [];
     }
 
     /**
@@ -815,15 +813,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports patron login.
      * It is currently assumed that all drivers do.
      *
-     * @param array  $functionConfig The patronLogin configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig The patronLogin configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with specific function keys
-     * and values for login; on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodpatronLogin($functionConfig, $params)
+    protected function checkMethodpatronLogin(array $functionConfig, array $params): array
     {
         return $functionConfig;
     }
@@ -831,19 +828,19 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Check if online payment is supported.
      *
-     * @param array  $functionConfig Function configuration values
-     * @param ?array $params         An array of function-specific params (or null)
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
      *
-     * @return mixed On success, an associative array with the function name; on failure, false.
+     * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodregisterPayment($functionConfig, $params)
+    protected function checkMethodregisterPayment(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('registerPayment', [$params ?: []])) {
             return ['function' => 'registerPayment'];
         }
-        return false;
+        return [];
     }
 
     /**
@@ -998,7 +995,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // If we need to perform a health check, try to do a random item lookup
         // before proceeding.
         if ($healthCheck) {
-            $this->getStatus($this->config->healthCheckId ?? '1');
+            $this->getStatus($this->config['healthCheckId'] ?? '1');
         }
 
         // If we're encountering failures, let's go into ils-offline mode if
@@ -1119,9 +1116,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function getHoldingsTextFieldNames()
     {
-        return isset($this->config->holdings_text_fields)
-            ? $this->config->holdings_text_fields->toArray()
-            : ['holdings_notes', 'summary', 'supplements', 'indexes'];
+        return $this->config['holdings_text_fields']
+            ?? ['holdings_notes', 'summary', 'supplements', 'indexes'];
     }
 
     /**
@@ -1129,15 +1125,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @param array $patron Patron data
      *
-     * @return bool|array Password policy array or false if unsupported
+     * @return array Password policy array (empty if unsupported)
      */
-    public function getPasswordPolicy($patron)
+    public function getPasswordPolicy(array $patron): array
     {
         return $this->checkCapability(
             'getConfig',
             ['changePassword', compact('patron')]
         ) ? $this->getDriver()->getConfig('changePassword', compact('patron'))
-            : false;
+            : [];
     }
 
     /**
@@ -1154,6 +1150,31 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function getMyTransactions($patron, $params = [])
     {
         $result = $this->__call('getMyTransactions', [$patron, $params]);
+
+        // Support also older driver return value:
+        if (!isset($result['count'])) {
+            $result = [
+                'count' => count($result),
+                'records' => $result,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get Patron Holds.
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @return mixed        Array of the patron's holds on success.
+     */
+    public function getMyHolds($patron, $params = [])
+    {
+        $result = $this->__call('getMyHolds', [$patron, $params]);
 
         // Support also older driver return value:
         if (!isset($result['count'])) {

@@ -14,7 +14,7 @@
   echo $this->render('search/results.phtml');
 
   // Override searchbox:
-  $this->layout()->searchbox = $this->context($this)->renderInContext(
+  $this->globals()['searchbox'] = $this->context($this)->renderInContext(
       'search/versions-searchbox.phtml',
       [
         'searchType' => 'basic',

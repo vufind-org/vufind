@@ -32,9 +32,9 @@ declare(strict_types=1);
 namespace VuFind\Form\Handler;
 
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Mime\Address;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
@@ -55,58 +55,34 @@ class Email implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * View renderer.
-     *
-     * @var RendererInterface
-     */
-    protected $viewRenderer;
-
-    /**
-     * Main config.
-     *
-     * @var Config
-     */
-    protected $mainConfig;
-
-    /**
-     * Mailer.
-     *
-     * @var Mailer
-     */
-    protected $mailer;
-
-    /**
      * Constructor.
      *
      * @param RendererInterface $viewRenderer View renderer
-     * @param Config            $config       Main config
+     * @param array             $mainConfig   Main config
      * @param Mailer            $mailer       Mailer
      */
     public function __construct(
-        RendererInterface $viewRenderer,
-        Config $config,
-        Mailer $mailer
+        protected RendererInterface $viewRenderer,
+        protected array $mainConfig,
+        protected Mailer $mailer
     ) {
-        $this->viewRenderer = $viewRenderer;
-        $this->mainConfig = $config;
-        $this->mailer = $mailer;
     }
 
     /**
      * Get data from submitted form and process them.
      *
-     * @param \VuFind\Form\Form                     $form   Submitted form
-     * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?UserEntityInterface                  $user   Authenticated user
+     * @param \VuFind\Form\Form      $form    Submitted form
+     * @param ServerRequestInterface $request Request
+     * @param ?UserEntityInterface   $user    Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
-        \Laminas\Mvc\Controller\Plugin\Params $params,
+        ServerRequestInterface $request,
         ?UserEntityInterface $user = null
     ): bool {
-        $postParams = $params->fromPost();
+        $postParams = $request->getParsedBody();
         $fields = $form->mapRequestParamsToFieldValues($postParams);
         $emailMessage = $this->viewRenderer->render(
             'Email/form.phtml',
@@ -115,11 +91,8 @@ class Email implements HandlerInterface, LoggerAwareInterface
 
         [$senderName, $senderEmail] = $this->getSender($form);
 
-        $replyToName = $params->fromPost(
-            'name',
-            $user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : ''
-        );
-        $replyToEmail = $params->fromPost('email', $user?->getEmail());
+        $replyToName = $postParams['name'] ?? ($user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : '');
+        $replyToEmail = $postParams['email'] ?? $user?->getEmail();
         $recipients = $form->getRecipient($postParams);
         $emailSubject = $form->getEmailSubject($postParams);
 
@@ -157,9 +130,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
     {
         $config = $this->mainConfig;
         $email = $form->getEmailFromAddress()
-            ?: $config->Feedback->sender_email ?? 'noreply@vufind.org';
+            ?: $config['Feedback']['sender_email'] ?? 'noreply@vufind.org';
         $name = $form->getEmailFromName()
-            ?: $config->Feedback->sender_name ?? 'VuFind Feedback';
+            ?: $config['Feedback']['sender_name'] ?? 'VuFind Feedback';
 
         return [$name, $email];
     }

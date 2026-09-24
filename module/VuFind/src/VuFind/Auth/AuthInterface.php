@@ -71,11 +71,11 @@ interface AuthInterface
     /**
      * Set configuration.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @return void
      */
-    public function setConfig($config);
+    public function setConfig(?array $config): void;
 
     /**
      * Whether this authentication method needs CSRF checking for the request.
@@ -202,7 +202,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function supportsPasswordChange();
+    public function supportsPasswordChange(): bool;
 
     /**
      * Does this authentication method support password recovery.
@@ -211,7 +211,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null);
+    public function supportsPasswordRecovery(?string $target = null): bool;
 
     /**
      * Does this authentication method support connecting library card of

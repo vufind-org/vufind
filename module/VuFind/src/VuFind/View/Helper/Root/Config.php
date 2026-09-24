@@ -29,7 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\PluginManager as ActionHelperPluginManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Config view helper.
@@ -40,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Config extends \Laminas\View\Helper\AbstractHelper
+class Config
 {
     /**
      * Display date format.
@@ -60,9 +63,13 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      * Config constructor.
      *
      * @param ConfigManagerInterface $configManager Configuration manager
+     * @param LoginHelper            $loginHelper   Login helper
      */
-    public function __construct(protected ConfigManagerInterface $configManager)
-    {
+    public function __construct(
+        protected ConfigManagerInterface $configManager,
+        #[Autowire(container: ActionHelperPluginManager::class)]
+        protected LoginHelper $loginHelper,
+    ) {
     }
 
     /**
@@ -71,10 +78,24 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      * @param string $config Name of configuration
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use getArray().
      */
     public function get($config)
     {
         return $this->configManager->getConfigObject($config);
+    }
+
+    /**
+     * Get the specified configuration as an array.
+     *
+     * @param string $config Name of configuration
+     *
+     * @return array
+     */
+    public function getArray($config): array
+    {
+        return $this->configManager->getConfigArray($config);
     }
 
     /**
@@ -84,7 +105,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function nonJavascriptSupportEnabled()
     {
-        return $this->get('config')->Site->nonJavascriptSupportEnabled ?? false;
+        return $this->getArray('config')['Site']['nonJavascriptSupportEnabled'] ?? false;
     }
 
     /**
@@ -94,7 +115,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function ajaxCoversEnabled()
     {
-        return $this->get('config')->Content->ajaxcovers ?? false;
+        return $this->getArray('config')['Content']['ajaxcovers'] ?? false;
     }
 
     /**
@@ -104,18 +125,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function getHoldingsItemLimit()
     {
-        $limit = $this->get('config')->Record->holdingsItemLimit;
-        return $limit ? (int)$limit : PHP_INT_MAX;
-    }
-
-    /**
-     * Should we limit the number of subjects displayed on the full record?
-     *
-     * @return int
-     */
-    public function getRecordSubjectLimit()
-    {
-        $limit = $this->get('config')->Record->subjectLimit;
+        $limit = $this->getArray('config')['Record']['holdingsItemLimit'] ?? null;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -127,8 +137,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function alwaysDisplayIndexRecordInStaffView(): bool
     {
-        return (bool)($this->get('config')->Record
-            ->alwaysDisplayIndexRecordInStaffView ?? false);
+        return (bool)($this->getArray('config')['Record']['alwaysDisplayIndexRecordInStaffView'] ?? false);
     }
 
     /**
@@ -138,11 +147,11 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function offcanvasSide(): ?string
     {
-        $config = $this->get('config');
-        if (!($config->Site->offcanvas ?? false)) {
+        $config = $this->getArray('config');
+        if (!($config['Site']['offcanvas'] ?? false)) {
             return null;
         }
-        return ($config->Site->sidebarOnLeft ?? false)
+        return ($config['Site']['sidebarOnLeft'] ?? false)
             ? 'left'
             : 'right';
     }
@@ -155,8 +164,8 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     public function dateFormat(): string
     {
         if (null === $this->displayDateFormat) {
-            $config = $this->get('config');
-            $this->displayDateFormat = $config->Site->displayDateFormat ?? 'm-d-Y';
+            $config = $this->getArray('config');
+            $this->displayDateFormat = $config['Site']['displayDateFormat'] ?? 'm-d-Y';
         }
         return $this->displayDateFormat;
     }
@@ -169,8 +178,8 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     public function timeFormat(): string
     {
         if (null === $this->displayTimeFormat) {
-            $config = $this->get('config');
-            $this->displayTimeFormat = $config->Site->displayTimeFormat ?? 'H:i';
+            $config = $this->getArray('config');
+            $this->displayTimeFormat = $config['Site']['displayTimeFormat'] ?? 'H:i';
         }
         return $this->displayTimeFormat;
     }
@@ -194,7 +203,26 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function displayLoanType(): bool
     {
-        return (bool)($this->get('config')->Catalog
-            ->display_loan_type_in_holdings ?? false);
+        return (bool)($this->getArray('config')['Catalog']['display_loan_type_in_holdings'] ?? false);
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form.
+     *
+     * @return array
+     */
+    public function getILSLoginSettings(): array
+    {
+        return $this->loginHelper->getILSLoginSettings();
+    }
+
+    /**
+     * Return this helper instance (for method chaining).
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

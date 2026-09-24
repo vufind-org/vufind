@@ -30,6 +30,7 @@
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\SimilarItems;
+use VuFind\Http\RouteHelper;
 use VuFindSearch\ParamBag;
 use VuFindTest\RecordDriver\TestHarness;
 
@@ -149,7 +150,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $mockObjects = $this->getSimilarItems($options);
         $similar = $mockObjects['similar'];
         $search = $mockObjects['search'];
-        $url = $mockObjects['url'];
+        $routeHelper = $mockObjects['routeHelper'];
         $router = $mockObjects['router'];
         $similar->setProviderId('foo_ProviderId');
         $params = new ParamBag(['rows' => $options['rows']]);
@@ -223,15 +224,15 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ->with($recordDriver)
             ->willReturn($routeDetails);
         $this->expectConsecutiveCalls(
-            $url,
-            'fromRoute',
+            $routeHelper,
+            'getUrlFromRoute',
             [
-                [$this->equalTo($routeDetails['route']), $this->equalTo($routeDetails['params'])],
-                [$this->equalTo('channels-record')],
+                [$routeDetails['route'], $routeDetails['params']],
+                ['channels-record', [], ['id' => 'foo_Id', 'source' => 'Solr']],
             ],
             [
                 'url_test',
-                'channels-record',
+                'channels-record?id=foo_Id&source=Solr',
             ]
         );
         return [
@@ -250,11 +251,12 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     protected function getSimilarItems($options = [])
     {
         $search = $this->createMock(\VuFindSearch\Service::class);
-        $url = $this->createMock(\Laminas\Mvc\Controller\Plugin\Url::class);
+        $routeHelper = $this->createMock(RouteHelper::class);
         $router = $this->createMock(\VuFind\Record\Router::class);
-        $similar = new SimilarItems($search, $url, $router, $options);
+        $similar = new SimilarItems($search, $routeHelper, $options);
+        $similar->setRecordRouter($router);
 
-        return compact('search', 'url', 'router', 'similar');
+        return compact('search', 'routeHelper', 'router', 'similar');
     }
 
     /**

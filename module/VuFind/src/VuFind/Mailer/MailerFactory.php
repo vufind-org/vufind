@@ -37,6 +37,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\SecretTrait;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for instantiating Mailer objects.
@@ -131,6 +132,7 @@ class MailerFactory implements FactoryInterface
             new \Symfony\Component\Mailer\Mailer(
                 \Symfony\Component\Mailer\Transport::fromDsn($this->getDSN($config))
             ),
+            $container->get(TemplateRendererInterface::class),
             [
                 'message_log' => $config['Mail']['message_log'] ?? null,
                 'message_log_format' => $config['Mail']['message_log_format'] ?? null,

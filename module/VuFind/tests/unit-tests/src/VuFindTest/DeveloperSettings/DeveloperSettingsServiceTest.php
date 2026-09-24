@@ -65,7 +65,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         ?ApiKeyServiceInterface $apiKeyService = null
     ): DeveloperSettingsService {
         return new DeveloperSettingsService(
-            $apiKeyService ?? $this->createMock(ApiKeyServiceInterface::class),
+            $apiKeyService ?? $this->createStub(ApiKeyServiceInterface::class),
             $config
         );
     }

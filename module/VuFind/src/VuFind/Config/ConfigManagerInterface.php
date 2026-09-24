@@ -49,35 +49,38 @@ interface ConfigManagerInterface
      *
      * The path consists of a base configuration name and a path to a subsection of that configuration.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return mixed
      */
-    public function getConfig(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): mixed;
+    public function getConfig(string $configName, bool $forceReload = false, bool $useLocalConfig = true): mixed;
 
     /**
      * Get config as array by path.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    public function getConfigArray(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): array;
+    public function getConfigArray(string $configName, bool $forceReload = false, bool $useLocalConfig = true): array;
 
     /**
      * Get config as object by path.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return Config
      */
-    public function getConfigObject(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): Config;
+    public function getConfigObject(string $configName, bool $forceReload = false, bool $useLocalConfig = true): Config;
 
     /**
      * Get config in PluginManager style.

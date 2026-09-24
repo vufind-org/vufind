@@ -282,8 +282,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'url' => 'http://foo',
                 'unsubscribeUrl' => 'http://foo?id=1&key=',
                 'checkboxFilters' => [],
-                'filters' => null,
-                'userInstitution' => 'My Institution',
+                'filters' => [],
             ],
         ];
         $renderer = $this->container->createMock(
@@ -337,7 +336,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockSearchResultsSet(?\VuFind\RecordDriver\AbstractBase $record = null): array
     {
         return [
-            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),
+            $record ?? $this->createStub(\VuFind\RecordDriver\SolrDefault::class),
         ];
     }
 
@@ -494,21 +493,18 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
-            new \VuFind\Config\Config(
-                $options['configArray'] ?? [
-                    'Site' => [
-                        'institution' => 'My Institution',
-                        'title' => 'My Site',
-                        'email' => 'admin@myuniversity.edu',
-                    ],
-                ]
-            ),
-            $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),
-            $options['searchService'] ?? $this->container->createMock(SearchServiceInterface::class),
-            $options['localeSettings'] ?? $this->container->createMock(\VuFind\I18n\Locale\LocaleSettings::class)
+            $options['configArray'] ?? [
+                'Site' => [
+                    'title' => 'My Site',
+                    'email' => 'admin@myuniversity.edu',
+                ],
+            ],
+            $options['mailer'] ?? $this->createStub(\VuFind\Mailer\Mailer::class),
+            $options['searchService'] ?? $this->createStub(SearchServiceInterface::class),
+            $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class)
         );
         $command->setTranslator(
-            $options['translator'] ?? $this->container->createMock(\Laminas\Mvc\I18n\Translator::class)
+            $options['translator'] ?? $this->createStub(\Laminas\Mvc\I18n\Translator::class)
         );
         $command->setPathResolver($this->getPathResolver());
         return $command;

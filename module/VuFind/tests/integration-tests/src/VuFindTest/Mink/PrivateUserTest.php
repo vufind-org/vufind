@@ -103,7 +103,7 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Comment control should not be present
-        $this->unfindCss($page, '.record-tabs .usercomments a');
+        $this->unfindCss($page, '.record-tabs .usercomments');
     }
 
     /**

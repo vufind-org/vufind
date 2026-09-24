@@ -252,7 +252,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Fake+DOI+test+1%22&type=AllFields',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Fake%20DOI%20test%201%22&type=AllFields',
             $session->getCurrentUrl()
         );
     }
@@ -277,7 +277,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR%20%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
     }
@@ -302,7 +302,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Authority/Search?lookfor=%22Royal+Dublin+Society%22&type=MainHeading',
+            $this->getVuFindUrl() . '/Authority/Search?lookfor=%22Royal%20Dublin%20Society%22&type=MainHeading',
             $session->getCurrentUrl()
         );
     }

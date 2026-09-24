@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'almadatabase' => AlmaDatabase::class,
-        'cas' => CAS::class,
         'choiceauth' => ChoiceAuth::class,
         'database' => Database::class,
         'email' => Email::class,
@@ -63,28 +62,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // for legacy 1.x compatibility
         'db' => Database::class,
         'sip' => SIP2::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AlmaDatabase::class => AlmaDatabaseFactory::class,
-        CAS::class => CASFactory::class,
-        ChoiceAuth::class => ChoiceAuthFactory::class,
-        Database::class => DatabaseFactory::class,
-        Email::class => EmailFactory::class,
-        Facebook::class => FacebookFactory::class,
-        ILS::class => ILSFactory::class,
-        LDAP::class => LDAPFactory::class,
-        MultiAuth::class => MultiAuthFactory::class,
-        MultiILS::class => ILSFactory::class,
-        OpenIDConnect::class => OpenIDConnectFactory::class,
-        Shibboleth::class => ShibbolethFactory::class,
-        SimulatedSSO::class => SimulatedSSOFactory::class,
-        SIP2::class => SIP2Factory::class,
     ];
 
     /**

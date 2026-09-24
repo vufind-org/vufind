@@ -126,7 +126,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function addComment(Element $page, string $comment): void
     {
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
         $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', $comment);
         $buttonSelector = 'form.comment-form .btn-primary';
@@ -157,7 +157,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->assertSame('new_tag 1 old_tag 1', $this->findCssAndGetText($page, '.tagList'));
         $this->assertSame('old_list new_list', $this->findCssAndGetText($page, '.savedLists.loaded ul'));
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->assertSame('old comment', $this->findCssAndGetText($page, '.comment-text', index: 0));
         $this->assertSame('new comment', $this->findCssAndGetText($page, '.comment-text', index: 1));
     }

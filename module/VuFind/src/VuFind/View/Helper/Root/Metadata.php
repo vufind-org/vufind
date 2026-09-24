@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Metadata view helper.
  *
@@ -38,44 +40,22 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Metadata extends \Laminas\View\Helper\AbstractHelper
+class Metadata
 {
-    /**
-     * Metadata configuration entries.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Laminas meta helper, used to embed html tags in the generated page.
-     *
-     * @var \Laminas\View\Helper\HeadMeta
-     */
-    protected $metaHelper;
-
-    /**
-     * Plugin Manager for vocabularies.
-     *
-     * @var \VuFind\MetadataVocabulary\PluginManager
-     */
-    protected $pluginManager;
-
     /**
      * Constructor.
      *
-     * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
-     * @param \VuFind\Config\Config                    $config     Configuration
-     * @param \Laminas\View\Helper\HeadMeta            $metaHelper Head meta helper
+     * @param \VuFind\MetadataVocabulary\PluginManager $pluginManager Plugin manager
+     * @param array                                    $config        Configuration
+     * @param \Laminas\View\Helper\HeadMeta            $metaHelper    Head meta helper
      */
     public function __construct(
-        \VuFind\MetadataVocabulary\PluginManager $pm,
-        \VuFind\Config\Config $config,
-        \Laminas\View\Helper\HeadMeta $metaHelper
+        protected \VuFind\MetadataVocabulary\PluginManager $pluginManager,
+        #[Autowire(config: 'metadata', configType: 'array')]
+        protected array $config,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected \Laminas\View\Helper\HeadMeta $metaHelper
     ) {
-        $this->pluginManager = $pm;
-        $this->config = $config;
-        $this->metaHelper = $metaHelper;
     }
 
     /**
@@ -87,8 +67,7 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getVocabularies(\VuFind\RecordDriver\AbstractBase $driver)
     {
-        $recordDriverConfigs = isset($this->config->Vocabularies)
-            ? $this->config->Vocabularies->toArray() : [];
+        $recordDriverConfigs = $this->config['Vocabularies'] ?? [];
         $retVal = [];
         foreach ($recordDriverConfigs as $className => $vocabs) {
             if ($driver instanceof $className) {
@@ -120,5 +99,15 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
                 }
             }
         }
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

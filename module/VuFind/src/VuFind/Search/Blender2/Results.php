@@ -43,7 +43,7 @@ class Results extends \VuFind\Search\Blender\Results
     /**
      * Search backend identifiers.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'Blender2';
+    protected ?string $backendId = 'Blender2';
 }

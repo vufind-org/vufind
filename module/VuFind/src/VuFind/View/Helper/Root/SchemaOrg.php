@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * View helper for injecting schema.org metadata.
@@ -41,7 +42,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
+class SchemaOrg
 {
     /**
      * Constructor.
@@ -50,7 +51,9 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      * @param bool           $enabled        Is schema.org metadata enabled?
      */
     public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
         protected HtmlAttributes $htmlAttributes,
+        #[Autowire(config: 'config', configType: 'array', path: 'Record/includeSchemaOrgMetadata', default: false)]
         protected bool $enabled = true
     ) {
     }
@@ -132,5 +135,15 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     public function getRecordTypes(RecordDriver $driver): string
     {
         return implode(' ', $this->getRecordTypesArray($driver));
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

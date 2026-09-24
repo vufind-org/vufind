@@ -439,7 +439,7 @@ class GeniePlus extends AbstractAPI
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactions' === $function) {
             return $this->config['Transactions'] ?? [
@@ -447,7 +447,7 @@ class GeniePlus extends AbstractAPI
             ];
         }
 
-        return false;
+        return [];
     }
 
     /**

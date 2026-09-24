@@ -43,19 +43,19 @@ use VuFind\Section\Plugin\SectionInterface;
  */
 interface SectionServiceInterface
 {
-    public const DEFAULT_CONFIG_PATH = 'Sections';
+    public const DEFAULT_CONFIG_NAME = 'Sections';
 
     /**
      * Get section configuration.
      *
      * @param string $key        Section key in configuration
-     * @param string $configPath Configuration path (optional)
+     * @param string $configName Configuration name (optional)
      *
      * @return array
      */
     public function getSectionConfig(
         string $key,
-        string $configPath = self::DEFAULT_CONFIG_PATH
+        string $configName = self::DEFAULT_CONFIG_NAME
     ): array;
 
     /**

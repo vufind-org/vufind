@@ -35,7 +35,6 @@
 
 namespace VuFind\ILS\Driver;
 
-use ArrayObject;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
@@ -585,7 +584,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $requestType Request type (Holds, StorageRetrievalRequests or
      * ILLRequests)
      *
-     * @return ArrayObject List of requests
+     * @return array List of requests
      */
     protected function createRequestList($requestType)
     {
@@ -600,7 +599,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $requestGroups = $this->getRequestGroups(null, null);
 
-        $list = new ArrayObject();
+        $list = [];
         for ($i = 0; $i < $items; $i++) {
             $location = $this->getFakeLoc(false);
             $randDays = rand() % 10;
@@ -680,7 +679,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 }
             }
 
-            $list->append($currentItem);
+            $list[] = $currentItem;
         }
         return $list;
     }
@@ -1244,19 +1243,30 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * This is responsible for retrieving all holds by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @return mixed        Array of the patron's holds on success.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getMyHolds($patron)
+    public function getMyHolds($patron, $params = [])
     {
         $this->checkIntermittentFailure();
         $session = $this->getSession($patron['id'] ?? null);
         if (!isset($session->holds)) {
             $session->holds = $this->createRequestList('Holds');
         }
-        return $session->holds;
+        $holds = $session->holds;
+
+        if ($limit = $params['limit'] ?? null) {
+            $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
+            $holds = array_slice($holds, $offset, $limit);
+        }
+
+        return [
+            'count' => count($session->holds),
+            'records' => $holds,
+        ];
     }
 
     /**
@@ -1436,11 +1446,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         // Order
         $transactions = $session->transactions;
         if (!empty($params['sort'])) {
-            $sort = explode(
-                ' ',
-                !empty($params['sort']) ? $params['sort'] : 'date_due desc',
-                2
-            );
+            $sort = explode(' ', $params['sort'], 2);
 
             $descending = isset($sort[1]) && 'desc' === $sort[1];
 
@@ -1460,8 +1466,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             );
         }
 
-        if (isset($params['limit'])) {
-            $limit = $params['limit'] ?? 50;
+        if ($limit = $params['limit'] ?? null) {
             $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
             $transactions = array_slice($transactions, $offset, $limit);
         }
@@ -1795,21 +1800,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Funds.
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @return array An associative array with key = fund ID, value = fund name.
-     *
-     * @deprecated
-     */
-    public function getFunds()
-    {
-        $this->checkIntermittentFailure();
-        return ['Fund A', 'Fund B', 'Fund C'];
-    }
-
-    /**
      * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
@@ -1868,40 +1858,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             }
         }
         return $results;
-    }
-
-    /**
-     * Get New Items.
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $this->checkIntermittentFailure();
-        // Pick a random number of results to return -- don't exceed limit or 30,
-        // whichever is smaller (this can be pretty slow due to the random ID code).
-        $results = $this->config['Records']['new_items']
-            ?? $this->getRandomBibIds(30);
-        $retVal = ['count' => count($results), 'results' => []];
-        foreach ($results as $result) {
-            $retVal['results'][] = ['id' => $result];
-        }
-        return $retVal;
     }
 
     /**
@@ -1995,12 +1951,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $this->checkIntermittentFailure();
         // Rewrite the holds in the session, removing those the user wants to
         // cancel.
-        $newHolds = new ArrayObject();
+        $newHolds = [];
         $retVal = ['count' => 0, 'items' => []];
         $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->holds as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
-                $newHolds->append($current);
+                $newHolds[] = $current;
             } else {
                 if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
@@ -2009,7 +1965,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         'status' => 'hold_cancel_success',
                     ];
                 } else {
-                    $newHolds->append($current);
+                    $newHolds[] = $current;
                     $retVal['items'][$current['item_id']] = [
                         'success' => false,
                         'status' => 'hold_cancel_fail',
@@ -2096,12 +2052,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
         // cancel.
-        $newRequests = new ArrayObject();
+        $newRequests = [];
         $retVal = ['count' => 0, 'items' => []];
         $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->storageRetrievalRequests as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
-                $newRequests->append($current);
+                $newRequests[] = $current;
             } else {
                 if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
@@ -2110,7 +2066,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         'status' => 'storage_retrieval_request_cancel_success',
                     ];
                 } else {
-                    $newRequests->append($current);
+                    $newRequests[] = $current;
                     $retVal['items'][$current['item_id']] = [
                         'success' => false,
                         'status' => 'storage_retrieval_request_cancel_fail',
@@ -2212,8 +2168,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             }
         }
 
-        // Write modified transactions back to session; in-place changes do not
-        // work due to ArrayObject eccentricities:
+        // Write modified transactions back to session
         $session->transactions = $transactions;
 
         return $finalResult;
@@ -2297,7 +2252,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $session = $this->getSession($holdDetails['patron']['id'] ?? null);
         if (!isset($session->holds)) {
-            $session->holds = new ArrayObject();
+            $session->holds = [];
         }
         $lastHold = count($session->holds) - 1;
         $nextId = $lastHold >= 0
@@ -2340,26 +2295,23 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $proxies = $this->getProxiedUsers($holdDetails['patron']);
             $proxiedFor = $proxies[$holdDetails['proxiedUser']];
         }
-        $session->holds->append(
-            [
-                'id'       => $holdDetails['id'],
-                'source'   => $this->getRecordSource(),
-                'location' => $holdDetails['pickUpLocation'],
-                'expire'   => $expire,
-                'create'   =>
-                    $this->dateConverter->convertToDisplayDate('U', time()),
-                'reqnum'   => $reqNum,
-                'item_id'  => $nextId,
-                'volume'   => '',
-                'processed' => '',
-                'requestGroup' => $requestGroup,
-                'frozen'   => $frozen,
-                'frozenThrough' => $frozenThrough,
-                'updateDetails' => $reqNum,
-                'cancel_details' => $reqNum,
-                'proxiedFor' => $proxiedFor,
-            ]
-        );
+        $session->holds[] = [
+            'id'       => $holdDetails['id'],
+            'source'   => $this->getRecordSource(),
+            'location' => $holdDetails['pickUpLocation'],
+            'expire'   => $expire,
+            'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
+            'reqnum'   => $reqNum,
+            'item_id'  => $nextId,
+            'volume'   => '',
+            'processed' => '',
+            'requestGroup' => $requestGroup,
+            'frozen'   => $frozen,
+            'frozenThrough' => $frozenThrough,
+            'updateDetails' => $reqNum,
+            'cancel_details' => $reqNum,
+            'proxiedFor' => $proxiedFor,
+        ];
 
         return ['success' => true];
     }
@@ -2446,7 +2398,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $session = $this->getSession($details['patron']['id'] ?? null);
         if (!isset($session->storageRetrievalRequests)) {
-            $session->storageRetrievalRequests = new ArrayObject();
+            $session->storageRetrievalRequests = [];
         }
         $lastRequest = count($session->storageRetrievalRequests) - 1;
         $nextId = $lastRequest >= 0
@@ -2480,21 +2432,16 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
 
-        $session->storageRetrievalRequests->append(
-            [
-                'id'       => $details['id'],
-                'source'   => $this->getRecordSource(),
-                'location' => $details['pickUpLocation'],
-                'expire'   =>
-                    $this->dateConverter->convertToDisplayDate('U', $expire),
-                'create'   =>
-                    $this->dateConverter->convertToDisplayDate('U', time()),
-                'processed' => rand() % 3 == 0
-                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
-                'reqnum'   => sprintf('%06d', $nextId),
-                'item_id'  => $nextId,
-            ]
-        );
+        $session->storageRetrievalRequests[] = [
+            'id'       => $details['id'],
+            'source'   => $this->getRecordSource(),
+            'location' => $details['pickUpLocation'],
+            'expire'   => $this->dateConverter->convertToDisplayDate('U', $expire),
+            'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
+            'processed' => rand() % 3 == 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
+            'reqnum'   => sprintf('%06d', $nextId),
+            'item_id'  => $nextId,
+        ];
 
         return ['success' => true];
     }
@@ -2566,7 +2513,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $session = $this->getSession($details['patron']['id'] ?? null);
         if (!isset($session->ILLRequests)) {
-            $session->ILLRequests = new ArrayObject();
+            $session->ILLRequests = [];
         }
         $lastRequest = count($session->ILLRequests) - 1;
         $nextId = $lastRequest >= 0
@@ -2620,21 +2567,16 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
 
-        $session->ILLRequests->append(
-            [
-                'id'       => $details['id'],
-                'source'   => $this->getRecordSource(),
-                'location' => $pickupLocation,
-                'expire'   =>
-                    $this->dateConverter->convertToDisplayDate('U', $expire),
-                'create'   =>
-                    $this->dateConverter->convertToDisplayDate('U', time()),
-                'processed' => rand() % 3 == 0
-                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
-                'reqnum'   => sprintf('%06d', $nextId),
-                'item_id'  => $nextId,
-            ]
-        );
+        $session->ILLRequests[] = [
+            'id'       => $details['id'],
+            'source'   => $this->getRecordSource(),
+            'location' => $pickupLocation,
+            'expire'   => $this->dateConverter->convertToDisplayDate('U', $expire),
+            'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
+            'processed' => rand() % 3 == 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
+            'reqnum'   => sprintf('%06d', $nextId),
+            'item_id'  => $nextId,
+        ];
 
         return ['success' => true];
     }
@@ -2740,12 +2682,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
         // cancel.
-        $newRequests = new ArrayObject();
+        $newRequests = [];
         $retVal = ['count' => 0, 'items' => []];
         $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->ILLRequests as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
-                $newRequests->append($current);
+                $newRequests[] = $current;
             } else {
                 if (!$this->isFailing(__METHOD__, 50)) {
                     $retVal['count']++;
@@ -2754,7 +2696,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         'status' => 'ill_request_cancel_success',
                     ];
                 } else {
-                    $newRequests->append($current);
+                    $newRequests[] = $current;
                     $retVal['items'][$current['item_id']] = [
                         'success' => false,
                         'status' => 'ill_request_cancel_fail',
@@ -2899,11 +2841,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return array|false An array with key-value pairs.
+     * @return array An array with key-value pairs.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {
@@ -2948,7 +2890,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if ($function == 'getMyTransactionHistory') {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             $config = [
                 'sort' => [
@@ -2983,6 +2925,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'default_sort' => 'due asc',
             ];
         }
+        if ('getMyHolds' === $function) {
+            if (empty($this->config['Holds']['paging'])) {
+                return [];
+            }
+            return [
+                'max_results' => $this->config['Holds']['max_page_size'] ?? 100,
+            ];
+        }
         if ($function == 'patronLogin') {
             return [
                 'loginMethod'
@@ -2991,7 +2941,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
         if ($function == 'OnlinePayment') {
             return $this->config['OnlinePayment'] ?? [];

@@ -29,9 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use League\CommonMark\ConverterInterface;
 use League\CommonMark\Output\RenderedContentInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Helper for transforming markdown to html.
@@ -42,23 +42,16 @@ use League\CommonMark\Output\RenderedContentInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Markdown extends AbstractHelper
+class Markdown
 {
-    /**
-     * Markdown converter.
-     *
-     * @var ConverterInterface
-     */
-    protected $converter;
-
     /**
      * Markdown constructor.
      *
      * @param ConverterInterface $converter Markdown converter
      */
-    public function __construct(ConverterInterface $converter)
+    #[Autowire]
+    public function __construct(protected ConverterInterface $converter)
     {
-        $this->converter = $converter;
     }
 
     /**

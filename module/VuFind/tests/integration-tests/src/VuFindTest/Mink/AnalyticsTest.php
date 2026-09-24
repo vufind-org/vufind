@@ -61,12 +61,19 @@ class AnalyticsTest extends \VuFindTest\Integration\MinkTestCase
             ['testGTMid'],
         ];
         $basicMatomoConfig = ['config' => ['Matomo' => ['url' => 'http://fakeMatomo', 'site_id' => 987654321]]];
+        $basicPiwikConfig = ['config' => ['Piwik' => $basicMatomoConfig['config']['Matomo']]];
         $customVariablesMatomoConfig = [
             'config' => ['Matomo' => $basicMatomoConfig['config']['Matomo'] + ['custom_variables' => true]],
         ];
         yield 'Matomo loads on home page (no custom variables by default)' => [
             '/',
             $basicMatomoConfig,
+            ['fakeMatomo', '987654321'],
+            ['setCustomVariable'],
+        ];
+        yield 'Matomo loads on home page when configured as [Piwik]' => [
+            '/',
+            $basicPiwikConfig,
             ['fakeMatomo', '987654321'],
             ['setCustomVariable'],
         ];

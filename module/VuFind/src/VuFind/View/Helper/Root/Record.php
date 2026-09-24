@@ -29,7 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\Config;
+use Laminas\View\Helper\ServerUrl;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -40,7 +42,9 @@ use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Search\Memory;
 use VuFind\Search\UrlQueryHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
+use VuFind\View\GlobalsContainer;
 
 use function get_class;
 use function in_array;
@@ -57,31 +61,10 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
+class Record implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
     use DbServiceAwareTrait;
-
-    /**
-     * Context view helper.
-     *
-     * @var \VuFind\View\Helper\Root\Context
-     */
-    protected $contextHelper;
-
-    /**
-     * Cover router.
-     *
-     * @var CoverRouter
-     */
-    protected $coverRouter = null;
-
-    /**
-     * Search memory.
-     *
-     * @var Memory
-     */
-    protected $searchMemory = null;
 
     /**
      * Record driver.
@@ -93,36 +76,69 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     /**
      * Constructor.
      *
-     * @param TagsService $tagsService Tags service
-     * @param ?Config     $config      Configuration from config.ini
+     * @param TagsService       $tagsService       Tags service
+     * @param CoverRouter       $coverRouter       Cover router
+     * @param Memory            $searchMemory      Search memory
+     * @param Context           $contextHelper     Context helper
+     * @param RendererInterface $viewRenderer      View renderer
+     * @param ResolverInterface $viewResolver      View resolver
+     * @param SearchTabs        $searchTabs        SearchTabs helper
+     * @param TransEsc          $transEsc          TransEsc helper
+     * @param Highlight         $highlight         Highlight helper
+     * @param AddEllipsis       $addEllipsis       AddEllipsis helper
+     * @param EscapeOrCleanHtml $escapeOrCleanHtml EscapeOrCleanHtml helper
+     * @param Truncate          $truncate          Truncate helper
+     * @param Auth              $auth              Auth helper
+     * @param Url               $url               Url helper
+     * @param ServerUrl         $serverUrl         ServerUrl helper
+     * @param GlobalsContainer  $globalsContainer  Global data container
+     * @param ?array            $config            Configuration from config.ini
      */
-    public function __construct(protected TagsService $tagsService, protected ?Config $config = null)
-    {
-        $this->config = $config;
+    public function __construct(
+        protected TagsService $tagsService,
+        protected CoverRouter $coverRouter,
+        protected Memory $searchMemory,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $contextHelper,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected SearchTabs $searchTabs,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected TransEsc $transEsc,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Highlight $highlight,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AddEllipsis $addEllipsis,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeOrCleanHtml $escapeOrCleanHtml,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Truncate $truncate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Auth $auth,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected ServerUrl $serverUrl,
+        protected GlobalsContainer $globalsContainer,
+        #[Autowire(config: 'config', configType: 'array')]
+        protected ?array $config = null
+    ) {
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**
-     * Inject the cover router.
+     * Store a record driver object and return this object so that the appropriate
+     * template can be rendered.
      *
-     * @param CoverRouter $router Cover router
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
      *
-     * @return void
+     * @return Record
      */
-    public function setCoverRouter($router)
+    public function __invoke($driver)
     {
-        $this->coverRouter = $router;
-    }
-
-    /**
-     * Inject the search memory.
-     *
-     * @param Memory $memory Search memory
-     *
-     * @return void
-     */
-    public function setSearchMemory(Memory $memory): void
-    {
-        $this->searchMemory = $memory;
+        $this->driver = $driver;
+        return $this;
     }
 
     /**
@@ -147,25 +163,6 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             $context ?? ['driver' => $this->driver],
             $throw
         );
-    }
-
-    /**
-     * Store a record driver object and return this object so that the appropriate
-     * template can be rendered.
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
-     *
-     * @return Record
-     */
-    public function __invoke($driver)
-    {
-        // Set up context helper:
-        $contextHelper = $this->getView()->plugin('context');
-        $this->contextHelper = $contextHelper($this->getView());
-
-        // Set up driver context:
-        $this->driver = $driver;
-        return $this;
     }
 
     /**
@@ -451,17 +448,18 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
         $title = $this->driver->tryMethod('getTitle');
         if ('' !== $highlightedTitle) {
-            $highlight = $this->getView()->plugin('highlight');
-            $addEllipsis = $this->getView()->plugin('addEllipsis');
+            $highlight = $this->highlight;
+            $addEllipsis = $this->addEllipsis;
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
         if ('' !== trim($title)) {
-            $escape = $this->getView()->plugin('escapeOrCleanHtml');
-            $truncate = $this->getView()->plugin('truncate');
-            return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
+            return ($this->escapeOrCleanHtml)(
+                ($this->truncate)($title, $maxLength),
+                dataContext: 'title',
+                renderingContext: 'link'
+            );
         }
-        $transEsc = $this->getView()->plugin('transEsc');
-        return $transEsc('Title not available');
+        return ($this->transEsc)('Title not available');
     }
 
     /**
@@ -484,12 +482,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         $hiddenFilters = null;
         // Try to get hidden filters for the current search:
         if ($this->searchMemory) {
-            $view = $this->getView();
             $searchId = $this->driver->getExtraDetail('searchId')
-                ?? $view->plugin('searchMemory')->getLastSearchId();
+                ?? $this->searchMemory->getLastSearchId();
             if (
                 $searchId
-                && ($search = $this->searchMemory->getSearchById($searchId, $view->plugin('auth')->getUserObject()))
+                && (
+                    $search = $this->searchMemory->getSearchById(
+                        $searchId,
+                        $this->auth->getUserObject()
+                    )
+                )
             ) {
                 $filters = UrlQueryHelper::buildQueryString(
                     [
@@ -501,7 +503,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         }
         // If we couldn't get hidden filters for the current search, use last filters:
         if (null === $hiddenFilters) {
-            $hiddenFilters = $this->getView()->plugin('searchTabs')
+            $hiddenFilters = $this->searchTabs
                 ->getCurrentHiddenFilterParams(
                     $this->driver->getSearchBackendIdentifier(),
                     false,
@@ -524,7 +526,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
-        $html = $this->view->render($template);
+        $html = $this->viewRenderer->render($template);
         $this->contextHelper->restore($oldContext);
         return $html;
     }
@@ -603,10 +605,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     {
         static $previewContexts = false;
         if (false === $previewContexts) {
-            $previewContexts = isset($this->config->Content->linkPreviewsToCovers)
+            $previewContexts = isset($this->config['Content']['linkPreviewsToCovers'])
                 ? array_map(
                     'trim',
-                    explode(',', $this->config->Content->linkPreviewsToCovers)
+                    explode(',', $this->config['Content']['linkPreviewsToCovers'])
                 ) : ['*'];
         }
         return in_array('*', $previewContexts)
@@ -662,15 +664,12 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (
-            isset($this->config->Content->coversize)
-            && !$this->config->Content->coversize
-        ) {
+        if (!($this->config['Content']['coversize'] ?? true)) {
             // covers disabled entirely
             return false;
         }
         // check for context-specific overrides
-        return $this->config->Content->coversize[$context] ?? $default;
+        return $this->config['Content']['coversize'][$context] ?? $default;
     }
 
     /**
@@ -682,13 +681,10 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     public function getThumbnailAlignment($context = 'result')
     {
-        $view = $this->getView();
         $configField = $context . 'ThumbnailsOnLeft';
-        $left = !isset($this->config->Site->$configField)
-            ? true : $this->config->Site->$configField;
-        $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
-            ? true : $this->config->Site->mirrorThumbnailsRTL;
-        if ($view->layout()->rtl && !$mirror) {
+        $left = $this->config['Site'][$configField] ?? true;
+        $mirror = $this->config['Site']['mirrorThumbnailsRTL'] ?? true;
+        if ($this->globalsContainer['rtl'] && !$mirror) {
             $left = !$left;
         }
         return $left ? 'left' : 'right';
@@ -712,7 +708,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         $size = 3,
         $margin = 4
     ) {
-        if (!isset($this->config->QRCode)) {
+        if (!isset($this->config['QRCode'])) {
             return false;
         }
 
@@ -725,10 +721,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
                 return false;
         }
 
-        if (
-            !isset($this->config->QRCode->$key)
-            || !$this->config->QRCode->$key
-        ) {
+        if (!($this->config['QRCode'][$key] ?? false)) {
             return false;
         }
 
@@ -743,8 +736,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
-        $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper('qrcode-show') . '?' . http_build_query($qrcode);
+        return ($this->url)('qrcode-show') . '?' . http_build_query($qrcode);
     }
 
     /**
@@ -760,7 +752,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         // Find out whether or not AJAX covers are enabled; this will control
         // whether dynamic URLs are resolved immediately or deferred until later
         // (see third parameter of getUrl() below).
-        $ajaxcovers = $this->config->Content->ajaxcovers ?? false;
+        $ajaxcovers = $this->config['Content']['ajaxcovers'] ?? false;
         return $this->coverRouter
             ? $this->coverRouter->getUrl($this->driver, $size, !$ajaxcovers)
             : false;
@@ -798,9 +790,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
-        $urlHelper = $this->getView()->plugin('url');
-        $serverUrlHelper = $this->getView()->plugin('serverurl');
-        $formatLink = function ($link) use ($urlHelper, $serverUrlHelper) {
+        $formatLink = function ($link) {
             // Error if route AND URL are missing at this point!
             if (!isset($link['route']) && !isset($link['url'])) {
                 throw new \Exception('Invalid URL array.');
@@ -810,8 +800,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
             if (!isset($link['url'])) {
                 $routeParams = $link['routeParams'] ?? [];
 
-                $link['url'] = $serverUrlHelper(
-                    $urlHelper($link['route'], $routeParams)
+                $link['url'] = ($this->serverUrl)(
+                    ($this->url)($link['route'], $routeParams)
                 );
                 if (isset($link['queryString'])) {
                     $link['url'] .= $link['queryString'];
@@ -840,7 +830,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     protected function hasOpenUrlReplaceSetting()
     {
-        return $this->config?->OpenURL?->replace_other_urls ?? false;
+        return $this->config['OpenURL']['replace_other_urls'] ?? false;
     }
 
     /**

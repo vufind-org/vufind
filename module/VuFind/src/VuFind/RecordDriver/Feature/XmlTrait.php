@@ -51,7 +51,7 @@ trait XmlTrait
      *
      * @var string
      */
-    protected string $xmlNs = 'http://www.w3.org/2000/xmlns/';
+    protected string $nsXml = 'http://www.w3.org/XML/1998/namespace';
 
     /**
      * XML class to use.
@@ -92,6 +92,6 @@ trait XmlTrait
     protected function getLangAttr(array $node): ?string
     {
         $xml = $this->getXmlReader();
-        return $xml->attr($node, '{{$this->xmlNs}}lang') ?? $xml->attr($node, 'lang');
+        return $xml->attr($node, "{{$this->nsXml}}lang") ?? $xml->attr($node, 'lang');
     }
 }

@@ -44,74 +44,26 @@ use VuFind\Search\Results\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
+class SearchTabsHelper
 {
-    /**
-     * Search manager.
-     *
-     * @var PluginManager
-     */
-    protected $results;
-
-    /**
-     * Tab configuration.
-     *
-     * @var array
-     */
-    protected $tabConfig;
-
-    /**
-     * Tab filter configuration.
-     *
-     * @var array
-     */
-    protected $filterConfig;
-
-    /**
-     * Tab permission configuration.
-     *
-     * @var array
-     */
-    protected $permissionConfig;
-
-    /**
-     * Tab settings.
-     *
-     * @var array
-     */
-    protected $settings;
-
-    /**
-     * Request.
-     *
-     * @var Request
-     */
-    protected $request;
-
     /**
      * Constructor.
      *
-     * @param PluginManager $results      Search results plugin manager
-     * @param array         $tabConfig    Tab configuration
-     * @param array         $filterConfig Tab filter configuration
-     * @param Request       $request      Request
-     * @param array         $permConfig   Tab permission configuration
-     * @param array         $settings     Tab settings
+     * @param PluginManager $results          Search results plugin manager
+     * @param array         $tabConfig        Tab configuration
+     * @param array         $filterConfig     Tab filter configuration
+     * @param Request       $request          Request
+     * @param array         $permissionConfig Tab permission configuration
+     * @param array         $settings         Tab settings
      */
     public function __construct(
-        PluginManager $results,
-        array $tabConfig,
-        array $filterConfig,
-        Request $request,
-        array $permConfig = [],
-        array $settings = []
+        protected PluginManager $results,
+        protected array $tabConfig,
+        protected array $filterConfig,
+        protected Request $request,
+        protected array $permissionConfig = [],
+        protected array $settings = []
     ) {
-        $this->results = $results;
-        $this->tabConfig = $tabConfig;
-        $this->filterConfig = $filterConfig;
-        $this->request = $request;
-        $this->permissionConfig = $permConfig;
-        $this->settings = $settings;
     }
 
     /**
