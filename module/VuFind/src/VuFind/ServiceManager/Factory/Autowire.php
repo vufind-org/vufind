@@ -53,9 +53,12 @@ class Autowire
      * @param ?string $path       Slash-separated path to extract from configuration
      * @param ?string $explode    Delimiter to use to convert a configuration string to an array (not applied to any
      * default value)
-     * @param mixed   $default    Default configuration value
+     * @param mixed   $default    Default value (can be used to inject a literal, or as a fallback if a path-based
+     * config is not found)
      * @param ?string $service    Service to inject (mutually exclusive with $config)
      * @param ?string $container  Container or plugin manager to use to get the service
+     *
+     * @throws LogicException
      */
     public function __construct(
         public readonly ?string $config = null,
@@ -66,17 +69,45 @@ class Autowire
         public readonly ?string $service = null,
         public readonly ?string $container = null,
     ) {
-        if (null !== $config) {
+        /**
+         * Throw an exception if the service or container attributes are set.
+         *
+         * @param string  $conflictingAttribute Conflicting attribute name to include in error
+         * @param ?string $service              Service attribute
+         * @param ?string $container            Container attribute
+         *
+         * @throws LogicException
+         * @return void
+         */
+        $failOnServiceOrContainer = function (
+            string $conflictingAttribute,
+            ?string $service,
+            ?string $container
+        ): void {
             if (null !== $service) {
-                throw new LogicException('#[Autowire] attribute cannot contain both config and service.');
+                throw new LogicException(
+                    '#[Autowire] attribute cannot contain both ' . $conflictingAttribute . ' and service.'
+                );
             }
             if (null !== $container) {
-                throw new LogicException('#[Autowire] attribute cannot contain both config and container.');
+                throw new LogicException(
+                    '#[Autowire] attribute cannot contain both ' . $conflictingAttribute . ' and container.'
+                );
             }
+        };
+        if (null !== $config) {
+            $failOnServiceOrContainer('config', $service, $container);
         } elseif (null !== $configType) {
             throw new LogicException(
                 '#[Autowire] attribute cannot contain configType without config.'
             );
+        } elseif (null !== $path) {
+            throw new LogicException(
+                '#[Autowire] attribute cannot contain path without config.'
+            );
+        }
+        if (null !== $default) {
+            $failOnServiceOrContainer('default', $service, $container);
         }
     }
 }
