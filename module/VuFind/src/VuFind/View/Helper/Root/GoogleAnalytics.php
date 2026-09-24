@@ -58,9 +58,11 @@ class GoogleAnalytics
      * @param array        $options      Configuration options (supported option: 'create_options_js').
      */
     public function __construct(
+        #[Autowire(config: 'google_analytics/apiKey')]
         protected ?string $key,
         #[Autowire(container: 'ViewHelperManager')]
         protected AssetManager $assetManager,
+        #[Autowire('config', path: 'GoogleAnalytics')]
         array $options = []
     ) {
         $this->createOptions = $options['create_options_js'] ?? '{}';
