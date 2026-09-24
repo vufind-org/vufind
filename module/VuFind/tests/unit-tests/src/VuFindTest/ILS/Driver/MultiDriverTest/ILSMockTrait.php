@@ -281,7 +281,7 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getILLPickUpLibraries($id, $patron)
+    public function getILLPickupLibraries($id, $patron)
     {
         return false;
     }
@@ -300,7 +300,7 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getILLPickUpLocations($id, $pickupLib, $patron)
+    public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         return false;
     }
