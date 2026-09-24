@@ -584,7 +584,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 // Use the multi-byte substring function if available to avoid
                 // problems with accented characters:
                 $fnameParts[$i] = function_exists('mb_substr')
-                    ? mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.'
+                    ? mb_substr($fnameParts[$i], 0, 1, 'UTF-8') . '.'
                     : substr($fnameParts[$i], 0, 1) . '.';
             }
             $name .= ', ' . implode(' ', $fnameParts);
