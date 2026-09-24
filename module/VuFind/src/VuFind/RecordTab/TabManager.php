@@ -32,6 +32,7 @@ namespace VuFind\RecordTab;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -80,6 +81,7 @@ class TabManager
      * @param RecordTabPluginManager $recordTabPluginManager RecordTab plugin manager
      * @param ConfigManagerInterface $configManager          Configuration manager
      */
+    #[Autowire]
     public function __construct(
         protected RecordTabPluginManager $recordTabPluginManager,
         protected ConfigManagerInterface $configManager,
