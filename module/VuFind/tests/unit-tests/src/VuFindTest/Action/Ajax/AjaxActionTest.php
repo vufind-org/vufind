@@ -84,16 +84,14 @@ class AjaxActionTest extends AbstractActionTestCase
      * Get an AJAX plugin manager. With no method name it reports no handler; otherwise the named handler either returns
      * the given result or throws the given exception.
      *
-     * @param ?string     $method Method the manager should recognize (null = recognizes nothing)
-     * @param array       $result Result array the handler returns from handleRequest()
-     * @param ?\Throwable $throws Exception the handler throws instead of returning
+     * @param ?string          $method            Method the manager should recognize (null = recognizes nothing)
+     * @param array|\Throwable $resultOrException Result array the handler returns, or an exception it throws instead
      *
      * @return AjaxPluginManager
      */
     protected function getAjaxManager(
         ?string $method = null,
-        array $result = [],
-        ?\Throwable $throws = null
+        array|\Throwable $resultOrException = []
     ): AjaxPluginManager {
         $manager = $this->createMock(AjaxPluginManager::class);
         if (null === $method) {
@@ -102,10 +100,10 @@ class AjaxActionTest extends AbstractActionTestCase
         }
         $manager->method('has')->willReturnCallback(fn ($m) => $m === $method);
         $handler = $this->createMock(AjaxHandlerInterface::class);
-        if (null !== $throws) {
-            $handler->method('handleRequest')->willThrowException($throws);
+        if ($resultOrException instanceof \Throwable) {
+            $handler->method('handleRequest')->willThrowException($resultOrException);
         } else {
-            $handler->method('handleRequest')->willReturn($result);
+            $handler->method('handleRequest')->willReturn($resultOrException);
         }
         $manager->method('get')->with($method)->willReturn($handler);
         return $manager;
@@ -199,7 +197,7 @@ class AjaxActionTest extends AbstractActionTestCase
 
         $action = $this->buildAction(
             JsonAction::class,
-            ajaxManager: $this->getAjaxManager('foo', throws: $exception),
+            ajaxManager: $this->getAjaxManager('foo', $exception),
             responseHelper: $responseHelper
         );
         $this->assertSame($expectedResponse, $action($this->request(['method' => 'foo']), new Response()));
