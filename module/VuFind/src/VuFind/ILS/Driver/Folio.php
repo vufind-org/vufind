@@ -2893,7 +2893,7 @@ class Folio extends AbstractAPI implements
         );
         $itemLocationId = $item->effectiveLocation->id;
         $location = $this->getLocationData($itemLocationId);
-        return array_intersect($allowedServicePointIds, $location['servicePointIds']);
+        return array_values(array_intersect($allowedServicePointIds, $location['servicePointIds']));
     }
 
     /**
