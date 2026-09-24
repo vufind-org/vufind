@@ -122,9 +122,9 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $solr->expects($this->once())->method('optimize')
             ->with('SolrWeb');
         $config = [
-                'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
-                'General' => compact('verbose'),
-                'Sitemaps' => ['url' => ['http://foo']],
+            'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
+            'General' => compact('verbose'),
+            'Sitemaps' => ['url' => ['http://foo']],
         ];
         $command = $this->getMockCommand($importer, $solr, $config);
         $this->expectConsecutiveCalls(
@@ -163,9 +163,9 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $solr->expects($this->once())->method('optimize')
             ->with('SolrWeb');
         $config = [
-                'Cache' => ['transform_cache_dir' => $cacheDir],
-                'General' => ['verbose' => true],
-                'Sitemaps' => ['url' => ['http://foo']],
+            'Cache' => ['transform_cache_dir' => $cacheDir],
+            'General' => ['verbose' => true],
+            'Sitemaps' => ['url' => ['http://foo']],
         ];
         $command = $this->getMockCommand($importer, $solr, $config);
         $commandTester = new CommandTester($command);
