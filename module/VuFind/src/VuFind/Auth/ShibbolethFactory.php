@@ -92,10 +92,10 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function getConfigurationLoader(ContainerInterface $container): ConfigurationLoaderInterface
     {
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $config = $configManager->getConfigObject('config');
-        $override = $config->Shibboleth->allow_configuration_override ?? false;
+        $config = $configManager->getConfigArray('config');
+        $override = $config['Shibboleth']['allow_configuration_override'] ?? false;
         if ($override) {
-            $shibConfig = $configManager->getConfigObject(self::SHIBBOLETH_CONFIG_FILE_NAME);
+            $shibConfig = $configManager->getConfigArray(self::SHIBBOLETH_CONFIG_FILE_NAME);
             return new MultiIdPConfigurationLoader($config, $shibConfig);
         }
         return new SingleIdPConfigurationLoader($config);

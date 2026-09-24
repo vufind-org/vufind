@@ -31,7 +31,6 @@
 
 namespace VuFind\Search\EDS;
 
-use VuFind\Config\Config;
 use VuFind\Record\Loader;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
@@ -51,9 +50,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'EDS';
+    protected ?string $backendId = 'EDS';
 
     /**
      * Facet list.
@@ -69,13 +68,13 @@ class Results extends \VuFind\Search\Base\Results
      * search parameters.
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
-     * @param Config                     $config        Backend config
+     * @param array                      $config        Backend config
      */
     public function __construct(
         Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        protected Config $config
+        protected array $config
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -108,7 +107,7 @@ class Results extends \VuFind\Search\Base\Results
         $params = $this->getParams();
         $backendParams = $params->getBackendParameters();
         if ($allTerms === '') {
-            if (!$this->config['General']['limiter_only'] ?? false) {
+            if (!($this->config['General']['limiter_only'] ?? false)) {
                 $this->storeErrorResponse('empty_search_disallowed');
                 return;
             } elseif (!$this->paramsIncludeLimiter($backendParams)) {

@@ -9,8 +9,8 @@
 
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {
-    $config = $this->config()->get('config');
-    $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+    $config = $this->config()->getArray('config');
+    $this->searchClassId = $config['Site']['defaultSearchBackend'] ?? 'Solr';
   }
 
   $this->breadcrumbs()->disable();

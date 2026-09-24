@@ -74,7 +74,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertEquals(['format'], $sf->getHierarchicalFacets());
@@ -102,7 +102,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $results = $this->getMockResults();
         $params = $results->getParams();
@@ -141,7 +141,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertEquals('OR', $sf->getFacetOperator('format'));
@@ -168,7 +168,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertTrue($sf->excludeAllowed('format'));
@@ -192,7 +192,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $filters = [
             'date' => ['[1900 TO 1905]'],
@@ -238,7 +238,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => ['collapsedFacets' => '   foo, bar,baz   '],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertEquals(['foo', 'bar', 'baz'], $sf->getCollapsedFacets());
@@ -260,7 +260,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => ['collapsedFacets' => '*'],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $results = $this->getMockResults();
         $sf = $this->getSideFacets($configManager, $results);
@@ -298,7 +298,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Checkboxes' => ['foo' => 'bar'],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $checkboxData = [
             [
@@ -331,7 +331,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Checkboxes' => ['foo' => 'bar'],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $checkboxData = [
             [
