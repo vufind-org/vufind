@@ -169,17 +169,14 @@ $config = [
         'factories' => [
             'VuFind\Controller\EITController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\EPFController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\ErrorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
-            'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
-            'VuFind\Controller\OAuth2Controller' => 'VuFind\Controller\OAuth2ControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Pazpar2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\PrimoController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -207,8 +204,6 @@ $config = [
             'eit' => 'VuFind\Controller\EITController',
             'EPF' => 'VuFind\Controller\EPFController',
             'epf' => 'VuFind\Controller\EPFController',
-            'Error' => 'VuFind\Controller\ErrorController',
-            'error' => 'VuFind\Controller\ErrorController',
             'Search2' => 'VuFind\Controller\Search2Controller',
             'search2' => 'VuFind\Controller\Search2Controller',
             'Hierarchy' => 'VuFind\Controller\HierarchyController',
@@ -217,8 +212,6 @@ $config = [
             'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
-            'Install' => 'VuFind\Controller\InstallController',
-            'install' => 'VuFind\Controller\InstallController',
             'LibGuides' => 'VuFind\Controller\LibGuidesController',
             'libguides' => 'VuFind\Controller\LibGuidesController',
             'LibGuidesAZ' => 'VuFind\Controller\LibGuidesAZController',
@@ -227,8 +220,6 @@ $config = [
             'librarycards' => 'VuFind\Controller\LibraryCardsController',
             'MyResearch' => 'VuFind\Controller\MyResearchController',
             'myresearch' => 'VuFind\Controller\MyResearchController',
-            'OAuth2' => 'VuFind\Controller\OAuth2Controller',
-            'oauth2' => 'VuFind\Controller\OAuth2Controller',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
             'Pazpar2' => 'VuFind\Controller\Pazpar2Controller',
@@ -292,10 +283,8 @@ $config = [
         'factories' => [
             \League\CommonMark\MarkdownConverter::class => \VuFind\Service\MarkdownFactory::class,
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
-            \VuFind\I18n\Locale\LocaleSettings::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
-            \VuFind\Record\Router::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\SMS\SMSInterface::class => \VuFind\SMS\Factory::class,
             \VuFind\UrlShortener\UrlShortenerInterface::class => \VuFind\UrlShortener\ServiceFactory::class,
             \VuFindHttp\HttpService::class => \VuFind\Service\HttpServiceFactory::class,
@@ -306,9 +295,6 @@ $config = [
         'delegators' => [
             'Laminas\Mvc\I18n\Translator' => [
                 'VuFind\I18n\Translator\TranslatorFactory',
-            ],
-            'SlmLocale\Locale\Detector' => [
-                'VuFind\I18n\Locale\LocaleDetectorFactory',
             ],
         ],
         'initializers' => [
@@ -456,6 +442,171 @@ $config = [
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Laminas components).
     'vufind' => [
+        // This section contains all action specific configuration that gets applied to actions before they're executed.
+        //
+        // The configuration is an array of associative arrays of configuration entries. Each entry is identified by its
+        // key so that any specific entry can be overridden in other modules.
+        //
+        // Note: Each module should use a module specific prefix in their own entries to avoid any unintentional clashes
+        // between modules. A good practice is to prefix each config entry key with lowercase module name followed by
+        // an underscore and the actual identifier (e.g. 'vufindadmin_admin').
+        //
+        // Valid keys for each configuration entry:
+        //   - actionIds             An array of action identifiers or prefixes the configuration applies to. This can
+        //                           be a simple string in format 'category/action' (all lowercase) or an array for
+        //                           matching the beginning of the action identifier (again all lowercase):
+        //                           [
+        //                             'type' => 'prefix',
+        //                              'prefix' => 'category/',
+        //                           ],
+        //
+        //   - accessPermission      Set access permission (string|false|null, see AccessPermissionInterface)
+        //   - accessDeniedBehavior  Set behavior when access is denied (string|null, see AccessPermissionInterface)
+        //   - backendId             Set search backend identifier (string)
+        //   - defaultTab            Set default tab (string|null)
+        //   - fallbackDefaultTab    Set fallback default tab (string; empty string to use Site/defaultRecordTab from
+        //                           config)
+        //   - poweredBy             Set "Powered by" displayed in page footer
+        'action_config' => [
+            // EDS:
+            'vufind_eds_record' => [
+                'actionIds' => [
+                    'edsrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'edsrecord/',
+                    ],
+                ],
+                'accessPermission' => 'access.EDSModule',
+                'backendId' => 'EDS',
+                'fallbackDefaultTab' => 'Description',
+            ],
+
+            // EIT:
+            'vufind_eit_record' => [
+                'actionIds' => [
+                    'eitrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'eitrecord/',
+                    ],
+                ],
+                'accessPermission' => 'access.EITModule',
+                'backendId' => 'EIT',
+                'fallbackDefaultTab' => 'Description',
+            ],
+
+            // EPF:
+            'vufind_epf_record' => [
+                'actionIds' => [
+                    'epfrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'epfrecord/',
+                    ],
+                ],
+                'accessPermission' => 'access.EPFModule',
+                'backendId' => 'EPF',
+            ],
+
+            // Record, Collection (Default backend):
+            'vufind_record' => [
+                'actionIds' => [
+                    'collection',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'collection/',
+                    ],
+                    'missingrecord',
+                    'missingrecord/home',
+                    'record',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'record/',
+                    ],
+                ],
+                'backendId' => DEFAULT_SEARCH_BACKEND,
+                'fallbackDefaultTab' => '',
+            ],
+
+            // Primo:
+            'vufind_primo_record' => [
+                'actionIds' => [
+                    'primorecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'primorecord/',
+                    ],
+                ],
+                'accessPermission' => 'access.PrimoModule',
+                'backendId' => 'Primo',
+                'fallbackDefaultTab' => 'Description',
+            ],
+
+            // ProquestFSG:
+            'vufind_proquestfsg_record' => [
+                'actionIds' => [
+                    'proquestfsgrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'proquestfsgrecord/',
+                    ],
+                ],
+                'backendId' => 'ProQuestFSG',
+                'checkEnabled' => true,
+            ],
+
+            // Search2Record, Search2Collection:
+            'vufind_search2_record' => [
+                'actionIds' => [
+                    'search2collection',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'search2collection/',
+                    ],
+                    'search2record',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'search2record/',
+                    ],
+                ],
+                'backendId' => 'Search2',
+                'fallbackDefaultTab' => 'Description',
+            ],
+
+            // Summon:
+            'vufind_summon_record' => [
+                'actionIds' => [
+                    'summonrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'summonrecord/',
+                    ],
+                ],
+                'backendId' => 'Summon',
+                'fallbackDefaultTab' => 'Description',
+                'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
+            ],
+
+            // WorldCat2 and legacy WorldCat actions:
+            'vufind_worldcat2_record' => [
+                'actionIds' => [
+                    // Legacy WorldCat actions:
+                    'worldcatrecord',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'worldcatrecord/',
+                    ],
+                    // Current WorldCat2 actions:
+                    'worldcat2record',
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'worldcat2record/',
+                    ],
+                ],
+                'backendId' => 'WorldCat2',
+            ],
+        ],
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
         // This section contains service manager configurations for all VuFind

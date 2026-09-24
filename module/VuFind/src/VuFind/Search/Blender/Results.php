@@ -43,9 +43,9 @@ class Results extends \VuFind\Search\Solr\Results
     /**
      * Search backend identifiers.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'Blender';
+    protected ?string $backendId = 'Blender';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the

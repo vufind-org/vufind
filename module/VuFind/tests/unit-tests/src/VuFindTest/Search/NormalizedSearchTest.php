@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Search;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Search\Minified;
 use VuFind\Search\NormalizedSearch;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\Results;
@@ -49,9 +51,9 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a results manager to test with.
      *
-     * @return ResultsManager
+     * @return MockObject&ResultsManager
      */
-    protected function getResultsManager(): ResultsManager
+    protected function getResultsManager(): MockObject&ResultsManager
     {
         return $this->createMock(\VuFind\Search\Results\PluginManager::class);
     }
@@ -83,7 +85,13 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
     {
         $finalResults = $results ?? $this->getResults();
         $manager = $this->getResultsManager();
-        $manager->method('get')->with('Solr')->willReturn($finalResults);
+        $manager->method('get')->willReturnCallback(
+            fn ($cl) => match ($cl) {
+                'Solr' => $finalResults,
+                // Use Solr Results object here too to ensure it doesn't actually get compared:
+                'Foo' => $this->getResults(),
+            }
+        );
         return new NormalizedSearch($manager, $finalResults);
     }
 
@@ -170,10 +178,31 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResults();
         $norm = $this->getNormalizedSearch($results);
         $mockMin = $this->createMock(\minSO::class);
-        $otherSearch = $this->createMock(\VuFind\Search\EDS\Results::class);
-        $mockMin->expects($this->once())
-            ->method('deminify')
-            ->willReturn($otherSearch);
+        $mockMin->expects($this->never())
+            ->method('deminify');
         $this->assertFalse($norm->isEquivalentToMinifiedSearch($mockMin));
+    }
+
+    /**
+     * Test handling of non-deminifiable search in equivalence.
+     *
+     * @return void
+     */
+    public function testNonDeminifiableSearchComparison(): void
+    {
+        $results = $this->createMock(Results::class);
+        $results->method('minify')
+            ->willReturnCallback(
+                function (Minified &$minified): void {
+                    $minified->cl = 'Foo';
+                    $minified->t = [
+                        'l' => '',
+                        's' => 'b',
+                        'i' => 'AllFields',
+                    ];
+                }
+            );
+        $norm = $this->getNormalizedSearch($results);
+        $this->assertFalse($norm->isEquivalentToMinifiedSearch(new \minSO($results)));
     }
 }

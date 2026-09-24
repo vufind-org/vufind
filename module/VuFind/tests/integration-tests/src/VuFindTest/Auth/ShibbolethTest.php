@@ -34,7 +34,6 @@ use Laminas\Http\Request;
 use VuFind\Auth\Shibboleth;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
-use VuFind\Config\Config;
 
 /**
  * Shibboleth authentication test class.
@@ -131,10 +130,10 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
         bool $useHeaders = false,
         bool $requiredAttributes = true
     ): Shibboleth {
-        $config = new Config($config ?? $this->getAuthConfig($useHeaders, $requiredAttributes));
+        $config ??= $this->getAuthConfig($useHeaders, $requiredAttributes);
         $loader = ($shibConfig === null)
             ? new SingleIdPConfigurationLoader($config)
-            : new MultiIdPConfigurationLoader($config, new Config($shibConfig));
+            : new MultiIdPConfigurationLoader($config, $shibConfig);
         $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
             $loader,

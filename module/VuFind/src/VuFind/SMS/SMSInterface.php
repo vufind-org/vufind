@@ -45,7 +45,7 @@ interface SMSInterface
      *
      * @return string
      */
-    public function getValidationType();
+    public function getValidationType(): string;
 
     /**
      * Get a list of carriers supported by the module. Returned as an array of
@@ -54,18 +54,18 @@ interface SMSInterface
      *
      * @return array
      */
-    public function getCarriers();
+    public function getCarriers(): array;
 
     /**
      * Send a text message to the specified provider.
      *
-     * @param string $provider The provider ID to send to
-     * @param string $to       The phone number at the provider
-     * @param string $from     The email address to use as sender
-     * @param string $message  The message to send
+     * @param string  $provider The provider ID to send to
+     * @param string  $to       The phone number at the provider
+     * @param ?string $from     The email address to use as sender (null for default)
+     * @param string  $message  The message to send
      *
      * @throws \VuFind\Exception\Mail
      * @return void
      */
-    public function text($provider, $to, $from, $message);
+    public function text(string $provider, string $to, ?string $from, string $message): void;
 }

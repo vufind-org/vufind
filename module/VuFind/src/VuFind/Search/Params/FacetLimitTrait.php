@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Params;
 
-use VuFind\Config\Config;
-
 use function in_array;
 
 /**
@@ -68,18 +66,18 @@ trait FacetLimitTrait
     protected int $hierarchicalFacetLimit = -1;
 
     /**
-     * Initialize facet limit from a Config object.
+     * Initialize facet limit from a Config array.
      *
-     * @param ?Config $config Configuration
+     * @param ?array $config Configuration
      *
      * @return void
      */
-    protected function initFacetLimitsFromConfig(?Config $config = null): void
+    protected function initFacetLimitsFromConfig(?array $config = null): void
     {
-        if (is_numeric($config->facet_limit ?? null)) {
-            $this->setFacetLimit($config->facet_limit);
+        if (is_numeric($config['facet_limit'] ?? null)) {
+            $this->setFacetLimit($config['facet_limit']);
         }
-        foreach ($config->facet_limit_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_limit_by_field'] ?? [] as $k => $v) {
             $this->facetLimitByField[$k] = $v;
         }
     }

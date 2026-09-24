@@ -21,7 +21,6 @@ return [
             'VuFind\View\Helper\Root\Overdrive' => 'VuFind\View\Helper\Root\OverdriveFactory',
             'VuFind\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\PiwikFactory',
             'VuFind\View\Helper\Root\ProxyUrl' => 'VuFind\View\Helper\Root\ProxyUrlFactory',
-            'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
             'VuFind\View\Helper\Root\Relais' => 'VuFind\View\Helper\Root\RelaisFactory',
             'VuFind\View\Helper\Root\ResultFeed' => 'VuFind\View\Helper\Root\ResultFeedFactory',
             'VuFind\View\Helper\Root\Session' => 'VuFind\View\Helper\Root\SessionFactory',

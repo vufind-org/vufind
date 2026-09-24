@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\TitleHolds;
@@ -69,7 +68,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
             $ilsAuth ?? $this->createStub(ILSAuthenticator::class),
             $catalog ?? $this->createStub(Connection::class),
             $hmac ?? $this->createStub(HMAC::class),
-            new Config($config)
+            $config
         );
     }
 

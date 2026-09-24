@@ -32,7 +32,6 @@ namespace VuFindTest\Auth;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\Auth\MultiAuth;
-use VuFind\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -59,7 +58,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         $manager = new \VuFind\Auth\PluginManager($container);
         $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);
-        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 

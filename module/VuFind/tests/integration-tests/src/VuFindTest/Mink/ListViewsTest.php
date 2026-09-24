@@ -101,8 +101,15 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->gotoRecord();
 
-        // Open the user comments tab and confirm that login is required:
+        // Assert that we are on the search results screen; we want to make sure that clicking on the comments
+        // tab doesn't manipulate the search URL inappropriately.
+        $session = $this->getMinkSession();
+        $initialUrl = $session->getCurrentUrl();
+        $this->assertStringEndsWith('/Search/Results?lookfor=id%3Atestdeweybrowse&type=AllFields', $initialUrl);
+
+        // Open the user comments tab and confirm that URL is unchanged and login is required:
         $this->clickCss($page, '#tab-button-usercomments-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->assertSame($initialUrl, $session->getCurrentUrl());
         $this->assertSame(
             'You must be logged in first',
             $this->findCssAndGetText($page, '.comment-form .btn-primary')

@@ -30,6 +30,7 @@
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_slice;
 use function chr;
@@ -57,41 +58,6 @@ class Cart
      */
     protected $items;
 
-    /**
-     * Maximum number of items allowed in cart.
-     *
-     * @var int
-     */
-    protected $maxSize;
-
-    /**
-     * Is the cart currently activated?
-     *
-     * @var bool
-     */
-    protected $active;
-
-    /**
-     * Is cart configured to toggles in search results?
-     *
-     * @var bool
-     */
-    protected $showTogglesInSearch;
-
-    /**
-     * Record loader.
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Cookie manager.
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
-
     public const CART_COOKIE = 'vufind_cart';
     public const CART_COOKIE_SOURCES = 'vufind_cart_src';
     public const CART_COOKIE_DELIM = "\t";
@@ -99,26 +65,23 @@ class Cart
     /**
      * Constructor.
      *
-     * @param \VuFind\Record\Loader $loader          Object for loading records
-     * @param CookieManager         $cookieManager   Cookie manager
-     * @param int                   $maxSize         Maximum size of cart contents
-     * @param bool                  $active          Is cart enabled?
-     * @param bool                  $togglesInSearch Is cart configured to toggles
+     * @param \VuFind\Record\Loader $recordLoader        Object for loading records
+     * @param CookieManager         $cookieManager       Cookie manager
+     * @param int                   $maxSize             Maximum size of cart contents
+     * @param bool                  $active              Is cart enabled?
+     * @param bool                  $showTogglesInSearch Is cart configured to show toggles
      * in search results?
      */
     public function __construct(
-        \VuFind\Record\Loader $loader,
-        \VuFind\Cookie\CookieManager $cookieManager,
-        $maxSize = 100,
-        $active = true,
-        $togglesInSearch = true
+        protected \VuFind\Record\Loader $recordLoader,
+        protected \VuFind\Cookie\CookieManager $cookieManager,
+        #[Autowire(config: 'config', path: 'Site/bookBagMaxSize', default: 100)]
+        protected int $maxSize = 100,
+        #[Autowire(config: 'config', path: 'Site/showBookBag', default: false)]
+        protected bool $active = true,
+        #[Autowire(config: 'config', path: 'Site/bookbagTogglesInSearch', default: true)]
+        protected bool $showTogglesInSearch = true
     ) {
-        $this->recordLoader = $loader;
-        $this->cookieManager = $cookieManager;
-        $this->maxSize = $maxSize;
-        $this->active = $active;
-        $this->showTogglesInSearch = $togglesInSearch;
-
         // Initialize contents
         $this->init($this->cookieManager->getCookies());
     }

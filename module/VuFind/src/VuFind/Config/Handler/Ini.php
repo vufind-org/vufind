@@ -208,6 +208,12 @@ class Ini extends AbstractBase
 
         if ($baseLocation !== null && file_exists($baseLocation->getPath()) && $baseLocation->getPath() !== $outfile) {
             // Copy from base to provide structure
+            $outfileDirectory = $destinationLocation->getBasePath();
+            if (!is_dir($outfileDirectory) && !mkdir($outfileDirectory, recursive: true)) {
+                throw new FileAccessException(
+                    "Error: Creating directory for {$outfile}."
+                );
+            }
             if (!copy($baseLocation->getPath(), $outfile)) {
                 throw new FileAccessException(
                     "Error: Problem copying to {$outfile}."

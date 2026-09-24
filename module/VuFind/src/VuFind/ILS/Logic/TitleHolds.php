@@ -62,15 +62,15 @@ class TitleHolds
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \VuFind\Config\Config         $config  VuFind configuration
+     * @param array                         $config  VuFind configuration
      */
     public function __construct(
         protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
         protected ILSConnection $catalog,
         protected \VuFind\Crypt\HMAC $hmac,
-        protected \VuFind\Config\Config $config
+        protected array $config
     ) {
-        $this->hideHoldings = ($this->config?->Record?->hide_holdings?->toArray() ?? []);
+        $this->hideHoldings = $this->config['Record']['hide_holdings'] ?? [];
     }
 
     /**
@@ -140,10 +140,7 @@ class TitleHolds
      */
     protected function checkOverrideMode($id, $mode)
     {
-        if (
-            isset($this->config->Catalog->allow_holds_override)
-            && $this->config->Catalog->allow_holds_override
-        ) {
+        if ($this->config['Catalog']['allow_holds_override'] ?? false) {
             $holdings = $this->getHoldings($id);
 
             // For title holds, the most important override feature to handle

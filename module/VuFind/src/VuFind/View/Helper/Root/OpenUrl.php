@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\Config;
 use VuFind\Resolver\Driver\PluginManager;
 
 use function count;
@@ -67,13 +66,13 @@ class OpenUrl
      * @param Context       $context       Context helper
      * @param array         $openUrlRules  VuFind OpenURL rules
      * @param PluginManager $pluginManager Resolver plugin manager
-     * @param ?Config       $config        VuFind OpenURL config
+     * @param ?array        $config        VuFind OpenURL config
      */
     public function __construct(
         protected Context $context,
         protected array $openUrlRules,
         protected PluginManager $pluginManager,
-        protected ?Config $config = null
+        protected ?array $config = null
     ) {
     }
 
@@ -112,7 +111,7 @@ class OpenUrl
         }
 
         if ($imagebased) {
-            if (!isset($this->config->dynamic_graphic)) {
+            if (!isset($this->config['dynamic_graphic'])) {
                 // if imagebased linking is forced by the template, but it is not
                 // configured properly, throw an exception
                 throw new \Exception(
@@ -129,7 +128,7 @@ class OpenUrl
 
             // Concatenate image based OpenUrl base and OpenUrl
             // to a usable image reference
-            $base = $this->config->dynamic_graphic;
+            $base = $this->config['dynamic_graphic'];
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
@@ -150,17 +149,17 @@ class OpenUrl
      */
     public function renderTemplate($imagebased = null)
     {
-        if (null !== $this->config && isset($this->config->url)) {
+        if (isset($this->config['url'])) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            [$base] = explode('?', $this->config->url);
+            [$base] = explode('?', $this->config['url']);
         } else {
             $base = false;
         }
 
-        $embed = (isset($this->config->embed) && !empty($this->config->embed));
+        $embed = (!empty($this->config['embed']));
 
-        $embedAutoLoad = $this->config->embed_auto_load ?? false;
+        $embedAutoLoad = $this->config['embed_auto_load'] ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
         if (
@@ -182,7 +181,7 @@ class OpenUrl
         }
 
         // instantiate the resolver plugin to get a proper resolver link
-        $resolver = $this->config->resolver ?? 'other';
+        $resolver = $this->config['resolver'] ?? 'other';
         $openurl = $this->recordDriver->getOpenUrl();
         if ($this->pluginManager->has($resolver)) {
             $resolverObj = new \VuFind\Resolver\Connection(
@@ -203,14 +202,14 @@ class OpenUrl
             'moreOptionsUrl' => $moreOptionsUrl,
             'openUrl' => $openurl,
             'openUrlBase' => empty($base) ? false : $base,
-            'openUrlWindow' => empty($this->config->window_settings)
-                ? false : $this->config->window_settings,
-            'openUrlGraphic' => empty($this->config->graphic)
-                ? false : $this->config->graphic,
-            'openUrlGraphicWidth' => empty($this->config->graphic_width)
-                ? false : $this->config->graphic_width,
-            'openUrlGraphicHeight' => empty($this->config->graphic_height)
-                ? false : $this->config->graphic_height,
+            'openUrlWindow' => empty($this->config['window_settings'])
+                ? false : $this->config['window_settings'],
+            'openUrlGraphic' => empty($this->config['graphic'])
+                ? false : $this->config['graphic'],
+            'openUrlGraphicWidth' => empty($this->config['graphic_width'])
+                ? false : $this->config['graphic_width'],
+            'openUrlGraphicHeight' => empty($this->config['graphic_height'])
+                ? false : $this->config['graphic_height'],
             'openUrlEmbed' => $embed,
             'openUrlEmbedAutoLoad' => $embedAutoLoad,
         ];
@@ -230,9 +229,9 @@ class OpenUrl
     {
         if (
             $this->imageBasedLinkingIsActive()
-            && isset($this->config->image_based_linking_mode)
+            && isset($this->config['image_based_linking_mode'])
         ) {
-            return $this->config->image_based_linking_mode;
+            return $this->config['image_based_linking_mode'];
         }
         return $this->imageBasedLinkingIsActive() ? 'both' : false;
     }
@@ -244,7 +243,7 @@ class OpenUrl
      */
     public function imageBasedLinkingIsActive()
     {
-        return isset($this->config->dynamic_graphic);
+        return isset($this->config['dynamic_graphic']);
     }
 
     /**
@@ -269,14 +268,14 @@ class OpenUrl
     protected function checkContext()
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
-        if (empty($this->config->url)) {
+        if (empty($this->config['url'])) {
             return false;
         }
 
         // If a setting exists, return that:
         $key = 'show_in_' . $this->area;
-        if (isset($this->config->$key)) {
-            return $this->config->$key;
+        if (isset($this->config[$key])) {
+            return $this->config[$key];
         }
 
         // If we got this far, use the defaults -- true for results, false for

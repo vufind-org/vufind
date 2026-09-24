@@ -281,6 +281,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
         $this->assertSelectedSort($page, 'title');
+        // Click on a record to be sure that the results lead to the right place:
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
@@ -318,6 +321,26 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 3, $expectedFirst, $expectedLast);
         $this->assertSelectedSort($page, $expectedSort);
+    }
+
+    /**
+     * Test sorting persists in last search link.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearchSort')]
+    public function testTagSearchSortPersistsInLastSearchLink(): void
+    {
+        $page = $this->performSearch('five', 'tag');
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 1);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'author');
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
+        // Click on search results in breadcrumb to go back to search and check that
+        // author sort is still selected
+        $page->clickLink('Search Results');
+        $this->assertSelectedSort($page, 'author');
     }
 
     /**

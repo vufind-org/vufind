@@ -76,20 +76,6 @@ class OaiResumptionService extends AbstractDbService implements
      * Retrieve an unexpired row from the database based on primary key; return null if it
      * is not found.
      *
-     * @param string $token The resumption token to retrieve.
-     *
-     * @return     ?OaiResumptionEntityInterface
-     * @deprecated Use OaiResumptionService::findWithId
-     */
-    public function findToken($token): ?OaiResumptionEntityInterface
-    {
-        return $this->findWithId($token);
-    }
-
-    /**
-     * Retrieve an unexpired row from the database based on primary key; return null if it
-     * is not found.
-     *
      * @param string $id Id to use for the search.
      *
      * @return ?OaiResumptionEntityInterface
