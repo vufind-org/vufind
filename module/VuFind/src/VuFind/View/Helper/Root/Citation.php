@@ -118,9 +118,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      * Store a record driver object and return this object so that the appropriate
      * template can be rendered.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
+     * @param \VuFind\RecordDriver\Base $driver Record driver object.
      *
-     * @return static
+     * @return Citation
      */
     public function __invoke($driver)
     {
