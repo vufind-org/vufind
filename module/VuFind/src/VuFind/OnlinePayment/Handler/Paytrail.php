@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Payment handle for Paytrail.
+ * Payment handler for Paytrail.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2025.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -46,7 +46,7 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Exception\PaymentException;
 
 /**
- * Payment handle for Paytrail.
+ * Payment handler for Paytrail.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -139,8 +139,8 @@ class Paytrail extends AbstractBase
             ->setCancel($notifyUrl);
 
         $customer = (new Customer())
-            ->setFirstName($user->getFirstname() ?: null)
-            ->setLastName($user->getLastname() ?: null)
+            ->setFirstName($this->truncate($user->getFirstname() ?: null, 50))
+            ->setLastName($this->truncate($user->getLastname() ?: null, 50))
             ->setEmail(trim($user->getEmail()));
 
         $language = $this->languageMap[$this->getCurrentLanguageCode()] ?? 'EN';
@@ -150,7 +150,7 @@ class Paytrail extends AbstractBase
             ->setStamp($localIdentifier)
             ->setRedirectUrls($returnUrls)
             ->setCallbackUrls($callbackUrls)
-            ->setReference("$localIdentifier - {$patron['cat_username']}")
+            ->setReference($this->truncate("$localIdentifier - {$patron['cat_username']}", 200))
             ->setCurrency($this->getCurrencyCode())
             ->setLanguage($language)
             ->setAmount($amount + $this->getServiceFee())
@@ -165,9 +165,9 @@ class Paytrail extends AbstractBase
                 // Skip item if there's no product code
                 continue;
             }
-            $code = mb_substr($code, 0, 100, 'UTF-8');
+            $code = $this->truncate($code, 100);
 
-            $fineDesc = $this->getFineDescription($fine, 100);
+            $fineDesc = $this->getFineDescription($fine, 1000);
             $itemId = $fine['fineId'] ?? $fine['id'] ?? null;
             $item = (new Item())
                 ->setDescription($fineDesc)
@@ -175,8 +175,8 @@ class Paytrail extends AbstractBase
                 ->setUnitPrice((int)round($fine['balance']))
                 ->setUnits(1)
                 ->setVatPercentage((float)($fine['taxPercent'] ?? 0) / 100.0)
-                ->setStamp(mb_substr("$localIdentifier $itemId", 0, 200, 'UTF-8'))
-                ->setReference(mb_substr($itemId, 0, 200, 'UTF-8'));
+                ->setStamp($this->truncate("$localIdentifier $itemId", 200))
+                ->setReference($this->truncate($itemId, 200));
 
             if ($itemMerchant = $this->organizationMerchantIdMappings[$fineOrg] ?? null) {
                 $item->setMerchant($itemMerchant);
@@ -186,8 +186,8 @@ class Paytrail extends AbstractBase
         }
         if (($serviceFee = $this->getServiceFee()) && ($serviceFeeProductCode = $this->getServiceFeeProductCode())) {
             $item = (new Item())
-                ->setDescription($this->translator->translate('Payment::Service Fee'))
-                ->setProductCode($serviceFeeProductCode)
+                ->setDescription($this->truncate($this->translator->translate('Payment::Service Fee'), 1000))
+                ->setProductCode($this->truncate($serviceFeeProductCode, 100))
                 ->setUnitPrice($serviceFee)
                 ->setUnits(1)
                 ->setVatPercentage((float)($this->getServiceFeeTaxRate() ?? 0) / 100.0);
@@ -331,5 +331,21 @@ class Paytrail extends AbstractBase
             $this->paymentConfig['secret'],
             $this->config['Site']['generator'] ?? 'VuFind'
         );
+    }
+
+    /**
+     * Truncate a nullable string to the specified maximum length.
+     *
+     * @param ?string $str       Value or null
+     * @param int     $maxLength Maximum allowed string length
+     *
+     * @return ?string
+     */
+    protected function truncate(?string $str, int $maxLength): ?string
+    {
+        if (null === $str) {
+            return null;
+        }
+        return mb_substr($str, 0, $maxLength);
     }
 }
