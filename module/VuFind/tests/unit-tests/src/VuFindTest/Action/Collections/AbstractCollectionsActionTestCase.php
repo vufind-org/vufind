@@ -30,25 +30,19 @@
 namespace VuFindTest\Action\Collections;
 
 use Laminas\Diactoros\Response;
-use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
-use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\HelperInterface;
-use VuFind\ActionHelper\PermissionHelper;
-use VuFind\ActionHelper\PluginManager as HelperPluginManager;
-use VuFind\Http\RouteHelper;
 use VuFind\I18n\Sorter;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results as SearchResults;
 use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindSearch\Command\AbstractBase as AbstractCommand;
 use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\Service as SearchService;
+use VuFindTest\Action\AbstractActionTestCase;
 
 /**
  * Base class for Collections action tests.
@@ -59,7 +53,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AbstractCollectionsActionTestCase extends TestCase
+abstract class AbstractCollectionsActionTestCase extends AbstractActionTestCase
 {
     /**
      * Template parameters captured from the renderTemplate() call.
@@ -107,35 +101,8 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
             $resultsManager,
             $sorter ?? $this->createStub(Sorter::class),
         );
-        $action->setHelperPluginManager($this->getHelperPluginManager($helpers));
-        $action->setRouteHelper($this->createStub(RouteHelper::class));
-        $action->setSessionSettings($this->createStub(SessionSettings::class));
-        if ($action instanceof AbstractTemplateRenderingAction) {
-            $action->setTemplateRenderer($this->getTemplateRenderer());
-        }
+        $this->initializeAction($action, $helpers, renderer: $this->getTemplateRenderer());
         return $action;
-    }
-
-    /**
-     * Get a helper plugin manager returning the provided helpers, plus a PermissionHelper for access.
-     *
-     * @param HelperInterface[] $helpers Extra helpers keyed by class name
-     *
-     * @return HelperPluginManager
-     */
-    protected function getHelperPluginManager(array $helpers = []): HelperPluginManager
-    {
-        if (!isset($helpers[PermissionHelper::class])) {
-            $permissionHelper = $this->createMock(PermissionHelper::class);
-            $permissionHelper->method('getPermissionBehaviorConfig')->willReturn([]);
-            $helpers[PermissionHelper::class] = $permissionHelper;
-        }
-
-        $manager = $this->createMock(HelperPluginManager::class);
-        $manager->method('get')->willReturnCallback(
-            fn ($name) => $helpers[$name] ?? throw new \Exception("Unexpected helper requested: $name")
-        );
-        return $manager;
     }
 
     /**
@@ -212,7 +179,6 @@ abstract class AbstractCollectionsActionTestCase extends TestCase
      */
     protected function invokeAction(AbstractAction $action, array $queryParams = []): ResponseInterface
     {
-        $request = (new ServerRequest())->withQueryParams($queryParams);
-        return $action($request, new Response());
+        return $action($this->getServerRequest(queryParams: $queryParams), new Response());
     }
 }

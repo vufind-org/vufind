@@ -60,7 +60,7 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
         // We should NOT strip an unregistered prefix:
         $this->assertEquals(
             'vufindadmin/admin',
-            $l->mapController(\VuFindAdmin\Controller\AdminController::class)
+            $l->mapController('VuFindAdmin\Controller\AdminController')
         );
     }
 
