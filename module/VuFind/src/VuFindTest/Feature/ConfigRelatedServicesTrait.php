@@ -37,7 +37,6 @@ use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Handler\PluginManager as ConfigHandlerPluginManager;
 use VuFind\Config\PathResolver;
-use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFindTest\Container\MockContainer;
 
 use function defined;
