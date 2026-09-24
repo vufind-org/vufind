@@ -62,6 +62,7 @@ class AjaxActionTest extends AbstractActionTestCase
      * @param class-string       $class          Action class to build
      * @param ?AjaxPluginManager $ajaxManager    AJAX handler plugin manager (defaults to a stub)
      * @param ?ResponseHelper    $responseHelper Response helper returned by the helper plugin manager
+     * (defaults to a stub)
      *
      * @return AbstractAjaxAction
      */
