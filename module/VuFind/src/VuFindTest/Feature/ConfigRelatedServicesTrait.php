@@ -197,21 +197,21 @@ trait ConfigRelatedServicesTrait
         $defaultCallback = is_callable($default) ? $default : fn () => $default;
         $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($getConfigArrayExpect ?? $this->any())
-                ->method('getConfigArray')
-                ->with($this->isType('string'))
-                ->willReturnCallback(
-                    function ($config) use ($configsCallback, $defaultCallback): array {
-                        return $configsCallback()[$config] ?? $defaultCallback();
-                    }
-                );
+            ->method('getConfigArray')
+            ->with($this->isType('string'))
+            ->willReturnCallback(
+                function ($config) use ($configsCallback, $defaultCallback): array {
+                    return $configsCallback()[$config] ?? $defaultCallback();
+                }
+            );
         $manager->expects($getConfigObjectExpect ?? $this->any())
-        ->method('getConfigObject')
-        ->with($this->isType('string'))
-        ->willReturnCallback(
-            function ($config) use ($configsCallback, $defaultCallback): Config {
-                return new Config($configsCallback()[$config] ?? $defaultCallback());
-            }
-        );
+            ->method('getConfigObject')
+            ->with($this->isType('string'))
+            ->willReturnCallback(
+                function ($config) use ($configsCallback, $defaultCallback): Config {
+                    return new Config($configsCallback()[$config] ?? $defaultCallback());
+                }
+            );
         return $manager;
     }
 
@@ -275,27 +275,6 @@ trait ConfigRelatedServicesTrait
                     return isset($configs[$config]);
                 }
             );
-        return $manager;
-    }
-
-    /**
-     * Get a mock configuration plugin manager that will throw an exception.
-     *
-     * @param \Throwable $exception Exception to throw
-     *
-     * @return MockObject&ConfigPluginManager
-     *
-     * @deprecated \VuFind\Config\PluginManager was deprecated and replaced by \VuFind\Config\ConfigManager.
-     * Use that and getMockFailingConfigManager instead.
-     */
-    protected function getMockFailingConfigPluginManager(
-        \Throwable $exception
-    ): ConfigPluginManager {
-        $manager = $this->createMock(ConfigPluginManager::class);
-        $manager->expects($this->any())
-            ->method('get')
-            ->with($this->isType('string'))
-            ->willThrowException($exception);
         return $manager;
     }
 }
