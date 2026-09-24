@@ -90,21 +90,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an emergency.
-     *
-     * @param Stringable|string $message Message
-     * @param array             $context Extra params (context from PSR-3)
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function emerg(Stringable|string $message, array $context = []): void
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
      * Log an alert.
      *
      * @param Stringable|string $message Message
@@ -126,21 +111,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      * @return void
      */
     public function critical(Stringable|string $message, array $context = []): void
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
-     * Log a critical error.
-     *
-     * @param Stringable|string $message Message
-     * @param array             $context Extra params
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function crit(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }

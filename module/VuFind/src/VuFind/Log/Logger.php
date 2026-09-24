@@ -98,21 +98,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * System is unusable.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function emerg(string|\Stringable $message, array $context = []): void
-    {
-        $this->emergency($message, $context);
-    }
-
-    /**
      * Action must be taken immediately.
      *
      * @param string|\Stringable $message Log message
@@ -136,21 +121,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     public function critical(string|\Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::CRITICAL, $message, $context);
-    }
-
-    /**
-     * Critical conditions.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function crit(string|\Stringable $message, array $context = []): void
-    {
-        $this->critical($message, $context);
     }
 
     /**
