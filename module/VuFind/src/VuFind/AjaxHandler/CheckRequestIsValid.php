@@ -59,6 +59,10 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
             'success' => 'storage_retrieval_request_place_text',
             'failure' => 'storage_retrieval_request_error_blocked',
         ],
+        'DigitizationRequest' => [
+            'success' => 'digitization_request_place_text',
+            'failure' => 'digitization_request_error_blocked',
+        ],
     ];
 
     /**
@@ -120,6 +124,13 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
                         break;
                     case 'StorageRetrievalRequest':
                         $results = $this->ils->checkStorageRetrievalRequestIsValid(
+                            $id,
+                            $data,
+                            $patron
+                        );
+                        break;
+                    case 'DigitizationRequest':
+                        $results = $this->ils->checkDigitizationRequestIsValid(
                             $id,
                             $data,
                             $patron

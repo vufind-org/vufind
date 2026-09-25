@@ -72,7 +72,8 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
             $driver->attachILS(
                 $container->get(\VuFind\ILS\Connection::class),
                 $container->get(\VuFind\ILS\Logic\Holds::class),
-                $container->get(\VuFind\ILS\Logic\TitleHolds::class)
+                $container->get(\VuFind\ILS\Logic\TitleHolds::class),
+                $container->get(\VuFind\ILS\Logic\TitleDigitization::class)
             );
             $driver->setIlsBackends($ilsBackends);
         }

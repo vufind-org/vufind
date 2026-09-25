@@ -329,6 +329,14 @@ $(function registerAccountAjax() {
     }
   });
 
+  VuFind.account.register("digitizationRequests", {
+    selector: ".digitizationrequests-status",
+    ajaxMethod: "getUserDigitizationRequests",
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit || status.other !== currentStatus.other;
+    }
+  });
+
   VuFind.account.register("illRequests", {
     selector: ".illrequests-status",
     ajaxMethod: "getUserILLRequests",
