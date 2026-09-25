@@ -59,9 +59,9 @@ class HomeAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // If there is exactly one record, send the user directly there:
         $ids = $this->getQueryParam('id', []);
         $print = $this->getQueryParam('print');
+        // If there is exactly one record, send the user directly there:
         if (count($ids) == 1) {
             $details = $this->recordRouter->getTabRouteDetails($ids[0]);
             $target = $this->routeHelper->getUrlFromRoute($details['route'], $details['params']);
