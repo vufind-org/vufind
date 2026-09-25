@@ -32,6 +32,9 @@ namespace VuFind\ILS\Driver;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Generator;
+use GuzzleHttp\Promise;
+use GuzzleHttp\Psr7;
 use Laminas\Http\Response;
 use VuFind\Config\Feature\SecretTrait;
 use VuFind\Connection\Webhook;
@@ -44,6 +47,7 @@ use function array_key_exists;
 use function array_slice;
 use function count;
 use function in_array;
+use function is_array;
 use function is_callable;
 use function is_int;
 use function is_object;
@@ -181,13 +185,16 @@ class Folio extends AbstractAPI implements
      * Support method for makeRequest to process an unexpected status code. Can return true to trigger
      * a retry of the API call or false to throw an exception.
      *
-     * @param Response $response      HTTP response
-     * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
+     * @param Response|Psr7\Response $response      HTTP response
+     * @param int                    $attemptNumber Counter to keep track of attempts
+     *                                              (starts at 1 for the first attempt)
      *
      * @return bool
      */
-    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
-    {
+    protected function shouldRetryAfterUnexpectedStatusCode(
+        Response|Psr7\Response $response,
+        int $attemptNumber
+    ): bool {
         // If the unexpected status is 401, and the token renews successfully, and we have not yet
         // retried, we should try again:
         if ($response->getStatusCode() === 401 && !$this->checkTenantToken() && $attemptNumber < 2) {
@@ -249,7 +256,10 @@ class Folio extends AbstractAPI implements
             unset($logParams['password']);
         }
         // truncate headers for token obscuring
-        $logHeaders = $req_headers->toArray();
+        $logHeaders = $req_headers;
+        if (!is_array($req_headers)) {
+            $logHeaders = $req_headers->toArray();
+        }
         if (isset($logHeaders['X-Okapi-Token'])) {
             $logHeaders['X-Okapi-Token'] = substr(
                 $logHeaders['X-Okapi-Token'],
@@ -542,14 +552,12 @@ class Folio extends AbstractAPI implements
      * @param string   $endpoint    FOLIO API endpoint
      * @param string   $querySuffix optional string to append to the queries
      *
-     * @return \Generator<object>
+     * @return Generator<int,mixed>
      * @throws ILSException if there is an issue with the FOLIO response
      */
     protected function getByBatch($ids, $idField, $responseKey, $endpoint, $querySuffix = '')
     {
-        if (count($ids) == 0) {
-            return;
-        }
+        $cachedItems = [];
         $idToKey = fn ($id) => $endpoint . '[' . $idField . '=' . $id . ']';
         $idsToLookFor = [];
         foreach ($ids as $id) {
@@ -557,36 +565,66 @@ class Folio extends AbstractAPI implements
             if ($items == null) {
                 $idsToLookFor[] = $id;
             } else {
-                foreach ($items as $item) {
-                    yield $item;
-                }
+                $cachedItems = array_merge($cachedItems, $items);
             }
         }
-        $resultsToCache = [];
-        foreach (array_chunk($idsToLookFor, self::QUERY_BY_IDS_BATCH_SIZE) as $idsInBatch) {
+        $fnSafeQuery = function ($idField, $idsInBatch, $querySuffix) {
             $idsWithQuotes = array_map(fn ($id) => '"' . $this->escapeCql($id) . '"', $idsInBatch);
-            $query = [
+            return [
                 'query' => $idField . ' == (' . implode(' OR ', $idsWithQuotes) . ')' . $querySuffix,
             ];
-            foreach (
-                $this->getPagedResults(
+        };
+        $idChunks = array_chunk($idsToLookFor, static::QUERY_BY_IDS_BATCH_SIZE);
+        if (count($idChunks) == 0) {
+            $gen = function () use ($cachedItems) {
+                yield from $cachedItems;
+            };
+            return $gen();
+        }
+
+        $pagedResults = $this->getPagedResults(
+            $responseKey,
+            $endpoint,
+            $fnSafeQuery($idField, array_shift($idChunks), $querySuffix)
+        );
+        $gen = function (
+            $idField,
+            $responseKey,
+            $endpoint,
+            $querySuffix
+        ) use (
+            $cachedItems,
+            $idChunks,
+            $pagedResults,
+            $fnSafeQuery,
+            $idToKey
+        ) {
+            yield from $cachedItems;
+            $resultsToCache = [];
+            while (true) {
+                foreach ($pagedResults as $item) {
+                    $key = $idToKey($item->$idField);
+                    if (isset($resultsToCache[$key])) {
+                        $resultsToCache[$key][] = $item;
+                    } else {
+                        $resultsToCache[$key] = [$item];
+                    }
+                    yield $item;
+                }
+                if (count($idChunks) == 0) {
+                    break;
+                }
+                $pagedResults = $this->getPagedResults(
                     $responseKey,
                     $endpoint,
-                    $query
-                ) as $item
-            ) {
-                $key = $idToKey($item->$idField);
-                if (isset($resultsToCache[$key])) {
-                    $resultsToCache[$key][] = $item;
-                } else {
-                    $resultsToCache[$key] = [$item];
-                }
-                yield $item;
+                    $fnSafeQuery($idField, array_shift($idChunks), $querySuffix)
+                );
             }
-        }
-        foreach ($resultsToCache as $key => $items) {
-            $this->putCachedData($key, $items);
-        }
+            foreach ($resultsToCache as $key => $items) {
+                $this->putCachedData($key, $items);
+            }
+        };
+        return $gen($idField, $responseKey, $endpoint, $querySuffix);
     }
 
     /**
@@ -594,28 +632,22 @@ class Folio extends AbstractAPI implements
      *
      * @param string[] $instanceIds the FOLIO instance ids
      *
-     * @return object[]
+     * @return Generator<int,mixed>
      * @throws ILSException if there is an issue with the FOLIO response
      */
     protected function getHoldingsByInstanceIds(array $instanceIds)
     {
         if (count($instanceIds) == 0) {
-            return [];
+            return;
         }
-        $holdings = [];
         $querySuffix = ' NOT discoverySuppress==true';
-        foreach (
-            $this->getByBatch(
-                $instanceIds,
-                'instanceId',
-                'holdingsRecords',
-                '/holdings-storage/holdings',
-                $querySuffix
-            ) as $holding
-        ) {
-            $holdings[] = $holding;
-        }
-        return $holdings;
+        yield from $this->getByBatch(
+            $instanceIds,
+            'instanceId',
+            'holdingsRecords',
+            '/holdings-storage/holdings',
+            $querySuffix
+        );
     }
 
     /**
@@ -623,15 +655,15 @@ class Folio extends AbstractAPI implements
      *
      * @param string[] $holdingsIds the FOLIO holdings ids
      *
-     * @return object[] The items, with an additional queryHoldingsRecordId property with the matching holdings id
+     * @return Generator<int,mixed> The items, with an additional queryHoldingsRecordId property with
+     *                              the matching holdings id
      * @throws ILSException if there is an issue with the FOLIO response
      */
     protected function getItemsByHoldingIds(array $holdingsIds)
     {
         if (count($holdingsIds) == 0) {
-            return [];
+            return;
         }
-        $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
         $querySuffix = empty($folioItemSort) ? '' : ' sortby ' . $folioItemSort;
         if (count($holdingsIds) == 1) {
@@ -646,9 +678,9 @@ class Folio extends AbstractAPI implements
                 ) as $item
             ) {
                 $item->queryHoldingsRecordId = $holdingsIds[0];
-                $items[] = $item;
+                yield $item;
             }
-            return $items;
+            return;
         }
         // Retrieve the item records
         $holdingsItemIds = [];
@@ -667,7 +699,7 @@ class Folio extends AbstractAPI implements
             $holdingsId = $item->holdingsRecordId;
             $item->queryHoldingsRecordId = $holdingsId;
             $holdingsItemIds[$holdingsId][] = $item->id;
-            $items[] = $item;
+            yield $item;
         }
         // Retrieve the related bound-with items
         // Duplicate items are avoided for each holdings
@@ -700,9 +732,8 @@ class Folio extends AbstractAPI implements
             ) as $item
         ) {
             $item->queryHoldingsRecordId = $itemIdToHoldingsRecordId[$item->id];
-            $items[] = $item;
+            yield $item;
         }
-        return $items;
     }
 
     /**
@@ -1193,68 +1224,107 @@ class Folio extends AbstractAPI implements
 
     /**
      * Get all bib records bound-with this item, including
-     * the directly-linked bib record.
+     * the directly-linked bib record and its title.
      *
      * @param object $item The item record
      *
-     * @return array An array of key metadata for each bib record
+     * @return Promise\Promise which unwraps to an array of arrays with 'title' and 'bibId'
      */
-    protected function getBoundWithRecords($item)
+    protected function getBoundWithRecordsPromise($item): Promise\Promise
     {
-        $boundWithRecords = [];
-        // Get the full item record, which includes the boundWithTitles data
-        $response = $this->makeRequest(
-            'GET',
-            '/inventory/items/' . $item->id
+        $path = '/inventory/items/' . $item->id;
+        return $this->makeRequestAsync($path)->then(
+            function (Psr7\Response $response) use ($path) {
+                $boundWithRecords = [];
+                $item = json_decode($response->getBody());
+                $code = $response->getStatusCode();
+                if (!($code >= 200 && $code < 300) || !$item) {
+                    $msg = $item->errors[0]->message ?? json_last_error_msg();
+                    throw new ILSException("Error: '$msg' fetching from '$path'");
+                }
+                foreach ($item->boundWithTitles ?? [] as $boundWithTitle) {
+                    $boundWithRecords[] = [
+                        'title' => $boundWithTitle->briefInstance?->title,
+                        'bibId' => $this->getBibId($boundWithTitle->briefInstance),
+                    ];
+                }
+                return $boundWithRecords;
+            }
         );
-        $item = json_decode($response->getBody());
-        foreach ($item->boundWithTitles ?? [] as $boundWithTitle) {
-            $boundWithRecords[] = [
-                'title' => $boundWithTitle->briefInstance?->title,
-                'bibId' => $this->getBibId($boundWithTitle->briefInstance->id),
-            ];
-        }
-        return $boundWithRecords;
     }
 
     /**
-     * Support method for getHoldings() -- processes a FOLIO item.
+     * Gather API data to later be used by processInstanceHoldings(). Specifically, these
+     * are GuzzleHTTP promises for API data which will be needed later. By queuing
+     * promises for data, we can reduce the amount of API wait time later.
      *
-     * @param string $bibId            Bib-level id
-     * @param array  $holdingDetails   details for the holding
-     * @param object $item             item to process
-     * @param int    $dueDateItemCount number of times getCurrentLoan()/getDueDate() were called (passed by reference)
-     * @param int    $number           item number
+     * @param object $item             The item record
+     * @param int    $dueDateItemCount Number of times getCurrentLoan()/getDueDate() were called
+     *                                 (passed by reference)
      *
-     * @return array An associative array
+     * @return array An array of data containing promises in keys:
+     *               'boundWith', 'currentLoan'
      */
-    protected function processItem($bibId, $holdingDetails, $item, &$dueDateItemCount, $number)
-    {
+    protected function gatherItemPromises(
+        $item,
+        &$dueDateItemCount
+    ): array {
+        $boundWithPromise = new Promise\FulfilledPromise([]);
+        if ($item->isBoundWith ?? false) {
+            $boundWithPromise = $this->getBoundWithRecordsPromise($item);
+        }
+
+        $currentLoanPromise = new Promise\FulfilledPromise([]);
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
-        $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
-        $currentLoan = null;
-        $dueDateValue = '';
-        $boundWithRecords = null;
         if (
             $item->status->name == 'Checked out'
             && $showDueDate
             && $dueDateItemCount < $maxNumDueDateItems
         ) {
-            $currentLoan = $this->getCurrentLoan($item->id);
-            $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
+            $currentLoanPromise = $this->getCurrentLoanPromises($item->id);
             $dueDateItemCount++;
         }
-        if ($item->isBoundWith ?? false) {
-            $boundWithRecords = $this->getBoundWithRecords($item);
-        }
+
+        $promises = [
+            'boundWith' => $boundWithPromise,
+            'currentLoan' => $currentLoanPromise,
+        ];
+        return $promises;
+    }
+
+    /**
+     * Support method for getHoldings() -- processes a FOLIO item
+     *
+     * @param string $bibId          Bib-level id
+     * @param array  $holdingDetails details for the holding
+     * @param object $item           item to process
+     * @param array  $itemPromises   An associative array with Promises contained within
+     * @param int    $number         item number
+     *
+     * @return array An associative array
+     */
+    protected function processItem(
+        $bibId,
+        $holdingDetails,
+        $item,
+        $itemPromises,
+        $number
+    ): array {
+        $showTime = $this->config['Availability']['showTime'] ?? false;
+        $currentLoan = null;
+        $dueDateValue = '';
+        $boundWithPromise = $itemPromises['boundWith'];
+        $currentLoanPromise = $itemPromises['currentLoan'];
+        $currentLoan = $this->getCurrentLoan($item->id, $currentLoanPromise);
+        $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
         $nextItem = $this->formatHoldingItem(
             $bibId,
             $holdingDetails,
             $item,
             $number,
             $dueDateValue,
-            $boundWithRecords ?? [],
+            $boundWithPromise->wait(),
             $currentLoan
         );
         return $nextItem;
@@ -1275,21 +1345,66 @@ class Folio extends AbstractAPI implements
         $dueDateItemCount = 0;
         $items = [];
         $vufindItemSort = $this->config['Holdings']['vufind_sort'] ?? '';
+        // Ensure locations API is cached to avoid potential delay when unwrapping promises
+        $this->getLocations();
+        /**
+         * Pass 1: Queue up API call promises
+         */
+        $holdingsPromises = [];
         foreach ($holdings as $holding) {
-            $holdingDetails = $this->getHoldingDetailsForItem($holding);
-            $nextBatch = [];
-            $sortNeeded = false;
-            $number = 0;
             $folioItemsForHolding = array_filter(
                 $folioItems,
                 fn ($item) => $item->queryHoldingsRecordId == $holding->id
             );
+            $holdingDetails = $this->getHoldingDetailsForItem($holding);
+            $itemsPromises = [];
             foreach ($folioItemsForHolding as $item) {
                 if ($item->discoverySuppress ?? false) {
                     continue;
                 }
+                $callNumberData = $this->chooseCallNumber(
+                    $holdingDetails['holdingCallNumberPrefix'],
+                    $holdingDetails['holdingCallNumber'],
+                    $item->effectiveCallNumberComponents->prefix
+                        ?? $item->itemLevelCallNumberPrefix ?? '',
+                    $item->effectiveCallNumberComponents->callNumber
+                        ?? $item->itemLevelCallNumber ?? ''
+                );
+                $locationCode = $this->getLocationData($item->effectiveLocation->id)['code'];
+                $itemsPromises[] = [
+                    'item' => $item,
+                    'promises' => $this->gatherItemPromises(
+                        $item,
+                        $dueDateItemCount
+                    ),
+                ];
+            }
+            $holdingsPromises[] = [
+                'holding' => $holding,
+                'holdingDetails' => $holdingDetails,
+                'itemsPromises' => $itemsPromises,
+            ];
+        }
+        /**
+         * Pass 2: Unwrap API calls and process them
+         */
+        foreach ($holdingsPromises as $holdingPromises) {
+            $number = 0;
+            $nextBatch = [];
+            $sortNeeded = false;
+            $holding = $holdingPromises['holding'];
+            $holdingDetails = $holdingPromises['holdingDetails'];
+            foreach ($holdingPromises['itemsPromises'] as $itemPromises) {
+                $item = $itemPromises['item'];
                 $number++;
-                $nextItem = $this->processItem($bibId, $holdingDetails, $item, $dueDateItemCount, $number);
+                $nextItem = $this->processItem(
+                    $bibId,
+                    $holdingDetails,
+                    $item,
+                    $itemPromises['promises'],
+                    $number
+                );
+
                 if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
                     $sortNeeded = true;
                 }
@@ -1382,14 +1497,21 @@ class Folio extends AbstractAPI implements
             }
         } else {
             $instances = $this->getInstancesByBibIds($bibIds);
-            $instanceIds = array_map(fn ($instance) => $instance->id, $instances);
+            $instanceIds = [];
             foreach ($instances as $instance) {
+                $instanceIds[] = $instance->id;
                 $bibIdToInstanceId[$instance->$idType] = $instance->id;
             }
         }
-        $holdings = $this->getHoldingsByInstanceIds($instanceIds);
-        $holdingIds = array_map(fn ($holding) => $holding->id, $holdings);
-        $folioItems = count($holdings) == 0 ? [] : $this->getItemsByHoldingIds($holdingIds);
+
+        $holdings = [];
+        $holdingIds = [];
+        foreach ($this->getHoldingsByInstanceIds($instanceIds) as $holding) {
+            $holdings[] = $holding;
+            $holdingIds[] = $holding->id;
+        }
+
+        $folioItems = [...$this->getItemsByHoldingIds($holdingIds)];
         $results = [];
         foreach ($bibIds as $bibId) {
             $instanceId = $bibIdToInstanceId[$bibId];
@@ -1436,23 +1558,43 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings(): obtaining any current loan from OKAPI
-     * by calling /circulation/loans with the item->id.
+     * Get any current loan from FOLIO by calling /circulation/loans with the item->id.
      *
      * @param string $itemId ID for the item to query
      *
-     * @return \stdClass|void
+     * @return Generator<int,mixed>
      */
-    protected function getCurrentLoan($itemId)
+    protected function getCurrentLoanPromises(string $itemId): Generator
     {
         $query = 'itemId==' . $itemId . ' AND status.name==Open';
-        foreach (
-            $this->getPagedResults(
-                'loans',
-                '/circulation/loans',
-                compact('query')
-            ) as $loan
-        ) {
+        $pagedResults = $this->getPagedResults(
+            'loans',
+            '/circulation/loans',
+            compact('query')
+        );
+        $gen = function () use ($pagedResults) {
+            yield from $pagedResults;
+        };
+        return $gen();
+    }
+
+    /**
+     * Support method for getHoldings(): obtaining any current loan from FOLIO
+     * for the given item id; optionally accepts an API promise to use instead of
+     * calling FOLIO API on-demand.
+     *
+     * @param string                     $itemId       ID for the item to query
+     * @param ?iterable<Promise\Promise> $loanPromises An iterable of Promises for loans;
+     *                                                 If null, will generate Promises itself
+     *
+     * @return \stdClass|void
+     */
+    protected function getCurrentLoan($itemId, $loanPromises = null)
+    {
+        if ($loanPromises === null) {
+            $loanPromises = $this->getCurrentLoanPromises($itemId);
+        }
+        foreach ($loanPromises as $loan) {
             // many loans are returned for an item, the one we want
             // is the one without a returnDate
             if (!isset($loan->returnDate) && isset($loan->dueDate)) {
@@ -1650,23 +1792,25 @@ class Folio extends AbstractAPI implements
      * @param int    $offset    Starting record index
      * @param int    $limit     Max number of records to retrieve
      *
-     * @return array
-     * @throws ILSException if the response code is not a success or the response is not JSON
+     * @return Promise\Promise for array
+     * @throws ILSException possible on Promise unwrap if the response code is not a
+     * success or the response is not JSON
      */
     protected function getResultPage($interface, $query = [], $offset = 0, $limit = 1000)
     {
         $combinedQuery = array_merge($query, compact('offset', 'limit'));
-        $response = $this->makeRequest(
-            'GET',
-            $interface,
-            $combinedQuery
+        $promise = $this->makeRequestAsync($interface, $combinedQuery);
+        return $promise->then(
+            function (Psr7\Response $response) use ($interface) {
+                $json = json_decode($response->getBody());
+                $code = $response->getStatusCode();
+                if (!($code >= 200 && $code < 300) || !$json) {
+                    $msg = $json->errors[0]->message ?? json_last_error_msg();
+                    throw new ILSException("Error: '$msg' fetching from '$interface'");
+                }
+                return $json;
+            }
         );
-        $json = json_decode($response->getBody());
-        if (!$response->isSuccess() || !$json) {
-            $msg = $json->errors[0]->message ?? json_last_error_msg();
-            throw new ILSException("Error: '$msg' fetching from '$interface'");
-        }
-        return $json;
     }
 
     /**
@@ -1677,24 +1821,32 @@ class Folio extends AbstractAPI implements
      * @param array  $query       Extra GET parameters (e.g. ['query' => 'your cql here'])
      * @param int    $limit       How many results to retrieve from FOLIO per call
      *
-     * @return array
+     * @return Generator<int,mixed>
      * @throws ILSException if there is an issue with the response
      */
     protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {
-        $offset = 0;
+        // Make a promise immediately, so the call beings even prior to generator iteration
+        $promises = [$this->getResultPage($interface, $query, 0, $limit)];
 
-        do {
-            $json = $this->getResultPage($interface, $query, $offset, $limit);
-            $totalEstimate = $json->totalRecords ?? 0;
-            foreach ($json->$responseKey ?? [] as $item) {
-                yield $item ?? '';
+        $gen = function ($responseKey, $interface, $query, $limit) use ($promises) {
+            $offset = $limit;
+            $totalEstimate = 1;
+            while ($promises || ($offset <= $totalEstimate)) {
+                if ($offset <= $totalEstimate) {
+                    $promises[] = $this->getResultPage($interface, $query, $offset, $limit);
+                    $offset += $limit;
+                } elseif ($promises) {
+                    // Unwrap current promises until we get a greater estimate
+                    $json = array_shift($promises)->wait();
+                    $totalEstimate = $json->totalRecords ?? 0;
+                    foreach ($json->$responseKey ?? [] as $item) {
+                        yield $item ?? '';
+                    }
+                }
             }
-            $offset += $limit;
-
-            // Continue until the current offset is greater than the totalRecords value returned
-            // from the API (which could be an estimate if more than 1000 results are returned).
-        } while ($offset <= $totalEstimate);
+        };
+        return $gen($responseKey, $interface, $query, $limit);
     }
 
     /**

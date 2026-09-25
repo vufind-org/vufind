@@ -29,13 +29,20 @@
 
 namespace VuFind\ILS\Driver;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
+use Laminas\Http\Header\HeaderInterface;
 use Laminas\Http\Response;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\GuzzleLivePool;
+use VuFind\Http\GuzzleServiceAwareInterface;
+use VuFind\Http\GuzzleServiceAwareTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 
 use function in_array;
+use function intval;
 use function is_string;
 
 /**
@@ -49,12 +56,52 @@ use function is_string;
  */
 abstract class AbstractAPI extends AbstractBase implements
     HttpServiceAwareInterface,
-    LoggerAwareInterface
+    LoggerAwareInterface,
+    GuzzleServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
     use \VuFindHttp\HttpServiceAwareTrait;
+    use GuzzleServiceAwareTrait;
+
+    /**
+     * Guzzle client
+     *
+     * @var \GuzzleHttp\Client
+     */
+    protected $client;
+
+    /**
+     * Guzzle live pool
+     *
+     * @var \VuFind\Http\GuzzleLivePool
+     */
+    protected $pool;
+
+    /**
+     * Get the class' Guzzle client, instantiating it if needed
+     *
+     * @return Client
+     */
+    protected function getClient(): Client
+    {
+        return $this->client ??= $this->getGuzzleService()->createClient(
+            $this->config['API']['base_url'],
+            120
+        );
+    }
+
+    /**
+     * Get the class' Guzzle pool, instantiating it if needed
+     *
+     * @return GuzzleLivePool
+     */
+    protected function getPool(): GuzzleLivePool
+    {
+        $concurrency = intval($this->config['Catalog']['concurrency'] ?? null);
+        return $this->pool ??= new GuzzleLivePool($this->getClient(), $concurrency);
+    }
 
     /**
      * Allow default corrections to all requests.
@@ -120,15 +167,18 @@ abstract class AbstractAPI extends AbstractBase implements
      * Support method for makeRequest to process an unexpected status code. Can return true to trigger
      * a retry of the API call or false to throw an exception.
      *
-     * @param Response $response      HTTP response
-     * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
+     * @param Response|Psr7\Response $response      HTTP response
+     * @param int                    $attemptNumber Counter to keep track of attempts
+     *                                              (starts at 1 for the first attempt)
      *
      * @return bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
-    {
+    protected function shouldRetryAfterUnexpectedStatusCode(
+        Response|Psr7\Response $response,
+        int $attemptNumber
+    ): bool {
         // No retries by default.
         return false;
     }
@@ -240,6 +290,118 @@ abstract class AbstractAPI extends AbstractBase implements
             }
         }
         return $response;
+    }
+
+    /**
+     * Make GET request async; async requests always use the GET method
+     *
+     * @param string            $path                API path (with a leading /)
+     * @param string|array      $params              Query parameters
+     * @param array             $headers             Additional headers
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
+     * @param string|array      $debugParams         Value to use in place of $params
+     * in debug messages (useful for concealing sensitive data, etc.)
+     * @param int               $attemptNumber       Counter to keep track of attempts
+     * (starts at 1 for the first attempt)
+     * @param ?string           $baseUrl             Provide an alternate schema, host,
+     * and optionally port to submit the request to (http://alt.example.edu:8080)
+     * For async API to work propery, even across different hosts, they need to make
+     * use of the same GuzzleHTTP client instance, so API calls to other endpoints
+     * should use this function instead of instantiating their own client instnace.
+     *
+     * @return \GuzzleHttp\Promise\Promise for a Psr7\Response
+     * @throws ILSException possible on Promise unwrap
+     */
+    public function makeRequestAsync(
+        $path = '/',
+        $params = [],
+        $headers = [],
+        $allowedFailureCodes = [],
+        $debugParams = null,
+        $attemptNumber = 1,
+        $baseUrl = null
+    ) {
+        $req_headers = new \Laminas\Http\Headers();
+        $req_headers->addHeaders($headers);
+        [$req_headers, $params] = $this->preRequest($req_headers, $params);
+        if (!empty($headers)) {
+            foreach ($headers as $header) {
+                $matches = $req_headers->get(explode(':', $header)[0]);
+
+                if ($matches instanceof \ArrayIterator) {
+                    foreach ($req_headers as $req_header) {
+                        $req_headers->removeHeader($req_header);
+                    }
+                } elseif ($matches instanceof HeaderInterface) {
+                    $req_headers->removeHeader($matches);
+                }
+                if ($matches != false) {
+                    $req_headers->addHeaderLine($header);
+                }
+            }
+        }
+        $folioBaseUrl = $this->config['API']['base_url'];
+        $baseUrl ??= $folioBaseUrl;
+        $logPath = ($folioBaseUrl != $baseUrl ? $baseUrl . $path : $path);
+        $request = new Psr7\Request('GET', $baseUrl . $path);
+
+        if ($this->logger) {
+            $this->debugRequest('GET', $path, $debugParams ?? $params, $headers);
+        }
+
+        $this->debug('Request ASYNC start for path ' . $logPath);
+        $startTime = microtime(true);
+        $promise = $this->getPool()->add(
+            $request,
+            ['headers' => $req_headers->toArray(), 'query' => $params]
+        );
+        return $promise->then(
+            function (Psr7\Response $response) use (
+                $startTime,
+                $path,
+                $params,
+                $headers,
+                $allowedFailureCodes,
+                $debugParams,
+                $attemptNumber,
+                $baseUrl,
+                $logPath
+            ) {
+                $endTime = microtime(true);
+                $responseTime = $endTime - $startTime;
+                $this->debug('Request ASYNC time to unwrap --- ' . $responseTime . ' seconds for ' . $logPath);
+                $code = $response->getStatusCode();
+                if (
+                    !($code >= 200 && $code < 300)
+                    && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
+                ) {
+                    $this->logError(
+                        "Unexpected error response (attempt #$attemptNumber"
+                        . "); code: {$code}, body: {$response->getBody()}"
+                    );
+                    if ($this->shouldRetryAfterUnexpectedStatusCode($response, $attemptNumber)) {
+                        return $this->makeRequestAsync(
+                            $path,
+                            $params,
+                            $headers,
+                            $allowedFailureCodes,
+                            $debugParams,
+                            $attemptNumber + 1,
+                            $baseUrl
+                        );
+                    } else {
+                        throw new ILSException('Unexpected error code.');
+                    }
+                }
+                return $response;
+            },
+            function (\Throwable $e): void {
+                $this->logError('Unexpected ' . $e::class . ': ' . (string)$e);
+                throw new ILSException('Error during send operation.');
+            }
+        );
     }
 
     /**
