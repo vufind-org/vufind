@@ -114,12 +114,9 @@ class TabManager
      */
     protected function initializeCurrentContext(): void
     {
-        if (!isset($this->config[$this->context])) {
-            $configFile = $this->contextSettings[$this->context]['configFile'];
-            $this->config[$this->context] = $this->configManager->getConfigArray(
-                $configFile
-            );
-        }
+        $this->config[$this->context] ??= $this->configManager->getConfigArray(
+            $this->contextSettings[$this->context]['configFile']
+        );
     }
 
     /**
