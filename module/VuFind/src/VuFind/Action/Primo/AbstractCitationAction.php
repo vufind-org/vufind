@@ -135,8 +135,6 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
      * @param ResponseInterface      $response Response
      *
      * @return mixed
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function performCitationSearch(
         ServerRequestInterface $request,
