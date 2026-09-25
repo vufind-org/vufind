@@ -54,8 +54,8 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
         $l = new InjectTemplateListener(['VuFind/']);
         // We should strip a registered prefix:
         $this->assertEquals(
-            'search',
-            $l->mapController(\VuFind\Controller\SearchController::class)
+            'index',
+            $l->mapController(\VuFind\Controller\IndexController::class)
         );
         // We should NOT strip an unregistered prefix:
         $this->assertEquals(

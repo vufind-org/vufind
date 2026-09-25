@@ -33,6 +33,7 @@ namespace VuFind\Action\Eds;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\Search\AbstractSearchAndResultsAction;
 use VuFind\Search\Base\Results;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -49,7 +50,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AdvancedAction extends AbstractEdsSearchAndResultsAction
+class AdvancedAction extends AbstractSearchAndResultsAction
 {
     /**
      * Display advanced search page.

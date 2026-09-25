@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author search action.
+ * Search Class Id Interface -- provides getters and setters for search class identifier.
  *
  * PHP version 8
  *
@@ -24,40 +24,35 @@
  * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Action\Author;
-
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
+namespace VuFind\Action;
 
 /**
- * Author search action.
+ * Search Class Id Interface -- provides getters and setters for search class identifier.
  *
  * @category VuFind
  * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
-class SearchAction extends AbstractSearchAndResultsAction
+interface SearchClassIdInterface extends ActionConfigInterface
 {
     /**
-     * Display author facet results.
+     * Get search class identifier.
      *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
-     *
-     * @return ResponseInterface
+     * @return string
      */
-    public function action(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
-    }
+    public function getSearchClassId(): string;
+
+    /**
+     * Set search class identifier.
+     *
+     * @param string $id Search class identifier
+     *
+     * @return static
+     */
+    public function setSearchClassId(string $id): static;
 }
