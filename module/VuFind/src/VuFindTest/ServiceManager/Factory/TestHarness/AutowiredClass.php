@@ -51,16 +51,18 @@ class AutowiredClass
     /**
      * Constructor.
      *
-     * @param array      $config          Configuration
-     * @param array      $configArray     Configuration (same as $config)
-     * @param array      $yamlConfig      YAML-based configuration
-     * @param Url        $url             URL helper
-     * @param Manager    $authManager     Authentication manager
-     * @param Connection $ilsConnection   ILS Connection
-     * @param string     $yamlFoo         A configuration value as string
-     * @param array      $yamlFooExploded A configuration value exploded to an array
-     * @param array      $defaultArray    A configuration default value
-     * @param string     $superValue      A value by path from an ArrayAccess object
+     * @param array      $config               Configuration
+     * @param array      $configArray          Configuration (same as $config)
+     * @param array      $yamlConfig           YAML-based configuration
+     * @param Url        $url                  URL helper
+     * @param Manager    $authManager          Authentication manager
+     * @param Connection $ilsConnection        ILS Connection
+     * @param string     $yamlFoo              A configuration value as string
+     * @param array      $yamlFooExploded      A configuration value exploded to an array
+     * @param array      $defaultArray         A configuration default value
+     * @param string     $superValue           A value by path from an ArrayAccess object
+     * @param string     $builtInWithNoDefault A built-in type parameter with no default
+     * @param string     $builtInWithDefault   A built-in type parameter with a default
      */
     public function __construct(
         #[Autowire(config: 'config')]
@@ -82,6 +84,9 @@ class AutowiredClass
         protected array $defaultArray,
         #[Autowire(service: 'superarray', path: 'foo/bar')]
         protected string $superValue,
+        #[Autowire(default: 'foo')]
+        protected string $builtInWithNoDefault,
+        protected string $builtInWithDefault = 'bar'
     ) {
         if (!($ilsConnection instanceof Connection)) {
             throw new \Exception('Invalid ILS Connection');
@@ -106,6 +111,12 @@ class AutowiredClass
         }
         if ('baz' !== $superValue) {
             throw new \Exception('Invalid superValue from path');
+        }
+        if ('foo' !== $builtInWithNoDefault) {
+            throw new \Exception('Invalid value from default attribute');
+        }
+        if ('bar' !== $builtInWithDefault) {
+            throw new \Exception('Problem processing native type with default');
         }
     }
 }
