@@ -49,6 +49,8 @@ use VuFindTest\ServiceManager\Factory\TestHarness\AutowiredClassEmptyConstructor
 use VuFindTest\ServiceManager\Factory\TestHarness\AutowiredClassNoConstructor;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass2;
+use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass3;
+use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass4;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidConfigType;
 
 /**
@@ -78,6 +80,14 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
         yield 'second invalid class' => [
             InvalidAutowiredClass2::class,
             'Unable to resolve type of parameter ilsConnection',
+        ];
+        yield 'third invalid class' => [
+            InvalidAutowiredClass3::class,
+            'Unable to autowire parameter "param" of type string; redundant default autowire parameter specified',
+        ];
+        yield 'fourth invalid class' => [
+            InvalidAutowiredClass4::class,
+            'Unable to autowire parameter "param" of type string; unexpected path attribute set',
         ];
         yield 'invalid config type' => [InvalidConfigType::class, 'Invalid configType yummy'];
     }

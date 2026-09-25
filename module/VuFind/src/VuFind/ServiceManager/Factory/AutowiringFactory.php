@@ -207,7 +207,7 @@ class AutowiringFactory implements FactoryInterface
                 // If we have a literal default, we can use it now -- but if a path is set, something is misconfigured
                 // and we should go ahead with throwing an exception.
                 if (isset($autowireArgs['path'])) {
-                    $builtInError .= '; unexpected path attribute set.';
+                    $builtInError .= '; unexpected path attribute set';
                 } elseif (array_key_exists('default', $autowireArgs ?? [])) { // can't use isset; value could be null
                     // If the parameter has a default value, specifying a different (or duplicate) default via the
                     // Autowire attribute is confusing and unnecessary, so we should not allow it:
