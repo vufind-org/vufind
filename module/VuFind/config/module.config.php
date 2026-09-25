@@ -273,7 +273,6 @@ $config = [
             'VuFind\AutocompletePluginManager' => 'VuFind\Autocomplete\PluginManager',
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\ChannelProviderPluginManager' => 'VuFind\ChannelProvider\PluginManager',
-            'VuFind\Config' => 'VuFind\Config\PluginManager',
             'VuFind\Config\ConfigManagerInterface' => 'VuFind\Config\ConfigManager',
             'VuFind\ContentPluginManager' => 'VuFind\Content\PluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Content\AuthorNotes\PluginManager',
@@ -817,8 +816,6 @@ $config = [
                 'backendId' => 'WorldCat2',
             ],
         ],
-        // The config reader is a special service manager for loading .ini files:
-        'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
