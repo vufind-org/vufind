@@ -32,6 +32,7 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -52,6 +53,7 @@ class LDAP extends AbstractBase
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
+    #[Autowire]
     public function __construct(protected ILSAuthenticator $ilsAuthenticator)
     {
     }
