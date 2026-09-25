@@ -51,7 +51,8 @@ class SIP2 extends AbstractBase
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
-    public function __construct(#[Autowire] protected ILSAuthenticator $ilsAuthenticator)
+    #[Autowire]
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
     {
     }
 
