@@ -659,6 +659,15 @@ class Upgrade implements LoggerAwareInterface
             unset($newConfig['LDAP']['port']);
         }
 
+        // Convert singular reference_id string to plural reference_ids array.
+        if (isset($newConfig['Logging']['reference_id'])) {
+            $referenceId = $newConfig['Logging']['reference_id'];
+            unset($newConfig['Logging']['reference_id']);
+            if (!empty($referenceId)) {
+                $newConfig['Logging']['reference_ids'][] = $referenceId;
+            }
+        }
+
         $this->applyOldSettings('RecordDataFormatter/DefaultRecord');
         if ($subjectLimit = $newConfig['Record']['subjectLimit'] ?? null) {
             unset($newConfig['Record']['subjectLimit']);

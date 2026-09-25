@@ -784,6 +784,38 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testLoggingReferenceIdMigration.
+     *
+     * @return \Iterator
+     */
+    public static function loggingReferenceIdMigrationProvider(): \Iterator
+    {
+        // Note that an unquoted "false" in an .ini file is parsed as an empty string,
+        // so the disabled case must be treated as empty rather than boolean false.
+        yield 'disabled' => ['logging-reference-id-false', null];
+        yield 'singular value' => ['logging-reference-id-username', ['username']];
+        yield 'plural values already present' => ['logging-reference-ids', ['username', 'ip']];
+        yield 'singular and plural combined' => ['logging-reference-id-and-ids', ['ip', 'username']];
+    }
+
+    /**
+     * Test migration of the [Logging] reference_id setting to reference_ids.
+     *
+     * @param string $fixture  Fixture to load
+     * @param ?array $expected Expected migrated reference_ids setting (null if none expected)
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('loggingReferenceIdMigrationProvider')]
+    public function testLoggingReferenceIdMigration(string $fixture, ?array $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['Logging']['reference_id']));
+        $this->assertEquals($expected, $results['config']['Logging']['reference_ids'] ?? null);
+    }
+
+    /**
      * Test upgrades without a special logic.
      *
      * @return void
