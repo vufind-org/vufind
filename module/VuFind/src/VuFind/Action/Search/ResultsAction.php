@@ -65,6 +65,7 @@ class ResultsAction extends AbstractSearchAndResultsAction
         if ('tag' === ($queryParams['type'] ?? null)) {
             // Because we're coming in from a search, we want to do a fuzzy tag search, not an exact search like we
             // would when linking to a specific tag name.
+            $queryParams['fuzzy'] = 'true';
             return $this->getHelper(ForwardHelper::class)->forwardTo(
                 $request->withQueryParams($queryParams),
                 $response,
