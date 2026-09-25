@@ -350,7 +350,7 @@ class LoginHelper implements HelperInterface
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
-            if (!$checkRedirect || $request->getQueryParams()['redirect'] ?? true) {
+            if (!$checkRedirect || ($request->getQueryParams()['redirect'] ?? true)) {
                 if (null !== $lightboxParent && !$this->contextHelper->inLightbox($request)) {
                     $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
                     $params = $parentUrl->getQueryAsArray();

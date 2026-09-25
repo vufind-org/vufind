@@ -87,7 +87,7 @@ class ResolveAction extends AbstractPaymentAction
             if ($url = $loginHelper->getAndClearFollowupUrl($request, true)) {
                 return $redirectHelper->redirectToUrl($response, $url);
             }
-            return $redirectHelper->redirectToRoute($response, 'Admin/Payment');
+            return $redirectHelper->redirectToRoute($response, 'admin/payment');
         }
         $loginHelper->setFollowupUrlToReferrer($request);
 
