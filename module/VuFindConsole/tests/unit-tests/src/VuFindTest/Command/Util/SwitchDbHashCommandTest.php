@@ -32,7 +32,6 @@ namespace VuFindTest\Command\Util;
 use Closure;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Config;
 use VuFind\Config\Writer;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserCardEntityInterface;
@@ -106,7 +105,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
-                    new Config($config),
+                    $config,
                     $userService ?? $this->getMockUserService(),
                     $cardService ?? $this->getMockCardService(),
                     Closure::fromCallable(

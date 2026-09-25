@@ -30,7 +30,6 @@
 
 namespace VuFindTheme;
 
-use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -87,12 +86,12 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
      * Configure the specified theme as VuFind's new default theme (and one of
      * the alternatives).
      *
-     * @param Config $config Existing VuFind configuration
+     * @param array  $config Existing VuFind configuration
      * @param string $name   Theme name to add to configuration.
      *
      * @return bool
      */
-    public function configure(Config $config, $name)
+    public function configure(array $config, $name)
     {
         // Enable theme
         $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);
@@ -112,8 +111,8 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         // - Set alternate_themes
         $this->writeln("\t\t[Site] > alternate_themes");
         $altSetting = [];
-        if (isset($config->Site->alternate_themes)) {
-            $alts = explode(',', $config->Site->alternate_themes);
+        if (isset($config['Site']['alternate_themes'])) {
+            $alts = explode(',', $config['Site']['alternate_themes']);
             foreach ($alts as $a) {
                 $parts = explode(':', $a);
                 if ($parts[1] === 'bootstrap5') {
@@ -134,8 +133,8 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
             $settingPrefixes['bootstrap'] . ':Bootstrap',
             $settingPrefixes['custom'] . ':' . ucwords($name),
         ];
-        if (isset($config->Site->selectable_themes)) {
-            $themes = explode(',', $config->Site->selectable_themes);
+        if (isset($config['Site']['selectable_themes'])) {
+            $themes = explode(',', $config['Site']['selectable_themes']);
             foreach ($themes as $t) {
                 $parts = explode(':', $t);
                 if (

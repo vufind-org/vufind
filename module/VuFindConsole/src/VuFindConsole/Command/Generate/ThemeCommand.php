@@ -30,7 +30,6 @@
 namespace VuFindConsole\Command\Generate;
 
 use Symfony\Component\Console\Attribute\AsCommand;
-use VuFind\Config\Config;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeGenerator;
 
@@ -59,14 +58,13 @@ class ThemeCommand extends AbstractThemeCommand
      * Constructor.
      *
      * @param ThemeGenerator $generator Generator to call
-     * @param Config         $config    Configuration from config.ini
-     * @param string|null    $name      The name of the command; passing null
-     * means it must be set in configure()
+     * @param array          $config    Configuration from config.ini
+     * @param string|null    $name      The name of the command; passing null means it must be set in configure()
      */
     public function __construct(
         ThemeGenerator $generator,
-        #[Autowire(config: 'config', configType: 'object')]
-        protected Config $config,
+        #[Autowire(config: 'config')]
+        protected array $config,
         ?string $name = null
     ) {
         parent::__construct($generator, $name);
