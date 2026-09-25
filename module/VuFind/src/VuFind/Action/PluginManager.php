@@ -113,6 +113,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eitrecord/save' => Record\SaveAction::class,
         'eitrecord/sms' => Record\SmsAction::class,
 
+        'epfrecord/addtag' => Record\AddTagAction::class,
+        'epfrecord/deletetag' => Record\DeleteTagAction::class,
+        'epfrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'epfrecord/cite' => Record\CiteAction::class,
+        'epfrecord/email' => Record\EmailAction::class,
+        'epfrecord/export' => Record\ExportAction::class,
+        'epfrecord/hold' => Record\HoldAction::class,
+        'epfrecord/home' => Record\HomeAction::class,
+        'epfrecord/permalink' => Record\PermalinkAction::class,
+        'epfrecord/rating' => Record\RatingAction::class,
+        'epfrecord/rdf' => Record\RdfAction::class,
+        'epfrecord/save' => Record\SaveAction::class,
+        'epfrecord/sms' => Record\SmsAction::class,
+
         'error/permissiondenied' => Error\PermissionDeniedAction::class,
 
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
