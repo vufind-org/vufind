@@ -74,7 +74,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
         yield 'autowired class' => [AutowiredClass::class];
         yield 'autowired class with no constructor' => [AutowiredClassNoConstructor::class];
         yield 'autowired class with empty constructor' => [AutowiredClassEmptyConstructor::class];
-        yield 'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter config of type array'];
+        yield 'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter "config" of type array'];
         yield 'second invalid class' => [
             InvalidAutowiredClass2::class,
             'Unable to resolve type of parameter ilsConnection',

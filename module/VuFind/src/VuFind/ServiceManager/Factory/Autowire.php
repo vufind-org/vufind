@@ -53,8 +53,8 @@ class Autowire
      * @param ?string $path       Slash-separated path to extract from configuration
      * @param ?string $explode    Delimiter to use to convert a configuration string to an array (not applied to any
      * default value)
-     * @param mixed   $default    Default value (can be used to inject a literal, or as a fallback if a path-based
-     * config is not found)
+     * @param mixed   $default    Default value (can be used to inject a literal to a parameter with no default, or as
+     * a fallback if a path-based config is specified but unset)
      * @param ?string $service    Service to inject (mutually exclusive with $config)
      * @param ?string $container  Container or plugin manager to use to get the service
      *

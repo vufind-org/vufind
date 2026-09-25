@@ -202,14 +202,21 @@ class AutowiringFactory implements FactoryInterface
                 throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
             }
             if ($type->isBuiltIn()) {
-                $builtInError = 'Unable to autowire parameter ' . $reflectionParameter->getName() . ' of type '
+                $builtInError = 'Unable to autowire parameter "' . $reflectionParameter->getName() . '" of type '
                     . $type->getName();
                 // If we have a literal default, we can use it now -- but if a path is set, something is misconfigured
                 // and we should go ahead with throwing an exception.
                 if (isset($autowireArgs['path'])) {
                     $builtInError .= '; unexpected path attribute set.';
                 } elseif (array_key_exists('default', $autowireArgs ?? [])) { // can't use isset; value could be null
+                    // If the parameter has a default value, specifying a different (or duplicate) default via the
+                    // Autowire attribute is confusing and unnecessary, so we should not allow it:
+                    if ($reflectionParameter->isDefaultValueAvailable()) {
+                        throw new LogicException($builtInError . '; redundant default autowire parameter specified');
+                    }
                     return $autowireArgs['default'];
+                } elseif ($reflectionParameter->isDefaultValueAvailable()) {
+                    return $reflectionParameter->getDefaultValue();
                 }
                 throw new LogicException($builtInError);
             }

@@ -67,7 +67,6 @@ class ThemeCommand extends AbstractThemeCommand
         ThemeGenerator $generator,
         #[Autowire(config: 'config', configType: 'object')]
         protected Config $config,
-        #[Autowire(default: null)]
         ?string $name = null
     ) {
         parent::__construct($generator, $name);
