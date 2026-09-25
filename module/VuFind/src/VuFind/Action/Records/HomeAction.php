@@ -64,10 +64,10 @@ class HomeAction extends AbstractSearchAndResultsAction
         // If there is exactly one record, send the user directly there:
         if (count($ids) == 1) {
             $details = $this->recordRouter->getTabRouteDetails($ids[0]);
-            $target = $this->routeHelper->getUrlFromRoute($details['route'], $details['params']);
             // forward print param, if necessary:
-            $params = $print ? '?print=' . urlencode($print) : '';
-            return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $target . $params);
+            $queryParams = $print ? compact('print') : [];
+            $target = $this->routeHelper->getUrlFromRoute($details['route'], $details['params'], $queryParams);
+            return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $target);
         }
         // Ignore Print for Search History:
         if ($print) {
