@@ -32,7 +32,6 @@ namespace VuFind\Action\Primo;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
-use VuFind\Search\Base\Results;
 
 /**
  * "Cited by" action.

@@ -32,7 +32,6 @@ namespace VuFind\Action\Primo;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
-use VuFind\Search\Base\Results;
 
 /**
  * "Cites" action.
@@ -43,7 +42,7 @@ use VuFind\Search\Base\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CitedByAction extends AbstractCitationAction
+class CitesAction extends AbstractCitationAction
 {
     /**
      * Display results of "cites" search.
