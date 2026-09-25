@@ -135,24 +135,6 @@ class ConfigManager implements ConfigManagerInterface
     }
 
     /**
-     * Get config in PluginManager style.
-     *
-     * @param string $name    Service name of plugin to retrieve.
-     * @param ?array $options Options to use when creating the instance.
-     *
-     * @return mixed
-     *
-     * @deprecated Use getConfigArray, getConfigObject or getConfig instead
-     */
-    public function get($name, ?array $options = null)
-    {
-        return $this->getConfigObject(
-            $name,
-            forceReload: $options['forceReload'] ?? false
-        );
-    }
-
-    /**
      * Load config from a specific location.
      *
      * @param ConfigLocationInterface $configLocation     Config location
