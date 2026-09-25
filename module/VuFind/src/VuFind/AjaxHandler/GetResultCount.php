@@ -77,8 +77,8 @@ class GetResultCount extends AbstractBase
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();
-        $queryString = $params->fromQuery('querystring');
-        parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
+        $queryString = $params->fromQuery('querystring', '');
+        parse_str(parse_url($queryString, PHP_URL_QUERY) ?? '', $searchParams);
 
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $results = $this->resultsManager->get($backend);
