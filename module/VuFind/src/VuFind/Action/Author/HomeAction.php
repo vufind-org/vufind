@@ -60,7 +60,7 @@ class HomeAction extends \VuFind\Action\Search\HomeAction
         // display the search form:
         $author = $this->getQueryParam('author');
         return !empty($author)
-            ? $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Author/Results')
+            ? $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'author/results')
             : parent::action($request, $response);
     }
 }

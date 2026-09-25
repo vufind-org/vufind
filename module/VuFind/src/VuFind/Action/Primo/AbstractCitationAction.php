@@ -139,7 +139,7 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
         ResponseInterface $response,
     ): ResponseInterface {
         if (!($id = trim($this->getQueryParam('lookfor', ''), '"'))) {
-            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Primo/Home');
+            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'primo/home');
         }
         $driver = $this->recordLoader->load($id, $this->getBackendId());
 

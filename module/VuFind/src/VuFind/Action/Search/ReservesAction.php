@@ -84,13 +84,13 @@ class ReservesAction extends AbstractTemplateRenderingAction
             || $this->getQueryParam('course') !== null
             || $this->getQueryParam('dept') !== null
         ) {
-            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Search/ReservesResults');
+            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'search/reservesresults');
         }
 
         // No params?  Show appropriate form (varies depending on whether we're using ILS-based or Solr-based
         // reserves searching).
         if ($this->reservesHelper->useIndex()) {
-            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Search/ReservesSearch');
+            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'search/reservessearch');
         }
 
         // If we got this far, we're using driver-based searching and need to send options to the view (but we should

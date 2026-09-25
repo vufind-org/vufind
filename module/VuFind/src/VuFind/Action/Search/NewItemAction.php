@@ -68,7 +68,7 @@ class NewItemAction extends AbstractNewItemAction
 
         // Search parameters set?  Process results.
         if ($this->getQueryParam('range') !== null) {
-            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Search/NewItemResults');
+            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'search/newitemresults');
         }
 
         $templateParams = $this->createTemplateParams(
