@@ -1308,10 +1308,10 @@ class DefaultRecord extends AbstractBase
             return $this->fields['thumbnail'];
         }
         $arr = [
-            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
+            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'UTF-8'),
             'callnumber' => $this->getCallNumber(),
             'size'       => $size,
-            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8'),
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'UTF-8'),
             'recordid'   => $this->getUniqueID(),
             'source'   => $this->getSourceIdentifier(),
         ];

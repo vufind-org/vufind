@@ -33,6 +33,7 @@ namespace VuFind\Action\Record;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
@@ -153,21 +154,21 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
             return $this->processSave($request, $response, $user);
         }
 
-        // If we got this far, we should save the referer for later use by the
+        // If we got this far, we should save the referrer for later use by the
         // ProcessSave action (to get back to where we came from after saving).
         // We shouldn't save follow-up information if it points to the Save
         // screen or the "create list" screen, as this causes confusing workflows;
         // in these cases, we will simply push the user to record view
         // by unsetting the followup and relying on default behavior in processSave.
-        $referer = $request->getHeader('Referer')[0] ?? '';
+        $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
         $loginHelper = $this->getHelper(LoginHelper::class);
         if (
-            !empty($referer)
-            && !str_ends_with($referer, '/Save')
-            && stripos($referer, 'MyResearch/EditList/NEW') === false
-            && $this->getHelper(UrlHelper::class)->isLocalUrl($referer)
+            !empty($referrer)
+            && !str_ends_with($referrer, '/Save')
+            && stripos($referrer, 'MyResearch/EditList/NEW') === false
+            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
         ) {
-            $loginHelper->setFollowupUrlToReferer($request);
+            $loginHelper->setFollowupUrlToReferrer($request);
         } else {
             $loginHelper->clearFollowupUrl();
         }
