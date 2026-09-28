@@ -62,7 +62,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoSearch()
+    protected function goToSearch()
     {
         $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
@@ -80,7 +80,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function goToRecord()
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
         // Ensure that accordion has completed its transition:
@@ -256,7 +256,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('anything else');
         $this->waitForPageLoad($page);
         // Come back
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         // Did our result close after not being being in the last search?
         $result = $page->find('css', '.result.embedded');
         $this->assertIsNotObject($result);

@@ -70,7 +70,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoSearch(string $query = 'Dewey'): element
+    protected function goToSearch(string $query = 'Dewey'): element
     {
         $page = $this->getSearchHomePage();
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
@@ -89,7 +89,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function goToRecord(string $query = 'Dewey'): Element
     {
-        $page = $this->gotoSearch($query);
+        $page = $this->goToSearch($query);
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
         return $page;
@@ -260,7 +260,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesNewAccount(): void
     {
-        $page = $this->gotoSearch('id:"017791359-1"');
+        $page = $this->goToSearch('id:"017791359-1"');
 
         $this->clickCss($page, '.save-record');
         $this->waitForPageLoad($page);
@@ -334,7 +334,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesLogin(): void
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
 
         $this->clickCss($page, '.save-record');
         // Login
@@ -378,7 +378,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLogin')]
     public function testAddSearchItemToFavoritesLoggedIn(): void
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         // Login
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username2', 'test');
@@ -523,7 +523,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $page = $this->gotoSearch('id:testbug2');
+        $page = $this->goToSearch('id:testbug2');
 
         // Login
         $this->clickCss($page, '.save-record');
@@ -556,7 +556,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function gotoUserAccount(string $username = 'username1'): DocumentElement
+    protected function goToUserAccount(string $username = 'username1'): DocumentElement
     {
         // Go home
         $session = $this->getMinkSession();
@@ -589,7 +589,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        return $this->gotoUserAccount();
+        return $this->goToUserAccount();
     }
 
     /**
@@ -870,7 +870,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $page = $this->gotoUserAccount();
+        $page = $this->goToUserAccount();
         // Click on the first list and tag it:
         $link = $this->findAndAssertLink($page, 'Test List');
         $link->click();
@@ -899,7 +899,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesLogin')]
     public function testPublicListIndicator(): void
     {
-        $page = $this->gotoUserAccount();
+        $page = $this->goToUserAccount();
 
         // Collect data about the user list links on the page; we are checking
         // for expected descriptions and icons, and we'll want URLs so we can
@@ -939,7 +939,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testDeleteSingleFavoriteItem(): void
     {
-        $page = $this->gotoUserAccount('username2');
+        $page = $this->goToUserAccount('username2');
 
         // Get the initial count of items
         $initialItems = $page->findAll('css', '.result');
