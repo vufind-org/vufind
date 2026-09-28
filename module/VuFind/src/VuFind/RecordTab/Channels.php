@@ -85,7 +85,8 @@ class Channels extends AbstractBase
             $query?->get('channelToken'),
             $query?->get('channelProvider'),
             $driver->getSearchBackendIdentifier(),
-            $this->configSections
+            $this->configSections,
+            'tab'
         );
     }
 }

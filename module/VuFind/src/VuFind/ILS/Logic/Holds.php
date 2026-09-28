@@ -455,7 +455,7 @@ class Holds
             return $holdings;
         }
 
-        // Are storage retrieval requests allowed?
+        // Are ILL requests allowed?
         $requestConfig = $this->catalog->checkFunction(
             'ILLRequests',
             compact('id', 'patron')

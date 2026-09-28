@@ -113,15 +113,42 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eitrecord/save' => Record\SaveAction::class,
         'eitrecord/sms' => Record\SmsAction::class,
 
+        'epfrecord/addtag' => Record\AddTagAction::class,
+        'epfrecord/deletetag' => Record\DeleteTagAction::class,
+        'epfrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'epfrecord/cite' => Record\CiteAction::class,
+        'epfrecord/email' => Record\EmailAction::class,
+        'epfrecord/export' => Record\ExportAction::class,
+        'epfrecord/hold' => Record\HoldAction::class,
+        'epfrecord/home' => Record\HomeAction::class,
+        'epfrecord/permalink' => Record\PermalinkAction::class,
+        'epfrecord/rating' => Record\RatingAction::class,
+        'epfrecord/rdf' => Record\RdfAction::class,
+        'epfrecord/save' => Record\SaveAction::class,
+        'epfrecord/sms' => Record\SmsAction::class,
+
         'error/permissiondenied' => Error\PermissionDeniedAction::class,
 
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
+
+        'install/fixbasicconfig' => Install\FixBasicConfigAction::class,
+        'install/fixcache' => Install\FixCacheAction::class,
+        'install/fixdatabase' => Install\FixDatabaseAction::class,
+        'install/fixdependencies' => Install\FixDependenciesAction::class,
+        'install/fixils' => Install\FixIlsAction::class,
+        'install/fixsolr' => Install\FixSolrAction::class,
+        'install/fixsecurity' => Install\FixSecurityAction::class,
+        'install/performsecurityfix' => Install\PerformSecurityFixAction::class,
+        'install/fixsslcerts' => Install\FixSslCertsAction::class,
 
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
 
         'oai/authserver' => Oai\AuthServerAction::class,
+
+        'oauth2/userinfo' => OAuth2\UserInfoAction::class,
+        'oauth2/wellknownconfiguration' => OAuth2\WellKnownConfigurationAction::class,
 
         'primorecord/addtag' => Record\AddTagAction::class,
         'primorecord/deletetag' => Record\DeleteTagAction::class,
@@ -161,6 +188,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'record/illrequest' => Record\IllRequestAction::class,
         'record/storageretrievalrequest' => Record\StorageRetrievalRequestAction::class,
 
+        'search2collection/home' => Collection\HomeAction::class,
         // At least hierarchy tree links use the collection AjaxTab route:
         'search2collection/ajaxtab' => Record\AjaxTabAction::class,
 
@@ -236,6 +264,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
         'Myresearch' => 'MyResearch',
+        'Oauth2' => 'OAuth2',
         'Shortlink' => 'ShortLink',
     ];
 

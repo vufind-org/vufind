@@ -33,7 +33,6 @@ namespace VuFindTest\I18n\Locale;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -56,7 +55,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testDefaultLocaleRequired(): void
     {
         $this->expectExceptionMessage('Default locale not configured!');
-        new LocaleSettings(new Config([]));
+        new LocaleSettings([]);
     }
 
     /**
@@ -68,7 +67,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testDefaultMustBeEnabled(): void
     {
         $this->expectExceptionMessage("Configured default locale 'en' not enabled!");
-        new LocaleSettings(new Config(['Site' => ['language' => 'en']]));
+        new LocaleSettings(['Site' => ['language' => 'en']]);
     }
 
     /**
@@ -79,12 +78,10 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testDefaultConfigs(): void
     {
         $settings = new LocaleSettings(
-            new Config(
-                [
-                    'Site' => ['language' => 'en'],
-                    'Languages' => ['en' => 'English'],
-                ]
-            )
+            [
+                'Site' => ['language' => 'en'],
+                'Languages' => ['en' => 'English'],
+            ]
         );
         $this->assertTrue($settings->browserLanguageDetectionEnabled());
         $this->assertSame(['en'], $settings->getFallbackLocales());
@@ -98,12 +95,10 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testDisablingBrowserLanguageDetection(): void
     {
         $settings = new LocaleSettings(
-            new Config(
-                [
-                    'Site' => ['language' => 'en', 'browserDetectLanguage' => 0],
-                    'Languages' => ['en' => 'English'],
-                ]
-            )
+            [
+                'Site' => ['language' => 'en', 'browserDetectLanguage' => 0],
+                'Languages' => ['en' => 'English'],
+            ]
         );
         $this->assertFalse($settings->browserLanguageDetectionEnabled());
     }
@@ -116,13 +111,11 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testRightToLeft(): void
     {
         $settings = new LocaleSettings(
-            new Config(
-                [
-                    'Site' => ['language' => 'en'],
-                    'Languages' => ['en' => 'English', 'ar' => 'Arabic'],
-                    'LanguageSettings' => ['rtl_langs' => 'ar'],
-                ]
-            )
+            [
+                'Site' => ['language' => 'en'],
+                'Languages' => ['en' => 'English', 'ar' => 'Arabic'],
+                'LanguageSettings' => ['rtl_langs' => 'ar'],
+            ]
         );
         $this->assertFalse($settings->isRightToLeftLocale('en'));
         $this->assertTrue($settings->isRightToLeftLocale('ar'));
@@ -136,12 +129,10 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     public function testInitializationStatusFlagging(): void
     {
         $settings = new LocaleSettings(
-            new Config(
-                [
-                    'Site' => ['language' => 'en'],
-                    'Languages' => ['en' => 'English'],
-                ]
-            )
+            [
+                'Site' => ['language' => 'en'],
+                'Languages' => ['en' => 'English'],
+            ]
         );
         $this->assertFalse($settings->isLocaleInitialized('en'));
         $settings->markLocaleInitialized('en');
@@ -212,7 +203,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
             $config['Site']['fallback_languages'] = $fallbackLanguages;
         }
 
-        $settings = new LocaleSettings(new Config($config));
+        $settings = new LocaleSettings($config);
         $this->assertEquals($expected, $settings->getFallbackLocales());
     }
 
@@ -364,12 +355,10 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
         string $expected
     ): void {
         $settings = new LocaleSettings(
-            new Config(
-                [
-                    'Site' => ['language' => $default],
-                    'Languages' => $enabled,
-                ]
-            )
+            [
+                'Site' => ['language' => $default],
+                'Languages' => $enabled,
+            ]
         );
 
         $this->assertSame(

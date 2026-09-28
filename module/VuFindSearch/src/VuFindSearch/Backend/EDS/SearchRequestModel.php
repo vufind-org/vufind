@@ -30,7 +30,6 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 
 use function array_key_exists;
 use function count;
