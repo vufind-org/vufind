@@ -632,6 +632,7 @@ VuFind.register('sideFacets', function SideFacets() {
    * This is used to indicate that new facet data is being loaded.
    */
   function showLoadingOverlay() {
+    debugger;
     let elem;
     if (this === undefined || this.nodeName === undefined) {
       elem = $('#search-sidebar .collapse, .checkbox-filters');
