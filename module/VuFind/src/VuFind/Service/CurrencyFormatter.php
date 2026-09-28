@@ -46,13 +46,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 class CurrencyFormatter
 {
     /**
-     * Default currency format (ISO 4217) to use.
-     *
-     * @var string
-     */
-    protected $defaultCurrency;
-
-    /**
      * Number formatter.
      *
      * @var NumberFormatter
@@ -67,7 +60,7 @@ class CurrencyFormatter
      */
     public function __construct(
         #[Autowire(config: 'config', path: 'Site/defaultCurrency')]
-        $defaultCurrency = null,
+        protected $defaultCurrency = null,
         #[Autowire(config: 'config', path: 'Site/locale')]
         $locale = null
     ) {
