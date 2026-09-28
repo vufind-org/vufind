@@ -48,7 +48,22 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertStringContainsString('VuFind', (string)$page->getContent());
+        $content = (string)$page->getContent();
+        $this->assertStringContainsString('VuFind', $content);
+        // Confirm that the system IS available by default (see testUnavailableHomePage below for the other case):
+        $this->assertStringNotContainsString('System Unavailable', $content);
+    }
+
+    /**
+     * Test that the home page can be made unavailable.
+     *
+     * @return void
+     */
+    public function testUnavailableHomePage(): void
+    {
+        $this->changeConfigs(['config' => ['System' => ['available' => false]]]);
+        $page = $this->getSearchHomePage();
+        $this->assertStringContainsString('System Unavailable', (string)$page->getContent());
     }
 
     /**

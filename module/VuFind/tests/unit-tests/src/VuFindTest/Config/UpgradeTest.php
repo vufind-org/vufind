@@ -814,4 +814,26 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertFalse(isset($configs['config']['Record']['citation_formats']));
     }
+
+    /**
+     * Test upgrades for subject limit config.
+     *
+     * @return void
+     */
+    public function testSubjectLimitUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('subject-limit');
+        $results = $upgrader->getNewConfigs();
+        $config = $results['config'];
+        $this->assertFalse(isset($config['Record']['subjectLimit']));
+        $recordDataFormatterConfig = $results['RecordDataFormatter/DefaultRecord'];
+        $this->assertEquals(
+            [
+                'truncateRows' => 5,
+                'truncateTopToggle' => 30,
+                'truncateElement' => '.subject-line',
+            ],
+            $recordDataFormatterConfig['Field_Subjects']
+        );
+    }
 }

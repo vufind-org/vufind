@@ -228,6 +228,10 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
                 return $accessDeniedResponse;
             }
 
+            if ($preprocessResponse = $this->preprocessRequest($request, $response)) {
+                return $preprocessResponse;
+            }
+
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -257,6 +261,25 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      * @return ?ResponseInterface
      */
     protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
+    }
+
+    /**
+     * Preprocess a request before the actual action is executed.
+     *
+     * This method is executed just before the actual action (i.e. after permission checks etc.).
+     * It is meant for preprocessing of requests in a shared base class of multiple actions.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function preprocessRequest(
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ?ResponseInterface {
@@ -315,13 +338,22 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     /**
      * Get a parameter from POST fields or query string.
      *
-     * @param string            $param   Param name
-     * @param array|string|null $default Default value
+     * @param string            $param       Param name
+     * @param array|string|null $default     Default value
+     * @param bool              $preferQuery Prefer query param if both POST and query param is available?
      *
      * @return array|string|null
      */
-    protected function getPostOrQueryParam(string $param, array|string|null $default = null): array|string|null
-    {
+    protected function getPostOrQueryParam(
+        string $param,
+        array|string|null $default = null,
+        bool $preferQuery = false
+    ): array|string|null {
+        if ($preferQuery) {
+            return $this->getQueryParam($param)
+                ?? $this->getPostParam($param)
+                ?? $default;
+        }
         return $this->getPostParam($param)
             ?? $this->getQueryParam($param)
             ?? $default;

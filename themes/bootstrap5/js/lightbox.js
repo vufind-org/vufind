@@ -576,6 +576,7 @@ VuFind.register('lightbox', function Lightbox() {
     _currentUrl = false;
     _lbReferrerUrl = false;
     _lightboxTitle = false;
+    VuFind.lightbox.refreshOnClose = false;
     _modalParams = {};
   }
 

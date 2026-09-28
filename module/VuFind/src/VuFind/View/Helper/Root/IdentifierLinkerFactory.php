@@ -69,10 +69,10 @@ class IdentifierLinkerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $helpers = $container->get('ViewHelperManager');
         // DOI config section is supported as a fallback for legacy back-compatibility:
-        $idConfig = $config?->IdentifierLinks?->toArray() ?? $config?->DOI?->toArray() ?? [];
+        $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
         return new $requestedName($helpers->get('context'), $container->get(RendererInterface::class), $idConfig);
     }
 }

@@ -30,7 +30,6 @@
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-use VuFind\Config\Config;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;

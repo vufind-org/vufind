@@ -65,14 +65,14 @@ abstract class AbstractBase implements
     /**
      * Main VuFind configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $mainConfig;
 
     /**
      * Record-specific configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $recordConfig;
 
@@ -93,10 +93,8 @@ abstract class AbstractBase implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
+     * @param ?array $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig Record-specific configuration file (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
@@ -286,7 +284,7 @@ abstract class AbstractBase implements
      */
     public function isRatingAllowed(): bool
     {
-        return !empty($this->recordConfig->Social->rating);
+        return !empty($this->recordConfig['Social']['rating']);
     }
 
     /**
@@ -311,10 +309,10 @@ abstract class AbstractBase implements
      */
     public function getCitationFormats(?string $context = null)
     {
-        if (($context !== null) && !($this->mainConfig->Citation->$context ?? false)) {
+        if (($context !== null) && !($this->mainConfig['Citation'][$context] ?? false)) {
             return [];
         }
-        $formatSetting = $this->mainConfig->Citation->formats ?? true;
+        $formatSetting = $this->mainConfig['Citation']['formats'] ?? true;
 
         // Default behavior: use all supported options.
         if ($formatSetting === true || $formatSetting === 'true') {

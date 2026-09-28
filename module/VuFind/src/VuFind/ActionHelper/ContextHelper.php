@@ -56,4 +56,16 @@ class ContextHelper implements HelperInterface
             'lightbox' === $layout
             || 'layout/lightbox' === $request->getAttribute('view-model')?->getTemplate();
     }
+
+    /**
+     * Get referrer of a request.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return ?string
+     */
+    public function getReferrer(ServerRequestInterface $request): ?string
+    {
+        return $request->getHeader('Referer')[0] ?? null;
+    }
 }

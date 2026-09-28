@@ -120,7 +120,7 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if (($this->mainConfig->Record->marcSubjectHeadingsSort ?? '') === 'numerical') {
+        if (($this->mainConfig['Record']['marcSubjectHeadingsSort'] ?? '') === 'numerical') {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
         } else {
             // Default | value === 'record'
@@ -407,8 +407,8 @@ trait MarcAdvancedTrait
     public function getNewerTitles()
     {
         // If the MARC links are being used, return blank array
-        $fieldsNames = isset($this->mainConfig->Record->marc_links)
-            ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
+        $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
+            ? array_map('trim', explode(',', $this->mainConfig['Record']['marc_links']))
             : [];
         return in_array('785', $fieldsNames) ? [] : parent::getNewerTitles();
     }
@@ -451,8 +451,8 @@ trait MarcAdvancedTrait
     public function getPreviousTitles()
     {
         // If the MARC links are being used, return blank array
-        $fieldsNames = isset($this->mainConfig->Record->marc_links)
-            ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
+        $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
+            ? array_map('trim', explode(',', $this->mainConfig['Record']['marc_links']))
             : [];
         return in_array('780', $fieldsNames) ? [] : parent::getPreviousTitles();
     }
@@ -720,10 +720,10 @@ trait MarcAdvancedTrait
     public function getAllRecordLinks()
     {
         // Load configurations:
-        $fieldsNames = isset($this->mainConfig->Record->marc_links)
-            ? explode(',', $this->mainConfig->Record->marc_links) : [];
+        $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
+            ? explode(',', $this->mainConfig['Record']['marc_links']) : [];
         $useVisibilityIndicator
-            = $this->mainConfig->Record->marc_links_use_visibility_indicator ?? true;
+            = $this->mainConfig['Record']['marc_links_use_visibility_indicator'] ?? true;
 
         $retVal = [];
         foreach ($fieldsNames as $value) {
@@ -807,7 +807,7 @@ trait MarcAdvancedTrait
             return false;
         }
 
-        $linkTypeSetting = $this->mainConfig->Record->marc_links_link_types
+        $linkTypeSetting = $this->mainConfig['Record']['marc_links_link_types']
             ?? 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $this->getSubfields($field, 'w');
