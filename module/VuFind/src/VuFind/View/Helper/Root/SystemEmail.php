@@ -48,7 +48,7 @@ class SystemEmail
      * @param string $email System email
      */
     public function __construct(
-        #[Autowire(config:'config', path: 'Site/email')]
+        #[Autowire(config:'config', path: 'Site/email', default: '')]
         protected string $email
     ) {
         $this->email = $email;
