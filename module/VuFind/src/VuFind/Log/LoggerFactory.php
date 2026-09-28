@@ -321,10 +321,8 @@ class LoggerFactory implements FactoryInterface
         $monologLogger->pushProcessor(new PsrLogMessageProcessor());
         $logConfig = $config['Logging'] ?? [];
 
-        // Load legacy reference_id (singular) config, if present.
-        $reference_ids = ($logConfig['reference_id'] ?? []) ? [$logConfig['reference_id']] : [];
-        // Merge with current reference_ids config.
-        $reference_ids = array_merge($reference_ids, $logConfig['reference_ids'] ?? []);
+        // Cast to array for backward compatibility with legacy single-string config.
+        $reference_ids = (array)($logConfig['reference_id'] ?? []);
 
         if (in_array('username', $reference_ids)) {
             try {
