@@ -631,8 +631,19 @@ VuFind.register('sideFacets', function SideFacets() {
    *
    * This is used to indicate that new facet data is being loaded.
    */
-  function showLoadingOverlay() {
+  function showLoadingOverlay(event) {
     debugger;
+    const target = event?.currentTarget?.getAttribute('target');
+    if (event && (
+      event.ctrlKey
+      || event.metaKey
+      || event.shiftKey
+      || event.altKey
+      || event.button > 0
+      || (target && target.toLowerCase() !== '_self')
+    )) {
+      return;
+    }
     let elem;
     if (this === undefined || this.nodeName === undefined) {
       elem = $('#search-sidebar .collapse, .checkbox-filters');
