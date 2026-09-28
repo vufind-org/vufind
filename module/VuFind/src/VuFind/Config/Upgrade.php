@@ -565,11 +565,10 @@ class Upgrade implements LoggerAwareInterface
         $this->checkTheme('mobile_theme', null);
 
         // Warn the user if they are using a deprecated encryption algorithm:
-        if ($newConfig['Security']['legacyPbkdf2'] ?? false) {
+        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
             $this->addWarning(
-                'Setting legacyPbkdf2 to true in config.ini is deprecated; please be sure to '
-                . 'change this setting to false and re-encrypt your data before upgrading to '
-                . 'the next major release.'
+                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
+                . 'Change this setting to false and re-encrypt your data before the next major release.'
             );
         }
 
