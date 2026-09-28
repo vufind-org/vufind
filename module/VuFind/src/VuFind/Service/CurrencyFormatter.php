@@ -62,7 +62,7 @@ class CurrencyFormatter
         #[Autowire(config: 'config', path: 'Site/defaultCurrency')]
         protected ?string $defaultCurrency = null,
         #[Autowire(config: 'config', path: 'Site/locale')]
-        $locale = null
+        ?string $locale = null
     ) {
         // Initialize number formatter (an empty string makes NumberFormatter use the default locale):
         $this->formatter = new NumberFormatter($locale ?? '', NumberFormatter::CURRENCY);
