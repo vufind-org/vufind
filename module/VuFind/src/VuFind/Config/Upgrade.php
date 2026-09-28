@@ -35,6 +35,7 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function dirname;
@@ -112,6 +113,7 @@ class Upgrade implements LoggerAwareInterface
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,
