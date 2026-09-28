@@ -74,7 +74,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $query = 'Dewey'): Element
+    protected function goToRecord(string $query = 'Dewey'): Element
     {
         $page = $this->performSearch($query);
         $this->clickCss($page, '.result a.title');
@@ -108,7 +108,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testAddComment(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click add comment without logging in
         $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
@@ -154,7 +154,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click add comment without logging in
         $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
@@ -200,7 +200,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testAddTag(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click to add tag
         $this->clickCss($page, '.tag-record');
         // Lightbox login open?
@@ -245,7 +245,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        // $page = $this->gotoRecord();
+        // $page = $this->goToRecord();
         // Check selected == 0
         $this->unFindCss($page, '.tagList .tag.selected');
         $this->findCss($page, '.tagList .tag');
@@ -388,7 +388,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Login
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->clickCss($page, '.tag-record');
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
@@ -619,7 +619,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
         $this->findCss($page, $this->openModalUsernameFieldSelector);
@@ -641,7 +641,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
         $this->findCss($page, ' [name="username"]');
@@ -683,7 +683,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click SMS
         $this->clickCss($page, '.sms-record');
         // Type invalid phone numbers
@@ -758,7 +758,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testRatingDisabled(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Check that rating is not displayed:
         $this->unFindCss($page, 'div.rating');
     }
@@ -801,7 +801,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $checked = 'div.rating-average input:checked';
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click to add rating
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
@@ -952,7 +952,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->waitForPageLoad($page);
         $this->clickCss($page, '#loginOptions a');
         $this->findCss($page, $this->openModalUsernameFieldSelector);
@@ -989,7 +989,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
-        $this->unfindCss($page, '.usercontent-table');
+        $this->unFindCss($page, '.usercontent-table');
         $this->assertStringContainsString(
             'No Comments',
             $page->getContent()
@@ -1002,7 +1002,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
-        $this->unfindCss($page, '.usercontent-table');
+        $this->unFindCss($page, '.usercontent-table');
         $this->assertStringContainsString(
             'No Tags',
             $page->getContent()
@@ -1017,7 +1017,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
-        $this->unfindCss($page, '.usercontent-table');
+        $this->unFindCss($page, '.usercontent-table');
         $this->assertStringContainsString(
             'No Ratings',
             $page->getContent()
@@ -1032,7 +1032,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testRefWorksExportButton(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click the first Export option in the drop-down menu
         $this->clickCss($page, '.export-toggle');
         $this->clickCss($page, '#export-options li a');

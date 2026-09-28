@@ -87,7 +87,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $query = 'Dewey'): Element
+    protected function goToRecord(string $query = 'Dewey'): Element
     {
         $page = $this->gotoSearch($query);
         $this->clickCss($page, '.result a.title');
@@ -116,7 +116,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testAddRecordToFavoritesNewAccount(): void
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         $this->clickCss($page, '.save-record');
         $this->clickCss($page, '.modal-body .createAccountLink');
@@ -187,7 +187,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLogin(): void
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         $this->clickCss($page, '.save-record');
         // Login
@@ -236,7 +236,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLoggedIn(): void
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Login
         $this->clickCss($page, '#loginOptions a');
         $this->waitForPageLoad($page);
@@ -886,7 +886,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $this->assertSame('Test List', $this->findCssAndGetText($page, 'h2.channel-title'));
             $this->assertCount(1, $page->findAll('css', 'li.channel-item'));
         } else {
-            $this->unfindCss($page, 'h2.channel-title');
+            $this->unFindCss($page, 'h2.channel-title');
         }
     }
 
@@ -899,7 +899,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesLogin')]
     public function testPublicListIndicator(): void
     {
-        $page = $this->goToUserAccount();
+        $page = $this->gotoUserAccount();
 
         // Collect data about the user list links on the page; we are checking
         // for expected descriptions and icons, and we'll want URLs so we can

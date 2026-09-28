@@ -547,7 +547,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addfilter($facetFilter)
+    public function addFilter($facetFilter)
     {
         $filterComponents = explode(':', $facetFilter, 3);
         if (count($filterComponents) < 3) {

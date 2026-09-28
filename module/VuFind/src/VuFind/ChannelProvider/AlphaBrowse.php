@@ -220,7 +220,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             $thumbs = [];
             // First map record drivers to an ID => thumb array...
             foreach ($records as $record) {
-                $thumbs[$record->getUniqueId()] = $this->coverRouter
+                $thumbs[$record->getUniqueID()] = $this->coverRouter
                     ->getUrl($record, 'medium');
             }
             // Now apply the thumbnails to the existing result set...

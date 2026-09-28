@@ -179,7 +179,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $this->userResourceService->getFavoritesForRecord(
-            $driver->getUniqueId(),
+            $driver->getUniqueID(),
             $driver->getSourceIdentifier(),
             null,
             $user
