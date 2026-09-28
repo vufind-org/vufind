@@ -630,9 +630,9 @@ VuFind.register('sideFacets', function SideFacets() {
    * Show a loading overlay on a facet container.
    *
    * This is used to indicate that new facet data is being loaded.
+  * @param {Event} event The click event.
    */
   function showLoadingOverlay(event) {
-    debugger;
     const target = event?.currentTarget?.getAttribute('target');
     if (event && (
       event.ctrlKey
