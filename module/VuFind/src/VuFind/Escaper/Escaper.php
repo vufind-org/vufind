@@ -50,8 +50,7 @@ class Escaper extends \Laminas\Escaper\Escaper
     public function __construct(
         #[Autowire(config: 'config', path: 'Site/extendedHtmlAttributeEscaping')]
         protected bool $extendedHtmlAttrEscaping = false
-    )
-    {
+    ) {
         parent::__construct();
     }
 
