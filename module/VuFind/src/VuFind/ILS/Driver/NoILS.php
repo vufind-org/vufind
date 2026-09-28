@@ -51,21 +51,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader.
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
      * Constructor.
      *
      * @param \VuFind\Record\Loader $loader Record loader
      */
     #[Autowire]
-    public function __construct(\VuFind\Record\Loader $loader)
+    public function __construct(protected \VuFind\Record\Loader $recordLoader)
     {
-        $this->recordLoader = $loader;
     }
 
     /**
