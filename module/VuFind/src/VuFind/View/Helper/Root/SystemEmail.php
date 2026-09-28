@@ -51,7 +51,6 @@ class SystemEmail
         #[Autowire(config:'config', path: 'Site/email', default: '')]
         protected string $email
     ) {
-        $this->email = $email;
     }
 
     /**
