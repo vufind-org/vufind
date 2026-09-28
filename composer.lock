@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fabf431d6c829a4e62b4b732b2ad4f18",
+    "content-hash": "5f00ec19161a4039defba0d70a1fa680",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -6027,23 +6027,23 @@
         },
         {
             "name": "league/oauth1-client",
-            "version": "v1.11.0",
+            "version": "v1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/oauth1-client.git",
-                "reference": "f9c94b088837eb1aae1ad7c4f23eb65cc6993055"
+                "reference": "aa8fe766f772f9233d6c06f9ef003fd8129e408d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/oauth1-client/zipball/f9c94b088837eb1aae1ad7c4f23eb65cc6993055",
-                "reference": "f9c94b088837eb1aae1ad7c4f23eb65cc6993055",
+                "url": "https://api.github.com/repos/thephpleague/oauth1-client/zipball/aa8fe766f772f9233d6c06f9ef003fd8129e408d",
+                "reference": "aa8fe766f772f9233d6c06f9ef003fd8129e408d",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-openssl": "*",
-                "guzzlehttp/guzzle": "^6.0|^7.0",
-                "guzzlehttp/psr7": "^1.7|^2.0",
+                "guzzlehttp/guzzle": "^6.5.8||^7.8.2||^8.0",
+                "guzzlehttp/psr7": "^1.9.1||^2.6.3||^3.0",
                 "php": ">=7.1||>=8.0"
             },
             "require-dev": {
@@ -6097,9 +6097,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/oauth1-client/issues",
-                "source": "https://github.com/thephpleague/oauth1-client/tree/v1.11.0"
+                "source": "https://github.com/thephpleague/oauth1-client/tree/v1.12.0"
             },
-            "time": "2024-12-10T19:59:05+00:00"
+            "time": "2026-09-19T05:12:51+00:00"
         },
         {
             "name": "league/oauth2-client",
