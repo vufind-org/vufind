@@ -12,6 +12,9 @@
   if ($this->hideButtonText) {
     $buttonAttributes['title'] = $this->transEscAttr($buttonText);
   }
+  if ($this->useHtml) {
+    $buttonAttributes['data-html'] = true;
+  }
 ?>
 <span class="copy-to-clipboard">
   <button<?=$this->htmlAttributes($buttonAttributes)?>>
