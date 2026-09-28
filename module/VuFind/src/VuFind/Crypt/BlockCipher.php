@@ -434,8 +434,7 @@ class BlockCipher
      */
     protected function getPbKdf2(string $salt, int $keySize): string
     {
-        $callback = 'hash_pbkdf2';
-        return $callback(
+        return 'hash_pbkdf2'(
             $this->pbkdf2Hash,
             $this->key,
             $salt,
