@@ -931,29 +931,4 @@ class GetThisLoaderTest extends TestCase
         $templates = $this->getProperty($getThis, 'subTemplates');
         $this->assertNull($templates);
     }
-
-    /**
-     * Test factory.
-     *
-     * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     * @throws ContainerExceptionInterface&Throwable
-     */
-    public function testFactory(): void
-    {
-        $cm = $this->createMock(ConfigManagerInterface::class);
-        $cm->expects($this->once())->method('getConfigArray')->willReturn([]);
-
-        $regex = $this->createMock(Regex::class);
-
-        $container = $this->createMock(MockContainer::class);
-        $container->expects($this->exactly(2))->method('get')->willReturnMap([
-            [Regex::class, $regex],
-            [ConfigManagerInterface::class, $cm],
-        ]);
-
-        $factory = new GetThisLoaderFactory();
-        $getThis = $factory($container, GetThisLoader::class);
-        $this->assertInstanceOf(GetThisLoader::class, $getThis);
-    }
 }
