@@ -48,7 +48,7 @@ class Escaper extends \Laminas\Escaper\Escaper
      * @param bool $extendedHtmlAttrEscaping Use Laminas' extended HTML attribute escaping?
      */
     public function __construct(
-        #[Autowire(config: 'config', path: 'Site/extendedHtmlAttributeEscaping')]
+        #[Autowire(config: 'config', path: 'Site/extendedHtmlAttributeEscaping', default: false)]
         protected bool $extendedHtmlAttrEscaping = false
     ) {
         parent::__construct();
