@@ -37,12 +37,11 @@ VuFind.register('copyToClipboard', function copyToClipboard() {
       button.addEventListener('click', () => {
         let content = targetElement.textContent.trim();
         if (typeof ClipboardItem !== 'undefined') {
-          let clipboardItems = {'text/plain': new Blob([content], {type: 'text/plain'})};
-          if (button.dataset.html !== undefined) {
-            const html = targetElement.innerHTML.trim();
-            clipboardItems['text/html'] = new Blob([html], {type: 'text/html'});
-          }
-          content = [new ClipboardItem(clipboardItems)];
+          const html = targetElement.innerHTML.trim();
+          content = [ new ClipboardItem({
+            ['text/plain']: new Blob([content], {type: 'text/plain'}),
+            ['text/html']: new Blob([html], {type: 'text/html'})
+          })];
         }
         navigator.clipboard.write(content).then(() => _showPopover(successPopover), () => _showPopover(errorPopover));
       });
