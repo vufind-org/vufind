@@ -187,7 +187,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
         $this->assertSame('Library Cards', $this->findCssAndGetText($page, 'h2'));
-        $this->unfindCss($page, '.add-card span.icon-link__label');
+        $this->unFindCss($page, '.add-card span.icon-link__label');
     }
 
     /**

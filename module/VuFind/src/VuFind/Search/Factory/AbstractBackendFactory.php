@@ -33,7 +33,6 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 use VuFind\Service\GetServiceTrait;
 
 /**
@@ -87,16 +86,16 @@ abstract class AbstractBackendFactory implements FactoryInterface
     /**
      * Create cache for the connector if enabled in configuration.
      *
-     * @param Config $searchConfig Search configuration
+     * @param array $searchConfig Search configuration
      *
      * @return ?StorageInterface
      */
-    protected function createConnectorCache(Config $searchConfig): ?StorageInterface
+    protected function createConnectorCache(array $searchConfig): ?StorageInterface
     {
-        if (empty($searchConfig->SearchCache->adapter)) {
+        if (empty($searchConfig['SearchCache']['adapter'])) {
             return null;
         }
-        $cacheConfig = $searchConfig->SearchCache->toArray();
+        $cacheConfig = $searchConfig['SearchCache'];
         $options = $cacheConfig['options'] ?? [];
         if (empty($options['namespace'])) {
             $options['namespace'] = 'Index';

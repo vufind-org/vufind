@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'almadatabase' => AlmaDatabase::class,
-        'cas' => CAS::class,
         'choiceauth' => ChoiceAuth::class,
         'database' => Database::class,
         'email' => Email::class,

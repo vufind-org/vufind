@@ -34,7 +34,6 @@ use Laminas\Session\Container;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\ChoiceAuth;
 use VuFind\Auth\PluginManager;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Http\PhpEnvironment\Request as PhpEnvironmentRequest;
 

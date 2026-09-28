@@ -173,7 +173,6 @@ $config = [
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
-            'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -213,8 +212,6 @@ $config = [
             'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
-            'Install' => 'VuFind\Controller\InstallController',
-            'install' => 'VuFind\Controller\InstallController',
             'LibGuides' => 'VuFind\Controller\LibGuidesController',
             'libguides' => 'VuFind\Controller\LibGuidesController',
             'LibGuidesAZ' => 'VuFind\Controller\LibGuidesAZController',
@@ -312,7 +309,6 @@ $config = [
             'VuFind\AutocompletePluginManager' => 'VuFind\Autocomplete\PluginManager',
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\ChannelProviderPluginManager' => 'VuFind\ChannelProvider\PluginManager',
-            'VuFind\Config' => 'VuFind\Config\PluginManager',
             'VuFind\Config\ConfigManagerInterface' => 'VuFind\Config\ConfigManager',
             'VuFind\ContentPluginManager' => 'VuFind\Content\PluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Content\AuthorNotes\PluginManager',
@@ -610,8 +606,6 @@ $config = [
                 'backendId' => 'WorldCat2',
             ],
         ],
-        // The config reader is a special service manager for loading .ini files:
-        'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [

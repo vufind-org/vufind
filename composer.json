@@ -136,9 +136,6 @@
         "rector/rector": "2.6.6",
         "squizlabs/php_codesniffer": "4.0.4"
     },
-    "suggest": {
-        "apereo/phpcas": "Allows CAS authentication to be used. Note that this functionality is deprecated."
-    },
     "extra": {
         "merge-plugin": {
             "include": [

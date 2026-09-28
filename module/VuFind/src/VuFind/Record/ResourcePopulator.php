@@ -99,7 +99,7 @@ class ResourcePopulator
     public function createResourceForDriver(RecordDriver $driver): ResourceEntityInterface
     {
         return $this->assignMetadata($this->resourceService->createEntity(), $driver)
-            ->setRecordId($driver->getUniqueId())
+            ->setRecordId($driver->getUniqueID())
             ->setSource($driver->getSourceIdentifier());
     }
 

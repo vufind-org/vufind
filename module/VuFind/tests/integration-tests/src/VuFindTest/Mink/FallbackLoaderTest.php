@@ -174,7 +174,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
         $oldId = '(IeDuNL)1048';
 
         // Create a user account and create a favorite, tag and comment to serve as "old data":
-        $page = $this->gotoRecord($newId);
+        $page = $this->goToRecord($newId);
         $this->addFavoriteWithTag($page, 'old_tag', 'old_list', createAccount: true);
         $this->addComment($page, 'old comment');
 

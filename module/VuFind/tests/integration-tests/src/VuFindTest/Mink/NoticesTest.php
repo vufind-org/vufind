@@ -822,7 +822,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
                 $this->findCssAndGetText($page, '#content > .notices .alert-success')
             );
         } else {
-            $this->unfindCss($page, '#content > .notices .alert-success');
+            $this->unFindCss($page, '#content > .notices .alert-success');
         }
     }
 
