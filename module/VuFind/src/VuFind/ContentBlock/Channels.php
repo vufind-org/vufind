@@ -45,20 +45,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Channels implements ContentBlockInterface
 {
     /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Channel loader.
-     *
-     * @var ChannelLoader
-     */
-    protected $loader;
-
-    /**
      * Data source (null to use default found in channels.ini).
      *
      * @var string
@@ -73,11 +59,9 @@ class Channels implements ContentBlockInterface
      */
     public function __construct(
         #[Autowire(service: 'Request')]
-        Request $request,
-        ChannelLoader $loader
+        protected Request $request,
+        protected ChannelLoader $loader
     ) {
-        $this->request = $request;
-        $this->loader = $loader;
     }
 
     /**
