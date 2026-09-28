@@ -29,8 +29,8 @@
 
 namespace VuFind\Autocomplete;
 
-use VuFind\Tags\TagsService;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Tags\TagsService;
 
 /**
  * Tag Autocomplete Module.
