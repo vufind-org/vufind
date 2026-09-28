@@ -30,6 +30,7 @@
 namespace VuFind\RecordTab;
 
 use VuFind\ChannelProvider\ChannelLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Channels tab.
@@ -55,8 +56,11 @@ class Channels extends AbstractBase
      * @param ChannelLoader $loader  Channel loader
      * @param array         $options Config settings
      */
-    public function __construct(protected ChannelLoader $loader, protected array $options = [])
-    {
+    public function __construct(
+        protected ChannelLoader $loader,
+        #[Autowire(config: 'channels', path: 'RecordTab')]
+        protected array $options = []
+    ) {
     }
 
     /**
