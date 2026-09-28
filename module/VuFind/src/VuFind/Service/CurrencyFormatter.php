@@ -60,7 +60,7 @@ class CurrencyFormatter
      */
     public function __construct(
         #[Autowire(config: 'config', path: 'Site/defaultCurrency')]
-        protected $defaultCurrency = null,
+        protected ?string $defaultCurrency = null,
         #[Autowire(config: 'config', path: 'Site/locale')]
         $locale = null
     ) {
