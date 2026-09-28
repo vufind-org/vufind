@@ -29,7 +29,7 @@
 
 namespace VuFind\Search;
 
-use function intval;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Helper to perform new items-related actions.
@@ -47,8 +47,10 @@ class NewItemsHelper
      *
      * @param array $config Configuration
      */
-    public function __construct(protected array $config)
-    {
+    public function __construct(
+        #[Autowire(config: 'config', path: 'NewItem')]
+        protected array $config
+    ) {
     }
 
     /**
@@ -114,7 +116,7 @@ class NewItemsHelper
         if (isset($this->config['ranges'])) {
             $tmp = explode(',', $this->config['ranges']);
             foreach ($tmp as $range) {
-                $range = intval($range);
+                $range = (int)($range);
                 if ($range > 0) {
                     $ranges[] = $range;
                 }
@@ -134,7 +136,7 @@ class NewItemsHelper
     public function getResultPages(): int
     {
         if (isset($this->config['result_pages'])) {
-            $resultPages = intval($this->config['result_pages']);
+            $resultPages = (int)($this->config['result_pages']);
             if ($resultPages < 1) {
                 $resultPages = 10;
             }
