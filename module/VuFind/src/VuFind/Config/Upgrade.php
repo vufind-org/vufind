@@ -564,6 +564,15 @@ class Upgrade implements LoggerAwareInterface
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if ($newConfig['Security']['legacyPbkdf2'] ?? false) {
+            $this->addWarning(
+                'Setting legacyPbkdf2 to true in config.ini is deprecated; please be sure to '
+                . 'change this setting to false and re-encrypt your data before upgrading to '
+                . 'the next major release.'
+            );
+        }
+
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
             $newConfig['Authentication']['method'] = 'Database';
