@@ -112,7 +112,7 @@ class ComponentParts extends AbstractBase
     public function getResults()
     {
         $record = $this->getRecordDriver();
-        $safeId = addcslashes($record->getUniqueId(), '"');
+        $safeId = addcslashes($record->getUniqueID(), '"');
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );

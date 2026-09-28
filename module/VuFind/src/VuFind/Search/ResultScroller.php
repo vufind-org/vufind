@@ -537,7 +537,7 @@ class ResultScroller
         }
 
         // build a full ID string using the driver:
-        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
+        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueID();
 
         // find where this record is in the current result page
         $pos = is_array($this->data->currIds)
@@ -613,7 +613,7 @@ class ResultScroller
                 return false;
             }
             $retVal[]
-                = $record->getSourceIdentifier() . '|' . $record->getUniqueId();
+                = $record->getSourceIdentifier() . '|' . $record->getUniqueID();
         }
         return $retVal;
     }
