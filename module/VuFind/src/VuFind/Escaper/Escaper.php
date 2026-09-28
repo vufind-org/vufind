@@ -29,6 +29,8 @@
 
 namespace VuFind\Escaper;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Escaper with configurable HTML attribute handling.
  *
@@ -45,7 +47,10 @@ class Escaper extends \Laminas\Escaper\Escaper
      *
      * @param bool $extendedHtmlAttrEscaping Use Laminas' extended HTML attribute escaping?
      */
-    public function __construct(protected bool $extendedHtmlAttrEscaping = false)
+    public function __construct(
+        #[Autowire(config: 'config', path: 'Site/extendedHtmlAttributeEscaping')]
+        protected bool $extendedHtmlAttrEscaping = false
+    )
     {
         parent::__construct();
     }
