@@ -56,6 +56,13 @@ use function spl_object_id;
 class GuzzleLivePool
 {
     /**
+     * Default concurrency when no value is specified.
+     *
+     * @var int
+     */
+    public const DEFAULT_CONCURRENCY = 10;
+
+    /**
      * The GuzzleHTTP client instance the pool uses
      *
      * @var ClientInterface
@@ -89,11 +96,15 @@ class GuzzleLivePool
      * Constructor
      *
      * @param ClientInterface $client      The GuzzleHTTP client for the pool to use
-     * @param int             $concurrency Max number of concurrent API calls
+     * @param ?int            $concurrency Max number of concurrent API calls; defaults to
+     *                                     DEFAULT_CONCURRENCY when null
      */
-    public function __construct(ClientInterface $client, int $concurrency = 10)
+    public function __construct(ClientInterface $client, ?int $concurrency = null)
     {
         $this->client = $client;
+        if ($concurrency === null) {
+            $concurrency = self::DEFAULT_CONCURRENCY;
+        }
         $this->concurrency = $concurrency < 1 ? 1 : $concurrency;
     }
 
