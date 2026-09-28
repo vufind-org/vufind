@@ -69,7 +69,6 @@ class BlockCipherFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $options = ['legacyPbkdf2' => $config['Security']['legacyPbkdf2'] ?? true];
-        return new $requestedName($options);
+        return new $requestedName();
     }
 }
