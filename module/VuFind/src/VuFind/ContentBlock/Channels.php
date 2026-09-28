@@ -71,8 +71,11 @@ class Channels implements ContentBlockInterface
      * @param Request       $request Request object
      * @param ChannelLoader $loader  Channel loader
      */
-    public function __construct(#[Autowire(service: 'Request')] Request $request, ChannelLoader $loader)
-    {
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        Request $request,
+        ChannelLoader $loader
+    ) {
         $this->request = $request;
         $this->loader = $loader;
     }
