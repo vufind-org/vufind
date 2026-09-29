@@ -29,8 +29,8 @@
 
 namespace VuFind\RecordTab;
 
-use VuFindSearch\Command\SearchCommand;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * Component parts display tab.
