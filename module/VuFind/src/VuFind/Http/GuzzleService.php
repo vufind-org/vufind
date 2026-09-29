@@ -256,6 +256,7 @@ class GuzzleService implements HttpServiceInterface
                 $scheme = match ($proxyConfig['type'] ?? '') {
                     'socks5'          => 'socks5://',
                     'socks5_hostname' => 'socks5h://',
+                    default           => 'http://',
                 };
                 $proxyUrl = $scheme . $proxyConfig['host'];
 
