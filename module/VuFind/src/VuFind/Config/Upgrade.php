@@ -567,11 +567,16 @@ class Upgrade implements LoggerAwareInterface
         $this->checkTheme('mobile_theme', null);
 
         // Warn the user if they are using a deprecated encryption algorithm:
-        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
-            $this->addWarning(
-                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
-                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
-            );
+        if (isset($newConfig['Security']['legacyPbkdf2'])) {
+            $this->addWarning('The legacyPbkdf2 setting is no longer supported and has been removed.');
+            if ($newConfig['Security']['legacyPbkdf2']) {
+                $this->addWarning(
+                    'Your legacyPbkdf2 setting was set to true. If you did not correctly migrate your data in a '
+                    . 'previous release, stored credentials may be unreadable. See '
+                    . 'https://vufind.org/wiki/configuration:pbkdf2 for details.'
+                );
+            }
+            unset($newConfig['Security']['legacyPbkdf2']);
         }
 
         // Translate legacy auth settings:
