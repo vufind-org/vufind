@@ -260,7 +260,7 @@ class GuzzleService implements HttpServiceInterface
             $proxyUrl = $scheme . $proxyConfig['host'];
             
             if (!empty($proxyConfig['port'])) {
-                $proxyUrl = ':' . $proxyConfig['port'];
+                $proxyUrl .= ':' . $proxyConfig['port'];
             }
             $guzzleConfig['proxy'] = $proxyUrl;
             }
