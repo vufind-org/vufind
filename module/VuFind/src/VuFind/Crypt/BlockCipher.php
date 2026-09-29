@@ -587,7 +587,10 @@ class BlockCipher implements LoggerAwareInterface
                 return false;
             }
             // If we made it this far, the config.ini legacyPbkdf2 setting is wrong; let's warn about that!
-            $this->logError('legacyPbkdf2 setting appears to be out of sync with database');
+            $this->logError(
+                'legacyPbkdf2 setting appears to be out of sync with database; see this page for a solution: '
+                . 'https://vufind.org/wiki/configuration:pbkdf2'
+            );
         }
 
         return $this->openSslDecrypt($ciphertext);
