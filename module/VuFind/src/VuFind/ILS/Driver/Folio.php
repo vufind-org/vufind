@@ -1238,7 +1238,7 @@ class Folio extends AbstractAPI implements
                 $boundWithRecords = [];
                 $item = json_decode($response->getBody());
                 $code = $response->getStatusCode();
-                if (!($code >= 200 && $code < 300) || !$item) {
+                if ($code < 200 || $code >= 300 || !$item) {
                     $msg = $item->errors[0]->message ?? json_last_error_msg();
                     throw new ILSException("Error: '$msg' fetching from '$path'");
                 }
@@ -1804,7 +1804,7 @@ class Folio extends AbstractAPI implements
             function (Psr7\Response $response) use ($interface) {
                 $json = json_decode($response->getBody());
                 $code = $response->getStatusCode();
-                if (!($code >= 200 && $code < 300) || !$json) {
+                if ($code < 200 || $code >= 300 || !$json) {
                     $msg = $json->errors[0]->message ?? json_last_error_msg();
                     throw new ILSException("Error: '$msg' fetching from '$interface'");
                 }

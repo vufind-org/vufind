@@ -374,7 +374,7 @@ abstract class AbstractAPI extends AbstractBase implements
                 $this->debug('Request ASYNC time to unwrap --- ' . $responseTime . ' seconds for ' . $logPath);
                 $code = $response->getStatusCode();
                 if (
-                    !($code >= 200 && $code < 300)
+                    ($code < 200 || $code >= 300)
                     && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
                 ) {
                     $this->logError(
