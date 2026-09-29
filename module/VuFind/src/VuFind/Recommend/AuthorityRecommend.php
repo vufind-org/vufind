@@ -31,8 +31,8 @@
 namespace VuFind\Recommend;
 
 use Laminas\Stdlib\Parameters;
-use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use function count;
 use function intval;

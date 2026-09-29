@@ -32,8 +32,8 @@ namespace VuFind\Recommend;
 
 use Laminas\Http\Request;
 use Laminas\Stdlib\Parameters;
-use VuFindSearch\Query\Query;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Query\Query;
 
 /**
  * AuthorFacets Recommendations Module.
