@@ -38,6 +38,7 @@ namespace VuFind\Crypt;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function chr;
 use function extension_loaded;
@@ -160,6 +161,7 @@ class BlockCipher implements LoggerAwareInterface
      *
      * @param array $options Options (supported key: algorithm)
      */
+    #[Autowire]
     public function __construct(array $options = [])
     {
         if (!extension_loaded('openssl')) {
