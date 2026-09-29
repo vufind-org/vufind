@@ -56,7 +56,7 @@ class CollectionHierarchyTree extends HierarchyTree
         parent::__construct($config);
     }
 
-    /**
+    /** 
      * Render a hierarchy tree.
      *
      * @param ?string $id      Hierarchy ID (omit to use active tree)
