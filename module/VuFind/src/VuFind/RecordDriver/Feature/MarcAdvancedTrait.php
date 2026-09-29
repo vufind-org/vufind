@@ -845,7 +845,7 @@ trait MarcAdvancedTrait
                     if ($isbn = $this->getSubfield($field, 'z')) {
                         $link = [
                             'type' => 'isn', 'value' => $isbn,
-                            'exclude' => $this->getUniqueId(),
+                            'exclude' => $this->getUniqueID(),
                         ];
                     }
                     break;
@@ -853,7 +853,7 @@ trait MarcAdvancedTrait
                     if ($issn = $this->getSubfield($field, 'x')) {
                         $link = [
                             'type' => 'isn', 'value' => $issn,
-                            'exclude' => $this->getUniqueId(),
+                            'exclude' => $this->getUniqueID(),
                         ];
                     }
                     break;
@@ -972,7 +972,7 @@ trait MarcAdvancedTrait
         foreach ($instructions as $key => $details) {
             foreach ($fields[$details['field']] as $i => $currentField) {
                 if (!isset($matches[$i])) {
-                    $matches[$i] = ['id' => $this->getUniqueId()];
+                    $matches[$i] = ['id' => $this->getUniqueID()];
                 }
                 $matches[$i][$key] = $this->extractSingleMarcDetail(
                     $currentField,

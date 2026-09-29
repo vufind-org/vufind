@@ -82,7 +82,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecordById(string $id = 'testsample1'): Element
+    protected function goToRecordById(string $id = 'testsample1'): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -406,7 +406,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->illRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -432,7 +432,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->illRequestProcedure($page);
         return $page;
     }
@@ -477,7 +477,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->storageRetrievalRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -503,7 +503,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->storageRetrievalRequestProcedure($page);
         return $page;
     }

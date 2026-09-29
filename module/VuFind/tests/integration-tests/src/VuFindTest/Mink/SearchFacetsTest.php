@@ -162,8 +162,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function assertMultiSelectActiveInFacetList(Element $element, bool $active): void
     {
-        $this->unfindCss($element, '.loading-spinner');
-        $checkMethod = $active ? 'findCss' : 'unfindCss';
+        $this->unFindCss($element, '.loading-spinner');
+        $checkMethod = $active ? 'findCss' : 'unFindCss';
         $this->$checkMethod($element, '.multi-filters-selection');
         $this->$checkMethod($element, '.js-full-facet-list.multi-facet-selection-active');
         $this->$checkMethod($element, '.js-apply-multi-facets-selection');
