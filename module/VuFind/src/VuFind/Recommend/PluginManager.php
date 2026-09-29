@@ -104,19 +104,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AuthorFacets::class => InjectResultsManagerFactory::class,
-        AuthorityRecommend::class => InjectResultsManagerFactory::class,
-        SummonBestBets::class => InjectResultsManagerFactory::class,
-        SummonDatabases::class => InjectResultsManagerFactory::class,
-        SummonTopics::class => InjectResultsManagerFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
