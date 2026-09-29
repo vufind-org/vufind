@@ -253,16 +253,17 @@ class GuzzleService implements HttpServiceInterface
         if (!$this->isLocal($url)) {
             $proxyConfig = $this->config['Proxy'] ?? [];
             if (!empty($proxyConfig['host'])) {
-                match ($proxyConfig['type'] ?? '') {
+                $scheme = match ($proxyConfig['type'] ?? '') {
                     'socks5'          => 'socks5://',
                     'socks5_hostname' => 'socks5h://',
                 };
-                $proxyConfig = $proxyConfig['host'];
-            }
+            $proxyUrl = $scheme . $proxyConfig['host'];
+            
             if (!empty($proxyConfig['port'])) {
-                $proxyConfig = ':' . $proxyConfig['port'];
+                $proxyUrl = ':' . $proxyConfig['port'];
             }
-            $guzzleConfig['proxy'] = $proxyConfig;
+            $guzzleConfig['proxy'] = $proxyUrl;
+            }
         }
         return $guzzleConfig;
     }
