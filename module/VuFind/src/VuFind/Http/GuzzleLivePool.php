@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GuzzleHTTP Live Promise Pool
+ * GuzzleHTTP Live Promise Pool.
  *
  * PHP version 8
  *
@@ -63,14 +63,14 @@ class GuzzleLivePool
     public const DEFAULT_CONCURRENCY = 10;
 
     /**
-     * The GuzzleHTTP client instance the pool uses
+     * The GuzzleHTTP client instance the pool uses.
      *
      * @var ClientInterface
      */
     private ClientInterface $client;
 
     /**
-     * The maximum number of active requests allowed concurrently
+     * The maximum number of active requests allowed concurrently.
      *
      * @var int
      */
@@ -93,7 +93,7 @@ class GuzzleLivePool
     private array $activePromises = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ClientInterface $client      The GuzzleHTTP client for the pool to use
      * @param ?int            $concurrency Max number of concurrent API calls; defaults to
@@ -141,7 +141,7 @@ class GuzzleLivePool
     }
 
     /**
-     * Check if there is available capacity to run a queued request and dispatch it if there is
+     * Check if there is available capacity to run a queued request and dispatch it if there is.
      *
      * @return void
      */
@@ -185,7 +185,7 @@ class GuzzleLivePool
     }
 
     /**
-     * Blocks until all active and queued requests within the pool are resolved
+     * Blocks until all active and queued requests within the pool are resolved.
      *
      * @return void
      */

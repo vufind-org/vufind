@@ -1294,7 +1294,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- processes a FOLIO item
+     * Support method for getHoldings() -- processes a FOLIO item.
      *
      * @param string $bibId          Bib-level id
      * @param array  $holdingDetails details for the holding
@@ -1348,7 +1348,7 @@ class Folio extends AbstractAPI implements
         // Ensure locations API is cached to avoid potential delay when unwrapping promises
         $this->getLocations();
         /**
-         * Pass 1: Queue up API call promises
+         * Pass 1: Queue up API call promises.
          */
         $holdingsPromises = [];
         foreach ($holdings as $holding) {
@@ -1386,7 +1386,7 @@ class Folio extends AbstractAPI implements
             ];
         }
         /**
-         * Pass 2: Unwrap API calls and process them
+         * Pass 2: Unwrap API calls and process them.
          */
         foreach ($holdingsPromises as $holdingPromises) {
             $number = 0;

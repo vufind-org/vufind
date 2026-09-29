@@ -66,21 +66,21 @@ abstract class AbstractAPI extends AbstractBase implements
     use GuzzleServiceAwareTrait;
 
     /**
-     * Guzzle client
+     * Guzzle client.
      *
      * @var \GuzzleHttp\Client
      */
     protected $client;
 
     /**
-     * Guzzle live pool
+     * Guzzle live pool.
      *
      * @var \VuFind\Http\GuzzleLivePool
      */
     protected $pool;
 
     /**
-     * Get the class' Guzzle client, instantiating it if needed
+     * Get the class' Guzzle client, instantiating it if needed.
      *
      * @return Client
      */
@@ -93,7 +93,7 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
-     * Get the class' Guzzle pool, instantiating it if needed
+     * Get the class' Guzzle pool, instantiating it if needed.
      *
      * @return GuzzleLivePool
      */
@@ -293,7 +293,7 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
-     * Make GET request async; async requests always use the GET method
+     * Make GET request async; async requests always use the GET method.
      *
      * @param string            $path                API path (with a leading /)
      * @param string|array      $params              Query parameters
