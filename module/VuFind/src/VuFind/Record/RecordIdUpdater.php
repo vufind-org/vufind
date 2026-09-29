@@ -54,11 +54,14 @@ class RecordIdUpdater
      * @param UserResourceServiceInterface $userResourceService User/Resource database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
      */
-    #[Autowire]
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceServiceInterface $resourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected CommentsServiceInterface $commentsService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserResourceServiceInterface $userResourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService
     ) {
     }

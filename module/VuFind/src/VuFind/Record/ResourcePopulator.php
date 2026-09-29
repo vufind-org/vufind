@@ -53,9 +53,10 @@ class ResourcePopulator
      *
      * @return void
      */
-    #[Autowire]
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceServiceInterface $resourceService,
+        #[Autowire]
         protected Loader $loader
     ) {
     }
