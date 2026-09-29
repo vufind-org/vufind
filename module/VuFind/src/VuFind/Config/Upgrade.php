@@ -566,6 +566,14 @@ class Upgrade implements LoggerAwareInterface
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
+            $this->addWarning(
+                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
+                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
+            );
+        }
+
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
             $newConfig['Authentication']['method'] = 'Database';
