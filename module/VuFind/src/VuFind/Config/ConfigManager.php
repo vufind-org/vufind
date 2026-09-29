@@ -37,6 +37,7 @@ use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\ConfigException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 use function strval;
@@ -67,6 +68,7 @@ class ConfigManager implements ConfigManagerInterface
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param CacheManager         $cacheManager         Cache manager
      */
+    #[Autowire]
     public function __construct(
         protected ConfigLoader $configLoader,
         protected HandlerPluginManager $configHandlerManager,
