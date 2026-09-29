@@ -257,12 +257,12 @@ class GuzzleService implements HttpServiceInterface
                     'socks5'          => 'socks5://',
                     'socks5_hostname' => 'socks5h://',
                 };
-            $proxyUrl = $scheme . $proxyConfig['host'];
-            
-            if (!empty($proxyConfig['port'])) {
-                $proxyUrl .= ':' . $proxyConfig['port'];
-            }
-            $guzzleConfig['proxy'] = $proxyUrl;
+                $proxyUrl = $scheme . $proxyConfig['host'];
+
+                if (!empty($proxyConfig['port'])) {
+                    $proxyUrl .= ':' . $proxyConfig['port'];
+                }
+                $guzzleConfig['proxy'] = $proxyUrl;
             }
         }
         return $guzzleConfig;
