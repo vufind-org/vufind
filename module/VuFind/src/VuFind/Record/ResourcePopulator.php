@@ -32,6 +32,7 @@ namespace VuFind\Record;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class for populating record rows in the resource table of the database.
@@ -52,6 +53,7 @@ class ResourcePopulator
      *
      * @return void
      */
+    #[Autowire]
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected Loader $loader
