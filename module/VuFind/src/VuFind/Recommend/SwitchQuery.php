@@ -32,6 +32,7 @@ namespace VuFind\Recommend;
 
 use VuFindSearch\Command\GetLuceneHelperCommand;
 use VuFindSearch\Service;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function strlen;
@@ -56,13 +57,6 @@ class SwitchQuery implements RecommendInterface
      * @var string
      */
     protected $backend;
-
-    /**
-     * Search service.
-     *
-     * @var Service
-     */
-    protected $searchService;
 
     /**
      * Improved query suggestions.
@@ -99,9 +93,9 @@ class SwitchQuery implements RecommendInterface
      *
      * @param Service $searchService Search backend plugin manager
      */
-    public function __construct(Service $searchService)
+    #[Autowire]
+    public function __construct(protected Service $searchService)
     {
-        $this->searchService = $searchService;
     }
 
     /**
