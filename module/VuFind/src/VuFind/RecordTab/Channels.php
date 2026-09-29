@@ -58,7 +58,7 @@ class Channels extends AbstractBase
      */
     public function __construct(
         protected ChannelLoader $loader,
-        #[Autowire(config: 'channels', path: 'RecordTab')]
+        #[Autowire(config: 'channels', path: 'RecordTab', default: [])]
         protected array $options = []
     ) {
     }
