@@ -568,7 +568,7 @@ class Upgrade implements LoggerAwareInterface
         if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
             $this->addWarning(
                 'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
-                . 'Change this setting to false and re-encrypt your data before the next major release.'
+                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
             );
         }
 
