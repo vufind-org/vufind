@@ -259,14 +259,10 @@ class GuzzleService implements HttpServiceInterface
                 $guzzleConfig['curl'][CURLOPT_PROXYPORT] = $proxyConfig['port'];
             }
             // HTTP is default, so handle only the SOCKS 5 proxy types
-            switch ($proxyConfig['type'] ?? '') {
-                case 'socks5':
-                    $guzzleConfig['curl'][CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
-                    break;
-                case 'socks5_hostname':
-                    $guzzleConfig['curl'][CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5_HOSTNAME;
-                    break;
-            }
+            match ($proxyConfig['type'] ?? '') {
+                'socks5'          => 'socks5://',
+                'socks5_hostname' => 'socks5h://',
+            };
         }
         return $guzzleConfig;
     }
