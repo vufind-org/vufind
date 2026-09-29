@@ -259,25 +259,6 @@ class RecordDataFormatter
     }
 
     /**
-     * Set default configuration.
-     *
-     * @param string         $key    Key for configuration to set.
-     * @param array|callable $values Defaults to store (either an array, or a
-     * callable returning an array).
-     *
-     * @return void
-     *
-     * @deprecated Set defaults on spec class directly
-     */
-    public function setDefaults(string $key, array|callable $values): void
-    {
-        $specs = $this->getSpecPluginForDriver();
-        if ($specs !== null && method_exists($specs, 'setDefaults')) {
-            $specs->setDefaults($key, $values);
-        }
-    }
-
-    /**
      * Get matching spec plugin for the driver.
      *
      * @return ?SpecInterface

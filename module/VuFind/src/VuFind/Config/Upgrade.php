@@ -35,6 +35,7 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function dirname;
@@ -112,6 +113,7 @@ class Upgrade implements LoggerAwareInterface
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,
@@ -206,28 +208,6 @@ class Upgrade implements LoggerAwareInterface
     protected function addWarning(string $msg): void
     {
         $this->warnings[] = $msg;
-    }
-
-    /**
-     * Support function -- merge the contents of two arrays parsed from ini files.
-     *
-     * @param array $config_ini The base config array.
-     * @param array $custom_ini Overrides to apply on top of the base array.
-     *
-     * @return array             The merged results.
-     *
-     * @deprecated
-     */
-    public static function iniMerge($config_ini, $custom_ini)
-    {
-        foreach ($custom_ini as $k => $v) {
-            // Make a recursive call if we need to merge array values into an
-            // existing key... otherwise just drop the value in place.
-            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
-                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
-                : $v;
-        }
-        return $config_ini;
     }
 
     /**
@@ -585,6 +565,19 @@ class Upgrade implements LoggerAwareInterface
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
+
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if (isset($newConfig['Security']['legacyPbkdf2'])) {
+            $this->addWarning('The legacyPbkdf2 setting is no longer supported and has been removed.');
+            if ($newConfig['Security']['legacyPbkdf2']) {
+                $this->addWarning(
+                    'Your legacyPbkdf2 setting was set to true. If you did not correctly migrate your data in a '
+                    . 'previous release, stored credentials may be unreadable. See '
+                    . 'https://vufind.org/wiki/configuration:pbkdf2 for details.'
+                );
+            }
+            unset($newConfig['Security']['legacyPbkdf2']);
+        }
 
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {

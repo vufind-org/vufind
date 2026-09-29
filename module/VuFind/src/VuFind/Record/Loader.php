@@ -213,7 +213,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
             $cachedRecords = $this->recordCache->lookupBatch($ids, $source);
             // Check which records could not be loaded from the record cache
             foreach ($cachedRecords as $cachedRecord) {
-                $list->check($cachedRecord->getUniqueId());
+                $list->check($cachedRecord->getUniqueID());
             }
         }
 
@@ -239,7 +239,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
             }
 
             foreach ($genuineRecords as $genuineRecord) {
-                $list->check($genuineRecord->getUniqueId());
+                $list->check($genuineRecord->getUniqueID());
             }
         }
 
@@ -263,7 +263,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
             }
             foreach ($fallbackRecords as $record) {
                 $retVal[] = $record;
-                if (!$list->check($record->getUniqueId())) {
+                if (!$list->check($record->getUniqueID())) {
                     $list->check($record->tryMethod('getPreviousUniqueId'));
                 }
             }

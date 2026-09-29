@@ -35,7 +35,6 @@ use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFindSearch\Backend\Primo\Backend;
@@ -191,7 +190,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
 
         // Attach hide facet value listener:
         $hfvListener = $this
-            ->getHideFacetValueListener($backend, new Config($this->primoConfig));
+            ->getHideFacetValueListener($backend, $this->primoConfig);
         if ($hfvListener) {
             $hfvListener->attach($events);
         }
@@ -236,7 +235,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
             $session
         );
         $connector->setLogger($this->logger);
-        if ($cache = $this->createConnectorCache(new Config($this->primoConfig))) {
+        if ($cache = $this->createConnectorCache($this->primoConfig)) {
             $connector->setCache($cache);
         }
         return $connector;

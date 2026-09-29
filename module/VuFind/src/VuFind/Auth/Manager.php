@@ -558,25 +558,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Legacy method that logs out the current user.
-     *
-     * @param string $url     URL to redirect user to after logging out.
-     * @param bool   $destroy Should we destroy the session (true) or just reset it
-     * (false); destroy is for log out, reset is for expiration.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     *
-     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
-     */
-    public function logout(string $url, bool $destroy = true): string
-    {
-        $url = $this->getLogoutRedirectUrl($url);
-        $this->clearLoginState($destroy);
-        return $url;
-    }
-
-    /**
      * Clear the logged in state of the current user.
      *
      * @param bool $destroy Should we destroy the session (true) or just reset it

@@ -34,6 +34,7 @@ namespace VuFind\Action\Cart;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\BulkActionHelper;
+use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\UrlHelper;
 
@@ -63,11 +64,15 @@ class SearchResultsBulkAction extends AbstractCartAction
     ): ResponseInterface {
         // We came in from a search, so let's remember that context so we can return to it later. However, if we came in
         // from a previous instance of this action (for example, because of a login screen), or if we have an external
-        // site in the referer, we should ignore that!
-        $referer = $request->getHeader('Referer')[0] ?? '';
+        // site in the referrer, we should ignore that!
+        $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
         $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
-        if ($referer && $this->getHelper(UrlHelper::class)->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
-            $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referer;
+        if (
+            $referrer
+            && !str_ends_with($referrer, $bulk)
+            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
+        ) {
+            $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referrer;
         }
 
         // Now forward to the requested action:

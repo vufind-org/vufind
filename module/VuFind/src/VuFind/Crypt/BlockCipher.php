@@ -36,6 +36,8 @@
 namespace VuFind\Crypt;
 
 use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareTrait;
 
 use function chr;
 use function extension_loaded;
@@ -51,8 +53,10 @@ use function ord;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BlockCipher
+class BlockCipher implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Salt.
      *

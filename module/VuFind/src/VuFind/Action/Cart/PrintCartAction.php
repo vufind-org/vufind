@@ -68,7 +68,7 @@ class PrintCartAction extends AbstractCartAction
 
         if (!$ids) {
             return $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')
-                ?? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'Cart/Home');
+                ?? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'cart-home');
         }
 
         // Check if id limit is exceeded

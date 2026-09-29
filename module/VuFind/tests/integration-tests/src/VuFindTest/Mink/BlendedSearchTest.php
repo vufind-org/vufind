@@ -329,7 +329,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go back and add another search term:
         $this->clickCss($page, '.adv_search_links a');
-        $this->clickcss($page, '.add_search_link');
+        $this->clickCss($page, '.add_search_link');
         $this->findCssAndSetValue($page, '#search_lookfor0_1', 'Award');
         $this->findCssAndSetValue($page, '#search_type0_1', 'Subject');
         $this->clickCss($page, '.adv-submit .btn-primary');

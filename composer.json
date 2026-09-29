@@ -86,7 +86,7 @@
         "laminas/laminas-validator": "2.64.4",
         "laminas/laminas-view": "2.36.0",
         "league/commonmark": "2.10.1",
-        "league/oauth1-client": "1.11.0",
+        "league/oauth1-client": "1.12.0",
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "^9.2",
         "lm-commons/lmc-rbac": "^2.2.1",
@@ -126,7 +126,7 @@
         "behat/mink": "1.13.0",
         "behat/mink-selenium2-driver": "1.7.0",
         "dmore/chrome-mink-driver": "2.10.0",
-        "friendsofphp/php-cs-fixer": "3.95.25",
+        "friendsofphp/php-cs-fixer": "3.95.27",
         "phpmd/phpmd": "2.15.0",
         "phpstan/phpstan": "2.2.13",
         "phpunit/php-code-coverage": "^11",
@@ -135,9 +135,6 @@
         "pietercolpaert/hardf": "0.6.2",
         "rector/rector": "2.6.6",
         "squizlabs/php_codesniffer": "4.0.4"
-    },
-    "suggest": {
-        "apereo/phpcas": "Allows CAS authentication to be used. Note that this functionality is deprecated."
     },
     "extra": {
         "merge-plugin": {
