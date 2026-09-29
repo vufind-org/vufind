@@ -30,9 +30,9 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\GetLuceneHelperCommand;
 use VuFindSearch\Service;
-use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function strlen;
