@@ -30,6 +30,7 @@
 namespace VuFind\RecordTab;
 
 use VuFindSearch\Command\SearchCommand;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Component parts display tab.
@@ -57,20 +58,13 @@ class ComponentParts extends AbstractBase
     protected $maxResults = 100;
 
     /**
-     * Search service.
-     *
-     * @var \VuFindSearch\Service
-     */
-    protected $searchService;
-
-    /**
      * Constructor.
      *
-     * @param \VuFindSearch\Service $search Search service
+     * @param \VuFindSearch\Service $searchService Search service
      */
-    public function __construct(\VuFindSearch\Service $search)
+    #[Autowire]
+    public function __construct(protected \VuFindSearch\Service $searchService)
     {
-        $this->searchService = $search;
     }
 
     /**
