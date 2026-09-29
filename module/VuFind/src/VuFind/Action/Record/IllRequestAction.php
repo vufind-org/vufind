@@ -229,8 +229,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         // Get pickup libraries
         $pickupLibraries = $this->ilsConnection->getILLPickupLibraries(
             $driver->getUniqueID(),
-            $patron,
-            $gatheredDetails
+            $patron
         );
 
         // Get pickup locations. Note that these are independent of pickup library,
