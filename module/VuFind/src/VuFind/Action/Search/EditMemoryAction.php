@@ -84,7 +84,7 @@ class EditMemoryAction extends AbstractAction
     ): ResponseInterface {
         // Get the user's referrer, with the home page as a fallback; we'll redirect here after the work is done.
         $from = $this->getHelper(ContextHelper::class)->getReferrer($request);
-        if ($from || !$this->getHelper(UrlHelper::class)->isLocalUrl($from)) {
+        if (!$from || !$this->getHelper(UrlHelper::class)->isLocalUrl($from)) {
             $from = $this->routeHelper->getUrlFromRoute('home');
         }
 
