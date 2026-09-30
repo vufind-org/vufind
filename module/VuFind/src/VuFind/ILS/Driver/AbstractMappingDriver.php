@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Multiple Backend Driver.
+ * Abstract Mapping Driver.
  *
  * PHP version 8
  *
@@ -40,10 +40,10 @@ use function is_array;
 use function is_callable;
 
 /**
- * Multiple Backend Driver.
+ * Abstract Mapping Driver.
  *
- * This driver allows to use multiple backends determined by a record id or
- * user id prefix (e.g. source.12345).
+ * This is an abstract driver can be extended to create a driver that are mapping different ids between the VuFind and
+ * a given ILS.
  *
  * @category VuFind
  * @package  ILSdrivers
@@ -81,8 +81,8 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         'getDefaultPickUpLocation' => 'patronAndDetailsParamMap',
         'getDefaultRequestGroup' => 'patronAndDetailsParamMap',
         'getHoldDefaultRequiredDate' => 'patronAndDetailsParamMap',
-        'Holds' => 'recordIdAndPatronAssociativeParamMap',
-        'Holdings' => 'recordIdAndPatronAssociativeParamMap',
+        'Holds' => 'recordIdAndPatronAssociativeArrayMap',
+        'Holdings' => 'recordIdAndPatronAssociativeArrayMap',
         'getHolding' => 'recordIdAndPatronParamMap',
         'getHoldLink' => 'recordIdAndPatronParamMap',
         'getILLPickupLibraries' => 'recordIdAndPatronParamMap',
@@ -116,6 +116,11 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         'updateHolds' => 'updateHoldsParamMap',
     ];
 
+    /**
+     * An array of methods where the result needs to be mapped.
+     *
+     * @var array
+     */
     protected array $resultMapMethods = [
         'renewMyItems' => 'mapIlsHoldToVuFindHold',
         'getMyTransactionHistory' => 'mapIlsHoldToVuFindHold',
@@ -130,7 +135,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
      * Methods that don't have parameters that allow the correct source to be
      * determined. These methods are only supported for the default driver.
      */
-    protected $methodsWithNoSourceSpecificParameters = [
+    protected array $methodsWithNoSourceSpecificParameters = [
         'findReserves',
         'getCourses',
         'getDepartments',
@@ -144,10 +149,116 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     /**
      * The default driver to use.
      *
-     * @var string
+     * @var ?string
      */
-    protected $defaultDriver;
+    protected ?string $defaultDriver;
 
+    /**
+     * Map VuFind's record id to the record id of the ILS.
+     *
+     * @param string $recordId VuFind Record ID
+     * @param string $source   Source code
+     *
+     * @return string ILS Record ID
+     */
+    abstract protected function mapVuFindRecordIdToIlsRecordId($recordId, $source);
+
+    /**
+     * Map VuFind's record id to the record id of the ILS.
+     *
+     * @param string $recordId VuFind Record ID
+     * @param string $source   Source code
+     *
+     * @return string ILS Record ID
+     */
+    abstract protected function mapVuFindItemIdToIlsItemId($recordId, $source);
+
+    /**
+     * Map VuFind's cat_username to the cat_username of the ILS.
+     *
+     * @param string $catUsername VuFind cat_username
+     * @param string $source      Source code
+     *
+     * @return string ILS cat_username
+     */
+    abstract protected function mapVuFindCatUsernameToIlsCatUsername(string $catUsername, $source): string;
+
+    /**
+     * Map VuFind's record id to the record id of the ILS.
+     *
+     * @param string $recordId VuFind Record ID
+     * @param string $source   Source code
+     *
+     * @return string ILS Record ID
+     */
+    abstract protected function mapIlsRecordIdToVuFindRecordId($recordId, $source);
+
+    /**
+     * Map VuFind's record id to the record id of the ILS.
+     *
+     * @param string $itemId VuFind Record ID
+     * @param string $source Source code
+     *
+     * @return string ILS Record ID
+     */
+    abstract protected function mapIlsItemIdToVuFindItemId($itemId, $source);
+
+    /**
+     * Map VuFind's cat_username to the cat_username id of the ILS.
+     *
+     * @param string $catUsername VuFind Patron ID
+     * @param string $source      Source code
+     *
+     * @return string ILS Patron ID
+     */
+    abstract protected function mapIlsCatUsernameToVuFindCatUsername(string $catUsername, $source): string;
+
+    /**
+     * Extract source from the given record ID.
+     *
+     * @param string $recordId Record global ID's to local ID's in the given array.id
+     *
+     * @return string Source
+     */
+    abstract protected function getSourceForRecordId($recordId);
+
+    /**
+     * Extract source from the given item ID.
+     *
+     * @param string $itemId Record global ID's to local ID's in the given array.id
+     *
+     * @return string Source
+     */
+    abstract protected function getSourceForItemId($itemId);
+
+    /**
+     * Extract source from the given catalog username.
+     *
+     * @param string $catUsername Catalog username
+     *
+     * @return string Source
+     */
+    abstract protected function getSourceForCatUsername($catUsername);
+
+    /**
+     * Extract source from the given patron.
+     *
+     * @param array $patron Patron
+     *
+     * @return string Source
+     */
+    protected function getSourceForPatron($patron)
+    {
+        return $this->getSourceForCatUsername($patron['cat_username']);
+    }
+
+    /**
+     * Maps parameters with a record ID in the first position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function recordIdParamMap($params)
     {
         $recordId = $params[0] ?? '';
@@ -156,6 +267,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a patron in the first position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function patronParamMap($params)
     {
         $patron = $params[0] ?? [];
@@ -164,6 +282,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a record ID in the first position and a patron in the second position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function recordIdAndPatronParamMap($params)
     {
         $id = $params[0] ?? '';
@@ -174,10 +299,18 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
-    protected function recordIdAndPatronAssociativeParamMap($params)
+    /**
+     * Maps an associative array with a record ID and a patron.
+     * (Used in getConfig for special cases 'Holds' and 'Holdings'.).
+     *
+     * @param array $array Array with record ID and patron
+     *
+     * @return array
+     */
+    protected function recordIdAndPatronAssociativeArrayMap($array)
     {
-        $recordId = $params['id'] ?? '';
-        $patron = $params['patron'] ?? [];
+        $recordId = $array['id'] ?? '';
+        $patron = $array['patron'] ?? [];
         $source = null;
         if ($patron) {
             $source = $this->getSourceForPatron($patron);
@@ -185,12 +318,19 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
             $source = $this->getSourceForRecordId($recordId);
         }
         if ($source) {
-            $params['id'] = $this->mapVuFindRecordIdToIlsRecordId($recordId, $source);
-            $params['patron'] = $this->mapVuFindPatronToIlsPatron($patron, $source);
+            $array['id'] = $this->mapVuFindRecordIdToIlsRecordId($recordId, $source);
+            $array['patron'] = $this->mapVuFindPatronToIlsPatron($patron, $source);
         }
-        return [$params, $source];
+        return [$array, $source];
     }
 
+    /**
+     * Maps parameters with details in the first position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function detailsParamMap($params)
     {
         $details = $params[0] ?? [];
@@ -199,6 +339,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with details including a patron in the first position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function detailsWithPatronParamMap($params)
     {
         $details = $params[0] ?? [];
@@ -212,6 +359,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with details in the first position and a patron in the second position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function detailsAndPatronParamMap($params)
     {
         $details = $params[0] ?? [];
@@ -231,6 +385,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a patron in the first position and details in the second position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function patronAndDetailsParamMap($params)
     {
         $mappedParams = [$params[1] ?? [], $params[0] ?? []];
@@ -240,6 +401,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a record ID in the first, details in the second and a patron in the third position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function recordIdAndDetailsAndPatronParamMap($params)
     {
         $source = $this->getSourceForPatron($params[2]);
@@ -249,6 +417,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a record ID in the first, a patron in the second and details in the third position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function recordIdAndPatronAndDetailsParamMap($params)
     {
         $source = $this->getSourceForPatron($params[1] ?? []);
@@ -258,6 +433,14 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a record ID in the first, a patron in the second
+     * and an array of record IDs in the third position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function getConsortialHoldingsParamMap($params)
     {
         $id = $params[0] ?? '';
@@ -281,6 +464,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         ];
     }
 
+    /**
+     * Maps parameters with a record ID in the first and a patron in the third position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function getILLPickupLocationsParamMap($params)
     {
         $mappedParams = [$params[0] ?? '', $params[2] ?? []];
@@ -290,6 +480,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with a catalog username in the first position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function patronLoginParamMap($params)
     {
         $catUsername = $params[0] ?? '';
@@ -298,6 +495,13 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
+    /**
+     * Maps parameters with details in the first and a patron in the third position.
+     *
+     * @param array $params Paramters
+     *
+     * @return array
+     */
     protected function updateHoldsParamMap($params)
     {
         $mappedParams = [$params[0] ?? '', $params[2] ?? []];
@@ -307,15 +511,23 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
-    protected function mapParamsAndGetSourceForMethod($function, $params)
+    /**
+     * Maps parameters for a given method and returns source to use.
+     *
+     * @param string $method Method name
+     * @param array  $params Paramters
+     *
+     * @return array
+     */
+    protected function mapParamsAndGetSourceForMethod(string $method, array $params): array
     {
-        if ($mappingMethod = $this->paramMapAndSourceCheckMethods[$function] ?? null) {
+        if ($mappingMethod = $this->paramMapAndSourceCheckMethods[$method] ?? null) {
             [$mappedParams, $source] = $this->$mappingMethod($params);
             if ($source) {
                 return [$mappedParams, $source];
             }
         }
-        $source = $this->getSourceForMethod($function, $params);
+        $source = $this->getSourceForMethod($method, $params);
         try {
             if (!$source && $patron = $this->ilsAuth->getStoredCatalogCredentials()) {
                 $source = $this->getSourceForPatron($patron);
@@ -326,9 +538,18 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [$params, $source];
     }
 
-    protected function mapResultForMethod($source, $function, $result)
+    /**
+     * Maps the result for a given source and method.
+     *
+     * @param string $source Source code
+     * @param string $method Method name
+     * @param mixed  $result Result of the method to be mapped
+     *
+     * @return mixed
+     */
+    protected function mapResultForMethod($source, $method, $result)
     {
-        if ($mappingMethod = $this->resultMapMethods[$function] ?? null) {
+        if ($mappingMethod = $this->resultMapMethods[$method] ?? null) {
             return $this->$mappingMethod($result, $source);
         }
         return $result;
@@ -587,6 +808,21 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
             }
         }
         throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Auth\ILSAuthenticator         $ilsAuth       ILS authenticator
+     * @param PluginManager                         $driverManager ILS driver manager
+     */
+    public function __construct(
+        \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        PluginManager $driverManager
+    ) {
+        parent::__construct($configManager, $driverManager);
     }
 
     /**

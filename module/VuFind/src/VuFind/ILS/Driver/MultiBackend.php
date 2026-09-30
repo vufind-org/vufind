@@ -46,6 +46,13 @@ use function strlen;
  */
 class MultiBackend extends AbstractMappingDriver
 {
+    /**
+     * Param mapping for MultiBackend ILLRequestIsValid method that does not map the patron.
+     *
+     * @param array $params Params
+     *
+     * @return array
+     */
     protected function checkILLRequestIsValidParamMap($params)
     {
         $source = $this->getSourceForRecordId($params[0] ?? '');
@@ -64,10 +71,10 @@ class MultiBackend extends AbstractMappingDriver
      */
     public function __construct(
         \VuFind\Config\ConfigManagerInterface $configManager,
-        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        \VuFind\Auth\ILSAuthenticator $ilsAuth,
         PluginManager $driverManager
     ) {
-        parent::__construct($configManager, $driverManager);
+        parent::__construct($configManager, $ilsAuth, $driverManager);
 
         // Patron is not mapped for ILL so that the correct library can be determined
         $this->paramMapAndSourceCheckMethods['checkILLRequestIsValid'] = 'checkILLRequestIsValidParamMap';
@@ -107,6 +114,7 @@ class MultiBackend extends AbstractMappingDriver
      * Map VuFind's record id to the record id of the ILS.
      *
      * @param string $recordId VuFind Record ID
+     * @param string $source   Source code
      *
      * @return string ILS Record ID
      */
@@ -119,6 +127,7 @@ class MultiBackend extends AbstractMappingDriver
      * Map VuFind's record id to the record id of the ILS.
      *
      * @param string $recordId VuFind Record ID
+     * @param string $source   Source code
      *
      * @return string ILS Record ID
      */
@@ -131,6 +140,7 @@ class MultiBackend extends AbstractMappingDriver
      * Map VuFind's cat_username to the cat_username of the ILS.
      *
      * @param string $catUsername VuFind cat_username
+     * @param string $source      Source code
      *
      * @return string ILS cat_username
      */
@@ -142,7 +152,8 @@ class MultiBackend extends AbstractMappingDriver
     /**
      * Map VuFind ids to the ids of the ILS.
      *
-     * @param string $id VuFind ID
+     * @param string $id     VuFind ID
+     * @param string $source Source code
      *
      * @return string ILS ID
      */
@@ -159,6 +170,7 @@ class MultiBackend extends AbstractMappingDriver
      * Map VuFind's record id to the record id of the ILS.
      *
      * @param string $recordId VuFind Record ID
+     * @param string $source   Source code
      *
      * @return string ILS Record ID
      */
@@ -171,6 +183,7 @@ class MultiBackend extends AbstractMappingDriver
      * Map VuFind's record id to the record id of the ILS.
      *
      * @param string $itemId VuFind Record ID
+     * @param string $source Source code
      *
      * @return string ILS Record ID
      */
@@ -183,6 +196,7 @@ class MultiBackend extends AbstractMappingDriver
      * Map VuFind's cat_username to the cat_username id of the ILS.
      *
      * @param string $catUsername VuFind Patron ID
+     * @param string $source      Source code
      *
      * @return string ILS Patron ID
      */
@@ -194,7 +208,8 @@ class MultiBackend extends AbstractMappingDriver
     /**
      * Map VuFind ids to the ids of the ILS.
      *
-     * @param string $id VuFind ID
+     * @param string $id     VuFind ID
+     * @param string $source Source code
      *
      * @return string ILS ID
      */
@@ -237,18 +252,6 @@ class MultiBackend extends AbstractMappingDriver
     protected function getSourceForCatUsername($catUsername)
     {
         return $this->getSource($catUsername);
-    }
-
-    /**
-     * Extract source from the given patron.
-     *
-     * @param array $patron Patron
-     *
-     * @return string Source
-     */
-    protected function getSourceForPatron($patron)
-    {
-        return $this->getSourceForCatUsername($patron['cat_username']);
     }
 
     /**
