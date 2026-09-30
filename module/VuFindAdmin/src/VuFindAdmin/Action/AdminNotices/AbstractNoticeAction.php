@@ -120,6 +120,8 @@ abstract class AbstractNoticeAction extends AbstractAdminAction implements Local
         $noticeFormConfig = $noticeConfig['adminForm'] ?? [];
         $formData = [];
 
+        $formData['enabled'] = $notice['enabled'] ?? true;
+
         $contexts = $noticeFormConfig['contexts'] ?? [];
         $formData['contexts'] = array_keys($contexts);
         if ($notice && $activeContext = $this->getBestMatchingContext($notice, $contexts)) {
@@ -286,6 +288,9 @@ abstract class AbstractNoticeAction extends AbstractAdminAction implements Local
     {
         $notice = $this->noticeManager->getDefaults();
         $noticeFormConfig = $this->noticeManager->getNoticeConfig()['adminForm'] ?? [];
+
+        $notice['enabled'] = $this->getPostParam('enabled') !== null;
+
         $useDateTimeInput = true;
         if ($context = $this->getPostParam('context_fieldset')['context'] ?? null) {
             if (in_array($context, $this->getDateTimeContexts())) {
