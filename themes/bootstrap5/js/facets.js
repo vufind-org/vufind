@@ -633,8 +633,7 @@ VuFind.register('sideFacets', function SideFacets() {
    * @param {Event} event The click event.
    */
   function showLoadingOverlay(event) {
-    const target = (event && event.currentTarget && event.currentTarget.getAttribute)
-      ? event.currentTarget.getAttribute('target') : null;
+    const target = event?.currentTarget?.getAttribute('target');
     if (event && (
       event.ctrlKey
       || event.metaKey
