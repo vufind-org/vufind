@@ -817,12 +817,12 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
      * @param array                             $queryParams Any query parameters
      *
-     * @return ResponseInterface
+     * @return ?ResponseInterface
      */
     protected function getRedirectForRecord(
         \VuFind\RecordDriver\AbstractBase $record,
         array $queryParams = []
-    ): ResponseInterface {
+    ): ?ResponseInterface {
         $details = $this->recordRouter->getTabRouteDetails($record);
         return $this->getHelper(RedirectHelper::class)->redirectToRoute(
             $this->response,

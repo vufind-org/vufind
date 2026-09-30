@@ -48,29 +48,18 @@ use VuFind\Search\Base\Results;
 class ResultsAction extends \VuFind\Action\Search\ResultsAction
 {
     /**
-     * Process the jumpto parameter -- either redirect to a specific record, or ignore the parameter and return null.
+     * Get a redirection response to a single record.
      *
-     * @param Results $results Search results object.
+     * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
+     * @param array                             $queryParams Any query parameters
      *
      * @return ?ResponseInterface
      */
-    protected function processJumpTo(Results $results): ?ResponseInterface
-    {
-        // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->getQueryParam('jumpto');
-        if (empty($jumpto) || !is_numeric($jumpto)) {
-            return null;
-        }
-
-        // Parameter out of range?  Ignore it:
-        $recordList = $results->getResults();
-        if (!isset($recordList[$jumpto - 1])) {
-            return null;
-        }
-
-        // If we got this far, we have a valid parameter so we should redirect
-        // and report success:
-        $url = $recordList[$jumpto - 1]->getUrl();
+    protected function getRedirectForRecord(
+        \VuFind\RecordDriver\AbstractBase $record,
+        array $queryParams = []
+    ): ?ResponseInterface {
+        $url = $record->tryMethod('getUrl');
         return $url ? $this->getHelper(RedirectHelper::class)->redirectToUrl($this->response, $url) : null;
     }
 }
