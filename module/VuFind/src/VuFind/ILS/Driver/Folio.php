@@ -49,7 +49,6 @@ use function is_int;
 use function is_object;
 use function is_string;
 use function sprintf;
-use function strlen;
 
 /**
  * FOLIO REST API driver.
@@ -222,43 +221,6 @@ class Folio extends AbstractAPI implements
     {
         // Normalize string to tolerate minor variations in config file:
         return trim(strtolower($this->config['IDs']['type'] ?? 'instance'));
-    }
-
-    /**
-     * Get the prefix of VuFind's bib IDs compared to the FOLIO ID.
-     *
-     * @return string
-     */
-    protected function getBibIdPrefix(): string
-    {
-        return $this->config['IDs']['prefix'] ?? '';
-    }
-
-    /**
-     * Map the FOLIO ID in to VuFind's bibliographic ID.
-     *
-     * @param string $folioId FOLIO ID
-     *
-     * @return string
-     */
-    protected function folioIdToBibId(string $folioId): string
-    {
-        return $this->getBibIdPrefix() . $folioId;
-    }
-
-    /**
-     * Map VuFind's bibliographic ID to the FOLIO ID.
-     *
-     * @param string $bibId Bib ID
-     *
-     * @return string
-     */
-    protected function bibIdToFolioId(string $bibId): string
-    {
-        if ($idPrefix = $this->getBibIdPrefix()) {
-            return substr($bibId, strlen($idPrefix));
-        }
-        return $bibId;
     }
 
     /**
@@ -540,7 +502,7 @@ class Folio extends AbstractAPI implements
         // Special case: if we're using instance IDs and we already have one,
         // short-circuit the lookup process:
         if ($idType === 'instance' && is_string($instanceOrInstanceId)) {
-            return $this->folioIdToBibId($instanceOrInstanceId);
+            return $instanceOrInstanceId;
         }
 
         $instance = is_object($instanceOrInstanceId)
@@ -549,9 +511,9 @@ class Folio extends AbstractAPI implements
 
         switch ($idType) {
             case 'hrid':
-                return $this->folioIdToBibId($instance->hrid);
+                return $instance->hrid;
             case 'instance':
-                return $this->folioIdToBibId($instance->id);
+                return $instance->id;
         }
 
         throw new \Exception('Unsupported ID type: ' . $idType);
@@ -759,11 +721,10 @@ class Folio extends AbstractAPI implements
         // directly:
         $idType = $this->getBibIdType();
         $idField = $idType === 'instance' ? 'id' : $idType;
-        $folioIds = array_map([$this, 'bibIdToFolioId'], $bibIds);
         $instances = [];
         foreach (
             $this->getByBatch(
-                $folioIds,
+                $bibIds,
                 $idField,
                 'instances',
                 '/instance-storage/instances'
@@ -1417,13 +1378,13 @@ class Folio extends AbstractAPI implements
             // Do not retrieve the instances if we already have their ids
             $instanceIds = $bibIds;
             foreach ($bibIds as $bibId) {
-                $bibIdToInstanceId[$bibId] = $this->bibIdToFolioId($bibId);
+                $bibIdToInstanceId[$bibId] = $bibId;
             }
         } else {
             $instances = $this->getInstancesByBibIds($bibIds);
             $instanceIds = array_map(fn ($instance) => $instance->id, $instances);
             foreach ($instances as $instance) {
-                $bibIdToInstanceId[$this->getBibId($instance)] = $instance->id;
+                $bibIdToInstanceId[$instance->$idType] = $instance->id;
             }
         }
         $holdings = $this->getHoldingsByInstanceIds($instanceIds);
@@ -3058,7 +3019,6 @@ class Folio extends AbstractAPI implements
                 ? 'instanceHrid' : 'instanceId';
             $bibId = $item->copiedItem->$idProperty ?? null;
             if ($bibId !== null) {
-                $bibId = $this->folioIdToBibId($bibId);
                 $courseData = $this->getCourseDetails(
                     $item->courseListingId ?? null
                 );
