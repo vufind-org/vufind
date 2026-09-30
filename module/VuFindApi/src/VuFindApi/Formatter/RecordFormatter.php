@@ -185,9 +185,9 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
     /**
      * Get fields from a record as an array.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record            Record driver
-     * @param array                             $fields            Fields to get
-     * @param array                             $recordFieldConfig Record field configuration
+     * @param AbstractRecord $record            Record driver
+     * @param array          $fields            Fields to get
+     * @param array          $recordFieldConfig Record field configuration
      *
      * @return array
      */
