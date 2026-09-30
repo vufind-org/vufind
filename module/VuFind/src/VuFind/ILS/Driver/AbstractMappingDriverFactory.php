@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MultiBackendFactory implements FactoryInterface
+class AbstractMappingDriverFactory implements FactoryInterface
 {
     /**
      * Create an object.
