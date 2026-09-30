@@ -630,8 +630,20 @@ VuFind.register('sideFacets', function SideFacets() {
    * Show a loading overlay on a facet container.
    *
    * This is used to indicate that new facet data is being loaded.
+   * @param {Event} event The click event.
    */
-  function showLoadingOverlay() {
+  function showLoadingOverlay(event) {
+    const target = event?.currentTarget?.getAttribute('target');
+    if (event && (
+      event.ctrlKey
+      || event.metaKey
+      || event.shiftKey
+      || event.altKey
+      || event.button > 0
+      || (target && target.toLowerCase() !== '_self')
+    )) {
+      return;
+    }
     let elem;
     if (this === undefined || this.nodeName === undefined) {
       elem = $('#search-sidebar .collapse, .checkbox-filters');
