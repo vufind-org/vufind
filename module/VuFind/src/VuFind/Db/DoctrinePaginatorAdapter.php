@@ -44,7 +44,7 @@ use Laminas\Paginator\Adapter\AdapterInterface;
 class DoctrinePaginatorAdapter implements AdapterInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Paginator $paginator Doctrine paginator to wrap
      */

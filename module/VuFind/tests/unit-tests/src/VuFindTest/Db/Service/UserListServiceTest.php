@@ -86,7 +86,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         $queryObject = $this->createMock(Query::class);
         $queryObject->method('getSingleColumnResult')->willReturn([]);
         $queryObject->expects($this->once())->method('setParameters')->willReturnCallback(
-            function ($params) use ($expected, $queryObject): Query {
+            function (\Doctrine\Common\Collections\ArrayCollection|array $params) use ($expected, $queryObject): Query {
                 $params = array_map(
                     fn ($param) => is_object($param) ? $param->getId() : $param,
                     $params,
@@ -97,10 +97,10 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         );
         $queryObject->method('getResult')->willReturn([]);
         $entityManager->expects($this->once())->method('createQuery')->willReturnCallback(
-            function ($dql) use ($expected, $queryObject) {
+            function (string $dql) use ($expected, $queryObject) {
                 // Assert that all the set parameters have been added to the dql properly in form of :param
                 foreach (array_keys($expected['params']) as $key) {
-                    $this->assertStringContainsString(":$key", (string)$dql);
+                    $this->assertStringContainsString(":$key", $dql);
                 }
                 return $queryObject;
             }

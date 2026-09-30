@@ -78,9 +78,10 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $isDevMode = APPLICATION_ENV == 'development';
         $storage = new BlackHole(); // TODO: use different cache if not in console mode.
         $cache = new CacheItemPoolDecorator($storage);
-        $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, cache: $cache);
+        $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode, cache: $cache);
         $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
         $config->setProxyDir(LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies');
+        $config->setProxyNamespace('DoctrineProxies');
         $config->setAutoGenerateProxyClasses(
             $isDevMode ? ProxyFactory::AUTOGENERATE_ALWAYS : ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
         );
