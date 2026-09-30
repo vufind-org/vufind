@@ -52,7 +52,7 @@ class RecordContentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $id = '0001732009-0'): Element
+    protected function goToRecord(string $id = '0001732009-0'): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -90,7 +90,7 @@ class RecordContentTest extends \VuFindTest\Integration\MinkTestCase
             ['config' => ['Content' => [$contentType => 'demo']]]
         );
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->clickCss($page, '#tab-button-' . $tab);
         $this->waitForPageLoad($page);
         $this->assertStringContainsString(

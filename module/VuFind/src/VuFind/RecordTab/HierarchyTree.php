@@ -150,7 +150,7 @@ class HierarchyTree extends AbstractBase
         }
         // If displaying the top of the tree, we should show the full hierarchy;
         // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
-        return $this->getActiveTree() == $recordDriver->getUniqueId();
+        return $this->getActiveTree() == $recordDriver->getUniqueID();
     }
 
     /**

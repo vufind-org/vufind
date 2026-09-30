@@ -38,7 +38,6 @@ use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
-use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;

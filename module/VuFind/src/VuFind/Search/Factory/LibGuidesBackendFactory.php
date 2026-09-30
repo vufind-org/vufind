@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
@@ -71,9 +70,9 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     /**
      * LibGuides configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $libGuidesConfig;
+    protected array $libGuidesConfig;
 
     /**
      * Create an object.
@@ -98,7 +97,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $this->libGuidesConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->getServiceName());
+            ->getConfigArray($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -116,7 +115,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector): Backend
     {
-        $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
+        $defaultSearch = $this->libGuidesConfig['General']['defaultSearch'] ?? null;
         $backend = new Backend(
             $connector,
             $this->createRecordCollectionFactory(),
@@ -135,21 +134,21 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     protected function createConnector(): Connector
     {
         // Load credentials:
-        $iid = $this->libGuidesConfig->General->iid ?? null;
+        $iid = $this->libGuidesConfig['General']['iid'] ?? null;
 
         // Pick version:
-        $ver = $this->libGuidesConfig->General->version ?? 1;
+        $ver = $this->libGuidesConfig['General']['version'] ?? 1;
 
         // Get base URI, if available:
-        $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
+        $baseUrl = $this->libGuidesConfig['General']['baseUrl'] ?? null;
 
         // Optionally parse the resource description
-        $displayDescription = $this->libGuidesConfig->General->displayDescription ?? false;
+        $displayDescription = $this->libGuidesConfig['General']['displayDescription'] ?? false;
 
         // Create connector:
         $connector = new Connector(
             $iid,
-            $this->createHttpClient($this->libGuidesConfig->General->timeout ?? 30),
+            $this->createHttpClient($this->libGuidesConfig['General']['timeout'] ?? 30),
             $ver,
             $baseUrl,
             $displayDescription

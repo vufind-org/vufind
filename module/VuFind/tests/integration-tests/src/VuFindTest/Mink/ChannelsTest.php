@@ -356,7 +356,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getChannelsHomePage();
         // We don't expect deprecated options to yield any data at all:
-        $this->unfindCss($page, 'h2.channel-title');
+        $this->unFindCss($page, 'h2.channel-title');
         $this->assertCount(0, $page->findAll('css', 'li.channel-item'));
     }
 

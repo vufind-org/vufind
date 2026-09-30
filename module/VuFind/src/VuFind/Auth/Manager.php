@@ -35,7 +35,6 @@ use Laminas\View\Renderer\RendererInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
 use Lmc\Rbac\Mvc\Identity\IdentityProviderInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
@@ -204,7 +203,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
-        $auth->setConfig(new Config($this->config));
+        $auth->setConfig($this->config);
         return $auth;
     }
 
@@ -556,25 +555,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     {
         // Assume dropdown is disabled unless explicitly turned on:
         return $this->config['Authentication']['enableDropdown'] ?? false;
-    }
-
-    /**
-     * Legacy method that logs out the current user.
-     *
-     * @param string $url     URL to redirect user to after logging out.
-     * @param bool   $destroy Should we destroy the session (true) or just reset it
-     * (false); destroy is for log out, reset is for expiration.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     *
-     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
-     */
-    public function logout(string $url, bool $destroy = true): string
-    {
-        $url = $this->getLogoutRedirectUrl($url);
-        $this->clearLoginState($destroy);
-        return $url;
     }
 
     /**

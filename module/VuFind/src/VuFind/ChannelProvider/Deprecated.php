@@ -48,15 +48,20 @@ class Deprecated extends AbstractChannelProvider
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
+     * @param ?string      $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded) -- not used in this provider
+     * @param string       $context      Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null)
-    {
+    public function getFromRecord(
+        RecordDriver $driver,
+        ?string $channelToken = null,
+        string $context = 'default'
+    ): array {
         return [];
     }
 
@@ -64,14 +69,14 @@ class Deprecated extends AbstractChannelProvider
      * Return channel information derived from a search results object.
      *
      * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param ?string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFromSearch(Results $results, $channelToken = null)
+    public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         return [];
     }

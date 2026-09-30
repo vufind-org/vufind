@@ -30,14 +30,9 @@
 namespace VuFindTest\Action\Collection;
 
 use Laminas\Diactoros\Response;
-use Laminas\Diactoros\ServerRequest;
-use Laminas\Router\RouteMatch;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Collection\HomeAction;
-use VuFind\ActionHelper\PermissionHelper;
-use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
@@ -48,8 +43,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordTab\TabManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\ResultScroller;
-use VuFind\Session\Settings as SessionSettings;
-use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFindTest\Action\AbstractActionTestCase;
 
 /**
  * Collection HomeAction test class.
@@ -60,7 +54,7 @@ use VuFind\View\Renderer\TemplateRendererInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class HomeActionTest extends TestCase
+class HomeActionTest extends AbstractActionTestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
@@ -72,7 +66,7 @@ class HomeActionTest extends TestCase
      * @param ?SearchMemory   $searchMemory   Search memory (defaults to a stub)
      * @param ?RecordRouter   $recordRouter   Record router (defaults to a stub)
      * @param ?RouteHelper    $routeHelper    Route helper (defaults to a stub)
-     * @param ?RedirectHelper $redirectHelper Redirect helper for HelperPluginManager to return
+     * @param ?RedirectHelper $redirectHelper Redirect helper to register (null for none)
      * @param ?RecordDriver   $driver         Record returned by RecordLoader's load()
      *
      * @return HomeAction
@@ -103,22 +97,8 @@ class HomeActionTest extends TestCase
             $config
         );
         $action->setBackendId('Solr');
-
-        $permissionHelper = $this->createMock(PermissionHelper::class);
-        $permissionHelper->method('getPermissionBehaviorConfig')->willReturn([]);
-        $redirectHelper ??= $this->createStub(RedirectHelper::class);
-        $manager = $this->createMock(HelperPluginManager::class);
-        $manager->method('get')->willReturnCallback(
-            fn ($name) => match ($name) {
-                PermissionHelper::class => $permissionHelper,
-                RedirectHelper::class => $redirectHelper,
-                default => throw new \Exception("Unexpected helper requested: $name"),
-            }
-        );
-        $action->setHelperPluginManager($manager);
-        $action->setRouteHelper($routeHelper ?? $this->createStub(RouteHelper::class));
-        $action->setSessionSettings($this->createStub(SessionSettings::class));
-        $action->setTemplateRenderer($this->createStub(TemplateRendererInterface::class));
+        $helpers = null === $redirectHelper ? [] : [RedirectHelper::class => $redirectHelper];
+        $this->initializeAction($action, $helpers, $routeHelper);
         return $action;
     }
 
@@ -158,8 +138,7 @@ class HomeActionTest extends TestCase
             driver: $this->createStub(RecordDriver::class)
         );
 
-        $routeMatch = new RouteMatch(['tab' => 'description']);
-        $request = (new ServerRequest())->withParsedBody([])->withAttribute('route-match', $routeMatch);
+        $request = $this->getServerRequest(['tab' => 'description']);
 
         $this->assertSame($expectedResponse, $action($request, new Response()));
     }
@@ -206,12 +185,7 @@ class HomeActionTest extends TestCase
             driver: $driver
         );
 
-        $routeMatch = new RouteMatch(['id' => 'coll1']);
-        $routeMatch->setMatchedRouteName('record');
-        $request = (new ServerRequest())
-            ->withQueryParams(['checkRoute' => '1'])
-            ->withParsedBody([])
-            ->withAttribute('route-match', $routeMatch);
+        $request = $this->getServerRequest(['id' => 'coll1'], ['checkRoute' => '1'], matchedRouteName: 'record');
 
         $this->assertSame($expectedResponse, $action($request, new Response()));
     }
