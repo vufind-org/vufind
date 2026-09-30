@@ -291,12 +291,7 @@ class LoginHelper implements HelperInterface
         bool $allowCurrentUrl = true,
         array $extras = []
     ): void {
-        // lbreferer is the stored current url of the lightbox which overrides the url from the server request when
-        // present
-        $referrer = $request->getQueryParams()['lbreferer'] ?? $this->contextHelper->getReferrer($request);
-        // Get the referrer -- if it's empty, there's nothing to store! Also, if the referrer lives outside of VuFind,
-        // don't store it! We only want internal post-login redirects.
-        if (empty($referrer) || !$this->urlHelper->isLocalUrl($referrer)) {
+        if (!($referrer = $this->contextHelper->getReferrer($request, true))) {
             return;
         }
         // If the referrer is the MyResearch/Home action, it probably means that the user is repeatedly mistyping their
