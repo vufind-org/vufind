@@ -65,7 +65,7 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
         protected RecordLinker $recordLinker,
         #[Autowire(container: 'ViewHelperManager')]
         protected Record $recordHelper,
-        protected ?ServerUrlHelper $serverUrlHelper = null
+        protected ServerUrlHelper $serverUrlHelper
     ) {
     }
 
@@ -95,7 +95,7 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
     {
         $result = $record->tryMethod('getAllSubjectHeadings', [true]);
         // Make sure that the record driver returned the additional information and return data only if it did:
-        return $result && isset($result[0]['heading']) ? $result : null;
+        return isset($result[0]['heading']) ? $result : null;
     }
 
     /**
