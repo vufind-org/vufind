@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProQuestFSGResults Recommendations Module
+ * ProQuestFSGResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * ProQuestFSGResults Recommendations Module
+ * ProQuestFSGResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of the ProQuestFSG backend.
  *

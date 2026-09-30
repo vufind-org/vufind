@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Results Tests
+ * Blender Results Tests.
  *
  * PHP version 8
  *
@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Blender;
 
-use VuFind\Config\Config;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Blender\Results;
@@ -40,7 +39,7 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Results Tests
+ * Blender Results Tests.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +53,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Test performing a search
+     * Test performing a search.
      *
      * @return void
      */
@@ -90,7 +89,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $paramsClasses,
-            new Config([]),
             []
         );
         $searchService = $this->createMock(\VuFindSearch\Service::class);

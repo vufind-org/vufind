@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * PHP version 8
  *
@@ -33,13 +33,12 @@ namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
 use Laminas\View\HelperPluginManager;
 use VuFind\Auth\Manager;
-use VuFind\Config\Config;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Url;
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,23 +49,26 @@ use VuFind\View\Helper\Root\Url;
 class AutowiredClass
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array      $config        Configuration
-     * @param array      $configArray   Configuration (same as $config)
-     * @param Config     $configObject  Configuration object (same configuration as $config)
-     * @param array      $yamlConfig    YAML-based configuration
-     * @param Url        $url           URL helper
-     * @param Manager    $authManager   Authentication manager
-     * @param Connection $ilsConnection ILS Connection
+     * @param array      $config               Configuration
+     * @param array      $configArray          Configuration (same as $config)
+     * @param array      $yamlConfig           YAML-based configuration
+     * @param Url        $url                  URL helper
+     * @param Manager    $authManager          Authentication manager
+     * @param Connection $ilsConnection        ILS Connection
+     * @param string     $yamlFoo              A configuration value as string
+     * @param array      $yamlFooExploded      A configuration value exploded to an array
+     * @param array      $defaultArray         A configuration default value
+     * @param string     $superValue           A value by path from an ArrayAccess object
+     * @param string     $builtInWithNoDefault A built-in type parameter with no default
+     * @param string     $builtInWithDefault   A built-in type parameter with a default
      */
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
         #[Autowire(config: 'config', configType: 'array')]
         protected array $configArray,
-        #[Autowire(config: 'config', configType: 'object')]
-        protected Config $configObject,
         #[Autowire(config: 'config2', configType: 'yaml')]
         protected array $yamlConfig,
         #[Autowire(container: HelperPluginManager::class)]
@@ -74,6 +76,17 @@ class AutowiredClass
         protected Manager $authManager,
         #[Autowire(service: Connection::class)]
         protected $ilsConnection,
+        #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/foo')]
+        protected string $yamlFoo,
+        #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/foo', explode: ',')]
+        protected array $yamlFooExploded,
+        #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/none', default: 'none')]
+        protected array $defaultArray,
+        #[Autowire(service: 'superarray', path: 'foo/bar')]
+        protected string $superValue,
+        #[Autowire(default: 'foo')]
+        protected string $builtInWithNoDefault,
+        protected string $builtInWithDefault = 'bar'
     ) {
         if (!($ilsConnection instanceof Connection)) {
             throw new \Exception('Invalid ILS Connection');
@@ -84,11 +97,26 @@ class AutowiredClass
         if (!isset($configArray['Foo'])) {
             throw new \Exception('Invalid array configuration');
         }
-        if (!isset($configObject->Foo)) {
-            throw new \Exception('Invalid object configuration');
-        }
         if (!isset($yamlConfig['YAML'])) {
             throw new \Exception('Invalid YAML configuration');
+        }
+        if ('bar, baz' !== $yamlFoo) {
+            throw new \Exception('Invalid YAML configuration from path');
+        }
+        if (['bar', 'baz'] !== $yamlFooExploded) {
+            throw new \Exception('Invalid exploded YAML configuration');
+        }
+        if (['none'] !== $defaultArray) {
+            throw new \Exception('Invalid default value');
+        }
+        if ('baz' !== $superValue) {
+            throw new \Exception('Invalid superValue from path');
+        }
+        if ('foo' !== $builtInWithNoDefault) {
+            throw new \Exception('Invalid value from default attribute');
+        }
+        if ('bar' !== $builtInWithDefault) {
+            throw new \Exception('Problem processing native type with default');
         }
     }
 }

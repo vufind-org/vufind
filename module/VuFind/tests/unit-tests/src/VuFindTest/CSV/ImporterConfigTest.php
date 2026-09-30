@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CSV Importer Configuration Test Class
+ * CSV Importer Configuration Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\CSV;
 use VuFind\CSV\ImporterConfig;
 
 /**
- * CSV Importer Configuration Test Class
+ * CSV Importer Configuration Test Class.
  *
  * @category VuFind
  * @package  Tests

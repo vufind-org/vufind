@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Explain element view helper
+ * Explain element view helper.
  *
  * PHP version 8
  *
@@ -30,10 +30,13 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 
 /**
- * Explain element view helper
+ * Explain element view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,8 +45,25 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ExplainElement extends \Laminas\View\Helper\AbstractHelper
+class ExplainElement
 {
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $view            View renderer
+     * @param Translate         $translate       Translate helper
+     * @param LocalizedNumber   $localizedNumber LocalizedNumber helper
+     */
+    public function __construct(
+        #[Autowire(service: 'ViewRenderer')]
+        protected RendererInterface $view,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected LocalizedNumber $localizedNumber
+    ) {
+    }
+
     /**
      * Render the explain element.
      *
@@ -54,7 +74,6 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($explainElement, $decimalPlaces)
     {
-        $view = $this->getView();
         $fieldName = $explainElement['fieldName'] ?? [];
         $fieldValue = $explainElement['fieldValue'] ?? [];
         $fieldModifier = $explainElement['fieldModifier'] ?? [];
@@ -62,10 +81,10 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
 
         $shortLabel = '';
         if ($function !== null) {
-            $shortLabel = $view->translate('explain_function_query_label') . ': ' . $function;
+            $shortLabel = ($this->translate)('explain_function_query_label') . ': ' . $function;
         } else {
             if (count($fieldName) > 1) {
-                $shortLabel .= $view->translate('Synonym') . '[';
+                $shortLabel .= ($this->translate)('Synonym') . '[';
             }
             $shortLabel .= implode(
                 ', ',
@@ -79,11 +98,11 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
         }
 
         if ($fieldModifier) {
-            $shortLabel .= '^' . $view->localizedNumber($fieldModifier, $decimalPlaces);
+            $shortLabel .= '^' . ($this->localizedNumber)($fieldModifier, $decimalPlaces);
         }
 
         $shortValue = $explainElement['value'];
-        $completeLine = $view->render(
+        $completeLine = $this->view->render(
             'RecordDriver/DefaultRecord/explain-line.phtml',
             compact('explainElement', 'fieldName', 'fieldValue', 'fieldModifier', 'decimalPlaces', 'function')
         );

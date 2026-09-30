@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 360Link Link Resolver Driver
+ * 360Link Link Resolver Driver.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use DOMDocument;
 use DOMXpath;
 
 /**
- * 360Link Link Resolver Driver
+ * 360Link Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -46,14 +46,14 @@ use DOMXpath;
 class Threesixtylink extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
@@ -65,7 +65,7 @@ class Threesixtylink extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -83,7 +83,7 @@ class Threesixtylink extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display

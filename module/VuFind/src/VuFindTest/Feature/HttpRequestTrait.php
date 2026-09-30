@@ -46,7 +46,7 @@ trait HttpRequestTrait
     use RemoteCoverageTrait;
 
     /**
-     * HTTP service
+     * HTTP service.
      *
      * @var ?GuzzleService
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Provide URL formatted as HTML and prefixed with proxy if applicable
+ * Provide URL formatted as HTML and prefixed with proxy if applicable.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
- * Provide URL formatted as HTML and prefixed with proxy if applicable
+ * Provide URL formatted as HTML and prefixed with proxy if applicable.
  *
  * @category VuFind
  * @package  UrlHighlight
@@ -47,14 +47,14 @@ class VuFindHighlighter extends HtmlHighlighter
     public const DEFAULT_SCHEME = 'http';
 
     /**
-     * Proxy url helper
+     * Proxy url helper.
      *
      * @var ProxyUrl
      */
     protected $proxyUrl;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ProxyUrl $proxyUrl Proxy url helper
      */
@@ -65,7 +65,7 @@ class VuFindHighlighter extends HtmlHighlighter
     }
 
     /**
-     * Return url with proxy
+     * Return url with proxy.
      *
      * @param UrlMatch $match url highlight match
      *

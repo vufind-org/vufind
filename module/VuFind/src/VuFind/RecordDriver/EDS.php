@@ -66,7 +66,7 @@ class EDS extends DefaultRecord
     /**
      * Return the unique identifier of this record within EDS API;
      * As Accession Numbers (AN) could be repetitive, we use Database ID
-     * to ensure a unique ID exists
+     * to ensure a unique ID exists.
      *
      * @return string Unique identifier.
      */
@@ -79,7 +79,7 @@ class EDS extends DefaultRecord
 
     /**
      * Return the rtac identifier of this record from EDS API;
-     * RTAC ID is basically the AN without the catalog prefix
+     * RTAC ID is basically the AN without the catalog prefix.
      *
      * @return string unique rtac identifier
      */
@@ -87,10 +87,10 @@ class EDS extends DefaultRecord
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? '';
 
-        $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
-        $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
+        $regexArray = $this->recordConfig['Catalog']['CatalogANRegex'] ?? [];
+        $replaceArray = $this->recordConfig['Catalog']['CatalogANReplace'] ?? [];
 
         if ($dbid === $catId && $this->pubTypeRtacEnabled()) {
             $returnValue = $an;
@@ -104,15 +104,15 @@ class EDS extends DefaultRecord
 
     /**
      * Identify if config tells us to expect a catalog, if catalog id is set
-     * and if catalog id matches databaseid
+     * and if catalog id matches databaseid.
      *
      * @return bool
      */
     public function hasCatalog()
     {
         $dbid = $this->fields['Header']['DbId'];
-        $hasCatalog = $this->recordConfig?->Catalog?->EDSHasCatalog ?? false;
-        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+        $hasCatalog = $this->recordConfig['Catalog']['EDSHasCatalog'] ?? false;
+        $catId = $this->recordConfig['Catalog']['CatalogDatabaseId'] ?? '';
 
         // if config empty or false, return false
         if (!$hasCatalog) {
@@ -128,7 +128,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Based on publication type determine if RTAC should be available
+     * Based on publication type determine if RTAC should be available.
      *
      * @return bool
      */
@@ -169,7 +169,7 @@ class EDS extends DefaultRecord
 
     /**
      * Get an array of information about record holdings, obtained in real-time
-     * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest
+     * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest.
      *
      * @return array
      */
@@ -211,6 +211,24 @@ class EDS extends DefaultRecord
         }
 
         return false;
+    }
+
+    /**
+     * Get a highlighted title string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedTitle()
+    {
+        // If highlighting is available, it will be in the item data; the raw data will
+        // include <highlight> tags, but these get converted into spans by deeper layers
+        // of the record driver and should be further translated into highlight markers
+        // for appropriate processing by the highlight view helper.
+        return preg_replace(
+            '|<span class="highlight">([^<]*)</span>|',
+            '{{{{START_HILITE}}}}$1{{{{END_HILITE}}}}',
+            $this->getItemsTitle()
+        );
     }
 
     /**
@@ -271,7 +289,28 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the authors of the record
+     * Check whether access to the record is restricted.
+     *
+     * @return bool
+     */
+    public function isRestrictedView(): bool
+    {
+        $accessLevel = $this->getAccessLevel();
+        return !empty($accessLevel) && $accessLevel !== '3';
+    }
+
+    /**
+     * Check whether the record is a placeholder.
+     *
+     * @return bool
+     */
+    public function isPlaceholder(): bool
+    {
+        return $this->getAccessLevel() === '1';
+    }
+
+    /**
+     * Get the authors of the record.
      *
      * @return string
      */
@@ -282,7 +321,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Obtain an array or authors indicated on the record
+     * Obtain an array or authors indicated on the record.
      *
      * @return array
      */
@@ -369,8 +408,7 @@ class EDS extends DefaultRecord
      */
     protected function itemIsIncluded(array $item, array $filter): bool
     {
-        $globalFilter = isset($this->recordConfig->ItemGlobalFilter)
-            ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
+        $globalFilter = $this->recordConfig['ItemGlobalFilter'] ?? [];
 
         $filter['exclude']['Label'] =
             array_merge($globalFilter['excludeLabel'] ?? [], $filter['exclude']['Label'] ?? []);
@@ -423,12 +461,12 @@ class EDS extends DefaultRecord
     ): array {
         $items = [];
         if (is_array($this->fields['Items'] ?? null)) {
-            $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
+            $itemGlobalOrderConfig = $this->recordConfig['ItemGlobalOrder'] ?? [];
             $origItems = $this->fields['Items'];
             // Only sort by label if we have a sort config:
             if (!empty($itemGlobalOrderConfig)) {
                 // We want unassigned labels to appear AFTER configured labels:
-                $nextPos = max(array_keys($itemGlobalOrderConfig));
+                $nextPos = (int)max(array_keys($itemGlobalOrderConfig));
                 foreach (array_keys($origItems) as $key) {
                     $label = $origItems[$key]['Label'] ?? '';
                     $configuredPos = array_search($label, $itemGlobalOrderConfig);
@@ -532,7 +570,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the ebook url of the record. If missing, return false
+     * Get the ebook url of the record. If missing, return false.
      *
      * @param array $types Types that we are interested in checking for
      *
@@ -552,7 +590,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the PDF url of the record. If missing, return false
+     * Get the PDF url of the record. If missing, return false.
      *
      * @return string
      */
@@ -562,7 +600,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the ePub url of the record. If missing, return false
+     * Get the ePub url of the record. If missing, return false.
      *
      * @return string
      */
@@ -572,7 +610,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the linked full text url of the record. If missing, return false
+     * Get the linked full text url of the record. If missing, return false.
      *
      * @return string
      */
@@ -644,7 +682,7 @@ class EDS extends DefaultRecord
         }
 
         // Optionally use VuFind's default cover loader
-        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        $fallBackToCoverLoader = $this->recordConfig['Cover']['fallBackToCoverLoader'] ?? [];
         if ($fallBackToCoverLoader) {
             $parentThumbnail = parent::getThumbnail($size);
 
@@ -669,7 +707,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Obtain the title of the record from the record info section
+     * Obtain the title of the record from the record info section.
      *
      * @return string
      */
@@ -685,7 +723,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Obtain the authors from a record from the RecordInfo section
+     * Obtain the authors from a record from the RecordInfo section.
      *
      * @return array
      */
@@ -897,7 +935,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get record languages
+     * Get record languages.
      *
      * @return array
      */
@@ -942,7 +980,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get ISSNs (of containing record)
+     * Get ISSNs (of containing record).
      *
      * @return array
      */
@@ -952,7 +990,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get an array of ISBNs
+     * Get an array of ISBNs.
      *
      * @return array
      */
@@ -962,7 +1000,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get title of containing record
+     * Get title of containing record.
      *
      * @return string
      */
@@ -1004,7 +1042,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get issue of containing record
+     * Get issue of containing record.
      *
      * @return string
      */
@@ -1014,7 +1052,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get volume of containing record
+     * Get volume of containing record.
      *
      * @return string
      */
@@ -1042,7 +1080,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get year of containing record
+     * Get year of containing record.
      *
      * @return string
      */

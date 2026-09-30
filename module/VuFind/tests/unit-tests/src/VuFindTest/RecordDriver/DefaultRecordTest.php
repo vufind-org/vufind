@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -30,12 +30,11 @@
 
 namespace VuFindTest\RecordDriver;
 
-use VuFind\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -484,7 +483,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         ];
         foreach ($tests as $current) {
             [$input, $output] = $current;
-            $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+            $cfg = ['Record' => ['citation_formats' => $input]];
             $this->assertEquals(
                 $output,
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
@@ -493,7 +492,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetCleanISBNs
+     * Data provider for testGetCleanISBNs.
      *
      * @return \Iterator
      */
@@ -583,12 +582,12 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a record driver with fake data.
      *
-     * @param array   $overrides  Fixture fields to override.
-     * @param ?Config $mainConfig Main configuration (optional).
+     * @param array  $overrides  Fixture fields to override.
+     * @param ?array $mainConfig Main configuration (optional).
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], ?Config $mainConfig = null)
+    protected function getDriver($overrides = [], ?array $mainConfig = null)
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

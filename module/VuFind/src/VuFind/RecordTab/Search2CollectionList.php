@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search 2 Collection list tab
+ * Search 2 Collection list tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Search 2 Collection list tab
+ * Search 2 Collection list tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,7 +41,7 @@ namespace VuFind\RecordTab;
 class Search2CollectionList extends CollectionList
 {
     /**
-     * Backend id
+     * Backend id.
      *
      * @var string
      */

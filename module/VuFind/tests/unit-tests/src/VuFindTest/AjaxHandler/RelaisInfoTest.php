@@ -30,6 +30,7 @@
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\RelaisInfo;
+use VuFindTest\Unit\AjaxHandlerTestCase;
 
 /**
  * RelaisInfo test class.
@@ -40,7 +41,7 @@ use VuFind\AjaxHandler\RelaisInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RelaisInfoTest extends \PHPUnit\Framework\TestCase
+class RelaisInfoTest extends AjaxHandlerTestCase
 {
     /**
      * Test authorization failure.
@@ -54,12 +55,11 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Connection\Relais::class),
             null
         );
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $this->assertEquals(['Failed', 403], $handler->handleRequest($params));
+        $this->assertSame(['Failed', 403], $handler->handleRequest($this->getRequest()));
     }
 
     /**
-     * Data provider for testSearchResponse()
+     * Data provider for testSearchResponse().
      *
      * @return \Iterator
      */
@@ -89,9 +89,7 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
         $user->expects($this->once())->method('getCatUsername')->willReturn('user');
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $params->expects($this->once())->method('fromQuery')->with('oclcNumber')
-            ->willReturn('oclcnum');
+        $request = $this->getRequest(['oclcNumber' => 'oclcnum']);
         $relais = $this->createMock(\VuFind\Connection\Relais::class);
         $relais->expects($this->once())->method('authenticatePatron')
             ->with('user', true)
@@ -102,6 +100,6 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
             $relais,
             $user
         );
-        $this->assertEquals($expected, $handler->handleRequest($params));
+        $this->assertEquals($expected, $handler->handleRequest($request));
     }
 }

@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class IntervalFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -75,7 +75,7 @@ class IntervalFactory implements FactoryInterface
         );
         return new $requestedName(
             $sessionStorage,
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
         );
     }
 }

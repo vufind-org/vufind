@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for configuration locations
+ * Interface for configuration locations.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Config\Location;
 
 /**
- * Interface for configuration locations
+ * Interface for configuration locations.
  *
  * This is a representation for the location of a configuration. It is based on a file or directory
  * on the system.

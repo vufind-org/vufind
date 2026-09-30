@@ -52,13 +52,13 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
     protected $useSyndeticsCoverImageFallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ?\VuFind\Config\Config $config Syndetics configuration
+     * @param ?array $config Syndetics configuration
      */
-    public function __construct(?\VuFind\Config\Config $config = null)
+    public function __construct(?array $config = null)
     {
-        $this->useSyndeticsCoverImageFallback = $config->use_syndetics_cover_image_fallback ?? false;
+        $this->useSyndeticsCoverImageFallback = $config['use_syndetics_cover_image_fallback'] ?? false;
         $this->supportsIsbn = $this->supportsIssn = $this->supportsOclc
             = $this->supportsUpc = $this->cacheAllowed = true;
     }
@@ -108,7 +108,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      */
     protected function getBaseUrl($key, $ids)
     {
-        $url = "https://secure.syndetics.com/index.aspx?client={$key}";
+        $url = "https://www.syndetics.com/index.aspx?client={$key}";
         $ident = '';
         if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
             $isbn = $ids['isbn']->get13();

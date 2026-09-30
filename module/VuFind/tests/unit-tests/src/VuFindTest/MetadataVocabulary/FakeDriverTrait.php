@@ -43,7 +43,7 @@ use VuFindTest\RecordDriver\TestHarness;
 trait FakeDriverTrait
 {
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @return TestHarness
      */

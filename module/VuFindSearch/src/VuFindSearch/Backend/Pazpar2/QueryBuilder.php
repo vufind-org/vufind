@@ -52,7 +52,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

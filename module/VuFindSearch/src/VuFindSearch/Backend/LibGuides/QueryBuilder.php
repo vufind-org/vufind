@@ -48,7 +48,7 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilder
 {
     /**
-     * LibGuides widget type
+     * LibGuides widget type.
      *
      * 1 = Research Guides
      * 2 = Database A-Z List

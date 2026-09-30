@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * PHP version 8
  *
@@ -31,11 +31,13 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 use function is_object;
 
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -47,33 +49,27 @@ use function is_object;
 class HierarchyTree extends AbstractBase
 {
     /**
-     * Tree data
+     * Tree data.
      *
      * @var array
      */
     protected $treeList = null;
 
     /**
-     * Configuration
+     * Constructor.
      *
-     * @var \VuFind\Config\Config
+     * @param array $config Configuration
      */
-    protected $config = null;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\Config $config Configuration
-     */
-    public function __construct(\VuFind\Config\Config $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
      * Get the VuFind configuration.
      *
-     * @return \VuFind\Config\Config
+     * @return array
      */
     protected function getConfig()
     {
@@ -102,7 +98,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get the ID of the active tree (false if none)
+     * Get the ID of the active tree (false if none).
      *
      * @return string|bool
      */
@@ -121,7 +117,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get an array of tree data
+     * Get an array of tree data.
      *
      * @return array
      */
@@ -158,11 +154,11 @@ class HierarchyTree extends AbstractBase
         }
         // If displaying the top of the tree, we should show the full hierarchy;
         // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
-        return $this->getActiveTree() == $recordDriver->getUniqueId();
+        return $this->getActiveTree() == $recordDriver->getUniqueID();
     }
 
     /**
-     * Render a hierarchy tree
+     * Render a hierarchy tree.
      *
      * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default
@@ -189,7 +185,7 @@ class HierarchyTree extends AbstractBase
     public function searchActive()
     {
         $config = $this->getConfig();
-        return !isset($config->Hierarchy->search) || $config->Hierarchy->search;
+        return (bool)($config['Hierarchy']['search'] ?? false);
     }
 
     /**
@@ -200,17 +196,18 @@ class HierarchyTree extends AbstractBase
     public function getSearchLimit()
     {
         $config = $this->getConfig();
-        return $config->Hierarchy->treeSearchLimit ?? -1;
+        return $config['Hierarchy']['treeSearchLimit'] ?? -1;
     }
 
     /**
-     * Disable record preview when screen width is narrow
+     * Disable record preview when screen width is narrow.
      *
      * @return bool
      */
     public function hidePreviewInNarrowDisplays(): bool
     {
-        return (bool)$this->config->Hierarchy?->hide_preview_in_narrow_displays;
+        $config = $this->getConfig();
+        return (bool)($config['Hierarchy']['hide_preview_in_narrow_displays'] ?? false);
     }
 
     /**

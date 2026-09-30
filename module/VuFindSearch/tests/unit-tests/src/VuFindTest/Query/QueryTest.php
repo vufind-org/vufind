@@ -44,7 +44,7 @@ use VuFindSearch\Query\Query;
 class QueryTest extends TestCase
 {
     /**
-     * Test containsTerm() method
+     * Test containsTerm() method.
      *
      * @return void
      */
@@ -69,7 +69,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test replaceTerm() method
+     * Test replaceTerm() method.
      *
      * @return void
      */
@@ -130,7 +130,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test normalization-related logic
+     * Test normalization-related logic.
      *
      * @return void
      */
@@ -154,7 +154,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test setHandler() method
+     * Test setHandler() method.
      *
      * @return void
      */
@@ -166,7 +166,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test setOperator() method
+     * Test setOperator() method.
      *
      * @return void
      */

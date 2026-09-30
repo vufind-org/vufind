@@ -47,14 +47,11 @@ class SolrAuthMarc extends SolrAuthDefault
     use Feature\MarcAdvancedTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
         $mainConfig = null,

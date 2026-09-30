@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface SortingInterface
+ * Interface SortingInterface.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\I18n;
 
 /**
- * Interface SortingInterface
+ * Interface SortingInterface.
  *
  * @category VuFind
  * @package  I18n
@@ -43,7 +43,7 @@ namespace VuFind\I18n;
 interface HasSorterInterface
 {
     /**
-     * Set the sorter
+     * Set the sorter.
      *
      * @param SorterInterface $sorter Sorter service
      *
@@ -52,7 +52,7 @@ interface HasSorterInterface
     public function setSorter(SorterInterface $sorter): void;
 
     /**
-     * Get the sorter
+     * Get the sorter.
      *
      * @return SorterInterface
      */

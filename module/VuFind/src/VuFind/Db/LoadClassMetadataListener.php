@@ -48,21 +48,21 @@ use function is_array;
 class LoadClassMetadataListener
 {
     /**
-     * Reverse lookup array for aliased entities
+     * Reverse lookup array for aliased entities.
      *
      * @var array
      */
     protected array $aliases;
 
     /**
-     * Cache for loaded metadata
+     * Cache for loaded metadata.
      *
      * @var array
      */
     protected array $loadedMetadata = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManagerInterface $entityManager Entity manager
      * @param array                  $aliases       Entity aliases
@@ -73,7 +73,7 @@ class LoadClassMetadataListener
     }
 
     /**
-     * Event listener for loadClassMetadata event
+     * Event listener for loadClassMetadata event.
      *
      * @param LoadClassMetadataEventArgs $eventArgs Event arguments
      *

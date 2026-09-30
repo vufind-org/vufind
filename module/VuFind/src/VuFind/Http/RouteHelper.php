@@ -46,7 +46,7 @@ use Laminas\View\Helper\Url;
 class RouteHelper
 {
     /**
-     * URL helper
+     * URL helper.
      *
      * @var ?Url
      */

@@ -1,0 +1,39 @@
+<h2><?=$this->transEsc('User Account')?></h2>
+<?php
+  $flashMessages = $this->flashmessages();
+?>
+
+<?php
+  // Note: Lightbox would close automatically after the initial login request when a flash-message is not found, so
+  // include one even when we don't have a message to display:
+  if ($flashMessages):
+?>
+  <?=$flashMessages?>
+<?php else: ?>
+  <div class="alert alert-info flash-message">
+    <?=$this->transEsc('email_verification_pending')?>
+  </div>
+<?php endif; ?>
+
+<div>
+  <form method="post" action="<?=$this->serverUrl(true)?>" class="form-email-verification">
+    <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+    <div class="form-group">
+      <label class="form-label">
+        <?=$this->transEsc('Email')?>:
+      </label>
+      <p class="form-control-static">
+        <?=$this->escapeHtml($authData['email'] ?? '')?>
+      </p>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="verification_code">
+        <?=$this->transEsc('one_time_password')?>:
+      </label>
+      <input type="text" name="verification_code" id="verification_code" class="form-control" autocomplete="one-time-code">
+    </div>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>">
+    </div>
+  </form>
+</div>

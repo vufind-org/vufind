@@ -51,7 +51,7 @@ class BrowZine extends DefaultRecord
     }
 
     /**
-     * Get the SciMago Journal Rank
+     * Get the SciMago Journal Rank.
      *
      * @return string
      */

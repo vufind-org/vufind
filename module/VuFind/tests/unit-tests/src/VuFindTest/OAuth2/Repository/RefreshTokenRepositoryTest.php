@@ -43,7 +43,7 @@ use VuFind\OAuth2\Entity\ScopeEntity;
 class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * Test refresh token repository
+     * Test refresh token repository.
      *
      * @return void
      */

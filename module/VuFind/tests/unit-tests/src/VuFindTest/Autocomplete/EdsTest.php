@@ -48,7 +48,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SearchServiceTrait;
 
     /**
-     * Get a mock backend
+     * Get a mock backend.
      *
      * @return Backend
      */
@@ -60,7 +60,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wrap a mock backend in a backend manager
+     * Wrap a mock backend in a backend manager.
      *
      * @param Backend $backend Backend to wrap
      *

@@ -34,7 +34,6 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
 use VuFindSearch\Backend\Blender\Backend;
@@ -65,7 +64,7 @@ class BackendTest extends TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Blender config
+     * Blender config.
      *
      * @var array
      */
@@ -92,7 +91,7 @@ class BackendTest extends TestCase
     ];
 
     /**
-     * Mappings
+     * Mappings.
      *
      * @var array
      */
@@ -219,7 +218,7 @@ class BackendTest extends TestCase
     ];
 
     /**
-     * Event manager
+     * Event manager.
      *
      * @var SharedEventManager
      */
@@ -236,7 +235,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Data provider for testSearch
+     * Data provider for testSearch.
      *
      * @return array
      */
@@ -591,7 +590,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test limits used for search requests
+     * Test limits used for search requests.
      *
      * @return void
      */
@@ -618,7 +617,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config(static::$config),
+            static::$config,
             $this->mappings,
             $eventManager
         );
@@ -674,7 +673,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test search with a partial failure
+     * Test search with a partial failure.
      *
      * @return void
      */
@@ -709,7 +708,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test search with a total failure
+     * Test search with a total failure.
      *
      * @return void
      */
@@ -731,7 +730,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test search with a error returned in a collection
+     * Test search with a error returned in a collection.
      *
      * @return void
      */
@@ -765,7 +764,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test search with array facet format
+     * Test search with array facet format.
      *
      * @return void
      */
@@ -823,7 +822,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Data provider for testInvalidAdaptiveBlockSize
+     * Data provider for testInvalidAdaptiveBlockSize.
      *
      * @return array
      */
@@ -864,7 +863,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test event handling
+     * Test event handling.
      *
      * @return void
      */
@@ -989,7 +988,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test initialization of an empty collection array
+     * Test initialization of an empty collection array.
      *
      * @return void
      */
@@ -1003,7 +1002,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Create a backend that returns the given values for facets and errors
+     * Create a backend that returns the given values for facets and errors.
      *
      * @param array $facets Facet data
      * @param array $errors Error data
@@ -1029,7 +1028,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Return search params
+     * Return search params.
      *
      * @param array  $filters Blender filters
      * @param ?Query $query   Query
@@ -1074,7 +1073,7 @@ class BackendTest extends TestCase
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
             $backends,
-            new Config($config ?? static::$config),
+            $config ?? static::$config,
             $mappings ?? $this->mappings,
             $eventManager
         );
@@ -1234,7 +1233,7 @@ class BackendTest extends TestCase
             $this->getEDSRecordCollectionFactory(),
             $cache,
             $container,
-            new Config([]),
+            [],
         ];
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->onlyMethods(['getAuthenticationToken', 'getSessionToken'])

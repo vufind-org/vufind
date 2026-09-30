@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Keep Alive" AJAX handler
+ * "Keep Alive" AJAX handler.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * "Keep Alive" AJAX handler
+ * "Keep Alive" AJAX handler.
  *
  * This is responsible for keeping the session alive whenever called
  * (via JavaScript)
@@ -47,32 +47,33 @@ use Laminas\Session\SessionManager;
 class KeepAlive extends AbstractBase
 {
     /**
-     * Session Manager
+     * Session Manager.
      *
      * @var SessionManager
      */
     protected $sessionManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionManager $sm Session manager
      */
     public function __construct(SessionManager $sm)
     {
+        parent::__construct(null);
         $this->sessionManager = $sm;
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         // Request ID from session to mark it active
         $this->sessionManager->getId();

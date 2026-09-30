@@ -141,7 +141,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock generator tools object
+     * Get a mock generator tools object.
      *
      * @param array $methods Methods to mock
      *

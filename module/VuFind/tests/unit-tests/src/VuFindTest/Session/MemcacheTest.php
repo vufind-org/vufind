@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Memcache Session Handler Test Class
+ * Memcache Session Handler Test Class.
  *
  * PHP version 8
  *
@@ -29,11 +29,10 @@
 
 namespace VuFindTest\Session;
 
-use VuFind\Config\Config;
 use VuFind\Session\Memcache;
 
 /**
- * Memcache Session Handler Test Class
+ * Memcache Session Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -191,7 +190,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     protected function getHandler(array $config = [], ?\Memcached $client = null): Memcache
     {
-        $handler = new Memcache(new Config($config), $client);
+        $handler = new Memcache($config, $client);
         $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }

@@ -59,7 +59,7 @@ class NamedList implements Countable, Iterator
     protected $list;
 
     /**
-     * The current position
+     * The current position.
      *
      * @var array
      */

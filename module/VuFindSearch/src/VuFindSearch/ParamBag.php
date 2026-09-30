@@ -50,7 +50,7 @@ use function sprintf;
 class ParamBag implements \Countable
 {
     /**
-     * Parameters
+     * Parameters.
      *
      * @var array
      */

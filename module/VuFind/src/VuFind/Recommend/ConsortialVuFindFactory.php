@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -71,7 +71,7 @@ class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\Factory
         }
 
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('ExternalVuFind'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('ExternalVuFind'),
             $container->get(\VuFind\Connection\ExternalVuFind::class)
         );
     }

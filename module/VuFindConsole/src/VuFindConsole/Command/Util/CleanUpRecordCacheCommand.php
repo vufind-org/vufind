@@ -51,7 +51,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 class CleanUpRecordCacheCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordServiceInterface $recordService Record database service
      * @param ?string                $name          The name of the command; passing null means it

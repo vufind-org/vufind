@@ -2,9 +2,6 @@
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
 
-  // Set up page title:
-  $this->headTitle(isset($list) ? $list->getTitle() : $this->translate('saved_items'));
-
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
@@ -30,12 +27,19 @@
   // Convenience variable:
   $account = $this->auth()->getManager();
   $user = $this->auth()->getUserObject();
+  $title = isset($list) ? $list->getTitle() : $this->translate('saved_items');
 ?>
 
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->getTitle()) : $this->transEsc('saved_items')?></h2>
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+      'title' => $title,
+      'level' => 1,
+    ])
+  ?>
 
   <?php if ($list && $user && $list->getUser()->getId() === $user->getId() && $list->isPublic()): ?>
     <strong>
@@ -93,7 +97,7 @@
     <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
   <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
-    <?php $multiPageSelection = ($this->config()->get('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
+    <?php $multiPageSelection = ($this->config()->getArray('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
     <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?=($listId = $list?->getId()) ? '-' . $listId : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
       <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">

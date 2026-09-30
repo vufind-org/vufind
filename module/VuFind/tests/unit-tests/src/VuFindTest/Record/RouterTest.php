@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Record;
 
-use VuFind\Config\Config;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -234,7 +233,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test record driver object
+     * Get test record driver object.
      *
      * @param string $id     Record ID
      * @param string $source Record source
@@ -250,7 +249,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test router object
+     * Get test router object.
      *
      * @param array $config Configuration.
      *
@@ -258,6 +257,6 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRouter($config = [])
     {
-        return new Router(new Config($config));
+        return new Router($config);
     }
 }

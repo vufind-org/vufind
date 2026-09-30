@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
 {
     /**
-     * Configuration file to read Blender settings from
+     * Configuration file to read Blender settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -55,16 +55,16 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
     protected $blenderIni = 'Blender';
 
     /**
-     * Configuration file to read Blender mappings settings from
+     * Configuration file to read Blender mappings settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
      * @var string
      */
-    protected $blenderMappingsYaml = 'BlenderMappings';
+    protected $blenderMappingsConfig = 'BlenderMappings';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -86,9 +86,8 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $blenderConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->blenderIni);
-        $backendConfig = $blenderConfig->Backends
-            ? $blenderConfig->Backends->toArray() : [];
+            ->getConfigArray($this->blenderIni);
+        $backendConfig = $blenderConfig['Backends'] ?? [];
         if (!$backendConfig) {
             throw new \Exception('No backends enabled in ' . $this->blenderIni . '.ini');
         }
@@ -102,12 +101,13 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             $searchParams[] = $paramsManager->get($backendId);
         }
 
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $blenderMappings = $yamlReader->get($this->blenderMappingsYaml . '.yaml');
+        $blenderMappings = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->blenderMappingsConfig);
         return parent::__invoke(
             $container,
             $requestedName,
-            [$facetHelper, $searchParams, $blenderConfig, $blenderMappings]
+            [$facetHelper, $searchParams, $blenderMappings]
         );
     }
 }

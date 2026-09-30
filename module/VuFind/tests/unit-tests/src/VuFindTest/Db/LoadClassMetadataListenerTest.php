@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LoadClassMetadata event listener test class
+ * LoadClassMetadata event listener test class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\LoadClassMetadataListener;
 
 /**
- * LoadClassMetadata event listener test class
+ * LoadClassMetadata event listener test class.
  *
  * @category VuFind
  * @package  Tests

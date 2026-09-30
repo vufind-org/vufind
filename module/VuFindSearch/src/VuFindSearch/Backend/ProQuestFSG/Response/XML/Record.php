@@ -68,7 +68,7 @@ class Record implements RecordInterface
     }
 
     /**
-     * Get MARC record
+     * Get MARC record.
      *
      * @return MarcReader
      */

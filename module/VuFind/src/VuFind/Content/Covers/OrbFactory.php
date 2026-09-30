@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Orb cover loader factory
+ * Orb cover loader factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Orb cover loader factory
+ * Orb cover loader factory.
  *
  * @category VuFind
  * @package  Content
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -77,9 +77,6 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!isset($config['Orb']['key'])) {
             throw new \Exception("Orb 'key' not set in VuFind config");
         }
-        $orb = new $requestedName($url, $config['Orb']['user'], $config['Orb']['key']);
-        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $orb->setCachingDownloader($cachingDownloader);
-        return $orb;
+        return new $requestedName($url, $config['Orb']['user'], $config['Orb']['key']);
     }
 }

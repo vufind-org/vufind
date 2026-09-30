@@ -48,7 +48,7 @@ class RefreshTokenEntity implements RefreshTokenEntityInterface, \JsonSerializab
     use EntityTrait;
 
     /**
-     * Serialize to a JSON string
+     * Serialize to a JSON string.
      *
      * @return mixed
      */

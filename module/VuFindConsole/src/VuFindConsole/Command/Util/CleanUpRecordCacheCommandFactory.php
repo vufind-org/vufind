@@ -48,7 +48,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 class CleanUpRecordCacheCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

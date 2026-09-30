@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS (integrated library system) view helper
+ * ILS (integrated library system) view helper.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * ILS (integrated library system) view helper
+ * ILS (integrated library system) view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,23 +40,16 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Ils extends \Laminas\View\Helper\AbstractHelper
+class Ils
 {
     /**
-     * ILS connection
-     *
-     * @var \VuFind\ILS\Connection
-     */
-    protected $connection;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection $connection ILS connection
      */
-    public function __construct(\VuFind\ILS\Connection $connection)
+    #[Autowire]
+    public function __construct(protected \VuFind\ILS\Connection $connection)
     {
-        $this->connection = $connection;
     }
 
     /**

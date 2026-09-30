@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Autowiring Factory
+ * VuFind Autowiring Factory.
  *
  * PHP version 8
  *
@@ -29,6 +29,7 @@
 
 namespace VuFind\ServiceManager\Factory;
 
+use ArrayAccess;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use LogicException;
 use Psr\Container\ContainerInterface;
@@ -36,10 +37,14 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Config\YamlReader;
 
+use function array_key_exists;
+use function is_array;
+
 /**
- * VuFind Autowiring Factory
+ * VuFind Autowiring Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -49,15 +54,17 @@ use VuFind\Config\YamlReader;
  */
 class AutowiringFactory implements FactoryInterface
 {
+    use ExplodeSettingTrait;
+
     /**
-     * Configuration manager
+     * Configuration manager.
      *
      * @var ?ConfigManagerInterface
      */
     protected ?ConfigManagerInterface $configManager = null;
 
     /**
-     * YAML reader
+     * YAML reader.
      *
      * @var ?YamlReader
      */
@@ -129,9 +136,16 @@ class AutowiringFactory implements FactoryInterface
         ?array $autowireArgs
     ) {
         if ($config = $autowireArgs['config'] ?? null) {
-            return $this->getConfig($container, $config, $autowireArgs);
+            $result = $this->getConfig($container, $config, $autowireArgs);
+        } else {
+            $result = $this->resolveService($container, $reflectionParameter, $autowireArgs);
         }
-        return $this->resolveService($container, $reflectionParameter, $autowireArgs);
+
+        if ($path = $autowireArgs['path'] ?? null) {
+            $result = $this->extractValueByPath($result, $path, $reflectionParameter, $autowireArgs);
+        }
+
+        return $result;
     }
 
     /**
@@ -147,7 +161,7 @@ class AutowiringFactory implements FactoryInterface
         ContainerInterface $container,
         string $config,
         ?array $autowireArgs
-    ) {
+    ): mixed {
         $type = $autowireArgs['configType'] ?? 'array';
         switch ($type) {
             case 'array':
@@ -179,7 +193,7 @@ class AutowiringFactory implements FactoryInterface
         ContainerInterface $container,
         ReflectionParameter $reflectionParameter,
         ?array $autowireArgs
-    ) {
+    ): mixed {
         $name = $autowireArgs['service'] ?? null;
         if (null === $name) {
             $type = $reflectionParameter->getType();
@@ -188,9 +202,23 @@ class AutowiringFactory implements FactoryInterface
                 throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
             }
             if ($type->isBuiltIn()) {
-                throw new LogicException(
-                    'Unable to autowire parameter ' . $reflectionParameter->getName() . ' of type ' . $type->getName()
-                );
+                $builtInError = 'Unable to autowire parameter "' . $reflectionParameter->getName() . '" of type '
+                    . $type->getName();
+                // If we have a literal default, we can use it now -- but if a path is set, something is misconfigured
+                // and we should go ahead with throwing an exception.
+                if (isset($autowireArgs['path'])) {
+                    $builtInError .= '; unexpected path attribute set';
+                } elseif (array_key_exists('default', $autowireArgs ?? [])) { // can't use isset; value could be null
+                    // If the parameter has a default value, specifying a different (or duplicate) default via the
+                    // Autowire attribute is confusing and unnecessary, so we should not allow it:
+                    if ($reflectionParameter->isDefaultValueAvailable()) {
+                        throw new LogicException($builtInError . '; redundant default autowire parameter specified');
+                    }
+                    return $autowireArgs['default'];
+                } elseif ($reflectionParameter->isDefaultValueAvailable()) {
+                    return $reflectionParameter->getDefaultValue();
+                }
+                throw new LogicException($builtInError);
             }
         }
 
@@ -198,5 +226,55 @@ class AutowiringFactory implements FactoryInterface
             ? $container->get($containerName)
             : $container;
         return $containerToUse->get((string)$name);
+    }
+
+    /**
+     * Get a value from a value by path.
+     *
+     * @param mixed               $value               Value
+     * @param string              $path                Path
+     * @param ReflectionParameter $reflectionParameter Parameter
+     * @param ?array              $autowireArgs        Autowire attribute arguments
+     *
+     * @return mixed
+     */
+    protected function extractValueByPath(
+        mixed $value,
+        string $path,
+        ReflectionParameter $reflectionParameter,
+        ?array $autowireArgs
+    ): mixed {
+        if (null === $value) {
+            return $autowireArgs['default'] ?? null;
+        }
+        if (!is_array($value) && !($value instanceof ArrayAccess)) {
+            throw new LogicException(
+                'Autowiring path can only be used with an array value or an object that implements ArrayAccess'
+            );
+        }
+        foreach (explode('/', $path) as $part) {
+            if (null === ($value = $value[$part] ?? null)) {
+                break;
+            }
+        }
+        if (null !== $value && null !== ($explode = $autowireArgs['explode'] ?? null)) {
+            return $this->explodeSetting((string)$value, 'trim', $explode);
+        }
+        $value ??= $autowireArgs['default'] ?? null;
+        if (null !== $value) {
+            // Cast to proper type:
+            $type = $reflectionParameter->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $value = match ($type->getName()) {
+                    'array' => (array)$value,
+                    'bool' => (bool)$value,
+                    'float' => (float)$value,
+                    'int' => (int)$value,
+                    'string' => (string)$value,
+                    default => $value,
+                };
+            }
+        }
+        return $value;
     }
 }

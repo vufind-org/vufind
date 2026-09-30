@@ -35,7 +35,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Auth\UserSessionPersistenceInterface;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
@@ -65,7 +64,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getSessionInitiator
+     * Test getSessionInitiator.
      *
      * @return void
      */
@@ -80,7 +79,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getSelectableAuthOptions
+     * Test getSelectableAuthOptions.
      *
      * @return void
      */
@@ -105,7 +104,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLoginTargets
+     * Test getLoginTargets.
      *
      * @return void
      */
@@ -120,7 +119,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getDefaultLoginTarget
+     * Test getDefaultLoginTarget.
      *
      * @return void
      */
@@ -135,7 +134,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLogoutRedirectUrl
+     * Test getLogoutRedirectUrl.
      *
      * @return void
      */
@@ -150,7 +149,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test clearLoginState (with destruction)
+     * Test clearLoginState (with destruction).
      *
      * @return void
      */
@@ -166,7 +165,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test clearLoginState (without destruction)
+     * Test clearLoginState (without destruction).
      *
      * @return void
      */
@@ -237,7 +236,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test supportsCreation
+     * Test supportsCreation.
      *
      * @return void
      */
@@ -255,7 +254,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test supportsRecovery
+     * Test supportsRecovery.
      *
      * @return void
      */
@@ -273,7 +272,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test supportsEmailChange
+     * Test supportsEmailChange.
      *
      * @return void
      */
@@ -291,7 +290,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test supportsPasswordChange
+     * Test supportsPasswordChange.
      *
      * @return void
      */
@@ -311,7 +310,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getAuthClassForTemplateRendering
+     * Test getAuthClassForTemplateRendering.
      *
      * @return void
      */
@@ -330,7 +329,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test userHasLoggedOut
+     * Test userHasLoggedOut.
      *
      * @return void
      */
@@ -341,7 +340,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test create
+     * Test create.
      *
      * @return void
      */
@@ -359,7 +358,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful login
+     * Test successful login.
      *
      * @return void
      */
@@ -378,7 +377,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test CSRF failure (same setup as successful login, but minus token)
+     * Test CSRF failure (same setup as successful login, but minus token).
      *
      * @return void
      */
@@ -394,7 +393,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test CSRF failure (same setup as successful login, but with bad token)
+     * Test CSRF failure (same setup as successful login, but with bad token).
      *
      * @return void
      */
@@ -411,7 +410,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful login (\VuFind\Exception\PasswordSecurity)
+     * Test unsuccessful login (\VuFind\Exception\PasswordSecurity).
      *
      * @return void
      */
@@ -431,7 +430,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful login (\VuFind\Exception\Auth)
+     * Test unsuccessful login (\VuFind\Exception\Auth).
      *
      * @return void
      */
@@ -471,7 +470,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test update password
+     * Test update password.
      *
      * @return void
      */
@@ -488,7 +487,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test checkForExpiredCredentials
+     * Test checkForExpiredCredentials.
      *
      * @return void
      */
@@ -561,7 +560,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         ?SessionManager $sessionManager = null,
         ?PluginManager $pm = null
     ): Manager {
-        $config = new Config($config);
         $cookies = new \VuFind\Cookie\CookieManager([]);
         $csrf = new \VuFind\Validator\SessionCsrf(
             [
@@ -576,7 +574,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         return new Manager(
             $config,
             $this->createMock(UserServiceInterface::class),
-            $userSession ?? $this->createMock(UserSessionPersistenceInterface::class),
+            $userSession ?? $this->createStub(UserSessionPersistenceInterface::class),
             $sessionManager ?? new SessionManager(),
             $pm ?? $this->getMockPluginManager(),
             $cookies,
@@ -622,7 +620,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
@@ -634,7 +632,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock request object
+     * Get a mock request object.
      *
      * @return MockObject&Request
      */

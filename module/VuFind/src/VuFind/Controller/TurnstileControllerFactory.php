@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class TurnstileControllerFactory extends AbstractBaseFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -67,9 +67,9 @@ class TurnstileControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $config = $yamlReader->get('RateLimiter.yaml');
-
+        $config = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('RateLimiter');
         return new $requestedName(
             $container,
             $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class),

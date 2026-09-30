@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search API Interface (Guzzle and Psr implementation)
+ * Summon Search API Interface (Guzzle and Psr implementation).
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Log\LoggerInterface;
 use SerialsSolutions_Summon_Exception;
 
 /**
- * Guzzle and PSR-compliant port of SerialsSolutions\Summon\Laminas connector
+ * Guzzle and PSR-compliant port of SerialsSolutions\Summon\Laminas connector.
  *
  * @category VuFind
  * @package  Search
@@ -46,7 +46,7 @@ use SerialsSolutions_Summon_Exception;
 class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareInterface
 {
     /**
-     * HTTP client instance
+     * HTTP client instance.
      *
      * @var HttpClient
      */

@@ -1,0 +1,63 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Login'), active: true);
+
+    // Convenience variable:
+    $offlineMode = $this->ils()->getOfflineMode();
+
+    // We should show the account menu unless it's been switched off or we're in the lightbox:
+    $showMenu = ($this->showMenu ?? true) && !$this->inLightbox;
+?>
+<?php if ($offlineMode == 'ils-offline'): ?>
+  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+<?php else: ?>
+  <div class="<?=$showMenu ? $this->layoutClass('mainbody') : ''?>">
+    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <?=$this->flashmessages()?>
+    <p>
+      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+    </p>
+    <div class="alert alert-info">
+      <?=$this->translate('email_login_code_sent_html')?>
+    </div>
+    <form method="post" action="<?=$this->serverUrl(true)?>" class="form-catalog-login">
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+      <div class="form-group">
+        <label class="form-label">
+          <?=$this->transEsc('Email')?>:
+        </label>
+        <p class="form-control-static">
+          <?=$this->escapeHtml($authData['email'] ?? '')?>
+        </p>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="card_password">
+          <?=$this->transEsc('one_time_password')?>:
+        </label>
+        <input type="text" name="password" id="card_password" class="form-control" autocomplete="one-time-code">
+      </div>
+      <div class="form-group">
+        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Login')?>">
+      </div>
+    </form>
+  </div>
+
+  <?php if ($showMenu): ?>
+    <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+      <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render()?>
+    </div>
+  <?php endif; ?>
+  <?php
+    if (null !== $this->targets) {
+      $methods = json_encode($this->loginMethods);
+      $script = "setupMultiILSLoginFields($methods, 'profile_cat_');";
+
+      // Inline the script for lightbox compatibility
+      echo $this->assetManager()->outputInlineScriptString($script);
+    }
+  ?>
+<?php endif; ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for oai_resumption table
+ * Entity model interface for oai_resumption table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for oai_resumption table
+ * Entity model interface for oai_resumption table.
  *
  * @category VuFind
  * @package  Database
@@ -50,7 +50,7 @@ interface OaiResumptionEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Resumption parameters setter
+     * Resumption parameters setter.
      *
      * @param ?string $params Resumption parameters.
      *

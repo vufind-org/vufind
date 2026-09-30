@@ -1,7 +1,7 @@
 <?php
 
 /**
- * KohaRest ILS driver test
+ * KohaRest ILS driver test.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFindTest\ILS\Driver;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\ILS\Driver\KohaRest;
 
 /**
- * KohaRest ILS driver test
+ * KohaRest ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -43,9 +44,10 @@ use VuFind\ILS\Driver\KohaRest;
 class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -58,21 +60,21 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test data for simulated HTTP responses (reset by each test)
+     * Test data for simulated HTTP responses (reset by each test).
      *
      * @var array
      */
     protected $fixtureSteps = [];
 
     /**
-     * Current fixture step
+     * Current fixture step.
      *
      * @var int
      */
     protected $currentFixtureStep = 0;
 
     /**
-     * Current fixture name
+     * Current fixture name.
      *
      * @var string
      */
@@ -94,7 +96,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Replace makeRequest to inject test returns
+     * Replace makeRequest to inject test returns.
      *
      * @param array $request Either a path as string or non-keyed array of path
      *                       elements, or a keyed array of request parameters
@@ -122,7 +124,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Generate a new KohaRest driver to return responses set in a json fixture
+     * Generate a new KohaRest driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
@@ -196,7 +198,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test purging of transaction history
+     * Test purging of transaction history.
      *
      * @return void
      */
@@ -207,7 +209,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test that selective deletion of entries from transaction history throws an exception
+     * Test that selective deletion of entries from transaction history throws an exception.
      *
      * @return void
      */
@@ -216,5 +218,53 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->createConnector('purge-transaction-history');
         $this->expectExceptionMessage('Unsupported function');
         $this->driver->purgeTransactionHistory(['id' => 'bar'], [1, 2]);
+    }
+
+    /**
+     * Data provider for testGetStatusCodeItemNotForLoanOrLost.
+     *
+     * @return \Generator
+     */
+    public static function getStatusCodeItemNotForLoanOrLostProvider(): \Iterator
+    {
+        yield 'no data' => [
+            'Item::NotForLoan',
+            [],
+            'Item__NotForLoan-',
+        ];
+
+        yield 'status only' => [
+            'Item::NotForLoan',
+            [
+                'status' => '-',
+            ],
+            'Item__NotForLoan-',
+        ];
+
+        yield 'code only' => [
+            'Item::NotForLoan',
+            [
+                'code' => 'foo',
+            ],
+            'foo',
+        ];
+    }
+
+    /**
+     * Test getStatusCodeItemNotForLoanOrLost method.
+     *
+     * @param string $code     Status code
+     * @param array  $data     Status data
+     * @param string $expected Expected result
+     *
+     * @return void
+     */
+    #[DataProvider('getStatusCodeItemNotForLoanOrLostProvider')]
+    public function testGetStatusCodeItemNotForLoanOrLost(string $code, array $data, string $expected): void
+    {
+        $this->assertSame(
+            $expected,
+            $this->callMethod($this->driver, 'getStatusCodeItemNotForLoanOrLost', [$code, $data, []])
+        );
     }
 }

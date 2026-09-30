@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test harness for simulating record drivers (ignore outside of test suite!)
+ * Test harness for simulating record drivers (ignore outside of test suite!).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\RecordDriver;
 
 /**
- * Test harness for simulating record drivers (ignore outside of test suite!)
+ * Test harness for simulating record drivers (ignore outside of test suite!).
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -41,7 +41,7 @@ namespace VuFindTest\RecordDriver;
 class TestHarness extends \VuFind\RecordDriver\AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

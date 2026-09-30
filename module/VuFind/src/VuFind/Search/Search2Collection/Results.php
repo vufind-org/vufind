@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search2 Collection aspect of the Search Multi-class (Results)
+ * Search2 Collection aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Search2Collection;
 
 /**
- * Search2 Collection Search Options
+ * Search2 Collection Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -41,9 +41,9 @@ namespace VuFind\Search\Search2Collection;
 class Results extends \VuFind\Search\SolrCollection\Results
 {
     /**
-     * Search backend identifiers.
+     * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'Search2Collection';
+    protected ?string $backendId = 'Search2Collection';
 }

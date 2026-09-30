@@ -82,7 +82,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecordById(string $id = 'testsample1'): Element
+    protected function goToRecordById(string $id = 'testsample1'): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -123,7 +123,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertSame(
             'Interlibrary Loan Requests',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
@@ -158,7 +158,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertSame(
             'Storage Retrieval Requests',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
@@ -257,7 +257,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Routine to place an ILL request
+     * Routine to place an ILL request.
      *
      * @param Element $page Page element.
      *
@@ -285,7 +285,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Routine to place a storage retrieval request
+     * Routine to place a storage retrieval request.
      *
      * @param Element $page Page element.
      *
@@ -406,7 +406,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->illRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -432,13 +432,13 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->illRequestProcedure($page);
         return $page;
     }
 
     /**
-     * Test canceling an ILL request with "cancel all."
+     * Test canceling an ILL request with "cancel all.".
      *
      * @return void
      */
@@ -450,7 +450,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling an ILL request with "cancel selected."
+     * Test canceling an ILL request with "cancel selected.".
      *
      * @return void
      */
@@ -477,7 +477,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->storageRetrievalRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -503,13 +503,13 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->storageRetrievalRequestProcedure($page);
         return $page;
     }
 
     /**
-     * Test canceling storage retrieval requests with "cancel all."
+     * Test canceling storage retrieval requests with "cancel all.".
      *
      * @return void
      */
@@ -521,7 +521,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling storage retrieval requests with "cancel selected."
+     * Test canceling storage retrieval requests with "cancel selected.".
      *
      * @return void
      */
@@ -640,7 +640,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testLoanHistoryWithPurgeDisabled
+     * Data provider for testLoanHistoryWithPurgeDisabled.
      *
      * @return \Iterator
      */
@@ -688,7 +688,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Log in and open loan history page
+     * Log in and open loan history page.
      *
      * @return DocumentElement
      */

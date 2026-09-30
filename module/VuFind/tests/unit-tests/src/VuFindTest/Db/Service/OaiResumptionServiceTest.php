@@ -167,7 +167,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFindToken(): void
+    public function testFindWithId(): void
     {
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager();
@@ -189,11 +189,11 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $query->expects($this->once())->method('setParameters')
             ->with(['id' => 'foo', 'now' => $dateTime])
             ->willReturn($query);
-        $this->assertEquals($oaiResumption, $resumptionService->findToken('foo'));
+        $this->assertEquals($oaiResumption, $resumptionService->findWithId('foo'));
     }
 
     /**
-     * Data provide for testEncodeParams()
+     * Data provide for testEncodeParams().
      *
      * @return \Iterator
      */
@@ -226,7 +226,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCreateTokenSuccess
+     * Data provider for testCreateTokenSuccess.
      *
      * @return Generator
      */
@@ -281,7 +281,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test duplicate tokens but success on the second try
+     * Test duplicate tokens but success on the second try.
      *
      * @param array  $token               Array with params and expiry
      * @param array  $randomTokenSequence Array containing strings to simulate duplicate tokens
@@ -335,7 +335,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test simple get tokens data provider
+     * Test simple get tokens data provider.
      *
      * @return Generator
      */
@@ -356,7 +356,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Very simple array acting as a database
+     * Very simple array acting as a database.
      *
      * @var array
      */
@@ -376,7 +376,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test legacy retrieval
+     * Test legacy retrieval.
      *
      * @param string  $token          Token used to search for row
      * @param ?string $expectedParams Expected parameters to be returned or null for no results

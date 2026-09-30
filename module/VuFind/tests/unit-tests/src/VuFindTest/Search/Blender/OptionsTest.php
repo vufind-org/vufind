@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Options Test
+ * Blender Options Test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\Blender\Options;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Options Test
+ * Blender Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testOptions
+     * Data provider for testOptions.
      *
      * @return \Iterator
      */

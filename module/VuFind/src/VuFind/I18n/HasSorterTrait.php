@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait SortingTrait
+ * Trait SortingTrait.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\I18n;
 use VuFind\Exception\BadConfig as BadConfigException;
 
 /**
- * Trait SortingTrait
+ * Trait SortingTrait.
  *
  * @category VuFind
  * @package  I18n
@@ -45,14 +45,14 @@ use VuFind\Exception\BadConfig as BadConfigException;
 trait HasSorterTrait
 {
     /**
-     * Sorter
+     * Sorter.
      *
      * @var ?SorterInterface
      */
     protected $sorter = null;
 
     /**
-     * Set the sorter
+     * Set the sorter.
      *
      * @param SorterInterface $sorter Sorter service
      *
@@ -64,7 +64,7 @@ trait HasSorterTrait
     }
 
     /**
-     * Get the sorter
+     * Get the sorter.
      *
      * @return SorterInterface
      */

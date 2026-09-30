@@ -77,7 +77,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * HTTP client factory
+     * HTTP client factory.
      *
      * @var callable
      */
@@ -98,21 +98,21 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     protected $map;
 
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
     protected $uniqueKey;
 
     /**
-     * Url of the last request
+     * Url of the last request.
      *
      * @var ?Http
      */
     protected $lastUrl = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|array        $url       SOLR core URL or an array of alternative
      * URLs
@@ -178,7 +178,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Clears the last url
+     * Clears the last url.
      *
      * @return void
      */
@@ -327,7 +327,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Call a method with provided options for the HTTP client
+     * Call a method with provided options for the HTTP client.
      *
      * @param array  $options HTTP client options
      * @param string $method  Method to call
@@ -364,7 +364,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Check if an exception from a Solr request should be thrown rather than retried
+     * Check if an exception from a Solr request should be thrown rather than retried.
      *
      * @param \Exception $ex Exception
      *

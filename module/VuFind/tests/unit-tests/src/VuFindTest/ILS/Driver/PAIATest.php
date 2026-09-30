@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\ILS\Driver\PAIA;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -368,7 +368,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -388,7 +388,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -401,7 +401,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -414,7 +414,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -427,7 +427,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -440,7 +440,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -453,7 +453,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -501,7 +501,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -514,7 +514,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -533,7 +533,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -552,7 +552,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -583,7 +583,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getAccountBlocks
+     * Test getAccountBlocks.
      *
      * @return void
      */

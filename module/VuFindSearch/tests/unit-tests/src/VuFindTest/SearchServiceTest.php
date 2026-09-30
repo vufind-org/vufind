@@ -48,7 +48,7 @@ class SearchServiceTest extends TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Mock backend
+     * Mock backend.
      *
      * @var BackendInterface
      */

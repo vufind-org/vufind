@@ -14,9 +14,9 @@
     </div>
     <?=$this->transEsc('od_content')?>
   </h2>
-  <?php if ($this->config()->get('Overdrive')->Overdrive->ODHelpLink): ?>
+  <?php if ($odHelpLink = $this->config()->getArray('Overdrive')['Overdrive']['ODHelpLink'] ?? false): ?>
     <p class="od_help"><?=$this->icon('overdrive-help')?>
-      <?=$this->translate('od_mycontent_help', ['%%url%%' => $this->config()->get('Overdrive')->Overdrive->ODHelpLink])?></p>
+      <?=$this->translate('od_mycontent_help', ['%%url%%' => $odHelpLink])?></p>
   <?php endif;?>
 
   <?=$this->flashmessages()?>
@@ -175,7 +175,7 @@
                           type="button" id="dropdownMenu1"
                           data-bs-toggle="dropdown"
                           aria-haspopup="true" aria-expanded="true">
-                              <?=$this->transEsc('od_but_edit_hold')?> <?=$this->icon('dropdown-caret')?>
+                              <?=$this->transEsc('od_but_edit_hold')?> <?=$this->icon('dropdown-open')?>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                     <li><a class="cancelhold"

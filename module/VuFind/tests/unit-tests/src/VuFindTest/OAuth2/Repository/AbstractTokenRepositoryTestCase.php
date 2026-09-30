@@ -101,7 +101,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create OAuth2 Config
+     * Create OAuth2 Config.
      *
      * @return array
      */
@@ -213,7 +213,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create Access token service
+     * Create Access token service.
      *
      * @return MockObject&AccessTokenServiceInterface
      */
@@ -320,7 +320,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create User service
+     * Create User service.
      *
      * @return MockObject&UserServiceInterface
      */
@@ -360,7 +360,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create a client entity
+     * Create a client entity.
      *
      * @return ClientEntity
      */

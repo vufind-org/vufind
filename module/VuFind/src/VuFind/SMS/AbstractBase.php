@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class to enable sharing of common methods between SMS subclasses
+ * Base class to enable sharing of common methods between SMS subclasses.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\SMS;
 
 /**
- * Base class to enable sharing of common methods between SMS subclasses
+ * Base class to enable sharing of common methods between SMS subclasses.
  *
  * @category VuFind
  * @package  SMS
@@ -41,43 +41,35 @@ namespace VuFind\SMS;
 abstract class AbstractBase implements SMSInterface
 {
     /**
-     * SMS configuration
+     * Constructor.
      *
-     * @var \VuFind\Config\Config
+     * @param array $smsConfig SMS configuration
      */
-    protected $smsConfig;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\Config $config SMS configuration
-     */
-    public function __construct(\VuFind\Config\Config $config)
+    public function __construct(protected array $smsConfig)
     {
-        $this->smsConfig = $config;
     }
 
     /**
-     * Filter bad characters from a phone number
+     * Filter bad characters from a phone number.
      *
      * @param string $num Phone number to filter
      *
      * @return string
      */
-    protected function filterPhoneNumber($num)
+    protected function filterPhoneNumber(string $num): string
     {
-        $filter = $this->smsConfig->General->filter ?? '-.() ';
+        $filter = $this->smsConfig['General']['filter'] ?? '-.() ';
         return str_replace(str_split($filter), '', $num);
     }
 
     /**
-     * Get validation type for phone numbers
+     * Get validation type for phone numbers.
      *
      * @return string
      */
-    public function getValidationType()
+    public function getValidationType(): string
     {
         // Load setting from config; at present, only US is implemented in templates
-        return $this->smsConfig->General->validation ?? 'US';
+        return $this->smsConfig['General']['validation'] ?? 'US';
     }
 }

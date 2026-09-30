@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Timed method blocks view helper
+ * Timed method blocks view helper.
  *
  * PHP version 8
  *
@@ -29,8 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ILS\Connection;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Timed method blocks view helper
+ * Timed method blocks view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,10 +41,26 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
+class MethodTimedBlocks
 {
     /**
-     * Returns a display string of timed blocks from driver configuration
+     * Constructor.
+     *
+     * @param Connection $ils      ILS helper
+     * @param TransEsc   $transEsc TransEsc helper
+     * @param DateTime   $dateTime DateTime helper
+     */
+    public function __construct(
+        protected Connection $ils,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected TransEsc $transEsc,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected DateTime $dateTime
+    ) {
+    }
+
+    /**
+     * Returns a display string of timed blocks from driver configuration.
      *
      * @param string $methodName        Method to check
      * @param string $methodDisplayName Method display name translation key (Defaults to "This feature")
@@ -54,31 +73,22 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
         string $methodDisplayName = '',
         array $params = []
     ): string {
-        $ils = $this->getView()->plugin('ils');
-        if ($block = $ils()->getMethodBlock($methodName, $params)) {
-            $transEsc = $this->getView()->plugin('transEsc');
-            $dateTime = $this->getView()->plugin('dateTime');
+        if ($block = $this->ils->getMethodBlock($methodName, $params)) {
             $transParams = [
-                '%%service%%' => $methodDisplayName
-                    ? $transEsc($methodDisplayName)
-                    : $transEsc('default_service_description'),
+                '%%service%%' => ($this->transEsc)($methodDisplayName ?: 'default_service_description'),
             ];
 
             if (!$block['recurring']) {
                 $end = $block['end']
-                    ? $dateTime->convertToDisplayDate('U', $block['end']->getTimestamp())
+                    ? $this->dateTime->convertToDisplayDate('U', $block['end']->getTimestamp())
                     : '';
                 $transParams['%%end%%'] = $end;
 
-                if ($end) {
-                    return $transEsc('service_blocked_until', $transParams);
-                } else {
-                    return $transEsc('service_blocked', $transParams);
-                }
+                return ($this->transEsc)($end ? 'service_blocked_until' : 'service_blocked', $transParams);
             } else {
-                $end = $dateTime->convertToDisplayTime('U', $block['end']->getTimestamp());
+                $end = $this->dateTime->convertToDisplayTime('U', $block['end']->getTimestamp());
                 $transParams['%%end%%'] = $end;
-                return $transEsc('service_blocked_until', $transParams);
+                return ($this->transEsc)('service_blocked_until', $transParams);
             }
         }
         return '';

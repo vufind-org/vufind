@@ -50,28 +50,28 @@ use VuFind\Net\UserIpReader;
 class IpRange implements PermissionProviderInterface
 {
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * IpAddressUtils object
+     * IpAddressUtils object.
      *
      * @var IpAddressUtils
      */
     protected $ipAddressUtils;
 
     /**
-     * User IP address reader
+     * User IP address reader.
      *
      * @var UserIpReader
      */
     protected $userIpReader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RequestInterface $request      Request object
      * @param IpAddressUtils   $ipUtils      IpAddressUtils object

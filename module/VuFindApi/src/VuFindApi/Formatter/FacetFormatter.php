@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facet formatter for API responses
+ * Facet formatter for API responses.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\Base\Results;
 use function in_array;
 
 /**
- * Facet formatter for API responses
+ * Facet formatter for API responses.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -45,7 +45,7 @@ use function in_array;
 class FacetFormatter extends BaseFormatter
 {
     /**
-     * Build an array of facet filters from the request params
+     * Build an array of facet filters from the request params.
      *
      * @param array $request Request params
      *
@@ -99,7 +99,7 @@ class FacetFormatter extends BaseFormatter
     }
 
     /**
-     * Recursive function to create a facet value list for a single facet
+     * Recursive function to create a facet value list for a single facet.
      *
      * @param array $list    Facet items
      * @param array $filters Facet filters
@@ -144,7 +144,7 @@ class FacetFormatter extends BaseFormatter
     }
 
     /**
-     * Create the result facet list
+     * Create the result facet list.
      *
      * @param array   $request               Request parameters
      * @param Results $results               Search results

@@ -30,6 +30,7 @@
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\RelaisAvailability;
+use VuFindTest\Unit\AjaxHandlerTestCase;
 
 /**
  * RelaisAvailability test class.
@@ -40,7 +41,7 @@ use VuFind\AjaxHandler\RelaisAvailability;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
+class RelaisAvailabilityTest extends AjaxHandlerTestCase
 {
     /**
      * Test authorization failure.
@@ -54,12 +55,11 @@ class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Connection\Relais::class),
             null
         );
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $this->assertEquals(['Failed', 403], $handler->handleRequest($params));
+        $this->assertSame(['Failed', 403], $handler->handleRequest($this->getRequest()));
     }
 
     /**
-     * Data provider for testSearchResponse()
+     * Data provider for testSearchResponse().
      *
      * @return \Iterator
      */
@@ -82,9 +82,7 @@ class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('searchResponseProvider')]
     public function testSearchResponse(string $response, array $expected): void
     {
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $params->expects($this->once())->method('fromQuery')->with('oclcNumber')
-            ->willReturn('oclcnum');
+        $request = $this->getRequest(['oclcNumber' => 'oclcnum']);
         $relais = $this->createMock(\VuFind\Connection\Relais::class);
         $relais->expects($this->once())->method('authenticatePatron')
             ->willReturn('authorization-id');
@@ -96,6 +94,6 @@ class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
             $relais,
             null
         );
-        $this->assertEquals($expected, $handler->handleRequest($params));
+        $this->assertEquals($expected, $handler->handleRequest($request));
     }
 }

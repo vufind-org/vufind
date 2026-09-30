@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Items Plugin Manager Test Class
+ * Related Items Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Related;
 use VuFind\Related\PluginManager;
 
 /**
- * Related Items Plugin Manager Test Class
+ * Related Items Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class AuthTokenTest
+ * Class AuthTokenTest.
  *
  * PHP version 8
  *
@@ -35,7 +35,6 @@ use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\LoginTokenManager;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\LoginTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -44,7 +43,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
- * Class LoginTokenManagerTest
+ * Class LoginTokenManagerTest.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -55,7 +54,7 @@ use VuFind\Exception\LoginToken as LoginTokenException;
 class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test login exception
+     * Test login exception.
      *
      * @return void
      */
@@ -80,7 +79,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test logging in with invalid token
+     * Test logging in with invalid token.
      *
      * @return void
      */
@@ -106,7 +105,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test failed login
+     * Test failed login.
      *
      * @return void
      */
@@ -164,7 +163,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get cookie manager
+     * Get cookie manager.
      *
      * @param array $cookies Cookies
      *
@@ -182,7 +181,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get login token
+     * Get login token.
      *
      * @param CookieManager $cookieManager cookie manager
      * @param LoginToken    $tokenTable    Login token table
@@ -193,7 +192,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getLoginToken($cookieManager, $tokenTable, $userTable, $browscapOk)
     {
-        $config = new Config([]);
+        $config = [];
         $saveHandler = $this->createMock(SaveHandlerInterface::class);
         $sessionManager = $this->createMock(SessionManager::class);
         $sessionManager->method('getSaveHandler')->willReturn($saveHandler);

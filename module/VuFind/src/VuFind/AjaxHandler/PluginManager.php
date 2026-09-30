@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\AjaxHandler;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * @category VuFind
  * @package  AJAX
@@ -51,6 +53,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'deleteRecordComment' => DeleteRecordComment::class,
         'identifierLinksLookup' => IdentifierLinksLookup::class,
         'getACSuggestions' => GetACSuggestions::class,
+        'getCookieConsent' => GetCookieConsent::class,
         'getIlsStatus' => GetIlsStatus::class,
         'getItemStatuses' => GetItemStatuses::class,
         'getLibraryPickupLocations' => GetLibraryPickupLocations::class,
@@ -84,48 +87,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        CheckRequestIsValid::class => AbstractIlsAndUserActionFactory::class,
-        CommentRecord::class => CommentRecordFactory::class,
-        DeleteRecordComment::class => DeleteRecordCommentFactory::class,
-        IdentifierLinksLookup::class => IdentifierLinksLookupFactory::class,
-        GetACSuggestions::class => GetACSuggestionsFactory::class,
-        GetIlsStatus::class => GetIlsStatusFactory::class,
-        GetItemStatuses::class => GetItemStatusesFactory::class,
-        GetLibraryPickupLocations::class => AbstractIlsAndUserActionFactory::class,
-        GetRecordCommentsAsHTML::class => GetRecordCommentsAsHTMLFactory::class,
-        GetRecordCover::class => GetRecordCoverFactory::class,
-        GetRecordDetails::class => GetRecordDetailsFactory::class,
-        GetRecordRating::class => GetRecordRatingFactory::class,
-        GetRecordTags::class => GetRecordTagsFactory::class,
-        GetRecordVersions::class => GetRecordVersionsFactory::class,
-        GetRequestGroupPickupLocations::class =>
-            AbstractIlsAndUserActionFactory::class,
-        GetResolverLinks::class => GetResolverLinksFactory::class,
-        GetResultCount::class => GetResultCountFactory::class,
-        GetSaveStatuses::class => GetSaveStatusesFactory::class,
-        GetSearchResults::class => GetSearchResultsFactory::class,
-        GetSideFacets::class => GetSideFacetsFactory::class,
-        GetUserFines::class => GetUserFinesFactory::class,
-        GetUserHolds::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetUserILLRequests::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetUserStorageRetrievalRequests::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetUserTransactions::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetVisData::class => GetVisDataFactory::class,
-        KeepAlive::class => KeepAliveFactory::class,
-        OnlinePaymentNotify::class => AbstractOnlinePaymentActionFactory::class,
-        OnlinePaymentRegister::class => AbstractOnlinePaymentActionFactory::class,
-        Recommend::class => RecommendFactory::class,
-        RelaisAvailability::class => AbstractRelaisActionFactory::class,
-        RelaisInfo::class =>  AbstractRelaisActionFactory::class,
-        RelaisOrder::class => AbstractRelaisActionFactory::class,
-        SystemStatus::class => SystemStatusFactory::class,
-        TagRecord::class => TagRecordFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

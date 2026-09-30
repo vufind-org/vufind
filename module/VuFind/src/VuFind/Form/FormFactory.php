@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class FormFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,16 +69,17 @@ class FormFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('config');
+        $formConfig = $configManager->getConfigArray('FeedbackForms');
         $viewHelperManager = $container->get('ViewHelperManager');
         $handlerManager = $container->get(\VuFind\Form\Handler\PluginManager::class);
 
         return new $requestedName(
-            $yamlReader,
             $viewHelperManager,
             $handlerManager,
-            $config
+            $config,
+            $formConfig
         );
     }
 }

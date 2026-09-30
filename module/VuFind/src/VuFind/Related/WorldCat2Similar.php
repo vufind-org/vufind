@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: WorldCat v2-based similarity
+ * Related Records: WorldCat v2-based similarity.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function count;
 use function in_array;
 
 /**
- * Related Records: WorldCat v2-based similarity
+ * Related Records: WorldCat v2-based similarity.
  *
  * @category VuFind
  * @package  Related_Records
@@ -125,7 +125,7 @@ class WorldCat2Similar extends Similar
             $result = $this->searchService->invoke($command)->getResult();
             foreach ($result->getRecords() as $record) {
                 if (
-                    !in_array($record->getUniqueId(), $idsToExclude)
+                    !in_array($record->getUniqueID(), $idsToExclude)
                     && count($this->results) < $this->maxRecommendations
                 ) {
                     $this->results[] = $record;

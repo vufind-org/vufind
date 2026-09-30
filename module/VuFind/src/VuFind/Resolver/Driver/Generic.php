@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Generic Link Resolver Driver
+ * Generic Link Resolver Driver.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Resolver\Driver;
 
 /**
- * Generic Link Resolver Driver
+ * Generic Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -41,7 +41,7 @@ namespace VuFind\Resolver\Driver;
 class Generic extends AbstractBase
 {
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -55,7 +55,7 @@ class Generic extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display

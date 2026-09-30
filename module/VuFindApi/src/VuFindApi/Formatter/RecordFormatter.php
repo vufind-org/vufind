@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record formatter for API responses
+ * Record formatter for API responses.
  *
  * PHP version 8
  *
@@ -29,15 +29,19 @@
 
 namespace VuFindApi\Formatter;
 
-use Laminas\View\HelperPluginManager;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
-use VuFindApi\Controller\ApiException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\RecordDriver\AbstractBase as AbstractRecord;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Helper\Root\Record;
+use VuFind\View\Helper\Root\RecordLinker;
 
 use function is_object;
 
 /**
- * Record formatter for API responses
+ * Record formatter for API responses.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -45,64 +49,63 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class RecordFormatter extends BaseFormatter
+class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array               $recordFields    Record field definitions
-     * @param HelperPluginManager $helperManager   View helper plugin manager
-     * @param ?ServerUrlHelper    $serverUrlHelper Server URL helper
+     * @param RecordLinker    $recordLinker    Record linker
+     * @param Record          $recordHelper    Record view helper
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
     public function __construct(
-        protected array $recordFields,
-        protected HelperPluginManager $helperManager,
-        protected ?ServerUrlHelper $serverUrlHelper = null
+        #[Autowire(container: 'ViewHelperManager')]
+        protected RecordLinker $recordLinker,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Record $recordHelper,
+        protected ServerUrlHelper $serverUrlHelper
     ) {
     }
 
     /**
-     * Get dedup IDs
+     * Get dedup IDs.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
-     * @return array|null
+     * @return ?array
      */
-    protected function getDedupIds($record)
+    protected function getDedupIds(AbstractRecord $record): ?array
     {
         if (!($dedupData = $record->tryMethod('getDedupData'))) {
             return null;
         }
-        $result = [];
-        foreach ($dedupData as $item) {
-            $result[] = $item['id'];
-        }
-        return $result ? $result : null;
+        return array_column($dedupData, 'id') ?: null;
     }
 
     /**
-     * Get extended subject headings
+     * Get extended subject headings.
      *
-     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     * @param AbstractRecord $record Record driver
      *
-     * @return array|null
+     * @return ?array
      */
-    protected function getExtendedSubjectHeadings($record)
+    protected function getExtendedSubjectHeadings(AbstractRecord $record): ?array
     {
-        $result = $record->getAllSubjectHeadings(true);
-        // Make sure that the record driver returned the additional information and
-        // return data only if it did
-        return $result && isset($result[0]['heading']) ? $result : null;
+        $result = $record->tryMethod('getAllSubjectHeadings', [true]);
+        // Make sure that the record driver returned the additional information and return data only if it did:
+        return isset($result[0]['heading']) ? $result : null;
     }
 
     /**
-     * Get full record for a record as XML
+     * Get full record for a record as XML.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
-     * @return string|null
+     * @return ?string
      */
-    protected function getFullRecord($record)
+    protected function getFullRecord(AbstractRecord $record): ?string
     {
         if ($xml = $record->tryMethod('getFilteredXML')) {
             return $xml;
@@ -112,15 +115,15 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get raw data for a record as an array
+     * Get raw data for a record as an array.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
      * @return array
      */
-    protected function getRawData($record)
+    protected function getRawData(AbstractRecord $record): array
     {
-        $rawData = $record->tryMethod('getRawData');
+        $rawData = $record->tryMethod('getRawData', default: []);
 
         // Leave out spelling data
         unset($rawData['spelling']);
@@ -129,92 +132,87 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get relative link to record page
+     * Get relative link to record page.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
      * @return string
      *
      * @deprecated Use getRecordPageRelativeLink instead
      */
-    protected function getRecordPage($record)
+    protected function getRecordPage(AbstractRecord $record): string
     {
         return $this->getRecordPageRelativeLink($record);
     }
 
     /**
-     * Get relative link to record page
+     * Get relative link to record page.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
      * @return string
      */
-    protected function getRecordPageRelativeLink($record)
+    protected function getRecordPageRelativeLink(AbstractRecord $record): string
     {
-        $urlHelper = $this->helperManager->get('recordLinker');
-        return $urlHelper->getUrl($record);
+        return $this->recordLinker->getUrl($record);
     }
 
     /**
-     * Get absolute link to record page
+     * Get absolute link to record page.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
      * @return string
      */
-    protected function getRecordPageAbsoluteLink($record)
+    protected function getRecordPageAbsoluteLink(AbstractRecord $record): string
     {
-        if (!$this->serverUrlHelper) {
-            throw new ApiException('ServerUrlHelper missing: Cannot generate absolute link to record.');
-        }
         $recordPage = $this->getRecordPageRelativeLink($record);
         return $this->serverUrlHelper->getUrlForPath($recordPage);
     }
 
     /**
-     * Get URLs
+     * Get URLs.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     * @param AbstractRecord $record Record driver
      *
      * @return array
      */
-    protected function getURLs($record)
+    protected function getURLs(AbstractRecord $record): array
     {
-        $recordHelper = $this->helperManager->get('record');
-        return $recordHelper($record)->getLinkDetails();
+        return ($this->recordHelper)($record)->getLinkDetails();
     }
 
     /**
-     * Get fields from a record as an array
+     * Get fields from a record as an array.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     * @param array                             $fields Fields to get
+     * @param AbstractRecord $record            Record driver
+     * @param array          $fields            Fields to get
+     * @param array          $recordFieldConfig Record field configuration
      *
      * @return array
      */
-    protected function getFields($record, $fields)
+    protected function getFields(AbstractRecord $record, array $fields, array $recordFieldConfig): array
     {
         $result = [];
         foreach ($fields as $field) {
-            if (!isset($this->recordFields[$field])) {
+            if (!isset($recordFieldConfig[$field])) {
                 continue;
             }
-            $method = $this->recordFields[$field]['vufind.method'];
+            $method = $recordFieldConfig[$field]['vufind.method'];
             $value = strncmp($method, 'Formatter::', 11) == 0
                 ? $this->{substr($method, 11)}($record)
                 : $record->tryMethod($method);
             $result[$field] = $value;
         }
         // Convert any translation aware string classes to strings
-        $translator = $this->helperManager->get('translate');
         array_walk_recursive(
             $result,
-            function (&$value) use ($translator): void {
+            function (&$value): void {
                 if (is_object($value)) {
                     if ($value instanceof TranslatableString) {
                         $value = [
                             'value' => (string)$value,
-                            'translated' => $translator->translate($value),
+                            'translated' => $this->translator->translate($value),
                         ];
                     } else {
                         $value = (string)$value;
@@ -227,21 +225,13 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get record field definitions.
+     * Return record field specs for the API specification.
+     *
+     * @param array $recordFieldConfig Record field configuration
      *
      * @return array
      */
-    public function getRecordFields()
-    {
-        return $this->recordFields;
-    }
-
-    /**
-     * Return record field specs for the API specification
-     *
-     * @return array
-     */
-    public function getRecordFieldSpec()
+    public function getRecordFieldSpec(array $recordFieldConfig): array
     {
         $fields = array_map(
             function ($item) {
@@ -252,7 +242,7 @@ class RecordFormatter extends BaseFormatter
                 }
                 return $item;
             },
-            $this->recordFields
+            $recordFieldConfig
         );
         return $fields;
     }
@@ -260,16 +250,17 @@ class RecordFormatter extends BaseFormatter
     /**
      * Format the results.
      *
-     * @param array $results         Results to process (array of record drivers)
-     * @param array $requestedFields Fields to include in response
+     * @param array $results           Results to process (array of record drivers)
+     * @param array $requestedFields   Fields to include in response
+     * @param array $recordFieldConfig Record field configuration
      *
      * @return array
      */
-    public function format($results, $requestedFields)
+    public function format(array $results, array $requestedFields, array $recordFieldConfig): array
     {
         $records = [];
         foreach ($results as $result) {
-            $records[] = $this->getFields($result, $requestedFields);
+            $records[] = $this->getFields($result, $requestedFields, $recordFieldConfig);
         }
 
         $this->filterArrayValues($records);

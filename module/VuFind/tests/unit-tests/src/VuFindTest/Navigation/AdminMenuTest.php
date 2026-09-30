@@ -90,11 +90,11 @@ class AdminMenuTest extends AbstractSectionTestCase
             $this->assertEquals(false, $plugin->{$method}());
         }
         $menu = $plugin->getMenu();
-        $this->assertCount(7, $menu['Admin']['MenuItems']);
+        $this->assertCount(8, $menu['Admin']['MenuItems']);
     }
 
     /**
-     * Data provider for testRequiredConfiguration
+     * Data provider for testRequiredConfiguration.
      *
      * @return \Iterator<string, array>
      */

@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class SectionServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,7 +70,7 @@ class SectionServiceFactory implements FactoryInterface
         }
         $localeSettings = $container->get(\VuFind\I18n\Locale\LocaleSettings::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\YamlReader::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\Section\Plugin\PluginManager::class),
             $localeSettings->getUserLocale(),
             $localeSettings->getFallbackLocales(),

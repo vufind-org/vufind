@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -31,12 +31,11 @@ namespace VuFindTest\RecordDriver;
 
 use Exception;
 use Laminas\Http\Response;
-use VuFind\Config\Config;
 use VuFind\RecordDriver\SolrMarcRemote;
 use VuFindHttp\HttpServiceInterface;
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -93,13 +92,13 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
     protected function getDriver(): SolrMarcRemote
     {
         $url = 'http://foo/%s';
-        $config = new Config(['Record' => ['remote_marc_url' => $url]]);
+        $config = ['Record' => ['remote_marc_url' => $url]];
         $driver = new SolrMarcRemote($config);
         return $driver;
     }
 
     /**
-     * Get a mock HttpService for testing
+     * Get a mock HttpService for testing.
      *
      * @return HttpServiceInterface
      */

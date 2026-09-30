@@ -30,8 +30,6 @@
 
 namespace VuFind\Search\Params;
 
-use VuFind\Config\Config;
-
 /**
  * Trait to add facet limiting settings to a Params object.
  *
@@ -44,14 +42,14 @@ use VuFind\Config\Config;
 trait FacetRestrictionsTrait
 {
     /**
-     * Per-field facet prefix
+     * Per-field facet prefix.
      *
      * @var array
      */
     protected array $facetPrefixByField = [];
 
     /**
-     * Per-field facet matches
+     * Per-field facet matches.
      *
      * @var array
      */
@@ -60,22 +58,22 @@ trait FacetRestrictionsTrait
     /**
      * Initialize facet prefix and matches from a Config object.
      *
-     * @param ?Config $config Configuration
+     * @param ?array $config Configuration
      *
      * @return void
      */
-    protected function initFacetRestrictionsFromConfig(?Config $config = null): void
+    protected function initFacetRestrictionsFromConfig(?array $config = null): void
     {
-        foreach ($config->facet_prefix_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_prefix_by_field'] ?? [] as $k => $v) {
             $this->facetPrefixByField[$k] = $v;
         }
-        foreach ($config->facet_matches_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_matches_by_field'] ?? [] as $k => $v) {
             $this->facetMatchesByField[$k] = $v;
         }
     }
 
     /**
-     * Set Facet Prefix by Field
+     * Set Facet Prefix by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
@@ -87,7 +85,7 @@ trait FacetRestrictionsTrait
     }
 
     /**
-     * Set Facet Matches by Field
+     * Set Facet Matches by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *

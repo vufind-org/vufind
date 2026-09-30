@@ -45,7 +45,7 @@ use VuFind\Search\Primo\Params;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test facet value normalization
+     * Test facet value normalization.
      *
      * @return void
      */
@@ -201,7 +201,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @return Params
      */

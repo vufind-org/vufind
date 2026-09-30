@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrAuthMarc Record Driver Test Class
+ * SolrAuthMarc Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\RecordDriver;
 
 /**
- * SolrAuthMarc Record Driver Test Class
+ * SolrAuthMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests

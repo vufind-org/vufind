@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels tab
+ * Channels tab.
  *
  * PHP version 8
  *
@@ -30,9 +30,10 @@
 namespace VuFind\RecordTab;
 
 use VuFind\ChannelProvider\ChannelLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Channels tab
+ * Channels tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -50,13 +51,16 @@ class Channels extends AbstractBase
     protected array $configSections = ['recordTab', 'record'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ChannelLoader $loader  Channel loader
      * @param array         $options Config settings
      */
-    public function __construct(protected ChannelLoader $loader, protected array $options = [])
-    {
+    public function __construct(
+        protected ChannelLoader $loader,
+        #[Autowire(config: 'channels', path: 'RecordTab', default: [])]
+        protected array $options = []
+    ) {
     }
 
     /**
@@ -85,7 +89,8 @@ class Channels extends AbstractBase
             $query?->get('channelToken'),
             $query?->get('channelProvider'),
             $driver->getSearchBackendIdentifier(),
-            $this->configSections
+            $this->configSections,
+            'tab'
         );
     }
 }

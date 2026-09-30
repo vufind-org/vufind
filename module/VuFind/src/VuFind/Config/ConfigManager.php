@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration manager
+ * Configuration manager.
  *
  * PHP version 8
  *
@@ -37,12 +37,13 @@ use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\ConfigException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 use function strval;
 
 /**
- * Configuration manager
+ * Configuration manager.
  *
  * @category VuFind
  * @package  Config
@@ -61,12 +62,13 @@ class ConfigManager implements ConfigManagerInterface
     protected StorageInterface $cache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigLoader         $configLoader         Config loader
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param CacheManager         $cacheManager         Cache manager
      */
+    #[Autowire]
     public function __construct(
         protected ConfigLoader $configLoader,
         protected HandlerPluginManager $configHandlerManager,
@@ -80,36 +82,41 @@ class ConfigManager implements ConfigManagerInterface
      *
      * The path consists of a base configuration name and a path to a subsection of that configuration.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return mixed
      */
-    public function getConfig(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): mixed
+    public function getConfig(string $configName, bool $forceReload = false, bool $useLocalConfig = true): mixed
     {
-        $configLocation = $this->configLoader->getConfigLocation($configPath, $useLocalConfig);
+        $configLocation = $this->configLoader->getConfigLocation($configName, $useLocalConfig);
         if (!$configLocation) {
             return [];
         }
-        $config = $this->loadConfigFromLocation($configLocation, forceReload: $forceReload);
-        return $config;
+        return $this->loadConfigFromLocation(
+            $configLocation,
+            forceReload: $forceReload,
+            useLocalConfig: $useLocalConfig
+        );
     }
 
     /**
      * Get config as array by path.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    public function getConfigArray(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): array
+    public function getConfigArray(string $configName, bool $forceReload = false, bool $useLocalConfig = true): array
     {
-        $config = $this->getConfig($configPath, $forceReload, $useLocalConfig);
+        $config = $this->getConfig($configName, $forceReload, $useLocalConfig);
         if (!is_array($config)) {
-            throw new ConfigException('Configuration on path ' . $configPath . ' is not an array.');
+            throw new ConfigException('Configuration on path ' . $configName . ' is not an array.');
         }
         return $config;
     }
@@ -117,33 +124,16 @@ class ConfigManager implements ConfigManagerInterface
     /**
      * Get config as object by path.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return Config
      */
-    public function getConfigObject(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): Config
+    public function getConfigObject(string $configName, bool $forceReload = false, bool $useLocalConfig = true): Config
     {
-        return new Config($this->getConfigArray($configPath, $forceReload, $useLocalConfig));
-    }
-
-    /**
-     * Get config in PluginManager style.
-     *
-     * @param string $name    Service name of plugin to retrieve.
-     * @param ?array $options Options to use when creating the instance.
-     *
-     * @return mixed
-     *
-     * @deprecated Use getConfigArray, getConfigObject or getConfig instead
-     */
-    public function get($name, ?array $options = null)
-    {
-        return $this->getConfigObject(
-            $name,
-            forceReload: $options['forceReload'] ?? false
-        );
+        return new Config($this->getConfigArray($configName, $forceReload, $useLocalConfig));
     }
 
     /**
@@ -152,13 +142,15 @@ class ConfigManager implements ConfigManagerInterface
      * @param ConfigLocationInterface $configLocation     Config location
      * @param bool                    $handleParentConfig If parent configuration should be handled
      * @param bool                    $forceReload        If cache should be ignored
+     * @param bool                    $useLocalConfig     Use local configuration if available
      *
      * @return mixed
      */
     public function loadConfigFromLocation(
         ConfigLocationInterface $configLocation,
         bool $handleParentConfig = true,
-        bool $forceReload = false
+        bool $forceReload = false,
+        bool $useLocalConfig = true,
     ): mixed {
         $cacheConfig = $this->cacheManager->getConfig();
         $cacheOptions = array_merge(
@@ -190,12 +182,17 @@ class ConfigManager implements ConfigManagerInterface
 
         // load configuration if it was not cached yet.
         if ($config === null) {
-            $config = $this->configLoader->loadConfigFromLocation($configLocation, $handleParentConfig, $forceReload);
+            $config = $this->configLoader->loadConfigFromLocation(
+                $configLocation,
+                $handleParentConfig,
+                $forceReload,
+                $useLocalConfig
+            );
+            if ($useAdvancedCache) {
+                $advancedCache->setItem($cacheKey, $config);
+            }
         }
 
-        if ($useAdvancedCache) {
-            $advancedCache->setItem($cacheKey, $config);
-        }
         return $config;
     }
 

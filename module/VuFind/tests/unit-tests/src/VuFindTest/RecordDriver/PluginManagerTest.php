@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDriver Plugin Manager Test Class
+ * RecordDriver Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\PluginManager;
 
 /**
- * RecordDriver Plugin Manager Test Class
+ * RecordDriver Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

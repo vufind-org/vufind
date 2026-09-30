@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides aspect of the Search Multi-class (Params)
+ * LibGuides aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\LibGuides;
 
 /**
- * LibGuides Search Parameters
+ * LibGuides Search Parameters.
  *
  * @category VuFind
  * @package  Search_LibGuides

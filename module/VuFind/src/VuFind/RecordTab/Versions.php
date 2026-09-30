@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * PHP version 8
  *
@@ -31,9 +31,10 @@ namespace VuFind\RecordTab;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -46,32 +47,14 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     use TranslatorAwareTrait;
 
     /**
-     * Main configuration
+     * Constructor.
      *
-     * @var \VuFind\Config\Config
+     * @param \VuFind\Search\Options\PluginManager $searchOptionsManager Search options plugin manager
      */
-    protected $config;
-
-    /**
-     * Search options plugin manager
-     *
-     * @var \VuFind\Search\Options\PluginManager
-     */
-    protected $searchOptionsManager;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\Config                $config Configuration
-     * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
-     * manager
-     */
+    #[Autowire]
     public function __construct(
-        \VuFind\Config\Config $config,
-        \VuFind\Search\Options\PluginManager $som
+        protected \VuFind\Search\Options\PluginManager $searchOptionsManager
     ) {
-        $this->config = $config;
-        $this->searchOptionsManager = $som;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for Dublin Core
+ * Metadata vocabulary implementation for Dublin Core.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for Dublin Core
+ * Metadata vocabulary implementation for Dublin Core.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,7 +41,7 @@ namespace VuFind\MetadataVocabulary;
 class DublinCore extends AbstractBase
 {
     /**
-     * Mapping from Dublin Core to VuFind fields
+     * Mapping from Dublin Core to VuFind fields.
      *
      * @var array
      */

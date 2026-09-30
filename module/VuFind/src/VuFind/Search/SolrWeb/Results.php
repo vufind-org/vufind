@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Web aspect of the Search Multi-class (Results)
+ * Solr Web aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\SolrWeb;
 
 /**
- * Solr Web Search Parameters
+ * Solr Web Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrWeb
@@ -43,7 +43,7 @@ class Results extends \VuFind\Search\Solr\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'SolrWeb';
+    protected ?string $backendId = 'SolrWeb';
 }

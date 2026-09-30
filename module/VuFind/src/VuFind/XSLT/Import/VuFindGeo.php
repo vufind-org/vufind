@@ -45,14 +45,14 @@ use function sprintf;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overridable for testing purposes)
+     * Method for logging errors (overridable for testing purposes).
      *
      * @var callable
      */
     public static $logMethod = 'error_log';
 
     /**
-     * Log an error message
+     * Log an error message.
      *
      * @param string $msg Message
      *

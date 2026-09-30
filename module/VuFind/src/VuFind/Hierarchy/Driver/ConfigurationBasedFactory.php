@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Driver Factory Class
+ * Hierarchy Driver Factory Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Hierarchy\Driver;
 use Psr\Container\ContainerInterface;
 
 /**
- * Hierarchy Driver Factory Class
+ * Hierarchy Driver Factory Class.
  *
  * This is a factory class to build objects for managing hierarchies.
  *
@@ -76,7 +76,7 @@ class ConfigurationBasedFactory
         ];
 
         // Load driver-specific configuration:
-        $driverConfig = $configManager->getConfigObject($config);
+        $driverConfig = $configManager->getConfigArray($config);
 
         // Build object:
         return new ConfigurationBased(

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hide values of facet for displaying
+ * Hide values of facet for displaying.
  *
  * PHP version 8
  *
@@ -80,7 +80,7 @@ class HideFacetValueListener
     }
 
     /**
-     * Hide facet values from display
+     * Hide facet values from display.
      *
      * @param EventInterface $event Event
      *
@@ -101,7 +101,7 @@ class HideFacetValueListener
     }
 
     /**
-     * Process hide facet value
+     * Process hide facet value.
      *
      * @param EventInterface $event Event
      *

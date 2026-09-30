@@ -12,7 +12,11 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => $this->translate('Your Checked Out Items'), 'headTitle' => $this->translate('Checked Out Items')]);?>
+  <?= $this->component('page-title', [
+      'title' => $this->translate('Your Checked Out Items'),
+      'headTitle' => $this->translate('Checked Out Items'),
+      'level' => 1,
+  ]); ?>
   <?=$this->flashmessages()?>
   <?=$this->methodTimedBlocks('Renewals')?>
 

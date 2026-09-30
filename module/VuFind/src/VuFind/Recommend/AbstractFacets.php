@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -29,12 +29,10 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Config\Config;
-
 use function in_array;
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  *
@@ -47,28 +45,28 @@ use function in_array;
 abstract class AbstractFacets implements RecommendInterface
 {
     /**
-     * Facets with "exclude" links enabled
+     * Facets with "exclude" links enabled.
      *
      * @var array
      */
     protected $excludableFacets = [];
 
     /**
-     * Facets that are "ORed" instead of "ANDed."
+     * Facets that are "ORed" instead of "ANDed.".
      *
      * @var array
      */
     protected $orFacets = [];
 
     /**
-     * Search results
+     * Search results.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
@@ -103,7 +101,7 @@ abstract class AbstractFacets implements RecommendInterface
     }
 
     /**
-     * Get the facet boolean operator
+     * Get the facet boolean operator.
      *
      * @param string $field Field name
      *
@@ -125,31 +123,31 @@ abstract class AbstractFacets implements RecommendInterface
     }
 
     /**
-     * Read boolean (OR/NOT) settings from the provided configuration
+     * Read boolean (OR/NOT) settings from the provided configuration.
      *
-     * @param Config $config    Configuration to read
+     * @param array  $config    Configuration to read
      * @param array  $allFacets All facets (to use when config = *)
      * @param string $section   Configuration section containing settings
      *
      * @return void
      */
     protected function loadBooleanConfigs(
-        Config $config,
+        array $config,
         $allFacets,
         $section = 'Results_Settings'
     ) {
         // Which facets are excludable?
-        if (isset($config->$section->exclude)) {
-            $this->excludableFacets = ($config->$section->exclude === '*')
+        if (isset($config[$section]['exclude'])) {
+            $this->excludableFacets = ($config[$section]['exclude'] === '*')
                 ? $allFacets
-                : array_map('trim', explode(',', $config->$section->exclude));
+                : array_map('trim', explode(',', $config[$section]['exclude']));
         }
 
         // Which facets are ORed?
-        if (isset($config->$section->orFacets)) {
-            $this->orFacets = ($config->$section->orFacets === '*')
+        if (isset($config[$section]['orFacets'])) {
+            $this->orFacets = ($config[$section]['orFacets'] === '*')
                 ? $allFacets
-                : array_map('trim', explode(',', $config->$section->orFacets));
+                : array_map('trim', explode(',', $config[$section]['orFacets']));
         }
     }
 }

@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Advanced Search'));
 
     // Disable top search box -- this page has a special layout.
-    $this->layout()->searchbox = false;
+    $this->globals()['searchbox'] = false;
 
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Advanced Search'), active: true);

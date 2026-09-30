@@ -638,7 +638,7 @@ class LuceneSyntaxHelper
     }
 
     /**
-     * Count occurrences of a character in non-quoted parts of the string
+     * Count occurrences of a character in non-quoted parts of the string.
      *
      * @param string $needle   Character to look for (non-escaped)
      * @param string $haystack String to process
@@ -661,7 +661,7 @@ class LuceneSyntaxHelper
     }
 
     /**
-     * Remove occurrences of given characters in non-quoted parts of the string
+     * Remove occurrences of given characters in non-quoted parts of the string.
      *
      * @param array  $needles  Characters to remove (non-escaped)
      * @param string $haystack String to process
@@ -683,7 +683,7 @@ class LuceneSyntaxHelper
     }
 
     /**
-     * Process a Lucene query string with a callback
+     * Process a Lucene query string with a callback.
      *
      * @param callable $callback Callback that gets called for each character
      * @param string   $str      String to process

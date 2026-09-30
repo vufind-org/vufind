@@ -31,7 +31,7 @@
   $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
 
   // Set up search box:
-  $this->layout()->searchbox = $this->context($this)->renderInContext(
+  $this->globals()['searchbox'] = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
       [
         'ignoreHiddenFiltersInRequest' => true,

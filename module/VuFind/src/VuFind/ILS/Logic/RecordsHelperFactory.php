@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class RecordsHelperFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,7 +69,7 @@ class RecordsHelperFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $container->get(\VuFind\Record\Loader::class)
         );
     }

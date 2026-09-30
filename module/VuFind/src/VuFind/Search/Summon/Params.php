@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Parameters
+ * Summon Search Parameters.
  *
  * PHP version 8
  *
@@ -30,13 +30,12 @@
 namespace VuFind\Search\Summon;
 
 use SerialsSolutions_Summon_Query as SummonQuery;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\ParamBag;
 
 /**
- * Summon Search Parameters
+ * Summon Search Parameters.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -49,14 +48,14 @@ class Params extends \VuFind\Search\Base\Params
     use \VuFind\Search\Params\FacetLimitTrait;
 
     /**
-     * Settings for all the facets
+     * Settings for all the facets.
      *
      * @var array
      */
     protected array $fullFacetSettings = [];
 
     /**
-     * Settings for the date facet only
+     * Settings for the date facet only.
      *
      * @var array
      */
@@ -80,7 +79,7 @@ class Params extends \VuFind\Search\Base\Params
     protected array $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
@@ -88,8 +87,9 @@ class Params extends \VuFind\Search\Base\Params
     public function __construct(\VuFind\Search\Base\Options $options, ConfigManagerInterface $configManager)
     {
         parent::__construct($options, $configManager);
-        $config = $configManager->getConfigObject($options->getFacetsIni());
-        $this->initFacetLimitsFromConfig($config->Facet_Settings ?? null);
+        $config = $configManager->getConfigArray($options->getFacetsIni());
+        $facetSettings = $config['Facet_Settings'] ?? null;
+        $this->initFacetLimitsFromConfig($facetSettings);
     }
 
     /**
@@ -401,12 +401,13 @@ class Params extends \VuFind\Search\Base\Params
     protected function initFacetList(string $facetList, string $facetSettings, ?string $cfgFile = null): bool
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
-        $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
         // Special case -- when most settings are in Results_Settings, the limits
         // can be found in Facet_Settings.
         $limitSection = ($facetSettings === 'Results_Settings')
             ? 'Facet_Settings' : $facetSettings;
-        $this->initFacetLimitsFromConfig($config->$limitSection ?? null);
+        $facetLimitConfig = $config['$limitSection'] ?? null;
+        $this->initFacetLimitsFromConfig($facetLimitConfig);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
 

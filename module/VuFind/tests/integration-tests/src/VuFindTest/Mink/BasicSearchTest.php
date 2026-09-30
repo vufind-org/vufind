@@ -43,28 +43,28 @@ use Behat\Mink\Element\Element;
 class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Selector for active pagination item
+     * Selector for active pagination item.
      *
      * @var string
      */
     protected $activePageSelector = '.pagination li.active';
 
     /**
-     * Selector for current pagination item
+     * Selector for current pagination item.
      *
      * @var string
      */
     protected $ariaCurrentPageSelector = '.pagination li[aria-current=page] a';
 
     /**
-     * Selector for active top pagination item
+     * Selector for active top pagination item.
      *
      * @var string
      */
     protected $topActivePageSelector = '.pagination-top li.active';
 
     /**
-     * Selector for current top pagination item
+     * Selector for current top pagination item.
      *
      * @var string
      */
@@ -89,7 +89,42 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testDefaultTopPagination
+     * Test that loading an out-of-bounds page with JS results in an in-bounds page.
+     *
+     * @return void
+     */
+    public function testOutOfBoundsPageWithJS()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=Author&type=AllFields&limit=5');
+        $page = $session->getPage();
+        $this->assertStringStartsWith(
+            'Showing 1 - 5 results of 16',
+            trim($this->findCssAndGetText($page, '.search-stats'))
+        );
+        // Change searchspecs.yaml to reduce total results to 14.
+        $this->changeYamlConfigs(
+            [
+                'searchspecs' => [
+                    'AllFields' => [
+                        'DismaxFields' => [
+                            'author',
+                        ],
+                    ],
+                ],
+            ],
+            ['searchspecs']
+        );
+        $this->clickCss($page, '.pagination .page-last a');
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString(
+            'Showing 11 - 14 results of 14',
+            trim($this->findCssAndGetText($page, '.search-stats'))
+        );
+    }
+
+    /**
+     * Data provider for testDefaultTopPagination.
      *
      * @return \Iterator
      */
@@ -100,7 +135,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test default top pagination
+     * Test default top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
@@ -137,7 +172,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test simple top pagination
+     * Test simple top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
@@ -193,7 +228,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test full top pagination
+     * Test full top pagination.
      *
      * @return void
      */
@@ -236,7 +271,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test bottom pagination
+     * Test bottom pagination.
      *
      * @return void
      */
@@ -261,7 +296,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Check that correct result range is being displayed
+     * Check that correct result range is being displayed.
      *
      * @param Element $page    Page
      * @param string  $results Result range (e.g. '1 - 20')
@@ -279,7 +314,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Scroll to results immediately to avoid elements from moving around while we click them
+     * Scroll to results immediately to avoid elements from moving around while we click them.
      *
      * @return void
      */

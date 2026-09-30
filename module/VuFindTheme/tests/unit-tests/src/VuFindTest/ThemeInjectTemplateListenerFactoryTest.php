@@ -1,7 +1,7 @@
 <?php
 
 /**
- * InjectTemplateListenerFactory Test Class
+ * InjectTemplateListenerFactory Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindTheme\InjectTemplateListener;
 use VuFindTheme\InjectTemplateListenerFactory;
 
 /**
- * InjectTemplateListenerFactory Test Class
+ * InjectTemplateListenerFactory Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hold Logic Class
+ * Hold Logic Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Hold Logic Class
+ * Hold Logic Class.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -49,18 +49,18 @@ use function is_array;
 class Holds
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \VuFind\Config\Config         $config  VuFind configuration
+     * @param array                         $config  VuFind configuration
      */
     public function __construct(
         protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
         protected ILSConnection $catalog,
         protected \VuFind\Crypt\HMAC $hmac,
-        protected \VuFind\Config\Config $config
+        protected array $config
     ) {
     }
 
@@ -135,7 +135,7 @@ class Holds
 
     /**
      * Public method for getting item holdings from the catalog and selecting which
-     * holding method to call
+     * holding method to call.
      *
      * @param string $id            A Bib ID
      * @param array  $ids           A list of Source Records (if catalog is for a consortium)
@@ -212,7 +212,7 @@ class Holds
     }
 
     /**
-     * Protected method for standard (i.e. No Holds) holdings
+     * Protected method for standard (i.e. No Holds) holdings.
      *
      * @param array $result A result set returned from a driver
      *
@@ -234,7 +234,7 @@ class Holds
     }
 
     /**
-     * Protected method for driver defined holdings
+     * Protected method for driver defined holdings.
      *
      * @param array $result          A result set returned from a driver
      * @param array $holdConfig      Hold configuration from driver
@@ -282,7 +282,7 @@ class Holds
     }
 
     /**
-     * Protected method for vufind (i.e. User) defined holdings
+     * Protected method for vufind (i.e. User) defined holdings.
      *
      * @param array  $result        A result set returned from a driver
      * @param string $type          The holds mode to be applied from:
@@ -299,11 +299,11 @@ class Holds
         $holdings = [];
         $any_available = false;
 
-        $holds_override = $this->config->Catalog->allow_holds_override ?? false;
+        $holds_override = $this->config['Catalog']['allow_holds_override'] ?? false;
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->getSuppressedLocations());
+                $show = isset($copy['location']) && !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
@@ -455,7 +455,7 @@ class Holds
             return $holdings;
         }
 
-        // Are storage retrieval requests allowed?
+        // Are ILL requests allowed?
         $requestConfig = $this->catalog->checkFunction(
             'ILLRequests',
             compact('id', 'patron')
@@ -491,7 +491,7 @@ class Holds
     }
 
     /**
-     * Get Hold Form
+     * Get Hold Form.
      *
      * Supplies holdLogic with the form details required to place a request
      *
@@ -543,7 +543,7 @@ class Holds
     }
 
     /**
-     * Get a grouping key for a holdings item
+     * Get a grouping key for a holdings item.
      *
      * @param array $copy Item information
      *
@@ -552,7 +552,7 @@ class Holds
     protected function getHoldingsGroupKey($copy)
     {
         // Group by holdings id and location unless configured otherwise
-        $grouping = $this->config->Catalog->holdings_grouping
+        $grouping = $this->config['Catalog']['holdings_grouping']
             ?? 'holdings_id,location';
 
         $groupKey = '';
@@ -594,6 +594,6 @@ class Holds
      */
     public function getSuppressedLocations()
     {
-        return (array)($this->config?->Record?->hide_holdings?->toArray() ?? []);
+        return (array)($this->config['Record']['hide_holdings'] ?? []);
     }
 }

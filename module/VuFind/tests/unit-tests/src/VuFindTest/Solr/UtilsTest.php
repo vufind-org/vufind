@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Utils Test Class
+ * Solr Utils Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Solr;
 use VuFind\Solr\Utils;
 
 /**
- * Solr Utils Test Class
+ * Solr Utils Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -65,7 +65,7 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSanitizeDate
+     * Data provider for testSanitizeDate.
      *
      * @return \Iterator
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Path Resolver Test Class
+ * Config Path Resolver Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Config Path Resolver Test Class
+ * Config Path Resolver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Test PathResolver
+     * Test PathResolver.
      *
      * @return void
      */

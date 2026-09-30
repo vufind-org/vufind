@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO EIT API Search Options
+ * EBSCO EIT API Search Options.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\ConfigManagerInterface;
 
 /**
  * EBSCO EIT Search Options
- * Largely copied from WorldCat Search Options
+ * Largely copied from WorldCat Search Options.
  *
  * @category VuFind
  * @package  Search_EIT
@@ -46,7 +46,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

@@ -63,7 +63,7 @@ class JsonRecord implements RecordInterface
     }
 
     /**
-     * __get()
+     * __get().
      *
      * @param string $name Field name
      *

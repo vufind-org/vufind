@@ -41,7 +41,7 @@ namespace VuFindTest\Feature;
 trait RemoteCoverageTrait
 {
     /**
-     * Get the remote coverage directory (or return null if remote coverage disabled)
+     * Get the remote coverage directory (or return null if remote coverage disabled).
      *
      * @return ?string
      */

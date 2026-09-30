@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels Recommendations Module
+ * Channels Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * Channels Recommendations Module
+ * Channels Recommendations Module.
  *
  * @category VuFind
  * @package  Recommendations

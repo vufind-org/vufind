@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -73,7 +73,7 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Net\UserIpReader::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $container->get(\VuFind\Db\Service\PluginManager::class)
                 ->get(\VuFind\Db\Service\AuthHashServiceInterface::class)
         );

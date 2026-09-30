@@ -1,0 +1,33 @@
+<?php
+// If we have a non-empty call number, we translate it if needed
+if (($callNumberData = $this->getThisLoader->getCallNumber()) && !empty($rawCallNumber = $callNumberData['text'] ?? '')) {
+    $callNumber = ($callNumberData['translate'] ?? false) ? $this->transEsc($rawCallNumber) : $this->escapeHtml($rawCallNumber);
+} else {
+    $callNumber = $this->transEsc('No call number');
+}
+?>
+<div>
+  <p>
+    <strong><?= $this->transEsc('Title') ?> :</strong>
+    <?=$this->escapeHtml($this->driver->getRawData()['title_full'] ?? '') ?>
+  </p>
+  <p>
+    <strong><?= $this->transEsc('Call Number') ?> :</strong>
+    <span><?= $callNumber ?></span>
+    <?php if ($copyNumber = $this->getThisLoader->getCopyNumber()): ?>
+      <span> (<?= $this->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) ?>)</span>
+    <?php endif; ?>
+  </p>
+  <?php if ($location = $this->getThisLoader->getLocation()): ?>
+    <p>
+      <strong><?= $this->transEsc('Location') ?> :</strong>
+      <span><?=$this->escapeHtml($location) ?></span>
+    </p>
+  <?php endif; ?>
+  <p>
+    <strong><?= $this->transEsc('Status') ?> :</strong>
+    <?= $this->transEsc($this->getThisLoader->getStatus()) ?>
+  </p>
+  <hr/>
+  <?=$this->render('record/get-this/place-request.phtml')?>
+</div>

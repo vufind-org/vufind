@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler for fetching versions link
+ * AJAX handler for fetching versions link.
  *
  * PHP version 8
  *
@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
@@ -39,7 +39,7 @@ use function count;
 use function is_array;
 
 /**
- * AJAX handler for fetching versions link
+ * AJAX handler for fetching versions link.
  *
  * @category VuFind
  * @package  AJAX
@@ -50,28 +50,28 @@ use function is_array;
 class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Record plugin
+     * Record plugin.
      *
      * @var Record
      */
     protected $recordPlugin;
 
     /**
-     * Tab manager
+     * Tab manager.
      *
      * @var TabManager
      */
     protected $tabManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss     Session settings
      * @param Loader          $loader Record loader
@@ -84,14 +84,14 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         Record $rp,
         TabManager $tm
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
         $this->recordLoader = $loader;
         $this->recordPlugin = $rp;
         $this->tabManager = $tm;
     }
 
     /**
-     * Load a single record and render the link template
+     * Load a single record and render the link template.
      *
      * @param string $id       Record id
      * @param string $source   Record source
@@ -114,17 +114,17 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites(); // avoid session write timing bug
 
-        $id = $params->fromPost('id') ?: $params->fromQuery('id');
-        $source = $params->fromPost('source') ?: $params->fromQuery('source');
-        $searchId = $params->fromPost('sid') ?: $params->fromQuery('sid');
+        $id = $this->getPostOrQueryParam($request, 'id');
+        $source = $this->getPostOrQueryParam($request, 'source');
+        $searchId = $this->getPostOrQueryParam($request, 'sid');
 
         if (!is_array($id)) {
             return $this->formatResponse(

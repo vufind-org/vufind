@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait that provides support for calling a method with configurable retries
+ * Trait that provides support for calling a method with configurable retries.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Service\Feature;
 
 /**
- * Trait that provides support for calling a method with configurable retries
+ * Trait that provides support for calling a method with configurable retries.
  *
  * @category VuFind
  * @package  Service
@@ -41,7 +41,7 @@ namespace VuFind\Service\Feature;
 trait RetryTrait
 {
     /**
-     * Retry options
+     * Retry options.
      *
      * @var array
      */
@@ -56,7 +56,7 @@ trait RetryTrait
     ];
 
     /**
-     * Call a method and retry the call if an exception is thrown
+     * Call a method and retry the call if an exception is thrown.
      *
      * @param callable  $callback       Method to call
      * @param ?callable $statusCallback Status callback called before retry and after
@@ -109,7 +109,7 @@ trait RetryTrait
     }
 
     /**
-     * Check if the call needs to be retried
+     * Check if the call needs to be retried.
      *
      * @param int   $attempt Failed attempt number
      * @param array $options Current options
@@ -122,7 +122,7 @@ trait RetryTrait
     }
 
     /**
-     * Get the delay before a try
+     * Get the delay before a try.
      *
      * @param int   $attempt Attempt number
      * @param array $options Current options

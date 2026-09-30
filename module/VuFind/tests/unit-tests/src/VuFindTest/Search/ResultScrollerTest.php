@@ -50,7 +50,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test next_prev_nav bug
      * Expect next_prev to behave like it's disabled if the last search didn't return
-     * any results
+     * any results.
      *
      * @return void
      */
@@ -75,7 +75,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test disabled behavior
+     * Test disabled behavior.
      *
      * @return void
      */
@@ -105,7 +105,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling on single-record set
+     * Test scrolling on single-record set.
      *
      * @return void
      */
@@ -126,7 +126,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record in the middle of the page
+     * Test scrolling for a record in the middle of the page.
      *
      * @return void
      */
@@ -255,7 +255,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record at the start of the first page
+     * Test scrolling for a record at the start of the first page.
      *
      * @return void
      */
@@ -276,7 +276,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record at the end of the last page (single-page example)
+     * Test scrolling for a record at the end of the last page (single-page example).
      *
      * @return void
      */
@@ -297,7 +297,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record at the end of the last page (multi-page example)
+     * Test scrolling for a record at the end of the last page (multi-page example).
      *
      * @return void
      */
@@ -393,7 +393,101 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock search results
+     * Test scrolling at end of middle page.
+     *
+     * @return void
+     */
+    public function testReducingTotalResults()
+    {
+        $results = $this->getMockResults(1, 2, 6);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|6',
+            'previousRecord' => 'Solr|1', 'nextRecord' => 'Solr|3',
+            'currentPosition' => 2, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('2'))
+        );
+
+        // Reduce search result count
+        $plugin->setResults($this->getMockResults(1, 2, 4));
+
+        // At the start of the next page, the values are not updated
+        // yet and show the old status.
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|6',
+            'previousRecord' => 'Solr|2', 'nextRecord' => 'Solr|4',
+            'currentPosition' => 3, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('3'))
+        );
+
+        // Check that result total and last record are updated when reaching end of page
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|4',
+            'previousRecord' => 'Solr|3', 'nextRecord' => null,
+            'currentPosition' => 4, 'resultTotal' => 4,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('4'))
+        );
+    }
+
+    /**
+     * Test scrolling at end of middle page.
+     *
+     * @return void
+     */
+    public function testReducingTotalResultsWithDisabledFirstLast()
+    {
+        $results = $this->getMockResults(1, 2, 6, false);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|1', 'nextRecord' => 'Solr|3',
+            'currentPosition' => 2, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('2'))
+        );
+
+        // Reduce search result count
+        $plugin->setResults($this->getMockResults(1, 2, 4, false));
+
+        // At the start of the next page, the values are not updated
+        // yet and show the old status.
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|2', 'nextRecord' => 'Solr|4',
+            'currentPosition' => 3, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('3'))
+        );
+
+        // Check that result total is updated when reaching end of page
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|3', 'nextRecord' => null,
+            'currentPosition' => 4, 'resultTotal' => 4,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('4'))
+        );
+    }
+
+    /**
+     * Get mock search results.
      *
      * @param int    $page      Current page number
      * @param int    $limit     Page size
@@ -432,7 +526,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock result scroller
+     * Get mock result scroller.
      *
      * @param \VuFind\Search\Base\Results $results restoreSearch results (null to ignore)
      *
@@ -454,14 +548,14 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         // Create an anonymous class to stub out some behavior:
         $resultScroller = new class (...$params) extends ResultScroller {
             /**
-             * Search results to return
+             * Search results to return.
              *
              * @var \VuFind\Search\Base\Results
              */
             protected $testResults;
 
             /**
-             * Set results to remember for restoreSearch
+             * Set results to remember for restoreSearch.
              *
              * @param \VuFind\Search\Base\Results $testResults Results
              *
@@ -473,7 +567,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Stubbed
+             * Stubbed.
              *
              * @param int $searchId Search ID
              *
@@ -486,7 +580,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Stubbed
+             * Stubbed.
              *
              * @param \VuFind\Search\Base\Results $search Search object to remember.
              *

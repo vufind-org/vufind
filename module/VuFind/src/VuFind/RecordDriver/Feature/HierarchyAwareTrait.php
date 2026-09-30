@@ -36,7 +36,7 @@ use function in_array;
  * Hierarchy support for record drivers.
  *
  * Assumption: Hierarchy fields found in $this->fields.
- * Assumption: Config object found in $this->mainConfig.
+ * Assumption: Config array found in $this->mainConfig.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -47,14 +47,14 @@ use function in_array;
 trait HierarchyAwareTrait
 {
     /**
-     * Hierarchy driver plugin manager
+     * Hierarchy driver plugin manager.
      *
      * @var \VuFind\Hierarchy\Driver\PluginManager
      */
     protected $hierarchyDriverManager = null;
 
     /**
-     * Hierarchy driver for current object
+     * Hierarchy driver for current object.
      *
      * @var \VuFind\Hierarchy\Driver\AbstractBase
      */
@@ -133,8 +133,7 @@ trait HierarchyAwareTrait
         // If collections are disabled or this record is not part of a hierarchy, go
         // no further....
         if (
-            !isset($this->mainConfig->Collections->collections)
-            || !$this->mainConfig->Collections->collections
+            !($this->mainConfig['Collections']['collections'] ?? false)
             || !($hierarchyDriver = $this->getHierarchyDriver())
         ) {
             return false;
@@ -184,7 +183,7 @@ trait HierarchyAwareTrait
     }
 
     /**
-     * Get the value of whether or not this is a collection level record
+     * Get the value of whether or not this is a collection level record.
      *
      * NOTE: \VuFind\Hierarchy\TreeDataFormatter\AbstractBase::isCollection()
      * duplicates some of this logic.
@@ -233,7 +232,7 @@ trait HierarchyAwareTrait
     }
 
     /**
-     * Get the Hierarchy Type (false if none)
+     * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
      */
@@ -242,7 +241,7 @@ trait HierarchyAwareTrait
         if (isset($this->fields['hierarchy_top_id'])) {
             $hierarchyType = $this->fields['hierarchytype'] ?? false;
             if (!$hierarchyType) {
-                $hierarchyType = $this->mainConfig->Hierarchy->driver ?? false;
+                $hierarchyType = $this->mainConfig['Hierarchy']['driver'] ?? false;
             }
             return $hierarchyType;
         }

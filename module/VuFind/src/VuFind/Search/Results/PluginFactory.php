@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Search\Results;
 
-use Psr\Container\ContainerInterface;
-
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * @category VuFind
  * @package  Search
@@ -43,41 +41,12 @@ use Psr\Container\ContainerInterface;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
         $this->defaultNamespace = 'VuFind\Search';
+        $this->defaultFactory = ResultsFactory::class;
         $this->classSuffix = '\Results';
-    }
-
-    /**
-     * Create a service for the specified name.
-     *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     * @param ?array             $extras        Extra options
-     *
-     * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        ?array $extras = null
-    ) {
-        $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
-        $params = $container->get(\VuFind\Search\Params\PluginManager::class)
-            ->get($paramsService);
-        $searchService = $container->get(\VuFindSearch\Service::class);
-        $recordLoader = $container->get(\VuFind\Record\Loader::class);
-        $class = $this->getClassName($requestedName);
-        return new $class(
-            $params,
-            $searchService,
-            $recordLoader,
-            ...($extras ?: [])
-        );
     }
 }

@@ -21,10 +21,9 @@
         $groupId = $channel['groupId'] ?? $channel['providerId'];
         $channelID = 'channel-' . md5(serialize($channel));
         $providerData = $this->htmlAttributes([
-          'data-batch-size' => $channel['config']['batchSize'],
-          'data-page-size' => $channel['config']['pageSize'],
-          'data-row-size' => $channel['config']['rowSize'],
           'id' => $channelID,
+          'data-page-size' => $channel['config']['pageSize'],
+          'data-batch-size' => $channel['config']['batchSize'],
         ]);
       ?>
       <div class="channel" <?=$providerData ?>>
@@ -36,7 +35,7 @@
               <button type="button" class="channel-add-more-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
               <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="visually-hidden"><?=$this->transEscAttr('channel_list_dropdown_toggle', ['%%channel%%' => $channel['title']]) ?></span>
-                <span aria-hidden="true"><?=$this->icon('dropdown-caret') ?></span>
+                <span aria-hidden="true"><?=$this->icon('dropdown-open') ?></span>
               </button>
               <ul class="dropdown-menu">
                 <?php
@@ -69,7 +68,7 @@
                 aria-label="<?=$this->transEsc('channel_options_dropdown_toggle', ['%%channel%%' => $channel['title']])?>"
               >
                 <?=$this->transEsc('channel_options') ?>
-                <?=$this->icon('dropdown-caret') ?>
+                <?=$this->icon('dropdown-open') ?>
               </button>
               <ul class="dropdown-menu">
                 <?php foreach ($channel['links'] as $item): ?>
@@ -95,13 +94,15 @@
               $url = empty($item['routeDetails'])
                 ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
                 : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']);
+              $channelItemAttrs = [
+                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
+                'class' => 'channel-item' . ($index < $channel['config']['pageSize'] ? '' : ' hidden-batch-item'),
+                'data-channel-id' => $channelID,
+                'data-record-id' => $item['id'],
+                'data-record-source' => $item['source'],
+              ];
             ?>
-            <li
-              class="channel-item <?=$index < $channel['config']['pageSize'] ? '' : 'hidden-batch-item' ?>"
-              data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>"
-              data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>"
-              data-record-source="<?=$this->escapeHtmlAttr($item['source']) ?>"
-            >
+            <li<?=$this->htmlAttributes($channelItemAttrs) ?>>
               <div class="channel-item-thumb">
                 <img
                   class="channel-item-img"
@@ -152,6 +153,8 @@
           ?>
           <button <?=$this->htmlAttributes($btnAttrs) ?>><?=$this->transEsc('channel_more_items') ?></button>
         </div>
+
+        <div class="gallery-polite-alert visually-hidden" aria-live="polite"></div>
       </div>
     <?php endforeach; ?>
   </div>

@@ -41,7 +41,7 @@ namespace VuFind\RecordDriver;
 class Search2DefaultFactory extends SolrDefaultFactory
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */

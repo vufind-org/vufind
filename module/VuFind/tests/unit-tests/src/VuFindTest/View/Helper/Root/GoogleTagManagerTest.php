@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleTagManager view helper Test Class
+ * GoogleTagManager view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\GoogleTagManager;
 
 /**
- * GoogleTagManager view helper Test Class
+ * GoogleTagManager view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test getHeadCode()
+     * Test getHeadCode().
      *
      * @return void
      */
@@ -57,7 +57,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBodyCode()
+     * Test getBodyCode().
      *
      * @return void
      */
@@ -69,7 +69,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the helper (disabled mode)
+     * Test the helper (disabled mode).
      *
      * @return void
      */
@@ -80,7 +80,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Render the GTM Head element code
+     * Render the GTM Head element code.
      *
      * @param string $gtmContainerId GTM Container ID (false for disabled)
      *
@@ -88,13 +88,12 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function renderGTMHeadCode(string $gtmContainerId): string
     {
-        $helper = new GoogleTagManager($gtmContainerId);
-        $helper->setView($this->getPhpRenderer());
-        return (string)$helper->getHeadCode();
+        $helper = new GoogleTagManager($gtmContainerId, $this->getAssetManager($this->getPhpRenderer()));
+        return $helper->getHeadCode();
     }
 
     /**
-     * Render the GTM Body element code
+     * Render the GTM Body element code.
      *
      * @param string $gtmContainerId GTM Container ID (false for disabled)
      *
@@ -102,8 +101,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function renderGTMBodyCode(string $gtmContainerId): string
     {
-        $helper = new GoogleTagManager($gtmContainerId);
-        $helper->setView($this->getPhpRenderer());
-        return (string)$helper->getBodyCode();
+        $helper = new GoogleTagManager($gtmContainerId, $this->getAssetManager($this->getPhpRenderer()));
+        return $helper->getBodyCode();
     }
 }

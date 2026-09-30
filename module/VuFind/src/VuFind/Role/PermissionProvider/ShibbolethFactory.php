@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,7 +69,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName($container->get('Request'), $cfg);
     }
 }

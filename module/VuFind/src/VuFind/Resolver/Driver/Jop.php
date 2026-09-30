@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JOP Link Resolver Driver
+ * JOP Link Resolver Driver.
  *
  * JOP is a free service -- the API endpoint is available at
  * http://services.dnb.de/fize-service/gvr/full.xml
@@ -45,7 +45,7 @@ use VuFind\Net\UserIpReader;
 use function in_array;
 
 /**
- * JOP Link Resolver Driver
+ * JOP Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -59,28 +59,28 @@ class Jop extends AbstractBase
     /**
      * As the JOP resolver provides also generic labels 'Article', 'Journal'
      * etc. in element AccessLevel this label can be used as title for
-     * resolver results by setting this variable to 'AccessLevel'
+     * resolver results by setting this variable to 'AccessLevel'.
      *
      * @var string
      */
     protected $xpathTitleSelector = 'Title';
 
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * User IP address reader
+     * User IP address reader.
      *
      * @var UserIpReader
      */
     protected $userIpReader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl      Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient   HTTP client
@@ -97,7 +97,7 @@ class Jop extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -116,7 +116,7 @@ class Jop extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display
@@ -153,7 +153,7 @@ class Jop extends AbstractBase
     }
 
     /**
-     * Get Resolver Url
+     * Get Resolver Url.
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *

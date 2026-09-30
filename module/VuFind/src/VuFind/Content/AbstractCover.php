@@ -130,7 +130,7 @@ abstract class AbstractCover
     }
 
     /**
-     * Use direct urls? (Or proxied urls)
+     * Use direct urls? (Or proxied urls).
      *
      * @return bool
      */
@@ -192,7 +192,7 @@ abstract class AbstractCover
     /**
      * Which location are mandatory for backlinks, available locations are the same
      * as used for cover size determination, see coversize setting in [Content]
-     * section of config.ini
+     * section of config.ini.
      *
      * @return array
      */

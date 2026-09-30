@@ -57,46 +57,25 @@ class Backend extends AbstractBackend
     use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
 
     /**
-     * Actual backends
-     *
-     * @var array
-     */
-    protected $backends;
-
-    /**
-     * Limit for number of records to blend
+     * Limit for number of records to blend.
      *
      * @var int
      */
     protected $blendLimit;
 
     /**
-     * Block size for interleaved records
+     * Block size for interleaved records.
      *
      * @var int
      */
     protected $blockSize;
 
     /**
-     * Adaptive block sizes for interleaved records
+     * Adaptive block sizes for interleaved records.
      *
      * @var array
      */
     protected $adaptiveBlockSizes;
-
-    /**
-     * Blender configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration
-     *
-     * @var array
-     */
-    protected $mappings;
 
     /**
      * Event manager.
@@ -108,33 +87,25 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param array                 $backends Actual backends
-     * @param \VuFind\Config\Config $config   Blender configuration
-     * @param array                 $mappings Mappings configuration
-     * @param EventManager          $events   Event manager
+     * @param array        $backends Actual backends
+     * @param array        $config   Blender configuration
+     * @param array        $mappings Mappings configuration
+     * @param EventManager $events   Event manager
      *
      * @return void
      */
     public function __construct(
-        array $backends,
-        \VuFind\Config\Config $config,
-        $mappings,
+        protected array $backends,
+        protected array $config,
+        protected array $mappings,
         EventManager $events
     ) {
-        $this->backends = $backends;
-        $this->config = $config;
-        $this->mappings = $mappings;
         $this->setEventManager($events);
 
-        $boostMax = isset($this->config->Blending->initialResults)
-            ? count($this->config->Blending->initialResults->toArray())
-            : 0;
+        $boostMax = count($config['Blending']['initialResults'] ?? []);
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = intval($this->config->Blending->blockSize ?? 10);
-        $this->adaptiveBlockSizes
-            = isset($this->config->Blending->adaptiveBlockSizes)
-            ? $this->config->Blending->adaptiveBlockSizes->toArray()
-            : [];
+        $this->blockSize = (int)($config['Blending']['blockSize'] ?? 10);
+        $this->adaptiveBlockSizes = $config['Blending']['adaptiveBlockSizes'] ?? [];
     }
 
     /**
@@ -249,7 +220,7 @@ class Backend extends AbstractBackend
             }
             // Log the errors and collect a list to display to the user:
             $this->logError("Search in $backendId failed: " . (string)$exception);
-            $failedBackends[] = $this->config->Backends[$backendId];
+            $failedBackends[] = $this->config['Backends'][$backendId];
         }
         if ($failedBackends) {
             $mergedCollection->addError(
@@ -280,7 +251,7 @@ class Backend extends AbstractBackend
 
     /**
      * Add records to the merged collection in a round-robin fashion up to the
-     * specified limit
+     * specified limit.
      *
      * @param RecordCollectionInterface $mergedCollection Merged collection
      * @param array                     $collections      Source collections
@@ -389,7 +360,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Get active backends for a search
+     * Get active backends for a search.
      *
      * @param ?ParamBag $params    Search backend parameters
      * @param string    $delimiter Delimiter for the blender_backend facet
@@ -486,7 +457,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Get the block size for the given result count
+     * Get the block size for the given result count.
      *
      * @param int $resultCount Result count
      *
@@ -569,7 +540,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Collect results back into the Command after an event has been processed
+     * Collect results back into the Command after an event has been processed.
      *
      * @param SearchCommand $command        Search command
      * @param SearchCommand $backendCommand Backend-specific command
@@ -593,7 +564,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Convert a search event to another backend
+     * Convert a search event to another backend.
      *
      * @param EventInterface   $event   Event
      * @param SearchCommand    $command Search command

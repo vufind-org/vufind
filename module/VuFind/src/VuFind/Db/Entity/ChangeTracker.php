@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for change_tracker table
+ * Entity model for change_tracker table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for change_tracker table
+ * Entity model for change_tracker table.
  *
  * @category VuFind
  * @package  Database
@@ -68,7 +68,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
     protected string $id;
 
     /**
-     * First time added to index
+     * First time added to index.
      *
      * @var ?DateTime
      */

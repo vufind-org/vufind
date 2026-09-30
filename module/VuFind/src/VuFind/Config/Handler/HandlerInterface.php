@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for config handler classes
+ * Interface for config handler classes.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Handler;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
- * Interface for config handler classes
+ * Interface for config handler classes.
  *
  * This interface class is the definition of the required methods for
  * loading configuration.
@@ -65,6 +65,16 @@ interface HandlerInterface
      * @return array
      */
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array;
+
+    /**
+     * Handle an include statement.
+     *
+     * @param string $includeSetting Settings of the include statement
+     * @param string $basePath       Base path used for relative includes
+     *
+     * @return mixed
+     */
+    public function handleInclude(string $includeSetting, string $basePath): mixed;
 
     /**
      * Write configuration to a specific location.

@@ -1,0 +1,15 @@
+<h2><?=$this->transEsc('recovery_title') ?></h2>
+<?=$this->flashmessages()?>
+
+<form method="post" action="<?=$this->serverUrl(true)?>" class="form-password-recovery">
+  <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+  <div class="form-group">
+    <label class="form-label" for="recovery_password">
+      <?=$this->transEsc('one_time_password')?>:
+    </label>
+    <input type="text" name="password" id="recovery_password" class="form-control" autocomplete="one-time-code">
+  </div>
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="verify" value="<?=$this->transEscAttr('Submit')?>">
+  </div>
+</form>

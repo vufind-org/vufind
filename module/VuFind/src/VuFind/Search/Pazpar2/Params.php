@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pazpar2 Search Parameters
+ * Pazpar2 Search Parameters.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Pazpar2;
 use VuFindSearch\ParamBag;
 
 /**
- * Pazpar2 Search Parameters
+ * Pazpar2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_Pazpar2

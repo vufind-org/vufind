@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CatalogResults Recommendations Module
+ * CatalogResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * CatalogResults Recommendations Module
+ * CatalogResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of the catalog; useful
  * for displaying catalog recommendations in other modules (i.e. Summon, Web, etc.)

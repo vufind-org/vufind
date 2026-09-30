@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat2 Search Object Options Test
+ * WorldCat2 Search Object Options Test.
  *
  * PHP version 8
  *
@@ -29,12 +29,11 @@
 
 namespace VuFindTest\Search\WorldCat2;
 
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\WorldCat2\Options;
 
 /**
- * WorldCat2 Search Object Options Test
+ * WorldCat2 Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -86,7 +85,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param array $config Configuration to get from config manager
      *
@@ -95,8 +94,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     protected function getOptions(array $config = []): Options
     {
         $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
-        $configObj = new Config($config);
-        $mockConfigManager->method('getConfigObject')->willReturn($configObj);
         $mockConfigManager->method('getConfigArray')->willReturn($config);
         return new Options($mockConfigManager);
     }

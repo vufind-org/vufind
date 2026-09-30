@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for resource table
+ * Entity model for resource table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for resource table
+ * Entity model for resource table.
  *
  * @category VuFind
  * @package  Database
@@ -144,7 +144,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Record Id setter
+     * Record Id setter.
      *
      * @param string $recordId recordId
      *
@@ -157,7 +157,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Record Id getter
+     * Record Id getter.
      *
      * @return string
      */
@@ -167,7 +167,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Title setter
+     * Title setter.
      *
      * @param string $title Title of the record.
      *
@@ -180,7 +180,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Title getter
+     * Title getter.
      *
      * @return string
      */
@@ -190,7 +190,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Display title setter
+     * Display title setter.
      *
      * @param string $title Display title of the record.
      *
@@ -203,7 +203,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Display title getter
+     * Display title getter.
      *
      * @return ?string
      */
@@ -213,7 +213,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Author setter
+     * Author setter.
      *
      * @param ?string $author Author of the title.
      *
@@ -226,7 +226,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Author getter
+     * Author getter.
      *
      * @return ?string
      */
@@ -236,7 +236,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Year setter
+     * Year setter.
      *
      * @param ?int $year Year title is published.
      *
@@ -249,7 +249,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Year getter
+     * Year getter.
      *
      * @return ?int
      */
@@ -259,7 +259,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Source setter
+     * Source setter.
      *
      * @param string $source Source (a search backend ID).
      *
@@ -272,7 +272,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Source getter
+     * Source getter.
      *
      * @return string
      */
@@ -282,7 +282,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Extra Metadata setter
+     * Extra Metadata setter.
      *
      * @param ?string $extraMetadata ExtraMetadata.
      *
@@ -295,7 +295,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Extra Metadata getter
+     * Extra Metadata getter.
      *
      * @return ?string
      */

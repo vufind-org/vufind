@@ -48,7 +48,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 class CacheFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -71,7 +71,7 @@ class CacheFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\RecordDriver\PluginManager::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('RecordCache'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('RecordCache'),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(RecordServiceInterface::class)
         );
     }

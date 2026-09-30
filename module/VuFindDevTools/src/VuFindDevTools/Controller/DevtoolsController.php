@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Development Tools Controller
+ * Development Tools Controller.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindDevTools\LanguageHelper;
 use function is_callable;
 
 /**
- * Development Tools Controller
+ * Development Tools Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -72,7 +72,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Deminify action
+     * Deminify action.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -103,7 +103,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Home action
+     * Home action.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -113,7 +113,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Icon action
+     * Icon action.
      *
      * @return array
      */
@@ -127,7 +127,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Language action
+     * Language action.
      *
      * @return array
      */
@@ -145,7 +145,23 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Permissions action
+     * Translation test action.
+     *
+     * @return array
+     */
+    public function translateAction()
+    {
+        return [
+            'submitted' => (bool)$this->params()->fromQuery('submitButton'),
+            'key' => $this->params()->fromQuery('key'),
+            'placeholders' => $this->params()->fromQuery('placeholders'),
+            'icu' => (bool)$this->params()->fromQuery('icu'),
+            'escape' => !(bool)$this->params()->fromQuery('noescape'),
+        ];
+    }
+
+    /**
+     * Permissions action.
      *
      * @return array
      */

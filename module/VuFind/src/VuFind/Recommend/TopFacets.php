@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function in_array;
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  *
@@ -47,14 +47,14 @@ use function in_array;
 class TopFacets extends AbstractFacets
 {
     /**
-     * Facet configuration
+     * Facet configuration.
      *
      * @var array
      */
     protected $facets;
 
     /**
-     * Basic configurations
+     * Basic configurations.
      *
      * @var array
      */
@@ -78,13 +78,12 @@ class TopFacets extends AbstractFacets
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
-        $config = $this->configManager->getConfigObject($iniName);
-        $this->facets = isset($config->$mainSection)
-            ? $config->$mainSection->toArray() : [];
+        $config = $this->configManager->getConfigArray($iniName);
+        $this->facets = $config[$mainSection] ?? [];
 
         // Load other relevant settings:
         $this->baseSettings = [
-            'rows' => $config->Results_Settings->top_rows,
+            'rows' => $config['Results_Settings']['top_rows'] ?? 2,
         ];
 
         // Load boolean configurations:

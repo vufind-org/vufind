@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Mailer Class
+ * VuFind Mailer Class.
  *
  * PHP version 8
  *
@@ -31,7 +31,6 @@
 
 namespace VuFind\Mailer;
 
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -39,12 +38,13 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
 use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 use function is_array;
 
 /**
- * VuFind Mailer Class
+ * VuFind Mailer Class.
  *
  * @category VuFind
  * @package  Mailer
@@ -61,7 +61,7 @@ class Mailer implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Mail transport
+     * Mail transport.
      *
      * @var MailerInterface
      */
@@ -75,27 +75,31 @@ class Mailer implements
     protected $initialTransport;
 
     /**
-     * The maximum number of email recipients allowed (0 = no limit)
+     * The maximum number of email recipients allowed (0 = no limit).
      *
      * @var int
      */
     protected $maxRecipients = 1;
 
     /**
-     * "From" address override
+     * "From" address override.
      *
      * @var string
      */
     protected $fromAddressOverride = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param MailerInterface $transport Mail transport
-     * @param array           $options   Message log options
+     * @param MailerInterface           $transport        Mail transport
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param array                     $options          Message log options
      */
-    public function __construct(MailerInterface $transport, protected array $options = [])
-    {
+    public function __construct(
+        MailerInterface $transport,
+        protected TemplateRendererInterface $templateRenderer,
+        protected array $options = []
+    ) {
         $this->setTransport($transport);
     }
 
@@ -128,18 +132,6 @@ class Mailer implements
     {
         $this->setTransport($this->initialTransport);
         return $this;
-    }
-
-    /**
-     * Get a blank email message object.
-     *
-     * @return Email
-     *
-     * @deprecated Use getNewMessage
-     */
-    public function getNewBlankMessage(): Email
-    {
-        return $this->getNewMessage();
     }
 
     /**
@@ -336,7 +328,6 @@ class Mailer implements
      * @param string|Address                         $from    Sender name and email address
      * @param string                                 $msg     User notes to include in message
      * @param string                                 $url     URL to share
-     * @param PhpRenderer                            $view    View object (used to render email templates)
      * @param ?string                                $subject Subject for email (optional)
      * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
      * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
@@ -349,7 +340,6 @@ class Mailer implements
         string|Address $from,
         string $msg,
         string $url,
-        PhpRenderer $view,
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
@@ -357,9 +347,9 @@ class Mailer implements
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
         }
-        $body = $view->partial(
-            'Email/share-link.phtml',
-            [
+        $body = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/share-link.phtml',
+            params: [
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg,
             ]
         );
@@ -383,7 +373,6 @@ class Mailer implements
      * @param string|Address                $from    Sender name and email address
      * @param string                        $msg     User notes to include in message
      * @param AbstractBase                  $record  Record being emailed
-     * @param PhpRenderer                   $view    View object (used to render email templates)
      * @param ?string                       $subject Subject for email (optional)
      * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
      * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
@@ -396,7 +385,6 @@ class Mailer implements
         string|Address $from,
         string $msg,
         AbstractBase $record,
-        PhpRenderer $view,
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
@@ -404,17 +392,18 @@ class Mailer implements
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);
         }
-        $body = $view->partial(
-            'Email/record.phtml',
-            [
+        $body = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/record.phtml',
+            params: [
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg,
             ]
         );
+
         $this->send($to, $from, $subject, $body, $cc, $replyTo);
     }
 
     /**
-     * Set the maximum number of email recipients
+     * Set the maximum number of email recipients.
      *
      * @param int $max Maximum
      *
@@ -426,7 +415,7 @@ class Mailer implements
     }
 
     /**
-     * Get the default subject line for sendRecord()
+     * Get the default subject line for sendRecord().
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      *
@@ -438,7 +427,7 @@ class Mailer implements
     }
 
     /**
-     * Get the "From" address override value
+     * Get the "From" address override value.
      *
      * @return string
      */
@@ -448,7 +437,7 @@ class Mailer implements
     }
 
     /**
-     * Set the "From" address override
+     * Set the "From" address override.
      *
      * @param string $address "From" address
      *
@@ -460,7 +449,7 @@ class Mailer implements
     }
 
     /**
-     * Convert the given addresses to an array
+     * Convert the given addresses to an array.
      *
      * @param string|Address|Address[]|null $addresses Addresses
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FavoritesService Test Class
+ * FavoritesService Test Class.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\Tags\TagsService;
 
 /**
- * FavoritesService Test Class
+ * FavoritesService Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -66,7 +66,7 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
         return new FavoritesService(
             $this->createMock(ResourceServiceInterface::class),
             $this->createMock(ResourceTagsService::class),
-            $listService ?? $this->createMock(UserListServiceInterface::class),
+            $listService ?? $this->createStub(UserListServiceInterface::class),
             $this->createMock(UserResourceServiceInterface::class),
             $this->createMock(UserServiceInterface::class),
             $this->createMock(ResourcePopulator::class),

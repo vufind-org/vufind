@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base formatter for API responses
+ * Base formatter for API responses.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use function is_array;
 use function is_bool;
 
 /**
- * Base formatter for API responses
+ * Base formatter for API responses.
  *
  * @category VuFind
  * @package  API_Formatter

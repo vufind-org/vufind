@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Alma Database authentication class
+ * Alma Database authentication class.
  *
  * PHP version 8
  *
@@ -33,6 +33,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Authentication class for Alma. The VuFind database and the Alma API are
@@ -47,26 +48,27 @@ use VuFind\Exception\Auth as AuthException;
 class AlmaDatabase extends Database
 {
     /**
-     * Alma driver
+     * Alma driver.
      *
      * @var \VuFind\ILS\Driver\Alma
      */
     protected $almaDriver = null;
 
     /**
-     * Alma config
+     * Alma config.
      *
      * @var array
      */
     protected $almaConfig = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection        $catalog       The ILS connection
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator
      * @param ?PasswordHasher               $hasher        Password hash service (null to create one)
      */
+    #[Autowire]
     public function __construct(
         protected \VuFind\ILS\Connection $catalog,
         protected \VuFind\Auth\ILSAuthenticator $authenticator,
@@ -88,7 +90,7 @@ class AlmaDatabase extends Database
     {
         // When in privacy mode, don't create an Alma account and delegate
         // further code execution to the parent.
-        if ($this->getConfig()->Authentication->privacy) {
+        if ($this->getConfig()['Authentication']['privacy'] ?? null) {
             return parent::create($request);
         }
 

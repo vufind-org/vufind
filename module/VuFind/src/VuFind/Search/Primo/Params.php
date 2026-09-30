@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central Search Parameters
+ * Primo Central Search Parameters.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\ParamBag;
 use function in_array;
 
 /**
- * Primo Central Search Parameters
+ * Primo Central Search Parameters.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -65,7 +65,7 @@ class Params extends \VuFind\Search\Base\Params
 
     /**
      * Mappings of specific Primo facet values (spelling errors and other special
-     * cases present at least in CDI)
+     * cases present at least in CDI).
      *
      * @var array
      */
@@ -135,7 +135,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the current filters as an array
+     * Return the current filters as an array.
      *
      * @return array
      */

@@ -49,7 +49,7 @@ use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 class AbstractCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Data Formatter (abstract base)
+ * Hierarchy Tree Data Formatter (abstract base).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Hierarchy Tree Data Formatter (abstract base)
+ * Hierarchy Tree Data Formatter (abstract base).
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -47,14 +47,14 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Top-level record from index
+     * Top-level record from index.
      *
      * @var object
      */
     protected $topNode;
 
     /**
-     * Child data map from index
+     * Child data map from index.
      *
      * @var array
      */
@@ -68,7 +68,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $sort;
 
     /**
-     * Collection mode
+     * Collection mode.
      *
      * @var string
      */
@@ -89,7 +89,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $validateHierarchySequences;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $validateHierarchySequences Throw an exception if hierarchy parent and sequence data is out of sync?
      */

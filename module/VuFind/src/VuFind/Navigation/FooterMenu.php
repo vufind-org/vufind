@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FooterMenu section plugin
+ * FooterMenu section plugin.
  *
  * PHP version 8
  *
@@ -30,11 +30,13 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
 /**
- * FooterMenu section plugin
+ * FooterMenu section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -45,13 +47,17 @@ use function count;
 class FooterMenu extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array $sectionConfig Menu configuration
-     * @param array $config        Main configuration
+     * @param SectionServiceInterface $sectionService Section service
+     * @param array                   $sectionConfig  Section configuration
+     * @param array                   $config         Main configuration
      */
     public function __construct(
+        SectionServiceInterface $sectionService,
+        #[Autowire(config: 'FooterMenu')]
         array $sectionConfig,
+        #[Autowire(config: 'config')]
         array $config
     ) {
         $this->addRequiredSettings(
@@ -75,7 +81,7 @@ class FooterMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config);
     }
 
     /**
@@ -109,7 +115,7 @@ class FooterMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -179,7 +185,7 @@ class FooterMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show cookie settings item
+     * Check whether to show cookie settings item.
      *
      * @return bool
      */

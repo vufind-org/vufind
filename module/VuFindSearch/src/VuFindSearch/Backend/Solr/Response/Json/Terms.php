@@ -81,7 +81,7 @@ class Terms implements IteratorAggregate
     }
 
     /**
-     * Get terms for the specified field
+     * Get terms for the specified field.
      *
      * @param string $field Field name
      *

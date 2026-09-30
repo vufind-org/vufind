@@ -50,7 +50,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?string $oclcCodeToExclude OCLC code to exclude from results
      */

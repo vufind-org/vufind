@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reviews tab
+ * Reviews tab.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\RecordTab;
 use VuFind\Content\Loader;
 
 /**
- * Reviews tab
+ * Reviews tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -43,7 +43,7 @@ use VuFind\Content\Loader;
 abstract class AbstractContent extends AbstractBase
 {
     /**
-     * Content loader
+     * Content loader.
      *
      * @var Loader
      */
@@ -64,7 +64,7 @@ abstract class AbstractContent extends AbstractBase
     protected $results = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Loader $loader      Content loader (null to disable)
      * @param bool    $hideIfEmpty Should we hide the tab if no content is found?

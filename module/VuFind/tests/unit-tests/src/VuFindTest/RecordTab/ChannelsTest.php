@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels Test Class
+ * Channels Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordTab\Channels;
 
 /**
- * Channels Test Class
+ * Channels Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -60,8 +60,8 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
         ?ChannelLoader $mockLoader = null,
         ?RecordDriver $mockDriver = null
     ): Channels {
-        $channels = new Channels($mockLoader ?? $this->createMock(ChannelLoader::class), $options);
-        $channels->setRecordDriver($mockDriver ?? $this->createMock(RecordDriver::class));
+        $channels = new Channels($mockLoader ?? $this->createStub(ChannelLoader::class), $options);
+        $channels->setRecordDriver($mockDriver ?? $this->createStub(RecordDriver::class));
         return $channels;
     }
 

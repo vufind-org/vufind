@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
 
 namespace VuFind\ContentBlock;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -56,20 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Channels::class => ChannelsFactory::class,
-        FacetList::class => FacetListFactory::class,
-        IlsStatusMonitor::class => InvokableFactory::class,
-        Recommend::class => RecommendFactory::class,
-        TemplateBased::class => TemplateBasedFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -85,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // we are building a brand new object.
         $this->sharedByDefault = false;
 
+        $this->addAbstractFactory(AbstractPluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

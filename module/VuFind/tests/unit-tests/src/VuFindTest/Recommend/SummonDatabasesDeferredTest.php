@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonDatabasesDeferred recommendation module Test Class
+ * SummonDatabasesDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * SummonDatabasesDeferred recommendation module Test Class
+ * SummonDatabasesDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Recommend;
 class SummonDatabasesDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */

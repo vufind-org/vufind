@@ -46,7 +46,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
-     * Data provider for test methods
+     * Data provider for test methods.
      *
      * @return array[]
      */
@@ -103,7 +103,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test basic item status display in search results
+     * Test basic item status display in search results.
      *
      * @param mixed  $availability       Item availability status
      * @param string $status             Status display string
@@ -209,7 +209,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test full item status display in search results
+     * Test full item status display in search results.
      *
      * @param mixed  $availability       Item availability status
      * @param string $status             Status display string
@@ -274,7 +274,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test item status failure display in search results
+     * Test item status failure display in search results.
      *
      * @return void
      */
@@ -295,7 +295,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test holdings tab
+     * Test holdings tab.
      *
      * @param mixed  $availability      Item availability status
      * @param string $status            Status display string
@@ -337,7 +337,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test call number display
+     * Test call number display.
      *
      * @param string $mode           Call number mode to configure
      * @param string $expectedCallNo Expected call number output
@@ -487,7 +487,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get search results page
+     * Get search results page.
      *
      * @return DocumentElement
      */
@@ -506,7 +506,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get record page
+     * Get record page.
      *
      * @return DocumentElement
      */

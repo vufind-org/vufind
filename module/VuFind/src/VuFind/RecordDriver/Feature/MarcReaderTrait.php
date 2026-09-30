@@ -71,7 +71,7 @@ trait MarcReaderTrait
     public function getRawMarcData()
     {
         // Set preferred MARC field from config or default, if it's not existing
-        $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
+        $preferredMarcFields = $this->mainConfig['Record']['preferredMarcFields']
             ?? 'fullrecord';
         $preferredMarcFieldArray = explode(',', $preferredMarcFields);
         $preferredMarcField = 'fullrecord';
@@ -82,7 +82,7 @@ trait MarcReaderTrait
             }
         }
         if (empty($this->fields[$preferredMarcField])) {
-            throw new \Exception('Missing MARC data in record ' . $this->getUniqueId());
+            throw new \Exception('Missing MARC data in record ' . $this->getUniqueID());
         }
         return trim($this->fields[$preferredMarcField]);
     }
@@ -150,7 +150,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Get the item's publication information
+     * Get the item's publication information.
      *
      * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
      *
@@ -159,7 +159,7 @@ trait MarcReaderTrait
     protected function getPublicationInfo($subfield = 'a')
     {
         // Get string separator for publication information:
-        $separator = $this->mainConfig->Record->marcPublicationInfoSeparator ?? ' ';
+        $separator = $this->mainConfig['Record']['marcPublicationInfoSeparator'] ?? ' ';
 
         // First check old-style 260 field:
         $results = $this->getFieldArray('260', [$subfield], true, $separator);
@@ -185,7 +185,7 @@ trait MarcReaderTrait
                 }
             }
         }
-        $replace260 = $this->mainConfig->Record->replaceMarc260 ?? false;
+        $replace260 = $this->mainConfig['Record']['replaceMarc260'] ?? false;
         if (count($pubResults) > 0) {
             return $replace260 ? $pubResults : array_merge($results, $pubResults);
         } elseif (count($copyResults) > 0) {
@@ -196,7 +196,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return first subfield with the given code in the provided MARC field
+     * Return first subfield with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get
@@ -209,7 +209,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return all subfields with the given code in the provided MARC field
+     * Return all subfields with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get

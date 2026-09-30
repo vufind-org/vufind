@@ -48,7 +48,7 @@ class RandomCommandTest extends TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Test Random with RandomInterface
+     * Test Random with RandomInterface.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class RandomCommandTest extends TestCase
     }
 
     /**
-     * Test Random (without RandomInterface)
+     * Test Random (without RandomInterface).
      *
      * @return void
      */
@@ -96,7 +96,7 @@ class RandomCommandTest extends TestCase
     }
 
     /**
-     * Test Random (without RandomInterface)
+     * Test Random (without RandomInterface).
      *
      * @return void
      */
@@ -142,7 +142,7 @@ class RandomCommandTest extends TestCase
     }
 
     /**
-     * Test Random (without RandomInterface)
+     * Test Random (without RandomInterface).
      *
      * @return void
      */
@@ -171,7 +171,7 @@ class RandomCommandTest extends TestCase
     }
 
     /**
-     * Test getting arguments
+     * Test getting arguments.
      *
      * @return void
      */

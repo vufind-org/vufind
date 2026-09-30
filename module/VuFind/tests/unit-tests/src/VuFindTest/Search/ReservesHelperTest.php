@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for the ReservesHelper
+ * Unit tests for the ReservesHelper.
  *
  * PHP version 8
  *
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use VuFind\ILS\Connection;
 use VuFind\RecordDriver\SolrReserves;
@@ -38,7 +39,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service;
 
 /**
- * Unit tests for the ReservesHelper
+ * Unit tests for the ReservesHelper.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +50,7 @@ use VuFindSearch\Service;
 class ReservesHelperTest extends TestCase
 {
     /**
-     * Test constructor throws exception when useIndex is true but searchService is null
+     * Test constructor throws exception when useIndex is true but searchService is null.
      *
      * @return void
      */
@@ -62,7 +63,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test constructor succeeds when useIndex is true and searchService is provided
+     * Test constructor succeeds when useIndex is true and searchService is provided.
      *
      * @return void
      */
@@ -77,7 +78,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test constructor succeeds when useIndex is false and searchService is null
+     * Test constructor succeeds when useIndex is false and searchService is null.
      *
      * @return void
      */
@@ -91,7 +92,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test useIndex returns correct value
+     * Test useIndex returns correct value.
      *
      * @return void
      */
@@ -106,7 +107,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test useIndex returns false
+     * Test useIndex returns false.
      *
      * @return void
      */
@@ -120,7 +121,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using catalog (ILS driver)
+     * Test findReserves using catalog (ILS driver).
      *
      * @return void
      */
@@ -145,7 +146,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using Solr index with results
+     * Test findReserves using Solr index with results.
      *
      * @return void
      */
@@ -178,20 +179,19 @@ class ReservesHelperTest extends TestCase
             ->method('getRecords')
             ->willReturn([$reserveRecord]);
 
-        $commandResponse = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
+        $commandResponse = $this->createMock(RetrieveCommand::class);
         $commandResponse->expects($this->once())
             ->method('getResult')
             ->willReturn($recordCollection);
 
         $searchService->expects($this->once())
             ->method('invoke')
-            ->with($this->callback(function ($command) {
+            ->willReturnCallback(function ($command) use ($commandResponse): MockObject&RetrieveCommand {
                 $this->assertInstanceOf(RetrieveCommand::class, $command);
                 $this->assertSame('SolrReserves', $command->getTargetIdentifier());
                 $this->assertSame('MATH201|johnson|Mathematics', $command->getArguments()[0]);
-                return true;
-            }))
-            ->willReturn($commandResponse);
+                return $commandResponse;
+            });
 
         $helper = new ReservesHelper(true, $searchService, $catalog);
         $result = $helper->findReserves('MATH201', 'johnson', 'Mathematics');
@@ -221,7 +221,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using Solr index with no results
+     * Test findReserves using Solr index with no results.
      *
      * @return void
      */
@@ -239,16 +239,14 @@ class ReservesHelperTest extends TestCase
         $recordCollection->expects($this->never())
             ->method('getRecords');
 
-        $commandResponse = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
+        $commandResponse = $this->createMock(RetrieveCommand::class);
         $commandResponse->expects($this->once())
             ->method('getResult')
             ->willReturn($recordCollection);
 
         $searchService->expects($this->once())
             ->method('invoke')
-            ->with($this->callback(function ($command) {
-                return $command instanceof RetrieveCommand;
-            }))
+            ->with($this->isInstanceOf(RetrieveCommand::class))
             ->willReturn($commandResponse);
 
         $helper = new ReservesHelper(true, $searchService, $catalog);
@@ -258,7 +256,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using catalog with null parameters
+     * Test findReserves using catalog with null parameters.
      *
      * @return void
      */

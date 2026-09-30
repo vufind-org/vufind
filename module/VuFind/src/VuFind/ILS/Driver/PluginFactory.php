@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver plugin factory
+ * ILS driver plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 /**
- * ILS driver plugin factory
+ * ILS driver plugin factory.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -41,7 +41,7 @@ namespace VuFind\ILS\Driver;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

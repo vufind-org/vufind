@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VisualFacets Recommendations Module
+ * VisualFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
 use function is_callable;
 
 /**
- * VisualFacets Recommendations Module
+ * VisualFacets Recommendations Module.
  *
  * This class supports visualizing pivot facet information as a treemap or circle
  * packing visualization.
@@ -49,7 +49,7 @@ use function is_callable;
 class VisualFacets extends AbstractFacets
 {
     /**
-     * Facet configuration
+     * Facet configuration.
      *
      * @var string
      */

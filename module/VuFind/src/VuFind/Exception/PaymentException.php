@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Payment Exception
+ * Payment Exception.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Exception;
 
 /**
- * Payment Exception
+ * Payment Exception.
  *
  * @category VuFind
  * @package  Exceptions

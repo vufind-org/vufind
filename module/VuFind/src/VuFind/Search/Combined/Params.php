@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Combined aspect of the Search Multi-class (Params)
+ * Combined aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Combined;
 
 /**
- * Combined Search Parameters
+ * Combined Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrAuth

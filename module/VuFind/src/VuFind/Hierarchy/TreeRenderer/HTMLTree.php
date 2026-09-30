@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree HTML Renderer
+ * Hierarchy Tree HTML Renderer.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Http\RouteHelper;
 use function in_array;
 
 /**
- * Hierarchy Tree HTML Renderer
+ * Hierarchy Tree HTML Renderer.
  *
  * This is a helper class for producing hierarchy trees.
  *
@@ -53,7 +53,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RouteHelper       $routeHelper        Router plugin for urls
      * @param bool              $collectionsEnabled Whether the collections functionality is enabled
@@ -113,7 +113,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     }
 
     /**
-     * Render the Hierarchy Tree
+     * Render the Hierarchy Tree.
      *
      * @param string  $context     The context from which the call has been made
      * @param string  $mode        The mode in which the tree should be generated
@@ -172,7 +172,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     }
 
     /**
-     * Use the router to build the appropriate URL based on context
+     * Use the router to build the appropriate URL based on context.
      *
      * @param object $node    JSON object of a node/top node
      * @param string $context Record or Collection

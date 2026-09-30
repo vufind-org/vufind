@@ -81,7 +81,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     }
 
     /**
-     * Get the tags that match a string
+     * Get the tags that match a string.
      *
      * @param string $text          Tag to look up.
      * @param string $sort          Sort type

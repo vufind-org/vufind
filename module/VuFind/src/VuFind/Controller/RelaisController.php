@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Relais Controller
+ * Relais Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use function is_array;
 
 /**
- * Relais Controller
+ * Relais Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -43,7 +43,7 @@ use function is_array;
 class RelaisController extends AbstractBase
 {
     /**
-     * Relais login action
+     * Relais login action.
      *
      * @return mixed
      */

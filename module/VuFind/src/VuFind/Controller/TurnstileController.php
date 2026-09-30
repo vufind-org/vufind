@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Turnstile Controller
+ * Turnstile Controller.
  *
  * PHP version 8
  *
@@ -35,6 +35,7 @@ use VuFind\Crypt\HMAC;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\RateLimiter\RateLimiterManager;
 use VuFind\RateLimiter\Turnstile\Turnstile;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Controller Cloudflare Turnstile access checks.
@@ -51,14 +52,14 @@ class TurnstileController extends AbstractBase implements
     use LoggerAwareTrait;
 
     /**
-     * Request properties to be securely hashed, to avoid manipulation
+     * Request properties to be securely hashed, to avoid manipulation.
      *
      * @var array
      */
     protected $hashKeys = ['siteKey', 'policyId', 'destination'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm                 Service locator
      * @param Turnstile               $turnstile          Turnstile service
@@ -77,7 +78,7 @@ class TurnstileController extends AbstractBase implements
     }
 
     /**
-     * Present the Turnstile challenge to the user
+     * Present the Turnstile challenge to the user.
      *
      * @return mixed
      */
@@ -89,12 +90,12 @@ class TurnstileController extends AbstractBase implements
             ?? 'https://challenges.cloudflare.com/turnstile/v0/api.js';
         $context['hash'] = $this->hmac->generate($this->hashKeys, $context);
 
-        $this->layout()->searchbox = false;
+        $this->getService(GlobalsContainer::class)['searchbox'] = false;
         return $this->createViewModel($context);
     }
 
     /**
-     * Verify the Turnstile widget result against the Turnstile backend
+     * Verify the Turnstile widget result against the Turnstile backend.
      *
      * @return mixed
      *

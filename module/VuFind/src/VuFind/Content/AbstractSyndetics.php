@@ -43,7 +43,7 @@ use DOMDocument;
 abstract class AbstractSyndetics extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param int $timeout HTTP timeout for API calls (in seconds)
      */
@@ -52,7 +52,7 @@ abstract class AbstractSyndetics extends AbstractBase
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param string $url URL for client to use
      *
@@ -78,7 +78,7 @@ abstract class AbstractSyndetics extends AbstractBase
      */
     protected function getIsbnUrl($isbn, $id, $file = 'index.xml', $type = 'rw12,h7')
     {
-        $url = 'https://secure.syndetics.com/index.aspx?isbn=' . $isbn
+        $url = 'https://www.syndetics.com/index.aspx?isbn=' . $isbn
             . '/' . $file . '&client=' . $id . '&type=' . $type;
         $this->debug('Syndetics request: ' . $url);
         return $url;

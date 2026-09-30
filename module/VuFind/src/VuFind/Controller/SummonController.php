@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Controller
+ * Summon Controller.
  *
  * PHP version 8
  *
@@ -31,9 +31,10 @@ namespace VuFind\Controller;
 
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
- * Summon Controller
+ * Summon Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +45,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class SummonController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -65,12 +66,12 @@ class SummonController extends AbstractSearch
      */
     public function injectSummonMessage(MvcEvent $e)
     {
-        $this->layout()->poweredBy
+        $this->getService(GlobalsContainer::class)['poweredBy']
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -86,7 +87,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return mixed
      */
@@ -116,7 +117,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */

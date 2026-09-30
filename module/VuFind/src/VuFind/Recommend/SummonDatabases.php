@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonDatabases Recommendations Module
+ * SummonDatabases Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonDatabases Recommendations Module
+ * SummonDatabases Recommendations Module.
  *
  * This class provides database recommendations by doing a search of Summon.
  *

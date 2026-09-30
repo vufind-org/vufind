@@ -32,7 +32,7 @@
 namespace VuFind\Controller\Feature;
 
 /**
- * VuFind Action Feature Trait - Controller bulk action helper methods
+ * VuFind Action Feature Trait - Controller bulk action helper methods.
  *
  * @category VuFind
  * @package  Controller_Plugins

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CachingDownloader Test Class
+ * CachingDownloader Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Http\GuzzleService;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * CachingDownloader Test Class
+ * CachingDownloader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testDownload
+     * Data provider for testDownload.
      *
      * @return \Iterator
      */
@@ -61,7 +61,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a download
+     * Test a download.
      *
      * @param bool $cacheEnabled Is the cache enabled?
      *
@@ -133,7 +133,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test exception handling
+     * Test exception handling.
      *
      * @return void
      */

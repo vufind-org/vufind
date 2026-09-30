@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Preview Test Class
+ * Preview Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Preview;
 
 /**
- * Preview Test Class
+ * Preview Test Class.
  *
  * @category VuFind
  * @package  Tests

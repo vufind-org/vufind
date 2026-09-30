@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover image router
+ * Cover image router.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function get_class;
 use function is_array;
 
 /**
- * Cover image router
+ * Cover image router.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -49,7 +49,7 @@ class Router implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string      $dynamicUrl  Base URL for dynamic cover images.
      * @param CoverLoader $coverLoader Cover loader

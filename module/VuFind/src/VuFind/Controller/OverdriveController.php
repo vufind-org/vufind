@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Overdrive Controller
+ * Overdrive Controller.
  *
  * PHP version 8
  *
@@ -22,7 +22,7 @@ use VuFind\RecordDriver\SolrOverdrive;
 use function is_array;
 
 /**
- * Overdrive Controller supports actions for Overdrive Integration
+ * Overdrive Controller supports actions for Overdrive Integration.
  *
  * @category VuFind
  * @package  Controller
@@ -37,14 +37,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Overdrive Connector
+     * Overdrive Connector.
      *
      * @var OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -169,7 +169,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
     /**
      * Get Status Action
-     * Supports the ajax getStatus calls
+     * Supports the ajax getStatus calls.
      *
      * @return array|bool|\Laminas\View\Model\ViewModel
      */
@@ -188,7 +188,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Hold Action
+     * Hold Action.
      *
      * Hold Action handles all of the actions involving
      * Overdrive content including checkout, hold, cancel hold etc.
@@ -273,7 +273,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Hold Confirm Result
+     * Hold Confirm Result.
      *
      * Get result of the action
      *
@@ -304,7 +304,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Confirm Checkout Result
+     * Confirm Checkout Result.
      *
      * Get result of the action
      *
@@ -352,7 +352,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Checkout Result
+     * Checkout Result.
      *
      * Get result of the action
      *
@@ -373,7 +373,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Place Hold Result
+     * Place Hold Result.
      *
      * Get result of the action
      *
@@ -394,7 +394,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Edit Hold Email Confirm Result
+     * Edit Hold Email Confirm Result.
      *
      * Get result of the action
      *
@@ -411,7 +411,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Edit Hold Email Result
+     * Edit Hold Email Result.
      *
      * Get result of the action
      *
@@ -427,7 +427,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Return Title Confirmation Result
+     * Return Title Confirmation Result.
      *
      * Get result of the action
      *
@@ -444,7 +444,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Suspend Hold Result
+     * Suspend Hold Result.
      *
      * Get result of the action
      *
@@ -473,7 +473,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Edit Suspended Hold Result
+     * Edit Suspended Hold Result.
      *
      * Get result of the action
      *
@@ -496,7 +496,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Cancel Hold Result
+     * Cancel Hold Result.
      *
      * Get result of the action
      *
@@ -511,7 +511,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Return Title Result
+     * Return Title Result.
      *
      * Get result of the action
      *
@@ -526,7 +526,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Download Title Result
+     * Download Title Result.
      *
      * Get result of the action
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -107,6 +107,9 @@ class ServiceInitializer implements InitializerInterface
         }
         if ($instance instanceof AuthorizationServiceAwareInterface) {
             $instance->setAuthorizationService($sm->get(AuthorizationService::class));
+        }
+        if ($instance instanceof \VuFind\Http\CachingDownloaderAwareInterface) {
+            $instance->setCachingDownloader($sm->get(\VuFind\Http\CachingDownloader::class));
         }
         // Only inject cache if configuration enabled (to save resources):
         if (

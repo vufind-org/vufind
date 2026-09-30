@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating content loaders
+ * Factory for instantiating content loaders.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating content loaders
+ * Factory for instantiating content loaders.
  *
  * @category VuFind
  * @package  Content
@@ -78,7 +78,7 @@ class Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

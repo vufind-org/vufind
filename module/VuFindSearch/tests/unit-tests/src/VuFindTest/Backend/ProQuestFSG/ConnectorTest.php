@@ -70,7 +70,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test search on invalid database key
+     * Test search on invalid database key.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine Test Class
+ * BrowZine Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Backend\BrowZine\Connector;
 use function is_array;
 
 /**
- * BrowZine Test Class
+ * BrowZine Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +52,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SearchServiceTrait;
 
     /**
-     * Given a connector, wrap it up in a backend and backend manager
+     * Given a connector, wrap it up in a backend and backend manager.
      *
      * @param Connector $connector Connector
      *
@@ -67,7 +67,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock connector
+     * Get a mock connector.
      *
      * @param array $ids      IDs expected by connector
      * @param array $response Response for connector to return
@@ -93,7 +93,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testDOIApiSuccess()
+     * Data provider for testDOIApiSuccess().
      *
      * @return \Iterator
      */

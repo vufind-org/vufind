@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ComponentTest
+ * Class ComponentTest.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Renderer\PhpRenderer;
 use VuFind\View\Helper\Root\Component;
 
 /**
- * Component Test Class
+ * Component Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,18 +50,16 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $helper = new Component();
-
         $view = $this->createMock(PhpRenderer::class);
-        $helper->setView($view);
+        $view->method('render')->willReturnArgument(0);
 
-        $helper->getView()->method('render')->willReturnArgument(0);
+        $helper = new Component($view);
 
         return $helper;
     }
 
     /**
-     * Test basic Component conversion
+     * Test basic Component conversion.
      *
      * @return void
      */

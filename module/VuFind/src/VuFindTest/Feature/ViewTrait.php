@@ -67,10 +67,24 @@ trait ViewTrait
     protected function getAssetManager(PhpRenderer $renderer): AssetManager
     {
         $container = new MockContainer($this);
+        $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
+        $services = [
+            \Laminas\View\Helper\HeadLink::class => new \Laminas\View\Helper\HeadLink(),
+            \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle(),
+            \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript(),
+            \Laminas\View\Helper\Url::class => new \Laminas\View\Helper\Url(),
+        ];
+        $viewHelperManager = $renderer->getHelperPluginManager();
+        foreach ($services as $key => $value) {
+            if (!$viewHelperManager->has($key)) {
+                $viewHelperManager->setService($key, $value);
+            }
+        }
+        $container->set(\Laminas\View\HelperPluginManager::class, $viewHelperManager);
         $factory = new AssetManagerFactory();
-        $helper = $factory($container, AssetManager::class);
-        $helper->setView($renderer);
-        return $helper;
+        $assetManager = $factory($container, AssetManager::class);
+
+        return $assetManager;
     }
 
     /**
@@ -119,7 +133,7 @@ trait ViewTrait
     }
 
     /**
-     * Get mock SearchMemory view helper
+     * Get mock SearchMemory view helper.
      *
      * @param ?Memory        $memory       Optional search memory
      * @param ?Url           $url          URL helper
@@ -145,7 +159,7 @@ trait ViewTrait
     }
 
     /**
-     * Create the cleanHtml helper
+     * Create the cleanHtml helper.
      *
      * @return CleanHtml
      */
@@ -154,7 +168,7 @@ trait ViewTrait
         // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
         $cacheOptions = new class () extends AdapterOptions {
             /**
-             * Get cache dir
+             * Get cache dir.
              *
              * @return string
              */

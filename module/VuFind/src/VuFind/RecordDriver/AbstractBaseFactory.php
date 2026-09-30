@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class AbstractBaseFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -65,7 +65,7 @@ class AbstractBaseFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName($mainConfig, ...($options ?: []));
     }
 }

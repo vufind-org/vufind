@@ -43,7 +43,7 @@ namespace VuFind\ServiceManager;
 trait LowerCaseServiceNameTrait
 {
     /**
-     * Retrieve a plugin
+     * Retrieve a plugin.
      *
      * @param string     $name    Name of plugin
      * @param null|array $options Options to use when creating the instance.

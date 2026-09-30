@@ -32,7 +32,6 @@ namespace VuFindTest\Command\Util;
 use Closure;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Config;
 use VuFind\Config\Writer;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Entity\UserCardEntityInterface;
@@ -56,21 +55,21 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Expected path to config.ini
+     * Expected path to config.ini.
      *
      * @var string
      */
     protected $expectedConfigIniPath;
 
     /**
-     * Encryption algorithm to use
+     * Encryption algorithm to use.
      *
      * @var string
      */
     protected $encryptionAlgorithm = 'aes';
 
     /**
-     * Get mock user database service object
+     * Get mock user database service object.
      *
      * @return MockObject&UserServiceInterface
      */
@@ -80,7 +79,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock card table object
+     * Get mock card table object.
      *
      * @return MockObject&UserCardServiceInterface
      */
@@ -90,7 +89,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock command object
+     * Get mock command object.
      *
      * @param array                     $config      Config settings
      * @param ?UserServiceInterface     $userService User table gateway
@@ -106,7 +105,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
-                    new Config($config),
+                    $config,
                     $userService ?? $this->getMockUserService(),
                     $cardService ?? $this->getMockCardService(),
                     Closure::fromCallable(
@@ -121,7 +120,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock config writer
+     * Get a mock config writer.
      *
      * @return MockObject&Writer
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: optimize Solr index
+ * Console command: optimize Solr index.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Console command: optimize Solr index
+ * Console command: optimize Solr index.
  *
  * @category VuFind
  * @package  Console

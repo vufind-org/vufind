@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Specification builder for record driver data formatting view helper
+ * Specification builder for record driver data formatting view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root\RecordDataFormatter;
 
 /**
- * Specification builder for record driver data formatting view helper
+ * Specification builder for record driver data formatting view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,7 +48,7 @@ class SpecBuilder
     protected $maxPos = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $spec Existing specification lines (optional)
      */

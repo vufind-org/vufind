@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content Excerpts Plugin Manager Test Class
+ * Content Excerpts Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Excerpts\Content;
 use VuFind\Content\Excerpts\PluginManager;
 
 /**
- * Content Excerpts Plugin Manager Test Class
+ * Content Excerpts Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

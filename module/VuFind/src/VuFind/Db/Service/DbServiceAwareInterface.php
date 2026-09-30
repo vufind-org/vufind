@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 /**
- * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager.
  *
  * @category VuFind
  * @package  Db_Service

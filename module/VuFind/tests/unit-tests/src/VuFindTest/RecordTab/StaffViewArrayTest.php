@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staff view Test Class
+ * Staff view Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\StaffViewArray;
 
 /**
- * StaffViewArray Test Class
+ * StaffViewArray Test Class.
  *
  * @category VuFind
  * @package  Tests

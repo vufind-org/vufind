@@ -49,7 +49,7 @@ use function in_array;
 class DbBuilder
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConnectionFactory $dbFactory       Database connection factory
      * @param MigrationLoader   $migrationLoader Migration file loader

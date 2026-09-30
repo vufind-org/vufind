@@ -57,7 +57,7 @@
     </li>
   <?php else: ?>
     <li>
-      <button class="facet-tree__toggle-expanded" disabled aria-label="<?=$this->transEscAttr($buttonLabel)?>"></button>
+      <button class="facet-tree__toggle-expanded" disabled aria-hidden="true"></button>
       <span class="facet-tree__item-container<?=$this->allowExclude ? ' facet-tree__item-container--exclude' : ''?>">
         <?=$renderedEntryHtml?>
       </span>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class for session handling
+ * Base class for session handling.
  *
  * PHP version 8
  *
@@ -31,13 +31,12 @@
 
 namespace VuFind\Session;
 
-use VuFind\Config\Config;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 
 /**
- * Base class for session handling
+ * Base class for session handling.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -54,7 +53,7 @@ abstract class AbstractBase implements HandlerInterface
     use DbServiceAwareTrait;
 
     /**
-     * Session lifetime in seconds
+     * Session lifetime in seconds.
      *
      * @var int
      */
@@ -62,27 +61,27 @@ abstract class AbstractBase implements HandlerInterface
 
     /**
      * Whether writes are disabled, i.e. any changes to the session are not written
-     * to the storage
+     * to the storage.
      *
      * @var bool
      */
     protected $writesDisabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ?Config $config Session configuration ([Session] section of
+     * @param ?array $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(?Config $config = null)
+    public function __construct(?array $config = null)
     {
-        if (isset($config->lifetime)) {
-            $this->lifetime = $config->lifetime;
+        if (isset($config['lifetime'])) {
+            $this->lifetime = $config['lifetime'];
         }
     }
 
     /**
-     * Enable session writing (default)
+     * Enable session writing (default).
      *
      * @return void
      */
@@ -92,7 +91,7 @@ abstract class AbstractBase implements HandlerInterface
     }
 
     /**
-     * Disable session writing, i.e. make it read-only
+     * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */

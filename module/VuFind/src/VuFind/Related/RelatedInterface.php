@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records Interface
+ * Related Records Interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Related;
 
 /**
- * Related Records Interface
+ * Related Records Interface.
  *
  * This interface class is the definition of the required methods for
  * generating record recommendations.

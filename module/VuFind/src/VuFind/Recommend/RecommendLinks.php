@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecommendLinks Recommendations Module
+ * RecommendLinks Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * RecommendLinks Recommendations Module
+ * RecommendLinks Recommendations Module.
  *
  * This class recommends links to services, that user may try.
  *
@@ -43,14 +43,14 @@ namespace VuFind\Recommend;
 class RecommendLinks implements RecommendInterface
 {
     /**
-     * Links to show
+     * Links to show.
      *
      * @var array
      */
     protected $links = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
@@ -112,7 +112,7 @@ class RecommendLinks implements RecommendInterface
     }
 
     /**
-     * Get array of links with title as key and value as link
+     * Get array of links with title as key and value as link.
      *
      * @return \VuFind\Search\Base\Results
      */

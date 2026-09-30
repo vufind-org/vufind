@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\View\Helper\Root;
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * @category VuFind
  * @package  VuFind\View\Helper\Root
@@ -45,7 +45,7 @@ class Sorter implements \VuFind\I18n\HasSorterInterface
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Get sorter
+     * Get sorter.
      *
      * @return \VuFind\I18n\SorterInterface
      */

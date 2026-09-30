@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\ILS\Logic\Holds;
 use VuFind\ILS\Logic\TitleHolds;
 
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -168,7 +168,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
+     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder).
      *
      * @return \Iterator
      */
@@ -376,14 +376,12 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $reflection = new \ReflectionObject($obj);
 
         $getFieldArray = $reflection->getMethod('getFieldArray');
-        $getFieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
         );
 
         $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
-        $getSubfieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getSubfieldArray

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\ServiceManager\Factory\TestHarness;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class InvalidConfigType
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Configuration
      */

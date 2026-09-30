@@ -1,0 +1,25 @@
+<?php
+  $preAuthenticationData = $this->auth()->getManager()->getPreAuthenticationData();
+  $message = $preAuthenticationData['messageHtml'] ?? null;
+?>
+<?php
+  // Note: Lightbox would close automatically after the initial login request when a flash-message is not found, so
+  // include one even when we don't have a message to display:
+?>
+<div class="alert alert-info flash-message<?=!$message ? ' hidden' : '' ?>">
+  <?=$this->translate($message ?? '')?>
+</div>
+<div class="form-group">
+  <label class="form-label">
+    <?=$this->transEsc('Email')?>:
+  </label>
+  <p class="form-control-static">
+    <?=$this->escapeHtml($preAuthenticationData['email'] ?? '')?>
+  </p>
+</div>
+<div class="form-group">
+  <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password">
+    <?=$this->transEsc('one_time_password')?>:
+  </label>
+  <input type="text" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="form-control" autocomplete="one-time-code">
+</div>

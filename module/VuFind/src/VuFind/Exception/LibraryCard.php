@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Library Card Exception
+ * Library Card Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Library Card Exception
+ * Library Card Exception.
  *
  * @category VuFind
  * @package  Exceptions

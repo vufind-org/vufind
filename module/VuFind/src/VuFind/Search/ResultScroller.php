@@ -56,14 +56,14 @@ use function is_array;
 class ResultScroller
 {
     /**
-     * Maximum number of last searches to track
+     * Maximum number of last searches to track.
      *
      * @var int
      */
     public const LAST_SEARCH_LIMIT = 10;
 
     /**
-     * Currently active scroll data
+     * Currently active scroll data.
      *
      * @var \stdClass
      */
@@ -111,7 +111,7 @@ class ResultScroller
     }
 
     /**
-     * Add data to session for a search
+     * Add data to session for a search.
      *
      * @param Results $searchObject Search object
      *
@@ -143,7 +143,7 @@ class ResultScroller
     }
 
     /**
-     * Make room for a new entry in the session storage as necessary
+     * Make room for a new entry in the session storage as necessary.
      *
      * @return void
      */
@@ -165,7 +165,7 @@ class ResultScroller
 
     /**
      * Return a modified results array to help scroll the user through the current
-     * page of results
+     * page of results.
      *
      * @param array $retVal Return values (in progress)
      * @param int   $pos    Current position within current page
@@ -182,7 +182,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where the user is on the cusp of
-     * the previous page of results
+     * the previous page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -223,7 +223,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where the user is on the cusp of
-     * the next page of results
+     * the next page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -264,7 +264,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the previous page of results
+     * from the previous page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -308,7 +308,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the next page of results
+     * from the next page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -352,7 +352,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the first page of results
+     * from the first page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -389,7 +389,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the last page of results
+     * from the last page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -506,7 +506,7 @@ class ResultScroller
     }
 
     /**
-     * Build and return the scroll data array
+     * Build and return the scroll data array.
      *
      * @param array      $retVal     Return values (in progress)
      * @param BaseRecord $driver     Driver for the record currently being displayed
@@ -537,7 +537,7 @@ class ResultScroller
         }
 
         // build a full ID string using the driver:
-        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
+        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueID();
 
         // find where this record is in the current result page
         $pos = is_array($this->data->currIds)
@@ -554,43 +554,37 @@ class ResultScroller
             if ($pos > 0 && $pos < $count - 1) {
                 // the current record is somewhere in the middle of the current
                 // page, ie: not first or last
-                return $this->scrollOnCurrentPage($retVal, $pos);
+                $retVal = $this->scrollOnCurrentPage($retVal, $pos);
             } elseif ($pos == 0) {
                 // this record is first record on the current page
-                return $this
-                    ->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
+                $retVal = $this->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
             } elseif ($pos == $count - 1) {
                 // this record is last record on the current page
-                return $this->fetchNextPage($retVal, $lastSearch, $pos);
+                $retVal = $this->fetchNextPage($retVal, $lastSearch, $pos);
             }
         } else {
             // the current record is not on the current page
-            // if there is something on the previous page
-            if (!empty($this->data->prevIds)) {
-                // check if current record is on the previous page
-                $pos = is_array($this->data->prevIds)
-                    ? array_search($id, $this->data->prevIds) : false;
-                if ($pos !== false) {
-                    return $this
-                        ->scrollToPreviousPage($retVal, $lastSearch, $pos);
-                }
-            }
-            // if there is something on the next page
-            if (!empty($this->data->nextIds)) {
-                // check if current record is on the next page
-                $pos = is_array($this->data->nextIds)
-                    ? array_search($id, $this->data->nextIds) : false;
-                if ($pos !== false) {
-                    return $this->scrollToNextPage($retVal, $lastSearch, $pos);
-                }
-            }
-            if ($this->data->firstlast) {
+            if (($pos = array_search($id, $this->data->prevIds ?? [])) !== false) {
+                // if there is something on the previous page
+                $retVal = $this->scrollToPreviousPage($retVal, $lastSearch, $pos);
+            } elseif (($pos = array_search($id, $this->data->nextIds ?? [])) !== false) {
+                // if there is something on the next page
+                $retVal = $this->scrollToNextPage($retVal, $lastSearch, $pos);
+            } elseif ($this->data->firstlast) {
                 if ($id == $retVal['firstRecord']) {
-                    return $this->scrollToFirstRecord($retVal, $lastSearch);
+                    $retVal = $this->scrollToFirstRecord($retVal, $lastSearch);
+                } elseif ($id == $retVal['lastRecord']) {
+                    $retVal = $this->scrollToLastRecord($retVal, $lastSearch);
                 }
-                if ($id == $retVal['lastRecord']) {
-                    return $this->scrollToLastRecord($retVal, $lastSearch);
-                }
+            }
+        }
+
+        // The results total of the initial search might have changed by the time we reach the end of the list.
+        // Therefore, we should update it here to avoid confusion.
+        if (!($retVal['nextRecord'] ?? null) && $currentPos = $retVal['currentPosition'] ?? null) {
+            $retVal['resultTotal'] = $this->data->total = $currentPos;
+            if ($this->data->firstlast) {
+                $retVal['lastRecord'] = $this->data->lastId = end($this->data->currIds);
             }
         }
 
@@ -619,7 +613,7 @@ class ResultScroller
                 return false;
             }
             $retVal[]
-                = $record->getSourceIdentifier() . '|' . $record->getUniqueId();
+                = $record->getSourceIdentifier() . '|' . $record->getUniqueID();
         }
         return $retVal;
     }

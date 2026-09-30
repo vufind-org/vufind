@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -52,7 +52,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
-     * Whether a key pair has been created
+     * Whether a key pair has been created.
      *
      * @var bool
      */
@@ -83,19 +83,25 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing ILS functions.
      *
+     * @param bool $disableLog Disable error logging?
+     *
      * @return array
      */
-    protected function getConfigIniOverrides(): array
+    protected function getConfigIniOverrides(bool $disableLog): array
     {
-        return [
+        $config = [
             'Catalog' => [
                 'driver' => 'Demo',
             ],
         ];
+        if ($disableLog) {
+            $config['Logging'] = ['file' => null];
+        }
+        return $config;
     }
 
     /**
-     * Get OAuth2Server.yaml overrides
+     * Get OAuth2Server.yaml overrides.
      *
      * @param string $redirectUri Redirect URI
      *
@@ -132,17 +138,18 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Set up a test
+     * Set up a test.
      *
      * @param string $redirectUri Redirect URI
+     * @param bool   $disableLog  Disable error logging due to expected exceptions?
      *
      * @return void
      */
-    protected function setUpTest(string $redirectUri): void
+    protected function setUpTest(string $redirectUri, bool $disableLog = false): void
     {
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(),
+                'config' => $this->getConfigIniOverrides($disableLog),
                 'Demo' => $this->getDemoIniOverrides(),
             ]
         );
@@ -153,7 +160,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testOAuth2Authorization
+     * Data provider for testOAuth2Authorization.
      *
      * @return \Iterator
      */
@@ -194,7 +201,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
-        $this->setUpTest($redirectUri);
+        $this->setUpTest($redirectUri, true);
 
         static::removeUsers(['username1']);
 
@@ -250,6 +257,15 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->assertArrayHasKey('state', $queryParams);
         $this->assertSame($state, $queryParams['state']);
 
+        // Test an OPTIONS request:
+        $tokenEndpointUrl = $this->getVuFindUrl() . '/OAuth2/token';
+        $response = $this->getHttpService()->createGuzzleClient($tokenEndpointUrl)
+            ->request('OPTIONS', $tokenEndpointUrl);
+        $this->assertSame(204, $response->getStatusCode());
+        $this->assertSame('GET, POST, OPTIONS', $response->getHeader('Access-Control-Allow-Methods')[0] ?? null);
+        $this->assertSame('*', $response->getHeader('Access-Control-Allow-Origin')[0] ?? null);
+        $this->assertSame('86400', $response->getHeader('Access-Control-Max-Age')[0] ?? null);
+
         // Fetch and check idToken with back-channel requests:
         $tokenParams = [
             'code' => $queryParams['code'],
@@ -259,7 +275,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'client_secret' => 'mysecret',
         ];
         $response = $this->httpPost(
-            $this->getVuFindUrl() . '/OAuth2/token',
+            $tokenEndpointUrl,
             http_build_query($tokenParams),
             'application/x-www-form-urlencoded'
         );
@@ -362,7 +378,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
-        $this->setUpTest($redirectUri);
+        $this->setUpTest($redirectUri, true);
 
         $nonce = time();
         $state = md5((string)$nonce);
@@ -409,7 +425,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
         // authorization response:
         $redirectUri = $this->getVuFindUrl() . '/Content/faq';
-        $this->setUpTest($redirectUri);
+        $this->setUpTest($redirectUri, true);
 
         $nonce = time();
         $state = md5((string)$nonce);
@@ -548,7 +564,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Create a public/private key pair
+     * Create a public/private key pair.
      *
      * @return void
      */
@@ -615,7 +631,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Restore any previous public/private key pair
+     * Restore any previous public/private key pair.
      *
      * @return void
      */

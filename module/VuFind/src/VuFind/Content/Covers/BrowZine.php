@@ -46,7 +46,7 @@ use function in_array;
 class BrowZine extends \VuFind\Content\AbstractCover
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service  $searchService Search service
      * @param string[] $ignoreList    Cover image URLs to ignore (we don't want to display third-party generic images)

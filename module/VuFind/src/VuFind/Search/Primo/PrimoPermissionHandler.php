@@ -30,7 +30,6 @@
 namespace VuFind\Search\Primo;
 
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
-use VuFind\Config\Config;
 
 use function in_array;
 use function is_array;
@@ -57,7 +56,7 @@ class PrimoPermissionHandler
 
     /**
      * Institution code applicable for the user (null = not set yet -- attempt autodetection;
-     * false = invalid value provided, or autodetection failed)
+     * false = invalid value provided, or autodetection failed).
      *
      * @var string|bool|null
      */
@@ -66,23 +65,20 @@ class PrimoPermissionHandler
     /**
      * Constructor.
      *
-     * @param Config|array $primoPermConfig Primo-Config for
+     * @param array $primoPermConfig Primo-Config for
      * Institutions
      *
      * @return void
      */
-    public function __construct(Config|array $primoPermConfig)
+    public function __construct(array $primoPermConfig)
     {
-        if ($primoPermConfig instanceof Config) {
-            $primoPermConfig = $primoPermConfig->toArray();
-        }
         $this->primoConfig = is_array($primoPermConfig) ? $primoPermConfig : [];
         $this->checkLegacySettings();
         $this->checkConfig();
     }
 
     /**
-     * Set the institution code (no autodetection)
+     * Set the institution code (no autodetection).
      *
      * @param string $code Institutioncode
      *
@@ -96,7 +92,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Determine if a institution code is set in config file
+     * Determine if a institution code is set in config file.
      *
      * @param string $code Code to approve against config file
      *
@@ -109,7 +105,7 @@ class PrimoPermissionHandler
 
     /**
      * Determine the institution code
-     * Returns false, if no institution can get set
+     * Returns false, if no institution can get set.
      *
      * @return string|bool
      */
@@ -122,7 +118,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Check if the user has permission
+     * Check if the user has permission.
      *
      * @return bool
      */
@@ -133,7 +129,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Checks the config file section for validity
+     * Checks the config file section for validity.
      *
      * @return void
      */
@@ -157,7 +153,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Legacy settings support
+     * Legacy settings support.
      *
      * @return void
      */
@@ -184,7 +180,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Gets all possible institution codes from config file
+     * Gets all possible institution codes from config file.
      *
      * @return array Array with valid Primo institution codes
      */
@@ -211,7 +207,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Autodetects the permissions by configuration file
+     * Autodetects the permissions by configuration file.
      *
      * @return void
      */
@@ -255,7 +251,7 @@ class PrimoPermissionHandler
 
     /**
      * Determine the default institution code
-     * Returns false, if no default code has been set
+     * Returns false, if no default code has been set.
      *
      * @return string|bool
      */
@@ -265,7 +261,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Determine the default onCampus Rule
+     * Determine the default onCampus Rule.
      *
      * @return ?string
      */
@@ -277,7 +273,7 @@ class PrimoPermissionHandler
     }
 
     /**
-     * Determine a onCampus Rule for a certain code
+     * Determine a onCampus Rule for a certain code.
      *
      * @param ?string $code Code to determine the rule name for
      *
@@ -296,14 +292,14 @@ class PrimoPermissionHandler
             return $onCampusRule;
         }
 
-        // If primoConfig->onCampusRule[] is not set
+        // If primoConfig['onCampusRule'][] is not set
         // no rule can get applied.
         // So return null to indicate that nothing can get matched.
         return null;
     }
 
     /**
-     * Checks, if a rule is granted
+     * Checks, if a rule is granted.
      *
      * @param string $code Code to check the rule name for
      *

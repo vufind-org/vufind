@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content block interface
+ * Content block interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ContentBlock;
 
 /**
- * Content block interface
+ * Content block interface.
  *
  * @category VuFind
  * @package  ContentBlock

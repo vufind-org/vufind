@@ -1,4 +1,7 @@
-<?php $account = $this->auth()->getManager(); ?>
+<?php
+  $account = $this->auth()->getManager();
+  $preAuthenticationData = $account->getPreAuthenticationData() ?? [];
+?>
 <?php $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <?php if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <?php
@@ -22,8 +25,12 @@
     <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($account->getCsrfHash())?>">
     <div class="form-group">
       <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEscAttr('Login')?>">
-      <?php if ($account->supportsCreation()): ?>
-        <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+      <?php if ($preAuthenticationData): ?>
+        <input class="btn btn-link cancel-link" type="submit" name="processCancel" value="<?=$this->transEscAttr('navigate_back')?>">
+      <?php else: ?>
+        <?php if ($account->supportsCreation()): ?>
+          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+        <?php endif; ?>
       <?php endif; ?>
       <a id="recovery_link" class="btn btn-link recover-account-link hidden" href="#"><?=$this->transEsc('Forgot Password')?></a>
     </div>

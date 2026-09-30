@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Writer Test Class
+ * Solr Writer Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\Service as SearchService;
 
 /**
- * Solr Utils Test Class
+ * Solr Utils Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ use VuFindSearch\Service as SearchService;
 class WriterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test commit
+     * Test commit.
      *
      * @return void
      */
@@ -61,7 +61,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test save
+     * Test save.
      *
      * @return void
      */
@@ -73,7 +73,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test save with non-default parameters
+     * Test save with non-default parameters.
      *
      * @return void
      */
@@ -92,7 +92,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test optimize
+     * Test optimize.
      *
      * @return void
      */
@@ -103,7 +103,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test delete all
+     * Test delete all.
      *
      * @return void
      */
@@ -116,7 +116,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test delete records
+     * Test delete records.
      *
      * @return void
      */
@@ -129,7 +129,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock change tracker service
+     * Get mock change tracker service.
      *
      * @return MockObject&ChangeTrackerServiceInterface
      */
@@ -139,7 +139,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a mock search service for a single command and its result
+     * Create a mock search service for a single command and its result.
      *
      * @param object $expectedCommand Expected command class
      * @param mixed  $result          Result to return for the invoked command
@@ -160,7 +160,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a Writer for a single command and its result
+     * Create a Writer for a single command and its result.
      *
      * @param object $expectedCommand Expected command class
      * @param mixed  $result          Result to return for the invoked command

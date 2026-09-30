@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Captcha view helper
+ * Captcha view helper.
  *
  * PHP version 8
  *
@@ -30,10 +30,13 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+
 use function count;
 
 /**
- * Captcha view helper
+ * Captcha view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,40 +45,31 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Captcha extends \Laminas\View\Helper\AbstractHelper
+class Captcha
 {
     use ClassBasedTemplateRendererTrait;
 
     /**
-     * Captcha services
+     * Constructor.
      *
-     * @var array
-     */
-    protected $captchas = [];
-
-    /**
-     * Config
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\Config $config   Config
-     * @param array                 $captchas Captchas
+     * @param array                          $config       Config
+     * @param \VuFind\Captcha\AbstractBase[] $captchas     Captchas
+     * @param RendererInterface              $viewRenderer View renderer
+     * @param ResolverInterface              $viewResolver View resolver
+     * @param Context                        $context      Context helper
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        array $captchas = []
+        protected array $config,
+        protected array $captchas,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        Context $context
     ) {
-        $this->config = $config;
-        $this->captchas = $captchas;
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
     }
 
     /**
-     * Return this object
+     * Return this object.
      *
      * @return static
      */
@@ -85,7 +79,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Generate HTML of a single CAPTCHA (redirect to template)
+     * Generate HTML of a single CAPTCHA (redirect to template).
      *
      * @param \VuFind\Captcha\AbstractBase $captcha Captcha
      *
@@ -114,10 +108,12 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
             return '';
         }
 
-        return $this->getView()->render(
+        return $this->viewRenderer->render(
             'Helpers/captcha',
-            ['wrapHtml' => $wrapHtml,
-                                'captchas' => $this->captchas]
+            [
+                'wrapHtml' => $wrapHtml,
+                'captchas' => $this->captchas,
+            ]
         );
     }
 
@@ -136,13 +132,13 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Return whether Captcha is active in the config
+     * Return whether Captcha is active in the config.
      *
      * @return bool
      */
     protected function active(): bool
     {
         return count($this->captchas) > 0
-            && isset($this->config->Captcha->forms);
+            && isset($this->config['Captcha']['forms']);
     }
 }

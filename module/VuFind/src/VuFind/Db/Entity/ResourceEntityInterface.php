@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for resource table
+ * Entity model interface for resource table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for resource table
+ * Entity model interface for resource table.
  *
  * @category VuFind
  * @package  Database
@@ -50,7 +50,7 @@ interface ResourceEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Record Id setter
+     * Record Id setter.
      *
      * @param string $recordId recordId
      *
@@ -59,14 +59,14 @@ interface ResourceEntityInterface extends EntityInterface
     public function setRecordId(string $recordId): static;
 
     /**
-     * Record Id getter
+     * Record Id getter.
      *
      * @return string
      */
     public function getRecordId(): string;
 
     /**
-     * Title setter
+     * Title setter.
      *
      * @param string $title Title of the record.
      *
@@ -75,14 +75,14 @@ interface ResourceEntityInterface extends EntityInterface
     public function setTitle(string $title): static;
 
     /**
-     * Title getter
+     * Title getter.
      *
      * @return string
      */
     public function getTitle(): string;
 
     /**
-     * Display title setter
+     * Display title setter.
      *
      * @param string $title Display title of the record.
      *
@@ -91,14 +91,14 @@ interface ResourceEntityInterface extends EntityInterface
     public function setDisplayTitle(string $title): static;
 
     /**
-     * Display title getter
+     * Display title getter.
      *
      * @return ?string
      */
     public function getDisplayTitle(): ?string;
 
     /**
-     * Author setter
+     * Author setter.
      *
      * @param ?string $author Author of the title.
      *
@@ -107,14 +107,14 @@ interface ResourceEntityInterface extends EntityInterface
     public function setAuthor(?string $author): static;
 
     /**
-     * Author getter
+     * Author getter.
      *
      * @return ?string
      */
     public function getAuthor(): ?string;
 
     /**
-     * Year setter
+     * Year setter.
      *
      * @param ?int $year Year title is published.
      *
@@ -123,14 +123,14 @@ interface ResourceEntityInterface extends EntityInterface
     public function setYear(?int $year): static;
 
     /**
-     * Year getter
+     * Year getter.
      *
      * @return ?int
      */
     public function getYear(): ?int;
 
     /**
-     * Source setter
+     * Source setter.
      *
      * @param string $source Source (a search backend ID).
      *
@@ -139,14 +139,14 @@ interface ResourceEntityInterface extends EntityInterface
     public function setSource(string $source): static;
 
     /**
-     * Source getter
+     * Source getter.
      *
      * @return string
      */
     public function getSource(): string;
 
     /**
-     * Extra Metadata setter
+     * Extra Metadata setter.
      *
      * @param ?string $extraMetadata ExtraMetadata.
      *
@@ -155,7 +155,7 @@ interface ResourceEntityInterface extends EntityInterface
     public function setExtraMetadata(?string $extraMetadata): static;
 
     /**
-     * Extra Metadata getter
+     * Extra Metadata getter.
      *
      * @return ?string
      */

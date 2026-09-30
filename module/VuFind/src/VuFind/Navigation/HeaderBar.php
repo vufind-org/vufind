@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * PHP version 8
  *
@@ -29,18 +29,20 @@
 
 namespace VuFind\Navigation;
 
-use Laminas\Http\Request;
-use Laminas\View\Model\ViewModel;
+use Laminas\Http\PhpEnvironment\Request;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 
 use function array_key_exists;
 use function count;
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -51,23 +53,28 @@ use function count;
 class HeaderBar extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array          $sectionConfig  Menu configuration
-     * @param array          $config         Main configuration
-     * @param Cart           $cart           Cart
-     * @param Manager        $authManager    Authentication manager
-     * @param ViewModel      $viewModel      View model
-     * @param LocaleSettings $localeSettings Locale settings
-     * @param Request        $request        Request
+     * @param SectionServiceInterface $sectionService   Section service
+     * @param array                   $sectionConfig    Section configuration
+     * @param array                   $config           Main configuration
+     * @param Cart                    $cart             Cart
+     * @param Manager                 $authManager      Authentication manager
+     * @param GlobalsContainer        $globalsContainer Global data container
+     * @param LocaleSettings          $localeSettings   Locale settings
+     * @param Request                 $request          Request
      */
     public function __construct(
+        SectionServiceInterface $sectionService,
+        #[Autowire(config: 'HeaderBar')]
         array $sectionConfig,
+        #[Autowire(config: 'config')]
         array $config,
         protected Cart $cart,
         protected Manager $authManager,
-        protected ViewModel $viewModel,
+        protected GlobalsContainer $globalsContainer,
         protected LocaleSettings $localeSettings,
+        #[Autowire(service: 'Request')]
         protected Request $request
     ) {
         $this->addRequiredSettings(
@@ -91,7 +98,7 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config);
     }
 
     /**
@@ -143,7 +150,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -159,24 +166,29 @@ class HeaderBar extends AbstractMenu
                   attributes:
                     id: feedbackLink
                     data-lightbox: data-lightbox
-            
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-feedback.phtml
+
                 - template: Section/HeaderBar/HeaderBar-cart.phtml
                   checkMethod: checkCart
-            
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-cart.phtml
+
                 - template: Section/HeaderBar/HeaderBar-account.phtml
                   checkMethod: checkAccount
-            
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-account.phtml
+
                 - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
                   checkMethod: checkThemeOptions
-            
+                  excludeFromSiteMapPage: true
+
                 - template: Section/HeaderBar/HeaderBar-allLangs.phtml
                   checkMethod: checkAllLangs
+                  excludeFromSiteMapPage: true
             YAML;
         return Yaml::parse($yaml);
     }
 
     /**
-     * Check whether to show feedback item
+     * Check whether to show feedback item.
      *
      * @return bool
      */
@@ -186,7 +198,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show cart item
+     * Check whether to show cart item.
      *
      * @return bool
      */
@@ -196,7 +208,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show account item
+     * Check whether to show account item.
      *
      * @return bool
      */
@@ -206,18 +218,18 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show theme options item
+     * Check whether to show theme options item.
      *
      * @return bool
      */
     public function checkThemeOptions(): bool
     {
-        return ($options = $this->viewModel->getVariable('themeOptions'))
+        return ($options = $this->globalsContainer['themeOptions'])
             && (count($options) > 1);
     }
 
     /**
-     * Check whether to show all languages item
+     * Check whether to show all languages item.
      *
      * @return bool
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HighwirePress Test Class
+ * HighwirePress Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\MetadataVocabulary;
 use VuFind\MetadataVocabulary\HighwirePress;
 
 /**
- * HighwirePress Test Class
+ * HighwirePress Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -51,7 +51,7 @@ use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
 class ILSAuthenticatorFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -87,7 +87,7 @@ class ILSAuthenticatorFactory implements FactoryInterface
             ),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\EmailAuthenticator::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
         );
         $dbServiceManager = $container->get(DatabaseServiceManager::class);
         $service->setAuditEventService($dbServiceManager->get(AuditEventServiceInterface::class));

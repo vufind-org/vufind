@@ -51,14 +51,14 @@ use VuFindConsole\Generator\GeneratorTools;
 class NonTabRecordActionCommand extends AbstractCommand
 {
     /**
-     * Main framework configuration
+     * Main framework configuration.
      *
      * @var array
      */
     protected $mainConfig;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorTools $tools      Generator tools
      * @param array          $mainConfig Main framework configuration

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract multi driver test
+ * Abstract multi driver test.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function count;
 use function in_array;
 
 /**
- * Abstract multi driver test
+ * Abstract multi driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -136,7 +136,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     *  Tests that logging works correctly
+     *  Tests that logging works correctly.
      *
      * @return array
      */
@@ -195,7 +195,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     *  Tests that getDriverConfig works correctly
+     *  Tests that getDriverConfig works correctly.
      *
      * @return void
      */
@@ -214,7 +214,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Method to get a patron with the given username
+     * Method to get a patron with the given username.
      *
      * @param string $username The username to use
      * @param string $instance The instance to append before the username
@@ -239,7 +239,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     /**
      * This function returns a mock service manager with the given parameters
      * For examples of what is to be passed, see:
-     * http://www.phpunit.de/manual/3.0/en/mock-objects.html
+     * http://www.phpunit.de/manual/3.0/en/mock-objects.html.
      *
      * @param object $times  The number of times it is expected to be called.
      * @param object $driver The driver type this SM will expect to be called with.
@@ -258,7 +258,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock Demo driver
+     * Get a mock Demo driver.
      *
      * @return \VuFind\ILS\Driver\Demo
      */
@@ -278,7 +278,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock driver
+     * Get a mock driver.
      *
      * @param string $type    Type of driver to make
      * @param array  $methods Array of methods to stub
@@ -329,7 +329,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     abstract protected function getDriver($constructorArgs = []);
 
     /**
-     * Create a Multi Driver for the given ILS drivers
+     * Create a Multi Driver for the given ILS drivers.
      *
      * @param array $drivers Array of drivers with prefix as key and driver instance
      * as value

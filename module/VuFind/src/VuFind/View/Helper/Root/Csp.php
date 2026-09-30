@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content Security Policy view helper
+ * Content Security Policy view helper.
  *
  * PHP version 8
  *
@@ -30,9 +30,11 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Response;
+use VuFind\Security\NonceGenerator;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Content Security Policy view helper
+ * Content Security Policy view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,20 +42,31 @@ use Laminas\Http\Response;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Csp extends \Laminas\View\Helper\AbstractHelper
+class Csp
 {
     /**
-     * Constructor
+     * CSP nonce.
      *
-     * @param ?Response $response HTTP Response, if any
-     * @param string    $nonce    CSP nonce
+     * @var string
      */
-    public function __construct(protected ?Response $response, protected string $nonce)
-    {
+    protected string $nonce;
+
+    /**
+     * Constructor.
+     *
+     * @param ?Response      $response  HTTP Response, if any
+     * @param NonceGenerator $generator Nonce generator
+     */
+    public function __construct(
+        #[Autowire(service: 'Response')]
+        protected ?Response $response,
+        NonceGenerator $generator
+    ) {
+        $this->nonce = $generator->getNonce();
     }
 
     /**
-     * Disable Content Security Policy by removing the headers
+     * Disable Content Security Policy by removing the headers.
      *
      * @return void
      */
@@ -81,7 +94,7 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Return the current nonce
+     * Return the current nonce.
      *
      * Result is a base64 encoded string that does not need escaping.
      *
@@ -90,5 +103,15 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
     public function getNonce(): string
     {
         return $this->nonce;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

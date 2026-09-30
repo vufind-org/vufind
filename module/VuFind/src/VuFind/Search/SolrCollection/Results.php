@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Collection aspect of the Search Multi-class (Results)
+ * Solr Collection aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\SolrCollection;
 
 /**
- * Solr Collection Search Options
+ * Solr Collection Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor

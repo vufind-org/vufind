@@ -45,7 +45,7 @@ use XMLWriter;
 class CommitDocument implements DocumentInterface
 {
     /**
-     * Value for commitWithin attribute
+     * Value for commitWithin attribute.
      *
      * @var int
      */

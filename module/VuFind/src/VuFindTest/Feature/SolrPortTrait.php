@@ -41,7 +41,7 @@ namespace VuFindTest\Feature;
 trait SolrPortTrait
 {
     /**
-     * Get Solr port number
+     * Get Solr port number.
      *
      * @return int
      */

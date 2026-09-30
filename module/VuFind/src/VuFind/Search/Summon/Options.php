@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Options
+ * Summon Search Options.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Summon;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Summon Search Options
+ * Summon Search Options.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -45,21 +45,21 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Maximum number of topic recommendations to show (null for none)
+     * Maximum number of topic recommendations to show (null for none).
      *
      * @var ?int
      */
     protected ?int $maxTopicRecommendations = null;
 
     /**
-     * Relevance sort override for empty searches
+     * Relevance sort override for empty searches.
      *
      * @var ?string
      */
     protected ?string $emptySearchRelevanceOverride = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -136,7 +136,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get the maximum number of topic recommendations (false for none)
+     * Get the maximum number of topic recommendations (false for none).
      *
      * @return ?int
      */
@@ -146,7 +146,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Set the maximum number of topic recommendations (false for none)
+     * Set the maximum number of topic recommendations (false for none).
      *
      * @param ?int $max New maximum setting
      *

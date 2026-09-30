@@ -51,7 +51,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
     use EntityTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param DbUserEntityInterface       $user               User
      * @param ?Connection                 $ils                ILS connection
@@ -90,7 +90,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
     }
 
     /**
-     * Get claims (attributes) for OpenID Connect
+     * Get claims (attributes) for OpenID Connect.
      *
      * @return array
      */

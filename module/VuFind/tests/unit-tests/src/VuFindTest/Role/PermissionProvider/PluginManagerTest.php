@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionProvider Plugin Manager Test Class
+ * PermissionProvider Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Role\PermissionProvider;
 use VuFind\Role\PermissionProvider\PluginManager;
 
 /**
- * PermissionProvider Plugin Manager Test Class
+ * PermissionProvider Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

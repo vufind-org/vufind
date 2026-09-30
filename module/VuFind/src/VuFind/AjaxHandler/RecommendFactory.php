@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\View\Helper\Root\Recommend;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for Recommend AJAX handler.
@@ -47,7 +49,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 class RecommendFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -74,7 +76,8 @@ class RecommendFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
             $container->get(ResultsManager::class)->get('Solr'),
-            $container->get('ViewRenderer')
+            $container->get(TemplateRendererInterface::class),
+            $container->get('ViewHelperManager')->get(Recommend::class),
         );
     }
 }

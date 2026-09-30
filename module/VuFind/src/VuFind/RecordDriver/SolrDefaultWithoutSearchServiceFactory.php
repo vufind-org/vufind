@@ -46,14 +46,14 @@ use Psr\Container\ContainerInterface;
 class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */
     protected $searchIni = 'searches';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -74,7 +74,7 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($this->searchIni);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($this->searchIni);
         $finalOptions = [null, $config];
         return parent::__invoke($container, $requestedName, $finalOptions);
     }

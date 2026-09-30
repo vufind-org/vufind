@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF Options Test
+ * EPF Options Test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\EPF\Options;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * EPF Options Test
+ * EPF Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testOptions
+     * Data provider for testOptions.
      *
      * @return \Iterator
      */

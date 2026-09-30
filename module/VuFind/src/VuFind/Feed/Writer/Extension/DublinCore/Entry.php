@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas\Feed\Entry extension for Dublin Core
+ * Laminas\Feed\Entry extension for Dublin Core.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Feed\Writer\Extension\DublinCore;
 use Laminas\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
 
 /**
- * Laminas\Feed\Entry extension for Dublin Core
+ * Laminas\Feed\Entry extension for Dublin Core.
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to
@@ -49,14 +49,14 @@ use Laminas\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
 class Entry extends ParentEntry
 {
     /**
-     * Formats
+     * Formats.
      *
      * @var array
      */
     protected $dcFormats = [];
 
     /**
-     * Date
+     * Date.
      *
      * @var string
      */

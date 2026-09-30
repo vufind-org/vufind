@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Explanation for second Solr index
+ * Solr Explanation for second Solr index.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Search\Search2;
 
 /**
- * Solr Explanation for second Solr index
+ * Solr Explanation for second Solr index.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -43,7 +43,7 @@ namespace VuFind\Search\Search2;
 class Explanation extends \VuFind\Search\Solr\Explanation
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */

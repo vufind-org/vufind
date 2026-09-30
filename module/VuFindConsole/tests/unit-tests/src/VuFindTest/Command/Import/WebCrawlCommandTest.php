@@ -31,7 +31,6 @@ namespace VuFindTest\Command\Import;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Config;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
 use VuFindConsole\Command\Import\WebCrawlCommand;
@@ -52,7 +51,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Data provider for testSuccessWithMinimalParameters()
+     * Data provider for testSuccessWithMinimalParameters().
      *
      * @return \Iterator
      */
@@ -122,13 +121,11 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ->with('SolrWeb');
         $solr->expects($this->once())->method('optimize')
             ->with('SolrWeb');
-        $config = new Config(
-            [
-                'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
-                'General' => compact('verbose'),
-                'Sitemaps' => ['url' => ['http://foo']],
-            ]
-        );
+        $config = [
+            'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
+            'General' => compact('verbose'),
+            'Sitemaps' => ['url' => ['http://foo']],
+        ];
         $command = $this->getMockCommand($importer, $solr, $config);
         $this->expectConsecutiveCalls(
             $command,
@@ -165,13 +162,11 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ->with('SolrWeb');
         $solr->expects($this->once())->method('optimize')
             ->with('SolrWeb');
-        $config = new Config(
-            [
-                'Cache' => ['transform_cache_dir' => $cacheDir],
-                'General' => ['verbose' => true],
-                'Sitemaps' => ['url' => ['http://foo']],
-            ]
-        );
+        $config = [
+            'Cache' => ['transform_cache_dir' => $cacheDir],
+            'General' => ['verbose' => true],
+            'Sitemaps' => ['url' => ['http://foo']],
+        ];
         $command = $this->getMockCommand($importer, $solr, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--use-expired-cache' => true]);
@@ -186,11 +181,11 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
      * @param ?Importer $importer Importer object
      * @param ?Writer   $solr     Solr writer object
-     * @param ?Config   $config   Configuration
+     * @param ?array    $config   Configuration
      * @param array     $methods  Methods to mock
      *
      * @return MockObject&WebCrawlCommand
@@ -198,7 +193,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockCommand(
         ?Importer $importer = null,
         ?Writer $solr = null,
-        ?Config $config = null,
+        ?array $config = [],
         array $methods = ['downloadFile', 'removeTempFile', 'updateTransformCache']
     ): MockObject&WebCrawlCommand {
         return $this->getMockBuilder(WebCrawlCommand::class)
@@ -206,14 +201,14 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     $importer ?? $this->getMockImporter(),
                     $solr ?? $this->getMockSolrWriter(),
-                    $config ?? new Config([]),
+                    $config,
                 ]
             )->onlyMethods($methods)
             ->getMock();
     }
 
     /**
-     * Get a mock importer object
+     * Get a mock importer object.
      *
      * @param array $methods Methods to mock
      *
@@ -230,7 +225,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock solr writer object
+     * Get a mock solr writer object.
      *
      * @param array $methods Methods to mock
      *

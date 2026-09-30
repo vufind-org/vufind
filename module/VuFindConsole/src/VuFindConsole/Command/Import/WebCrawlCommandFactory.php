@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class WebCrawlCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,7 +69,7 @@ class WebCrawlCommandFactory implements FactoryInterface
         return new $requestedName(
             new \VuFind\XSLT\Importer($container),
             $container->get(\VuFind\Solr\Writer::class),
-            $configManager->getConfigObject('webcrawl'),
+            $configManager->getConfigArray('webcrawl'),
             ...($options ?? [])
         );
     }

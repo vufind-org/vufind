@@ -32,7 +32,6 @@ namespace VuFindTest\Auth;
 use Laminas\Http\Request;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\SIP2;
-use VuFind\Config\Config;
 
 /**
  * SIP2 authentication test class.
@@ -55,12 +54,12 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     public function getAuthObject(?array $config = null): SIP2
     {
         $obj = new SIP2($this->createMock(ILSAuthenticator::class));
-        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the LDAP object.
      *
      * @return array
      */

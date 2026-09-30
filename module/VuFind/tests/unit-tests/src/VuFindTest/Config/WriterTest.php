@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Writer Test Class
+ * Config Writer Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\Writer;
 
 /**
- * Config Writer Test Class
+ * Config Writer Test Class.
  *
  * @category VuFind
  * @package  Tests

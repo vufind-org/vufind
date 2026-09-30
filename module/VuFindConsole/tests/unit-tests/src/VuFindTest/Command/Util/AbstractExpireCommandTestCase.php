@@ -49,14 +49,14 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = AbstractExpireCommand::class;
 
     /**
-     * Name of a valid service class (or interface) to test with
+     * Name of a valid service class (or interface) to test with.
      *
      * @var string
      */
@@ -178,7 +178,7 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get the command class
+     * Get the command class.
      *
      * @param DeleteExpiredInterface $service Table to process
      * @param DateTime               $date    Expiration date threshold

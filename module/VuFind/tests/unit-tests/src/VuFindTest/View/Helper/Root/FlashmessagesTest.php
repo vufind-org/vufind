@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * PHP version 8
  *
@@ -31,12 +31,13 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use VuFind\View\FlashMessenger\FlashMessenger;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Flashmessages;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,11 +47,10 @@ use VuFind\View\Helper\Root\Translate;
  */
 class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Data provider for testFlashmessageData
+     * Data provider for testFlashmessageData.
      *
      * @return \Iterator
      */
@@ -210,7 +210,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a Flashmessages helper with the given messages in the queue
+     * Get a Flashmessages helper with the given messages in the queue.
      *
      * @param array $messages Messages
      *
@@ -223,41 +223,20 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         };
 
         $mockMessenger = $this->createMock(FlashMessenger::class);
-        $mockMessenger->method('getMessages')->with($this->isString())->willReturnCallback($getMessages);
         $mockMessenger->method('getErrorMessages')->willReturnCallback(fn (): array => $getMessages('error'));
         $mockMessenger->method('getInfoMessages')->willReturnCallback(fn (): array => $getMessages('info'));
         $mockMessenger->method('getSuccessMessages')->willReturnCallback(fn (): array => $getMessages('success'));
         $mockMessenger->method('getWarningMessages')->willReturnCallback(fn (): array => $getMessages('warning'));
 
-        $fm = new Flashmessages($mockMessenger);
+        $dependencies = $this->getViewHelpers();
 
-        $layout = new class () {
-            /**
-             * Set layout template or retrieve "layout" view model
-             *
-             * If no arguments are given, grabs the "root" or "layout" view model.
-             * Otherwise, attempts to set the template for that view model.
-             *
-             * @param null|string $template Template
-             *
-             * @return Model|null|self
-             */
-            public function __invoke($template = null)
-            {
-                return $this;
-            }
-        };
-
-        $helpers = array_merge(
-            $this->getViewHelpers(),
-            [
-                'layout' => $layout,
-            ]
+        return new Flashmessages(
+            $mockMessenger,
+            new GlobalsContainer(),
+            $dependencies['translate'],
+            $dependencies['escapeHtml'],
+            $dependencies['transEsc']
         );
-
-        $fm->setView($this->getPhpRenderer($helpers));
-
-        return $fm;
     }
 
     /**
@@ -265,7 +244,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers(): array
     {
         $translations = [
             'default' => [
@@ -278,7 +257,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc($translate, new EscapeHtml());
-        return compact('transEsc', 'translate');
+        $escapeHtml = new EscapeHtml();
+        $transEsc = new TransEsc($translate, $escapeHtml);
+        return compact('translate', 'escapeHtml', 'transEsc');
     }
 }

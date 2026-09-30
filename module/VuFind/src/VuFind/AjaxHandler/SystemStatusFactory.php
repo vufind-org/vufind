@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class SystemStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -75,8 +75,10 @@ class SystemStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
-            $servicePluginManager->get(\VuFind\Db\Service\SessionServiceInterface::class)
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
+            $servicePluginManager->get(\VuFind\Db\Service\SessionServiceInterface::class),
+            $container->get(\VuFindSearch\Service::class),
+            $container->get(\VuFind\ILS\Connection::class)
         );
     }
 }

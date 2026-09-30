@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for representing sitemap index files
+ * Class for representing sitemap index files.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap;
 
 /**
- * Class for representing sitemap index files
+ * Class for representing sitemap index files.
  *
  * @category VuFind
  * @package  Sitemap
@@ -48,7 +48,7 @@ class SitemapIndex extends AbstractFile
     protected $lastmod;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $lastmod Last modification date of sitemaps.
      */

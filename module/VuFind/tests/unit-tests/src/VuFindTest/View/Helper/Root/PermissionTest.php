@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission view helper Test Class
+ * Permission view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Role\PermissionManager;
 use VuFind\View\Helper\Root\Permission;
 
 /**
- * Permission view helper Test Class
+ * Permission view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,31 +56,31 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
             'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest:param1=noValue',
-            'deniedControllerBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
+            'deniedActionBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
         ],
         'permissionDeniedTemplateNoParams' => [
             'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest',
-            'deniedControllerBehavior' => 'showTemplate:record/ActionTest',
+            'deniedActionBehavior' => 'showTemplate:record/ActionTest',
         ],
         'permissionDeniedMessage' => [
             'deniedTemplateBehavior' => 'showMessage:dl_translatable_test',
-            'deniedControllerBehavior' => 'showTemplate:action_translatable_test',
+            'deniedActionBehavior' => 'showTemplate:action_translatable_test',
         ],
         'permissionDeniedLogin' => [
-            'deniedControllerBehavior' => 'promptLogin',
+            'deniedActionBehavior' => 'promptLogin',
         ],
         'permissionDeniedException' => [
-            'deniedControllerBehavior' => 'exception:ForbiddenException:exception_message',
+            'deniedActionBehavior' => 'exception:ForbiddenException:exception_message',
         ],
         'permissionDeniedNonExistentException' => [
-            'deniedControllerBehavior' => 'exception:NonExistentException:exception_message',
+            'deniedActionBehavior' => 'exception:NonExistentException:exception_message',
         ],
         'permissionDeniedNothing' => [
         ],
     ];
 
     /**
-     * Convenience method to get permission helper
+     * Convenience method to get permission helper.
      *
      * @param PermissionDeniedManager $mockPdm Mock permission denied manager
      *
@@ -98,7 +98,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the message display
+     * Test the message display.
      *
      * @return void
      */
@@ -121,7 +121,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the template display
+     * Test the template display.
      *
      * @return void
      */
@@ -146,7 +146,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the template display with an existing template
+     * Test the template display with an existing template.
      *
      * @return void
      */
@@ -187,7 +187,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock permission manager
+     * Get mock permission manager.
      *
      * @param array $isAuthorized isAuthorized value to return
      *

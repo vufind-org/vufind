@@ -68,7 +68,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testLogin()
+     * Data provider for testLogin().
      *
      * @return \Iterator
      */
@@ -87,7 +87,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test SSO login
+     * Test SSO login.
      *
      * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
      *
@@ -112,7 +112,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * SSO login in lightbox
+     * SSO login in lightbox.
      *
      * @return void
      */
@@ -149,7 +149,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test SSO external logout
+     * Test SSO external logout.
      *
      * @return void
      */
@@ -195,7 +195,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Logs out on the current page and checks if logout was successful
+     * Logs out on the current page and checks if logout was successful.
      *
      * @return void
      */

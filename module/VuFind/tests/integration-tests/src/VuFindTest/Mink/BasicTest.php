@@ -48,7 +48,22 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertStringContainsString('VuFind', (string)$page->getContent());
+        $content = (string)$page->getContent();
+        $this->assertStringContainsString('VuFind', $content);
+        // Confirm that the system IS available by default (see testUnavailableHomePage below for the other case):
+        $this->assertStringNotContainsString('System Unavailable', $content);
+    }
+
+    /**
+     * Test that the home page can be made unavailable.
+     *
+     * @return void
+     */
+    public function testUnavailableHomePage(): void
+    {
+        $this->changeConfigs(['config' => ['System' => ['available' => false]]]);
+        $page = $this->getSearchHomePage();
+        $this->assertStringContainsString('System Unavailable', (string)$page->getContent());
     }
 
     /**
@@ -80,7 +95,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test language switching by checking a link in the footer
+     * Test language switching by checking a link in the footer.
      *
      * @return void
      */
@@ -96,6 +111,11 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.language.dropdown');
         $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
+        // Check the active language name:
+        $this->assertSame(
+            'Deutsch',
+            $this->findCssAndGetText($page, '.language.dropdown li a.active')
+        );
         // Check footer help-link
         $this->assertNotSame(
             'Search Tips',
@@ -104,7 +124,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test theme switching by checking for a phrase from the example theme
+     * Test theme switching by checking for a phrase from the example theme.
      *
      * @return void
      */
@@ -128,7 +148,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Default theme does not have an h1:
-        $this->unfindCss($page, 'h1');
+        $this->unFindCss($page, 'h1');
 
         // Change the theme:
         $this->clickCss($page, '.theme-selector.dropdown');
@@ -240,7 +260,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test lightbox jump links
+     * Test lightbox jump links.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autocomplete handler plugin manager
+ * Autocomplete handler plugin manager.
  *
  * PHP version 8
  *
@@ -32,12 +32,13 @@ namespace VuFind\Autocomplete;
 use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_callable;
 use function is_object;
 
 /**
- * Autocomplete handler plugin manager
+ * Autocomplete handler plugin manager.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -48,12 +49,13 @@ use function is_object;
 class Suggester
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager          $pluginManager  Autocomplete plugin manager
      * @param ConfigManagerInterface $configManager  Config manager
      * @param OptionsManager         $optionsManager Options manager
      */
+    #[Autowire]
     public function __construct(
         protected PluginManager $pluginManager,
         protected ConfigManagerInterface $configManager,

@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class GetResultCountFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,8 +70,8 @@ class GetResultCountFactory implements \Laminas\ServiceManager\Factory\FactoryIn
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get(\VuFind\Session\Settings::class)
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class)
         );
     }
 }

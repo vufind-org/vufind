@@ -62,7 +62,7 @@ class ExtendServiceCommand extends AbstractCommand
                 'config_path',
                 InputArgument::REQUIRED,
                 "the path to the service in the framework config\ne.g."
-                . ' controllers/factories/VuFind\\\\Controller\\\\AjaxController'
+                . ' service_manager/factories/VuFind\\\\Cover\\\\Loader'
             )->addArgument(
                 'target_module',
                 InputArgument::REQUIRED,

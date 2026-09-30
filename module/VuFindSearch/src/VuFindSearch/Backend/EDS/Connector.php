@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO EDS API Connector
+ * EBSCO EDS API Connector.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\Http\Client as HttpClient;
 use Psr\Log\LoggerAwareInterface;
 
 /**
- * EBSCO EDS API Connector
+ * EBSCO EDS API Connector.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -51,14 +51,14 @@ class Connector extends Base implements LoggerAwareInterface
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * The HTTP Request object to execute EDS API transactions
+     * The HTTP Request object to execute EDS API transactions.
      *
      * @var HttpClient
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the EDS API Client
      *

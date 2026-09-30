@@ -44,7 +44,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 class Module
 {
     /**
-     * Return generic configuration
+     * Return generic configuration.
      *
      * @return array
      */
@@ -107,13 +107,11 @@ class Module
     public function getViewHelperConfig()
     {
         return [
+            'abstract_factories' => [
+                \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+            ],
             'factories' => [
                 View\Helper\AssetManager::class => View\Helper\AssetManagerFactory::class,
-                View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
-                View\Helper\ParentTemplate::class => View\Helper\ParentTemplateFactory::class,
-                View\Helper\Slot::class => InvokableFactory::class,
-                View\Helper\TemplatePath::class => View\Helper\TemplatePathFactory::class,
-                View\Helper\SetupThemeResources::class => View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
                 'assetManager' => View\Helper\AssetManager::class,

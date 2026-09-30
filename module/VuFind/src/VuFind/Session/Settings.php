@@ -58,7 +58,7 @@ class Settings
     protected $disableWrite = false;
 
     /**
-     * Session manager (if instantiated)
+     * Session manager (if instantiated).
      *
      * @var SessionManager
      */

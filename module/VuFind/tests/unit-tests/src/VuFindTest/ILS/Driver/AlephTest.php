@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Aleph ILS driver test
+ * Aleph ILS driver test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use RuntimeException;
 use VuFind\ILS\Driver\Aleph;
 
 /**
- * Aleph ILS driver test
+ * Aleph ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -61,7 +61,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test the getMyFines() method
+     * Test the getMyFines() method.
      *
      * @return void
      */
@@ -153,7 +153,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testing getMyProfile
+     * Data provider for testing getMyProfile.
      *
      * @return Generator
      */
@@ -213,7 +213,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @param string $fixture         Fixture file name located in aleph fixtures folder
      * @param bool   $xserver_enabled Use xserver
@@ -252,7 +252,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Mock fixture as HTTP client response
+     * Mock fixture as HTTP client response.
      *
      * @param string|array|null $fixture Fixture file
      *
@@ -280,7 +280,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Load response from file
+     * Load response from file.
      *
      * @param string $filename File name of raw HTTP response
      *

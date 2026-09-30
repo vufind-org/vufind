@@ -66,7 +66,7 @@ interface AccessTokenServiceInterface extends DbServiceInterface
     ): ?AccessTokenEntityInterface;
 
     /**
-     * Add or replace an OpenID nonce for a user
+     * Add or replace an OpenID nonce for a user.
      *
      * @param int     $userId User ID
      * @param ?string $nonce  Nonce
@@ -76,7 +76,7 @@ interface AccessTokenServiceInterface extends DbServiceInterface
     public function storeNonce(int $userId, ?string $nonce): void;
 
     /**
-     * Retrieve an OpenID nonce for a user
+     * Retrieve an OpenID nonce for a user.
      *
      * @param int $userId User ID
      *

@@ -41,21 +41,21 @@ namespace VuFindSearch\Backend\Solr\Document;
 class RawDocument implements DocumentInterface
 {
     /**
-     * Raw document text
+     * Raw document text.
      *
      * @var string
      */
     protected $content;
 
     /**
-     * MIME type
+     * MIME type.
      *
      * @var string
      */
     protected $mime;
 
     /**
-     * Text encoding
+     * Text encoding.
      *
      * @var string
      */

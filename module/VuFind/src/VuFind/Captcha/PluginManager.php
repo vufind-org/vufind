@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CAPTCHA plugin manager
+ * CAPTCHA plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
 
 namespace VuFind\Captcha;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
- * CAPTCHA plugin manager
+ * CAPTCHA plugin manager.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -56,17 +56,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        Demo::class => InvokableFactory::class,
-        Dumb::class => DumbFactory::class,
-        Image::class => ImageFactory::class,
-        Interval::class => IntervalFactory::class,
-        ReCaptcha::class => ReCaptchaFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

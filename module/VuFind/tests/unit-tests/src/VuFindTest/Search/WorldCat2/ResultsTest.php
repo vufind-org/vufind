@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat2 Search Object Results Test
+ * WorldCat2 Search Object Results Test.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
 /**
- * WorldCat2 Search Object Results Test
+ * WorldCat2 Search Object Results Test.
  *
  * @category VuFind
  * @package  Tests
@@ -122,7 +122,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param ?Options                $options           Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
@@ -141,7 +141,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Results object
+     * Get Results object.
      *
      * @param ?Params                $params Params object (null to create)
      * @param ?\VuFindSearch\Service $search Search service (null to create)
@@ -156,8 +156,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
-            $search ?? $this->createMock(\VuFindSearch\Service::class),
-            $loader ?? $this->createMock(Loader::class)
+            $search ?? $this->createStub(\VuFindSearch\Service::class),
+            $loader ?? $this->createStub(Loader::class)
         );
     }
 }

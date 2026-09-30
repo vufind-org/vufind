@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Embedded Preview tab
+ * Embedded Preview tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Embedded Preview tab
+ * Embedded Preview tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,13 +41,6 @@ namespace VuFind\RecordTab;
 class Preview extends AbstractBase
 {
     /**
-     * Configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config = null;
-
-    /**
      * Is this tab active?
      *
      * @var bool
@@ -55,7 +48,7 @@ class Preview extends AbstractBase
     protected $active = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $active Is this tab active?
      */

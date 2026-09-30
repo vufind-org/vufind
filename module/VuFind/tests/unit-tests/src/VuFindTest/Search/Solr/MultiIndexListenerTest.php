@@ -162,7 +162,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
 
         $facets   = $params->get('facet.field');
         sort($facets);
-        $this->assertEquals(['field_1', 'field_2'], $facets);
+        $this->assertSame(['field_1', 'field_2'], $facets);
     }
 
     /**

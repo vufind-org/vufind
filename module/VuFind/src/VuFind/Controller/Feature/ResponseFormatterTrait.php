@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Feature Trait - HTTP response formatting support methods
+ * VuFind Action Feature Trait - HTTP response formatting support methods.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller\Feature;
 use Laminas\Http\Response;
 
 /**
- * VuFind Action Feature Trait - HTTP response formatting support methods
+ * VuFind Action Feature Trait - HTTP response formatting support methods.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -43,7 +43,7 @@ use Laminas\Http\Response;
 trait ResponseFormatterTrait
 {
     /**
-     * Get a JSON response from an array of data
+     * Get a JSON response from an array of data.
      *
      * @param array $data       Data to encode
      * @param int   $statusCode HTTP status code

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for user table
+ * Entity model for user table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for user table
+ * Entity model for user table.
  *
  * @category VuFind
  * @package  Database
@@ -64,7 +64,7 @@ class User implements UserEntityInterface
     protected int $id;
 
     /**
-     * Username
+     * Username.
      *
      * @var string
      */
@@ -72,7 +72,7 @@ class User implements UserEntityInterface
     protected string $username = '';
 
     /**
-     * Password
+     * Password.
      *
      * @var string
      */
@@ -232,7 +232,7 @@ class User implements UserEntityInterface
     protected string $lastLanguage = '';
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -252,7 +252,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Username setter
+     * Username setter.
      *
      * @param string $username Username
      *
@@ -413,7 +413,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Catalog id setter
+     * Catalog id setter.
      *
      * @param ?string $catId Catalog id
      *
@@ -436,7 +436,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Catalog username setter
+     * Catalog username setter.
      *
      * @param ?string $catUsername Catalog username
      *
@@ -459,7 +459,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Home library setter
+     * Home library setter.
      *
      * @param ?string $homeLibrary Home library
      *
@@ -482,7 +482,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Raw catalog password setter
+     * Raw catalog password setter.
      *
      * @param ?string $catPassword Cat password
      *
@@ -505,7 +505,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Encrypted catalog password setter
+     * Encrypted catalog password setter.
      *
      * @param ?string $passEnc Encrypted password
      *
@@ -679,7 +679,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Last login getter
+     * Last login getter.
      *
      * @return ?DateTime
      */
@@ -689,7 +689,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Created setter
+     * Created setter.
      *
      * @param DateTime $dateTime Last login date
      *
@@ -702,7 +702,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Created getter
+     * Created getter.
      *
      * @return DateTime
      */
@@ -736,7 +736,7 @@ class User implements UserEntityInterface
     }
 
     /**
-     * Get the list of roles of this identity
+     * Get the list of roles of this identity.
      *
      * @return string[]|\Laminas\Permissions\Rbac\RoleInterface[]
      */

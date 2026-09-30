@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version check utility
+ * Version check utility.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Config;
 
 /**
- * Version check utility
+ * Version check utility.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ class Version
 {
     /**
      * Extract version number from the build.xml file of the running instance or
-     * another instance pointed to by $dir
+     * another instance pointed to by $dir.
      *
      * @param string $dir Optional directory containing build.xml
      *

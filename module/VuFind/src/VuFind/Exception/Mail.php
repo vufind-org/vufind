@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mail Exception
+ * Mail Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Mail Exception
+ * Mail Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -77,7 +77,7 @@ class Mail extends \Exception
     public const ERROR_TOO_MANY_RECIPIENTS = 4;
 
     /**
-     * Safe error message to return
+     * Safe error message to return.
      *
      * @var string
      */

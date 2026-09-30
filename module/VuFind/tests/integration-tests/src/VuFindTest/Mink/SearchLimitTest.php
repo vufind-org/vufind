@@ -50,14 +50,14 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     use SearchLimitTrait;
 
     /**
-     * Selector for limit control
+     * Selector for limit control.
      *
      * @var string
      */
     protected $limitControlSelector = '#limit';
 
     /**
-     * Set up a search page with limits configured
+     * Set up a search page with limits configured.
      *
      * @param string  $limitParam Value of limit GET parameter
      * @param ?string $options    limit_options setting for searches.ini
@@ -93,7 +93,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Check that first and last record of the results are correct
+     * Check that first and last record of the results are correct.
      *
      * @param Element $page  Current page
      * @param string  $first Expected first title
@@ -183,7 +183,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test the limit control
+     * Test the limit control.
      *
      * @return void
      */

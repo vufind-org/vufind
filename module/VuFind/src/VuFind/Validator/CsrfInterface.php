@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for Csrf validator
+ * Interface for Csrf validator.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Validator;
 use Laminas\Validator\ValidatorInterface;
 
 /**
- * Interface for Csrf validator
+ * Interface for Csrf validator.
  *
  * @category VuFind
  * @package  Validator
@@ -45,7 +45,7 @@ use Laminas\Validator\ValidatorInterface;
 interface CsrfInterface extends ValidatorInterface
 {
     /**
-     * Retrieve CSRF token
+     * Retrieve CSRF token.
      *
      * If no CSRF token currently exists, or should be regenerated,
      * generates one.

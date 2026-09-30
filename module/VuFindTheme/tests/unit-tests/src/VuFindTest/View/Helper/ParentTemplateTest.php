@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ParentTemplate view helper Test Class
+ * ParentTemplate view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper;
 use VuFindTheme\View\Helper\ParentTemplate;
 
 /**
- * ParentTemplate view helper Test Class
+ * ParentTemplate view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,14 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @return void
      */
@@ -101,7 +101,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test stack rewinding bug (VUFIND-1604)
+     * Test stack rewinding bug (VUFIND-1604).
      *
      * @return void
      */
@@ -118,7 +118,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deeper parent return
+     * Test deeper parent return.
      *
      * @return void
      */
@@ -132,7 +132,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */

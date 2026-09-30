@@ -48,7 +48,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
-     * Random recommendation module class
+     * Random recommendation module class.
      *
      * @var Random
      */
@@ -68,7 +68,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test settings
+     * Test settings.
      *
      * @return void
      */
@@ -104,7 +104,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test default settings
+     * Test default settings.
      *
      * @return void
      */
@@ -139,7 +139,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test initialisation
+     * Test initialisation.
      *
      * @return void
      */
@@ -178,7 +178,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test initialisation
+     * Test initialisation.
      *
      * @return void
      */
@@ -271,7 +271,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test minimum result limit feature
+     * Test minimum result limit feature.
      *
      * @return void
      */
@@ -283,7 +283,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test results coming back
+     * Test results coming back.
      *
      * @return void
      */
@@ -295,7 +295,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test displaymode
+     * Test displaymode.
      *
      * @return void
      */
@@ -306,7 +306,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fixture object
+     * Get a fixture object.
      *
      * @param string $file Fixture name
      *

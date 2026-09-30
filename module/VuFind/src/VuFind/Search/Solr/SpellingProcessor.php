@@ -30,7 +30,6 @@
 namespace VuFind\Search\Solr;
 
 use Closure;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryInterface;
@@ -52,7 +51,7 @@ use function strlen;
 class SpellingProcessor
 {
     /**
-     * Spelling limit
+     * Spelling limit.
      *
      * @var int
      */
@@ -88,17 +87,17 @@ class SpellingProcessor
     protected ?Closure $normalizer;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ?Config   $config     Spelling configuration (optional)
+     * @param ?array    $config     Spelling configuration (optional)
      * @param ?callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct(?Config $config = null, ?callable $normalizer = null)
+    public function __construct(?array $config = null, ?callable $normalizer = null)
     {
-        $this->spellingLimit = $config->limit ?? 3;
-        $this->spellSkipNumeric = $config->skip_numeric ?? true;
-        $this->expand = $config->expand ?? true;
-        $this->phrase = $config->phrase ?? false;
+        $this->spellingLimit = $config['limit'] ?? 3;
+        $this->spellSkipNumeric = $config['skip_numeric'] ?? true;
+        $this->expand = $config['expand'] ?? true;
+        $this->phrase = $config['phrase'] ?? false;
         $this->normalizer = ($normalizer !== null) ? $normalizer(...) : null;
     }
 
@@ -123,7 +122,7 @@ class SpellingProcessor
     }
 
     /**
-     * Input Tokenizer - Specifically for spelling purposes
+     * Input Tokenizer - Specifically for spelling purposes.
      *
      * Because of its focus on spelling, these tokens are unsuitable
      * for actual searching. They are stripping important search data
@@ -200,7 +199,7 @@ class SpellingProcessor
     }
 
     /**
-     * Support method for getSuggestions()
+     * Support method for getSuggestions().
      *
      * @param QueryInterface $query Query for which info should be retrieved
      * @param array          $info  Spelling suggestion information

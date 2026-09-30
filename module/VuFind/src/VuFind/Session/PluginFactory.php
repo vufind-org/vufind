@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session handler plugin factory
+ * Session handler plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Session;
 
 /**
- * Session handler plugin factory
+ * Session handler plugin factory.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -41,7 +41,7 @@ namespace VuFind\Session;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

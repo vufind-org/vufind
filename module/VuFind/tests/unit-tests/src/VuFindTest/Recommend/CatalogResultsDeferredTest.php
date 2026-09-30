@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CatalogResultsDeferred recommendation module Test Class
+ * CatalogResultsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * CatalogResultsDeferred recommendation module Test Class
+ * CatalogResultsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Recommend;
 class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */

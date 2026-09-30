@@ -41,7 +41,7 @@ use function count;
 
 /**
  * EIT QueryBuilder.
- * Largely copied from the WorldCat QueryBuilder
+ * Largely copied from the WorldCat QueryBuilder.
  *
  * @category VuFind
  * @package  Search
@@ -57,7 +57,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

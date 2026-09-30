@@ -1,7 +1,7 @@
 <?php
 
 /**
- * InsecureCookie PermissionProvider Test Class
+ * InsecureCookie PermissionProvider Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Role\PermissionProvider\InsecureCookie;
 
 /**
- * InsecureCookie PermissionProvider Test Class
+ * InsecureCookie PermissionProvider Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -68,7 +68,7 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetPermissions()
+     * Data provider for testGetPermissions().
      *
      * @return \Iterator
      */

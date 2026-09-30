@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Collection list tab
+ * Collection list tab.
  *
  * PHP version 8
  *
@@ -33,9 +33,10 @@ use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Collection list tab
+ * Collection list tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -46,55 +47,32 @@ use VuFind\Search\SearchRunner;
 class CollectionList extends AbstractBase
 {
     /**
-     * Search results object (null prior to processing)
+     * Search results object (null prior to processing).
      *
      * @var \VuFind\Search\SolrCollection\Results
      */
     protected $results = null;
 
     /**
-     * Search runner
-     *
-     * @var SearchRunner
-     */
-    protected $runner;
-
-    /**
-     * Recommendation manager
-     *
-     * @var RecommendManager
-     */
-    protected $recommendManager;
-
-    /**
-     * Search memory
-     *
-     * @var SearchMemory
-     */
-    protected $searchMemory;
-
-    /**
-     * Search class id
+     * Search class id.
      *
      * @var string
      */
     protected $searchClassId = 'SolrCollection';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param SearchRunner     $runner Search runner
-     * @param RecommendManager $recMan Recommendation manager
-     * @param SearchMemory     $sm     Search memory
+     * @param SearchRunner     $runner           Search runner
+     * @param RecommendManager $recommendManager Recommendation manager
+     * @param SearchMemory     $searchMemory     Search memory
      */
+    #[Autowire]
     public function __construct(
-        SearchRunner $runner,
-        RecommendManager $recMan,
-        SearchMemory $sm
+        protected SearchRunner $runner,
+        protected RecommendManager $recommendManager,
+        protected SearchMemory $searchMemory
     ) {
-        $this->runner = $runner;
-        $this->recommendManager = $recMan;
-        $this->searchMemory = $sm;
     }
 
     /**

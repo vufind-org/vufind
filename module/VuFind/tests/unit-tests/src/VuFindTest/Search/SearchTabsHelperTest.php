@@ -69,7 +69,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test getHiddenFilters()
+     * Test getHiddenFilters().
      *
      * @return void
      */
@@ -128,7 +128,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTabConfig() and getTabFilterConfig()
+     * Test getTabConfig() and getTabFilterConfig().
      *
      * @return void
      */
@@ -143,7 +143,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test extractClassName()
+     * Test extractClassName().
      *
      * @return void
      */
@@ -157,7 +157,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test filtersMatch()
+     * Test filtersMatch().
      *
      * @return void
      */
@@ -203,7 +203,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a SearchTabsHelper
+     * Create a SearchTabsHelper.
      *
      * @param string $config  Which config set to use
      * @param array  $filters Active filters for a simulated request

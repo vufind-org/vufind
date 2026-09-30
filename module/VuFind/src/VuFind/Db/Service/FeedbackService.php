@@ -49,7 +49,7 @@ use function intval;
 class FeedbackService extends AbstractDbService implements FeedbackServiceInterface
 {
     /**
-     * Db column name to Doctrine entity field mapper
+     * Db column name to Doctrine entity field mapper.
      *
      * @var array
      */
@@ -84,7 +84,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
-     * Get feedback by filter
+     * Get feedback by filter.
      *
      * @param ?string $formName Form name (optional filter)
      * @param ?string $siteUrl  Site URL (optional filter)
@@ -137,7 +137,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
-     * Delete feedback by ids
+     * Delete feedback by ids.
      *
      * @param array $ids IDs
      *
@@ -158,7 +158,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
-     * Get values for a column
+     * Get values for a column.
      *
      * @param string $column Column name
      *
@@ -174,7 +174,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
-     * Column mapper
+     * Column mapper.
      *
      * @param string $column Column name
      *
@@ -186,7 +186,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
     }
 
     /**
-     * Get unique values for a column of the feedback table
+     * Get unique values for a column of the feedback table.
      *
      * @param string $column Column name
      *

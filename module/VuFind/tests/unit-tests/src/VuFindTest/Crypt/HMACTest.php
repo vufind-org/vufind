@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HMAC Test Class
+ * HMAC Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Crypt;
 use VuFind\Crypt\HMAC;
 
 /**
- * HMAC Test Class
+ * HMAC Test Class.
  *
  * @category VuFind
  * @package  Tests

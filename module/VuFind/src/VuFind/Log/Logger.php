@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Logger
+ * VuFind Logger.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function is_object;
 use function is_string;
 
 /**
- * This class wraps the BaseLogger class to allow for log verbosity
+ * This class wraps the BaseLogger class to allow for log verbosity.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -61,7 +61,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     protected bool $debugNeeded = false;
 
     /**
-     * Monolog logger instance
+     * Monolog logger instance.
      *
      * @var MonologLogger
      */
@@ -74,7 +74,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UserIpReader   $userIpReader  User IP reader service
      * @param ?MonologLogger $monologLogger Optional Monolog logger instance
@@ -95,21 +95,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     public function emergency(string|\Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::EMERGENCY, $message, $context);
-    }
-
-    /**
-     * System is unusable.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function emerg(string|\Stringable $message, array $context = []): void
-    {
-        $this->emergency($message, $context);
     }
 
     /**
@@ -139,21 +124,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Critical conditions.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function crit(string|\Stringable $message, array $context = []): void
-    {
-        $this->critical($message, $context);
-    }
-
-    /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
@@ -168,22 +138,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Runtime errors that do not require immediate action but should typically
-     * be logged and monitored.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function err(string|\Stringable $message, array $context = []): void
-    {
-        $this->error($message, $context);
-    }
-
-    /**
      * Exceptional occurrences that are not errors.
      *
      * @param string|\Stringable $message Log message
@@ -194,21 +148,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     public function warning(string|\Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::WARNING, $message, $context);
-    }
-
-    /**
-     * Exceptional occurrences that are not errors.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function warn(string|\Stringable $message, array $context = []): void
-    {
-        $this->warning($message, $context);
     }
 
     /**
@@ -394,7 +333,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Convert function argument to a loggable string
+     * Convert function argument to a loggable string.
      *
      * @param mixed $arg Argument
      *

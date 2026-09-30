@@ -7,6 +7,11 @@
     </span>
   </div>
   <div class="groupCallnumber">
-    <?=$location['callnumberHtml']?>
+    <span><?=$location['callnumberHtml']?></span>
+    <?php if (!empty($location['getThisURL'])): ?>
+      <span class="getThis">
+        <a rel="nofollow" data-lightbox href="<?= $location['getThisURL'] ?>"><?=$this->transEsc('Get This')?></a>
+      </span>
+    <?php endif; ?>
   </div>
 <?php endforeach; ?>

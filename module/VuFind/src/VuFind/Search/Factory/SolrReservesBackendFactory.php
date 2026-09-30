@@ -41,13 +41,13 @@ namespace VuFind\Search\Factory;
 class SolrReservesBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
         $this->defaultIndexName = 'reserves';
         $this->searchConfig = 'reserves';
-        $this->searchYaml = 'reservessearchspecs.yaml';
+        $this->searchSpecsConfig = 'reservessearchspecs';
         $this->facetConfig = 'reserves';
     }
 

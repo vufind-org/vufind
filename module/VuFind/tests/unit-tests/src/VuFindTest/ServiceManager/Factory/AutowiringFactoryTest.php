@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AutowiringFactory Test Class
+ * AutowiringFactory Test Class.
  *
  * PHP version 8
  *
@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFindTest\ServiceManager\Factory;
 
+use ArrayAccess;
 use Laminas\View\HelperPluginManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Container\ContainerInterface;
@@ -48,10 +49,12 @@ use VuFindTest\ServiceManager\Factory\TestHarness\AutowiredClassEmptyConstructor
 use VuFindTest\ServiceManager\Factory\TestHarness\AutowiredClassNoConstructor;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass2;
+use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass3;
+use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass4;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidConfigType;
 
 /**
- * AutowiringFactory Test Class
+ * AutowiringFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -64,7 +67,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testAutoWiring
+     * Data provider for testAutoWiring.
      *
      * @return \Iterator<string, array>
      */
@@ -73,10 +76,18 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
         yield 'autowired class' => [AutowiredClass::class];
         yield 'autowired class with no constructor' => [AutowiredClassNoConstructor::class];
         yield 'autowired class with empty constructor' => [AutowiredClassEmptyConstructor::class];
-        yield 'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter config of type array'];
+        yield 'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter "config" of type array'];
         yield 'second invalid class' => [
             InvalidAutowiredClass2::class,
             'Unable to resolve type of parameter ilsConnection',
+        ];
+        yield 'third invalid class' => [
+            InvalidAutowiredClass3::class,
+            'Unable to autowire parameter "param" of type string; redundant default autowire parameter specified',
+        ];
+        yield 'fourth invalid class' => [
+            InvalidAutowiredClass4::class,
+            'Unable to autowire parameter "param" of type string; unexpected path attribute set',
         ];
         yield 'invalid config type' => [InvalidConfigType::class, 'Invalid configType yummy'];
     }
@@ -113,7 +124,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock container
+     * Get mock container.
      *
      * @return ContainerInterface
      */
@@ -128,13 +139,68 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
         $yamlReader
             ->method('get')
             ->with('config2.yaml')
-            ->willReturn(['YAML' => ['foo' => 'bar']]);
+            ->willReturn(['YAML' => ['foo' => 'bar, baz']]);
         $container->set(YamlReader::class, $yamlReader);
         $plugins = new MockViewHelperContainer($this);
         $plugins->set(Url::class, $this->createMock(Url::class));
         $container->set(HelperPluginManager::class, $plugins);
         $container->set(AuthManager::class, $this->createMock(AuthManager::class));
         $container->set(Connection::class, $this->createMock(Connection::class));
+        $superArray = new class () implements ArrayAccess {
+            protected array $values = [
+                'foo' => [
+                    'bar' => 'baz',
+                ],
+            ];
+
+            /**
+             * Set by offset.
+             *
+             * @param mixed $offset Offset
+             * @param mixed $value  Value
+             *
+             * @return void
+             */
+            public function offsetSet($offset, $value): void
+            {
+            }
+
+            /**
+             * Check offset.
+             *
+             * @param mixed $offset Offset
+             *
+             * @return bool
+             */
+            public function offsetExists($offset): bool
+            {
+                return isset($this->values[$offset]);
+            }
+
+            /**
+             * Unset by offset.
+             *
+             * @param mixed $offset Offset
+             *
+             * @return void
+             */
+            public function offsetUnset($offset): void
+            {
+            }
+
+            /**
+             * Get by offset.
+             *
+             * @param mixed $offset Offset
+             *
+             * @return mixed
+             */
+            public function offsetGet($offset): mixed
+            {
+                return $this->values[$offset] ?? null;
+            }
+        };
+        $container->set('superarray', $superArray);
         return $container;
     }
 }

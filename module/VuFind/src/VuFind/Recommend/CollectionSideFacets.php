@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CollectionSideFacets Recommendations Module
+ * CollectionSideFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * CollectionSideFacets Recommendations Module
+ * CollectionSideFacets Recommendations Module.
  *
  * This class extends the SideFacets functionality for use in Collection display.
  *

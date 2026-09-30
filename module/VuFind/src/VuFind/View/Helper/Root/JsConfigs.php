@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsConfigs helper for passing configs to Javascript
+ * JsConfigs helper for passing configs to Javascript.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * JsConfigs helper for passing configs to Javascript
+ * JsConfigs helper for passing configs to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Root;
 class JsConfigs
 {
     /**
-     * Config
+     * Config.
      *
      * @var array
      */

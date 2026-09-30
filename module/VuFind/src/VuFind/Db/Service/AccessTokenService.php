@@ -90,7 +90,7 @@ class AccessTokenService extends AbstractDbService implements
     }
 
     /**
-     * Add or replace an OpenID nonce for a user
+     * Add or replace an OpenID nonce for a user.
      *
      * @param int     $userId User ID
      * @param ?string $nonce  Nonce
@@ -107,7 +107,7 @@ class AccessTokenService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve an OpenID nonce for a user
+     * Retrieve an OpenID nonce for a user.
      *
      * @param int $userId User ID
      *

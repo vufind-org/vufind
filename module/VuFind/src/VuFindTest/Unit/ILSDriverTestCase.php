@@ -41,7 +41,7 @@ namespace VuFindTest\Unit;
 abstract class ILSDriverTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * ILS driver
+     * ILS driver.
      *
      * @var \VuFind\ILS\Driver\AbstractBase
      */

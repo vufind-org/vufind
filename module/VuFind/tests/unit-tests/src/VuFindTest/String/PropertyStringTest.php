@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PropertyString Test Class
+ * PropertyString Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\String;
 use VuFind\String\PropertyString;
 
 /**
- * PropertyString Test Class
+ * PropertyString Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\String\PropertyString;
 class PropertyStringTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getters and setters
+     * Test getters and setters.
      *
      * @return void
      */
@@ -79,7 +79,7 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testFromHtml
+     * Data provider for testFromHtml.
      *
      * @return \Iterator
      */
@@ -123,7 +123,7 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the fromHtml static constructor
+     * Test the fromHtml static constructor.
      *
      * @param string $html          Input HTML
      * @param array  $attrs         Additional attributes

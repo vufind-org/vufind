@@ -29,9 +29,12 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
-use VuFind\IdentifierLinker\PluginManager;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\IdentifierLinker\PluginManager as LinkerPluginManager;
+use VuFind\View\Helper\Root\Icon;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 
@@ -47,7 +50,7 @@ use function count;
 class IdentifierLinksLookup extends AbstractBase
 {
     /**
-     * Identifier link resolver configuration value, exploded into an array of options
+     * Identifier link resolver configuration value, exploded into an array of options.
      *
      * @var string[]
      */
@@ -55,38 +58,45 @@ class IdentifierLinksLookup extends AbstractBase
 
     /**
      * Behavior to use when multiple resolvers find results for the same identifier set (may
-     * be 'first' -- use first match, or 'merge' -- use all results)
+     * be 'first' -- use first match, or 'merge' -- use all results).
      *
      * @var string
      */
     protected $multiMode;
 
     /**
-     * Whether to load icons via the cover proxy
+     * Whether to load icons via the cover proxy.
      *
      * @var bool
      */
     protected $proxyIcons = false;
 
     /**
-     * Whether to open links in a new window
+     * Whether to open links in a new window.
      *
      * @var bool
      */
     protected $openInNewWindow = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param PluginManager     $pluginManager Identifier Linker Plugin Manager
-     * @param RendererInterface $viewRenderer  View renderer
-     * @param array             $config        Main configuration
+     * @param LinkerPluginManager       $pluginManager   Identifier Linker Plugin Manager
+     * @param TemplateRendererInterface $renderer        Template renderer
+     * @param ServerUrlHelper           $serverUrlHelper Server URL helper
+     * @param RouteHelper               $routeHelper     Route helper
+     * @param Icon                      $iconHelper      Icon helper
+     * @param array                     $config          Main configuration
      */
     public function __construct(
-        protected PluginManager $pluginManager,
-        protected RendererInterface $viewRenderer,
+        protected LinkerPluginManager $pluginManager,
+        protected TemplateRendererInterface $renderer,
+        protected ServerUrlHelper $serverUrlHelper,
+        protected RouteHelper $routeHelper,
+        protected Icon $iconHelper,
         array $config
     ) {
+        parent::__construct(null);
         // DOI config section is supported as a legacy fallback for back-compatibility:
         $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
         $this->resolvers
@@ -103,14 +113,16 @@ class IdentifierLinksLookup extends AbstractBase
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $gatheredData = [];
-        $ids = json_decode($params->getController()->getRequest()->getContent(), true);
+        $stream = $request->getBody();
+        $stream->rewind();
+        $ids = json_decode($stream->getContents(), true);
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
                 $next = $this->pluginManager->get($resolver)->getLinks($ids);
@@ -132,25 +144,30 @@ class IdentifierLinksLookup extends AbstractBase
                 }
             }
         }
-        $response = array_map([$this, 'renderResponseChunk'], $gatheredData);
+        $response = array_map(fn ($data) => $this->renderResponseChunk($request, $data), $gatheredData);
         return $this->formatResponse($response);
     }
 
     /**
      * Render the links for a single record.
      *
-     * @param array $data Data to render
+     * @param ServerRequestInterface $request Request
+     * @param array                  $data    Data to render
      *
      * @return string
      */
-    protected function renderResponseChunk(array $data): string
+    protected function renderResponseChunk(ServerRequestInterface $request, array $data): string
     {
         $newWindow = $this->openInNewWindow;
-        return $this->viewRenderer->render('ajax/identifierLinks.phtml', compact('data', 'newWindow'));
+        return $this->renderer->renderTemplateAsString(
+            $request,
+            'ajax/identifierLinks.phtml',
+            compact('data', 'newWindow')
+        );
     }
 
     /**
-     * Proxify external icon links and render local icons
+     * Proxify external icon links and render local icons.
      *
      * @param array $data Identifier plugin data
      *
@@ -158,23 +175,19 @@ class IdentifierLinksLookup extends AbstractBase
      */
     protected function processIconLinks(array $data): array
     {
-        $serverHelper = $this->viewRenderer->plugin('serverurl');
-        $urlHelper = $this->viewRenderer->plugin('url');
-        $iconHelper = $this->viewRenderer->plugin('icon');
-
         foreach ($data as &$links) {
             foreach ($links as &$link) {
                 if ($this->proxyIcons && !empty($link['icon'])) {
-                    $link['icon'] = $serverHelper(
-                        $urlHelper(
+                    $link['icon'] = $this->serverUrlHelper->getUrlForPath(
+                        $this->routeHelper->getUrlFromRoute(
                             'cover-show',
                             [],
-                            ['query' => ['proxy' => $link['icon']]]
+                            ['proxy' => $link['icon']]
                         )
                     );
                 }
                 if (!empty($link['localIcon'])) {
-                    $link['localIcon'] = $iconHelper($link['localIcon'], 'icon-link__icon');
+                    $link['localIcon'] = ($this->iconHelper)($link['localIcon'], 'icon-link__icon');
                 }
             }
             unset($link);

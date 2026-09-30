@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Markdown
+ * Class Markdown.
  *
  * PHP version 8
  *
@@ -29,12 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use League\CommonMark\ConverterInterface;
 use League\CommonMark\Output\RenderedContentInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Helper for transforming markdown to html
+ * Helper for transforming markdown to html.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,27 +42,20 @@ use League\CommonMark\Output\RenderedContentInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Markdown extends AbstractHelper
+class Markdown
 {
-    /**
-     * Markdown converter
-     *
-     * @var ConverterInterface
-     */
-    protected $converter;
-
     /**
      * Markdown constructor.
      *
      * @param ConverterInterface $converter Markdown converter
      */
-    public function __construct(ConverterInterface $converter)
+    #[Autowire]
+    public function __construct(protected ConverterInterface $converter)
     {
-        $this->converter = $converter;
     }
 
     /**
-     * Converts markdown to html
+     * Converts markdown to html.
      *
      * @param string $markdown Markdown formatted text
      *

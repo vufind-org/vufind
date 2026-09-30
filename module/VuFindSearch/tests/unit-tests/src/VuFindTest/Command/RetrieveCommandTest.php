@@ -45,7 +45,7 @@ use VuFindSearch\ParamBag;
 class RetrieveCommandTest extends TestCase
 {
     /**
-     * Test that a supported backed behaves as expected
+     * Test that a supported backed behaves as expected.
      *
      * @return void
      */
@@ -67,7 +67,7 @@ class RetrieveCommandTest extends TestCase
     }
 
     /**
-     * Test getArguments method
+     * Test getArguments method.
      *
      * @return void
      */

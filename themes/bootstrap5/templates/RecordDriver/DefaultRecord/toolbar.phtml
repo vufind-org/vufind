@@ -51,7 +51,7 @@
           <?=$this->icon('export', 'icon-link__icon') ?>
           <span class="icon-link__label">
             <?=$this->transEsc('Export Record') ?>
-            <?=$this->icon('dropdown-caret') ?>
+            <?=$this->icon('dropdown-open') ?>
           </span>
         </a>
         <ul class="dropdown-menu" id="export-options" role="menu">
@@ -85,7 +85,7 @@
       <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier(), 'inToolbar' => true]); ?>
     <?php endif; ?>
 
-    <?php if ($this->config()->get('config')->Record->permanent_link ?? true): ?>
+    <?php if ($this->config()->getArray('config')['Record']['permanent_link'] ?? true): ?>
       <li>
         <a class="permalink-record toolbar-btn icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
           <?=$this->icon('external-link', 'icon-link__icon') ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 use VuFind\RecordTab\TabManager;
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Default configuration for mock plugin manager
+     * Default configuration for mock plugin manager.
      *
      * @var array
      */
@@ -84,20 +84,17 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?RecordTabPluginManager $recordTabPluginManager Plugin manager to use (null for default)
      * @param ?ConfigManagerInterface $configManager          Config manager to use (null for default)
-     * @param array                   $legacyConfig           Legacy config
      *
      * @return TabManager
      */
     protected function getTabManager(
         ?RecordTabPluginManager $recordTabPluginManager = null,
         ?ConfigManagerInterface $configManager = null,
-        array $legacyConfig = []
     ): TabManager {
         return new TabManager(
             $recordTabPluginManager ?? $this->getMockRecordTabPluginManager(),
             $configManager
-                ?? $this->getMockConfigManager($this->defaultConfig),
-            $legacyConfig
+                ?? $this->getMockConfigManager($this->defaultConfig)
         );
     }
 
@@ -114,41 +111,6 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $pm->method('has')->willReturn(true);
         $pm->method('get')->willReturn($mockTab);
         return $pm;
-    }
-
-    /**
-     * Test deprecated config warning.
-     *
-     * @return void
-     */
-    public function testDeprecatedConfigTriggersWarning(): void
-    {
-        $this->expectExceptionMessage(
-            'Using deprecated way of fetching tab configuration! Use RecordTabs.ini instead.'
-        );
-        $errorCallback = function (int $code, string $msg): void {
-            throw new \Exception($msg, $code);
-        };
-        $legacyConfig = [
-            'vufind' => [
-                'recorddriver_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'foo' => 'bar',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-            ],
-        ];
-        set_error_handler($errorCallback, E_USER_WARNING);
-        try {
-            $this->getTabManager(legacyConfig: $legacyConfig);
-        } catch (\Throwable $e) {
-            throw $e;
-        } finally {
-            restore_error_handler();
-        }
     }
 
     /**

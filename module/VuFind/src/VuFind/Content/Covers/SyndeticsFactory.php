@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Syndetics cover loader factory
+ * Syndetics cover loader factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Syndetics cover loader factory
+ * Syndetics cover loader factory.
  *
  * @category VuFind
  * @package  Content
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,10 +69,7 @@ class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
-        $syndetics = new $requestedName($config->Syndetics ?? null);
-        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $syndetics->setCachingDownloader($cachingDownloader);
-        return $syndetics;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        return new $requestedName($config['Syndetics'] ?? null);
     }
 }

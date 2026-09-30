@@ -44,7 +44,7 @@ use VuFindHttp\HttpService;
 trait CacheManagementTrait
 {
     /**
-     * Get configuration required for cache clear permission
+     * Get configuration required for cache clear permission.
      *
      * @return array
      */

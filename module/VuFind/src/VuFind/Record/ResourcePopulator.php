@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for populating record rows in the resource table of the database
+ * Class for populating record rows in the resource table of the database.
  *
  * PHP version 8
  *
@@ -32,9 +32,10 @@ namespace VuFind\Record;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Class for populating record rows in the resource table of the database
+ * Class for populating record rows in the resource table of the database.
  *
  * @category VuFind
  * @package  Record
@@ -45,7 +46,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 class ResourcePopulator
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface $resourceService Resource database service
      * @param Loader                   $loader          Record loader
@@ -53,6 +54,7 @@ class ResourcePopulator
      * @return void
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceServiceInterface $resourceService,
         protected Loader $loader
     ) {
@@ -99,7 +101,7 @@ class ResourcePopulator
     public function createResourceForDriver(RecordDriver $driver): ResourceEntityInterface
     {
         return $this->assignMetadata($this->resourceService->createEntity(), $driver)
-            ->setRecordId($driver->getUniqueId())
+            ->setRecordId($driver->getUniqueID())
             ->setSource($driver->getSourceIdentifier());
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class PageLocatorFactory
+ * Class PageLocatorFactory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * Page locator factory
+ * Page locator factory.
  *
  * @category VuFind
  * @package  Content
@@ -47,7 +47,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 class PageLocatorFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

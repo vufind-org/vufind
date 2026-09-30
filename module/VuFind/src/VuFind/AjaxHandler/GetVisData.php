@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Visualization Data" AJAX handler
+ * "Get Visualization Data" AJAX handler.
  *
  * PHP version 8
  *
@@ -31,15 +31,15 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Recommend\DateFacetTrait;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Visualization Data" AJAX handler
+ * "Get Visualization Data" AJAX handler.
  *
  * AJAX for timeline feature (PubDateVisAjax)
  *
@@ -56,22 +56,16 @@ class GetVisData extends AbstractBase
     use DateFacetTrait;
 
     /**
-     * Solr search results object
+     * Constructor.
      *
-     * @var Results
+     * @param SessionSettings $sessionSettings Session settings
+     * @param Results         $results         Solr search results object
      */
-    protected $results;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings $ss      Session settings
-     * @param Results         $results Solr search results object
-     */
-    public function __construct(SessionSettings $ss, Results $results)
-    {
-        $this->sessionSettings = $ss;
-        $this->results = $results;
+    public function __construct(
+        SessionSettings $sessionSettings,
+        protected Results $results
+    ) {
+        parent::__construct($sessionSettings);
     }
 
     /**
@@ -116,22 +110,22 @@ class GetVisData extends AbstractBase
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $paramsObj = $this->results->getParams();
-        $paramsObj->initFromRequest(new Parameters($params->fromQuery()));
-        foreach ($params->fromQuery('hf', []) as $hf) {
+        $paramsObj->initFromRequest(new Parameters($request->getQueryParams()));
+        foreach ((array)$this->getQueryParam($request, 'hf', []) as $hf) {
             $paramsObj->addHiddenFilter($hf);
         }
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $filters = $paramsObj->getRawFilters();
-        $rawDateFacets = $params->fromQuery('facetFields');
+        $rawDateFacets = $this->getQueryParam($request, 'facetFields');
         $dateFacets = empty($rawDateFacets) ? [] : explode(':', $rawDateFacets);
         $fields = $this->processDateFacets($this->results, $filters, $dateFacets);
         $facets = $this->processFacetValues($filters, $fields);

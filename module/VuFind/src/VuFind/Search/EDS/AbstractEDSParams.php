@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common EDS & EPF API Params
+ * Common EDS & EPF API Params.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function count;
 use function in_array;
 
 /**
- * Common EDS & EPF API Params
+ * Common EDS & EPF API Params.
  *
  * @category VuFind
  * @package  EBSCO
@@ -109,7 +109,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */
@@ -120,7 +120,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Get facet operator for the specified field
+     * Get facet operator for the specified field.
      *
      * @param string  $field             Field name
      * @param ?string $specifiedOperator Operator specified on a config filter line
@@ -139,7 +139,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */

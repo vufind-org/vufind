@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO API Exception class
+ * EBSCO API Exception class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function count;
 use function is_array;
 
 /**
- * EBSCO API Exception class
+ * EBSCO API Exception class.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -45,14 +45,14 @@ use function is_array;
 class ApiException extends \VuFindSearch\Backend\Exception\BackendException
 {
     /**
-     * Error message details returned from the API
+     * Error message details returned from the API.
      *
      * @var array
      */
     protected $apiErrorDetails = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $apiErrorMessage Error message
      */
@@ -67,7 +67,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
     }
 
     /**
-     * Set the api error details into an array
+     * Set the api error details into an array.
      *
      * @param array $message Error message
      *
@@ -111,7 +111,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
     }
 
     /**
-     * Is this a know api error
+     * Is this a know api error.
      *
      * @return bool
      */
@@ -121,7 +121,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
     }
 
     /**
-     * Known api error code
+     * Known api error code.
      *
      * @return array
      */
@@ -131,7 +131,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
     }
 
     /**
-     * Known api error description
+     * Known api error description.
      *
      * @return string
      */
@@ -141,7 +141,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
     }
 
     /**
-     * Known api detailed error description
+     * Known api detailed error description.
      *
      * @return string
      */

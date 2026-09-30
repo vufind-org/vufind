@@ -50,52 +50,33 @@ use function is_string;
 class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
-     * Blender configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration
-     *
-     * @var array
-     */
-    protected $mappings;
-
-    /**
-     * Backends to be used for initial results
+     * Backends to be used for initial results.
      *
      * @var array
      */
     protected $initialResultsBackends;
 
     /**
-     * Any errors encountered
+     * Any errors encountered.
      *
      * @var array
      */
     protected $errors = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config $config   Configuration
-     * @param array                 $mappings Mappings configuration
+     * @param ?array $config   Blender configuration
+     * @param array  $mappings Mappings configuration
      */
-    public function __construct($config = null, $mappings = [])
+    public function __construct(protected ?array $config = null, protected array $mappings = [])
     {
-        $this->config = $config;
-        $this->mappings = $mappings;
         $this->response = static::$template;
-        $this->initialResultsBackends
-            = isset($this->config->Blending->initialResults)
-            ? $this->config->Blending->initialResults->toArray()
-            : [];
+        $this->initialResultsBackends = $config['Blending']['initialResults'] ?? [];
     }
 
     /**
-     * Initialize blended results
+     * Initialize blended results.
      *
      * Creates a record list from 0 to $limit
      *
@@ -149,7 +130,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Add an error message
+     * Add an error message.
      *
      * @param mixed $error Error
      *
@@ -191,7 +172,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get delimiter for the given facet field
+     * Get delimiter for the given facet field.
      *
      * @param string $field Facet field
      *
@@ -199,11 +180,11 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function getFacetDelimiter(string $field): string
     {
-        $delimitedFacets = $this->config->Advanced_Settings->delimited_facets ?? [];
+        $delimitedFacets = $this->config['Advanced_Settings']['delimited_facets'] ?? [];
         foreach ($delimitedFacets as $current) {
             $parts = explode('|', $current);
             if ($parts[0] === $field) {
-                return $parts[1] ?? $this->config->Advanced_Settings->delimiter
+                return $parts[1] ?? $this->config['Advanced_Settings']['delimiter']
                     ?? '';
             }
         }
@@ -211,7 +192,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Collect records from all backends to an associative array
+     * Collect records from all backends to an associative array.
      *
      * @param array $collections Array of record collections
      *
@@ -245,7 +226,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function add(RecordInterface $record, $checkExisting = true)
     {
-        $label = $this->config->Backends[$record->getSearchBackendIdentifier()]
+        $label = $this->config['Backends'][$record->getSearchBackendIdentifier()]
             ?? '';
         if ($label) {
             $record->addLabel($label, 'source');
@@ -254,7 +235,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Store errors from all backends
+     * Store errors from all backends.
      *
      * @param array $collections Array of record collections
      *
@@ -264,7 +245,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     {
         foreach ($collections as $backendId => $collection) {
             foreach ($collection->getErrors() as $error) {
-                $label = $this->config->Backends[$backendId];
+                $label = $this->config['Backends'][$backendId] ?? null;
                 if (is_string($error) && $label) {
                     $error = [
                         'msg' => '%%error%% -- %%label%%',
@@ -282,7 +263,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Calculate the backend to be used for a record at the given position
+     * Calculate the backend to be used for a record at the given position.
      *
      * Note: This does not take into account whether there are enough records in the
      * source.
@@ -312,7 +293,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Merge facets
+     * Merge facets.
      *
      * @param array $collections Result collections
      *
@@ -355,7 +336,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Map facet values from the backends into a merged list
+     * Map facet values from the backends into a merged list.
      *
      * @param array $collections Result collections
      * @param array $settings    Settings for a single facet field
@@ -412,7 +393,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get parent hierarchy keys for a facet value
+     * Get parent hierarchy keys for a facet value.
      *
      * For example with '2/Main/Sub/Shelf/' the result is:
      * [
@@ -437,7 +418,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get facet counts for Blender backend facet
+     * Get facet counts for Blender backend facet.
      *
      * @param array $collections Collections
      *
@@ -446,11 +427,11 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     protected function getBlenderFacetStats(array $collections): array
     {
         $delimiter = $this->getFacetDelimiter('blender_backend');
-        $orFacets = $this->config->Results_Settings->orFacets ?? '';
+        $orFacets = $this->config['Results_Settings']['orFacets'] ?? '';
         $orFacetList = array_map('trim', explode(',', $orFacets));
         $isOrFacet = '*' === $orFacets || in_array('blender_backend', $orFacetList);
         $result = [];
-        foreach ($this->config->Backends as $backendId => $name) {
+        foreach ($this->config['Backends'] ?? [] as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
             if (isset($collections[$backendId])) {
                 if ($total = $collections[$backendId]->getTotal()) {
@@ -464,7 +445,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Convert a facet value from a backend
+     * Convert a facet value from a backend.
      *
      * @param string $value        Facet value
      * @param string $type         Facet type

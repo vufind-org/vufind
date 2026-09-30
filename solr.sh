@@ -97,4 +97,4 @@ then
 fi
 
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" --user-managed -a "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR -Dsolr.config.lib.enabled=true $SOLR_ADDITIONAL_JVM_OPTIONS"
+"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} --port "$SOLR_PORT" --solr-home "$SOLR_HOME" -m "$SOLR_HEAP" --user-managed --jvm-opts "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR -Dsolr.config.lib.enabled=true $SOLR_ADDITIONAL_JVM_OPTIONS"

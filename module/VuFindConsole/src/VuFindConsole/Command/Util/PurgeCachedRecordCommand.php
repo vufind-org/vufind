@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: purge a record from cache
+ * Console command: purge a record from cache.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
- * Console command: purge a record from cache
+ * Console command: purge a record from cache.
  *
  * @category VuFind
  * @package  Console
@@ -54,7 +54,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 class PurgeCachedRecordCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordServiceInterface   $recordService   Record table object
      * @param ResourceServiceInterface $resourceService Resource table object

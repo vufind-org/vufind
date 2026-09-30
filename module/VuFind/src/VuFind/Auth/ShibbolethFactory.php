@@ -51,7 +51,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public const SHIBBOLETH_CONFIG_FILE_NAME = 'Shibboleth';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -83,7 +83,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Return configuration loader for shibboleth
+     * Return configuration loader for shibboleth.
      *
      * @param ContainerInterface $container Service manager
      *
@@ -92,10 +92,10 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function getConfigurationLoader(ContainerInterface $container): ConfigurationLoaderInterface
     {
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $config = $configManager->getConfigObject('config');
-        $override = $config->Shibboleth->allow_configuration_override ?? false;
+        $config = $configManager->getConfigArray('config');
+        $override = $config['Shibboleth']['allow_configuration_override'] ?? false;
         if ($override) {
-            $shibConfig = $configManager->getConfigObject(self::SHIBBOLETH_CONFIG_FILE_NAME);
+            $shibConfig = $configManager->getConfigArray(self::SHIBBOLETH_CONFIG_FILE_NAME);
             return new MultiIdPConfigurationLoader($config, $shibConfig);
         }
         return new SingleIdPConfigurationLoader($config);

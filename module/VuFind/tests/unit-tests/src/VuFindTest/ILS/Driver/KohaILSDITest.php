@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class KohaILSDITest
+ * Class KohaILSDITest.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\KohaILSDI;
 
 /**
- * Class KohaILSDITest
+ * Class KohaILSDITest.
  *
  * @category VuFind
  * @package  VuFindTest\ILS\Driver
@@ -55,7 +55,7 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test toKohaDate method
+     * Test toKohaDate method.
      *
      * @return void
      * @throws \ReflectionException
@@ -63,7 +63,6 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testToKohaDate(): void
     {
         $method = new \ReflectionMethod('\VuFind\ILS\Driver\KohaILSDI', 'toKohaDate');
-        $method->setAccessible(true);
         $this->assertEquals('1982-10-22', $method->invokeArgs($this->driver, ['10-22-1982']));
         $this->assertEquals(null, $method->invokeArgs($this->driver, ['']));
         $this->assertEquals(null, $method->invokeArgs($this->driver, [null]));

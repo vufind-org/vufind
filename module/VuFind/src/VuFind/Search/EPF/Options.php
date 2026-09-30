@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF API Options
+ * EPF API Options.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**
- * EPF API Options
+ * EPF API Options.
  *
  * @category VuFind
  * @package  EBSCO
@@ -49,7 +49,7 @@ use VuFind\Search\EDS\AbstractEDSOptions;
 class Options extends AbstractEDSOptions
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

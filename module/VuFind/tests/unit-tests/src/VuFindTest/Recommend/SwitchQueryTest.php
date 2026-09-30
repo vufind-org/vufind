@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SwitchQuery recommendation module Test Class
+ * SwitchQuery recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Recommend\SwitchQuery;
 use VuFind\Search\BackendManager;
 
 /**
- * SwitchQuery recommendation module Test Class
+ * SwitchQuery recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SearchServiceTrait;
 
     /**
-     * Test "getResults"
+     * Test "getResults".
      *
      * @return void
      */
@@ -58,7 +58,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lowercase booleans
+     * Test lowercase booleans.
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lowercase booleans with case insensitive setting (should be skipped)
+     * Test lowercase booleans with case insensitive setting (should be skipped).
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test id query
+     * Test id query.
      *
      * @return void
      */
@@ -104,7 +104,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query
+     * Test advanced query.
      *
      * @return void
      */
@@ -119,7 +119,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unwanted booleans
+     * Test unwanted booleans.
      *
      * @return void
      */
@@ -137,7 +137,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unwanted quotes
+     * Test unwanted quotes.
      *
      * @return void
      */
@@ -154,7 +154,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test transform unwanted character
+     * Test transform unwanted character.
      *
      * @return void
      */
@@ -171,7 +171,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test transform unwanted character on phrase (should omit suggestion)
+     * Test transform unwanted character on phrase (should omit suggestion).
      *
      * @return void
      */
@@ -183,7 +183,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param \VuFind\Search\Solr\Results $results  results object
      * @param string                      $settings settings

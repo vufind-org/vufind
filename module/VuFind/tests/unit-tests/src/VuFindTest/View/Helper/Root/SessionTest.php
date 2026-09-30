@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session view helper Test Class
+ * Session view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\View\Helper\Root\Session;
 use VuFind\View\Helper\Root\SessionFactory;
 
 /**
- * Session view helper Test Class
+ * Session view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFind\View\Helper\Root\SessionFactory;
 class SessionTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the helper
+     * Test the helper.
      *
      * @return void
      */

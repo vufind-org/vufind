@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Search history label" view helper
+ * "Search history label" view helper.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * "Search history label" view helper
+ * "Search history label" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,32 +40,20 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HistoryLabel extends \Laminas\View\Helper\AbstractHelper
+class HistoryLabel
 {
     /**
-     * Label configuration
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Translation helper
-     *
-     * @var TransEsc
-     */
-    protected $translator;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param array    $config     Label configuration
      * @param TransEsc $translator Translation helper
      */
-    public function __construct(array $config, TransEsc $translator)
-    {
-        $this->config = $config;
-        $this->translator = $translator;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array', path: 'SearchHistoryLabels', default: [])]
+        protected array $config,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected TransEsc $translator
+    ) {
     }
 
     /**
@@ -73,7 +63,7 @@ class HistoryLabel extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($class)
+    public function __invoke($class): string
     {
         if (isset($this->config[$class])) {
             return ($this->translator)($this->config[$class]) . ':';

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content pages generator plugin
+ * Content pages generator plugin.
  *
  * PHP version 8
  *
@@ -30,7 +30,6 @@
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\Router\RouteStackInterface;
-use VuFind\Config\Config;
 use VuFindTheme\ThemeInfo;
 use Webmozart\Glob\Glob;
 
@@ -38,7 +37,7 @@ use function in_array;
 use function strlen;
 
 /**
- * Content pages generator plugin
+ * Content pages generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -49,35 +48,14 @@ use function strlen;
 class ContentPages extends AbstractGeneratorPlugin
 {
     /**
-     * Theme informations
-     *
-     * @var ThemeInfo
-     */
-    protected $themeInfo;
-
-    /**
-     * Router
-     *
-     * @var RouteStackInterface
-     */
-    protected $router;
-
-    /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Main VuFind configuration (config.ini)
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Patterns of files to be included
+     * Patterns of files to be included.
      *
      * @see https://github.com/webmozarts/glob
      *
@@ -95,7 +73,7 @@ class ContentPages extends AbstractGeneratorPlugin
     ];
 
     /**
-     * Patterns of files to be ignored when searching for content pages
+     * Patterns of files to be ignored when searching for content pages.
      *
      * @see https://github.com/webmozarts/glob
      *
@@ -107,20 +85,17 @@ class ContentPages extends AbstractGeneratorPlugin
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo           $themeInfo Theme info
      * @param RouteStackInterface $router    Router
-     * @param Config              $config    Main VuFind configuration
+     * @param array               $config    Main VuFind configuration (config.ini)
      */
     public function __construct(
-        ThemeInfo $themeInfo,
-        RouteStackInterface $router,
-        Config $config
+        protected ThemeInfo $themeInfo,
+        protected RouteStackInterface $router,
+        protected array $config
     ) {
-        $this->themeInfo = $themeInfo;
-        $this->router = $router;
-        $this->config = $config;
     }
 
     /**
@@ -156,9 +131,7 @@ class ContentPages extends AbstractGeneratorPlugin
     public function getUrls(): \Generator
     {
         $nonLanguageFiles = [];
-        $languages = isset($this->config->Languages)
-            ? array_keys($this->config->Languages->toArray())
-            : [];
+        $languages = array_keys($this->config['Languages'] ?? []);
         foreach ($this->includedFiles as $fileSpec) {
             $files = $this->themeInfo->findInThemes([$fileSpec['path'] . $fileSpec['pattern']]);
             // Check each file for language suffix and combine the files into a
@@ -197,7 +170,7 @@ class ContentPages extends AbstractGeneratorPlugin
     }
 
     /**
-     * Check if the given file should be excluded from sitemap
+     * Check if the given file should be excluded from sitemap.
      *
      * @param string $filename Filename
      *

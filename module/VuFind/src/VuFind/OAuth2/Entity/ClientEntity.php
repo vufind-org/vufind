@@ -49,7 +49,7 @@ class ClientEntity implements ClientEntityInterface
     use ClientTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Client configuration
      */

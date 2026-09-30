@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authorization Token Exception
+ * Authorization Token Exception.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Exception;
 
 /**
- * Authorization Token Exception
+ * Authorization Token Exception.
  *
  * @category VuFind
  * @package  Exceptions

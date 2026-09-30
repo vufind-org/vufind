@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Admin menu
+ * Admin menu.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,9 +30,11 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Admin menu
+ * Admin menu.
  *
  * @category VuFind
  * @package  Navigation
@@ -43,14 +45,28 @@ use Symfony\Component\Yaml\Yaml;
 class AdminMenu extends AbstractMenu
 {
     /**
+     * Show Overdrive admin menu item?
+     *
+     * @var bool
+     */
+    protected bool $showOverdriveAdminMenu;
+
+    /**
      * Constructor.
      *
-     * @param array $sectionConfig          Menu configuration
-     * @param bool  $showOverdriveAdminMenu Show Overdrive admin menu item?
+     * @param SectionServiceInterface $sectionService  Section service
+     * @param array                   $sectionConfig   Section configuration
+     * @param array                   $config          Main configuration
+     * @param array                   $overdriveConfig Overdrive configuration
      */
     public function __construct(
+        SectionServiceInterface $sectionService,
+        #[Autowire(config: 'AdminMenu')]
         array $sectionConfig,
-        protected bool $showOverdriveAdminMenu
+        #[Autowire(config: 'config')]
+        array $config,
+        #[Autowire(config: 'Overdrive')]
+        array $overdriveConfig
     ) {
         $this->addRequiredSettings(
             [
@@ -59,7 +75,9 @@ class AdminMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct($sectionService, $sectionConfig, $config);
+        $this->showOverdriveAdminMenu
+            = $overdriveConfig['Overdrive']['showOverdriveAdminMenu'] ?? false;
     }
 
     /**
@@ -75,7 +93,7 @@ class AdminMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -87,41 +105,45 @@ class AdminMenu extends AbstractMenu
                 - name: home
                   label: Home
                   route: admin
-            
+
                 - name: socialstats
                   label: Social Statistics
                   route: admin/social
-            
+
                 - name: config
                   label: Configuration
                   route: admin/config
-            
+
                 - name: maintenance
                   label: System Maintenance
                   route: admin/maintenance
-            
+
                 - name: tags
                   label: Tag Maintenance
                   route: admin/tags
-            
+
                 - name: feedback
                   label: Feedback Management
                   route: admin/feedback
-            
+
                 - name: overdrive
                   label: od_admin_menu
                   route: admin/overdrive
                   checkMethod: checkShowOverdrive
-            
+
                 - name: payment
                   label: Online Payment
                   route: admin/payment
+
+                - name: notices
+                  label: Notices
+                  route: admin/notices
             YAML;
         return Yaml::parse($yaml);
     }
 
     /**
-     * Check whether to show Overdrive admin menu item
+     * Check whether to show Overdrive admin menu item.
      *
      * @return bool
      */

@@ -50,14 +50,14 @@ class ReCaptcha extends AbstractBase
     protected $recaptcha;
 
     /**
-     * Language
+     * Language.
      *
      * @var string
      */
     protected $language;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Service\ReCaptcha $recaptcha ReCaptcha Service
      * @param string                    $language  Translator locale
@@ -92,15 +92,18 @@ class ReCaptcha extends AbstractBase
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function verify(Params $params): bool
+    public function verify(array $postParams, array $queryParams): bool
     {
-        $responseField = $params->fromPost('g-recaptcha-response');
+        $responseField = $postParams['g-recaptcha-response'] ?? null;
         return $this->recaptcha->verify($responseField)->isValid();
     }
 }

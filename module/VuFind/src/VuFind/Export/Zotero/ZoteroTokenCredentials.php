@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero OAuth TokenCredentials
+ * Zotero OAuth TokenCredentials.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Export\Zotero;
 use League\OAuth1\Client\Credentials\TokenCredentials;
 
 /**
- * Zotero OAuth TokenCredentials
+ * Zotero OAuth TokenCredentials.
  *
  * Class for authenticating with Zotero using OAuth.
  *
@@ -47,7 +47,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 class ZoteroTokenCredentials extends TokenCredentials
 {
     /**
-     * User ID
+     * User ID.
      *
      * @var ?string
      */

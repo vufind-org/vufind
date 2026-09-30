@@ -130,7 +130,7 @@ trait UserCreationTrait
     }
 
     /**
-     * Make new account
+     * Make new account.
      *
      * @param Element $page     Page element
      * @param string  $username Username to create
@@ -164,7 +164,7 @@ trait UserCreationTrait
     }
 
     /**
-     * Function to press the login button and create a default user
+     * Function to press the login button and create a default user.
      *
      * @param Element $page      Page element.
      * @param array   $overrides Optional overrides for form values.

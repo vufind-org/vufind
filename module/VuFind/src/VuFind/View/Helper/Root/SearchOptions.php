@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Retrieve search options" view helper
+ * "Retrieve search options" view helper.
  *
  * PHP version 8
  *
@@ -30,9 +30,10 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Options\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * "Retrieve search options" view helper
+ * "Retrieve search options" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,27 +41,20 @@ use VuFind\Search\Options\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchOptions extends \Laminas\View\Helper\AbstractHelper
+class SearchOptions
 {
     /**
-     * Search manager
-     *
-     * @var PluginManager
-     */
-    protected $manager;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager $manager Search manager
      */
-    public function __construct(PluginManager $manager)
+    #[Autowire]
+    public function __construct(protected PluginManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**
-     * Wrapper to the options plugin manager
+     * Wrapper to the options plugin manager.
      *
      * @param string $type The search type of the object to retrieve
      *

@@ -52,7 +52,7 @@ class DynamicRoleProvider implements RoleProviderInterface
     protected $roles = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionProvider\PluginManager $manager Permission provider manager
      * @param array                            $config  Configuration for determining
@@ -65,7 +65,7 @@ class DynamicRoleProvider implements RoleProviderInterface
     }
 
     /**
-     * Get the roles from the provider
+     * Get the roles from the provider.
      *
      * @param string[] $roleNames Role(s) to look up.
      *

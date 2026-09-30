@@ -95,7 +95,7 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a failure scenario
+     * Test a failure scenario.
      *
      * @return void
      */
@@ -128,7 +128,7 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock importer object
+     * Get a mock importer object.
      *
      * @param array $methods Methods to mock
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CSRF Test Class
+ * CSRF Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Session\Container;
 use VuFind\Validator\SessionCsrf;
 
 /**
- * CSRF Test Class
+ * CSRF Test Class.
  *
  * @category VuFind
  * @package  Tests

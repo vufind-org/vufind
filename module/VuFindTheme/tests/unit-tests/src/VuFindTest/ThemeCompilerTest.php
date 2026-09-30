@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ThemeCompiler Test Class
+ * ThemeCompiler Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFindTheme\ThemeCompiler;
 use VuFindTheme\ThemeInfo;
 
 /**
- * ThemeCompiler Test Class
+ * ThemeCompiler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,14 +46,14 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * ThemeInfo object for tests
+     * ThemeInfo object for tests.
      *
      * @var ThemeInfo
      */
     protected $info;
 
     /**
-     * Path where new theme will be created
+     * Path where new theme will be created.
      *
      * @var string
      */
@@ -233,7 +233,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a test ThemeCompiler object
+     * Get a test ThemeCompiler object.
      *
      * @return ThemeCompiler
      */

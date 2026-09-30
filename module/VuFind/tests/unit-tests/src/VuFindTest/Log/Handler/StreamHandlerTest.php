@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Stream Handler Test Class
+ * Stream Handler Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Log\Handler\StreamHandler;
 use VuFind\Log\Logger;
 
 /**
- * Stream Log Handler Test Class
+ * Stream Log Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,28 +46,28 @@ use VuFind\Log\Logger;
 class StreamHandlerTest extends TestCase
 {
     /**
-     * Temporary log file path
+     * Temporary log file path.
      *
      * @var string
      */
     protected $tempLogFile;
 
     /**
-     * Stream handler instance
+     * Stream handler instance.
      *
      * @var StreamHandler
      */
     protected $handler;
 
     /**
-     * Logger instance
+     * Logger instance.
      *
      * @var Logger
      */
     protected $logger;
 
     /**
-     * Set up test environment
+     * Set up test environment.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Clean up test environment
+     * Clean up test environment.
      *
      * @return void
      */
@@ -102,7 +102,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test that the handler can be instantiated
+     * Test that the handler can be instantiated.
      *
      * @return void
      */
@@ -113,7 +113,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test basic log writing functionality
+     * Test basic log writing functionality.
      *
      * @return void
      */
@@ -129,7 +129,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test all log levels are handled correctly
+     * Test all log levels are handled correctly.
      *
      * @return void
      */
@@ -159,7 +159,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test log level filtering
+     * Test log level filtering.
      *
      * @return void
      */
@@ -197,7 +197,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test logging with context data
+     * Test logging with context data.
      *
      * @return void
      */
@@ -222,7 +222,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test concurrent logging
+     * Test concurrent logging.
      *
      * @return void
      */
@@ -245,7 +245,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test file permissions and accessibility
+     * Test file permissions and accessibility.
      *
      * @return void
      */
@@ -259,7 +259,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test that the handler properly closes resources
+     * Test that the handler properly closes resources.
      *
      * @return void
      */

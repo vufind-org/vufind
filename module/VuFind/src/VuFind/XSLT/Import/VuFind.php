@@ -50,14 +50,14 @@ use function strlen;
 class VuFind
 {
     /**
-     * ISO8601 date format string
+     * ISO8601 date format string.
      *
      * @var string
      */
     protected const ISO8601_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * Service locator
+     * Service locator.
      *
      * @var ServiceLocatorInterface
      */
@@ -152,7 +152,7 @@ class VuFind
     }
 
     /**
-     * Read parser method from fulltext.ini
+     * Read parser method from fulltext.ini.
      *
      * @return string Name of parser to use (i.e. Aperture or Tika)
      */
@@ -180,7 +180,7 @@ class VuFind
     }
 
     /**
-     * Call parsing method based on parser setting in fulltext.ini
+     * Call parsing method based on parser setting in fulltext.ini.
      *
      * @param string $url URL to harvest
      *
@@ -201,7 +201,7 @@ class VuFind
     }
 
     /**
-     * Generic method for building Aperture Command
+     * Generic method for building Aperture Command.
      *
      * @param string $input  name of input file | url
      * @param string $output name of output file
@@ -285,7 +285,7 @@ class VuFind
     }
 
     /**
-     * Generic method for building Tika command
+     * Generic method for building Tika command.
      *
      * @param string $input  url | fileresource
      * @param string $output name of output file
@@ -615,18 +615,30 @@ class VuFind
      * Best is defined as the first value to consist of only YYYY or YYYY-ZZZZ,
      * with no other text. If no "best" match is found, the first value is used.
      *
-     * @param array $input DOM elements to search.
+     * @param array $input  DOM elements to search.
+     * @param bool  $strict Only return valid Solr date range values.
      *
      * @return string
      */
-    public static function extractBestDateOrRange($input)
+    public static function extractBestDateOrRange($input, $strict = false)
     {
+        $fallback = null;
         foreach ($input as $current) {
             if (preg_match('/^\d{4}(-\d{4})?$/', $current->textContent)) {
-                return $current->textContent;
+                return ($strict && str_contains($current->textContent, '-'))
+                    ? '[' . str_replace('-', ' TO ', $current->textContent) . ']'
+                    : $current->textContent;
+            } elseif (null === $fallback) {
+                if ($strict) {
+                    if (preg_match('/\d{4}/', $current->textContent, $matches)) {
+                        $fallback = $matches[0];
+                    }
+                } else {
+                    $fallback = $current->textContent;
+                }
             }
         }
-        return reset($input)->textContent;
+        return $fallback ?? '';
     }
 
     /**
@@ -689,7 +701,7 @@ class VuFind
     }
 
     /**
-     * Invert "Firstname Lastname" authors into "Lastname, Firstname."
+     * Invert "Firstname Lastname" authors into "Lastname, Firstname.".
      *
      * @param string $rawName Raw name
      *

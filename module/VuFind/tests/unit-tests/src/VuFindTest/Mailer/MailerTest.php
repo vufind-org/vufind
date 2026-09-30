@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * PHP version 8
  *
@@ -29,16 +29,19 @@
 
 namespace VuFindTest\Mailer;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use VuFind\Mailer\Mailer;
 use VuFind\Mailer\MailerFactory;
+use VuFind\View\Renderer\LaminasTemplateRenderer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Container\MockContainer;
 
 use function count;
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -224,7 +227,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject in the body
+     * Test sending an email with subject in the body.
      *
      * @return void
      */
@@ -250,7 +253,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject not allowed in the body
+     * Test sending an email with subject not allowed in the body.
      *
      * @return void
      */
@@ -334,7 +337,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we only accept one recipient by default
+     * Test that we only accept one recipient by default.
      *
      * @return void
      */
@@ -375,7 +378,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 
         $transport = $this->createMock(MailerInterface::class);
         $transport->expects($this->once())->method('send')->willThrowException(new \Exception('Boom'));
-        $mailer = new Mailer($transport);
+        $mailer = new Mailer($transport, $this->createMock(TemplateRendererInterface::class));
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
 
@@ -386,6 +389,11 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnknownException()
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $mailer = $this->createMock(Mailer::class);
         $mailer->expects($this->once())->method('send')->willThrowException(
             new \VuFind\Exception\Mail(
@@ -401,25 +409,22 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sendLink
+     * Test sendLink.
      *
      * @return void
      */
     public function testSendLink()
     {
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view->method('__call')
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->method('renderTemplateAsString')
             ->willReturnCallback(
-                function ($method, $args) {
-                    if ($method === 'partial') {
-                        $this->assertSame('Email/share-link.phtml', $args[0]);
-                        $this->assertSame('http://foo', $args[1]['msgUrl']);
-                        $this->assertSame('to@example.com;to2@example.com', $args[1]['to']);
-                        $this->assertSame('from@example.com', $args[1]['from']);
-                        $this->assertSame('message', $args[1]['message']);
-                        return 'body';
-                    }
-                    return null;
+                function (?\Psr\Http\Message\ServerRequestInterface $request, ?string $template, array $params) {
+                    $this->assertSame('Email/share-link.phtml', $template);
+                    $this->assertSame('http://foo', $params['msgUrl']);
+                    $this->assertSame('to@example.com;to2@example.com', $params['to']);
+                    $this->assertSame('from@example.com', $params['from']);
+                    $this->assertSame('message', $params['message']);
+                    return 'body';
                 }
             );
 
@@ -433,21 +438,20 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && 'body' == $message->getBody()->getBody()
                 && 'Library Catalog Search Result' == $message->getSubject();
         };
-        $mailer = $this->getMailer($callback);
+        $mailer = $this->getMailer($callback, $renderer);
         $mailer->setMaxRecipients(2);
         $mailer->sendLink(
             'to@example.com;to2@example.com',
             'from@example.com',
             'message',
             'http://foo',
-            $view,
             null,
             'cc@example.com'
         );
     }
 
     /**
-     * Test sendRecord
+     * Test sendRecord.
      *
      * @return void
      */
@@ -456,21 +460,24 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
 
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view->expects($this->once())->method('__call')
+        $templateRenderer = $this->createMock(LaminasTemplateRenderer::class);
+        $templateRenderer->expects($this->once())->method('renderTemplateAsString')
             ->willReturnCallback(
-                function ($method, $args) use ($driver) {
-                    if ($method === 'partial') {
-                        $this->assertSame('Email/record.phtml', $args[0]);
-                        $in = $args[1];
-                        $this->assertSame($driver, $in['driver']);
-                        $this->assertSame('to@example.com', $in['to']);
-                        $this->assertSame('from@example.com', $in['from']);
-                        $this->assertSame('message', $in['message']);
+                function (
+                    ?ServerRequestInterface $request = null,
+                    ?string $template = null,
+                    array $params = [],
+                    array $childTemplates = []
+                ) use ($driver): string {
+                    $this->assertNotInstanceOf(ServerRequestInterface::class, $request);
+                    $this->assertSame('Email/record.phtml', $template);
+                    $this->assertSame($driver, $params['driver']);
+                    $this->assertSame('to@example.com', $params['to']);
+                    $this->assertSame('from@example.com', $params['from']);
+                    $this->assertSame('message', $params['message']);
+                    $this->assertEmpty($childTemplates);
 
-                        return 'body';
-                    }
-                    return null;
+                    return 'body';
                 }
             );
 
@@ -480,8 +487,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && 'body' == $message->getBody()->getBody()
                 && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
-        $mailer = $this->getMailer($callback);
-        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+        $mailer = $this->getMailer($callback, $templateRenderer);
+        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver);
     }
 
     /**
@@ -508,18 +515,19 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mailer with a mock transport
+     * Create mailer with a mock transport.
      *
-     * @param ?callable $callback Mock send method result callback
+     * @param ?callable                  $callback Mock send method result callback
+     * @param ?TemplateRendererInterface $renderer Template renderer
      *
      * @return Mailer
      */
-    protected function getMailer($callback = null)
+    protected function getMailer($callback = null, ?TemplateRendererInterface $renderer = null)
     {
         $transport = $this->createMock(MailerInterface::class);
         if ($callback) {
             $transport->expects($this->once())->method('send')->with($this->callback($callback));
         }
-        return new Mailer($transport);
+        return new Mailer($transport, $renderer ?? $this->createStub(TemplateRendererInterface::class));
     }
 }

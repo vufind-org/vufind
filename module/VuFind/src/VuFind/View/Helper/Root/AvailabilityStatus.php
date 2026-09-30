@@ -29,7 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Helper class for rendering availability statuses.
@@ -40,7 +42,7 @@ use VuFind\ILS\Logic\AvailabilityStatusInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
+class AvailabilityStatus
 {
     /**
      * Html class for available items.
@@ -99,11 +101,21 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
     protected string $iconUnknown = 'status-unknown';
 
     /**
-     * Message cache
+     * Message cache.
      *
      * @var array
      */
     protected array $messageCache = [];
+
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $view View renderer
+     */
+    #[Autowire]
+    public function __construct(protected RendererInterface $view)
+    {
+    }
 
     /**
      * Get html class for availability status.
@@ -114,13 +126,13 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      */
     public function getClass(AvailabilityStatusInterface $availabilityStatus): string
     {
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
             return $this->classUnavailable;
         }
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_AVAILABLE)) {
             return $this->classAvailable;
         }
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNKNOWN)) {
             return $this->classUnknown;
         }
         return $this->classUncertain;
@@ -135,13 +147,13 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      */
     public function getIcon(AvailabilityStatusInterface $availabilityStatus): string
     {
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
             return $this->iconUnavailable;
         }
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_AVAILABLE)) {
             return $this->iconAvailable;
         }
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNKNOWN)) {
             return $this->iconUnknown;
         }
         return $this->iconUncertain;
@@ -156,18 +168,28 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
      */
     public function renderStatusForAjaxResponse(AvailabilityStatusInterface $availabilityStatus): string
     {
-        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN)) {
+        if ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNKNOWN)) {
             $key = 'ajax/status-unknown.phtml';
-        } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE)) {
+        } elseif ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_AVAILABLE)) {
             $key = 'ajax/status-available.phtml';
-        } elseif ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
+        } elseif ($availabilityStatus->is(AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
             $key = 'ajax/status-unavailable.phtml';
         } else {
             $key = 'ajax/status-uncertain.phtml';
         }
         if (!isset($this->messageCache[$key])) {
-            $this->messageCache[$key] = $this->getView()->render($key);
+            $this->messageCache[$key] = $this->view->render($key);
         }
         return $this->messageCache[$key];
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

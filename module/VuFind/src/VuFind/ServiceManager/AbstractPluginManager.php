@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Plugin Manager
+ * VuFind Plugin Manager.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\AbstractPluginManager as Base;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 
 /**
- * VuFind Plugin Manager
+ * VuFind Plugin Manager.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -48,7 +48,7 @@ abstract class AbstractPluginManager extends Base
     use LowerCaseServiceNameTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -67,7 +67,7 @@ abstract class AbstractPluginManager extends Base
     }
 
     /**
-     * Validate the plugin
+     * Validate the plugin.
      *
      * Checks that the filter loaded is either a valid callback or an instance
      * of FilterInterface.

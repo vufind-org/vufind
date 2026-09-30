@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Support class (mock Unicorn driver) for MultiBackend ILS driver test
+ * Support class (mock Unicorn driver) for MultiBackend ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
- * Support class (mock Unicorn driver) for MultiBackend ILS driver test
+ * Support class (mock Unicorn driver) for MultiBackend ILS driver test.
  *
  * @category VuFind
  * @package  Tests

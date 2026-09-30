@@ -56,7 +56,6 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->container->set(SessionManager::class, $sm);
         $factory = new KeepAliveFactory();
         $handler = $factory($this->container, KeepAlive::class);
-        $params = new \Laminas\Mvc\Controller\Plugin\Params();
-        $this->assertEquals([true], $handler->handleRequest($params));
+        $this->assertEquals([true], $handler->handleRequest($this->getRequest()));
     }
 }

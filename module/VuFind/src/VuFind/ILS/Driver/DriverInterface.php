@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for ILS Drivers
+ * Interface for ILS Drivers.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 /**
- * Catalog Specific Driver Class
+ * Catalog Specific Driver Class.
  *
  * This interface class is the definition of the required methods for
  * interacting with the local catalog.
@@ -71,7 +71,7 @@ interface DriverInterface
     public function init();
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -85,7 +85,7 @@ interface DriverInterface
     public function getStatus($id);
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -98,7 +98,7 @@ interface DriverInterface
     public function getStatuses($ids);
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -115,7 +115,7 @@ interface DriverInterface
     public function getHolding($id, ?array $patron = null, array $options = []);
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).

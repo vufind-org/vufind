@@ -271,12 +271,7 @@
 
   </query>
 
-  <!--
-    Let the dispatch filter handler /select?qt=XXX
-    handleSelect=true will use consistent error handling for /select and /update
-    handleSelect=false will use solr1.1 style error formatting
-    -->
-  <requestDispatcher handleSelect="true" >
+  <requestDispatcher>
     <!-- Set HTTP caching related parameters (for proxy caches and clients).
 
          To get the behaviour of Solr 1.2 (ie: no caching related headers)
@@ -332,6 +327,31 @@
        <str name="fl">*</str>
        <str name="version">2.1</str>
         -->
+      <str name="spellcheck.extendedResults">true</str>
+      <str name="spellcheck.onlyMorePopular">true</str>
+      <str name="spellcheck.count">20</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <str name="sow">true</str>
+    </lst>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
+
+  <!-- Explicit /select handler to replace deprecated requestDispatcher handleSelect handling.
+       This mirrors the "standard" handler so that requests to /select behave the same as before. -->
+  <requestHandler name="/select" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="echoParams">explicit</str>
       <str name="spellcheck.extendedResults">true</str>
       <str name="spellcheck.onlyMorePopular">true</str>
       <str name="spellcheck.count">20</str>
@@ -411,7 +431,7 @@
     </arr>
   </requestHandler>
 
-  <requestHandler name="morelikethis" class="solr.MoreLikeThisHandler">
+  <requestHandler name="/morelikethis" class="solr.MoreLikeThisHandler">
     <lst name="defaults">
       <str name="mlt.fl">title,title_short,callnumber-label,topic,language,author,publishDate</str>
       <str name="mlt.qf">

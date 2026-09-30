@@ -57,7 +57,7 @@ class Record implements RecordInterface
     }
 
     /**
-     * Get raw record
+     * Get raw record.
      *
      * @return array
      */

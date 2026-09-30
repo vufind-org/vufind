@@ -73,12 +73,14 @@ enum AuditEventSubtype: string
     case Logout = 'logout';
     case PasswordChanged = 'password_changed';
     case PasswordReset = 'password_reset';
+    case PreAuth = 'pre_auth';
     case RememberLogin = 'remember_login';
     case SaveSearch = 'save_search';
     case ScheduleSearch = 'schedule_search';
     case SendAddressVerificationEmail = 'send_address_verification_email';
     case SendCardAuthEmail = 'send_card_auth_email';
     case SendEmailLoginLink = 'send_email_login_link';
+    case SendEmailRecoveryCode = 'send_email_recovery_code';
     case SendEmailRecoveryLink = 'send_email_recovery_link';
     case TokenLogin = 'token_login';
     case UnSaveSearch = 'un_save_search';

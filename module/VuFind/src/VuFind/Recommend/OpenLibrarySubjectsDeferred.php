@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_object;
 
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * This class provides recommendations by doing a search of the catalog; useful
  * for displaying catalog recommendations in other modules (i.e. Summon, Web, etc.)
@@ -48,14 +48,14 @@ use function is_object;
 class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
 {
     /**
-     * Raw configuration string
+     * Raw configuration string.
      *
      * @var string
      */
     protected $rawParams;
 
     /**
-     * Processed configuration string
+     * Processed configuration string.
      *
      * @var array
      */

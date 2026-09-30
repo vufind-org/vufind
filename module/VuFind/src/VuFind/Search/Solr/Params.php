@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Params)
+ * Solr aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function is_array;
 use function sprintf;
 
 /**
- * Solr Search Parameters
+ * Solr Search Parameters.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -57,7 +57,7 @@ class Params extends \VuFind\Search\Base\Params
 
     /**
      * Search with facet.contains
-     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html.
      *
      * @var ?string
      */
@@ -65,49 +65,49 @@ class Params extends \VuFind\Search\Base\Params
 
     /**
      * Ignore Case when using facet.contains
-     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html.
      *
      * @var ?bool
      */
     protected ?bool $facetContainsIgnoreCase = null;
 
     /**
-     * Offset for facet results
+     * Offset for facet results.
      *
      * @var ?int
      */
     protected ?int $facetOffset = null;
 
     /**
-     * Prefix for facet searching
+     * Prefix for facet searching.
      *
      * @var ?string
      */
     protected ?string $facetPrefix = null;
 
     /**
-     * Sorting order for facet search results
+     * Sorting order for facet search results.
      *
      * @var ?string
      */
     protected ?string $facetSort = null;
 
     /**
-     * Sorting order of single facet by index
+     * Sorting order of single facet by index.
      *
      * @var ?array
      */
     protected ?array $indexSortedFacets = null;
 
     /**
-     * Fields for visual faceting
+     * Fields for visual faceting.
      *
      * @var ?string
      */
     protected ?string $pivotFacets = null;
 
     /**
-     * Hierarchical Facet Helper
+     * Hierarchical Facet Helper.
      *
      * @var ?HierarchicalFacetHelper
      */
@@ -138,14 +138,14 @@ class Params extends \VuFind\Search\Base\Params
     protected array $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Virtual field name used for custom filters
+     * Virtual field name used for custom filters.
      *
      * @var string
      */
     protected string $customFilterFieldName;
 
     /**
-     * Default sort aliases
+     * Default sort aliases.
      *
      * @var array
      */
@@ -160,7 +160,7 @@ class Params extends \VuFind\Search\Base\Params
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
@@ -177,21 +177,19 @@ class Params extends \VuFind\Search\Base\Params
         $this->facetHelper = $facetHelper;
 
         // Use basic facet limit by default, if set:
-        $config = $configManager->getConfigObject($options->getFacetsIni());
-        $this->initFacetLimitsFromConfig($config->Results_Settings ?? null);
-        $this->initFacetRestrictionsFromConfig($config->Results_Settings ?? null);
-        if (isset($config->LegacyFields)) {
-            $this->facetAliases = $config->LegacyFields->toArray();
+        $config = $configManager->getConfigArray($options->getFacetsIni());
+        $resultsSettings = $config['Results_Settings'] ?? null;
+        $this->initFacetLimitsFromConfig($resultsSettings);
+        $this->initFacetRestrictionsFromConfig($resultsSettings);
+        if (isset($config['LegacyFields'])) {
+            $this->facetAliases = $config['LegacyFields'];
         }
-        if (
-            isset($config->Results_Settings->sorted_by_index)
-            && count($config->Results_Settings->sorted_by_index) > 0
-        ) {
+        if (count($config['Results_Settings']['sorted_by_index'] ?? []) > 0) {
             $this->setIndexSortedFacets(
-                $config->Results_Settings->sorted_by_index->toArray()
+                $config['Results_Settings']['-sorted_by_index']
             );
         }
-        $this->customFilterFieldName = $config->CustomFilters->custom_filter_field ?? 'vufind';
+        $this->customFilterFieldName = $config['CustomFilters']['custom_filter_field'] ?? 'vufind';
         $searchConfig = $this->configManager->getConfigArray($this->getOptions()->getSearchIni());
         $localSortDefinitions = $searchConfig['LocalSortDefinitions'] ?? [];
         foreach ($localSortDefinitions as $alias => $localSortDefinition) {
@@ -211,7 +209,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the current filters as an array of strings ['field:filter']
+     * Return the current filters as an array of strings ['field:filter'].
      *
      * @return array $filterQuery
      */
@@ -257,7 +255,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return current facet configurations
+     * Return current facet configurations.
      *
      * @return array $facetSet
      */
@@ -285,12 +283,12 @@ class Params extends \VuFind\Search\Base\Params
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
                     $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
                         ?? VUFIND_DEFAULT_EARLIEST_YEAR;
-                    $endYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                    $endYear = $this->getOptions()->getDateRangeSliderMaxValue($facetField)
                         ?? ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
                     $facetSet["f.{$facetField}.facet.range.start"]
-                        = sprintf('%s%04d-01-01T00:00:00Z', $startYear < 0 ? '-' : '', $startYear);
+                        = sprintf('%04d-01-01T00:00:00Z', $startYear);
                     $facetSet["f.{$facetField}.facet.range.end"]
-                        = sprintf('%s%04d-12-31T23:59:59Z', $endYear < 0 ? '-' : '', $endYear);
+                        = sprintf('%04d-12-31T23:59:59Z', $endYear);
                     $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
                     $facetSet['range'][] = $facetField;
                 } else {
@@ -357,7 +355,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Contains
+     * Set Facet Contains.
      *
      * @param string $p the new contains value
      *
@@ -369,7 +367,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Contains Ignore Case
+     * Set Facet Contains Ignore Case.
      *
      * @param bool $val the new boolean value
      *
@@ -381,7 +379,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Offset
+     * Set Facet Offset.
      *
      * @param int $o the new offset value
      *
@@ -393,7 +391,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Prefix
+     * Set Facet Prefix.
      *
      * @param string $p the new prefix value
      *
@@ -405,7 +403,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Sorting
+     * Set Facet Sorting.
      *
      * @param string $s the new sorting action value
      *
@@ -417,7 +415,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Index Facet Sorting
+     * Set Index Facet Sorting.
      *
      * @param array $s the facets sorted by index
      *
@@ -441,8 +439,9 @@ class Params extends \VuFind\Search\Base\Params
     protected function initFacetList(string $facetList, string $facetSettings, ?string $cfgFile = null): bool
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
-        $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
-        $this->initFacetLimitsFromConfig($config->$facetSettings ?? null);
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
+        $facetSettingsConfig = $config['$facetSettings'] ?? null;
+        $this->initFacetLimitsFromConfig($facetSettingsConfig);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
 
@@ -669,7 +668,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set pivot facet fields to use for visual results
+     * Set pivot facet fields to use for visual results.
      *
      * @param string $facets A comma-separated list of fields
      *
@@ -681,7 +680,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Get pivot facet information for visual facets
+     * Get pivot facet information for visual facets.
      *
      * @return ?string
      */

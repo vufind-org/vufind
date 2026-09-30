@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Holds Support Methods
+ * VuFind Action Helper - Holds Support Methods.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Date\DateException;
 use function in_array;
 
 /**
- * Action helper to perform holds-related actions
+ * Action helper to perform holds-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins

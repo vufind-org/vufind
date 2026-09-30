@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VF Configuration Writer
+ * VF Configuration Writer.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function is_int;
 use function strlen;
 
 /**
- * Class to update VuFind configuration settings
+ * Class to update VuFind configuration settings.
  *
  * @category VuFind
  * @package  Config
@@ -46,21 +46,21 @@ use function strlen;
 class Writer
 {
     /**
-     * Configuration file to write
+     * Configuration file to write.
      *
      * @var string
      */
     protected $filename;
 
     /**
-     * Content of file
+     * Content of file.
      *
      * @var string
      */
     protected $content;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string            $filename Configuration file to write
      * @param string|array|null $content  Content to load into file (set to null to
@@ -87,7 +87,7 @@ class Writer
     }
 
     /**
-     * Change/add a setting
+     * Change/add a setting.
      *
      * @param string $section Section to change/add
      * @param string $setting Setting within section to change/add
@@ -120,22 +120,23 @@ class Writer
                     $currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
-                    $line = $this->buildContentLine($setting, $value, 0)
+                    $this->content = rtrim($this->content);
+                    $line = "\n" . $this->buildContentLine($setting, $value, 0)
                         . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
-            } elseif (strstr($content, '=')) {
+            } elseif ($currentSection == $section && strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
                 $key = trim($contentParts[0]);
                 // If the key we are trying to set is already present as an array,
                 // we need to clear out the multiple existing values before writing
                 // in a new one:
-                if ($key == $setting . '[]') {
+                if (str_starts_with($key, $setting . '[')) {
                     continue;
                 }
                 // Standard case for match on section + key:
-                if ($currentSection == $section && $key == $setting) {
+                if ($key == $setting) {
                     $settingSet = true;
                     if ($value === null) {
                         continue;
@@ -151,6 +152,8 @@ class Writer
             // Save the current line:
             $this->content .= $line . "\n";
         }
+
+        $this->content = substr($this->content, 0, -1); // remove trailing \n
 
         // Did we loop through everything without finding a place to put the setting?
         if (!$settingSet && $value !== null) {
@@ -210,7 +213,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format a value
+     * Support method for buildContent -- format a value.
      *
      * @param mixed $e Value to format
      *
@@ -230,7 +233,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format a line
+     * Support method for buildContent -- format a line.
      *
      * @param string $key   Configuration key
      * @param mixed  $value Configuration value
@@ -270,7 +273,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format an array into lines
+     * Support method for buildContent -- format an array into lines.
      *
      * @param string $key   Configuration key
      * @param array  $value Configuration value
@@ -297,7 +300,7 @@ class Writer
 
     /**
      * Write an ini file, adapted from
-     * http://php.net/manual/function.parse-ini-file.php
+     * http://php.net/manual/function.parse-ini-file.php.
      *
      * @param array $assoc_arr Array to output
      * @param array $comments  Comments to inject

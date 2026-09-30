@@ -47,7 +47,7 @@ use function intval;
 trait SearchLimitTrait
 {
     /**
-     * Selector for limit control
+     * Selector for limit control.
      *
      * @var string
      */
@@ -88,7 +88,7 @@ trait SearchLimitTrait
     }
 
     /**
-     * Change sort order of search results
+     * Change sort order of search results.
      *
      * @param Element $page  Current page
      * @param int     $value Limit option value

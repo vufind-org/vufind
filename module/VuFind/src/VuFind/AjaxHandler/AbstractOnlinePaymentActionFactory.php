@@ -50,7 +50,7 @@ use VuFind\Db\Service\PaymentServiceInterface;
 class AbstractOnlinePaymentActionFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

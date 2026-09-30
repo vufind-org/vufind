@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Password Security Exception
+ * Password Security Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Password Security Exception
+ * Password Security Exception.
  *
  * @category VuFind
  * @package  Exceptions

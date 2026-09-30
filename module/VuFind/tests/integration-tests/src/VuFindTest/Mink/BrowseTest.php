@@ -102,7 +102,7 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test configuration of available browse options
+     * Test configuration of available browse options.
      *
      * @param string[] $expected Expected option list
      * @param array    $settings Settings to adjust in config.ini [Browse] section

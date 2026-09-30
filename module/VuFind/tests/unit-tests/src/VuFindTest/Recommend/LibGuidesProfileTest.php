@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesProfile recommendation module Test Class
+ * LibGuidesProfile recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,6 @@ namespace VuFindTest\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Connection\LibGuides;
 use VuFind\Recommend\LibGuidesProfile;
@@ -41,7 +40,7 @@ use VuFind\Search\Base\Params;
 use VuFindTest\Search\TestHarness\Results;
 
 /**
- * LibGuidesProfile recommendation module Test Class
+ * LibGuidesProfile recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,21 +54,21 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * LibGuides connection object
+     * LibGuides connection object.
      *
      * @var LibGuides
      */
     protected $connector;
 
     /**
-     * Cache adapter object
+     * Cache adapter object.
      *
      * @var CacheAdapter
      */
     protected $cacheAdapter;
 
     /**
-     * LibGuidesProfile object
+     * LibGuidesProfile object.
      *
      * @var LibGuidesProfile
      */
@@ -90,7 +89,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test search term that is an exact match for a subject specialty
+     * Test search term that is an exact match for a subject specialty.
      *
      * @return void
      */
@@ -107,7 +106,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test search term that is a substring of a subject specialty
+     * Test search term that is a substring of a subject specialty.
      *
      * @return void
      */
@@ -125,7 +124,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test search term that is a loose match for a subject specialty
+     * Test search term that is a loose match for a subject specialty.
      *
      * @return void
      */
@@ -143,7 +142,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test call number match
+     * Test call number match.
      *
      * @return void
      */
@@ -187,7 +186,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a partially mocked LibGuidesProfile object
+     * Build a partially mocked LibGuidesProfile object.
      *
      * @param array $config The config object
      *
@@ -201,7 +200,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
 
         // For the target class LibGuidesProfile, only mock the caching methods
         $libGuidesProfile = $this->getMockBuilder(LibGuidesProfile::class)
-            ->setConstructorArgs([$this->connector, new Config($config), $this->cacheAdapter])
+            ->setConstructorArgs([$this->connector, $config, $this->cacheAdapter])
             ->onlyMethods(['getCachedData', 'putCachedData'])
             ->getMock();
         $libGuidesProfile->method('getCachedData')->willReturn(null);
@@ -209,7 +208,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a partially mocked Results object for a given query string
+     * Build a partially mocked Results object for a given query string.
      *
      * @param string $queryString The query string
      * @param array  $facets      The result facets

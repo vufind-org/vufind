@@ -56,7 +56,7 @@ class Spellcheck implements IteratorAggregate, Countable
     protected $terms;
 
     /**
-     * Spelling query that generated suggestions
+     * Spelling query that generated suggestions.
      *
      * @var string
      */

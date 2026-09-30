@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holdings view helper Test Class
+ * Holdings view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\ILS\Logic\AvailabilityStatus;
 
 /**
- * Holdings view helper Test Class
+ * Holdings view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\ILS\Logic\AvailabilityStatus;
 class HoldingsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testBarcodeVisibilityBehavior()
+     * Data provider for testBarcodeVisibilityBehavior().
      *
      * @return \Iterator
      */

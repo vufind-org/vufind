@@ -1,0 +1,54 @@
+[
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/request-preference-storage\/request-preference?query=userId==whatever",
+        "expectedParams": {
+        },
+        "bodyType": "json",
+        "body": {
+            "requestPreferences": [
+                {
+                    "id": "668b8f1b-6cd6-48e5-be2b-48b9f39da4ce",
+                    "userId": "ba2e7a40-f845-4fe0-84c4-26b283bdc5d3",
+                    "holdShelf": true,
+                    "delivery": true,
+                    "defaultDeliveryAddressTypeId": "49d8f402-1ec9-4418-b6aa-e8a88f7b0ac6",
+                    "fulfillment": "Delivery",
+                    "metadata": {
+                        "createdDate": "2022-09-15T13:17:16.334+00:00",
+                        "createdByUserId": "cfcd85b2-9e7d-4b98-bb95-f1c25025899b",
+                        "updatedDate": "2026-05-18T21:14:44.795+00:00",
+                        "updatedByUserId": "1591c58f-e8a3-4255-be54-2b2af5de3d23"
+                    }
+                }
+            ]
+        },
+        "totalRecords": 1
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/request-preference-storage\/request-preference?query=userId==user2",
+        "expectedParams": {
+        },
+        "bodyType": "json",
+        "body": {
+            "requestPreferences": [
+                {
+                    "id": "668b8f1b-6cd6-48e5-be2b-48b9f39da4ce",
+                    "userId": "ba2e7a40-f845-4fe0-84c4-26b283bdc5d3",
+                    "holdShelf": true,
+                    "delivery": true,
+                    "defaultDeliveryAddressTypeId": "49d8f402-1ec9-4418-b6aa-e8a88f7b0ac6",
+                    "fulfillment": "Hold Shelf",
+                    "metadata": {
+                        "createdDate": "2022-09-15T13:17:16.334+00:00",
+                        "createdByUserId": "cfcd85b2-9e7d-4b98-bb95-f1c25025899b",
+                        "updatedDate": "2026-05-18T21:14:44.795+00:00",
+                        "updatedByUserId": "1591c58f-e8a3-4255-be54-2b2af5de3d23"
+                    }
+                }
+            ]
+        },
+        "totalRecords": 1
+    }
+]

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staff view (array dump) tab
+ * Staff view (array dump) tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Staff view (array dump) tab
+ * Staff view (array dump) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,7 +41,7 @@ namespace VuFind\RecordTab;
 class StaffViewOverdrive extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

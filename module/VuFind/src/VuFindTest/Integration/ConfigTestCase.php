@@ -52,21 +52,21 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Path to base configurations
+     * Path to base configurations.
      *
      * @var string
      */
     protected string $baseDirPath;
 
     /**
-     * Path to local dir configurations
+     * Path to local dir configurations.
      *
      * @var string
      */
     protected string $localDirPath;
 
     /**
-     * Path to local dir backup
+     * Path to local dir backup.
      *
      * @var string
      */

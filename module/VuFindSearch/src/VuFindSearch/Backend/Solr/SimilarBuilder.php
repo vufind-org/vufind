@@ -52,7 +52,7 @@ use function sprintf;
 class SimilarBuilder implements SimilarBuilderInterface
 {
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
@@ -67,14 +67,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     protected $useHandler = false;
 
     /**
-     * MoreLikeThis Handler parameters
+     * MoreLikeThis Handler parameters.
      *
      * @var string
      */
     protected $handlerParams = '';
 
     /**
-     * Number of similar records to retrieve
+     * Number of similar records to retrieve.
      *
      * @var int
      */
@@ -83,27 +83,26 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param ?\VuFind\Config\Config $searchConfig Search config
-     * @param string                 $uniqueKey    Solr field used to store unique identifier
+     * @param ?array $searchConfig Search config
+     * @param string $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        ?\VuFind\Config\Config $searchConfig = null,
+        ?array $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
-        if (isset($searchConfig->MoreLikeThis)) {
-            $mlt = $searchConfig->MoreLikeThis;
+        if (isset($searchConfig['MoreLikeThis'])) {
+            $mlt = $searchConfig['MoreLikeThis'];
             if (
-                isset($mlt->useMoreLikeThisHandler)
-                && $mlt->useMoreLikeThisHandler
+                $mlt['useMoreLikeThisHandler'] ?? false
             ) {
                 $this->useHandler = true;
-                $this->handlerParams = $mlt->params ?? '';
+                $this->handlerParams = $mlt['params'] ?? '';
             }
-            if (isset($mlt->count)) {
-                $this->count = $mlt->count;
+            if (isset($mlt['count'])) {
+                $this->count = $mlt['count'];
             }
         }
     }
@@ -132,7 +131,6 @@ class SimilarBuilder implements SimilarBuilderInterface
                 'q',
                 sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
-            $params->set('qt', 'morelikethis');
         }
         if (null === $params->get('rows')) {
             $params->set('rows', $this->count);

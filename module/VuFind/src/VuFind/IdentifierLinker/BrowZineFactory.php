@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine identifier linker factory
+ * BrowZine identifier linker factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * BrowZine identifier linker factory
+ * BrowZine identifier linker factory.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -67,7 +67,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
     protected array $defaultBestIntegratorLinks;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -83,7 +83,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

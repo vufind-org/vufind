@@ -2,7 +2,7 @@
 
 /**
  * Optional backend feature: Get some extra details about a search,
- * e.g. the search parameters or request url
+ * e.g. the search parameters or request url.
  *
  * PHP version 8
  *
@@ -49,7 +49,7 @@ interface ExtraRequestDetailsInterface
     public function getExtraRequestDetails();
 
     /**
-     * Clears all accumulated extra request details
+     * Clears all accumulated extra request details.
      *
      * @return void
      */

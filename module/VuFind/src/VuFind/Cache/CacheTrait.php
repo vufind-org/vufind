@@ -45,7 +45,7 @@ trait CacheTrait
     use KeyGeneratorTrait;
 
     /**
-     * Cache for storing data temporarily (e.g. patron blocks with the ILS driver)
+     * Cache for storing data temporarily (e.g. patron blocks with the ILS driver).
      *
      * @var StorageInterface
      */

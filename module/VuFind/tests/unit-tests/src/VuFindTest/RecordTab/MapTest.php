@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Map Test Class
+ * Map Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\RecordTab\Map;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Map Test Class
+ * Map Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Get a Map object
+     * Get a Map object.
      *
      * @return Map
      */

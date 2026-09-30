@@ -57,7 +57,7 @@ VuFind.register('record', function Record() {
       method: 'POST',
       headers: {'Accept': 'application/json'},
       body: new URLSearchParams({
-        tag: '"' + tag.replace(/\+/g, ' ') + '"',
+        tag: '"' + String(tag).replace(/\+/g, ' ') + '"',
         id: recordId.value,
         source: recordSource.value,
         remove: remove
@@ -84,7 +84,7 @@ VuFind.register('record', function Record() {
    */
   function init() {
     removeCheckRouteParam();
-    VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
+    VuFind.truncate.initTruncate('.truncate-record-field');
     VuFind.truncate.initTruncate('table.truncate-field', 'tr.holding-row', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   }
 

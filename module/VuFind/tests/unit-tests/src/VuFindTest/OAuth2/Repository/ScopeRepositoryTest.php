@@ -44,7 +44,7 @@ use VuFind\OAuth2\Repository\ScopeRepository;
 class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * Data provider for testScopeRepository
+     * Data provider for testScopeRepository.
      *
      * @return \Iterator
      */
@@ -56,7 +56,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test scope repository
+     * Test scope repository.
      *
      * @param string $scopeId Scope ID
      * @param string $desc    Expected description
@@ -102,7 +102,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test scope repository with invalid id
+     * Test scope repository with invalid id.
      *
      * @return void
      */
@@ -121,7 +121,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test scope repository with invalid configuration
+     * Test scope repository with invalid configuration.
      *
      * @return void
      */

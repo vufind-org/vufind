@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class GeoCoordsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,6 +70,6 @@ class GeoCoordsFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\GeoFeatures\MapSelectionConfig::class)
             ->getMapSelectionOptions();
-        return new $requestedName($config['default_coordinates']);
+        return new $requestedName($config['default_coordinates'], $container->get('ViewHelperManager')->get('url'));
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database authentication class
+ * Database authentication class.
  *
  * PHP version 8
  *
@@ -39,12 +39,13 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\DuplicateKeyException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_object;
 
 /**
- * Database authentication class
+ * Database authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -57,31 +58,32 @@ use function is_object;
 class Database extends AbstractBase
 {
     /**
-     * Password hasher
+     * Password hasher.
      *
      * @var PasswordHasher
      */
     protected $hasher;
 
     /**
-     * Username
+     * Username.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password
+     * Password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?PasswordHasher $hasher Password hash service (null to create one)
      */
+    #[Autowire]
     public function __construct(?PasswordHasher $hasher = null)
     {
         $this->hasher = $hasher ?? new PasswordHasher();
@@ -126,7 +128,7 @@ class Database extends AbstractBase
     protected function passwordHashingEnabled()
     {
         $config = $this->getConfig();
-        return $config->Authentication->hash_passwords ?? false;
+        return $config['Authentication']['hash_passwords'] ?? false;
     }
 
     /**
@@ -275,7 +277,7 @@ class Database extends AbstractBase
     protected function checkEmailVerified($user)
     {
         $config = $this->getConfig();
-        $verify_email = $config->Authentication->verify_email ?? false;
+        $verify_email = $config['Authentication']['verify_email'] ?? false;
         if ($verify_email && !$user->getEmailVerified()) {
             throw new AuthEmailNotVerifiedException(
                 $user,
@@ -322,8 +324,7 @@ class Database extends AbstractBase
     {
         // If no inclusion list is configured, all emails are allowed:
         $fullConfig = $this->getConfig();
-        $config = isset($fullConfig->Authentication)
-            ? $fullConfig->Authentication->toArray() : [];
+        $config = $fullConfig['Authentication'] ?? [];
         $rawIncludeList = $config['legal_domains']
             ?? $config['domain_whitelist']  // deprecated configuration
             ?? null;
@@ -356,17 +357,17 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         return true;
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -374,7 +375,7 @@ class Database extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         return true;
     }
@@ -392,6 +393,7 @@ class Database extends AbstractBase
     public function getPasswordRecoveryData(array $params): ?array
     {
         $userService = $this->getUserService();
+        $user = null;
         if ($email = $params['email'] ?? null) {
             $user = $userService->getUserByEmail($email);
         } elseif ($username = $params['username'] ?? null) {
@@ -429,7 +431,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -444,7 +446,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

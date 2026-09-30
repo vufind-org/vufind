@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Availability Status Manager
+ * Availability Status Manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ILS\Logic;
 
 /**
- * Availability Status Manager
+ * Availability Status Manager.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -41,7 +41,7 @@ namespace VuFind\ILS\Logic;
 class AvailabilityStatusManager
 {
     /**
-     * Create a new Availability Status
+     * Create a new Availability Status.
      *
      * @param int|bool $availability Availability
      *

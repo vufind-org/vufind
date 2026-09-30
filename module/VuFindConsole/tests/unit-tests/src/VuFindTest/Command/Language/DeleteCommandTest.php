@@ -49,7 +49,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Language fixture directory
+     * Language fixture directory.
      *
      * @var string
      */
@@ -87,7 +87,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSuccessWithMinimalParameters()
+     * Data provider for testSuccessWithMinimalParameters().
      *
      * @return \Iterator
      */
@@ -141,7 +141,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
      * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
      * @param ?ExtendedIniReader     $reader      Reader for .ini files
@@ -168,7 +168,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock normalizer object
+     * Get a mock normalizer object.
      *
      * @param array $methods Methods to mock
      *
@@ -185,7 +185,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock reader object
+     * Get a mock reader object.
      *
      * @param array $methods Methods to mock
      *

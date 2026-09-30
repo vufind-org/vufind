@@ -48,7 +48,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     use Feature\PreviousUniqueIdTrait;
 
     /**
-     * Fields that may contain subject headings, and their descriptions
+     * Fields that may contain subject headings, and their descriptions.
      *
      * @var array
      */
@@ -60,7 +60,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     ];
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
@@ -304,7 +304,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     }
 
     /**
-     * Pass in a date converter
+     * Pass in a date converter.
      *
      * @param \VuFind\Date\Converter $dc Date converter
      *
@@ -316,7 +316,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     }
 
     /**
-     * Get a date converter
+     * Get a date converter.
      *
      * @return \VuFind\Date\Converter
      */

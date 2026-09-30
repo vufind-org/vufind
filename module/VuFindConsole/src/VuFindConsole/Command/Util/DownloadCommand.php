@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: download
+ * Console command: download.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Http\GuzzleService;
 
 /**
- * Console command: download
+ * Console command: download.
  *
  * @category VuFind
  * @package  Console
@@ -55,7 +55,7 @@ use VuFind\Http\GuzzleService;
 class DownloadCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GuzzleService $guzzleService Guzzle service
      * @param ?string       $name          The name of the command; passing null means it must be set in configure()

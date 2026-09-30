@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine Options Test
+ * BrowZine Options Test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\BrowZine\Options;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * BrowZine Options Test
+ * BrowZine Options Test.
  *
  * @category VuFind
  * @package  Tests

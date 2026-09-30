@@ -47,14 +47,14 @@ class EIT extends DefaultRecord
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * Used for identifying search backends
+     * Used for identifying search backends.
      *
      * @var string
      */
     protected $sourceIdentifier = 'EIT';
 
     /**
-     * Reference to controlInfo section of fields, for readability
+     * Reference to controlInfo section of fields, for readability.
      *
      * @var array
      */
@@ -377,7 +377,7 @@ class EIT extends DefaultRecord
     }
 
     /**
-     * Support method for getContainerEndPage()
+     * Support method for getContainerEndPage().
      *
      * @return string
      */

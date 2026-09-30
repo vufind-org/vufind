@@ -52,7 +52,7 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     protected $services = false;
 
     /**
-     * Get mock database service plugin manager
+     * Get mock database service plugin manager.
      *
      * @return \VuFind\Db\Service\PluginManager
      */

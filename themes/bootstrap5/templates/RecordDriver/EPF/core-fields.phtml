@@ -1,11 +1,9 @@
 <?php
   $formatter = $this->recordDataFormatter($this->driver);
   $coreFields = $formatter->getData($formatter->getDefaults($this->defaults ?? 'core'));
-  $accessLevel = $this->driver->getAccessLevel();
-  $restrictedView = empty($accessLevel) ? false : true;
   $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
-<?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
+<?php if ($searchOptions->showRestrictedViewWarning() && $this->driver->isRestrictedView()): ?>
   <?=$this->render('error/restrictedViewWarning.phtml')?>
 <?php endif; ?>
 <?php if (!empty($coreFields)): ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides Profile Recommendations Module
+ * LibGuides Profile Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,15 +30,13 @@
 namespace VuFind\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
-use function intval;
 use function is_string;
 use function strlen;
 
 /**
- * LibGuides Profile Recommendations Module
+ * LibGuides Profile Recommendations Module.
  *
  * @category VuFind
  * @package  Recommendations
@@ -53,73 +51,73 @@ class LibGuidesProfile implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * LibGuides connector
+     * LibGuides connector.
      *
      * @var LibGuides
      */
     protected $libGuides;
 
     /**
-     * List of strategies enabled to find a matching LibGuides profile
+     * List of strategies enabled to find a matching LibGuides profile.
      *
      * @var array
      */
     protected $strategies = [];
 
     /**
-     * Map of call number pattern to config alias
+     * Map of call number pattern to config alias.
      *
      * @var array
      */
     protected $callNumberToAlias;
 
     /**
-     * Map of config alias to LibGuides account ID
+     * Map of config alias to LibGuides account ID.
      *
      * @var array
      */
     protected $aliasToAccountId;
 
     /**
-     * Facet field name containing the call numbers to match against
+     * Facet field name containing the call numbers to match against.
      *
      * @var string
      */
     protected $callNumberField;
 
     /**
-     * Length of the substring at the start of a call number to match against
+     * Length of the substring at the start of a call number to match against.
      *
      * @var int
      */
     protected $callNumberLength;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param LibGuides    $libGuides LibGuides API connection
-     * @param Config       $config    LibGuides API configuration object
+     * @param array        $config    LibGuides API configuration object
      * @param CacheAdapter $cache     Object cache
      */
     public function __construct(
         LibGuides $libGuides,
-        Config $config,
+        array $config,
         CacheAdapter $cache
     ) {
         $this->libGuides = $libGuides;
         $this->setCacheStorage($cache);
 
         // Cache the data related to profiles for up to 10 minutes:
-        $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
+        $this->cacheLifetime = (int)($config['GetAccounts']['cache_lifetime'] ?? 600);
 
-        if ($profile = $config->Profile->toArray()) {
+        if ($profile = $config['Profile'] ?? []) {
             $strategies = $profile['strategies'] ?? [];
             $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 

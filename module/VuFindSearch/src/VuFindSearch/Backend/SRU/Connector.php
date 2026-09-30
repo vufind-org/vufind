@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SRU Search Interface
+ * SRU Search Interface.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_array;
 use function sprintf;
 
 /**
- * SRU Search Interface
+ * SRU Search Interface.
  *
  * @category VuFind
  * @package  SRU
@@ -60,28 +60,28 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     protected $raw = false;
 
     /**
-     * The HTTP_Request object used for REST transactions
+     * The HTTP_Request object used for REST transactions.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * The host to connect to
+     * The host to connect to.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * The version to specify in the URL
+     * The version to specify in the URL.
      *
      * @var string
      */
     protected $sruVersion = '1.1';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the SOAP Client
      *
@@ -96,7 +96,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get records similar to one record
+     * Get records similar to one record.
      *
      * @param array  $record An associative array of the record data
      * @param string $id     The record id
@@ -123,7 +123,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Scan
+     * Scan.
      *
      * @param string $clause   The CQL clause specifying the start point
      * @param int    $pos      The position of the start point in the response
@@ -146,7 +146,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Search
+     * Search.
      *
      * @param string $query   The search query
      * @param string $start   The record to start with
@@ -199,7 +199,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
 
     /**
      * Check for SRU Diagnostics error in a response.
-     * See https://www.loc.gov/standards/sru/diagnostics/diagnosticsList.html
+     * See https://www.loc.gov/standards/sru/diagnostics/diagnosticsList.html.
      *
      * @param string $resultBody The response body to check.
      *
@@ -217,7 +217,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Submit REST Request
+     * Submit REST Request.
      *
      * @param string $method  HTTP Method to use: GET or POST
      * @param string $path    URL path following $this->host

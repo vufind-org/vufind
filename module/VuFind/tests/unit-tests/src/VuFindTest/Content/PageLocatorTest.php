@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class PageLocatorTest
+ * Class PageLocatorTest.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Content\PageLocator;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Content Page Locator Test Class
+ * Content Page Locator Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class UnicornFactory
+ * Class UnicornFactory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class UnicornFactory
+ * Class UnicornFactory.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class UnicornFactory extends DriverWithDateConverterFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

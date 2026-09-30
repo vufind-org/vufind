@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database Migration Loader Test Class
+ * Database Migration Loader Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Db\Migration\MigrationLoader;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Database Migration Loader Test Class
+ * Database Migration Loader Test Class.
  *
  * @category VuFind
  * @package  Tests

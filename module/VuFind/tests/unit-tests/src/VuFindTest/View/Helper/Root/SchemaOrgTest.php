@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SchemaOrg View Helper Test Class
+ * SchemaOrg View Helper Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\View\Helper\Root\SchemaOrg;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * SchemaOrg View Helper Test Class
+ * SchemaOrg View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests

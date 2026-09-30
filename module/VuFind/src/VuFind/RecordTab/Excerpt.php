@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Excerpt tab
+ * Excerpt tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Excerpt tab
+ * Excerpt tab.
  *
  * @category VuFind
  * @package  RecordTabs

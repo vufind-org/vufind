@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for user_list table
+ * Entity model for user_list table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for user_list table
+ * Entity model for user_list table.
  *
  * @category VuFind
  * @package  Database
@@ -180,7 +180,7 @@ class UserList implements UserListEntityInterface
     }
 
     /**
-     * Get list type
+     * Get list type.
      *
      * @return string
      */
@@ -190,7 +190,7 @@ class UserList implements UserListEntityInterface
     }
 
     /**
-     * Set list type
+     * Set list type.
      *
      * @param string $type Type of the user list
      *

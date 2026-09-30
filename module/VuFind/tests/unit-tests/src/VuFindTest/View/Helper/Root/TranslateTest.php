@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
+ * Translate view helper Test Class (and by extension, the TranslatorAwareTrait).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\View\Helper\Root\Translate;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
+ * Translate view helper Test Class (and by extension, the TranslatorAwareTrait).
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     use TranslatorTrait;
 
     /**
-     * Test translation without a loaded translator
+     * Test translation without a loaded translator.
      *
      * @return void
      */
@@ -66,7 +66,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid translation array
+     * Test invalid translation array.
      *
      * @return void
      */
@@ -80,7 +80,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid translation array
+     * Test invalid translation array.
      *
      * @return void
      */
@@ -94,7 +94,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test translation with a loaded translator
+     * Test translation with a loaded translator.
      *
      * @return void
      */
@@ -244,7 +244,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test translation of a TranslatableString object with a loaded translator
+     * Test translation of a TranslatableString object with a loaded translator.
      *
      * @return void
      */
@@ -317,7 +317,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test translation of a TranslatableString object using text domains with a
-     * loaded translator
+     * loaded translator.
      *
      * @return void
      */
@@ -384,7 +384,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test translation with a loaded translator and a text domain
+     * Test translation with a loaded translator and a text domain.
      *
      * @return void
      */
@@ -417,7 +417,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test nested translation with potential text domain conflict
+     * Test nested translation with potential text domain conflict.
      *
      * @return void
      */
@@ -439,7 +439,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test locale retrieval without a loaded translator
+     * Test locale retrieval without a loaded translator.
      *
      * @return void
      */
@@ -450,7 +450,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test locale retrieval without a loaded translator
+     * Test locale retrieval without a loaded translator.
      *
      * @return void
      */

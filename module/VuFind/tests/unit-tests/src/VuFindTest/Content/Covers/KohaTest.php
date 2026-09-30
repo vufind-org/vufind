@@ -43,7 +43,7 @@ use VuFind\Content\Covers\Koha;
 class KohaTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testValidCoverLoading
+     * Data provider for testValidCoverLoading.
      *
      * @return \Iterator
      */
@@ -65,7 +65,7 @@ class KohaTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @param string|bool $expected Expected response
      * @param array       $params   Parameters to send to cover loader

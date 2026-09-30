@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class LogicFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,7 +72,7 @@ class LogicFactory implements FactoryInterface
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Crypt\HMAC::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
         );
     }
 }

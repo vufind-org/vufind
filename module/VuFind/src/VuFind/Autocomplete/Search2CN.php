@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search2 Call Number Autocomplete Module
+ * Search2 Call Number Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Search2 Call Number Autocomplete Module
+ * Search2 Call Number Autocomplete Module.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -42,7 +42,7 @@ namespace VuFind\Autocomplete;
 class Search2CN extends SolrCN
 {
     /**
-     * Search object family to use
+     * Search object family to use.
      *
      * @var string
      */

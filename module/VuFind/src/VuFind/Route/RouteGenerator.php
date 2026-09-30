@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Route Generator Class
+ * Route Generator Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Route;
 
 /**
- * Route Generator Class
+ * Route Generator Class.
  *
  * The data model object representing a user's book cart.
  *
@@ -59,7 +59,7 @@ class RouteGenerator
     protected static $recordRoutes = [];
 
     /**
-     * Reset Route Generator (used for tests)
+     * Reset Route Generator (used for tests).
      *
      * @return void
      */

@@ -311,7 +311,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test record driver object
+     * Get test record driver object.
      *
      * @param string $id     Record ID
      * @param string $source Record source
@@ -363,7 +363,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['load'])
             ->getMock();
         $callback = function ($r) {
-            return $r->getUniqueId();
+            return $r->getUniqueID();
         };
         $expectedIds = array_map($callback, $records);
         $fallbackPlugin->expects($this->once())->method('load')

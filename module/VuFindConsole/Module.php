@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Code module for VuFind's console functionality
+ * Code module for VuFind's console functionality.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindConsole;
 
 /**
- * Code module for VuFind's console functionality
+ * Code module for VuFind's console functionality.
  *
  * @category VuFind
  * @package  Module
@@ -41,7 +41,7 @@ namespace VuFindConsole;
 class Module
 {
     /**
-     * Get module configuration
+     * Get module configuration.
      *
      * @return array
      */

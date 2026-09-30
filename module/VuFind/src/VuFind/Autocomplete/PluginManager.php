@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autocomplete handler plugin manager
+ * Autocomplete handler plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Autocomplete;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Autocomplete handler plugin manager
+ * Autocomplete handler plugin manager.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -70,25 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        None::class => InvokableFactory::class,
-        Eds::class => EdsFactory::class,
-        Search2::class => SolrFactory::class,
-        Search2CN::class => SolrFactory::class,
-        Solr::class => SolrFactory::class,
-        SolrAuth::class => SolrFactory::class,
-        SolrCN::class => SolrFactory::class,
-        SolrReserves::class => SolrFactory::class,
-        Tag::class => TagFactory::class,
-        SolrPrefix::class => SolrFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

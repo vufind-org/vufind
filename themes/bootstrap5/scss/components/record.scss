@@ -332,7 +332,12 @@ $tag-remove-badge-color:          #a94442 !default;
     width: initial;
   }
 
-  /* Hide radio inputs, but keep them accessible by keyboard */
+  /* Show focus ring */
+  &:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+  }
+
   .rating__input {
     position: absolute !important;
     left: -9999px !important;

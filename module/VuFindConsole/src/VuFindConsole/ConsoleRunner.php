@@ -44,21 +44,21 @@ use Symfony\Component\Console\Application;
 class ConsoleRunner
 {
     /**
-     * List of commands
+     * List of commands.
      *
      * @var array
      */
     protected $commands;
 
     /**
-     * Plugin manager (to retrieve commands)
+     * Plugin manager (to retrieve commands).
      *
      * @var ContainerInterface
      */
     protected $pluginManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ContainerInterface $pm Plugin manager (to retrieve commands)
      */
@@ -94,7 +94,7 @@ class ConsoleRunner
     }
 
     /**
-     * Run the console action
+     * Run the console action.
      *
      * @return mixed
      */

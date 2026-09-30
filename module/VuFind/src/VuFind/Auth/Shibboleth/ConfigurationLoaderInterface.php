@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration loader interface
+ * Configuration loader interface.
  *
  * PHP version 8
  *
@@ -15,7 +15,7 @@
 namespace VuFind\Auth\Shibboleth;
 
 /**
- * Configuration loader interface
+ * Configuration loader interface.
  *
  * @category VuFind
  * @package  Authentication

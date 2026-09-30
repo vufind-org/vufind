@@ -65,7 +65,7 @@ class DatabaseTest extends TestCase
     }
 
     /**
-     * Test that the shortener works correctly under "happy path."
+     * Test that the shortener works correctly under "happy path.".
      *
      * @return void
      *
@@ -131,7 +131,7 @@ class DatabaseTest extends TestCase
     }
 
     /**
-     * Test that resolve errors correctly when given bad input
+     * Test that resolve errors correctly when given bad input.
      *
      * @return void
      *

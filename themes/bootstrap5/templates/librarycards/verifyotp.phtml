@@ -1,0 +1,39 @@
+<?php
+  // Set up page title:
+  $pageTitle = empty($this->authData['cardID']) ? 'Add a Library Card' : 'Edit Library Card';
+  $this->headTitle($this->translate($pageTitle));
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Library Cards'), $this->url('librarycards-home'))
+    ->add($this->translate($pageTitle), active: true);
+?>
+
+<?=$this->flashmessages()?>
+
+<h2><?=$this->transEsc($pageTitle); ?></h2>
+
+<div class="alert alert-info">
+  <?=$this->translate('email_login_code_sent_html')?>
+</div>
+
+<form class="form-edit-card" method="post" name="<?=empty($this->authData['cardID']) ? 'newCardForm' : 'editCardForm'?>" data-clear-account-cache>
+  <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+  <div class="form-group">
+    <label class="form-label">
+      <?=$this->transEsc('Email')?>:
+    </label>
+    <p class="form-control-static">
+      <?=$this->escapeHtml($authData['email'] ?? '')?>
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="form-label" for="card_password">
+      <?=$this->transEsc('one_time_password')?>:
+    </label>
+    <input type="text" name="password" id="card_password" class="form-control" autocomplete="one-time-code">
+  </div>
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Save') ?>">
+  </div>
+</form>

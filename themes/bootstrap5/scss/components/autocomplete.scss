@@ -1,8 +1,10 @@
 /* https://github.com/vufind-org/autocomplete.js (v2.1.3) */
 
+@use "sass:color";
+
 $autocomplete-item-bg     : #fff !default;
 $autocomplete-active-bg   : $primary !default;
-$autocomplete-hover-bg    : lighten($primary, 40%) !default;
+$autocomplete-hover-bg    : color.adjust($primary, $lightness: 40%) !default;
 $autocomplete-disabled-bg : lightgray !default;
 $autocomplete-border      : lightgray !default;
 $autocomplete-secondary   : darkgray !default; // item description
@@ -34,7 +36,7 @@ $autocomplete-secondary   : darkgray !default; // item description
     &:hover { background-color: $autocomplete-hover-bg; }
     &.is-selected {
       background-color: $autocomplete-active-bg;
-      color: contrast($autocomplete-active-bg);
+      color: color-contrast($autocomplete-active-bg);
     }
   }
 
@@ -45,7 +47,7 @@ $autocomplete-secondary   : darkgray !default; // item description
 
   .ac-header {
     white-space: nowrap;
-    color: contrast($autocomplete-disabled-bg);
+    color: color-contrast($autocomplete-disabled-bg);
     background-color: $autocomplete-disabled-bg;
     cursor: default;
   }

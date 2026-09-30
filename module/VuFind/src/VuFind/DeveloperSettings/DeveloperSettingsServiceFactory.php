@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Developer settings service factory
+ * Developer settings service factory.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Service\ApiKeyService;
 use VuFind\Db\Service\PluginManager;
 
 /**
- * Developer settings service factory
+ * Developer settings service factory.
  *
  * @category VuFind
  * @package  Developer_Settings
@@ -50,7 +50,7 @@ use VuFind\Db\Service\PluginManager;
 class DeveloperSettingsServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

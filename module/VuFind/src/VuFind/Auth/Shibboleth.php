@@ -77,28 +77,28 @@ class Shibboleth extends AbstractBase
     ];
 
     /**
-     * Read attributes from headers instead of environment variables
+     * Read attributes from headers instead of environment variables.
      *
      * @var bool
      */
     protected $useHeaders = false;
 
     /**
-     * Name of attribute with shibboleth identity provider
+     * Name of attribute with shibboleth identity provider.
      *
      * @var string
      */
     protected $shibIdentityProvider = self::DEFAULT_IDPSERVERPARAM;
 
     /**
-     * Name of attribute with shibboleth session ID
+     * Name of attribute with shibboleth session ID.
      *
      * @var string
      */
     protected $shibSessionId = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
      * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
@@ -116,17 +116,17 @@ class Shibboleth extends AbstractBase
     /**
      * Set configuration.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
-        $this->useHeaders = $this->config->Shibboleth->use_headers ?? false;
-        $this->shibIdentityProvider = $this->config->Shibboleth->idpserverparam
+        $this->useHeaders = $this->config['Shibboleth']['use_headers'] ?? false;
+        $this->shibIdentityProvider = $this->config['Shibboleth']['idpserverparam']
             ?? self::DEFAULT_IDPSERVERPARAM;
-        $this->shibSessionId = $this->config->Shibboleth->session_id ?? null;
+        $this->shibSessionId = $this->config['Shibboleth']['session_id'] ?? null;
     }
 
     /**
@@ -140,15 +140,15 @@ class Shibboleth extends AbstractBase
     protected function validateConfig()
     {
         // Throw an exception if the required username setting is missing.
-        $shib = $this->config->Shibboleth;
-        if (!isset($shib->username) || empty($shib->username)) {
+        $shib = $this->config['Shibboleth'] ?? [];
+        if (empty($shib['username'])) {
             throw new AuthException(
                 'Shibboleth username is missing in your configuration file.'
             );
         }
 
         // Throw an exception if no login endpoint is available.
-        if (!isset($shib->login)) {
+        if (!isset($shib['login'])) {
             throw new AuthException(
                 'Shibboleth login configuration parameter is not set.'
             );
@@ -170,6 +170,10 @@ class Shibboleth extends AbstractBase
         // Check if username is set.
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
+        if (!isset($shib['username'])) {
+            $this->debug('Username attribute configuration missing.');
+            throw new AuthException('authentication_error_admin');
+        }
         $username = $this->getAttribute($request, $shib['username']);
         if (empty($username)) {
             $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
@@ -239,17 +243,17 @@ class Shibboleth extends AbstractBase
     public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
-        $shibTarget = $config->Shibboleth->target ?? $target;
+        $shibTarget = $config['Shibboleth']['target'] ?? $target;
         $append = (str_contains($shibTarget, '?')) ? '&' : '?';
         // Adding the auth_method parameter makes it possible to handle logins when
         // using an auth method that proxies others.
-        $sessionInitiator = $config->Shibboleth->login
+        $sessionInitiator = $config['Shibboleth']['login']
             . '?target=' . urlencode($shibTarget)
             . urlencode($append . 'auth_method=Shibboleth');
 
-        if (isset($config->Shibboleth->provider_id)) {
+        if (isset($config['Shibboleth']['provider_id'])) {
             $sessionInitiator = $sessionInitiator . '&entityID=' .
-                urlencode($config->Shibboleth->provider_id);
+                urlencode($config['Shibboleth']['provider_id']);
         }
 
         return $sessionInitiator;
@@ -265,7 +269,7 @@ class Shibboleth extends AbstractBase
         $config = $this->getConfig();
         if (
             !isset($this->shibSessionId)
-            || !($config->Shibboleth->checkExpiredSession ?? true)
+            || !($config['Shibboleth']['checkExpiredSession'] ?? true)
         ) {
             return false;
         }
@@ -284,9 +288,9 @@ class Shibboleth extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (!empty($config->Shibboleth->logout)) {
-            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&' : '?';
-            $url = $config->Shibboleth->logout . $append . 'return=' . urlencode($url);
+        if (!empty($config['Shibboleth']['logout'])) {
+            $append = (str_contains($config['Shibboleth']['logout'], '?')) ? '&' : '?';
+            $url = $config['Shibboleth']['logout'] . $append . 'return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
@@ -324,7 +328,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Return configuration loader
+     * Return configuration loader.
      *
      * @return ConfigurationLoaderInterface configuration loader
      */
@@ -365,7 +369,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Add session id mapping to external_session table for single logout support
+     * Add session id mapping to external_session table for single logout support.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -390,7 +394,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Fetch entityId used for authentication
+     * Fetch entityId used for authentication.
      *
      * @param Request $request Request object
      *

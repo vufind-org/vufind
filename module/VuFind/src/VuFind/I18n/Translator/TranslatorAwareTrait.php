@@ -48,14 +48,14 @@ use function is_string;
 trait TranslatorAwareTrait
 {
     /**
-     * Translator
+     * Translator.
      *
      * @var TranslatorInterface
      */
     protected $translator = null;
 
     /**
-     * Set a translator
+     * Set a translator.
      *
      * @param TranslatorInterface $translator Translator
      *
@@ -93,7 +93,7 @@ trait TranslatorAwareTrait
     }
 
     /**
-     * Build a debug-mode translation
+     * Build a debug-mode translation.
      *
      * @param string $domain Text domain
      * @param string $str    String to translate
@@ -116,7 +116,7 @@ trait TranslatorAwareTrait
     }
 
     /**
-     * Translate a string (or string-castable object)
+     * Translate a string (or string-castable object).
      *
      * @param string|object|array $target          String to translate or an array of text
      *                                             domain and string to translate
@@ -221,7 +221,7 @@ trait TranslatorAwareTrait
     }
 
     /**
-     * Get translation for a string
+     * Get translation for a string.
      *
      * @param string $rawStr          String to translate
      * @param array  $tokens          Tokens to inject into the translated string

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autocomplete Plug-In Interface
+ * Autocomplete Plug-In Interface.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Autocomplete Plug-In Interface
+ * Autocomplete Plug-In Interface.
  *
  * This interface class is the definition of the required methods for
  * generating autocomplete suggestions.

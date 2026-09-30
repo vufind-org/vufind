@@ -43,7 +43,7 @@ use VuFind\Record\Checklist;
 class ChecklistTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test checklists
+     * Test checklists.
      *
      * @return void
      */

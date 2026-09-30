@@ -9,7 +9,7 @@
     </li>
     <?php if ($this->accountCapabilities()->isEmailActionAvailable()): ?>
       <li>
-        <a class="icon-link mailSearch" href="<?=$this->url('search-email')?>" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" rel="nofollow">
+        <a class="icon-link mailSearch" href="<?=$this->url('search-email') . '?url=' . urlencode($this->serverUrl(true)) ?>" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" rel="nofollow">
           <?=$this->icon('send-email', 'icon-link__icon') ?>
           <span class="icon-link__label"><?=$this->transEsc('Email this Search')?></span>
         </a>

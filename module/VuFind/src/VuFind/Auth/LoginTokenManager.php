@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Persistent login token manager
+ * Persistent login token manager.
  *
  * PHP version 8
  *
@@ -36,7 +36,6 @@ use BrowscapPHP\BrowscapInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -50,7 +49,7 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
 
 /**
- * Class LoginTokenManager
+ * Class LoginTokenManager.
  *
  * @category VuFind
  * @package  VuFind\Auth
@@ -74,7 +73,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     protected $browscapCallback;
 
     /**
-     * Browscap
+     * Browscap.
      *
      * @var BrowscapInterface
      */
@@ -88,14 +87,14 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     protected $themeInitialized = false;
 
     /**
-     * User that needs to receive a warning (or null for no warning needed)
+     * User that needs to receive a warning (or null for no warning needed).
      *
      * @var ?UserEntityInterface
      */
     protected $userToWarn = null;
 
     /**
-     * Token data for deferred token update
+     * Token data for deferred token update.
      *
      * @var ?array
      */
@@ -104,7 +103,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     /**
      * LoginToken constructor.
      *
-     * @param Config                     $config            Configuration
+     * @param array                      $config            Configuration
      * @param UserServiceInterface       $userService       User database service
      * @param LoginTokenServiceInterface $loginTokenService Login Token database service
      * @param CookieManager              $cookieManager     Cookie manager
@@ -114,7 +113,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      * @param callable                   $browscapCB        Callback for creating Browscap
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected UserServiceInterface $userService,
         protected LoginTokenServiceInterface $loginTokenService,
         protected CookieManager $cookieManager,
@@ -127,7 +126,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Authenticate user using a login token cookie
+     * Authenticate user using a login token cookie.
      *
      * @param string $sessionId Session identifier
      *
@@ -178,7 +177,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Create a new login token series
+     * Create a new login token series.
      *
      * @param UserEntityInterface $user      User
      * @param string              $sessionId Session identifier
@@ -267,17 +266,17 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get login token cookie lifetime (days)
+     * Get login token cookie lifetime (days).
      *
      * @return int
      */
     public function getCookieLifetime(): int
     {
-        return (int)($this->config->Authentication->persistent_login_lifetime ?? 14);
+        return (int)($this->config['Authentication']['persistent_login_lifetime'] ?? 14);
     }
 
     /**
-     * Get login token cookie name
+     * Get login token cookie name.
      *
      * @return string
      */
@@ -287,7 +286,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Delete a login token from cookies and database
+     * Delete a login token from cookies and database.
      *
      * @return void
      */
@@ -301,7 +300,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Create a new login token series or rotate login token in given series
+     * Create a new login token series or rotate login token in given series.
      *
      * @param UserEntityInterface $user           User
      * @param string              $sessionId      Session identifier
@@ -332,7 +331,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         $userId = $user->getId();
         try {
             if ($series) {
-                $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
+                $lenient = ($this->config['Authentication']['lenient_token_rotation'] ?? true);
                 $this->loginTokenService->deleteBySeries($series, $lenient ? $currentTokenId : null);
                 $this->debug("Updating login token $token series $series for user {$userId}");
             } else {
@@ -356,7 +355,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Send email warning to user
+     * Send email warning to user.
      *
      * @param UserEntityInterface $user User
      *
@@ -364,16 +363,16 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      */
     protected function sendLoginTokenWarningEmail(UserEntityInterface $user)
     {
-        if (!($this->config->Authentication->send_login_warnings ?? true)) {
+        if (!($this->config['Authentication']['send_login_warnings'] ?? true)) {
             return;
         }
-        $title = $this->config->Site->title ?? '';
+        $title = $this->config['Site']['title'] ?? '';
         if ($toAddr = $user->getEmail()) {
             $message = $this->viewRenderer->render(
                 'Email/login-warning.phtml',
                 compact('title')
             );
-            $subject = $this->config->Authentication->persistent_login_warning_email_subject
+            $subject = $this->config['Authentication']['persistent_login_warning_email_subject']
                 ?? 'persistent_login_warning_email_subject';
 
             try {
@@ -390,7 +389,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Set login token cookie
+     * Set login token cookie.
      *
      * @param string $token   Login token
      * @param string $series  Series the token belongs to
@@ -410,7 +409,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get login token cookie in array format
+     * Get login token cookie in array format.
      *
      * @return array
      */
@@ -434,7 +433,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get Browscap
+     * Get Browscap.
      *
      * @return BrowscapInterface
      */

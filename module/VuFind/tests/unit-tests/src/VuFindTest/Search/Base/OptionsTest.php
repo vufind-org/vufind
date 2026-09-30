@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base Search Object Options Test
+ * Base Search Object Options Test.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\Base;
 
 /**
- * Base Search Object Options Test
+ * Base Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests

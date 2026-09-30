@@ -44,21 +44,21 @@ use VuFind\Net\UserIpReader;
 class IpRegEx implements PermissionProviderInterface
 {
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * User IP address reader
+     * User IP address reader.
      *
      * @var UserIpReader
      */
     protected $userIpReader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request      $request      Request object
      * @param UserIpReader $userIpReader User IP address reader

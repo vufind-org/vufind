@@ -1,7 +1,7 @@
 <?php
 
 /**
- * POST Log Handler Test Class
+ * POST Log Handler Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Monolog\LogRecord;
 use VuFind\Log\Handler\PostHandler;
 
 /**
- * POST Log Handler Test Class
+ * POST Log Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ use VuFind\Log\Handler\PostHandler;
 class PostTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test handler functionality
+     * Test handler functionality.
      *
      * @return void
      */

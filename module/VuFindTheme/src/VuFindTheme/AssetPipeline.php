@@ -66,7 +66,7 @@ class AssetPipeline implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo   $themeInfo      Theme information service
      * @param Url         $urlHelper      URL view helper
@@ -102,7 +102,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Check if config is enabled for the specified file type
+     * Check if config is enabled for the specified file type.
      *
      * @param string $fileType File type to check for pipeline config
      *
@@ -278,7 +278,7 @@ class AssetPipeline implements LoggerAwareInterface
 
     /**
      * Check if a file is minifiable i.e. does not have a pattern that denotes it's
-     * already minified
+     * already minified.
      *
      * @param string $filename File name
      *
@@ -312,7 +312,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Get minified data for a file
+     * Get minified data for a file.
      *
      * @param array  $details    File details
      * @param string $concatPath Target path for the resulting file (used in minifier
@@ -344,7 +344,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Create a concatenated file from the given group of files
+     * Create a concatenated file from the given group of files.
      *
      * @param string $concatPath Resulting file path
      * @param array  $group      Object containing 'key' and stdobj file 'items'

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Bootstrap5;
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Bootstrap5;
 class BulkAction extends \VuFind\View\Helper\Root\BulkAction
 {
     /**
-     * CSS class for button
+     * CSS class for button.
      *
      * @var ?string
      */

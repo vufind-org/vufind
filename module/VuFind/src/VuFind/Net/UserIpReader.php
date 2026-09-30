@@ -45,7 +45,7 @@ use function count;
 class UserIpReader
 {
     /**
-     * Server parameters
+     * Server parameters.
      *
      * @var Parameters
      */
@@ -60,14 +60,14 @@ class UserIpReader
     protected $allowForwardedIps;
 
     /**
-     * IP addresses to exclude from consideration
+     * IP addresses to exclude from consideration.
      *
      * @var array
      */
     protected $ipFilter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Parameters  $server            Server parameters
      * @param string|bool $allowForwardedIps Forwarded header configuration string

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine aspect of the Search Multi-class (Options)
+ * BrowZine aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\BrowZine;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * BrowZine Search Options
+ * BrowZine Search Options.
  *
  * @category VuFind
  * @package  Search_BrowZine
@@ -45,7 +45,7 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

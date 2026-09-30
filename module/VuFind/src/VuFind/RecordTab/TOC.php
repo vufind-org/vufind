@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Table of Contents tab
+ * Table of Contents tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Table of Contents tab
+ * Table of Contents tab.
  *
  * @category VuFind
  * @package  RecordTabs

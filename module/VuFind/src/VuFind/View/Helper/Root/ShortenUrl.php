@@ -29,10 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
- * View helper for formatting dates and times
+ * View helper for formatting dates and times.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,27 +41,21 @@ use VuFind\UrlShortener\UrlShortenerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShortenUrl extends \Laminas\View\Helper\AbstractHelper
+class ShortenUrl
 {
     /**
-     * URL shortener
-     *
-     * @var UrlShortenerInterface
-     */
-    protected $shortener;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param UrlShortenerInterface $shortener URL shortener
      */
-    public function __construct(UrlShortenerInterface $shortener)
-    {
-        $this->shortener = $shortener;
+    #[Autowire]
+    public function __construct(
+        protected UrlShortenerInterface $shortener
+    ) {
     }
 
     /**
-     * Shorten a URL
+     * Shorten a URL.
      *
      * @param string $url URL to shorten
      *

@@ -85,7 +85,7 @@ trait LoggerAwareTrait
     }
 
     /**
-     * Log an exception
+     * Log an exception.
      *
      * @param \Exception $exception Exception to log
      *

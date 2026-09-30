@@ -30,15 +30,11 @@
 namespace VuFind\Section\Plugin;
 
 use VuFind\Navigation\AccountMenu;
-use VuFind\Navigation\AccountMenuFactory;
 use VuFind\Navigation\AdminMenu;
-use VuFind\Navigation\AdminMenuFactory;
 use VuFind\Navigation\FooterMenu;
-use VuFind\Navigation\FooterMenuFactory;
 use VuFind\Navigation\HeaderBar;
-use VuFind\Navigation\HeaderBarFactory;
 use VuFind\Navigation\SiteMap;
-use VuFind\Navigation\SiteMapFactory;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
  * Section plugin manager.
@@ -68,23 +64,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AccountMenu::class => AccountMenuFactory::class,
-        AdminMenu::class => AdminMenuFactory::class,
-        FooterMenu::class => FooterMenuFactory::class,
-        HeaderBar::class => HeaderBarFactory::class,
-        SiteMap::class => SiteMapFactory::class,
-        // Reserved for future plugins.
-        // Container::class => InvokableFactory::class,
-        // Tabs::class => InvokableFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -100,6 +80,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // we are building a brand new object.
         $this->sharedByDefault = false;
 
+        $this->addAbstractFactory(AbstractPluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

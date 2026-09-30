@@ -101,7 +101,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a search memory class
+     * Create a search memory class.
      *
      * @return Memory
      */

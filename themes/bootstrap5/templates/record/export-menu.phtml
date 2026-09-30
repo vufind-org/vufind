@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Export Record'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -13,6 +10,13 @@
 <?=$this->flashmessages()?>
 <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
 <?php if (count($exportFormats) > 0): ?>
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+      'title' => $this->translate('Export Record'),
+      'level' => 1,
+    ])
+  ?>
   <?=$this->transEsc('export_choose_format')?>
   <ul>
   <?php foreach ($exportFormats as $exportFormat): ?>

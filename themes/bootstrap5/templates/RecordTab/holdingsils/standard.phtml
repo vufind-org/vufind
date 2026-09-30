@@ -4,15 +4,26 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
+    $getThisLoader = $tab->getGetThisLoader();
+    if ($getThisLoader?->areItemsSupported([$holding])) {
+        $getThisLoader->setItems([$holding]);
+        $getThisLoader->setRecordDriver($this->driver);
+        $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
+        $getThisURL = $isOnlineResource ? null : $this->url(
+            'record-getthis',
+            ['id' => $holding['id']],
+            ['query' => ['item_id' => $holding['item_id'] ?? null]]
+        );
+    }
   ?>
   <tr class="holding-row"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'typeof' => 'Offer'])?>>
-    <th class="copy-number"><?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'])?>
+    <th class="copy-number"><?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'] ?? '')?>
       <?php if ($holding['enumchron'] ?? false): ?>
         <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
       <?php endif; ?>
     </th>
     <td>
-      <?php if ($holding['reserve'] == 'Y'): ?>
+      <?php if (($holding['reserve'] ?? 'N') == 'Y'): ?>
         <?=$this->schemaOrg()->getLink('http://schema.org/InStoreOnly', 'availability')?>
         <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
       <?php endif; ?>
@@ -51,6 +62,11 @@
             <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? 'ill_request_check_text' : 'ill_request_place_text')?></span>
           </a>
         <?php endif; ?>
+        <?php if (isset($getThisURL, $isOnlineResource) && !$isOnlineResource): ?>
+          <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURL) ?>" rel="nofollow">
+            <?=$this->transEsc('Get This')?>
+          </a>
+        <?php endif; ?>
       <?php else: ?>
         <?php /* Begin Unavailable Items (Recalls) */ ?>
           <?php if ($holding['returnDate'] ?? false): ?>&ndash; <span class="small"><?=$this->escapeHtml($holding['returnDate'])?></span><?php endif; ?>
@@ -64,6 +80,11 @@
             <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
               <?=$this->icon('place-recall', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
+            </a>
+          <?php endif; ?>
+          <?php if (isset($getThisURL)): ?>
+            <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURL) ?>" rel="nofollow">
+              <?=$this->transEsc('Get This')?>
             </a>
           <?php endif; ?>
           <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>

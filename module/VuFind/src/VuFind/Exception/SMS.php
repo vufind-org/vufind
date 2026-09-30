@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SMS Exception
+ * SMS Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * SMS Exception
+ * SMS Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -48,7 +48,7 @@ class SMS extends \VuFind\Exception\Mail
     public const ERROR_UNKNOWN_CARRIER = 5;
 
     /**
-     * Safe error message to return
+     * Safe error message to return.
      *
      * @var string
      */

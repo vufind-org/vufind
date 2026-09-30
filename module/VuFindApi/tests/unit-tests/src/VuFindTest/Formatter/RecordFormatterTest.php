@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Formatter;
 
+use Laminas\Translator\TranslatorInterface;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
 use VuFindApi\Formatter\RecordFormatter;
@@ -75,24 +76,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a helper plugin manager for the RecordFormatter.
-     *
-     * @return \Laminas\View\HelperPluginManager
-     */
-    protected function getHelperPluginManager()
-    {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $hm = new \Laminas\View\HelperPluginManager($container);
-        $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
-        $mockRecordLinker
-            = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
-        $mockRecordLinker->method('getUrl')->willReturn('/vufind/Record/12345');
-        $hm->setService('recordLinker', $mockRecordLinker);
-        return $hm;
-    }
-
-    /**
-     * Get a mock ServerUrlHelper
+     * Get a mock ServerUrlHelper.
      *
      * @return ServerUrlHelper
      */
@@ -106,17 +90,30 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a formatter to test with.
      *
-     * @param array $defs Configuration for formatter
-     *
      * @return RecordFormatter
      */
-    protected function getFormatter(?array $defs = null): RecordFormatter
+    protected function getFormatter(): RecordFormatter
     {
-        return new RecordFormatter(
-            $defs ?: $this->getDefaultDefs(),
-            $this->getHelperPluginManager(),
+        $mockRecordLinker = $this->createMock(\VuFind\View\Helper\Root\RecordLinker::class);
+        $mockRecordLinker->method('getUrl')->willReturn('/vufind/Record/12345');
+        $mockRecordHelper = $this->createMock(\VuFind\View\Helper\Root\Record::class);
+        $mockTranslator = $this->createMock(TranslatorInterface::class);
+        $mockTranslator->method('translate')
+            ->willReturnCallback(
+                function ($s) {
+                    return $s instanceof TranslatableString
+                        ? $s->getDisplayString()
+                        : (string)$s;
+                }
+            );
+
+        $formatter = new RecordFormatter(
+            $mockRecordLinker,
+            $mockRecordHelper,
             $this->getServerUrlHelper()
         );
+        $formatter->setTranslator($mockTranslator);
+        return $formatter;
     }
 
     /**
@@ -124,7 +121,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindTest\RecordDriver\TestHarness
      */
-    protected function getDriver()
+    protected function getDriver(): \VuFindTest\RecordDriver\TestHarness
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
@@ -149,19 +146,20 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFormatter()
+    public function testFormatter(): void
     {
         $formatter = $this->getFormatter();
 
         $driver = $this->getDriver();
 
         // Test requesting no fields.
-        $this->assertEquals([], $formatter->format([$driver], []));
+        $this->assertEquals([], $formatter->format([$driver], [], $this->getDefaultDefs()));
 
         // Test requesting fields:
         $results = $formatter->format(
             [$driver],
-            array_keys($this->getDefaultDefs())
+            array_keys($this->getDefaultDefs()),
+            $this->getDefaultDefs()
         );
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
@@ -190,7 +188,8 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $driver->setFilteredXML($filtered);
         $results = $formatter->format(
             [$driver],
-            array_keys($this->getDefaultDefs())
+            array_keys($this->getDefaultDefs()),
+            $this->getDefaultDefs()
         );
         $expected[0]['fullRecord'] = $filtered;
         $expected[0]['rawData']['FilteredXML'] = $filtered;
@@ -202,10 +201,10 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFieldSpecs()
+    public function testFieldSpecs(): void
     {
         $formatter = $this->getFormatter();
-        $results = $formatter->getRecordFieldSpec();
+        $results = $formatter->getRecordFieldSpec($this->getDefaultDefs());
         $expected = [
             'cleanDOI' => [
                 'description' => 'First valid DOI',

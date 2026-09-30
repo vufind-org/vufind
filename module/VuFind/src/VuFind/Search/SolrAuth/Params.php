@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Authority aspect of the Search Multi-class (Params)
+ * Solr Authority aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\SolrAuth;
 
 /**
- * Solr Authority Search Parameters
+ * Solr Authority Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrAuth

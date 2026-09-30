@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Component parts display tab
+ * Component parts display tab.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * Component parts display tab
+ * Component parts display tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -43,34 +44,27 @@ use VuFindSearch\Command\SearchCommand;
 class ComponentParts extends AbstractBase
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Maximum results to display
+     * Maximum results to display.
      *
      * @var int
      */
     protected $maxResults = 100;
 
     /**
-     * Search service
+     * Constructor.
      *
-     * @var \VuFindSearch\Service
+     * @param \VuFindSearch\Service $searchService Search service
      */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindSearch\Service $search Search service
-     */
-    public function __construct(\VuFindSearch\Service $search)
+    #[Autowire]
+    public function __construct(protected \VuFindSearch\Service $searchService)
     {
-        $this->searchService = $search;
     }
 
     /**
@@ -112,7 +106,7 @@ class ComponentParts extends AbstractBase
     public function getResults()
     {
         $record = $this->getRecordDriver();
-        $safeId = addcslashes($record->getUniqueId(), '"');
+        $safeId = addcslashes($record->getUniqueID(), '"');
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );

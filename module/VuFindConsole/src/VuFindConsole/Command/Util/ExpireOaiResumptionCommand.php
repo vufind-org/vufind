@@ -72,7 +72,7 @@ class ExpireOaiResumptionCommand extends AbstractExpireCommand
     protected $minAge = null;
 
     /**
-     * Convert days to a date threshold
+     * Convert days to a date threshold.
      *
      * @param float $daysOld Days before now
      *

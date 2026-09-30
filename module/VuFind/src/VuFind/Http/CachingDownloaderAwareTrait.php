@@ -64,14 +64,14 @@ trait CachingDownloaderAwareTrait
     protected $cacheOptionsFile = null;
 
     /**
-     * Caching downloader
+     * Caching downloader.
      *
      * @var CachingDownloader
      */
     protected $cachingDownloader = null;
 
     /**
-     * Set caching downloader
+     * Set caching downloader.
      *
      * @param $cachingDownloader CachingDownloader
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TemplatePath view helper Test Class
+ * TemplatePath view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper;
 use VuFindTheme\View\Helper\TemplatePath;
 
 /**
- * TemplatePath view helper Test Class
+ * TemplatePath view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,14 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @return void
      */
@@ -97,7 +97,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */
@@ -111,7 +111,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */

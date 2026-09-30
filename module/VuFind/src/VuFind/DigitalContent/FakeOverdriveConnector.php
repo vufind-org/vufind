@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FakeOverdriveConnector
+ * FakeOverdriveConnector.
  *
  * Class responsible for simulating the Overdrive API for test purposes.
  *
@@ -32,10 +32,8 @@
 
 namespace VuFind\DigitalContent;
 
-use VuFind\Config\Config;
-
 /**
- * FakeOverdriveConnector
+ * FakeOverdriveConnector.
  *
  * Class responsible for simulating the Overdrive API for test purposes.
  *
@@ -49,21 +47,21 @@ use VuFind\Config\Config;
 class FakeOverdriveConnector extends OverdriveConnector
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config $mainConfig   VuFind main conf
-     * @param Config $recordConfig Record-specific conf file
+     * @param array $mainConfig   VuFind main conf
+     * @param array $recordConfig Record-specific conf file
      */
     public function __construct(
-        Config $mainConfig,
-        Config $recordConfig
+        array $mainConfig,
+        array $recordConfig
     ) {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
     }
 
     /**
-     * Get (Logged-in) User
+     * Get (Logged-in) User.
      *
      * Returns the currently logged in user or false if the user is not
      *
@@ -75,7 +73,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Overdrive Access
+     * Get Overdrive Access.
      *
      * Whether the patron has access to overdrive actions (hold,
      * checkout etc.).
@@ -93,7 +91,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Availability
+     * Get Availability.
      *
      * Retrieves the availability for a single resource from Overdrive API
      * with information like copiesOwned, copiesAvailable, numberOfHolds et.
@@ -110,7 +108,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Availability (in) Bulk
+     * Get Availability (in) Bulk.
      *
      * Gets availability for up to 25 titles at once. This is used by the
      * the ajax availability system
@@ -147,7 +145,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Collection Token
+     * Get Collection Token.
      *
      * Gets the collection token for the Overdrive collection. The collection
      * token doesn't change much but according to
@@ -167,7 +165,7 @@ class FakeOverdriveConnector extends OverdriveConnector
 
     /**
      * Overdrive Checkout
-     * Processes a request to checkout a title from Overdrive
+     * Processes a request to checkout a title from Overdrive.
      *
      * @param string $overDriveId The overdrive id for the title
      *
@@ -179,7 +177,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Places a hold on an item within OverDrive
+     * Places a hold on an item within OverDrive.
      *
      * @param string $overDriveId The overdrive id for the title
      * @param string $email       The email overdrive should use for notif
@@ -192,7 +190,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Updates the email address for a hold on an item within OverDrive
+     * Updates the email address for a hold on an item within OverDrive.
      *
      * @param string $overDriveId The overdrive id for the title
      * @param string $email       The email overdrive should use for notif
@@ -211,7 +209,7 @@ class FakeOverdriveConnector extends OverdriveConnector
 
     /**
      * Suspend Hold
-     * Suspend an existing Overdrive Hold
+     * Suspend an existing Overdrive Hold.
      *
      * @param string $overDriveId    The overdrive id for the title
      * @param string $email          The email overdrive should use for notif
@@ -232,7 +230,7 @@ class FakeOverdriveConnector extends OverdriveConnector
 
     /**
      * Edit Suspended Hold
-     * Change the redelivery date on an already suspended hold
+     * Change the redelivery date on an already suspended hold.
      *
      * @param string $overDriveId    The overdrive id for the title
      * @param string $email          The email overdrive should use for notif
@@ -253,7 +251,7 @@ class FakeOverdriveConnector extends OverdriveConnector
 
     /**
      * Delete Suspended Hold
-     * Removes the suspension from a hold
+     * Removes the suspension from a hold.
      *
      * @param string $overDriveId The overdrive id for the title
      *
@@ -271,7 +269,7 @@ class FakeOverdriveConnector extends OverdriveConnector
 
     /**
      * Cancel Hold
-     * Cancel and existing Overdrive Hold
+     * Cancel and existing Overdrive Hold.
      *
      * @param string $overDriveId The overdrive id for the title
      *
@@ -296,7 +294,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Retrieves the auth header needed to get the Download HTML snippet
+     * Retrieves the auth header needed to get the Download HTML snippet.
      *
      * @return object Object containing the auth header in the data property
      */
@@ -311,7 +309,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Returns permanent links for OverDrive resources
+     * Returns permanent links for OverDrive resources.
      *
      * @param array $overDriveIds An array of OverDrive IDs we need links for
      *
@@ -323,7 +321,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Returns all the issues for an overdrive magazine title
+     * Returns all the issues for an overdrive magazine title.
      *
      * @param string $overDriveId Overdrive Identifier for magazine title
      * @param bool   $checkouts   Whether to add checkout information to each issue
@@ -343,7 +341,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Returns a hash of metadata keyed on overdrive reserveID
+     * Returns a hash of metadata keyed on overdrive reserveID.
      *
      * @param array $overDriveIds Set of Overdrive IDs
      *
@@ -356,7 +354,7 @@ class FakeOverdriveConnector extends OverdriveConnector
 
     /**
      * For  array of titles passed in this will return the same array
-     * with metadata attached to the records with the property name of 'metadata'
+     * with metadata attached to the records with the property name of 'metadata'.
      *
      * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
      *                               you get from getCheckouts and getHolds)
@@ -369,7 +367,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Overdrive Checkout
+     * Get Overdrive Checkout.
      *
      * Get the overdrive checkout object for an overdrive title
      * for the current user
@@ -387,7 +385,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Overdrive Hold
+     * Get Overdrive Hold.
      *
      * Get the overdrive hold object for an overdrive title
      * for the current user
@@ -405,7 +403,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Overdrive Checkouts (or a user)
+     * Get Overdrive Checkouts (or a user).
      *
      * @param bool $refresh Whether or not to ignore cache and get latest
      *
@@ -426,7 +424,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     }
 
     /**
-     * Get Overdrive Holds (or a user)
+     * Get Overdrive Holds (or a user).
      *
      * @param bool $refresh Whether or not to ignore cache and get latest
      *

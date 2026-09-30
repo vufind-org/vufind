@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind tag processing logic
+ * VuFind tag processing logic.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind;
 
 /**
- * VuFind tag processing logic
+ * VuFind tag processing logic.
  *
  * @category VuFind
  * @package  Tags

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ConfigManager Integration Test Class
+ * ConfigManager Integration Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFindTest\Integration\ConfigTestCase;
 
 /**
- * ConfigManager Integration Test Class
+ * ConfigManager Integration Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -60,29 +60,6 @@ class ConfigManagerIntegrationTest extends ConfigTestCase
         $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
         // check that the cache is ignored
         $config = $configManager->getConfig('config', forceReload: true);
-        $this->assertEquals('Custom Generator', $config['Site']['generator']);
-    }
-
-    /**
-     * Test that the config PluginManager caching is disabled.
-     *
-     * @return void
-     */
-    public function testDisabledPluginManagerCaching(): void
-    {
-        $container = $this->getContainerWithConfigRelatedServices();
-        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $pluginManager = $container->get(\VuFind\Config\PluginManager::class);
-        $this->setUpLocalConfigDir('defaultgenerator');
-        $config = $pluginManager->get('config')->toArray();
-        $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
-        // check that the cache is used and the change in the config files is ignored
-        $this->setUpLocalConfigDir('customgenerator');
-        $config = $pluginManager->get('config')->toArray();
-        $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
-        // check that the plugin manager cache is ignored
-        $configManager->getConfig('config', forceReload: true);
-        $config = $pluginManager->get('config')->toArray();
         $this->assertEquals('Custom Generator', $config['Site']['generator']);
     }
 

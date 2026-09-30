@@ -79,7 +79,7 @@ interface ApiKeyServiceInterface extends DbServiceInterface
     public function getByToken(string $token): ?ApiKeyEntityInterface;
 
     /**
-     * Delete API key
+     * Delete API key.
      *
      * @param ApiKeyEntityInterface $apiKey API key entity
      *

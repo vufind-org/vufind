@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class AccountCapabilitiesFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,7 +69,7 @@ class AccountCapabilitiesFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             // Pass a callback to return the auth manager to prevent circular dependencies
             // (we need the auth manager to determine some capabilities, but some of its
             // dependencies may need to make capability checks as well).

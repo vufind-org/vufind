@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FeedbackService Test Class
+ * FeedbackService Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\FeedbackService;
 
 /**
- * FeedbackService Test Class
+ * FeedbackService Test Class.
  *
  * @category VuFind
  * @package  Tests

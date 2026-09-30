@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WebResults Test Class
+ * WebResults Test Class.
  *
  * PHP version 8
  *
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Emmanuel Afuadajo <afuadajoe@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -30,34 +31,46 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\WebResults;
-use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * WebResults Test Class
+ * WebResults Test Class.
  *
  * @category VuFind
  * @package  Tests
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Emmanuel Afuadajo <afuadajoe@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class WebResultsTest extends \PHPUnit\Framework\TestCase
+class WebResultsTest extends AbstractSearchObjectTestCase
 {
-    use ConfigRelatedServicesTrait;
+    /**
+     * Get the class name of the module.
+     *
+     * @return string
+     */
+    protected function getTestClass(): string
+    {
+        return WebResults::class;
+    }
 
     /**
-     * Test getting search class id.
+     * Get search class id for the module.
      *
-     * @return void
+     * @return string
      */
-    public function testGetSearchClassId(): void
+    protected function getExpectedSearchClassId(): string
     {
-        $class = new \ReflectionClass(WebResults::class);
-        $method = $class->getMethod('getSearchClassId');
-        $method->setAccessible(true);
-        $runner = $this->createMock(\VuFind\Search\SearchRunner::class);
-        $obj = new WebResults($runner, $this->getMockConfigManager());
+        return 'SolrWeb';
+    }
 
-        $this->assertSame('SolrWeb', $method->invoke($obj));
+    /**
+     * Get the default heading for the module.
+     *
+     * @return string
+     */
+    protected function getExpectedDefaultHeading(): string
+    {
+        return 'Library Web Search';
     }
 }

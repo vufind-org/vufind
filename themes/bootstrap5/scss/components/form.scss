@@ -175,8 +175,8 @@ form {
 .checkbox-select-number {
   min-width: 2ch;
   text-align: end;
-  font-weight: bold;
-  color: $gray;
+  color: $gray-dark;
+  line-height: 1.5;
 }
 
 /* hide result/list checkboxes (but NOT cart checkboxes) on mobile search/favorites */

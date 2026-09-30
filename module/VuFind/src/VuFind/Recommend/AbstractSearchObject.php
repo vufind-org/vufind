@@ -30,6 +30,7 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
 use function intval;
@@ -48,49 +49,49 @@ use function is_object;
 abstract class AbstractSearchObject implements RecommendInterface
 {
     /**
-     * Results object
+     * Results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Number of results to show
+     * Number of results to show.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Sort order for results (null = default)
+     * Sort order for results (null = default).
      *
      * @var ?string
      */
     protected $sort;
 
     /**
-     * Heading for this recommendation module
+     * Heading for this recommendation module.
      *
      * @var string
      */
     protected $heading;
 
     /**
-     * Config section with filters for this search
+     * Config section with filters for this search.
      *
      * @var string
      */
     protected $filterIniSection;
 
     /**
-     * Name of request parameter to use for search query
+     * Name of request parameter to use for search query.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SearchRunner                          $runner        Search runner
      * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
@@ -200,10 +201,15 @@ abstract class AbstractSearchObject implements RecommendInterface
     /**
      * Get search results.
      *
-     * @return \VuFind\Search\Base\Results
+     * @return Results
+     *
+     * @throws \Exception
      */
-    public function getResults()
+    public function getResults(): Results
     {
+        if (null === $this->results) {
+            throw new \Exception(static::class . '::getResults() called before init().');
+        }
         return $this->results;
     }
 

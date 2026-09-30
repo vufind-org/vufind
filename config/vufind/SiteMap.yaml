@@ -7,10 +7,10 @@
 # The format of this configuration is as follows:
 #
 # Array keys for every group are:
+#   - section: renders menuItems with a route, url, template or siteMapPageTemplate
+#     key from the specified section. Specifying SiteMap plugin sections is not
+#     possible. Keys documented below are not supported if set.
 #   - label: text shown as group header, will be translated
-#   - section: renders menuItems with a route or url key from the specified section.
-#     Specifying SiteMap plugin sections is not possible. Keys documented below are
-#     not supported if set.
 #   - MenuItems: items shown in the menu - required unless section is set
 #   - checkMethod: the name of a SiteMap section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.

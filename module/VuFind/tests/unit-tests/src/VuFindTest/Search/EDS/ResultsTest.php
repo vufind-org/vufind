@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Results Object Test
+ * EDS Results Object Test.
  *
  * PHP version 8
  *
@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\EDS;
 
-use VuFind\Config\Config;
 use VuFind\Record\Loader;
 use VuFind\Search\EDS\Params;
 use VuFind\Search\EDS\Results;
@@ -37,7 +36,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
 /**
- * EDS Results Object Test
+ * EDS Results Object Test.
  *
  * @category VuFind
  * @package  Tests
@@ -104,7 +103,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $this->createMock(Params::class),
             $this->createMock(SearchService::class),
             $this->createMock(Loader::class),
-            $this->createMock(Config::class)
+            []
         );
         $this->assertSame($includesLimiter, $results->paramsIncludeLimiter($params));
     }

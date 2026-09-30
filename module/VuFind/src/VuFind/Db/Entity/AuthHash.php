@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for auth_hash table
+ * Entity model for auth_hash table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for auth_hash table
+ * Entity model for auth_hash table.
  *
  * @category VuFind
  * @package  Database

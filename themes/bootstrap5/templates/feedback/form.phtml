@@ -70,7 +70,7 @@
       <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
         <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($formElement->getAttribute('id')) . '"' : ''?>>
       <?php else: ?>
-        <div class="field-set"<?= !empty($elementHelpPre) ? ' role="contentinfo" aria-label="' . $this->escapeHtmlAttr($elementHelpPre) . '"' : ''?>>
+        <div class="field-set">
       <?php endif ?>
     <?php endif ?>
 

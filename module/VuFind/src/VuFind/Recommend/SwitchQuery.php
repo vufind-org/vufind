@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SwitchQuery Recommendations Module
+ * SwitchQuery Recommendations Module.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function strlen;
 
 /**
- * SwitchQuery Recommendations Module
+ * SwitchQuery Recommendations Module.
  *
  * This class recommends adjusting your search query to yield better results.
  *
@@ -95,7 +95,7 @@ class SwitchQuery implements RecommendInterface
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $searchService Search backend plugin manager
      */
@@ -294,7 +294,7 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * Broaden search by truncating one character (e.g. call number)
+     * Broaden search by truncating one character (e.g. call number).
      *
      * @param string $query Query to transform
      *

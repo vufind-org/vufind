@@ -47,7 +47,7 @@ use function count;
 class Demo extends \VuFind\Content\AbstractCover
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo $themeInfo Theme info
      * @param string    $baseUrl   VuFind's base URL

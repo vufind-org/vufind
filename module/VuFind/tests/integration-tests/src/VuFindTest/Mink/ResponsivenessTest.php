@@ -58,7 +58,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that bulk controls are hidden in mobile view and visible in desktop
+     * Test that bulk controls are hidden in mobile view and visible in desktop.
      *
      * @param int   $windowWidth       Window width
      * @param int   $windowHeight      Window height
@@ -115,7 +115,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that offcanvas controls are visible in mobile and hidden in desktop
+     * Test that offcanvas controls are visible in mobile and hidden in desktop.
      *
      * @param int   $windowWidth       Window width
      * @param int   $windowHeight      Window height

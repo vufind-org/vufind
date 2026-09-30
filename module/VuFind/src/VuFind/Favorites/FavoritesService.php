@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites service
+ * Favorites service.
  *
  * PHP version 8
  *
@@ -56,7 +56,7 @@ use function func_get_args;
 use function intval;
 
 /**
- * Favorites service
+ * Favorites service.
  *
  * @category VuFind
  * @package  Favorites
@@ -69,7 +69,7 @@ class FavoritesService implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface     $resourceService     Resource database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
@@ -274,7 +274,7 @@ class FavoritesService implements TranslatorAwareInterface
     }
 
     /**
-     * Given an array of item ids, remove them from all of the specified user's lists
+     * Given an array of item ids, remove them from all of the specified user's lists.
      *
      * @param UserEntityInterface $user   User owning lists
      * @param string[]            $ids    IDs to remove from the list
@@ -302,7 +302,7 @@ class FavoritesService implements TranslatorAwareInterface
     }
 
     /**
-     * Legacy name for saveRecordToFavorites()
+     * Legacy name for saveRecordToFavorites().
      *
      * @return array
      *
@@ -629,7 +629,7 @@ class FavoritesService implements TranslatorAwareInterface
     }
 
     /**
-     * Convert an array representing tags into a string for an edit form
+     * Convert an array representing tags into a string for an edit form.
      *
      * @param array $tags Tags
      *

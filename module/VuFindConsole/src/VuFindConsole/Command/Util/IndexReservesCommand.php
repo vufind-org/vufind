@@ -58,21 +58,21 @@ use function sprintf;
 class IndexReservesCommand extends AbstractSolrAndIlsCommand
 {
     /**
-     * Output interface
+     * Output interface.
      *
      * @var OutputInterface
      */
     protected $output;
 
     /**
-     * Default delimiter for reading files
+     * Default delimiter for reading files.
      *
      * @var string
      */
     protected $defaultDelimiter = ',';
 
     /**
-     * Default template for reading files
+     * Default template for reading files.
      *
      * @var string
      */
@@ -126,7 +126,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
     /**
      * Build the reserves index from date returned by the ILS driver,
-     * specifically: getInstructors, getDepartments, getCourses, findReserves
+     * specifically: getInstructors, getDepartments, getCourses, findReserves.
      *
      * @param array $instructors Array of instructors $instructor_id => $instructor
      * @param array $courses     Array of courses     $course_id => $course

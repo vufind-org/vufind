@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
+ * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
  *
  * PHP version 8
  *
@@ -31,9 +31,11 @@
 namespace VuFind;
 
 use function array_key_exists;
+use function function_exists;
+use function is_int;
 
 /**
- * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
+ * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -47,21 +49,21 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Property for storing raw image data; may be null if image is unavailable
+     * Property for storing raw image data; may be null if image is unavailable.
      *
      * @var string
      */
     protected $image = null;
 
     /**
-     * Content type of data in $image property
+     * Content type of data in $image property.
      *
      * @var string
      */
     protected $contentType = null;
 
     /**
-     * Theme tools
+     * Theme tools.
      *
      * @var \VuFindTheme\ThemeInfo
      */
@@ -83,7 +85,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
 
     /**
      * Array containing map of allowed file extensions to mimetypes
-     * (to be extended)
+     * (to be extended).
      *
      * @var array
      */
@@ -95,7 +97,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
     ];
 
     /**
-     * Setter for dependency
+     * Setter for dependency.
      *
      * @param \VuFindTheme\ThemeInfo $theme VuFind theme tools
      *
@@ -107,7 +109,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get the image data (not meant to be called until after image is populated)
+     * Get the image data (not meant to be called until after image is populated).
      *
      * @return string
      */
@@ -122,7 +124,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
 
     /**
      * Get the content type of the current image (not meant to be called until after
-     * contentType is populated)
+     * contentType is populated).
      *
      * @return string
      */
@@ -198,6 +200,30 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
 
         // Load the image data:
         $this->image = file_get_contents($noCoverImage);
+    }
+
+    /**
+     * Given a file path, return the MIME type by analyzing the file. Returns null for
+     * unidentifiable or non-image files.
+     *
+     * @param string $filename File to analyze
+     *
+     * @return ?string
+     */
+    protected function getImageMimeTypeFromFile(string $filename): ?string
+    {
+        // First try mime_content_type... but this could falsely return text/plain if the
+        // PHP mime_magic.magicfile setting is not configured correctly.
+        $contentType = mime_content_type($filename);
+        if (str_starts_with($contentType, 'image/')) {
+            return $contentType;
+        }
+
+        // Next try exif_imagetype if it is available, or default to the slower getimagesize if it is not.
+        $type = function_exists('exif_imagetype')
+            ? exif_imagetype($filename)
+            : getimagesize($filename)[2] ?? null;
+        return is_int($type) ? image_type_to_mime_type($type) : null;
     }
 
     /**

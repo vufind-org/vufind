@@ -259,7 +259,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
      * @param array $methods Methods to mock
      *

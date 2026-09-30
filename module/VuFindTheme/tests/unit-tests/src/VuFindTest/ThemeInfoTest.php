@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ThemeInfo Test Class
+ * ThemeInfo Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use VuFindTheme\ThemeInfo;
 
 /**
- * ThemeInfo Test Class
+ * ThemeInfo Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,14 +47,14 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Generic setup function
+     * Generic setup function.
      *
      * @return void
      */
@@ -65,7 +65,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBaseDir
+     * Test getBaseDir.
      *
      * @return void
      */
@@ -75,7 +75,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get/setTheme
+     * Test get/setTheme.
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test setting invalid theme
+     * Test setting invalid theme.
      *
      * @return void
      */
@@ -101,7 +101,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test theme info
+     * Test theme info.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test theme info with a mixin
+     * Test theme info with a mixin.
      *
      * @return void
      */
@@ -161,7 +161,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test findContainingTheme()
+     * Test findContainingTheme().
      *
      * @return void
      */
@@ -184,7 +184,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test findContainingTheme() with a mixin
+     * Test findContainingTheme() with a mixin.
      *
      * @return void
      */
@@ -197,7 +197,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test findInThemes()
+     * Test findInThemes().
      *
      * @return void
      */
@@ -231,7 +231,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() with a basic theme
+     * Test getMergedConfig() with a basic theme.
      *
      * @return void
      */
@@ -250,7 +250,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() using a child theme
+     * Test getMergedConfig() using a child theme.
      *
      * @return void
      */
@@ -270,7 +270,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() using a mixin
+     * Test getMergedConfig() using a mixin.
      *
      * @return void
      */
@@ -289,7 +289,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() on string value in config
+     * Test getMergedConfig() on string value in config.
      *
      * @return void
      */
@@ -301,7 +301,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() with no key (return all)
+     * Test getMergedConfig() with no key (return all).
      *
      * @return void
      */
@@ -317,7 +317,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Stress-test our merging algorithm
+     * Stress-test our merging algorithm.
      *
      * @param array $test     Test data
      * @param array $expected Expected response
@@ -335,7 +335,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cases for mergeWithoutOverride
+     * Test cases for mergeWithoutOverride.
      *
      * @return \Iterator
      */
@@ -432,7 +432,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a test object
+     * Get a test object.
      *
      * @return ThemeInfo
      */

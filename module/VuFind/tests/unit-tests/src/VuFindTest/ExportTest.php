@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Export Support Test Class
+ * Export Support Test Class.
  *
  * PHP version 8
  *
@@ -30,11 +30,10 @@
 namespace VuFindTest;
 
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\Config\Config;
 use VuFind\Export;
 
 /**
- * Export Support Test Class
+ * Export Support Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -93,7 +92,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "needs redirect"
+     * Test "needs redirect".
      *
      * @return void
      */
@@ -109,7 +108,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-XML case of process group
+     * Test non-XML case of process group.
      *
      * @return void
      */
@@ -122,7 +121,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test XML case of process group
+     * Test XML case of process group.
      *
      * @return void
      */
@@ -148,7 +147,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test recordSupportsFormat
+     * Test recordSupportsFormat.
      *
      * @return void
      */
@@ -177,7 +176,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFormatsForRecord
+     * Test getFormatsForRecord.
      *
      * @return void
      */
@@ -196,7 +195,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFormatsForRecords
+     * Test getFormatsForRecords.
      *
      * @return void
      */
@@ -223,7 +222,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHeaders
+     * Test getHeaders.
      *
      * @return void
      */
@@ -235,7 +234,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getRedirectUrl
+     * Test getRedirectUrl.
      *
      * @return void
      */
@@ -253,7 +252,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLabelForFormat
+     * Test getLabelForFormat.
      *
      * @return void
      */
@@ -271,7 +270,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBulkExportType()
+     * Test getBulkExportType().
      *
      * @return void
      */
@@ -293,7 +292,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBulkUrl() method
+     * Test getBulkUrl() method.
      *
      * @return void
      */
@@ -316,7 +315,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPostField()
+     * Test getPostField().
      *
      * @return void
      */
@@ -331,7 +330,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTargetWindow()
+     * Test getTargetWindow().
      *
      * @return void
      */
@@ -346,7 +345,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake MARCXML record
+     * Get a fake MARCXML record.
      *
      * @param string $id ID to put in record.
      *
@@ -369,6 +368,6 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     protected function getExport($main = [], $export = [], $renderer = null)
     {
-        return new Export($main, $export, $renderer ?? $this->createMock(PhpRenderer::class));
+        return new Export($main, $export, $renderer ?? $this->createStub(PhpRenderer::class));
     }
 }

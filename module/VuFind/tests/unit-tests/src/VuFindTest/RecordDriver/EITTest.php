@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EIT Record Driver Test Class
+ * EIT Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\EIT;
 
 /**
- * EIT Record Driver Test Class
+ * EIT Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests

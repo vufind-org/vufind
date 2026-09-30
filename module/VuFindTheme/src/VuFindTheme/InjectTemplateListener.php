@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind "Inject Template" Listener
+ * VuFind "Inject Template" Listener.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use function strlen;
 class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListener
 {
     /**
-     * List of prefixes for theme files
+     * List of prefixes for theme files.
      *
      * @var array $prefixes
      */
@@ -72,7 +72,7 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
     }
 
     /**
-     * Inflect a name to a normalized value
+     * Inflect a name to a normalized value.
      *
      * @param string $name Name to inflect
      *

@@ -1,37 +1,43 @@
-<?php $loginTargets = $this->auth()->getManager()->getLoginTargets(); ?>
-<div class="form-group">
-  <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_target"><?=$this->transEsc('login_target')?>:</label>
-  <?php
-    $currentTarget = $this->request->get('target');
-    if (!$currentTarget || !in_array($currentTarget, $loginTargets)) {
-      $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();
-    }
-  ?>
-  <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-select">
-    <?php foreach ($loginTargets as $target):?>
-      <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEscWithPrefix('source_', $target)?></option>
-    <?php endforeach ?>
-  </select>
-</div>
-<div class="form-group">
-  <label class="form-label password-login" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
-  <label class="form-label email-login hidden" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
-  <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control">
-</div>
-<div class="form-group">
-  <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
-  <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="form-control" autocomplete="current-password">
-</div>
-
 <?php
-  $methods = [];
   $authManager = $this->auth()->getManager();
-  foreach ($loginTargets as $target) {
-    $methods[$target] = $authManager->getILSLoginMethod($target);
-  }
-  $methods = json_encode($methods);
-  $script = "setupMultiILSLoginFields($methods, 'login_{$topClass}_');";
-
-  // Inline the script for lightbox compatibility
-  echo $this->assetManager()->outputInlineScriptString($script);
+  $loginTargets = $authManager->getLoginTargets();
 ?>
+<?php if ($authManager->getPreAuthenticationData()): ?>
+  <?=$this->auth()->getOtpLoginFields()?>
+<?php else: ?>
+  <div class="form-group">
+    <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_target"><?=$this->transEsc('login_target')?>:</label>
+    <?php
+      $currentTarget = $this->request->get('target');
+      if (!$currentTarget || !in_array($currentTarget, $loginTargets)) {
+        $currentTarget = $authManager->getDefaultLoginTarget();
+      }
+    ?>
+    <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-select">
+      <?php foreach ($loginTargets as $target):?>
+        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEscWithPrefix('source_', $target)?></option>
+      <?php endforeach ?>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label password-login" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
+    <label class="form-label email-login hidden" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control">
+  </div>
+  <div class="form-group">
+    <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="form-control" autocomplete="current-password">
+  </div>
+
+  <?php
+    $methods = [];
+    foreach ($loginTargets as $target) {
+      $methods[$target] = $authManager->getILSLoginMethod($target);
+    }
+    $methods = json_encode($methods);
+    $script = "setupMultiILSLoginFields($methods, 'login_{$topClass}_');";
+
+    // Inline the script for lightbox compatibility
+    echo $this->assetManager()->outputInlineScriptString($script);
+  ?>
+<?php endif; ?>

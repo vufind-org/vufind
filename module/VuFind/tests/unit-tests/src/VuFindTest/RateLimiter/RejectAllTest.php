@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RejectAll Test Class
+ * RejectAll Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Symfony\Component\RateLimiter\Exception\ReserveNotSupportedException;
 use VuFind\RateLimiter\RejectAll;
 
 /**
- * RejectAll Test Class
+ * RejectAll Test Class.
  *
  * @category VuFind
  * @package  Tests

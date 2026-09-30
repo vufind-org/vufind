@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Export support class
+ * Export support class.
  *
  * PHP version 8
  *
@@ -31,12 +31,13 @@ namespace VuFind;
 
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_callable;
 
 /**
- * Export support class
+ * Export support class.
  *
  * @category VuFind
  * @package  Export
@@ -48,22 +49,25 @@ class Export
 {
     /**
      * Property to cache active formats
-     * (initialized to empty array , populated later)
+     * (initialized to empty array , populated later).
      *
      * @var array
      */
     protected $activeFormats = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array       $mainConfig   Main VuFind configuration
      * @param array       $exportConfig Export-specific configuration
      * @param PhpRenderer $viewRenderer View renderer
      */
     public function __construct(
+        #[Autowire(config: 'config')]
         protected array $mainConfig,
+        #[Autowire(config: 'export')]
         protected array $exportConfig,
+        #[Autowire(service: 'ViewRenderer')]
         protected PhpRenderer $viewRenderer
     ) {
     }

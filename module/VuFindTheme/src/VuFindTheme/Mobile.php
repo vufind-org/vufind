@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mobile Device Detection Wrapper
+ * Mobile Device Detection Wrapper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ namespace VuFindTheme;
 use uagent_info;
 
 /**
- * Mobile Device Detection Wrapper
+ * Mobile Device Detection Wrapper.
  *
  * @category VuFind
  * @package  Theme
@@ -49,14 +49,14 @@ use uagent_info;
 class Mobile
 {
     /**
-     * Mobile detection object
+     * Mobile detection object.
      *
      * @var uagent_info
      */
     protected $detector;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?uagent_info $detector Detector object to wrap (null to create one)
      */

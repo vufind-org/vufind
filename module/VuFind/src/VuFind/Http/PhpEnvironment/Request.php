@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTTP Request class
+ * HTTP Request class.
  *
  * PHP version 8
  *
@@ -29,11 +29,14 @@
 
 namespace VuFind\Http\PhpEnvironment;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\Factory\DefaultFactory;
+
 use function is_array;
 use function is_string;
 
 /**
- * HTTP Request class
+ * HTTP Request class.
  *
  * @category VuFind
  * @package  HTTP
@@ -41,11 +44,12 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[DefaultFactory(name: InvokableFactory::class)]
 class Request extends \Laminas\Http\PhpEnvironment\Request
 {
     /**
      * Return the parameter container responsible for query parameters or a single
-     * query parameter
+     * query parameter.
      *
      * @param string|null $name    Parameter name to retrieve, or null to get the
      * whole container.
@@ -93,7 +97,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Clean up a parameter
+     * Clean up a parameter.
      *
      * @param \Laminas\Stdlib\ParametersInterface|mixed $param Parameter
      *
@@ -123,7 +127,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Check if a parameter is valid
+     * Check if a parameter is valid.
      *
      * @param mixed $param Parameter to check
      *

@@ -163,7 +163,7 @@ class BackendManager
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
             $events->attach(Service::class, Service::EVENT_RESOLVE, $listener);
-            $this->listeners->attach($events, $listener);
+            $this->listeners->offsetSet($events, $listener);
         }
     }
 
@@ -179,7 +179,7 @@ class BackendManager
         if ($this->listeners->offsetExists($events)) {
             $listener = $this->listeners->offsetGet($events);
             $events->detach($listener, Service::class);
-            $this->listeners->detach($events);
+            $this->listeners->offsetUnset($events);
         }
     }
 }

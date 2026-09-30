@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP profiling support
+ * PHP profiling support.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
  */
 
 /**
- * Enable profiler (XHProf or Tideways)
+ * Enable profiler (XHProf or Tideways).
  *
  * @param string $profilerBaseUrl Profiler base url to display
  *

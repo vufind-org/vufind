@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionProvider ServerParam Test Class
+ * PermissionProvider ServerParam Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\Role\PermissionProvider;
 use VuFind\Role\PermissionProvider\ServerParam;
 
 /**
- * PermissionProvider ServerParam Test Class
+ * PermissionProvider ServerParam Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Role\PermissionProvider\ServerParam;
 class ServerParamTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test single option with matching string
+     * Test single option with matching string.
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option array with matching string
+     * Test option array with matching string.
      *
      * @return void
      */
@@ -73,7 +73,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test multiple options with matching headers
+     * Test multiple options with matching headers.
      *
      * @return void
      */
@@ -87,7 +87,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test multiple options with no matching header
+     * Test multiple options with no matching header.
      *
      * @return void
      */
@@ -101,7 +101,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with multiple values and matching header
+     * Test option with multiple values and matching header.
      *
      * @return void
      */
@@ -115,7 +115,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with multiple values and no matching header
+     * Test option with multiple values and no matching header.
      *
      * @return void
      */
@@ -129,7 +129,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with regex modifier and matching header
+     * Test option with regex modifier and matching header.
      *
      * @return void
      */
@@ -143,7 +143,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with regex modifier and no matching header
+     * Test option with regex modifier and no matching header.
      *
      * @return void
      */
@@ -157,7 +157,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not modifier and matching header
+     * Test option with not modifier and matching header.
      *
      * @return void
      */
@@ -171,7 +171,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not modifier and no matching header
+     * Test option with not modifier and no matching header.
      *
      * @return void
      */
@@ -185,7 +185,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not regex modifier and matching header
+     * Test option with not regex modifier and matching header.
      *
      * @return void
      */
@@ -199,7 +199,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not regex modifier and no matching header
+     * Test option with not regex modifier and no matching header.
      *
      * @return void
      */
@@ -213,7 +213,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Setup request and header objects, run getPermissions and check the result
+     * Setup request and header objects, run getPermissions and check the result.
      *
      * @param array $headers        Request headers
      * @param mixed $options        options as from configuration

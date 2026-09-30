@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for feedback table
+ * Entity model for feedback table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for feedback table
+ * Entity model for feedback table.
  *
  * @category VuFind
  * @package  Database
@@ -64,7 +64,7 @@ class Feedback implements FeedbackEntityInterface
     protected int $id;
 
     /**
-     * Message
+     * Message.
      *
      * @var string
      */
@@ -72,7 +72,7 @@ class Feedback implements FeedbackEntityInterface
     protected string $message;
 
     /**
-     * Form data
+     * Form data.
      *
      * @var ?array
      */
@@ -80,7 +80,7 @@ class Feedback implements FeedbackEntityInterface
     protected ?array $formData = null;
 
     /**
-     * Form name
+     * Form name.
      *
      * @var string
      */
@@ -88,7 +88,7 @@ class Feedback implements FeedbackEntityInterface
     protected string $formName;
 
     /**
-     * Creation date
+     * Creation date.
      *
      * @var DateTime
      */
@@ -96,7 +96,7 @@ class Feedback implements FeedbackEntityInterface
     protected DateTime $created;
 
     /**
-     * Last update date
+     * Last update date.
      *
      * @var DateTime
      */
@@ -104,7 +104,7 @@ class Feedback implements FeedbackEntityInterface
     protected DateTime $updated;
 
     /**
-     * Status
+     * Status.
      *
      * @var string
      */
@@ -112,7 +112,7 @@ class Feedback implements FeedbackEntityInterface
     protected string $status = 'open';
 
     /**
-     * Site URL
+     * Site URL.
      *
      * @var string
      */
@@ -120,7 +120,7 @@ class Feedback implements FeedbackEntityInterface
     protected string $siteUrl;
 
     /**
-     * User that created request
+     * User that created request.
      *
      * @var ?UserEntityInterface
      */
@@ -129,7 +129,7 @@ class Feedback implements FeedbackEntityInterface
     protected ?UserEntityInterface $user = null;
 
     /**
-     * User that updated request
+     * User that updated request.
      *
      * @var ?UserEntityInterface
      */
@@ -158,7 +158,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Message setter
+     * Message setter.
      *
      * @param string $message Message
      *
@@ -171,7 +171,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Message getter
+     * Message getter.
      *
      * @return string
      */
@@ -194,7 +194,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Form data getter
+     * Form data getter.
      *
      * @return ?array
      */
@@ -217,7 +217,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Form name getter
+     * Form name getter.
      *
      * @return string
      */
@@ -240,7 +240,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Created getter
+     * Created getter.
      *
      * @return DateTime
      */
@@ -264,7 +264,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Updated getter
+     * Updated getter.
      *
      * @return DateTime
      */
@@ -287,7 +287,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Status getter
+     * Status getter.
      *
      * @return string
      */
@@ -310,7 +310,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Site URL getter
+     * Site URL getter.
      *
      * @return string
      */
@@ -333,7 +333,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * User getter
+     * User getter.
      *
      * @return ?UserEntityInterface
      */
@@ -356,7 +356,7 @@ class Feedback implements FeedbackEntityInterface
     }
 
     /**
-     * Updatedby getter
+     * Updatedby getter.
      *
      * @return ?UserEntityInterface
      */

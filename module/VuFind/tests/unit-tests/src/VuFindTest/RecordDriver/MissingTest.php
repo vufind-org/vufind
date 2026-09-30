@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Missing Record Driver Test Class
+ * Missing Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\Missing;
 
 /**
- * Missing Record Driver Test Class
+ * Missing Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -63,7 +63,7 @@ class MissingTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testDetermineMissingTitleWithoutDetails
+     * Data provider for testDetermineMissingTitleWithoutDetails.
      *
      * @return \Iterator
      */

@@ -156,7 +156,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'input.btn.btn-primary');
 
         // Delete the account:
-        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.fa-trash-can');
         $this->clickCss($page, '.modal #delete-account-submit');
         $this->waitForPageLoad($page);
 

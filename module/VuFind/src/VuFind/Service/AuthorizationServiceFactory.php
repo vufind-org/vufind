@@ -38,7 +38,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Authorization service factory
+ * Authorization service factory.
  *
  * @category VuFind
  * @package  Service
@@ -49,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class AuthorizationServiceFactory extends LmcRbacAuthorizationServiceFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -44,7 +44,7 @@ use function in_array;
 class PropertyString implements PropertyStringInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $string     String value
      * @param array  $properties Associative array of any additional properties. Use a custom prefix for locally
@@ -57,7 +57,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Create a PropertyString from an HTML string
+     * Create a PropertyString from an HTML string.
      *
      * @param string $html       HTML
      * @param array  $properties Any additional properties (see __construct)
@@ -71,7 +71,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Set string value
+     * Set string value.
      *
      * @param string $str String value
      *
@@ -84,7 +84,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Get string value
+     * Get string value.
      *
      * @return string
      */
@@ -94,7 +94,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Set HTML string
+     * Set HTML string.
      *
      * @param string $html HTML
      *
@@ -107,7 +107,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Get HTML string
+     * Get HTML string.
      *
      * Note: This could contain anything and must be sanitized for display unless marked trusted
      * (see setHtmlTrusted/isHtmlTrusted).
@@ -120,7 +120,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Set flag for trusted HTML
+     * Set flag for trusted HTML.
      *
      * @param bool $trusted Is the HTML content trusted?
      *
@@ -133,7 +133,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Get flag for trusted HTML
+     * Get flag for trusted HTML.
      *
      * @return ?bool
      */
@@ -143,7 +143,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Add an identifier
+     * Add an identifier.
      *
      * @param string $id Identifier
      *
@@ -160,7 +160,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Set identifiers
+     * Set identifiers.
      *
      * @param array $ids Identifiers
      *
@@ -173,7 +173,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Get identifiers
+     * Get identifiers.
      *
      * @return ?array
      */
@@ -183,7 +183,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Check if offset exists
+     * Check if offset exists.
      *
      * @param mixed $offset Offset
      *
@@ -195,7 +195,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Return value of offset
+     * Return value of offset.
      *
      * @param mixed $offset Offset
      *
@@ -207,7 +207,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Set value of offset
+     * Set value of offset.
      *
      * @param mixed $offset Offset
      * @param mixed $value  Value
@@ -220,7 +220,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Unset value of offset
+     * Unset value of offset.
      *
      * @param mixed $offset Offset
      *
@@ -232,7 +232,7 @@ class PropertyString implements PropertyStringInterface
     }
 
     /**
-     * Return string value
+     * Return string value.
      *
      * @return string
      */

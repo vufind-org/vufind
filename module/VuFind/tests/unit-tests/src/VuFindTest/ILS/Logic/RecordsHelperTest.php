@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for the RecordsHelper
+ * Unit tests for the RecordsHelper.
  *
  * PHP version 8
  *
@@ -30,13 +30,12 @@
 namespace VuFindTest\ILS\Logic;
 
 use PHPUnit\Framework\TestCase;
-use VuFind\Config\Config;
 use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\AbstractBase;
 
 /**
- * Unit tests for the RecordsHelper
+ * Unit tests for the RecordsHelper.
  *
  * @category VuFind
  * @package  Tests
@@ -47,13 +46,13 @@ use VuFind\RecordDriver\AbstractBase;
 class RecordsHelperTest extends TestCase
 {
     /**
-     * Test getDrivers with empty array
+     * Test getDrivers with empty array.
      *
      * @return void
      */
     public function testGetDriversWithEmptyArray(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $loader->expects($this->never())
@@ -66,13 +65,13 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers with valid records
+     * Test getDrivers with valid records.
      *
      * @return void
      */
     public function testGetDriversWithValidRecords(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
@@ -117,13 +116,13 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers with records missing id field
+     * Test getDrivers with records missing id field.
      *
      * @return void
      */
     public function testGetDriversWithMissingId(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
@@ -153,13 +152,13 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers with records using default search backend
+     * Test getDrivers with records using default search backend.
      *
      * @return void
      */
     public function testGetDriversWithDefaultSearchBackend(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [
@@ -189,7 +188,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Data provider for ajax configuration tests
+     * Data provider for ajax configuration tests.
      *
      * @return \Iterator<(int | string), mixed>
      */
@@ -204,16 +203,15 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats when ajax is enabled
+     * Test collectRequestStats when ajax is enabled.
      *
-     * @param array $configData Configuration data
+     * @param array $config Configuration data
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('ajaxConfigProvider')]
-    public function testCollectRequestStatsWithAjaxEnabled(array $configData): void
+    public function testCollectRequestStatsWithAjaxEnabled(array $config): void
     {
-        $config = new Config($configData);
         $loader = $this->createMock(Loader::class);
 
         $ilsDetails1 = ['id' => 'record1', 'status' => 'available'];
@@ -247,13 +245,13 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats when ajax is disabled
+     * Test collectRequestStats when ajax is disabled.
      *
      * @return void
      */
     public function testCollectRequestStatsWithAjaxDisabled(): void
     {
-        $config = new Config(['Authentication' => ['enableAjax' => false]]);
+        $config = ['Authentication' => ['enableAjax' => false]];
         $loader = $this->createMock(Loader::class);
 
         $driver = $this->createMock(AbstractBase::class);
@@ -269,13 +267,13 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats with empty records array
+     * Test collectRequestStats with empty records array.
      *
      * @return void
      */
     public function testCollectRequestStatsWithEmptyRecords(): void
     {
-        $config = new Config(['Authentication' => ['enableAjax' => true]]);
+        $config = ['Authentication' => ['enableAjax' => true]];
         $loader = $this->createMock(Loader::class);
 
         $helper = new RecordsHelper($config, $loader);
@@ -290,13 +288,13 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers maintains correct order from loadBatch
+     * Test getDrivers maintains correct order from loadBatch.
      *
      * @return void
      */
     public function testGetDriversMaintainsOrder(): void
     {
-        $config = $this->createMock(Config::class);
+        $config = [];
         $loader = $this->createMock(Loader::class);
 
         $records = [

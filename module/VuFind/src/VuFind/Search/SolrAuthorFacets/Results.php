@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorFacets aspect of the Search Multi-class (Results)
+ * AuthorFacets aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function array_slice;
 use function count;
 
 /**
- * AuthorFacets Search Results
+ * AuthorFacets Search Results.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets

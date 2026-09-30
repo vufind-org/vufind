@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds controller plugin test class
+ * Holds controller plugin test class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 
 /**
- * Class HoldsTest
+ * Class HoldsTest.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use VuFind\Date\Converter as DateConverter;
 class HoldsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock container
+     * Mock container.
      *
      * @var \VuFindTest\Container\MockContainer
      */
@@ -65,7 +65,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test validateIds method
+     * Test validateIds method.
      *
      * @return void
      */

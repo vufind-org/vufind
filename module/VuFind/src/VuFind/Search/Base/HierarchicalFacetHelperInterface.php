@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchical facet helper interface
+ * Hierarchical facet helper interface.
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -33,7 +33,7 @@ use VuFind\I18n\TranslatableStringInterface;
 use VuFind\Search\UrlQueryHelper;
 
 /**
- * Hierarchical facet helper interface
+ * Hierarchical facet helper interface.
  *
  * @category VuFind
  * @package  Search_Base
@@ -80,7 +80,7 @@ interface HierarchicalFacetHelperInterface
     ): array;
 
     /**
-     * Flatten a hierarchical facet list to a simple array
+     * Flatten a hierarchical facet list to a simple array.
      *
      * @param array $facetList Facet list
      *
@@ -89,7 +89,7 @@ interface HierarchicalFacetHelperInterface
     public function flattenFacetHierarchy(array $facetList): array;
 
     /**
-     * Format a facet display text for displaying
+     * Format a facet display text for displaying.
      *
      * @param string       $displayText Display text
      * @param bool         $allLevels   Whether to display all levels or only the
@@ -108,7 +108,7 @@ interface HierarchicalFacetHelperInterface
     ): TranslatableStringInterface;
 
     /**
-     * Format a filter string in parts suitable for displaying or translation
+     * Format a filter string in parts suitable for displaying or translation.
      *
      * @param string $filter Filter value
      *

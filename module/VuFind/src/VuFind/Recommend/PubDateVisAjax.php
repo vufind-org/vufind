@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PubDateVisAjax Recommendations Module
+ * PubDateVisAjax Recommendations Module.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
 use function array_slice;
 
 /**
- * PubDateVisAjax Recommendations Module
+ * PubDateVisAjax Recommendations Module.
  *
  * This class displays a visualisation of facet values in a recommendation module
  *
@@ -47,14 +47,14 @@ class PubDateVisAjax implements RecommendInterface
     use DateFacetTrait;
 
     /**
-     * Raw settings string
+     * Raw settings string.
      *
      * @var string
      */
     protected string $settings;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
@@ -75,7 +75,7 @@ class PubDateVisAjax implements RecommendInterface
     protected bool $initiallyHideControls = false;
 
     /**
-     * Facet fields to use
+     * Facet fields to use.
      *
      * @var array
      */
@@ -145,19 +145,20 @@ class PubDateVisAjax implements RecommendInterface
      */
     public function getVisFacets(): array
     {
+        $results = $this->getSearchResults();
         // Don't bother processing if the result set is empty:
-        if ($this->searchObject->getResultTotal() <= 0) {
+        if ($results->getResultTotal() <= 0) {
             return [];
         }
         return $this->processDateFacets(
-            $this->searchObject,
-            $this->searchObject->getParams()->getRawFilters(),
+            $results,
+            $results->getParams()->getRawFilters(),
             $this->dateFacets
         );
     }
 
     /**
-     * Get zoom setting
+     * Get zoom setting.
      *
      * @return bool
      */
@@ -167,7 +168,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get zoom setting
+     * Get zoom setting.
      *
      * @return bool
      */
@@ -177,7 +178,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get facet fields
+     * Get facet fields.
      *
      * @return string
      */
@@ -187,13 +188,26 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get search parameters
+     * Get search parameters.
      *
      * @return string of params
      */
     public function getSearchParams(): string
     {
         // Get search parameters and return them minus the leading ?:
-        return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
+        return substr($this->getSearchResults()->getUrlQuery()->getParams(false), 1);
+    }
+
+    /**
+     * Get search results object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getSearchResults(): \VuFind\Search\Base\Results
+    {
+        if (!$this->searchObject) {
+            throw new \Exception('getSearchResults called before initialization.');
+        }
+        return $this->searchObject;
     }
 }

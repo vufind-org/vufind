@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mixed List aspect of the Search Multi-class (Options)
+ * Mixed List aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\MixedList;
 
 /**
- * Search Mixed List Options
+ * Search Mixed List Options.
  *
  * @category VuFind
  * @package  Search_MixedList

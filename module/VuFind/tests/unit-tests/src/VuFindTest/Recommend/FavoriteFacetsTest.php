@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FavoriteFacets recommendation module Test Class
+ * FavoriteFacets recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\FavoriteFacets;
 
 /**
- * FavoriteFacets recommendation module Test Class
+ * FavoriteFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -72,7 +72,7 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param ?\VuFind\Search\Solr\Results $results    results object
      * @param string                       $tagSetting Are tags enabled?

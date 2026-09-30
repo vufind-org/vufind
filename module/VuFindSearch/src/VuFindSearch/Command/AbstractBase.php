@@ -46,21 +46,21 @@ use VuFindSearch\ParamBag;
 abstract class AbstractBase implements CommandInterface
 {
     /**
-     * Search backend identifier
+     * Search backend identifier.
      *
      * @var string
      */
     protected $backendId;
 
     /**
-     * Command context
+     * Command context.
      *
      * @var mixed
      */
     protected $context;
 
     /**
-     * Search backend parameters
+     * Search backend parameters.
      *
      * @var ParamBag
      */
@@ -74,7 +74,7 @@ abstract class AbstractBase implements CommandInterface
     protected $executed = false;
 
     /**
-     * Result of executed operation
+     * Result of executed operation.
      *
      * @var mixed
      */

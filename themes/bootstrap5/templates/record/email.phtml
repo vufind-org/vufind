@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Email Record'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -9,8 +6,18 @@
   }
   $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($this->translate('Email Record'), active: true);
+  $title = $this->translate('Email Record')
+    . ': <span class="title-in-heading">' . $this->escapeHtml($this->driver->getBreadcrumb()) . '</span>';
 ?>
-<h2><?=$this->transEsc('Email Record') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
+<?=
+  // Set page title and heading.
+  $this->component('page-title', [
+    'title' => $title,
+    'level' => 1,
+    'headTitle' => $this->translate('Email Record'),
+    'escape' => false,
+  ])
+?>
 <form class="form-record-email" method="post" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email')) ?>" name="emailRecord">
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">

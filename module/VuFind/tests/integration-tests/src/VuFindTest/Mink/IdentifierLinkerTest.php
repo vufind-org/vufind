@@ -58,10 +58,13 @@ class IdentifierLinkerTest extends \VuFindTest\Integration\MinkTestCase
             ],
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=id:(0000183626-1 OR testsample1)&limit=1');
+        // Sort is important here to ensure predictable order of records; we want the identifier on page 2:
+        $session->visit(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=id:(0000183626-1 OR testsample1)&limit=1&sort=author'
+        );
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->unfindCss($page, '.identifierLink a');
+        $this->unFindCss($page, '.identifierLink a');
         $this->clickCss($page, '.page-next .page-link');
         $this->waitForPageLoad($page);
         $this->findCss($page, '.identifierLink a');

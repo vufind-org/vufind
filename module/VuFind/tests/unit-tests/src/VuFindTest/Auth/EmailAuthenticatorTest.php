@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Email Authenticator Test Class
+ * Email Authenticator Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,6 @@ use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
@@ -46,7 +45,7 @@ use VuFind\Validator\CsrfInterface;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * Email Authenticator Manager Test Class
+ * Email Authenticator Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -84,13 +83,13 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
-            $sessionManager ?? $this->createMock(SessionManager::class),
-            $csrf ?? $this->createMock(CsrfInterface::class),
-            $mailer ?? $this->createMock(Mailer::class),
-            $renderer ?? $this->createMock(PhpRenderer::class),
-            $userIpReader ?? $this->createMock(UserIpReader::class),
-            new Config($config),
-            $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
+            $sessionManager ?? $this->createStub(SessionManager::class),
+            $csrf ?? $this->createStub(CsrfInterface::class),
+            $mailer ?? $this->createStub(Mailer::class),
+            $renderer ?? $this->createStub(PhpRenderer::class),
+            $userIpReader ?? $this->createStub(UserIpReader::class),
+            $config,
+            $authHashService ?? $this->createStub(AuthHashServiceInterface::class)
         );
         $authenticator->setTranslator($this->getMockTranslator([]));
         return $authenticator;

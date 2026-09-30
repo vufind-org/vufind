@@ -35,7 +35,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\Connector;
 use VuFindSearch\Backend\EIT\QueryBuilder;
@@ -61,14 +60,14 @@ class EITBackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $config;
+    protected array $config;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -89,7 +88,7 @@ class EITBackendFactory extends AbstractBackendFactory
         ?array $options = null
     ) {
         $this->setup($container);
-        $this->config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('EIT');
+        $this->config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('EIT');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -120,11 +119,11 @@ class EITBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector(): Connector
     {
-        $prof = $this->config->General->prof ?? null;
-        $pwd = $this->config->General->pwd ?? null;
-        $base = $this->config->General->base_url
+        $prof = $this->config['General']['prof'] ?? null;
+        $pwd = $this->config['General']['pwd'] ?? null;
+        $base = $this->config['General']['base_url']
             ?? 'https://eit.ebscohost.com/Services/SearchService.asmx/Search';
-        $dbs = $this->config->General->dbs ?? null;
+        $dbs = $this->config['General']['dbs'] ?? null;
         $connector = new Connector(
             $base,
             $this->createHttpClient(),
@@ -147,7 +146,7 @@ class EITBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

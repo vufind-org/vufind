@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class OpenUrlFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,7 +68,7 @@ class OpenUrlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $pathResolver = $container->get(\VuFind\Config\PathResolver::class);
         $openUrlRules = json_decode(
             file_get_contents(
@@ -83,7 +83,7 @@ class OpenUrlFactory implements FactoryInterface
             $helpers->get('context'),
             $openUrlRules,
             $resolverPluginManager,
-            $config->OpenURL ?? null
+            $config['OpenURL'] ?? null
         );
     }
 }

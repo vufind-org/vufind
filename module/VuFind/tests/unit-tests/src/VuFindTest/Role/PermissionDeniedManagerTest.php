@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionManager Test Class
+ * PermissionManager Test Class.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFindTest\Role;
 
+use VuFind\Exception\ConfigException;
 use VuFind\Role\PermissionDeniedManager;
 
 /**
- * PermissionManager Test Class
+ * PermissionManager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,35 +51,35 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
             'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest:param1=noValue',
-            'deniedControllerBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
+            'deniedActionBehavior' => 'showTemplate:record/ActionTest:param1=noValue',
         ],
         'permissionDeniedTemplateNoParams' => [
             'deniedTemplateBehavior' => 'showTemplate:record/displayLogicTest',
-            'deniedControllerBehavior' => 'showTemplate:record/ActionTest',
+            'deniedActionBehavior' => 'showTemplate:record/ActionTest',
         ],
         'permissionDeniedMessage' => [
             'deniedTemplateBehavior' => 'showMessage:dl_translatable_test',
-            'deniedControllerBehavior' => 'showTemplate:action_translatable_test',
+            'deniedActionBehavior' => 'showTemplate:action_translatable_test',
         ],
         'permissionDeniedLogin' => [
-            'deniedControllerBehavior' => 'promptLogin',
+            'deniedActionBehavior' => 'promptLogin',
         ],
         'permissionDeniedException' => [
-            'deniedControllerBehavior' => 'exception:ForbiddenException:exception_message',
+            'deniedActionBehavior' => 'exception:ForbiddenException:exception_message',
         ],
         'permissionDeniedNonExistentException' => [
-            'deniedControllerBehavior' => 'exception:NonExistentException:exception_message',
+            'deniedActionBehavior' => 'exception:NonExistentException:exception_message',
         ],
         'permissionDeniedNothing' => [
         ],
     ];
 
     /**
-     * Test a correctly configured template
+     * Test a correctly configured template.
      *
      * @return void
      */
-    public function testTemplateConfig()
+    public function testTemplateConfig(): void
     {
         $expected = [
             'action' => 'showTemplate',
@@ -94,16 +95,16 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('permissionDeniedTemplate'));
-        $this->assertEquals($expectedNoParams, $pm->getDeniedControllerBehavior('permissionDeniedTemplateNoParams'));
+        $this->assertEquals($expected, $pm->getDeniedActionBehavior('permissionDeniedTemplate'));
+        $this->assertEquals($expectedNoParams, $pm->getDeniedActionBehavior('permissionDeniedTemplateNoParams'));
     }
 
     /**
-     * Test a correctly configured exception
+     * Test a correctly configured exception.
      *
      * @return void
      */
-    public function testExceptionConfig()
+    public function testExceptionConfig(): void
     {
         $expected = [
             'action' => 'exception',
@@ -113,17 +114,17 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('permissionDeniedException'));
+        $this->assertEquals($expected, $pm->getDeniedActionBehavior('permissionDeniedException'));
     }
 
     /**
-     * Test an empty permission section
-     * getDeniedControllerBehavior should return false as the PermissionDeniedManager
-     * has nothing to do
+     * Test an empty permission section.
+     *
+     * The getDeniedActionBehavior method should return false as the PermissionDeniedManager has nothing to do.
      *
      * @return void
      */
-    public function testEmptyConfig()
+    public function testEmptyConfig(): void
     {
         $expected = [
             'action' => 'promptLogin',
@@ -132,17 +133,17 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('permissionDeniedNothing'));
+        $this->assertEquals($expected, $pm->getDeniedActionBehavior('permissionDeniedNothing'));
     }
 
     /**
-     * Test a non existent permission section
-     * getDeniedControllerBehavior should return false as the PermissionDeniedManager
-     * has nothing to do
+     * Test a non existent permission section.
+     *
+     * The getDeniedActionBehavior method should return false as the PermissionDeniedManager has nothing to do.
      *
      * @return void
      */
-    public function testNonExistentConfig()
+    public function testNonExistentConfig(): void
     {
         $expected = [
             'action' => 'promptLogin',
@@ -151,6 +152,43 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
         ];
         $pm = new PermissionDeniedManager($this->permissionDeniedConfig);
 
-        $this->assertEquals($expected, $pm->getDeniedControllerBehavior('garbage'));
+        $this->assertEquals($expected, $pm->getDeniedActionBehavior('garbage'));
+    }
+
+    /**
+     * Test that legacy default controller behavior configuration throws an exception.
+     *
+     * @return void
+     */
+    public function testLegacyDefaultConfigException(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage(
+            'permissionBehavior configuration must not contain the legacy defaultDeniedControllerBehavior setting'
+        );
+        new PermissionDeniedManager([
+            'global' => [
+                'defaultDeniedControllerBehavior' => 'promptLogin',
+            ],
+        ]);
+    }
+
+    /**
+     * Test that legacy permission-specific controller behavior configuration throws an exception.
+     *
+     * @return void
+     */
+    public function testLegacyPermissionSpecificConfigException(): void
+    {
+        $this->expectException(ConfigException::class);
+        $this->expectExceptionMessage(
+            'permissionBehavior configuration must not contain the legacy deniedControllerBehavior setting'
+            . ' (found in [Foo])'
+        );
+        new PermissionDeniedManager([
+            'Foo' => [
+                'deniedControllerBehavior' => 'promptLogin',
+            ],
+        ]);
     }
 }

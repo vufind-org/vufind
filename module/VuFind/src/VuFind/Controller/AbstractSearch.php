@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search Controller
+ * VuFind Search Controller.
  *
  * PHP version 8
  *
@@ -35,9 +35,9 @@ use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\ResultScroller;
 use VuFind\Solr\Utils as SolrUtils;
@@ -48,7 +48,7 @@ use function intval;
 use function is_array;
 
 /**
- * VuFind Search Controller
+ * VuFind Search Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -95,7 +95,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return ViewModel
      */
@@ -187,7 +187,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get active recommendation module settings
+     * Get active recommendation module settings.
      *
      * @return array
      */
@@ -248,7 +248,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Home action
+     * Home action.
      *
      * @return mixed
      */
@@ -284,7 +284,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Send search results to results view
+     * Send search results to results view.
      *
      * @return Response|ViewModel
      */
@@ -332,7 +332,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get the value multiFacetsSelection from the config
+     * Get the value multiFacetsSelection from the config.
      *
      * @param array $config The config containing multiFacetsSelection
      *
@@ -349,7 +349,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Perform a search and send results to a results view
+     * Perform a search and send results to a results view.
      *
      * @param callable $setupCallback Optional setup callback that overrides the
      * default one
@@ -390,12 +390,9 @@ class AbstractSearch extends AbstractBase
         }
         $view->params = $params = $results->getParams();
 
-        // For page parameter being out of results list, we want to redirect to correct page
-        $page = $params->getPage();
-        $totalResults = $results->getResultTotal();
-        $limit = $params->getLimit();
-        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
-        if ($totalResults > 0 && $page > $lastPage) {
+        // For a page parameter being out of the results list, we want to redirect to the correct page
+        $lastPage = $results->getLastAvailablePage();
+        if ($results->getResultTotal() > 0 && $params->getPage() > $lastPage) {
             $queryParams = $request;
             $queryParams['page'] = $lastPage;
             return $this->redirect()->toRoute(
@@ -512,7 +509,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get a redirection response to a single record
+     * Get a redirection response to a single record.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
      * @param array                             $queryParams Any query parameters
@@ -605,7 +602,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Convenience method for accessing results
+     * Convenience method for accessing results.
      *
      * @return \VuFind\Search\Results\PluginManager
      */
@@ -871,7 +868,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Returns a list of all items associated with one facet for the lightbox
+     * Returns a list of all items associated with one facet for the lightbox.
      *
      * Parameters:
      * facet        The facet to retrieve
@@ -893,7 +890,9 @@ class AbstractSearch extends AbstractBase
         // Has the request been sent in an AJAX context?
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
         $urlBase = $this->params()->fromQuery('urlBase', '');
-        $searchAction = $this->params()->fromQuery('searchAction', '');
+        $defaultSearchAction = $this->getService(RouteHelper::class)
+            ->getUrlFromRoute($params->getOptions()->getSearchAction());
+        $searchAction = $this->params()->fromQuery('searchAction', $defaultSearchAction);
         // $urlBase and $searchAction should be relative URLs; if there is an
         // absolute URL passed in, this may be a sign of malicious activity and
         // we should fail.
@@ -952,7 +951,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get proper options file for search class
+     * Get proper options file for search class.
      *
      * @return \VuFind\Search\Base\Options
      */

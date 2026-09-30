@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for shortlinks table
+ * Entity model for shortlinks table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for shortlinks table
+ * Entity model for shortlinks table.
  *
  * @category VuFind
  * @package  Database
@@ -84,7 +84,7 @@ class Shortlinks implements ShortlinksEntityInterface
     protected DateTime $created;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

@@ -269,7 +269,7 @@ class ConnectorTest extends TestCase
     }
 
     /**
-     * Test that making a request calls the HTTP client factory
+     * Test that making a request calls the HTTP client factory.
      *
      * @return void
      */

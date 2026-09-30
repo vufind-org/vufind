@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExternalVuFind connection factory
+ * ExternalVuFind connection factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * ExternalVuFind connection factory
+ * ExternalVuFind connection factory.
  *
  * @category VuFind
  * @package  Connection
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ExternalVuFindFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

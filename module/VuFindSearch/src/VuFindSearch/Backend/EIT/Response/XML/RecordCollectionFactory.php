@@ -40,7 +40,7 @@ use function sprintf;
 
 /**
  * Simple XML-based factory for record collection.
- * Largely copied from the WorldCat XML-based factory
+ * Largely copied from the WorldCat XML-based factory.
  *
  * @category VuFind
  * @package  Search

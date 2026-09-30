@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View helper to support ILS holdings display
+ * View helper to support ILS holdings display.
  *
  * PHP version 8
  *
@@ -29,10 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function strlen;
 
 /**
- * View helper to support ILS holdings display
+ * View helper to support ILS holdings display.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,23 +42,17 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Holdings extends \Laminas\View\Helper\AbstractHelper
+class Holdings
 {
     /**
-     * Configuration
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Configuration
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $config
+    ) {
     }
 
     /**
@@ -74,5 +70,15 @@ class Holdings extends \Laminas\View\Helper\AbstractHelper
             = (bool)($catalogConfig['display_items_without_barcodes'] ?? true);
         return $holding['availability']->isVisibleInHoldings()
             && ($showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0);
+    }
+
+    /**
+     * Make the helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

@@ -1,0 +1,27 @@
+<?php
+$link = $getThisParams['general_link'] ?? '';
+$requestCopyLink = trim($getThisParams['request_link'], '/') . '/' . $this->driver->getOpenUrl();
+?>
+<div>
+  <p>
+    <strong>
+      <a
+        href="<?= $this->escapeHtml($link) ?>"
+        target="_blank"
+      >
+        <?= $this->transEsc('Interlibrary Loan Requests') ?>
+      </a>:
+    </strong>
+    <?= $this->transEsc('interlibrary_loan_requests_text') ?>
+  </p>
+  <ul>
+    <li>
+      <a
+        href="<?= $this->escapeHtml($requestCopyLink) ?>"
+        target='_blank'
+      >
+        <?= $this->transEsc('delivery_request') ?>
+      </a>
+    </li>
+  </ul>
+</div>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Save Statuses" AJAX handler
+ * "Get Save Statuses" AJAX handler.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
@@ -40,7 +41,7 @@ use VuFind\Session\Settings as SessionSettings;
 use function is_array;
 
 /**
- * "Get Save Statuses" AJAX handler
+ * "Get Save Statuses" AJAX handler.
  *
  * Check one or more records to see if they are saved in one of the user's list.
  *
@@ -55,7 +56,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings              $ss                  Session settings
      * @param ?UserEntityInterface         $user                Logged in user (or null)
@@ -68,7 +69,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         protected RouteHelper $routeHelper,
         protected UserResourceServiceInterface $userResourceService
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 
     /**
@@ -117,28 +118,28 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
         // loop through each ID check if it is saved to any of the user's lists
-        $ids = $params->fromPost('id', $params->fromQuery('id', []));
-        $sources = $params->fromPost('source', $params->fromQuery('source', []));
+        $ids = $this->getPostOrQueryParam($request, 'id', []);
+        $sources = $this->getPostOrQueryParam($request, 'source', []);
         if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $statuses = $this->getDataFromUser($ids, $sources);

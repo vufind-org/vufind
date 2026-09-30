@@ -57,21 +57,9 @@ trait AutocompleteTrait
         string $text,
         ?string $highlight = null
     ): NodeElement {
-        $tries = 0;
-        $snoozeTime = 0;
-        $loadMsg = 'Loading…';
-        do {
-            $acItemText = $this->findCssAndGetText($page, '.autocomplete-results .ac-item');
-            if (strcasecmp($acItemText, $loadMsg) === 0) {
-                $this->snooze(0.5);
-                $snoozeTime += 0.5 * $this->getSnoozeMultiplier();
-            }
-            $tries++;
-        } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             $text,
-            $acItemText,
-            "Failed after $tries tries, with $snoozeTime seconds snooze time."
+            fn () => $this->findCssAndGetText($page, '.autocomplete-results .ac-item')
         );
         $acHighlight = $page->find('css', '.autocomplete-results .ac-item b');
         if ($highlight) {

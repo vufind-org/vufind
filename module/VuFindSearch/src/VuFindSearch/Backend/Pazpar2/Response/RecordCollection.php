@@ -50,7 +50,7 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
-     * Total records
+     * Total records.
      *
      * @var int
      */

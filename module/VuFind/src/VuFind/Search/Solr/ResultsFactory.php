@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -65,10 +65,10 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         ?array $options = null
     ) {
         $solr = parent::__invoke($container, $requestedName, $options);
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $solr->setSpellingProcessor(
             new \VuFind\Search\Solr\SpellingProcessor(
-                $config->Spelling ?? null,
+                $config['Spelling'] ?? null,
                 $solr->getOptions()->getSpellingNormalizer()
             )
         );

@@ -29,8 +29,8 @@
 
 namespace VuFind\Section;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
-use VuFind\Config\YamlReader;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ConfigException;
 use VuFind\Navigation\NavigationInterface;
@@ -51,13 +51,13 @@ class SectionService implements SectionServiceInterface
     /**
      * Constructor.
      *
-     * @param YamlReader     $yamlReader      YAML reader
-     * @param SectionManager $sectionManager  Section plugin manager
-     * @param string         $userLocale      User locale
-     * @param array          $fallbackLocales Fallback locales
+     * @param ConfigManagerInterface $configManager   Config manager
+     * @param SectionManager         $sectionManager  Section plugin manager
+     * @param string                 $userLocale      User locale
+     * @param array                  $fallbackLocales Fallback locales
      */
     public function __construct(
-        protected YamlReader $yamlReader,
+        protected ConfigManagerInterface $configManager,
         protected SectionManager $sectionManager,
         protected string $userLocale,
         protected array $fallbackLocales,
@@ -68,22 +68,22 @@ class SectionService implements SectionServiceInterface
      * Get section configuration.
      *
      * @param string $key        Section key in configuration
-     * @param string $configPath Configuration path (optional)
+     * @param string $configName Configuration path (optional)
      *
      * @return array
      */
     public function getSectionConfig(
         string $key,
-        string $configPath = self::DEFAULT_CONFIG_PATH
+        string $configName = self::DEFAULT_CONFIG_NAME
     ): array {
-        $config = $this->yamlReader->get($configPath . '.yaml');
+        $config = $this->configManager->getConfigArray($configName);
         if (empty($config)) {
             throw new ConfigException(
-                'Configuration path not found or empty: ' . $configPath
+                'Configuration not found or empty: ' . $configName
             );
         } elseif (!isset($config['Sections'])) {
             throw new BadConfig(
-                'Sections key is missing from configuration file: ' . $configPath
+                'Sections key is missing from configuration: ' . $configName
             );
         }
         if (!$config = $config['Sections'][$key] ?? false) {

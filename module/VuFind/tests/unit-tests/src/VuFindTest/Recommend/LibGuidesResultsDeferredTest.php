@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesResultsDeferred recommendation module Test Class
+ * LibGuidesResultsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * LibGuidesResultsDeferred recommendation module Test Class
+ * LibGuidesResultsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ namespace VuFindTest\Recommend;
 class LibGuidesResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */

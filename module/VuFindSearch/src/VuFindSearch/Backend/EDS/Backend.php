@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Backend
+ * EDS API Backend.
  *
  * PHP version 8
  *
@@ -33,7 +33,6 @@ namespace VuFindSearch\Backend\EDS;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Session\Container as SessionContainer;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\EDS\Response\RecordCollection;
@@ -46,7 +45,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use function in_array;
 
 /**
- *  EDS API Backend
+ *  EDS API Backend.
  *
  * @category VuFind
  * @package  Search
@@ -59,35 +58,35 @@ class Backend extends AbstractBackend
     use SecretTrait;
 
     /**
-     * Client user to make the actually requests to the EdsApi
+     * Client user to make the actually requests to the EdsApi.
      *
      * @var Connector
      */
     protected $client;
 
     /**
-     * Query builder
+     * Query builder.
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
 
     /**
-     * User name for EBSCO EDS API account if using UID Authentication
+     * User name for EBSCO EDS API account if using UID Authentication.
      *
      * @var string
      */
     protected $userName;
 
     /**
-     * Password for EBSCO EDS API account if using UID Authentication
+     * Password for EBSCO EDS API account if using UID Authentication.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Profile for EBSCO EDS API account (may be overridden)
+     * Profile for EBSCO EDS API account (may be overridden).
      *
      * @var string
      */
@@ -95,42 +94,42 @@ class Backend extends AbstractBackend
 
     /**
      * Default profile for EBSCO EDS API account (taken from initial config and
-     * never changed)
+     * never changed).
      *
      * @var string
      */
     protected $defaultProfile;
 
     /**
-     * Whether or not to use IP Authentication for communication with the EDS API
+     * Whether or not to use IP Authentication for communication with the EDS API.
      *
      * @var bool
      */
     protected $ipAuth;
 
     /**
-     * Organization EDS API requests are being made for
+     * Organization EDS API requests are being made for.
      *
      * @var string
      */
     protected $orgId;
 
     /**
-     * VuFind Authentication manager
+     * VuFind Authentication manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $authManager = null;
 
     /**
-     * Object cache (for storing authentication tokens)
+     * Object cache (for storing authentication tokens).
      *
      * @var CacheAdapter
      */
     protected $cache;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var SessionContainer
      */
@@ -144,14 +143,14 @@ class Backend extends AbstractBackend
     protected $isGuest;
 
     /**
-     * Backend type
+     * Backend type.
      *
      * @var string
      */
     protected $backendType = null;
 
     /**
-     * Validation config
+     * Validation config.
      *
      * @var array
      */
@@ -164,7 +163,7 @@ class Backend extends AbstractBackend
      * @param RecordCollectionFactoryInterface $factory Record collection factory
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
-     * @param ?Config                          $config  Object representing EDS.ini
+     * @param ?array                           $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(
@@ -172,7 +171,7 @@ class Backend extends AbstractBackend
         RecordCollectionFactoryInterface $factory,
         CacheAdapter $cache,
         SessionContainer $session,
-        ?Config $config = null,
+        ?array $config = null,
         $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
@@ -183,12 +182,12 @@ class Backend extends AbstractBackend
         $this->isGuest = $isGuest;
 
         // Extract key values from configuration:
-        $this->userName = $config->EBSCO_Account->user_name ?? null;
-        $this->password = $this->getSecretFromConfig($config->EBSCO_Account, 'password');
-        $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
-        $this->profile = $config->EBSCO_Account->profile ?? null;
-        $this->orgId = $config->EBSCO_Account->organization_id ?? null;
-        $this->validationConfig = $config->Validation?->toArray() ?? [];
+        $this->userName = $config['EBSCO_Account']['user_name'] ?? null;
+        $this->password = $this->getSecretFromConfig($config['EBSCO_Account'] ?? [], 'password');
+        $this->ipAuth = $config['EBSCO_Account']['ip_auth'] ?? false;
+        $this->profile = $config['EBSCO_Account']['profile'] ?? null;
+        $this->orgId = $config['EBSCO_Account']['organization_id'] ?? null;
+        $this->validationConfig = $config['Validation'] ?? [];
 
         // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
@@ -523,6 +522,22 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Are the provided credentials valid for use with the API?
+     *
+     * @param string $username Username to check
+     * @param string $password Password to check
+     *
+     * @return bool
+     */
+    protected function credentialsAreValid(string $username, string $password): bool
+    {
+        if ($username === 'USERNAME' || $password === 'PASSWORD') {
+            throw new \Exception('Default EDS credentials detected; service not configured correctly.');
+        }
+        return !empty($username) && !empty($password);
+    }
+
+    /**
      * Obtain the authentication to use with the EDS API from cache if it exists. If
      * not, then generate a new one.
      *
@@ -559,7 +574,7 @@ class Backend extends AbstractBackend
         $username = $this->userName;
         $password = $this->password;
         $orgId = $this->orgId;
-        if (!empty($username) && !empty($password)) {
+        if ($this->credentialsAreValid($username, $password)) {
             $this->debug(
                 'Calling Authenticate with username: '
                 . "$username, password: XXXXXXXX, orgid: $orgId "
@@ -606,7 +621,7 @@ class Backend extends AbstractBackend
 
         $username = $this->userName;
         $password = $this->password;
-        if (!empty($username) && !empty($password)) {
+        if ($this->credentialsAreValid($username, $password)) {
             $results = $this->client
                 ->authenticate($username, $password, $this->orgId, ['autocomplete']);
             $autoresult = $results['Autocomplete'] ?? [];
@@ -720,17 +735,18 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Obtain data from the INFO method
+     * Obtain data from the INFO method.
      *
      * @param string $sessionToken Session token (optional)
+     * @param string $bustCache    Bust the request cache
      *
      * @return array
      */
-    public function getInfo($sessionToken = null)
+    public function getInfo($sessionToken = null, $bustCache = false)
     {
         // Use a different cache key for guests, just in case info differs:
         $cacheKey = $this->isGuest ? 'edsGuestInfo' : 'edsLoggedInInfo';
-        if ($data = $this->cache->getItem($cacheKey)) {
+        if (!$bustCache && ($data = $this->cache->getItem($cacheKey))) {
             return $data;
         }
         $authenticationToken = $this->getAuthenticationToken();
@@ -780,7 +796,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Set the VuFind Authentication Manager
+     * Set the VuFind Authentication Manager.
      *
      * @param \VuFind\Auth\Manager $authManager Authentication Manager
      *

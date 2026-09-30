@@ -80,7 +80,7 @@ interface PaymentServiceInterface extends DbServiceInterface
     public function getPaymentByLocalIdentifier(string $localIdentifier): ?PaymentEntityInterface;
 
     /**
-     * Get last paid payment for a patron
+     * Get last paid payment for a patron.
      *
      * @param string $catUsername Patron's catalog username
      *
@@ -129,7 +129,7 @@ interface PaymentServiceInterface extends DbServiceInterface
     public function getUnresolvedPaymentsToReport(int $interval): array;
 
     /**
-     * Get a filtered list of payments
+     * Get a filtered list of payments.
      *
      * @param PaymentStatus[] $statuses         Payment statuses (optional filter)
      * @param ?string         $localIdentifier  Local identifier (optional filter)

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Constant definitions to support bootstrap logic for PHPUnit
+ * Constant definitions to support bootstrap logic for PHPUnit.
  *
  * PHP version 8
  *

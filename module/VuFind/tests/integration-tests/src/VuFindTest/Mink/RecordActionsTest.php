@@ -31,6 +31,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Generator;
 
 use function count;
 use function intval;
@@ -73,7 +74,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $query = 'Dewey'): Element
+    protected function goToRecord(string $query = 'Dewey'): Element
     {
         $page = $this->performSearch($query);
         $this->clickCss($page, '.result a.title');
@@ -107,7 +108,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testAddComment(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click add comment without logging in
         $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
@@ -153,7 +154,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click add comment without logging in
         $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
@@ -199,7 +200,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testAddTag(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click to add tag
         $this->clickCss($page, '.tag-record');
         // Lightbox login open?
@@ -216,17 +217,21 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
-        $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        // Count tags with missing
-        $sum = 0;
-        foreach ($tags as $t) {
-            $link = $t->find('css', 'button');
-            if ($link) {
-                $sum += intval($link->getText());
+        $this->assertEqualsWithTimeout(
+            3,
+            function () use ($page): int {
+                $tags = $page->findAll('css', '.tagList .tag');
+                // Count tags with missing
+                $sum = 0;
+                foreach ($tags as $t) {
+                    $link = $t->find('css', 'button');
+                    if ($link) {
+                        $sum += intval($link->getText());
+                    }
+                }
+                return $sum;
             }
-        }
-        $this->assertSame(3, $sum);
+        );
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->waitForPageLoad($page);
@@ -240,7 +245,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        // $page = $this->gotoRecord();
+        // $page = $this->goToRecord();
         // Check selected == 0
         $this->unFindCss($page, '.tagList .tag.selected');
         $this->findCss($page, '.tagList .tag');
@@ -276,10 +281,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('five', 'tag');
         $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
         $this->assertSelectedSort($page, 'title');
+        // Click on a record to be sure that the results lead to the right place:
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
-     * Data provider for testTagSearchSort
+     * Data provider for testTagSearchSort.
      *
      * @return \Iterator
      */
@@ -313,6 +321,26 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertResultTitles($page, 3, $expectedFirst, $expectedLast);
         $this->assertSelectedSort($page, $expectedSort);
+    }
+
+    /**
+     * Test sorting persists in last search link.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearchSort')]
+    public function testTagSearchSortPersistsInLastSearchLink(): void
+    {
+        $page = $this->performSearch('five', 'tag');
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 1);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'author');
+        $page->clickLink('Dewey browse test');
+        $this->assertSame('Dewey browse test', $this->findCssAndGetText($page, 'h1'));
+        // Click on search results in breadcrumb to go back to search and check that
+        // author sort is still selected
+        $page->clickLink('Search Results');
+        $this->assertSelectedSort($page, 'author');
     }
 
     /**
@@ -360,7 +388,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Login
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->clickCss($page, '.tag-record');
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
@@ -374,6 +402,49 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         $this->assertCount(6, $tags);
+    }
+
+    /**
+     * Data provider for testTagManagementTagDisplay.
+     *
+     * @return Generator<string, array>
+     */
+    public static function tagManagementTagDisplayProvider(): Generator
+    {
+        yield 'case sensitive' => [true, ['ONE', 'THREE 4', 'five', 'five', 'five', 'new tag', 'one', 'three 4']];
+        yield 'case insensitive' => [false, ['five', 'five', 'five', 'new tag', 'one', 'one', 'three 4', 'three 4']];
+    }
+
+    /**
+     * Test display of tags in user content management area.
+     *
+     * @param bool     $caseSensitive Use case sensitive tags?
+     * @param string[] $expected      Expected tag text
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('tagManagementTagDisplayProvider')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
+    public function testTagManagementTagDisplay(bool $caseSensitive, array $expected): void
+    {
+        if ($caseSensitive) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'Social' => ['case_sensitive_tags' => 'true'],
+                    ],
+                ]
+            );
+        }
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Tag/UserList'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $tags = array_map(fn ($tag) => $tag->getText(), $page->findAll('css', 'td.user-tag div'));
+        // Sort tags to account for database platform and timing differences:
+        sort($tags);
+        $this->assertEquals($expected, $tags);
     }
 
     /**
@@ -548,7 +619,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
         $this->findCss($page, $this->openModalUsernameFieldSelector);
@@ -570,7 +641,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
         $this->findCss($page, ' [name="username"]');
@@ -612,7 +683,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click SMS
         $this->clickCss($page, '.sms-record');
         // Type invalid phone numbers
@@ -674,6 +745,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
                 return $this->getCurrentQueryString(true);
             }
         );
+
+        // Make sure the expected test message was injected
+        $this->findCss($page, '.print-test-disabled-message');
     }
 
     /**
@@ -684,13 +758,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testRatingDisabled(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Check that rating is not displayed:
         $this->unFindCss($page, 'div.rating');
     }
 
     /**
-     * Data provider for testRating
+     * Data provider for testRating.
      *
      * @return \Iterator
      */
@@ -727,7 +801,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $checked = 'div.rating-average input:checked';
 
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click to add rating
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
@@ -751,6 +825,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         // Add rating
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -762,6 +837,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -782,6 +858,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, $ratingLink);
             $this->waitForPageLoad($page);
             $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+            $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
             $this->waitForPageLoad($page);
         } else {
             // Check that remove button is not present
@@ -801,6 +878,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Add rating
         $this->clickCss($page, $ratingLink);
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -857,7 +935,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding comments, rating and tag to a record and then
-     * delete them from user account menu
+     * delete them from user account menu.
      *
      * @return void
      */
@@ -874,7 +952,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->waitForPageLoad($page);
         $this->clickCss($page, '#loginOptions a');
         $this->findCss($page, $this->openModalUsernameFieldSelector);
@@ -885,6 +963,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'div.rating-average a');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
 
@@ -910,7 +989,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
-        $this->unfindCss($page, '.usercontent-table');
+        $this->unFindCss($page, '.usercontent-table');
+        $this->assertStringContainsString(
+            'No Comments',
+            $page->getContent()
+        );
 
         $this->clickCss($page, 'li#user-content-tag a.nav-link');
         $this->waitForPageLoad($page);
@@ -919,7 +1002,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
-        $this->unfindCss($page, '.usercontent-table');
+        $this->unFindCss($page, '.usercontent-table');
+        $this->assertStringContainsString(
+            'No Tags',
+            $page->getContent()
+        );
 
         $this->clickCss($page, 'li#user-content-ratings a.nav-link');
         $this->waitForPageLoad($page);
@@ -930,18 +1017,22 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
-        $this->unfindCss($page, '.usercontent-table');
+        $this->unFindCss($page, '.usercontent-table');
+        $this->assertStringContainsString(
+            'No Ratings',
+            $page->getContent()
+        );
     }
 
     /**
-     * Test export button found in toolbar
+     * Test export button found in toolbar.
      *
      * @return void
      */
     public function testRefWorksExportButton(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click the first Export option in the drop-down menu
         $this->clickCss($page, '.export-toggle');
         $this->clickCss($page, '#export-options li a');

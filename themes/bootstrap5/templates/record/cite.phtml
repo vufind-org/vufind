@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Record Citations'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -16,6 +13,13 @@
   foreach ($this->driver->getCitationFormats() as $format) {
     $citations[$format] = $helper->getCitation($format);
   }
+?>
+<?=
+  // Set page title and heading.
+  $this->component('page-title', [
+    'title' => $this->translate('Record Citations'),
+    'level' => 1,
+  ])
 ?>
 <?php if (count($citations) == 0): ?>
   <?=$this->transEsc('No citations are available for this record')?>

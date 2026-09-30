@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MakeTag view helper Test Class
+ * MakeTag view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\View\Helper\Root\MakeTag;
 use function call_user_func_array;
 
 /**
- * MakeTag view helper Test Class
+ * MakeTag view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,19 +47,7 @@ use function call_user_func_array;
 class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
-     * Get makeTag helper with mock view
-     *
-     * @return MakeTag
-     */
-    protected function getHelper(): MakeTag
-    {
-        $helper = new MakeTag();
-        $helper->setView($this->getViewWithHelpers());
-        return $helper;
-    }
-
-    /**
-     * Test that responds to common inputs
+     * Test that responds to common inputs.
      *
      * @return \Iterator
      */
@@ -84,7 +72,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Void elements for test below
+     * Void elements for test below.
      *
      * @return \Iterator
      */
@@ -118,7 +106,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Void elements for test below
+     * Void elements for test below.
      *
      * @return \Iterator
      */
@@ -150,7 +138,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test all data providers above
+     * Test all data providers above.
      *
      * @param string $expected Expected value
      * @param array  $params   Parameters to test
@@ -162,7 +150,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('voidTags')]
     public function testElements($expected, $params): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         $this->assertEquals(
             $expected,
@@ -171,7 +159,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Good tag names for test below
+     * Good tag names for test below.
      *
      * @return \Iterator
      */
@@ -189,7 +177,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test tag name edge cases
+     * Test tag name edge cases.
      *
      * @param string $tagName Tag name to use in test
      *
@@ -198,7 +186,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('validTags')]
     public function testValidTagNames($tagName): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         $this->assertSame(
             $helper($tagName, ''),
@@ -209,7 +197,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Bad tag names for test below
+     * Bad tag names for test below.
      *
      * @return \Iterator
      */
@@ -225,7 +213,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test exception on bad tag names
+     * Test exception on bad tag names.
      *
      * @param string $tagName Tag name to use in test
      *
@@ -234,7 +222,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('invalidTags')]
     public function testInvalidTagNames($tagName): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         // Fulfill plugin quota
         $helper('sanity-check', 'this is good');
@@ -245,13 +233,13 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test deprecated elements
+     * Test deprecated elements.
      *
      * @return void
      */
     public function testDeprecatedElementTriggersWarning(): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         // Fulfill plugin quota
         $helper('sanity-check', 'this is good');

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Helper - Renewals Support Methods
+ * VuFind Helper - Renewals Support Methods.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\View\FlashMessenger\FlashMessengerInterface;
 use function is_array;
 
 /**
- * Helper to perform renewal-related actions
+ * Helper to perform renewal-related actions.
  *
  * @category VuFind
  * @package  ILS_Logic

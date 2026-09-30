@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface SorterInterface
+ * Interface SorterInterface.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\I18n;
 
 /**
- * Interface SorterInterface
+ * Interface SorterInterface.
  *
  * @category VuFind
  * @package  I18n
@@ -43,7 +43,7 @@ namespace VuFind\I18n;
 interface SorterInterface
 {
     /**
-     * Compare function
+     * Compare function.
      *
      * @param string $string1 First string to compare
      * @param string $string2 Second string to compare
@@ -53,7 +53,7 @@ interface SorterInterface
     public function compare(string $string1, string $string2): int;
 
     /**
-     * Sort array by values
+     * Sort array by values.
      *
      * @param array $array Array to sort
      *
@@ -62,7 +62,7 @@ interface SorterInterface
     public function sort(array &$array): bool;
 
     /**
-     * Sort array by values and maintain index association
+     * Sort array by values and maintain index association.
      *
      * @param array $array Array to sort
      *
@@ -71,7 +71,7 @@ interface SorterInterface
     public function asort(array &$array): bool;
 
     /**
-     * Natural sort by values and maintain index association
+     * Natural sort by values and maintain index association.
      *
      * @param array $array Array to sort
      *
