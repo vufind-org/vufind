@@ -233,7 +233,7 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
      *
      * @param mixed  $data     The response data
      * @param string $status   Status of the request
-     * @param int    $httpCode A custom HTTP Status Code
+     * @param ?int   $httpCode A custom HTTP Status Code
      * @param string $message  Status message
      *
      * @return ResponseInterface
