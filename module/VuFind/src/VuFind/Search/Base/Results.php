@@ -74,9 +74,9 @@ abstract class Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId;
+    protected ?string $backendId = null;
 
     /**
      * Override (only for use in very rare cases).
@@ -464,9 +464,9 @@ abstract class Results
     /**
      * Basic 'getter' of search backend identifier.
      *
-     * @return string
+     * @return ?string
      */
-    public function getBackendId(): string
+    public function getBackendId(): ?string
     {
         return $this->backendId;
     }

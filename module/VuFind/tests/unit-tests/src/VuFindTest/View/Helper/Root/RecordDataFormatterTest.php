@@ -103,7 +103,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
-        $configEntity = $configManager->getConfigObject('config');
+        $configEntity = $configManager->getConfigArray('config');
 
         $translate = new \VuFind\View\Helper\Root\Translate();
 
@@ -205,7 +205,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'url' => $url,
             'usertags' => new \VuFind\View\Helper\Root\UserTags(
                 new \VuFind\Config\AccountCapabilities(
-                    new \VuFind\Config\Config([]),
+                    [],
                     fn () => $authManager
                 )
             ),
@@ -402,7 +402,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $specManager,
             $helpers['record'],
             $helpers['transEsc'],
-            $helpers['escapeHtml']
+            $helpers['escapeHtml'],
         );
 
         return $formatter;

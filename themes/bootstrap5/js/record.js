@@ -84,7 +84,7 @@ VuFind.register('record', function Record() {
    */
   function init() {
     removeCheckRouteParam();
-    VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
+    VuFind.truncate.initTruncate('.truncate-record-field');
     VuFind.truncate.initTruncate('table.truncate-field', 'tr.holding-row', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   }
 

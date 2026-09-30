@@ -1,14 +1,14 @@
 <?=$this->component('page-title', ['title' => 'Tag Management', 'headTitle' => $this->translate('VuFind Administration - Tag Management')]);?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h3><?=$this->translate('List Tags')?></h3>
-
   <?=$this->render('admin/tags/menu.phtml', ['active' => 'list'])?>
+
+  <h3><?=$this->translate('List Tags')?></h3>
 
   <?=$this->flashmessages()?>
 
   <form class="form-tags-list" action="<?= $this->url('admin/tags', ['action' => 'List'])?>" method="get">
-    <h3><?=$this->translate('filter_tags')?></h3>
-    <div class="tag-controls">
+    <h4 class="visually-hidden"><?=$this->translate('filter_tags')?></h4>
+    <div class="form-group tag-controls">
       <label for="user_id">
         <?=$this->translate('Username')?>
         <select name="user_id" id="user_id" class="form-select">

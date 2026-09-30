@@ -108,7 +108,6 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      */
     public function __construct()
     {
-        $this->init();
     }
 
     /**
@@ -219,13 +218,21 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
         $this->request = $request;
         $this->response = $response;
 
+        $this->init();
+
         try {
+            $this->configureDefaultAccessPermission();
+
             if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
                 return $actionConfigResponse;
             }
 
             if ($accessDeniedResponse = $this->validateAccessPermission()) {
                 return $accessDeniedResponse;
+            }
+
+            if ($preprocessResponse = $this->preprocessRequest($request, $response)) {
+                return $preprocessResponse;
             }
 
             return $this->action($request, $response);
@@ -241,7 +248,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      */
     protected function init(): void
     {
-        // This function is called after constructor for any initialization required.
+        // This function is called in the beginning of action invocation for any initialization required.
     }
 
     /**
@@ -257,6 +264,25 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      * @return ?ResponseInterface
      */
     protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
+    }
+
+    /**
+     * Preprocess a request before the actual action is executed.
+     *
+     * This method is executed just before the actual action (i.e. after permission checks etc.).
+     * It is meant for preprocessing of requests in a shared base class of multiple actions.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function preprocessRequest(
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ?ResponseInterface {
@@ -315,13 +341,22 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     /**
      * Get a parameter from POST fields or query string.
      *
-     * @param string            $param   Param name
-     * @param array|string|null $default Default value
+     * @param string            $param       Param name
+     * @param array|string|null $default     Default value
+     * @param bool              $preferQuery Prefer query param if both POST and query param is available?
      *
      * @return array|string|null
      */
-    protected function getPostOrQueryParam(string $param, array|string|null $default = null): array|string|null
-    {
+    protected function getPostOrQueryParam(
+        string $param,
+        array|string|null $default = null,
+        bool $preferQuery = false
+    ): array|string|null {
+        if ($preferQuery) {
+            return $this->getQueryParam($param)
+                ?? $this->getPostParam($param)
+                ?? $default;
+        }
         return $this->getPostParam($param)
             ?? $this->getQueryParam($param)
             ?? $default;
@@ -410,11 +445,11 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     }
 
     /**
-     * Validate any access permission for the action.
+     * Configure default access permission for the action.
      *
-     * @return ?ResponseInterface A response if access is denied, null otherwise
+     * @return void
      */
-    public function validateAccessPermission(): ?ResponseInterface
+    protected function configureDefaultAccessPermission(): void
     {
         $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
         $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
@@ -468,7 +503,15 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
             // Check for a default permission if a more specific permission was not found above:
             $this->accessPermission ??= $actionPermissions['*'] ?? null;
         }
+    }
 
+    /**
+     * Validate any access permission for the action.
+     *
+     * @return ?ResponseInterface A response if access is denied, null otherwise
+     */
+    protected function validateAccessPermission(): ?ResponseInterface
+    {
         // If there is an access permission set for this action, pass it through to the permission helper and return the
         // response:
         if ($this->accessPermission) {

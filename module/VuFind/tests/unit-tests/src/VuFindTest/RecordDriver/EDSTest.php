@@ -160,8 +160,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
-        $cache = $this->createMock(StorageInterface::class);
-        $record = new EDS(new \VuFind\Config\Config($config ?? $this->defaultDriverConfig), $cache);
+        $record = new EDS(null, $config ?? $this->defaultDriverConfig, $cache);
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);

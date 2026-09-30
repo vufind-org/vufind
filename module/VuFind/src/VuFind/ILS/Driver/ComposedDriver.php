@@ -298,7 +298,8 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getConfig(string $function, array $params = []): array
     {
-        return $this->defaultCall('getConfig', func_get_args());
+        $driverName = $this->getMainDriverNameForMethod($function);
+        return $this->callDriverMethod($driverName, 'getConfig', func_get_args());
     }
 
     /**

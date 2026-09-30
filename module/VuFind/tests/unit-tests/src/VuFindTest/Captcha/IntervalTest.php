@@ -51,13 +51,11 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
     public function testIntervalCaptcha(): void
     {
         $session = new \Laminas\Session\Container('SessionState');
-        $config = new \VuFind\Config\Config(
-            [
-                'Captcha' => [
-                    'time_from_session_start' => 20,
-                ],
-            ]
-        );
+        $config = [
+            'Captcha' => [
+                'time_from_session_start' => 20,
+            ],
+        ];
 
         $interval = new \VuFind\Captcha\Interval($session, $config);
 

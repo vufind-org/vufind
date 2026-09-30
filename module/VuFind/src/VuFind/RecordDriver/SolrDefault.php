@@ -133,12 +133,9 @@ class SolrDefault extends DefaultRecord implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      */
     #[DefaultFactory(name: SolrDefaultFactory::class)]
     public function __construct(
@@ -148,22 +145,14 @@ class SolrDefault extends DefaultRecord implements
     ) {
         $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
-        $this->snippet = !isset($searchSettings->General->snippets)
-            ? false : $searchSettings->General->snippets;
-        if (
-            isset($searchSettings->Snippet_Captions)
-            && count($searchSettings->Snippet_Captions) > 0
-        ) {
-            foreach ($searchSettings->Snippet_Captions as $key => $value) {
-                $this->snippetCaptions[$key] = $value;
-            }
+        $this->snippet = $searchSettings['General']['snippets'] ?? false;
+        foreach ($searchSettings['Snippet_Captions'] ?? [] as $key => $value) {
+            $this->snippetCaptions[$key] = $value;
         }
         // Container-contents linking
-        $this->containerLinking
-            = !isset($mainConfig->Hierarchy->simpleContainerLinks)
-            ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+        $this->containerLinking = $mainConfig['Hierarchy']['simpleContainerLinks'] ?? false;
 
-        $this->explainEnabled = $searchSettings->Explain->enabled ?? false;
+        $this->explainEnabled = $searchSettings['Explain']['enabled'] ?? false;
 
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
