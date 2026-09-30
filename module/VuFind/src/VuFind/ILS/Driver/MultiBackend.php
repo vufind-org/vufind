@@ -58,7 +58,7 @@ class MultiBackend extends AbstractMappingDriver
         $source = $this->getSourceForRecordId($params[0] ?? '');
         // Patron is not mapped so that the correct library can be determined
         $params[0] = $this->mapVuFindRecordIdToIlsRecordId($params[0] ?? '', $source);
-        $params[1] = $this->mapVuFindHoldToIlsHold($params[1] ?? [], $source);
+        $params[1] = $this->mapVuFindDetailsToIlsDetails($params[1] ?? [], $source);
         return [$params, $source];
     }
 

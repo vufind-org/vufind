@@ -107,7 +107,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             'id' => "$source.record1",
             'item_id' => "$source.record2",
         ];
-        $result = $this->callMethod($driver, 'mapIlsHoldToVuFindHold', [$data, $source]);
+        $result = $this->callMethod($driver, 'mapIlsDetailsToVuFindDetails', [$data, $source]);
         $this->assertEquals($expected, $result);
 
         // Empty source must not add prefixes
@@ -115,7 +115,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             'id' => 'record1',
             'item_id' => 'record2',
         ];
-        $result = $this->callMethod($driver, 'mapIlsHoldToVuFindHold', [$data, '']);
+        $result = $this->callMethod($driver, 'mapIlsDetailsToVuFindDetails', [$data, '']);
         $this->assertEquals($expected, $result);
 
         $data = [
@@ -167,7 +167,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         ];
         $result = $this->callMethod(
             $driver,
-            'mapIlsHoldToVuFindHold',
+            'mapIlsDetailsToVuFindDetails',
             [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
@@ -199,7 +199,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             'id' => "$source.record1",
             'item_id' => "$source.record2",
         ];
-        $result = $this->callMethod($driver, 'mapVuFindHoldToIlsHold', [$data, $source]);
+        $result = $this->callMethod($driver, 'mapVuFindDetailsToIlsDetails', [$data, $source]);
         $this->assertEquals($expected, $result);
 
         $expected = [

@@ -122,12 +122,12 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
      * @var array
      */
     protected array $resultMapMethods = [
-        'renewMyItems' => 'mapIlsHoldToVuFindHold',
-        'getMyTransactionHistory' => 'mapIlsHoldToVuFindHold',
-        'getMyHolds' => 'mapIlsHoldToVuFindHold',
-        'getMyTransactions' => 'mapIlsHoldToVuFindHold',
-        'getConsortialHoldings' => 'mapIlsHoldToVuFindHold',
-        'getRenewDetails' => 'mapIlsHoldToVuFindHold',
+        'renewMyItems' => 'mapIlsDetailsToVuFindDetails',
+        'getMyTransactionHistory' => 'mapIlsDetailsToVuFindDetails',
+        'getMyHolds' => 'mapIlsDetailsToVuFindDetails',
+        'getMyTransactions' => 'mapIlsDetailsToVuFindDetails',
+        'getConsortialHoldings' => 'mapIlsDetailsToVuFindDetails',
+        'getRenewDetails' => 'mapIlsDetailsToVuFindDetails',
         'getMyFines' => 'mapIlsIdsToVuFindIds',
     ];
 
@@ -335,7 +335,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     {
         $details = $params[0] ?? [];
         $source = $this->getSourceForRecordId($details['id']);
-        $params[0] = $this->mapVuFindHoldToIlsHold($details, $source);
+        $params[0] = $this->mapVuFindDetailsToIlsDetails($details, $source);
         return [$params, $source];
     }
 
@@ -351,9 +351,9 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         $details = $params[0] ?? [];
         $patron = $details['patron'];
         $source = $this->getSourceForPatron($patron);
-        // remove patron from hold details for mapping of ids
+        // remove patron from details for mapping of ids
         unset($details['patron']);
-        $details = $this->mapVuFindHoldToIlsHold($details, $source);
+        $details = $this->mapVuFindDetailsToIlsDetails($details, $source);
         $details['patron'] = $this->mapVuFindPatronToIlsPatron($patron, $source);
         $params[0] = $details;
         return [$params, $source];
@@ -380,7 +380,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         } elseif ($itemId) {
             $source = $this->getSourceForItemId($itemId);
         }
-        $params[0] = $this->mapVuFindHoldToIlsHold($details, $source);
+        $params[0] = $this->mapVuFindDetailsToIlsDetails($details, $source);
         $params[1] = $this->mapVuFindPatronToIlsPatron($patron, $source);
         return [$params, $source];
     }
@@ -412,7 +412,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     {
         $source = $this->getSourceForPatron($params[2]);
         $params[0] = $this->mapVuFindRecordIdToIlsRecordId($params[0] ?? '', $source);
-        $params[1] = $this->mapVuFindHoldToIlsHold($params[1] ?? [], $source);
+        $params[1] = $this->mapVuFindDetailsToIlsDetails($params[1] ?? [], $source);
         $params[2] = $this->mapVuFindPatronToIlsPatron($params[2] ?? [], $source);
         return [$params, $source];
     }
@@ -429,7 +429,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         $source = $this->getSourceForPatron($params[1] ?? []);
         $params[0] = $this->mapVuFindRecordIdToIlsRecordId($params[0] ?? '', $source);
         $params[1] = $this->mapVuFindPatronToIlsPatron($params[1] ?? [], $source);
-        $params[2] = $this->mapVuFindHoldToIlsHold($params[2] ?? [], $source);
+        $params[2] = $this->mapVuFindDetailsToIlsDetails($params[2] ?? [], $source);
         return [$params, $source];
     }
 
@@ -457,7 +457,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         return [
             [
                 $this->mapVuFindRecordIdToIlsRecordId($id, $source),
-                $this->mapVuFindHoldToIlsHold($patron, $source),
+                $this->mapVuFindDetailsToIlsDetails($patron, $source),
                 array_map(fn ($id) => $this->mapVuFindRecordIdToIlsRecordId($id, $source), $ids),
             ],
             $source,
@@ -575,17 +575,17 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     }
 
     /**
-     * Map the hold array of the ILS to VuFind's hold array.
+     * Map the details array of the ILS to VuFind's details array.
      *
-     * @param array  $hold   Hold
-     * @param string $source Source code
+     * @param array  $details Details
+     * @param string $source  Source code
      *
      * @return array
      */
-    protected function mapIlsHoldToVuFindHold($hold, $source)
+    protected function mapIlsDetailsToVuFindDetails($details, $source)
     {
         return $this->mapVuFindIdsToIlsIds(
-            $hold,
+            $details,
             $source,
             [
                 'id' => 'mapIlsRecordIdToVuFindRecordId',
@@ -654,17 +654,17 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     }
 
     /**
-     * Map VuFind's hold array to the hold array of the ILS.
+     * Map VuFind's details array to the details array of the ILS.
      *
-     * @param array  $hold   Hold
-     * @param string $source Source code
+     * @param array  $details Details
+     * @param string $source  Source code
      *
      * @return array
      */
-    protected function mapVuFindHoldToIlsHold($hold, $source)
+    protected function mapVuFindDetailsToIlsDetails($details, $source)
     {
         return $this->mapVuFindIdsToIlsIds(
-            $hold,
+            $details,
             $source,
             [
                 'id' => 'mapVuFindRecordIdToIlsRecordId',
@@ -857,7 +857,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         [$params, $source] = $this->mapParamsAndGetSourceForMethod(__FUNCTION__, func_get_args());
         if ($driver = $this->getDriver($source)) {
             $status = $driver->getStatus(...$params);
-            return $this->mapIlsHoldToVuFindHold($status, $source);
+            return $this->mapIlsDetailsToVuFindDetails($status, $source);
         }
         // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
@@ -916,7 +916,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
                 }
                 $statuses = array_map(
                     function ($status) use ($source) {
-                        return $this->mapIlsHoldToVuFindHold($status, $source);
+                        return $this->mapIlsDetailsToVuFindDetails($status, $source);
                     },
                     $statuses
                 );
@@ -953,7 +953,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
                 $params[1] = [];
             }
             $holdings = $driver->getHolding(...$params);
-            return $this->mapIlsHoldToVuFindHold($holdings, $source);
+            return $this->mapIlsDetailsToVuFindDetails($holdings, $source);
         }
         // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
@@ -1109,7 +1109,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
                 return [];
             }
             $requests = $driver->getMyStorageRetrievalRequests(...$params);
-            return $this->mapIlsHoldToVuFindHold($requests, $source);
+            return $this->mapIlsDetailsToVuFindDetails($requests, $source);
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -1377,7 +1377,7 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
                 return [];
             }
             $requests = $driver->getMyILLRequests(...$params);
-            return $this->mapIlsHoldToVuFindHold($requests, $source);
+            return $this->mapIlsDetailsToVuFindDetails($requests, $source);
         }
         throw new ILSException('No suitable backend driver found');
     }
