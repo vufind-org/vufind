@@ -264,9 +264,8 @@ class SearchAction extends AbstractApiSearchAndRecordAction
                 $params->setLimit($recordFields ? $limit : 0);
             }
         );
-        // If we received an EmptySet back, that indicates that the real search
-        // failed due to some kind of syntax error, and we should display a
-        // warning to the user; otherwise, we should proceed with normal post-search
+        // If we received an EmptySet back, that indicates that the real search failed due to some kind of syntax
+		// error, and we should display a warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             throw new ApiException(ApiException::INVALID_SEARCH, 400);
