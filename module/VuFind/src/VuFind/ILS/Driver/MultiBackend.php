@@ -124,16 +124,16 @@ class MultiBackend extends AbstractMappingDriver
     }
 
     /**
-     * Map VuFind's record id to the record id of the ILS.
+     * Map VuFind's item id to the item id of the ILS.
      *
-     * @param string $recordId VuFind Record ID
-     * @param string $source   Source code
+     * @param string $itemId VuFind Record ID
+     * @param string $source Source code
      *
-     * @return string ILS Record ID
+     * @return string ILS item ID
      */
-    protected function mapVuFindItemIdToIlsItemId($recordId, $source)
+    protected function mapVuFindItemIdToIlsItemId($itemId, $source)
     {
-        return $this->mapVuFindIdToIlsId($recordId, $source);
+        return $this->mapVuFindIdToIlsId($itemId, $source);
     }
 
     /**
@@ -180,12 +180,12 @@ class MultiBackend extends AbstractMappingDriver
     }
 
     /**
-     * Map VuFind's record id to the record id of the ILS.
+     * Map VuFind's item id to the item id of the ILS.
      *
-     * @param string $itemId VuFind Record ID
+     * @param string $itemId VuFind item ID
      * @param string $source Source code
      *
-     * @return string ILS Record ID
+     * @return string ILS item ID
      */
     protected function mapIlsItemIdToVuFindItemId($itemId, $source)
     {

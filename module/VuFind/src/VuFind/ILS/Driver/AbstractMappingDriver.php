@@ -166,12 +166,12 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     /**
      * Map VuFind's record id to the record id of the ILS.
      *
-     * @param string $recordId VuFind Record ID
-     * @param string $source   Source code
+     * @param string $itemId VuFind item ID
+     * @param string $source Source code
      *
-     * @return string ILS Record ID
+     * @return string ILS item ID
      */
-    abstract protected function mapVuFindItemIdToIlsItemId($recordId, $source);
+    abstract protected function mapVuFindItemIdToIlsItemId($itemId, $source);
 
     /**
      * Map VuFind's cat_username to the cat_username of the ILS.
@@ -194,12 +194,12 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     abstract protected function mapIlsRecordIdToVuFindRecordId($recordId, $source);
 
     /**
-     * Map VuFind's record id to the record id of the ILS.
+     * Map VuFind's item id to the item id of the ILS.
      *
-     * @param string $itemId VuFind Record ID
+     * @param string $itemId VuFind item ID
      * @param string $source Source code
      *
-     * @return string ILS Record ID
+     * @return string ILS item ID
      */
     abstract protected function mapIlsItemIdToVuFindItemId($itemId, $source);
 
@@ -249,7 +249,10 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
      */
     protected function getSourceForPatron($patron)
     {
-        return $this->getSourceForCatUsername($patron['cat_username']);
+        if ($catUsername = $patron['cat_username'] ?? null) {
+            return $this->getSourceForCatUsername($catUsername);
+        }
+        return null;
     }
 
     /**
@@ -350,7 +353,16 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     {
         $details = $params[0] ?? [];
         $patron = $details['patron'];
-        $source = $this->getSourceForPatron($patron);
+        $source = '';
+        $recordId = $details['id'] ?? null;
+        $itemId = $details['item_id'] ?? null;
+        if ($patron) {
+            $source = $this->getSourceForPatron($patron);
+        } elseif ($recordId) {
+            $source = $this->getSourceForRecordId($recordId);
+        } elseif ($itemId) {
+            $source = $this->getSourceForItemId($itemId);
+        }
         // remove patron from details for mapping of ids
         unset($details['patron']);
         $details = $this->mapVuFindDetailsToIlsDetails($details, $source);
