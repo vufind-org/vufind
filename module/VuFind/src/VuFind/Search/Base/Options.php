@@ -433,13 +433,6 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $displayCitationLinksInResults;
 
     /**
-     * Should we display a warning in restricted views?
-     *
-     * @var bool
-     */
-    protected bool $showRestrictedViewWarning;
-
-    /**
      * Contexts where the restricted view warning is being displayed.
      *
      * @var array
@@ -550,11 +543,12 @@ abstract class Options implements TranslatorAwareInterface
 
         $this->displayCitationLinksInResults
             = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
-        $this->showRestrictedViewWarning
-            = (bool)($this->searchSettings['General']['show_restricted_view_warning'] ?? false);
-        $this->showRestrictedViewWarningContexts = $this->explodeListSetting(
-            $this->searchSettings['General']['show_restricted_view_warning_contexts'] ?? '*'
-        );
+        $showRestrictedViewWarningSetting = $this->searchSettings['General']['show_restricted_view_warning'] ?? '';
+        // support legacy config
+        if ($showRestrictedViewWarningSetting === '1') {
+            $showRestrictedViewWarningSetting = 'result_list_top,record_view';
+        }
+        $this->showRestrictedViewWarningContexts = $this->explodeListSetting($showRestrictedViewWarningSetting);
     }
 
     /**
@@ -1501,21 +1495,17 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we display a warning in restricted views? Context should be used to support
-     * deactivation of specific contexts via configuration. If omitted, returns true if ANY
-     * contexts are enabled.
+     * Should we display a warning in restricted views?
      *
-     * @param ?string $context Optional context
+     * @param ?string $context Optional context (If omitted, returns true if ANY
+     * contexts are enabled)
      *
      * @return bool
      */
     public function showRestrictedViewWarning(?string $context = null): bool
     {
-        if (!$this->showRestrictedViewWarning) {
-            return false;
-        }
         if ($context === null) {
-            return true;
+            return !empty($this->showRestrictedViewWarningContexts);
         }
         return (bool)array_intersect([$context, '*'], $this->showRestrictedViewWarningContexts);
     }
