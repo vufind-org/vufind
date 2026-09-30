@@ -437,7 +437,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected array $showRestrictedViewWarningContexts;
+    protected array $restrictedViewWarningContexts;
 
     /**
      * VuFind main configuration.
@@ -543,12 +543,12 @@ abstract class Options implements TranslatorAwareInterface
 
         $this->displayCitationLinksInResults
             = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
-        $showRestrictedViewWarningSetting = $this->searchSettings['General']['show_restricted_view_warning'] ?? '';
+        $restrictedViewWarningSetting = $this->searchSettings['General']['show_restricted_view_warning'] ?? '';
         // support legacy config
-        if ($showRestrictedViewWarningSetting === '1') {
-            $showRestrictedViewWarningSetting = 'result_list_top,record_view';
+        if ($restrictedViewWarningSetting === '1') {
+            $restrictedViewWarningSetting = 'result_list_top,record_view';
         }
-        $this->showRestrictedViewWarningContexts = $this->explodeListSetting($showRestrictedViewWarningSetting);
+        $this->restrictedViewWarningContexts = $this->explodeListSetting($restrictedViewWarningSetting);
     }
 
     /**
@@ -1504,10 +1504,9 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function showRestrictedViewWarning(?string $context = null): bool
     {
-        if ($context === null) {
-            return !empty($this->showRestrictedViewWarningContexts);
-        }
-        return (bool)array_intersect([$context, '*'], $this->showRestrictedViewWarningContexts);
+        return ($context === null)
+            ? !empty($this->restrictedViewWarningContexts)
+            : (bool)array_intersect([$context, '*'], $this->restrictedViewWarningContexts);
     }
 
     /**
