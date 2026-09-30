@@ -353,6 +353,44 @@ class GetThisLoaderTest extends TestCase
                 // Expected templates
             ],
         ];
+        yield [
+            [
+                // Config
+                'my_template1' => [
+                    'enabled' => true,
+                ],
+                'my_template2' => [
+                    'enabled' => true,
+                    'exclusive' => 'only',
+                ],
+                'my_template3' => [
+                    'enabled' => true,
+                ],
+
+            ],
+            [
+                'my_template2',
+            ],
+        ];
+        yield [
+            [
+                // Config
+                'my_template1' => [
+                    'enabled' => true,
+                ],
+                'my_template2' => [
+                    'enabled' => true,
+                    'exclusive' => 'preventNext',
+                ],
+                'my_template3' => [
+                    'enabled' => true,
+                ],
+            ],
+            [
+                'my_template1',
+                'my_template2',
+            ],
+        ];
     }
 
     /**

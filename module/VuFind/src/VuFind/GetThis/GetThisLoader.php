@@ -266,6 +266,7 @@ class GetThisLoader implements LoggerAwareInterface
             throw new Exception('Error with the get this configuration : ' . $t->getMessage(), previous: $t);
         }
         $this->sortSubTemplateParams();
+        $this->applyExclusiveFlag();
         return $this->subTemplates ?? [];
     }
 
@@ -283,6 +284,32 @@ class GetThisLoader implements LoggerAwareInterface
         usort($this->subTemplates, function ($a, $b) use ($orderMap) {
             return isset($orderMap[$a], $orderMap[$b]) ? $orderMap[$a] <=> $orderMap[$b] : 0;
         });
+    }
+
+    /**
+     * Apply the exclusive flag from the config.
+     *
+     * @return void
+     */
+    public function applyExclusiveFlag(): void
+    {
+        $preventNext = false;
+        foreach ($this->subTemplates ?? [] as $i => $subTemplate) {
+            if ($preventNext) {
+                unset($this->subTemplates[$i]);
+                continue;
+            }
+            if (!isset($this->config['templates'][$subTemplate]['exclusive'])) {
+                continue;
+            }
+            if ($this->config['templates'][$subTemplate]['exclusive'] === 'only') {
+                $this->subTemplates = [$subTemplate];
+                break;
+            }
+            if ($this->config['templates'][$subTemplate]['exclusive'] === 'preventNext') {
+                $preventNext = true;
+            }
+        }
     }
 
     /**
@@ -326,7 +353,7 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return mixed
      */
-    protected function matches(string $regexName, string|array $haystack, bool $default = false): bool
+    public function matches(string $regexName, string|array $haystack, bool $default = false): bool
     {
         if (is_array($haystack)) {
             foreach ($haystack as $item) {
@@ -600,18 +627,16 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the faculty delivery template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool  If the template should display
      */
-    public function showStaffDelivery(?string $itemId = null): bool
+    public function showStaffDelivery(): bool
     {
-        $item = $this->getItem($itemId);
+        $item = $this->getItem();
         if (
             empty($item)
             || empty($item['availability'])
-            || $this->isOut($itemId)
-            || $this->isUnavailable($itemId)
+            || $this->isOut()
+            || $this->isUnavailable()
             || !$item['availability'] instanceof AvailabilityStatusInterface
         ) {
             return false;
@@ -624,18 +649,16 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the remote parton template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool  If the template should display
      */
-    public function showRemoteDelivery(?string $itemId = null): bool
+    public function showRemoteDelivery(): bool
     {
-        $item = $this->getItem($itemId);
+        $item = $this->getItem();
         if (
             empty($item)
             || empty($item['availability'])
-            || $this->isOut($itemId)
-            || $this->isUnavailable($itemId)
+            || $this->isOut()
+            || $this->isUnavailable()
             || !$item['availability'] instanceof AvailabilityStatusInterface
         ) {
             return false;
@@ -647,13 +670,11 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the other library links template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool  If the template should display
      */
-    public function showInterLibrary(?string $itemId = null): bool
+    public function showInterLibrary(): bool
     {
-        $itemId = $this->getItemId($itemId);
+        $itemId = $this->getItemId();
         $haystack = [];
         if ($location = $this->getLocation($itemId)) {
             $haystack[] = $location;
@@ -672,13 +693,11 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the microform template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool If the template should display
      */
-    public function showMicroForm(?string $itemId = null): bool
+    public function showMicroForm(): bool
     {
-        $location = $this->getLocation($itemId);
+        $location = $this->getLocation();
         return $this->matches('LOCATION_MICROFORMS', $location);
     }
 

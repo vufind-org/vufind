@@ -495,6 +495,7 @@ class GetThisTest extends MinkTestCase
         $config = [
             'config' => [
                 'Site' => ['holdingsTemplate' => 'extended'],
+                'Catalog' => ['driver' => 'Sample'],
             ],
         ];
         $this->changeConfigs($config);
