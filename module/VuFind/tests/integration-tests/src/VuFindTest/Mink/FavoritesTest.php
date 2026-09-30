@@ -70,7 +70,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoSearch(string $query = 'Dewey'): element
+    protected function goToSearch(string $query = 'Dewey'): element
     {
         $page = $this->getSearchHomePage();
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $query);
@@ -87,9 +87,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $query = 'Dewey'): Element
+    protected function goToRecord(string $query = 'Dewey'): Element
     {
-        $page = $this->gotoSearch($query);
+        $page = $this->goToSearch($query);
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
         return $page;
@@ -116,7 +116,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testAddRecordToFavoritesNewAccount(): void
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         $this->clickCss($page, '.save-record');
         $this->clickCss($page, '.modal-body .createAccountLink');
@@ -187,7 +187,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLogin(): void
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         $this->clickCss($page, '.save-record');
         // Login
@@ -236,7 +236,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLoggedIn(): void
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Login
         $this->clickCss($page, '#loginOptions a');
         $this->waitForPageLoad($page);
@@ -260,7 +260,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesNewAccount(): void
     {
-        $page = $this->gotoSearch('id:"017791359-1"');
+        $page = $this->goToSearch('id:"017791359-1"');
 
         $this->clickCss($page, '.save-record');
         $this->waitForPageLoad($page);
@@ -334,7 +334,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesLogin(): void
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
 
         $this->clickCss($page, '.save-record');
         // Login
@@ -378,7 +378,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLogin')]
     public function testAddSearchItemToFavoritesLoggedIn(): void
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         // Login
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username2', 'test');
@@ -523,7 +523,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $page = $this->gotoSearch('id:testbug2');
+        $page = $this->goToSearch('id:testbug2');
 
         // Login
         $this->clickCss($page, '.save-record');
@@ -556,7 +556,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function gotoUserAccount(string $username = 'username1'): DocumentElement
+    protected function goToUserAccount(string $username = 'username1'): DocumentElement
     {
         // Go home
         $session = $this->getMinkSession();
@@ -586,7 +586,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $extraConfig['config']['Mail']['testOnly'] = 1;
         $this->changeConfigs($extraConfig);
-        return $this->gotoUserAccount();
+        return $this->goToUserAccount();
     }
 
     /**
@@ -658,7 +658,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     public function testSingleCite(): void
     {
         $this->changeConfigs(['config' => ['Citation' => ['list_single' => true]]]);
-        $page = $this->gotoUserAccount();
+        $page = $this->goToUserAccount();
 
         // Click cite link
         $this->clickCss($page, '.result-links .cite');
@@ -922,7 +922,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $page = $this->gotoUserAccount();
+        $page = $this->goToUserAccount();
         // Click on the first list and tag it:
         $link = $this->findAndAssertLink($page, 'Test List');
         $link->click();
@@ -938,7 +938,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $this->assertSame('Test List', $this->findCssAndGetText($page, 'h2.channel-title'));
             $this->assertCount(1, $page->findAll('css', 'li.channel-item'));
         } else {
-            $this->unfindCss($page, 'h2.channel-title');
+            $this->unFindCss($page, 'h2.channel-title');
         }
     }
 
@@ -991,7 +991,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testDeleteSingleFavoriteItem(): void
     {
-        $page = $this->gotoUserAccount('username2');
+        $page = $this->goToUserAccount('username2');
 
         // Get the initial count of items
         $initialItems = $page->findAll('css', '.result');

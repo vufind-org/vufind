@@ -169,7 +169,7 @@ class Results extends \VuFind\Search\Base\Results
         $scoreMap = [];
         foreach ($this->results as $record) {
             $data = $record->getRawData();
-            $scoreMap[$record->getUniqueId()] = $data['score'] ?? null;
+            $scoreMap[$record->getUniqueID()] = $data['score'] ?? null;
         }
         return $scoreMap;
     }

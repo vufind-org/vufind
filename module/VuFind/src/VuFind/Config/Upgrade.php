@@ -35,6 +35,7 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function dirname;
@@ -112,6 +113,7 @@ class Upgrade implements LoggerAwareInterface
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,
@@ -563,6 +565,14 @@ class Upgrade implements LoggerAwareInterface
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
+
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
+            $this->addWarning(
+                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
+                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
+            );
+        }
 
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {

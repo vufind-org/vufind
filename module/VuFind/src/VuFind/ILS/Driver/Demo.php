@@ -412,7 +412,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
-        return [$record->getUniqueId(), $record->getTitle()];
+        return [$record->getUniqueID(), $record->getTitle()];
     }
 
     /**
@@ -628,7 +628,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             } else {
                 if ($this->idsInMyResearch) {
                     [$currentItem['id'], $currentItem['title']]
-                        = $this->getRandomBibIdAndtitle();
+                        = $this->getRandomBibIdAndTitle();
                     $currentItem['source'] = $this->getRecordSource();
                 } else {
                     $currentItem['title'] = 'Demo Title ' . $i;
