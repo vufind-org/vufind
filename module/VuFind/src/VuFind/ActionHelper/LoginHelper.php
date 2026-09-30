@@ -291,7 +291,7 @@ class LoginHelper implements HelperInterface
         bool $allowCurrentUrl = true,
         array $extras = []
     ): void {
-        if (!($referrer = $this->contextHelper->getReferrer($request, true))) {
+        if (!($referrer = $this->contextHelper->getReferrer($request, true, allowCurrentUrl: $allowCurrentUrl))) {
             return;
         }
         // If the referrer is the MyResearch/Home action, it probably means that the user is repeatedly mistyping their
@@ -312,11 +312,6 @@ class LoginHelper implements HelperInterface
         );
         $mulNorm = $this->urlHelper->normalizeUrlForComparison($myUserLogin);
         if (str_starts_with($referrerNorm, $mulNorm)) {
-            return;
-        }
-
-        // Check that the referrer is not current URL if not allowed:
-        if (!$allowCurrentUrl && (string)$request->getUri() === $referrer) {
             return;
         }
 

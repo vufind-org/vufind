@@ -76,13 +76,15 @@ class ContextHelper implements HelperInterface
      * @param ServerRequestInterface $request               Request
      * @param bool                   $checkLightboxReferrer Check lightbox referrer?
      * @param bool                   $allowExternalUrls     Allow external URLs too?
+     * @param bool                   $allowCurrentUrl       Allow current URL as referrer?
      *
      * @return ?string
      */
     public function getReferrer(
         ServerRequestInterface $request,
         bool $checkLightboxReferrer = false,
-        bool $allowExternalUrls = false
+        bool $allowExternalUrls = false,
+        bool $allowCurrentUrl = true
     ): ?string {
         // lbreferer is the stored current url of the lightbox which overrides the url from the request when present
         $referrer = $checkLightboxReferrer ? ($request->getQueryParams()['lbreferer'] ?? null) : null;
@@ -90,6 +92,11 @@ class ContextHelper implements HelperInterface
         if ($referrer && !$allowExternalUrls && !$this->urlHelper->isLocalUrl($referrer)) {
             $referrer = null;
         }
+        // Check that the referrer is not current URL if not allowed:
+        if (!$allowCurrentUrl && (string)$request->getUri() === $referrer) {
+            return null;
+        }
+
         // Return a non-empty string or null:
         return $referrer ?: null;
     }
