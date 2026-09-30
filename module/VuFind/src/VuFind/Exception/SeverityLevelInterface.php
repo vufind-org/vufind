@@ -45,5 +45,5 @@ interface SeverityLevelInterface
      *
      * @return string
      */
-    public function getSeverityLevel();
+    public function getSeverityLevel(): string;
 }
