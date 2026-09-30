@@ -182,7 +182,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
         $templateParams['hierarchicalFacetsSortOptions'] = $this->getAdvancedHierarchicalFacetsSortOptions($facetsIni);
         $templateParams['facetList'] = $this->processAdvancedFacets(
             $facets,
-            ($templateParams['saved'] ?? null) ?: null,
+            $templateParams['saved'],
             $templateParams['hierarchicalFacets'],
             $templateParams['hierarchicalFacetsSortOptions']
         );

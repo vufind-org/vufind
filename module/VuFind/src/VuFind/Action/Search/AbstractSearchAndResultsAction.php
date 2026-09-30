@@ -302,31 +302,28 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function renderAdvancedSearch(?callable $setupCallback = null): ResponseInterface
     {
-        $templateParams = $this->createTemplateParams(
-            [
-                'options' => $this->getOptionsForClass(),
-                'saved' => false,
-            ]
-        );
-        if ($templateParams['options']->getAdvancedSearchAction() === null) {
+        $options = $this->getOptionsForClass();
+        if ($options->getAdvancedSearchAction() === null) {
             throw new \Exception('Advanced search not supported.');
         }
 
         // Handle request to edit existing saved search:
         // 'edit' query parameter is added for legacy template support; we use intval to ensure that
         // the correct type is passed to restoreAdvancedSearch.
+        $saved = null;
         $searchId = intval($this->getQueryParam('sid') ?? $this->getQueryParam('edit') ?? 0);
         if ($searchId > 0) {
-            $templateParams['saved'] = $this->restoreAdvancedSearch($searchId);
+            $saved = $this->restoreAdvancedSearch($searchId);
         }
 
         // If we have default filters, set them up as a fake "saved" search
         // to properly populate special controls on the advanced screen.
-        if (!$templateParams['saved'] && count($templateParams['options']->getDefaultFilters()) > 0) {
-            $templateParams['saved'] = $this->resultsPluginManager->get($this->getSearchClassId());
-            $templateParams['saved']->getParams()->initFromRequest(new \Laminas\Stdlib\Parameters([]));
+        if (!$saved && count($options->getDefaultFilters()) > 0) {
+            $saved = $this->resultsPluginManager->get($this->getSearchClassId());
+            $saved->getParams()->initFromRequest(new \Laminas\Stdlib\Parameters([]));
         }
 
+        $templateParams = $this->createTemplateParams(compact('options', 'saved'));
         if ($setupCallback) {
             $templateParams = $setupCallback($templateParams);
         }
@@ -563,6 +560,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     protected function createTemplateParams(array $params = []): array
     {
         $params['searchClassId'] = $this->getSearchClassId();
+        $params['saved'] ??= null;
         return $params;
     }
 

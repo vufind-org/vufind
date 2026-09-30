@@ -75,17 +75,15 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
 
         // Set up facet information:
         $templateParams = $this->addFacetDetails($templateParams);
+        $saved = $templateParams['saved'];
         $specialFacets = $this->parseSpecialFacetsSetting($templateParams['options']->getSpecialAdvancedFacets());
         if (isset($specialFacets['illustrated'])) {
-            $templateParams['illustratedLimit'] = $this->getIllustrationSettings($templateParams['saved'] ?: null);
+            $templateParams['illustratedLimit'] = $this->getIllustrationSettings($saved);
         }
         if (isset($specialFacets['checkboxes'])) {
-            $templateParams['checkboxFacets'] = $this->processAdvancedCheckboxes(
-                $specialFacets['checkboxes'],
-                ($templateParams['saved'] ?? null) ?: null
-            );
+            $templateParams['checkboxFacets'] = $this->processAdvancedCheckboxes($specialFacets['checkboxes'], $saved);
         }
-        $templateParams['ranges'] = $this->getAllRangeSettings($specialFacets, $templateParams['saved'] ?: null);
+        $templateParams['ranges'] = $this->getAllRangeSettings($specialFacets, $saved);
 
         return $templateParams;
     }
@@ -184,7 +182,7 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
      *
      * @param ?Results $savedSearch Saved search object, or null if none
      *
-     * @return array              Legal options, with selected value flagged.
+     * @return array Legal options, with selected value flagged.
      */
     protected function getIllustrationSettings(?Results $savedSearch = null): array
     {

@@ -62,22 +62,16 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
         return $this->renderAdvancedSearch(
             function (array $templateParams): array {
                 $facets = $this->facetCachePluginManager->get('Summon')->getList('Advanced');
-                $templateParams['facetList'] = $this->processAdvancedFacets($facets, $templateParams['saved']);
+                $saved = $templateParams['saved'];
+                $templateParams['facetList'] = $this->processAdvancedFacets($facets, $saved);
 
                 $specialFacets = $this->parseSpecialFacetsSetting(
                     $templateParams['options']->getSpecialAdvancedFacets()
                 );
                 if ($checkboxes = $specialFacets['checkboxes'] ?? null) {
-                    $templateParams['checkboxFacets'] = $this->processAdvancedCheckboxes(
-                        $checkboxes,
-                        $templateParams['saved']
-                    );
+                    $templateParams['checkboxFacets'] = $this->processAdvancedCheckboxes($checkboxes, $saved);
                 }
-                $templateParams['ranges'] = $this->getAllRangeSettings(
-                    $specialFacets,
-                    $templateParams['saved'],
-                    'Summon'
-                );
+                $templateParams['ranges'] = $this->getAllRangeSettings($specialFacets, $saved, 'Summon');
                 return $templateParams;
             }
         );
