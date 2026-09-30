@@ -126,7 +126,6 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         'getMyFines' => 'mapIlsIdsToVuFindIds',
     ];
 
-    /* todo check these */
     /**
      * Methods that don't have parameters that allow the correct source to be
      * determined. These methods are only supported for the default driver.

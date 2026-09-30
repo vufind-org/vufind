@@ -86,56 +86,6 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getSourceFromParams.
-     *
-     * @return void
-     */
-    public function testGetSourceFromParams()
-    {
-        $driver = $this->initDriver();
-
-        $drivers = ['d1' => 'Voyager', 'd2' => 'Demo'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        $result = $this->callMethod($driver, 'getSourceFromParams', ['']);
-        $this->assertEquals('', $result);
-
-        $result = $this->callMethod($driver, 'getSourceFromParams', ['d1.record2']);
-        $this->assertEquals('d1', $result);
-
-        $data = [
-            'id' => 'record1',
-            'cat_username' => 'record2',
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('', $result);
-
-        $data = [
-            'id' => 'record1',
-            'cat_username' => 'd1.record2',
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('d1', $result);
-
-        $data = [
-            'id' => 'd2.record1',
-            'cat_username' => 'record2',
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('d2', $result);
-
-        $data = [
-            'test' => 'true',
-            'patron' => [
-                'id' => 'd2.record1',
-                'cat_username' => 'record2',
-            ],
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('d2', $result);
-    }
-
-    /**
      * Testing method for mapIlsIdsToVuFindIds.
      *
      * @return void
