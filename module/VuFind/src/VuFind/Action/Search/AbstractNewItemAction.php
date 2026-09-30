@@ -208,9 +208,8 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
     ): array {
         $templateParams = parent::getSearchResultsTemplateParams($request, $searchClassId, $setupCallback);
 
-        // Customize the URL helper to make sure it builds proper new item URLs
-        // (check it's set first -- RSS feed will return a response model rather
-        // than a view model):
+        // Customize the URL helper to make sure it builds proper new item URLs (check it's set first -- RSS feed will
+		// return a response model rather than a view model):
         if ($results = $templateParams['results'] ?? null) {
             $results->getOptions()->setFacetListAction('search-newitemfacetlist');
             $results->getUrlQuery()
