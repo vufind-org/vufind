@@ -50,7 +50,6 @@ use function strlen;
  */
 class MultiBackend extends AbstractMappingDriver
 {
-    // todo keep
     protected function checkILLRequestIsValidParamMap($params)
     {
         $source = $this->getSourceForRecordId($params[0] ?? '');
@@ -59,36 +58,6 @@ class MultiBackend extends AbstractMappingDriver
         $params[1] = $this->mapVuFindHoldToIlsHold($params[1] ?? [], $source);
         return [$params, $source];
     }
-
-    protected function placeILLRequestParamMap($params)
-    {
-        $details = $params[0] ?? [];
-        $patron = $details['patron'] ?? [];
-        $source = $this->getSourceForRecordId($details['id']);
-        // remove patron from hold details for mapping of ids
-        unset($details['patron']);
-        $details = $this->mapVuFindHoldToIlsHold($details, $source);
-        // Patron is not mapped so that the correct library can be determined
-        $details['patron'] = $patron;
-        $params[0] = $details;
-        return [$params, $source];
-    }
-
-    /* todo check these */
-    /**
-     * Methods that don't have parameters that allow the correct source to be
-     * determined. These methods are only supported for the default driver.
-     */
-    protected $methodsWithNoSourceSpecificParameters = [
-        'findReserves',
-        'getCourses',
-        'getDepartments',
-        'getInstructors',
-        'getOfflineMode',
-        'getSuppressedAuthorityRecords',
-        'getSuppressedRecords',
-        'loginIsHidden',
-    ];
 
     /**
      * Constructor.
@@ -108,7 +77,7 @@ class MultiBackend extends AbstractMappingDriver
         $this->paramMapAndSourceCheckMethods['checkILLRequestIsValid'] = 'checkILLRequestIsValidParamMap';
         $this->paramMapAndSourceCheckMethods['getILLPickupLibraries'] = 'recordIdParamMap';
         $this->paramMapAndSourceCheckMethods['getILLPickupLocations'] = 'recordIdParamMap';
-        $this->paramMapAndSourceCheckMethods['placeILLRequest'] = 'placeILLRequestParamMap';
+        $this->paramMapAndSourceCheckMethods['placeILLRequest'] = 'detailsParamMap';
     }
 
     /**
@@ -160,18 +129,6 @@ class MultiBackend extends AbstractMappingDriver
     protected function mapVuFindItemIdToIlsItemId($recordId, $source)
     {
         return $this->mapVuFindIdToIlsId($recordId, $source);
-    }
-
-    /**
-     * Map VuFind's patron id to the patron id of the ILS.
-     *
-     * @param string $patronId VuFind Patron ID
-     *
-     * @return string ILS Patron ID
-     */
-    protected function mapVuFindPatronIdToIlsPatronId(string $patronId, $source): string
-    {
-        return $this->mapVuFindIdToIlsId($patronId, $source);
     }
 
     /**
@@ -313,56 +270,5 @@ class MultiBackend extends AbstractMappingDriver
         }
 
         return '';
-    }
-
-    /**
-     * Get source for a method and parameters.
-     *
-     * @param string $method Method
-     * @param array  $params Parameters
-     *
-     * @return string
-     */
-    protected function getSourceForMethod(string $method, array $params): ?string
-    {
-        if ($source = parent::getSourceForMethod($method, $params)) {
-            return $source;
-        }
-        return $this->getSourceFromParams($params);
-    }
-
-    /**
-     * Get source from method parameters.
-     *
-     * @param array $params      Parameters of a driver method call
-     * @param array $allowedKeys Keys to use for source identification
-     *
-     * @return ?string Source id or empty string if not found
-     */
-    protected function getSourceFromParams(
-        $params,
-        $allowedKeys = [0, 'id', 'cat_username']
-    ) {
-        if (!is_array($params)) {
-            if (is_string($params)) {
-                $source = $this->getSource($params);
-                if ($source && isset($this->drivers[$source])) {
-                    return $source;
-                }
-            }
-            return null;
-        }
-        foreach ($params as $key => $value) {
-            $source = false;
-            if (is_array($value) && (is_int($key) || $key === 'patron')) {
-                $source = $this->getSourceFromParams($value, $allowedKeys);
-            } elseif (in_array($key, $allowedKeys)) {
-                $source = $this->getSource($value);
-            }
-            if ($source && isset($this->drivers[$source])) {
-                return $source;
-            }
-        }
-        return null;
     }
 }

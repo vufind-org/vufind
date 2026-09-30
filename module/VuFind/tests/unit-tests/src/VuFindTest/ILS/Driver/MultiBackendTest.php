@@ -2360,12 +2360,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
 
-        //Case: Instance to use is in parameters but does not have method
-        //Result: A return of false
+        //Case: Instance to use is in parameters but does not have method.
+        // Assuming method works if it is unknown.
+        //Result: A return of true
 
         $patron = [$this->getPatron('username', 'testing3')];
         $methodReturn = $driver->supportsMethod('fail', $patron);
-        $this->assertFalse($methodReturn);
+        $this->assertTrue($methodReturn);
 
         //Case: Instance to use is in parameters and has method
         //Result: A return of true

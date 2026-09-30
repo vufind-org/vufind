@@ -81,6 +81,8 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         'getDefaultPickUpLocation' => 'patronAndDetailsParamMap',
         'getDefaultRequestGroup' => 'patronAndDetailsParamMap',
         'getHoldDefaultRequiredDate' => 'patronAndDetailsParamMap',
+        'Holds' => 'recordIdAndPatronAssociativeParamMap',
+        'Holdings' => 'recordIdAndPatronAssociativeParamMap',
         'getHolding' => 'recordIdAndPatronParamMap',
         'getHoldLink' => 'recordIdAndPatronParamMap',
         'getILLPickupLibraries' => 'recordIdAndPatronParamMap',
@@ -124,6 +126,22 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         'getMyFines' => 'mapIlsIdsToVuFindIds',
     ];
 
+    /* todo check these */
+    /**
+     * Methods that don't have parameters that allow the correct source to be
+     * determined. These methods are only supported for the default driver.
+     */
+    protected $methodsWithNoSourceSpecificParameters = [
+        'findReserves',
+        'getCourses',
+        'getDepartments',
+        'getInstructors',
+        'getOfflineMode',
+        'getSuppressedAuthorityRecords',
+        'getSuppressedRecords',
+        'loginIsHidden',
+    ];
+
     /**
      * The default driver to use.
      *
@@ -154,6 +172,23 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
         $source = $this->getSourceForRecordId($id);
         $params[0] = $this->mapVuFindRecordIdToIlsRecordId($id, $source);
         $params[1] = $this->mapVuFindPatronToIlsPatron($patron, $source);
+        return [$params, $source];
+    }
+
+    protected function recordIdAndPatronAssociativeParamMap($params)
+    {
+        $recordId = $params['id'] ?? '';
+        $patron = $params['patron'] ?? [];
+        $source = null;
+        if ($patron) {
+            $source = $this->getSourceForPatron($patron);
+        } elseif ($recordId) {
+            $source = $this->getSourceForRecordId($recordId);
+        }
+        if ($source) {
+            $params['id'] = $this->mapVuFindRecordIdToIlsRecordId($recordId, $source);
+            $params['patron'] = $this->mapVuFindPatronToIlsPatron($patron, $source);
+        }
         return [$params, $source];
     }
 
@@ -276,7 +311,10 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
     protected function mapParamsAndGetSourceForMethod($function, $params)
     {
         if ($mappingMethod = $this->paramMapAndSourceCheckMethods[$function] ?? null) {
-            return $this->$mappingMethod($params);
+            [$mappedParams, $source] = $this->$mappingMethod($params);
+            if ($source) {
+                return [$mappedParams, $source];
+            }
         }
         $source = $this->getSourceForMethod($function, $params);
         try {
@@ -390,7 +428,6 @@ abstract class AbstractMappingDriver extends AbstractMultiDriver
             $patron,
             $source,
             [
-                'id' => 'mapVuFindPatronIdToIlsPatronId',
                 'cat_username' => 'mapVuFindCatUsernameToIlsCatUsername',
             ]
         );
