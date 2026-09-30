@@ -33,11 +33,16 @@ declare(strict_types=1);
 
 namespace VuFindTest\Action\Install;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Action\Install\AbstractInstallAction;
 use VuFind\Action\Install\HomeAction;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ReflectionTrait;
+
+use function strlen;
 
 /**
  * Class AbstractInstallActionTest.
@@ -201,6 +206,116 @@ class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
             $expected,
             $this->callMethod($action, 'getMinimalPhpVersion')
         );
+    }
+
+    /**
+     * Test that an insecure configuration is repaired with hashing/encryption settings and a fresh 32-character key.
+     *
+     * @return void
+     */
+    public function testGetFixedSecurityConfigurationForInsecureConfig(): void
+    {
+        $action = $this->getAutowiredObject(HomeAction::class);
+        $fixed = $this->callMethod($action, 'getFixedSecurityConfiguration', [[]])['Authentication'];
+        $this->assertTrue($fixed['hash_passwords']);
+        $this->assertTrue($fixed['encrypt_ils_password']);
+        $this->assertSame('aes', $fixed['ils_encryption_algo']);
+        $this->assertSame(32, strlen($fixed['ils_encryption_key']));
+    }
+
+    /**
+     * Test that a secure configuration missing only an encryption key gets a key without rewriting the
+     * hashing/encryption flags.
+     *
+     * @return void
+     */
+    public function testGetFixedSecurityConfigurationAddsMissingKeyOnly(): void
+    {
+        $action = $this->getAutowiredObject(HomeAction::class);
+        $config = ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]];
+        $fixed = $this->callMethod($action, 'getFixedSecurityConfiguration', [$config])['Authentication'];
+        $this->assertArrayNotHasKey('hash_passwords', $fixed);
+        $this->assertSame(32, strlen($fixed['ils_encryption_key']));
+    }
+
+    /**
+     * Test that a fully secure configuration needs no changes.
+     *
+     * @return void
+     */
+    public function testGetFixedSecurityConfigurationForSecureConfig(): void
+    {
+        $action = $this->getAutowiredObject(HomeAction::class);
+        $config = [
+            'Authentication' => [
+                'hash_passwords' => true,
+                'encrypt_ils_password' => true,
+                'ils_encryption_key' => 'already-set',
+            ],
+        ];
+        $this->assertSame([], $this->callMethod($action, 'getFixedSecurityConfiguration', [$config]));
+    }
+
+    /**
+     * Data provider for testHasSecureDatabase().
+     *
+     * @return \Iterator
+     */
+    public static function hasSecureDatabaseProvider(): \Iterator
+    {
+        yield 'insecure configuration' => [false, 0, false];
+
+        yield 'secure config, clean database' => [true, 0, true];
+
+        yield 'secure config, insecure rows' => [true, 1, false];
+    }
+
+    /**
+     * Test that database security depends on both the configuration and the absence of insecure rows.
+     *
+     * @param bool $secureConfig Whether hashing/encryption are enabled in the configuration
+     * @param int  $insecureRows Number of insecure rows reported by each database service
+     * @param bool $expected     Expected result
+     *
+     * @return void
+     */
+    #[DataProvider('hasSecureDatabaseProvider')]
+    public function testHasSecureDatabase(bool $secureConfig, int $insecureRows, bool $expected): void
+    {
+        $rows = array_fill(0, $insecureRows, $this->createStub(\stdClass::class));
+        $userService = $this->createMock(UserServiceInterface::class);
+        $userService->method('getInsecureRows')->willReturn($rows);
+        $userCardService = $this->createMock(UserCardServiceInterface::class);
+        $userCardService->method('getInsecureRows')->willReturn([]);
+
+        $action = $this->getAutowiredObject(
+            HomeAction::class,
+            [UserServiceInterface::class => $userService, UserCardServiceInterface::class => $userCardService]
+        );
+        $config = $secureConfig
+            ? ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]]
+            : [];
+        $this->setProperty($action, 'config', $config);
+        $this->assertSame($expected, $this->callMethod($action, 'hasSecureDatabase'));
+    }
+
+    /**
+     * Test that a database error while checking security is treated as insecure.
+     *
+     * @return void
+     */
+    public function testHasSecureDatabaseTreatsErrorsAsInsecure(): void
+    {
+        $userService = $this->createMock(UserServiceInterface::class);
+        $userService->method('getInsecureRows')->willThrowException(new \RuntimeException('no db'));
+
+        $action = $this->getAutowiredObject(HomeAction::class, [UserServiceInterface::class => $userService]);
+        $this->setProperty(
+            $action,
+            'config',
+            ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]]
+        );
+        $this->assertFalse($this->callMethod($action, 'hasSecureDatabase'));
     }
 
     /**
