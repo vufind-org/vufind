@@ -145,6 +145,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'install/performsecurityfix' => Install\PerformSecurityFixAction::class,
         'install/fixsslcerts' => Install\FixSslCertsAction::class,
 
+        'librarycards/connectcard' => LibraryCards\ConnectCardAction::class,
+        'librarycards/connectcardlogin' => LibraryCards\ConnectCardLoginAction::class,
+        'librarycards/deletecard' => LibraryCards\DeleteCardAction::class,
+        'librarycards/editcard' => LibraryCards\EditCardAction::class,
+        'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
+        'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
@@ -267,6 +274,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
         'Shortlink' => 'ShortLink',
