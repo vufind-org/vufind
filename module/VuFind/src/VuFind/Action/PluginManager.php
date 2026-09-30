@@ -131,6 +131,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
 
+        'hierarchy/getrecord' => Hierarchy\GetRecordAction::class,
+        'hierarchy/gettree' => Hierarchy\GetTreeAction::class,
+        'hierarchy/searchtree' => Hierarchy\SearchTreeAction::class,
+
         'install/fixbasicconfig' => Install\FixBasicConfigAction::class,
         'install/fixcache' => Install\FixCacheAction::class,
         'install/fixdatabase' => Install\FixDatabaseAction::class,
