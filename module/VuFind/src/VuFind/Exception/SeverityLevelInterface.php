@@ -43,7 +43,7 @@ interface SeverityLevelInterface
     /**
      * Get the logging severity level for this exception.
      *
-     * @return int
+     * @return string
      */
     public function getSeverityLevel();
 }
