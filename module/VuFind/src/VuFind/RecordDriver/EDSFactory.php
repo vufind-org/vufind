@@ -66,7 +66,7 @@ class EDSFactory implements FactoryInterface
     ) {
         $parts = explode('\\', $requestedName);
         $configName = array_pop($parts);
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($configName);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($configName);
         $cache = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
         return new $requestedName($config, $cache);
     }

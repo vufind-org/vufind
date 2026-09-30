@@ -82,8 +82,7 @@ class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareI
     public function supports($ids)
     {
         return isset($ids['recordid'])
-            && isset($ids['source'])
-            && $ids['source'] === 'EDS';
+            && ($ids['source'] ?? null) === 'EDS';
     }
 
     /**

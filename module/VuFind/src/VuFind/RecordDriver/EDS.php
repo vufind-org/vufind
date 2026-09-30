@@ -70,9 +70,8 @@ class EDS extends DefaultRecord
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig VuFind main configuration (omit
-     * for built-in defaults)
-     * @param StorageInterface      $cache      Cache
+     * @param ?array           $mainConfig VuFind main configuration (omit for built-in defaults)
+     * @param StorageInterface $cache      Cache
      */
     public function __construct(
         $mainConfig = null,
@@ -716,7 +715,7 @@ class EDS extends DefaultRecord
         // for certain ebook packages.
         if ($thumbnail) {
             // Determine if we are using the cover loader method or direct load
-            $loadDirectly = $this->recordConfig?->Cover?->loadDirectly ?? true;
+            $loadDirectly = $this->recordConfig['Cover']['loadDirectly'] ?? true;
             if ($loadDirectly) {
                 return $thumbnail;
             } else {
