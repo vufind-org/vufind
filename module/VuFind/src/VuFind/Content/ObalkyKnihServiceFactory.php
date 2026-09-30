@@ -70,14 +70,14 @@ class ObalkyKnihServiceFactory implements FactoryInterface
                 'Unexpected options passed to factory.'
             );
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('obalkyknih');
-        if (!isset($config->ObalkyKnih)) {
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('obalkyknih');
+        if (!isset($config['ObalkyKnih'])) {
             throw new ServiceNotCreatedException(
                 'ObalkyKnih service is not properly configured'
             );
         }
 
-        $service = new $requestedName($config->ObalkyKnih);
+        $service = new $requestedName($config['ObalkyKnih']);
 
         // Populate cache storage if a setCacheStorage method is present:
         if (method_exists($service, 'setCacheStorage')) {

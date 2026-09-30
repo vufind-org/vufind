@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\View\Helper\AssetManager;
+
 /**
  * GoogleTagManager view helper.
  *
@@ -38,23 +41,20 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
+class GoogleTagManager
 {
-    /**
-     * GTM Container ID (false if disabled).
-     *
-     * @var string|bool
-     */
-    protected $gtmContainerId;
-
     /**
      * Constructor.
      *
-     * @param string|bool $gtmContainerId Container ID (false if disabled)
+     * @param string|bool  $gtmContainerId Container ID (false if disabled)
+     * @param AssetManager $assetManager   Asset manager helper
      */
-    public function __construct($gtmContainerId)
-    {
-        $this->gtmContainerId = $gtmContainerId;
+    public function __construct(
+        #[Autowire(config: 'config', path: 'GoogleTagManager/gtmContainerId', default: false)]
+        protected $gtmContainerId,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager
+    ) {
     }
 
     /**
@@ -62,7 +62,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getHeadCode()
+    public function getHeadCode(): string
     {
         if (!$this->gtmContainerId) {
             return '';
@@ -76,7 +76,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
             n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','{$this->gtmContainerId}');
             END;
-        return $this->getView()->plugin('assetManager')->outputInlineScriptString($js);
+        return $this->assetManager->outputInlineScriptString($js);
     }
 
     /**
@@ -84,18 +84,27 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBodyCode()
+    public function getBodyCode(): string
     {
         if (!$this->gtmContainerId) {
             return '';
         }
 
-        $js = <<<END
+        return <<<END
             <!-- Google Tag Manager (noscript) -->
             <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$this->gtmContainerId}"
             height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- End Google Tag Manager (noscript) -->
             END;
-        return $js;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

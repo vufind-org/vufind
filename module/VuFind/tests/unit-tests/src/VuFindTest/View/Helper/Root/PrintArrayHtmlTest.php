@@ -54,10 +54,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
      */
     protected function getHelper()
     {
-        $helper = new PrintArrayHtml();
-        $helper->setView($this->getViewWithHelpers());
-
-        return $helper;
+        return new PrintArrayHtml($this->getMakeTagHelper());
     }
 
     /**

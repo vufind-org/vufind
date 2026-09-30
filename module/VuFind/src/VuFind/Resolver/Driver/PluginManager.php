@@ -29,8 +29,6 @@
 
 namespace VuFind\Resolver\Driver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Resolver driver plugin manager.
  *
@@ -67,14 +65,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Alma::class => AlmaFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
-        Demo::class => InvokableFactory::class,
-        Jop::class => JopFactory::class,
-        LinkIq::class => LinkIqFactory::class,
         Sfx::class => DriverWithHttpClientFactory::class,
         Redi::class => DriverWithHttpClientFactory::class,
-        Generic::class => AbstractBaseFactory::class,
     ];
 
     /**

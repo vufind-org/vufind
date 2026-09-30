@@ -72,10 +72,9 @@ class SlackTest extends \PHPUnit\Framework\TestCase
 
         $handler->expects($this->once())
             ->method('write')
-            ->with($this->callback(function (LogRecord $record) {
+            ->willReturnCallback(function (LogRecord $record): void {
                 $this->assertSame('test', $record->message);
-                return true;
-            }));
+            });
 
         $handler->handle($logRecord);
     }

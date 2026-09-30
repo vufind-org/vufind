@@ -70,7 +70,7 @@ class HoldSettingsFactory implements FactoryInterface
         }
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
-            $configManager->getConfigObject('config')->Catalog
+            $configManager->getConfigArray('config')['Catalog']
         );
     }
 }

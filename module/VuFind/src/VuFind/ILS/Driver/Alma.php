@@ -1405,7 +1405,7 @@ class Alma extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ($function == 'patronLogin') {
             return [
@@ -1435,7 +1435,7 @@ class Alma extends AbstractBase implements
                 'default_sort' => 'due asc',
             ];
         } else {
-            $functionConfig = false;
+            $functionConfig = [];
         }
 
         return $functionConfig;
@@ -2003,32 +2003,5 @@ class Alma extends AbstractBase implements
             $this->putCachedData($cacheId, $locations, 3600);
         }
         return $locations;
-    }
-
-    /**
-     * Get list of funds.
-     *
-     * @return array with key = fund ID, value = fund name
-     *
-     * @deprecated
-     */
-    public function getFunds()
-    {
-        // https://developers.exlibrisgroup.com/alma/apis/acq
-        // GET /almaws/v1/acq/funds
-        try {
-            $xml = $this->makeRequest('/acq/funds');
-        } catch (ILSException $e) {
-            // API key not defined or not configured to allow this API.
-            // Required permission: Acquisition Read.
-            $xml = [];
-        }
-        $result = [];
-        foreach ($xml->fund ?? [] as $fund) {
-            $fundId = (string)$fund->id;
-            $fundName = (string)$fund->name;
-            $result[$fundId] = $fundName;
-        }
-        return $result;
     }
 }

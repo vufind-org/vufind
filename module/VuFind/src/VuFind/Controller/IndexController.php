@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Auth\Manager as AuthManager;
-use VuFind\Config\Config;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -41,15 +41,8 @@ use VuFind\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
+class IndexController extends AbstractBase
 {
-    /**
-     * VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $config;
-
     /**
      * Auth manager.
      *
@@ -60,12 +53,13 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
     /**
      * Constructor.
      *
-     * @param Config      $config      VuFind configuration
-     * @param AuthManager $authManager Auth manager
+     * @param ServiceLocatorInterface $sm          Service locator
+     * @param array                   $config      VuFind configuration
+     * @param AuthManager             $authManager Auth manager
      */
-    public function __construct(Config $config, AuthManager $authManager)
+    public function __construct(ServiceLocatorInterface $sm, protected array $config, AuthManager $authManager)
     {
-        $this->config = $config;
+        parent::__construct($sm);
         $this->authManager = $authManager;
     }
 
@@ -79,15 +73,15 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
     {
         // Load different configurations depending on whether we're logged in or not:
         if ($this->authManager->getIdentity()) {
-            $controller = $this->config->Site->defaultLoggedInModule ?? 'MyResearch';
+            $controller = $this->config['Site']['defaultLoggedInModule'] ?? 'MyResearch';
             $actionConfig = 'defaultLoggedInAction';
         } else {
-            $controller = $this->config->Site->defaultModule ?? 'Search';
+            $controller = $this->config['Site']['defaultModule'] ?? 'Search';
             $actionConfig = 'defaultAction';
         }
-        $action = $this->config->Site->$actionConfig ?? 'Home';
+        $action = $this->config['Site'][$actionConfig] ?? 'Home';
 
         // Forward to the appropriate controller and action:
-        return $this->forward()->dispatch($controller, compact('action'));
+        return $this->forwardTo($controller, $action);
     }
 }

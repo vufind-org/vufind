@@ -110,6 +110,20 @@ class Notices implements TranslatorAwareInterface
     }
 
     /**
+     * Get style classes.
+     *
+     * @param string $style Style
+     *
+     * @return string
+     */
+    public function getStyleClasses(string $style): string
+    {
+        return $this->noticeManager->getNoticeConfig()['styles'][$style]['classes']
+            ?? $this->defaultStyleClasses[$style]
+            ?? '';
+    }
+
+    /**
      * Render notice.
      *
      * @param array $notice Notice
@@ -128,9 +142,7 @@ class Notices implements TranslatorAwareInterface
         );
         $classes = '';
         if ($style = $notice['style'] ?? null) {
-            $classes = $this->noticeManager->getConfig()['styles'][$style]['classes']
-                ?? $this->defaultStyleClasses[$style]
-                ?? '';
+            $classes = $this->getStyleClasses($style);
         }
         return $this->renderer->render(
             'Helpers/notices/notice.phtml',

@@ -40,31 +40,23 @@ use Laminas\Session\Container as SessionContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Session extends \Laminas\View\Helper\AbstractHelper
+class Session
 {
-    /**
-     * Session container.
-     *
-     * @var SessionContainer
-     */
-    protected $sessionContainer;
-
     /**
      * Config constructor.
      *
      * @param SessionContainer $sessionContainer Session container
      */
-    public function __construct(SessionContainer $sessionContainer)
+    public function __construct(protected SessionContainer $sessionContainer)
     {
-        $this->sessionContainer = $sessionContainer;
     }
 
     /**
      * Return this object.
      *
-     * @return Session
+     * @return static
      */
-    public function __invoke(): Session
+    public function __invoke(): static
     {
         return $this;
     }

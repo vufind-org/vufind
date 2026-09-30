@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
 use VuFind\AjaxHandler\PluginManager;
+use VuFind\Http\HttpStatus;
 
 /**
  * Trait to allow AJAX response generation.
@@ -119,7 +120,7 @@ trait AjaxResponseTrait
         return $this->getAjaxResponse(
             $type,
             $this->translate('An error has occurred') . $debugMsg,
-            Ajax::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 
@@ -153,7 +154,7 @@ trait AjaxResponseTrait
         return $this->getAjaxResponse(
             $type,
             $this->translate('Invalid Method'),
-            Ajax::STATUS_HTTP_BAD_REQUEST
+            HttpStatus::BAD_REQUEST
         );
     }
 }

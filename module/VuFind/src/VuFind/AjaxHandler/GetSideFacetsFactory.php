@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for GetSideFacets AJAX handler.
@@ -75,7 +76,7 @@ class GetSideFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
             $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get('ViewRenderer')
+            $container->get(TemplateRendererInterface::class)
         );
         return $result;
     }

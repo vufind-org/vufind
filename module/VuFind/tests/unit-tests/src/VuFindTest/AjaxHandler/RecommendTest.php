@@ -36,7 +36,6 @@ use VuFind\Recommend\RecommendInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
-use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 
 use function count;
 
@@ -124,17 +123,13 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->willReturn($results);
         $this->container->set(ResultsManager::class, $resultsManager);
 
-        // Set up view helper and renderer:
-        $view = new \Laminas\View\Renderer\PhpRenderer();
+        // Set up view helper plugin manager:
         $plugins = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $plugins->set('recommend', $plugins->get(RecommendHelper::class));
-        $view->setHelperPluginManager($plugins);
-        $this->container->set('ViewRenderer', $view);
+        $this->container->set(\Laminas\View\HelperPluginManager::class, $plugins);
 
         // Build and test the ajax handler:
         $factory = new RecommendFactory();
         $handler = $factory($this->container, Recommend::class);
-        $params = $this->getParamsHelper(['mod' => 'foo']);
-        $this->assertEquals([null], $handler->handleRequest($params));
+        $this->assertEquals([null], $handler->handleRequest($this->getRequest(['mod' => 'foo'])));
     }
 }

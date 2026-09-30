@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * AJAX handler interface.
@@ -42,19 +42,12 @@ use Laminas\Mvc\Controller\Plugin\Params;
  */
 interface AjaxHandlerInterface
 {
-    // define some status constants
-    public const STATUS_HTTP_BAD_REQUEST = 400; // bad request
-    public const STATUS_HTTP_NEED_AUTH = 401;   // must login first
-    public const STATUS_HTTP_FORBIDDEN = 403;   // method is unavailable
-    public const STATUS_HTTP_ERROR = 500;       // an error occurred
-    public const STATUS_HTTP_UNAVAILABLE = 503; // temporarily unavailable
-
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params);
+    public function handleRequest(ServerRequestInterface $request): array;
 }

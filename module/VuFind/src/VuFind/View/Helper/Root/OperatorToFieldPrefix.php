@@ -38,7 +38,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class OperatorToFieldPrefix extends \Laminas\View\Helper\AbstractHelper
+class OperatorToFieldPrefix
 {
     /**
      * Given a Boolean operator from a filter, convert it into a VuFind URL field prefix.

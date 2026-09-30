@@ -30,8 +30,6 @@
 namespace VuFindTest\Feature;
 
 use Laminas\EventManager\SharedEventManager;
-use VuFind\Config\PathResolver;
-use VuFind\Config\SearchSpecsReader;
 use VuFind\Search\BackendManager;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -71,10 +69,6 @@ trait LiveSolrTrait
         $container->set(
             \VuFindHttp\HttpService::class,
             $httpFactory($container, \VuFindHttp\HttpService::class)
-        );
-        $container->set(
-            SearchSpecsReader::class,
-            new SearchSpecsReader($container->get(PathResolver::class))
         );
         $container->set('SharedEventManager', new SharedEventManager());
         $container->set(

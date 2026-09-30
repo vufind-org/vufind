@@ -29,10 +29,10 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Tags\TagsService;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * AJAX handler to get all tags for a record as HTML.
@@ -48,31 +48,32 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor.
      *
-     * @param TagsService          $tagsService Tags service
-     * @param ?UserEntityInterface $user        Logged in user (or null)
-     * @param RendererInterface    $renderer    View renderer
+     * @param TagsService               $tagsService Tags service
+     * @param ?UserEntityInterface      $user        Logged in user (or null)
+     * @param TemplateRendererInterface $renderer    Template renderer
      */
     public function __construct(
         protected TagsService $tagsService,
         protected ?UserEntityInterface $user,
-        protected RendererInterface $renderer
+        protected TemplateRendererInterface $renderer,
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $id = $params->fromQuery('id');
-        $source = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $id = $this->getQueryParam($request, 'id');
+        $source = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
         $tags = $this->tagsService->getRecordTags(
             $id,
             $source,
@@ -94,7 +95,7 @@ class GetRecordTags extends AbstractBase
         }
 
         $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user, 'driver' => "$source|$id"];
-        $html = $this->renderer->render('record/taglist', $viewParams);
+        $html = $this->renderer->renderTemplateAsString($request, 'record/taglist', $viewParams);
         return $this->formatResponse(compact('html'));
     }
 }

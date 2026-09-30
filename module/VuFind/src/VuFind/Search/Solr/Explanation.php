@@ -54,72 +54,71 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @var float
      */
-    protected $maxScore;
+    protected float $maxScore;
 
     /**
      * Relevance score of the title with the recordId.
      *
      * @var float
      */
-    protected $totalScore;
+    protected float $totalScore;
 
     /**
      * Relevance score of the title with the recordId without modifiers (boost / coord).
      *
      * @var float
      */
-    protected $baseScore;
+    protected float $baseScore;
 
     /**
      * Value of boost.
      *
-     * @var float
+     * @var ?array
      */
-    protected $boost;
+    protected ?array $boost = null;
 
     /**
      * Value of coord. If only 2 out of 4 search query parts match, then coord would be 1/2.
      * It adjusts the score so that the 2 other search query parts also influence the score.
      *
-     * @var float
+     * @var ?array
      */
-    protected $coord;
+    protected ?array $coord = null;
 
     /**
-     * The main result of the explain class,
-     * an array with every match and its values.
+     * The main result of the explain class, an array with every match and its values.
      *
      * @var array
      */
-    protected $explanation = [];
+    protected array $explanation = [];
 
     /**
      * Describes the rest. It has restValue and the percentage from total value.
      *
      * @var ?array
      */
-    protected $rest = null;
+    protected ?array $rest = null;
 
     /**
      * Contains the fields that were removed from the main explanation.
      *
      * @var array
      */
-    protected $explanationForRest = [];
+    protected array $explanationForRest = [];
 
     /**
      * Raw explanation.
      *
-     * @var string
+     * @var ?string
      */
-    protected $rawExplanation = null;
+    protected ?string $rawExplanation = null;
 
     /**
      * Get relevance value of best scoring title.
      *
      * @return float
      */
-    public function getMaxScore()
+    public function getMaxScore(): float
     {
         return $this->maxScore;
     }
@@ -129,7 +128,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return float
      */
-    public function getTotalScore()
+    public function getTotalScore(): float
     {
         return $this->totalScore;
     }
@@ -139,7 +138,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return float
      */
-    public function getBaseScore()
+    public function getBaseScore(): float
     {
         return $this->baseScore;
     }
@@ -147,9 +146,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
     /**
      * Get value of the boost used in Solr query.
      *
-     * @return float
+     * @return ?array
      */
-    public function getBoost()
+    public function getBoost(): ?array
     {
         return $this->boost;
     }
@@ -157,9 +156,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
     /**
      * Get value of coord.
      *
-     * @return float
+     * @return ?array
      */
-    public function getCoord()
+    public function getCoord(): ?array
     {
         return $this->coord;
     }
@@ -169,7 +168,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return array
      */
-    public function getExplanation()
+    public function getExplanation(): array
     {
         return $this->explanation;
     }
@@ -177,9 +176,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
     /**
      * Get rest. It has restValue and the percentage from total value.
      *
-     * @return array
+     * @return ?array
      */
-    public function getRest()
+    public function getRest(): ?array
     {
         return $this->rest;
     }
@@ -189,7 +188,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return array
      */
-    public function getExplanationForRest()
+    public function getExplanationForRest(): array
     {
         return $this->explanationForRest;
     }
@@ -197,9 +196,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
     /**
      * Get the raw explanation.
      *
-     * @return string
+     * @return ?string
      */
-    public function getRawExplanation()
+    public function getRawExplanation(): ?string
     {
         return $this->rawExplanation;
     }
@@ -209,7 +208,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return int
      */
-    public function getMaxFields()
+    public function getMaxFields(): int
     {
         return $this->config['Explain']['maxFields'] ?? -1;
     }
@@ -219,7 +218,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return float
      */
-    public function getMinPercentage()
+    public function getMinPercentage(): float
     {
         return $this->config['Explain']['minPercent'] ?? 0;
     }
@@ -229,7 +228,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return int
      */
-    public function getDecimalPlaces()
+    public function getDecimalPlaces(): int
     {
         return $this->config['Explain']['decimalPlaces'] ?? 2;
     }
@@ -242,7 +241,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
-    public function performRequest($recordId)
+    public function performRequest(string $recordId): void
     {
         // get search query
         $query  = $this->getParams()->getQuery();
@@ -284,7 +283,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
-    protected function build($response, $recordId)
+    protected function build(array $response, string $recordId): void
     {
         // prepare parsing
         $recordId = str_replace(['\(', '\)'], ['(', ')'], $recordId);
@@ -359,7 +358,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return array normed lines
      */
-    protected function cleanLines($lines)
+    protected function cleanLines(string $lines): array
     {
         $lines = preg_replace('/\\n\), product/', '), product', $lines);
         $lines = preg_replace('/ \(MATCH\)/', '', $lines);
@@ -381,9 +380,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
      * @param float $modifier 1 (* tieValue)
      *
      * @throws \VuFindSearch\Backend\Exception\BackendException
-     * @return string Solr lines without the last inspected line
+     * @return array Solr lines without the last inspected line
      */
-    protected function buildRecursive($lines, $modifier)
+    protected function buildRecursive(array $lines, float $modifier): array
     {
         $line = array_pop($lines);
         $curLevel = $this->getLevel($line);
@@ -474,7 +473,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return int
      */
-    protected function getLevel($line)
+    protected function getLevel(string $line): int
     {
         return (strlen($line) - strlen(ltrim($line))) / 2;
     }
@@ -487,7 +486,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return array
      */
-    protected function getChildLines($lines, $level)
+    protected function getChildLines(array $lines, int $level): array
     {
         $res = [];
         while (!empty($lines) && $this->getLevel(end($lines)) > $level) {
@@ -506,7 +505,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      *
      * @return array
      */
-    protected function parseLine($line)
+    protected function parseLine(string $line): array
     {
         $info = explode('=', $line, 2);
         return [
@@ -521,12 +520,16 @@ class Explanation extends \VuFind\Search\Base\Explanation
      * @param float  $value         Value
      * @param string $description   Description
      * @param float  $percentage    Percentage
-     * @param float  $fieldModifier Field Modifier
+     * @param ?float $fieldModifier Field Modifier
      *
      * @return array
      */
-    protected function parseExplainElement($value, $description, $percentage, $fieldModifier)
-    {
+    protected function parseExplainElement(
+        float $value,
+        string $description,
+        float $percentage,
+        ?float $fieldModifier
+    ): array {
         $res = [
             'value' => $value,
             'percent' => $percentage,

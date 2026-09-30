@@ -102,7 +102,7 @@ class Bookplate implements RelatedInterface
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
         $configSection = !empty($config[1]) ? $config[1] : 'Record';
-        $this->config = $this->configManager->getConfigObject($configFile)->$configSection;
+        $this->config = $this->configManager->getConfigArray($configFile)[$configSection] ?? [];
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
             $this->getBookplateTitlesField()
@@ -140,7 +140,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullUrlTemplate()
     {
-        return $this->config->bookplate_full ?? '';
+        return $this->config['bookplate_full'] ?? '';
     }
 
     /**
@@ -150,7 +150,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbUrlTemplate()
     {
-        return $this->config->bookplate_thumb ?? '';
+        return $this->config['bookplate_thumb'] ?? '';
     }
 
     /**
@@ -160,7 +160,7 @@ class Bookplate implements RelatedInterface
      */
     protected function displayBookplateTitles()
     {
-        return $this->config->bookplate_display_title ?? true;
+        return $this->config['bookplate_display_title'] ?? true;
     }
 
     /**
@@ -170,7 +170,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateTitlesField()
     {
-        return $this->config->bookplate_titles_field ?? '';
+        return $this->config['bookplate_titles_field'] ?? '';
     }
 
     /**
@@ -182,7 +182,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullImagesField()
     {
-        return $this->config->bookplate_images_field ?? '';
+        return $this->config['bookplate_images_field'] ?? '';
     }
 
     /**
@@ -194,7 +194,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbnailsField()
     {
-        return $this->config->bookplate_thumbnails_field ?? '';
+        return $this->config['bookplate_thumbnails_field'] ?? '';
     }
 
     /**

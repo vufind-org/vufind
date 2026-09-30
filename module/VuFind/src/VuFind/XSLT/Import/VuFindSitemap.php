@@ -286,6 +286,9 @@ class VuFindSitemap extends VuFind
         $fields['url'] = $url;
         $fields['last_indexed'] = date('Y-m-d\TH:i:s\Z');
 
+        // Format the sortable title:
+        $fields['title_sort'] = static::stripArticles($fields['title'] ?? '');
+
         return $fields;
     }
 }

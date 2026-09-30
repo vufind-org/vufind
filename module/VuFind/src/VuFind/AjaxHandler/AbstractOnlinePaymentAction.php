@@ -65,7 +65,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
         protected OnlinePaymentManager $onlinePaymentManager,
         AuditEventServiceInterface $auditEventService
     ) {
-        $this->sessionSettings = $sessionSettings;
+        parent::__construct($sessionSettings);
         $this->auditEventService = $auditEventService;
     }
 }

@@ -16,7 +16,7 @@ namespace VuFindTest;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Regex\Regex;
 use VuFind\Regex\RegexFactory;
 use VuFindTest\Container\MockContainer;
@@ -95,11 +95,11 @@ class RegexTest extends TestCase
      */
     public function testFactory(): void
     {
-        $yaml = $this->createMock(YamlReader::class);
-        $yaml->expects($this->once())->method('get')->willReturn(['regex' => ['/pattern/i']]);
+        $cm = $this->createMock(ConfigManagerInterface::class);
+        $cm->expects($this->once())->method('getConfigArray')->willReturn(['regex' => ['/pattern/i']]);
 
         $container = $this->createMock(MockContainer::class);
-        $container->expects($this->once())->method('get')->willReturn($yaml);
+        $container->expects($this->once())->method('get')->with(ConfigManagerInterface::class)->willReturn($cm);
 
         $factory = new RegexFactory();
         $regex = $factory($container, Regex::class);

@@ -77,47 +77,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        \VuFind\Search\Blender\Results::class
-            => \VuFind\Search\Solr\ResultsFactory::class,
-        \VuFind\Search\BrowZine\Results::class => ResultsFactory::class,
-        \VuFind\Search\Combined\Results::class => ResultsFactory::class,
-        \VuFind\Search\EDS\Results::class => \VuFind\Search\EDS\ResultsFactory::class,
-        \VuFind\Search\EIT\Results::class => ResultsFactory::class,
-        \VuFind\Search\EPF\Results::class => ResultsFactory::class,
-        \VuFind\Search\EmptySet\Results::class => ResultsFactory::class,
-        \VuFind\Search\Favorites\Results::class =>
-            \VuFind\Search\Favorites\ResultsFactory::class,
-        \VuFind\Search\LibGuides\Results::class => ResultsFactory::class,
-        \VuFind\Search\LibGuidesAZ\Results::class => ResultsFactory::class,
-        \VuFind\Search\MixedList\Results::class => ResultsFactory::class,
-        \VuFind\Search\Pazpar2\Results::class => ResultsFactory::class,
-        \VuFind\Search\Primo\Results::class => ResultsFactory::class,
-        \VuFind\Search\ProQuestFSG\Results::class => ResultsFactory::class,
-        \VuFind\Search\Search2\Results::class =>
-            \VuFind\Search\Search2\ResultsFactory::class,
-        \VuFind\Search\Search2Collection\Results::class => ResultsFactory::class,
-        \VuFind\Search\Solr\Results::class =>
-            \VuFind\Search\Solr\ResultsFactory::class,
-        \VuFind\Search\SolrAuth\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrAuthor\Results::class =>
-            \VuFind\Search\Solr\ResultsFactory::class,
-        \VuFind\Search\SolrAuthorFacets\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrCollection\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrReserves\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrWeb\Results::class => ResultsFactory::class,
-        \VuFind\Search\Summon\Results::class => ResultsFactory::class,
-        \VuFind\Search\Tags\Results::class =>
-            \VuFind\Search\Tags\ResultsFactory::class,
-        \VuFind\Search\WorldCat\Results::class => ResultsFactory::class,
-        \VuFind\Search\WorldCat2\Results::class => ResultsFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.

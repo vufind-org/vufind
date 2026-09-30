@@ -32,6 +32,7 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * SIP2 authentication module.
@@ -50,6 +51,7 @@ class SIP2 extends AbstractBase
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
+    #[Autowire]
     public function __construct(protected ILSAuthenticator $ilsAuthenticator)
     {
     }
@@ -74,9 +76,9 @@ class SIP2 extends AbstractBase
         // Attempt SIP2 Authentication
         $mysip = new \sip2();
         $config = $this->getConfig();
-        if (isset($config->SIP2)) {
-            $mysip->hostname = $config->SIP2->host;
-            $mysip->port = $config->SIP2->port;
+        if (isset($config['SIP2'])) {
+            $mysip->hostname = $config['SIP2']['host'];
+            $mysip->port = $config['SIP2']['port'];
         }
 
         if (!$mysip->connect()) {

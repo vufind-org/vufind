@@ -35,6 +35,7 @@ use VuFind\Crypt\HMAC;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\RateLimiter\RateLimiterManager;
 use VuFind\RateLimiter\Turnstile\Turnstile;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Controller Cloudflare Turnstile access checks.
@@ -89,7 +90,7 @@ class TurnstileController extends AbstractBase implements
             ?? 'https://challenges.cloudflare.com/turnstile/v0/api.js';
         $context['hash'] = $this->hmac->generate($this->hashKeys, $context);
 
-        $this->layout()->searchbox = false;
+        $this->getService(GlobalsContainer::class)['searchbox'] = false;
         return $this->createViewModel($context);
     }
 

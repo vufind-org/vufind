@@ -72,7 +72,12 @@ class Manager implements LoggerAwareInterface
     public function evaluateConditions(array $conditions): bool
     {
         foreach ($conditions as $condition) {
-            $conditionHandler = $this->handlerPluginManager->get($condition['type'] ?? '');
+            $conditionType = $condition['type'] ?? '';
+            if (!$this->handlerPluginManager->has($conditionType)) {
+                $this->logWarning('Condition handler for ' . $conditionType . ' not found.');
+                return false;
+            }
+            $conditionHandler = $this->handlerPluginManager->get($conditionType);
             try {
                 if (!$conditionHandler->checkCondition($condition)) {
                     return false;

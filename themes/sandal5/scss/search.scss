@@ -36,6 +36,10 @@
     padding: 4px .75rem;
   }
 }
+// Prevent weird spacing on alerts in search results (e.g. EDS placeholder record warning)
+.result-body .resultItemLine1 .alert {
+  margin-top: 0;
+}
 @include media-breakpoint-up(sm) {
   .result {
     margin-left: 0;

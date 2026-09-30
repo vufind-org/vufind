@@ -29,7 +29,8 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\View\Helper\Root\Record as RecordHelper;
@@ -57,21 +58,22 @@ class GetRecordRating extends AbstractBase
         protected RecordHelper $recordHelper,
         protected RatingsService $ratingsService
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
-        $id = $params->fromQuery('id');
-        $source = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $id = $this->getQueryParam($request, 'id');
+        $source = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
         if (empty($id)) {
-            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         $driver = $this->recordLoader->load($id, $source, false);
         $html = ($this->recordHelper)($driver)->renderTemplate('rating.phtml');

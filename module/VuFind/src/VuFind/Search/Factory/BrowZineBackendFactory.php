@@ -29,7 +29,11 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
@@ -52,33 +56,41 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * BrowZine configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
-    protected $browzineConfig;
+    protected array $browzineConfig;
 
     /**
-     * Create service.
+     * Create an object.
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $this->browzineConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject('BrowZine');
+            ->getConfigArray('BrowZine');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -96,7 +108,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -109,22 +121,22 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
-        $token = $this->getSecretFromConfig($this->browzineConfig?->General, 'access_token');
+        $token = $this->getSecretFromConfig($this->browzineConfig['General'] ?? [], 'access_token');
         // Validate configuration:
         if ($token === null) {
             throw new \Exception('Missing access token in BrowZine.ini');
         }
-        if (empty($this->browzineConfig->General->library_id)) {
+        if (empty($this->browzineConfig['General']['library_id'])) {
             throw new \Exception('Missing library ID in BrowZine.ini');
         }
 
         // Create connector:
         $connector = new Connector(
-            $this->createHttpClient($this->browzineConfig->General->timeout ?? 30),
+            $this->createHttpClient($this->browzineConfig['General']['timeout'] ?? 30),
             $token,
-            $this->browzineConfig->General->library_id
+            $this->browzineConfig['General']['library_id']
         );
         $connector->setLogger($this->logger);
         return $connector;
@@ -135,10 +147,9 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -146,7 +157,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

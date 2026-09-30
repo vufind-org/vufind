@@ -49,16 +49,15 @@ class Clickatell extends AbstractBase
      *
      * @var \Laminas\Http\Client
      */
-    protected $client;
+    protected \Laminas\Http\Client $client;
 
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config  SMS configuration
-     * @param array                 $options Additional options (client may be an
-     *                                       HTTP client object)
+     * @param array $config  SMS configuration
+     * @param array $options Additional options (client may be an HTTP client object)
      */
-    public function __construct(\VuFind\Config\Config $config, $options = [])
+    public function __construct(array $config, array $options = [])
     {
         parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();
@@ -67,15 +66,15 @@ class Clickatell extends AbstractBase
     /**
      * Send a text message to the specified provider.
      *
-     * @param string $provider The provider ID to send to
-     * @param string $to       The phone number at the provider
-     * @param string $from     The email address to use as sender
-     * @param string $message  The message to send
+     * @param string  $provider The provider ID to send to
+     * @param string  $to       The phone number at the provider
+     * @param ?string $from     The email address to use as sender (null for default)
+     * @param string  $message  The message to send
      *
      * @throws \VuFind\Exception\Mail
      * @return void
      */
-    public function text($provider, $to, $from, $message)
+    public function text(string $provider, string $to, ?string $from, string $message): void
     {
         $url = $this->getApiUrl($to, $message);
         try {
@@ -90,7 +89,6 @@ class Clickatell extends AbstractBase
         if (!str_starts_with($response, 'ID:')) {
             throw new SMSException($response, SMSException::ERROR_UNKNOWN);
         }
-        return true;
     }
 
     /**
@@ -100,7 +98,7 @@ class Clickatell extends AbstractBase
      *
      * @return array
      */
-    public function getCarriers()
+    public function getCarriers(): array
     {
         return [
             'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
@@ -112,9 +110,9 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiUsername()
+    protected function getApiUsername(): string
     {
-        return $this->smsConfig->Clickatell->user ?? null;
+        return $this->smsConfig['Clickatell']['user'] ?? '';
     }
 
     /**
@@ -122,9 +120,9 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiPassword()
+    protected function getApiPassword(): string
     {
-        return $this->smsConfig->Clickatell->password ?? null;
+        return $this->smsConfig['Clickatell']['password'] ?? '';
     }
 
     /**
@@ -132,9 +130,9 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiId()
+    protected function getApiId(): string
     {
-        return $this->smsConfig->Clickatell->api_id ?? null;
+        return $this->smsConfig['Clickatell']['api_id'] ?? '';
     }
 
     /**
@@ -145,11 +143,11 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiUrl($to, $message)
+    protected function getApiUrl(string $to, string $message): string
     {
         // Get base URL:
-        $url = isset($this->smsConfig->Clickatell->url)
-            ? trim($this->smsConfig->Clickatell->url, '?')
+        $url = isset($this->smsConfig['Clickatell']['url'])
+            ? trim($this->smsConfig['Clickatell']['url'], '?')
             : 'https://api.clickatell.com/http/sendmsg';
 
         // Add parameters to URL:
@@ -169,7 +167,7 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function formatMessage($message)
+    protected function formatMessage(string $message): string
     {
         // Clickatell expects UCS-2 encoding:
         if (!function_exists('iconv')) {

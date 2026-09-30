@@ -56,5 +56,5 @@ class ParamsFactory extends \VuFind\Search\Blender\ParamsFactory
      *
      * @var string
      */
-    protected $blenderMappingsYaml = 'Blender2Mappings';
+    protected $blenderMappingsConfig = 'Blender2Mappings';
 }

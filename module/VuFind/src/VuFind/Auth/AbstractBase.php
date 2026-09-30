@@ -70,7 +70,7 @@ abstract class AbstractBase implements
     /**
      * Configuration settings.
      *
-     * @var \VuFind\Config\Config
+     * @var ?array
      */
     protected $config = null;
 
@@ -101,7 +101,7 @@ abstract class AbstractBase implements
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \VuFind\Config\Config
+     * @return ?array
      */
     public function getConfig()
     {
@@ -145,11 +145,11 @@ abstract class AbstractBase implements
     /**
      * Set configuration.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         $this->config = $config;
         $this->configValidated = false;
@@ -370,7 +370,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         // By default, password changing is not supported.
         return false;
@@ -383,7 +383,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         // By default, password recovery is not supported.
         return false;
@@ -450,9 +450,7 @@ abstract class AbstractBase implements
     {
         $policy = [];
         $config = $this->getConfig();
-        $authConfig = isset($config->Authentication)
-            ? $config->Authentication->toArray()
-            : [];
+        $authConfig = $config['Authentication'] ?? [];
         /* Map settings to the policy array, e.g.:
          *
          * password_minimum_length or username_minimum_length => minLength

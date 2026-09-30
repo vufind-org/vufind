@@ -50,11 +50,11 @@ class CollectionHierarchyTree extends HierarchyTree
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config Configuration
+     * @param array                 $config Configuration
      * @param \VuFind\Record\Loader $loader Record loader
      */
     public function __construct(
-        \VuFind\Config\Config $config,
+        array $config,
         \VuFind\Record\Loader $loader
     ) {
         parent::__construct($config);

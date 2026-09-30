@@ -29,8 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Developer settings helper.
@@ -41,13 +41,14 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class DeveloperSettings extends AbstractHelper
+class DeveloperSettings
 {
     /**
      * Constructor.
      *
      * @param DeveloperSettingsService $developerSettingsService Developer settings service
      */
+    #[Autowire]
     public function __construct(protected DeveloperSettingsService $developerSettingsService)
     {
     }
@@ -60,5 +61,15 @@ class DeveloperSettings extends AbstractHelper
     public function isEnabled(): bool
     {
         return $this->developerSettingsService->apiKeysEnabled();
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

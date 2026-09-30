@@ -121,10 +121,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        $functionConfig = $this->config[$function] ?? false;
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**

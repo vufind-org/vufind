@@ -66,19 +66,19 @@ class Unpaywall implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config DOI section of main VuFind config
+     * @param array $config DOI section of main VuFind config
      *
      * @throws \Exception
      */
     public function __construct($config)
     {
-        if (!isset($config->unpaywall_email)) {
+        if (!isset($config['unpaywall_email'])) {
             throw new \Exception(
                 'Missing configuration for Unpaywall DOI linker: unpaywall_email'
             );
         }
-        $this->email = $config->unpaywall_email;
-        $this->apiUrl = $config->unpaywall_api_url ?? 'https://api.unpaywall.org/v2';
+        $this->email = $config['unpaywall_email'];
+        $this->apiUrl = $config['unpaywall_api_url'] ?? 'https://api.unpaywall.org/v2';
     }
 
     /**

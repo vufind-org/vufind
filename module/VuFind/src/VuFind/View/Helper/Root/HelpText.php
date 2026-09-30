@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * "Load help text" view helper.
  *
@@ -38,15 +40,8 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HelpText extends \Laminas\View\Helper\AbstractHelper
+class HelpText
 {
-    /**
-     * The content view helper.
-     *
-     * @var Content
-     */
-    protected $contentHelper;
-
     /**
      * Warning messages.
      *
@@ -57,11 +52,12 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param Content $content The content view helper
+     * @param Content $contentHelper The content view helper
      */
-    public function __construct(Content $content)
-    {
-        $this->contentHelper = $content;
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Content $contentHelper
+    ) {
     }
 
     /**
@@ -110,5 +106,15 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
         }
 
         return $html;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

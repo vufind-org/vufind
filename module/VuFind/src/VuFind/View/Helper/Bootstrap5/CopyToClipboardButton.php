@@ -31,6 +31,9 @@ declare(strict_types=1);
 
 namespace VuFind\View\Helper\Bootstrap5;
 
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Class CopyClipboardButton.
  *
@@ -40,8 +43,19 @@ namespace VuFind\View\Helper\Bootstrap5;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
+class CopyToClipboardButton
 {
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $view View renderer
+     */
+    #[Autowire]
+    public function __construct(
+        protected RendererInterface $view
+    ) {
+    }
+
     /**
      * This helper creates button for copying content of an element into clipboard.
      *
@@ -55,8 +69,7 @@ class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
     {
         static $buttonNumber = 0;
         $buttonNumber++;
-        $view = $this->getView();
-        return $view->render(
+        return $this->view->render(
             'Helpers/copy-to-clipboard-button.phtml',
             [
                 'selector' => $elementSelector,

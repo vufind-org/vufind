@@ -29,8 +29,6 @@
 
 namespace VuFind\Autocomplete;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Autocomplete handler plugin manager.
  *
@@ -67,24 +65,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrcnautocomplete' => 'SolrCN',
         'solrreservesautocomplete' => 'SolrReserves',
         'tagautocomplete' => 'Tag',
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        None::class => InvokableFactory::class,
-        Eds::class => EdsFactory::class,
-        Search2::class => SolrFactory::class,
-        Search2CN::class => SolrFactory::class,
-        Solr::class => SolrFactory::class,
-        SolrAuth::class => SolrFactory::class,
-        SolrCN::class => SolrFactory::class,
-        SolrReserves::class => SolrFactory::class,
-        Tag::class => TagFactory::class,
-        SolrPrefix::class => SolrFactory::class,
     ];
 
     /**

@@ -53,7 +53,7 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         $view = $this->getPhpRenderer();
-        $markdown = new Markdown(
+        return new Markdown(
             new GithubFlavoredMarkdownConverter(
                 [
                     'html_input' => 'strip',
@@ -61,8 +61,6 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
                 ]
             )
         );
-        $markdown->setView($view);
-        return $markdown;
     }
 
     /**

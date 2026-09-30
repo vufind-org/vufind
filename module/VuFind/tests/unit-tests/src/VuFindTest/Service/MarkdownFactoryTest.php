@@ -209,6 +209,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'normalize' => 'relative',
                 'html_class' => 'table-of-contents',
                 'placeholder' => null,
+                'max_placeholder_entries' => null,
             ],
             'heading_permalink' => [
                 'min_heading_level' => 3,

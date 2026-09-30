@@ -29,8 +29,6 @@
 
 namespace VuFind\Related;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Related record plugin manager.
  *
@@ -63,12 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Channels::class => InvokableFactory::class,
-        Bookplate::class => BookplateFactory::class,
-        Deprecated::class => InvokableFactory::class,
         MoreByAuthorSolr::class => SimilarFactory::class,
-        Similar::class => SimilarFactory::class,
-        WorldCat2Similar::class => WorldCat2SimilarFactory::class,
     ];
 
     /**

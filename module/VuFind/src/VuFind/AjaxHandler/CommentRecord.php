@@ -29,11 +29,12 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
@@ -59,7 +60,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      *
      * @param ResourcePopulator        $resourcePopulator   Resource populator service
      * @param CommentsServiceInterface $commentsService     Comments database service
-     * @param Captcha                  $captcha             Captcha controller plugin
+     * @param CaptchaService           $captcha             Captcha service
      * @param ?UserEntityInterface     $user                Logged in user (or null)
      * @param bool                     $enabled             Are comments enabled?
      * @param RecordLoader             $recordLoader        Record loader
@@ -69,69 +70,72 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     public function __construct(
         protected ResourcePopulator $resourcePopulator,
         protected CommentsServiceInterface $commentsService,
-        protected Captcha $captcha,
+        protected CaptchaService $captcha,
         protected ?UserEntityInterface $user,
         protected bool $enabled,
         protected RecordLoader $recordLoader,
         protected AccountCapabilities $accountCapabilities,
         protected RatingsService $ratingsService
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Is CAPTCHA valid? (Also returns true if CAPTCHA is disabled).
      *
+     * @param ServerRequestInterface $request Request
+     *
      * @return bool
      */
-    protected function checkCaptcha()
+    protected function checkCaptcha(ServerRequestInterface $request)
     {
         // Not enabled? Report success!
         if (!$this->captcha->active('userComments')) {
             return true;
         }
         $this->captcha->setErrorMode('none');
-        return $this->captcha->verify();
+        return $this->captcha->verify($request->getParsedBody(), $request->getQueryParams());
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         // Make sure comments are enabled:
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
-        $id = $params->fromPost('id');
-        $source = $params->fromPost('source', DEFAULT_SEARCH_BACKEND);
-        $comment = $params->fromPost('comment');
+        $id = $this->getPostParam($request, 'id');
+        $source = $this->getPostParam($request, 'source', DEFAULT_SEARCH_BACKEND);
+        $comment = $this->getPostParam($request, 'comment');
         if (empty($id) || empty($comment)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $driver = $this->recordLoader->load($id, $source, false);
 
-        if (!$this->checkCaptcha()) {
+        if (!$this->checkCaptcha($request)) {
             return $this->formatResponse(
                 $this->translate('captcha_not_passed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
@@ -142,7 +146,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             $resource
         );
 
-        $rating = $params->fromPost('rating', '');
+        $rating = $this->getPostParam($request, 'rating', '');
         if (
             $driver->isRatingAllowed()
             && ('' !== $rating

@@ -69,7 +69,7 @@ class LoaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $container->get(\VuFindTheme\ThemeInfo::class)
         );
     }

@@ -45,10 +45,9 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
      */
     public function __construct()
     {
-        parent::__construct();
         $this->defaultIndexName = 'reserves';
         $this->searchConfig = 'reserves';
-        $this->searchYaml = 'reservessearchspecs.yaml';
+        $this->searchSpecsConfig = 'reservessearchspecs';
         $this->facetConfig = 'reserves';
     }
 
@@ -57,7 +56,7 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
      *
      * Returns a callable or null to use RecordCollectionFactory's default method.
      *
-     * @return callable|null
+     * @return ?callable
      */
     protected function getCreateRecordCallback(): ?callable
     {

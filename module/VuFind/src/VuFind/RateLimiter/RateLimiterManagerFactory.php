@@ -81,8 +81,9 @@ class RateLimiterManagerFactory implements FactoryInterface
 
         $this->serviceLocator = $container;
 
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $config = $yamlReader->get('RateLimiter.yaml');
+        $config = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('RateLimiter');
 
         $authManager = $container->get(\VuFind\Auth\Manager::class);
         $request = $container->get('Request');

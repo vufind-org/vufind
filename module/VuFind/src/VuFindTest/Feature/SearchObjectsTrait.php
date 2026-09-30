@@ -65,7 +65,7 @@ trait SearchObjectsTrait
              *
              * @return string
              */
-            public function getSearchAction()
+            public function getSearchAction(): string
             {
                 return '';
             }
@@ -75,7 +75,7 @@ trait SearchObjectsTrait
              *
              * @return string
              */
-            public function getSearchClassId()
+            public function getSearchClassId(): string
             {
                 return 'Mock';
             }

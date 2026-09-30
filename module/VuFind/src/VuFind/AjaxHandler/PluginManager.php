@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
  * AJAX handler plugin manager.
@@ -87,50 +87,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        CheckRequestIsValid::class => AbstractIlsAndUserActionFactory::class,
-        CommentRecord::class => CommentRecordFactory::class,
-        DeleteRecordComment::class => DeleteRecordCommentFactory::class,
-        IdentifierLinksLookup::class => IdentifierLinksLookupFactory::class,
-        GetACSuggestions::class => GetACSuggestionsFactory::class,
-        GetIlsStatus::class => GetIlsStatusFactory::class,
-        GetItemStatuses::class => GetItemStatusesFactory::class,
-        GetLibraryPickupLocations::class => AbstractIlsAndUserActionFactory::class,
-        GetRecordCommentsAsHTML::class => GetRecordCommentsAsHTMLFactory::class,
-        GetRecordCover::class => GetRecordCoverFactory::class,
-        GetRecordDetails::class => GetRecordDetailsFactory::class,
-        GetRecordRating::class => GetRecordRatingFactory::class,
-        GetRecordTags::class => GetRecordTagsFactory::class,
-        GetRecordVersions::class => GetRecordVersionsFactory::class,
-        GetRequestGroupPickupLocations::class =>
-            AbstractIlsAndUserActionFactory::class,
-        GetResolverLinks::class => GetResolverLinksFactory::class,
-        GetResultCount::class => GetResultCountFactory::class,
-        GetSaveStatuses::class => GetSaveStatusesFactory::class,
-        GetSearchResults::class => GetSearchResultsFactory::class,
-        GetSideFacets::class => GetSideFacetsFactory::class,
-        GetUserFines::class => GetUserFinesFactory::class,
-        GetUserHolds::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetUserILLRequests::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetUserStorageRetrievalRequests::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetUserTransactions::class => AbstractIlsUserAndRendererActionFactory::class,
-        GetVisData::class => GetVisDataFactory::class,
-        KeepAlive::class => KeepAliveFactory::class,
-        OnlinePaymentNotify::class => AbstractOnlinePaymentActionFactory::class,
-        OnlinePaymentRegister::class => AbstractOnlinePaymentActionFactory::class,
-        Recommend::class => RecommendFactory::class,
-        RelaisAvailability::class => AbstractRelaisActionFactory::class,
-        RelaisInfo::class =>  AbstractRelaisActionFactory::class,
-        RelaisOrder::class => AbstractRelaisActionFactory::class,
-        SystemStatus::class => SystemStatusFactory::class,
-        TagRecord::class => TagRecordFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
@@ -143,7 +99,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory(AbstractAutowiringFactory::class);
+        $this->addAbstractFactory(AbstractPluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

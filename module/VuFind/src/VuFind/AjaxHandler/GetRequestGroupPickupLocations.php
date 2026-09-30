@@ -29,7 +29,8 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * "Get Request Group Pickup Locations" AJAX handler.
@@ -47,26 +48,26 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $id = $params->fromQuery('id');
-        $requestGroupId = $params->fromQuery('requestGroupId');
+        $id = $this->getQueryParam($request, 'id');
+        $requestGroupId = $this->getQueryParam($request, 'requestGroupId');
         if (null === $id || null === $requestGroupId) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -93,7 +94,7 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
 
         return $this->formatResponse(
             $this->translate('An error has occurred'),
-            self::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 }

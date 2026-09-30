@@ -45,17 +45,17 @@ class EPFBackendFactory extends EdsBackendFactory
     /**
      * Default URL for the EDS Backend.  Set here for the EPF API.
      *
-     * @var str
+     * @var string
      */
-    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/publication';
+    protected string $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/publication';
 
     /**
      * Get the service name. This is used for both configuration
      * and record driver retrieval.
      *
-     * @return str
+     * @return string
      */
-    protected function getServiceName()
+    protected function getServiceName(): string
     {
         return 'EPF';
     }

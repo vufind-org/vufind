@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * CookieManager view helper.
  *
@@ -38,13 +40,14 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CookieManager extends \Laminas\View\Helper\AbstractHelper
+class CookieManager
 {
     /**
      * Constructor.
      *
      * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
      */
+    #[Autowire]
     public function __construct(
         protected \VuFind\Cookie\CookieManager $cookieManager,
     ) {

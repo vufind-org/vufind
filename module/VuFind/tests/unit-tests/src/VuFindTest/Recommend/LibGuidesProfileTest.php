@@ -32,7 +32,6 @@ namespace VuFindTest\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Connection\LibGuides;
 use VuFind\Recommend\LibGuidesProfile;
@@ -201,7 +200,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
 
         // For the target class LibGuidesProfile, only mock the caching methods
         $libGuidesProfile = $this->getMockBuilder(LibGuidesProfile::class)
-            ->setConstructorArgs([$this->connector, new Config($config), $this->cacheAdapter])
+            ->setConstructorArgs([$this->connector, $config, $this->cacheAdapter])
             ->onlyMethods(['getCachedData', 'putCachedData'])
             ->getMock();
         $libGuidesProfile->method('getCachedData')->willReturn(null);
@@ -230,8 +229,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
             $queryParams,
             $this->createStub(\VuFindSearch\Service::class),
             $this->createMock(\VuFind\Record\Loader::class),
-            null,
-            $facets
+            facets: $facets
         );
         return $queryResults;
     }

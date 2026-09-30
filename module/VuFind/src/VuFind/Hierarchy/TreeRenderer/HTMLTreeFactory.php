@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * HTMLTree hierarchy tree renderer plugin factory.
@@ -69,7 +70,7 @@ class HTMLTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
-            $container->get('ControllerPluginManager')->get('Url'),
+            $container->get(RouteHelper::class),
             !empty($config['Collections']['collections']),
             $container->get('ViewRenderer')
         );

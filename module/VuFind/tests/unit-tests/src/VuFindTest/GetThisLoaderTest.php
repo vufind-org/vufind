@@ -19,16 +19,13 @@ use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerExceptionInterface;
 use ReflectionException;
-use Throwable;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\YamlReader;
 use VuFind\GetThis\GetThisLoader;
-use VuFind\GetThis\GetThisLoaderFactory;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\RecordDriver\SolrDefault;
 use VuFind\Regex\Regex;
-use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\ReflectionTrait;
@@ -76,9 +73,9 @@ class GetThisLoaderTest extends TestCase
      */
     public function setUp(): void
     {
-        $yamlReader = new YamlReader($this->getPathResolver());
-        $this->baseConfig = $yamlReader->get('GetThis.yaml');
-        $this->regexConfig = $yamlReader->get('Regex.yaml');
+        $configManager = $this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class);
+        $this->baseConfig = $configManager->getConfigArray('GetThis');
+        $this->regexConfig = $configManager->getConfigArray('Regex');
         $this->regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
     }
 
@@ -98,11 +95,11 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Create a mock driver for solr.
+     * Create a mock record driver for Solr.
      *
-     * @return SolrDefault|MockObject
+     * @return SolrDefault&MockObject
      */
-    public function getMockRecordDriver(): SolrDefault|MockObject
+    public function getMockRecordDriver(): SolrDefault&MockObject
     {
         return $this->createMock(SolrDefault::class);
     }
@@ -929,30 +926,5 @@ class GetThisLoaderTest extends TestCase
         $getThis->setRecordDriver($driver);
         $templates = $this->getProperty($getThis, 'subTemplates');
         $this->assertNull($templates);
-    }
-
-    /**
-     * Test factory.
-     *
-     * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     * @throws ContainerExceptionInterface&Throwable
-     */
-    public function testFactory(): void
-    {
-        $yaml = $this->createMock(YamlReader::class);
-        $yaml->expects($this->once())->method('get')->willReturn([]);
-
-        $regex = $this->createMock(Regex::class);
-
-        $container = $this->createMock(MockContainer::class);
-        $container->expects($this->exactly(2))->method('get')->willReturnMap([
-            [Regex::class, $regex],
-            [YamlReader::class, $yaml],
-        ]);
-
-        $factory = new GetThisLoaderFactory();
-        $getThis = $factory($container, GetThisLoader::class);
-        $this->assertInstanceOf(GetThisLoader::class, $getThis);
     }
 }

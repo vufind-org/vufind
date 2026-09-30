@@ -87,30 +87,30 @@ class ObalkyKnihService implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config Configuration for service
+     * @param array $config Configuration for service
      */
-    public function __construct(\VuFind\Config\Config $config)
+    public function __construct(array $config)
     {
         if (
-            !isset($config->base_url) || count($config->base_url) < 1
-            || !isset($config->books_endpoint)
+            !isset($config['base_url']) || count($config['base_url']) < 1
+            || !isset($config['books_endpoint'])
         ) {
             throw new \Exception(
                 'Configuration for ObalkyKnih.cz service is not valid'
             );
         }
-        $this->baseUrls = $config->base_url;
+        $this->baseUrls = $config['base_url'];
         $this->cacheLifetime = 1800;
-        $this->referrer = $config->referrer ?? null;
-        $this->sigla = $config->sigla ?? null;
-        foreach ($config->toArray() as $configItem => $configValue) {
+        $this->referrer = $config['referrer'] ?? null;
+        $this->sigla = $config['sigla'] ?? null;
+        foreach ($config as $configItem => $configValue) {
             $parts = explode('_', $configItem);
             if ($parts[1] ?? '' === 'endpoint') {
                 $this->endpoints[$parts[0]] = $configValue;
             }
         }
         $this->checkServersAvailability
-            = $config->checkServersAvailability ?? false;
+            = $config['checkServersAvailability'] ?? false;
     }
 
     /**

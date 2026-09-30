@@ -65,7 +65,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'combined-results';
     }
@@ -76,13 +76,13 @@ class Options extends \VuFind\Search\Base\Options
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         $recommend = [];
         $config = $this->configManager->getConfigArray('combined');
@@ -100,7 +100,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return array
      */
-    public function getTabConfig()
+    public function getTabConfig(): array
     {
         $config = $this->configManager->getConfigArray('combined');
 
@@ -118,7 +118,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Cart is supported if any of the tabs support cart:
         foreach (array_keys($this->getTabConfig()) as $current) {

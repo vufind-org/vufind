@@ -1,12 +1,13 @@
 <span class="relaisLink"><?=$this->icon('spinner') ?> <?=$this->transEsc('relais_checking')?></span>
 <?php
   // Only activate Relais code once, even if there are multiple items:
-  if (empty($this->layout()->relaisActive)) {
+  $globals = $this->globals();
+  if (empty($globals['relaisActive'])) {
     // We need a record driver in $driver for this to work right!
     if (!isset($driver)) {
         throw new \Exception('Record driver missing!');
     }
-    $this->layout()->relaisActive = true;
+    $globals['relaisActive'] = true;
     $this->render('relais/relais-setup.phtml'); // set up script and translations
     $addLink = $this->escapeJs($this->url('relais-request'));
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));

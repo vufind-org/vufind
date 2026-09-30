@@ -45,7 +45,7 @@ class FacetCache extends \VuFind\Search\Base\FacetCache
      *
      * @return string
      */
-    protected function getCacheNamespace()
+    protected function getCacheNamespace(): string
     {
         return 'search2-facets';
     }

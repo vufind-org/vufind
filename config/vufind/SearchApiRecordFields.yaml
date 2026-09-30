@@ -291,8 +291,17 @@ recordLinks:
   items:
     $ref: '#/components/schemas/RecordLink'
 recordPage:
+  # Deprecated. See description.
   vufind.method: "Formatter::getRecordPage"
-  description: Link to the record page in the UI
+  description: "Link to the record page in the UI. Deprecated: Use recordPageRelativeLink or recordPageAbsoluteLink instead."
+  type: string
+recordPageRelativeLink:
+  vufind.method: "Formatter::getRecordPageRelativeLink"
+  description: Link to the record page in the UI via a relative link
+  type: string
+recordPageAbsoluteLink:
+  vufind.method: "Formatter::getRecordPageAbsoluteLink"
+  description: Link to the record page from external sites with an absolute link
   type: string
 relationshipNotes:
   vufind.method: getRelationshipNotes

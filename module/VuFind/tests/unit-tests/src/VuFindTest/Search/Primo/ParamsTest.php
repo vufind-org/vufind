@@ -52,27 +52,27 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     public function testFixPrimoFacetValue()
     {
         $params = $this->getParams();
-        $this->assertEquals(
+        $this->assertSame(
             'Foo Bar',
             $params->fixPrimoFacetValue('foo bar')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Foo Bar',
             $params->fixPrimoFacetValue('foo_bar')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Reference Entries',
             $params->fixPrimoFacetValue('reference_entrys')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Newsletter Articles',
             $params->fixPrimoFacetValue('newsletterarticle')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Archival Materials / Manuscripts',
             $params->fixPrimoFacetValue('archival_material_manuscripts')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '维普资讯 (Chongqing)',
             $params->fixPrimoFacetValue('维普资讯 (Chongqing)')
         );
@@ -197,7 +197,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Primo', $this->getParams()->getSearchClassId());
+        $this->assertSame('Primo', $this->getParams()->getSearchClassId());
     }
 
     /**

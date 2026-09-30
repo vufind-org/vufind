@@ -30,6 +30,7 @@
 namespace VuFindTheme\View\Helper;
 
 use Laminas\View\Resolver\TemplatePathStack;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Helper to get path to a template from another theme (for including).
@@ -40,7 +41,7 @@ use Laminas\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TemplatePath extends \Laminas\View\Helper\AbstractHelper
+class TemplatePath
 {
     /**
      * Absolute path up to the theme name.
@@ -57,20 +58,13 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
     protected $pathPost;
 
     /**
-     * Template path stack.
-     *
-     * @var TemplatePathStack
-     */
-    protected $templatePathStack;
-
-    /**
      * Constructor.
      *
-     * @param TemplatePathStack $templateStack Inheritance stack of template paths
+     * @param TemplatePathStack $templatePathStack Inheritance stack of template paths
      */
-    public function __construct($templateStack)
+    #[Autowire]
+    public function __construct(protected TemplatePathStack $templatePathStack)
     {
-        $this->templatePathStack = $templateStack;
         // get current theme path
         $paths = $this->templatePathStack->getPaths();
         // split for easy replacement later

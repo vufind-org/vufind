@@ -60,6 +60,28 @@ abstract class AbstractBase implements HandlerInterface
     }
 
     /**
+     * Handle an include statement.
+     *
+     * @param string $includeSetting Settings of the include statement
+     * @param string $basePath       Base path used for relative includes
+     *
+     * @return mixed
+     */
+    public function handleInclude(string $includeSetting, string $basePath): mixed
+    {
+        // default for file based configuration handlers
+        $includeSettingParts = explode('::', $includeSetting, 2);
+        $configurationPath = (($includeSettingParts[1] ?? 'absolute') === 'relative')
+            ? $basePath . DIRECTORY_SEPARATOR . $includeSettingParts[0]
+            : $includeSettingParts[0];
+        $configLocation = $this->pathResolver->getConfigLocationOnPath($configurationPath);
+        if ($configLocation === null) {
+            throw new ConfigException('Can not include file ' . $configurationPath . '. File not found.');
+        }
+        return $this->parseConfig($configLocation)['data'];
+    }
+
+    /**
      * Write configuration to a specific location.
      *
      * @param ConfigLocationInterface  $destinationLocation Destination location for the config
@@ -98,21 +120,20 @@ abstract class AbstractBase implements HandlerInterface
 
     /**
      * Create a new config location object on a path based on another config location.
+     * Returns null if no config exists on path.
      *
      * @param ConfigLocationInterface $configLocation Original config location
      * @param string                  $path           New config location path
      *
-     * @return ConfigLocationInterface
-     *
-     * @throws FileAccessException
+     * @return ?ConfigLocationInterface
      */
     protected function getParentLocationOnPath(
         ConfigLocationInterface $configLocation,
         string $path
-    ): ConfigLocationInterface {
+    ): ?ConfigLocationInterface {
         $parentLocation = $this->pathResolver->getConfigLocationOnPath($path);
         if ($parentLocation === null) {
-            throw new FileAccessException("Error: $path does not exist.");
+            return null;
         }
         $parentLocation->setConfigName($configLocation->getConfigName())
             // parent locations on a different path should still refer to the same

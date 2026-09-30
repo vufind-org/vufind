@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * System contact email helper.
  *
@@ -38,23 +40,17 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemEmail extends \Laminas\View\Helper\AbstractHelper
+class SystemEmail
 {
-    /**
-     * System email.
-     *
-     * @var string
-     */
-    protected $email;
-
     /**
      * Constructor.
      *
      * @param string $email System email
      */
-    public function __construct($email)
-    {
-        $this->email = $email;
+    public function __construct(
+        #[Autowire(config:'config', path: 'Site/email', default: '')]
+        protected string $email
+    ) {
     }
 
     /**

@@ -6,7 +6,8 @@
   $this->headTitle($headTitle);
 
   // Set up search box:
-  $this->layout()->searchbox = $this->context($this)->renderInContext(
+  $globals = $this->globals();
+  $globals['searchbox'] = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
       [
         'lookfor' => $lookfor,
@@ -35,7 +36,7 @@
   }
 
   // Store search id:
-  $this->layout()->searchId = $this->results->getSearchId();
+  $globals['searchId'] = $this->results->getSearchId();
 
   $options = $this->params->getOptions();
   $this->render(
@@ -46,15 +47,18 @@
           'jsResults' => $options->loadResultsWithJsEnabled(),
       ]
   );
-  $recommendations = $this->results->getRecommendations('side');
+  $sideRecommendations = $this->results->getRecommendations('side');
+  $topRecommendations = $this->results->getRecommendations('top');
+  $bottomRecommendations = $this->results->getRecommendations('bottom');
+  $noResultsRecommendations = $this->results->getRecommendations('noresults');
   $this->assetManager()->appendScriptString('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
 ?>
 
 <h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>
 
-<div class="<?=$this->layoutClass('mainbody', (bool)$recommendations)?>">
+<div class="<?=$this->layoutClass('mainbody', (bool)$sideRecommendations)?>">
   <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-    <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
+    <?php foreach ($topRecommendations as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
   <?php endif; ?>
@@ -68,7 +72,7 @@
         <?php else: ?>
           <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <?php endif; ?>
-        <?php if ($recommendations): ?>
+        <?php if ($sideRecommendations): ?>
           <?=$this->component('show-search-sidebar-button')?>
         <?php endif; ?>
       <?php else: ?>
@@ -93,18 +97,18 @@
       <?php
         $default = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]);
         $emptyMessage = $this->slot('empty-message')->get($default);
-        $this->layout()->srmessage = $emptyMessage;
+        $this->globals()['srmessage'] = $emptyMessage;
         echo $emptyMessage;
       ?>
     </p>
     <?php if (isset($this->parseError)): ?>
       <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
     <?php endif; ?>
-    <?php foreach (($top = $this->results->getRecommendations('top')) as $index => $current): ?>
+    <?php foreach ($topRecommendations as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
-    <?php foreach ($this->results->getRecommendations('noresults') as $index => $current): ?>
-      <?php if (!in_array($current, $top)): ?>
+    <?php foreach ($noResultsRecommendations as $index => $current): ?>
+      <?php if (!in_array($current, $topRecommendations) && !in_array($current, $bottomRecommendations)): ?>
         <?=$this->recommend($current, 'noresults', $index)?>
       <?php endif; ?>
     <?php endforeach; ?>
@@ -120,13 +124,16 @@
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results], 'options' => $this->paginationOptions ?? []])?>
     <?=$this->context($this)->renderInContext('search/controls/results-tools.phtml', ['results' => $this->results])?>
   <?php endif; ?>
+  <?php foreach ($bottomRecommendations as $index => $current): ?>
+    <?=$this->recommend($current, 'bottom', $index)?>
+  <?php endforeach; ?>
 </div>
 <?php /* End Main Listing */ ?>
 
 <?php /* Refine Search Options */ ?>
-<?php if ($recommendations): ?>
+<?php if ($sideRecommendations): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar" role="region" aria-label="<?=$this->transEscAttr('Search sidebar') ?>">
-    <?php foreach ($recommendations as $index => $current): ?>
+    <?php foreach ($sideRecommendations as $index => $current): ?>
       <?=$this->recommend($current, 'side', $index)?>
     <?php endforeach; ?>
   </div>

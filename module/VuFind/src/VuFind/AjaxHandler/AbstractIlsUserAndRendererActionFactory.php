@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for AbstractIlsAndUserAction AJAX handlers.
@@ -71,7 +72,7 @@ class AbstractIlsUserAndRendererActionFactory implements \Laminas\ServiceManager
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             ...($options ?: [])
         );
     }

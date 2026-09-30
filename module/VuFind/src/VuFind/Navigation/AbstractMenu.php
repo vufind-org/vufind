@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -56,13 +56,6 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     protected const ITEM_CONTEXT = 'item';
 
     /**
-     * Section service.
-     *
-     * @var SectionServiceInterface
-     */
-    protected SectionServiceInterface $sectionService;
-
-    /**
      * Processed and filtered menu configuration returned by getMenu().
      *
      * @var ?array
@@ -72,18 +65,22 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     /**
      * Constructor.
      *
-     * @param array $sectionConfig Section configuration
-     * @param array $config        Main configuration
+     * @param SectionServiceInterface $sectionService Section service
+     * @param array                   $sectionConfig  Section configuration
+     * @param array                   $config         Main configuration
      */
     public function __construct(
+        protected SectionServiceInterface $sectionService,
         array $sectionConfig,
-        protected array $config = []
+        protected array $config
     ) {
         $this->requiredSettings[self::GROUP_CONTEXT] ??= [];
         $this->requiredSettings[self::ITEM_CONTEXT] ??= [];
         $this->localizableSettings[self::GROUP_CONTEXT] ??= [];
         $this->localizableSettings[self::ITEM_CONTEXT] ??= [];
+        $this->setSectionService($this->sectionService);
         $this->setSectionConfig($sectionConfig);
+        $this->localizeSectionConfig();
     }
 
     /**
@@ -108,19 +105,11 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     public function getSectionService(): SectionServiceInterface
     {
-        // Section service must be set after constructing the object. This
-        // requirement will be removed in VuFind version 12.
-        if (!isset($this->sectionService)) {
-            throw new Exception('Section service not set');
-        }
         return $this->sectionService;
     }
 
     /**
      * Set section service.
-     *
-     * This method must be called after constructing the object. This
-     * requirement will be removed in VuFind version 12.
      *
      * @param SectionServiceInterface $sectionService Section service
      *
@@ -134,10 +123,6 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
 
     /**
      * Localize section configuration.
-     *
-     * This method should be called after setting the section service and if
-     * setting the configuration outside the constructor. This requirement will
-     * be removed in VuFind version 12.
      *
      * @return static
      */

@@ -31,6 +31,7 @@ namespace VuFindTheme\View\Helper;
 
 use Exception;
 use Laminas\View\Resolver\TemplatePathStack;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Helper to get path to a parent template (for including).
@@ -41,23 +42,16 @@ use Laminas\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
+class ParentTemplate
 {
-    /**
-     * Inheritance stack of template folder paths.
-     *
-     * @var TemplatePathStack
-     */
-    protected $templatePathStack;
-
     /**
      * Constructor.
      *
-     * @param TemplatePathStack $templateStack Inheritance stack of template paths
+     * @param TemplatePathStack $templatePathStack Inheritance stack of template paths
      */
-    public function __construct($templateStack)
+    #[Autowire]
+    public function __construct(protected TemplatePathStack $templatePathStack)
     {
-        $this->templatePathStack = $templateStack;
     }
 
     /**

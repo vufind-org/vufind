@@ -64,7 +64,7 @@ class PrimoController extends AbstractSearch
      */
     public function citedByAction()
     {
-        $this->flashMessenger()->addInfoMessage('results_citing_title_note');
+        $this->getFlashMessenger()->addInfoMessage('results_citing_title_note');
         return $this->performCitationSearch();
     }
 
@@ -75,7 +75,7 @@ class PrimoController extends AbstractSearch
      */
     public function citesAction()
     {
-        $this->flashMessenger()->addInfoMessage('results_cited_by_title_note');
+        $this->getFlashMessenger()->addInfoMessage('results_cited_by_title_note');
         return $this->performCitationSearch();
     }
 

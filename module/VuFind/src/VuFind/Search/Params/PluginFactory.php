@@ -29,9 +29,6 @@
 
 namespace VuFind\Search\Params;
 
-use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManagerInterface;
-
 /**
  * Search params plugin factory.
  *
@@ -49,31 +46,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     public function __construct()
     {
         $this->defaultNamespace = 'VuFind\Search';
+        $this->defaultFactory = ParamsFactory::class;
         $this->classSuffix = '\Params';
-    }
-
-    /**
-     * Create a service for the specified name.
-     *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     * @param ?array             $extras        Extra options
-     *
-     * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        ?array $extras = null
-    ) {
-        $optionsService = preg_replace('/Params$/', 'Options', $requestedName);
-        $options = $container->get(\VuFind\Search\Options\PluginManager::class)
-            ->get($optionsService);
-        $class = $this->getClassName($requestedName);
-        $configManager = $container->get(ConfigManagerInterface::class);
-        // Clone the options instance in case caller modifies it:
-        return new $class(clone $options, $configManager, ...($extras ?: []));
     }
 }

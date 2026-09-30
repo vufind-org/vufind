@@ -71,19 +71,25 @@ class CaptchaFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
 
-        $captchaTypes = $config->Captcha->types ?? [];
+        $captchaTypes = $config['Captcha']['types'] ?? [];
 
         $captchas = [];
         foreach ($captchaTypes as $captchaType) {
             $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)
                 ->get(trim($captchaType));
         }
+        $viewHelperManager = $container->get('ViewHelperManager');
+        $viewRenderer = $viewHelperManager->getRenderer();
+        $viewResolver = $viewRenderer->resolver();
 
         return new $requestedName(
             $config,
-            $captchas
+            $captchas,
+            $viewRenderer,
+            $viewResolver,
+            $viewHelperManager->get('context')
         );
     }
 }

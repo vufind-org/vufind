@@ -166,8 +166,8 @@ class BackendTest extends TestCase
         $this->assertEquals('Language', $facets[0]['displayName']);
         $this->assertEquals(0, $coll->getOffset());
         $this->assertEquals([], $coll->getSpellcheck());
-        $this->assertEquals(false, $coll->getBestBets());
-        $this->assertEquals(false, $coll->getDatabaseRecommendations());
+        $this->assertEquals([], $coll->getBestBets());
+        $this->assertEquals([], $coll->getDatabaseRecommendations());
     }
 
     /**

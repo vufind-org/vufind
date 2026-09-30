@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Options\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Retrieve search options" view helper.
@@ -40,23 +41,16 @@ use VuFind\Search\Options\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchOptions extends \Laminas\View\Helper\AbstractHelper
+class SearchOptions
 {
-    /**
-     * Search manager.
-     *
-     * @var PluginManager
-     */
-    protected $manager;
-
     /**
      * Constructor.
      *
      * @param PluginManager $manager Search manager
      */
-    public function __construct(PluginManager $manager)
+    #[Autowire]
+    public function __construct(protected PluginManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**

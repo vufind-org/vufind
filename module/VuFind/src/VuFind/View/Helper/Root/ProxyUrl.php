@@ -32,8 +32,6 @@ namespace VuFind\View\Helper\Root;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
-use function intval;
-
 /**
  * Proxy URL view helper.
  *
@@ -43,7 +41,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
+class ProxyUrl implements
     \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
@@ -52,23 +50,15 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * VuFind configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config VuFind configuration
-     * @param ?CacheAdapter         $cache  Cache for web service responses
+     * @param ?array        $config VuFind configuration
+     * @param ?CacheAdapter $cache  Cache for web service responses
      */
-    public function __construct($config = null, ?CacheAdapter $cache = null)
+    public function __construct(protected ?array $config = null, ?CacheAdapter $cache = null)
     {
-        $this->config = $config;
         $this->setCacheStorage($cache);
-        $this->cacheLifetime = intval($config->EZproxy->prefixLinksWebServiceCacheLifetime ?? 600);
+        $this->cacheLifetime = (int)($config['EZproxy']['prefixLinksWebServiceCacheLifetime'] ?? 600);
     }
 
     /**
@@ -80,13 +70,13 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
      */
     public function __invoke($url)
     {
-        $useWebService = $this->config->EZproxy->prefixLinksWebServiceUrl ?? false;
+        $useWebService = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? false;
         $usePrefix = $useWebService
             ? $this->checkUrl($url) ?? $this->checkConfig()
             : $this->checkConfig();
 
-        return ($usePrefix && isset($this->config->EZproxy->host))
-            ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)
+        return ($usePrefix && isset($this->config['EZproxy']['host']))
+            ? $this->config['EZproxy']['host'] . '/login?qurl=' . urlencode($url)
             : $url;
     }
 
@@ -97,7 +87,7 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
      */
     protected function checkConfig()
     {
-        return $this->config->EZproxy->prefixLinks ?? true;
+        return $this->config['EZproxy']['prefixLinks'] ?? true;
     }
 
     /**
@@ -124,13 +114,13 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     /**
      * Query the web service on whether to prefix URLs to a given domain.
      *
-     * @param $domain The domain
+     * @param string $domain The domain
      *
      * @return mixed Whether the URL should be prefixed, or null if it can't be determined
      */
     protected function queryWebService($domain)
     {
-        $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl;
+        $prefixLinksWebServiceUrl = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? '';
         try {
             $response = $this->httpService->get($prefixLinksWebServiceUrl, ['url' => $domain]);
             $responseData = trim($response->getContent());

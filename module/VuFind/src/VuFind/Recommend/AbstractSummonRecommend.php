@@ -143,7 +143,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      */
     protected function configureSummonResults(\VuFind\Search\Summon\Results $results)
     {
-        $results->getParams()->setBasicSearch($this->lookfor, 'AllFields');
+        $results->getParams()->setBasicSearch($this->lookfor ?? '', 'AllFields');
     }
 
     /**

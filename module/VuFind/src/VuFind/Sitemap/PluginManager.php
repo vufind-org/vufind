@@ -29,8 +29,6 @@
 
 namespace VuFind\Sitemap;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Sitemap generator plugin manager.
  *
@@ -51,17 +49,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ContentPages' => Plugin\ContentPages::class,
         'Index' => Plugin\Index::class,
         'StartPage' => Plugin\StartPage::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Plugin\ContentPages::class => Plugin\ContentPagesFactory::class,
-        Plugin\Index::class => Plugin\IndexFactory::class,
-        Plugin\StartPage::class => InvokableFactory::class,
     ];
 
     /**

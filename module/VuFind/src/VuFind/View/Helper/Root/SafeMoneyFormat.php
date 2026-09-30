@@ -29,9 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtml;
 use VuFind\Service\CurrencyFormatter;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Safe money format view helper.
@@ -42,22 +42,8 @@ use VuFind\Service\CurrencyFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SafeMoneyFormat extends AbstractHelper
+class SafeMoneyFormat
 {
-    /**
-     * CurrencyFormatter.
-     *
-     * @var CurrencyFormatter
-     */
-    protected $currencyFormatter;
-
-    /**
-     * Escape helper.
-     *
-     * @var EscapeHtml
-     */
-    protected $escapeHtml;
-
     /**
      * Constructor.
      *
@@ -65,11 +51,10 @@ class SafeMoneyFormat extends AbstractHelper
      * @param EscapeHtml        $escapeHtml        Escaper
      */
     public function __construct(
-        CurrencyFormatter $currencyFormatter,
-        EscapeHtml $escapeHtml
+        protected CurrencyFormatter $currencyFormatter,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
     ) {
-        $this->currencyFormatter = $currencyFormatter;
-        $this->escapeHtml = $escapeHtml;
     }
 
     /**

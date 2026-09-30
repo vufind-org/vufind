@@ -47,7 +47,7 @@ class Search2BackendFactory extends SolrDefaultBackendFactory
     {
         parent::__construct();
         $this->mainConfig = $this->searchConfig = $this->facetConfig = 'Search2';
-        $this->searchYaml = 'searchspecs2.yaml';
+        $this->searchSpecsConfig = 'searchspecs2';
     }
 
     /**
@@ -55,7 +55,7 @@ class Search2BackendFactory extends SolrDefaultBackendFactory
      *
      * Returns a callable or null to use RecordCollectionFactory's default method.
      *
-     * @return callable|null
+     * @return ?callable
      */
     protected function getCreateRecordCallback(): ?callable
     {

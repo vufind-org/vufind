@@ -47,18 +47,6 @@ use function call_user_func_array;
 class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
-     * Get makeTag helper with mock view.
-     *
-     * @return MakeTag
-     */
-    protected function getHelper(): MakeTag
-    {
-        $helper = new MakeTag();
-        $helper->setView($this->getViewWithHelpers());
-        return $helper;
-    }
-
-    /**
      * Test that responds to common inputs.
      *
      * @return \Iterator
@@ -162,7 +150,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('voidTags')]
     public function testElements($expected, $params): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         $this->assertEquals(
             $expected,
@@ -198,7 +186,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('validTags')]
     public function testValidTagNames($tagName): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         $this->assertSame(
             $helper($tagName, ''),
@@ -234,7 +222,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('invalidTags')]
     public function testInvalidTagNames($tagName): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         // Fulfill plugin quota
         $helper('sanity-check', 'this is good');
@@ -251,7 +239,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      */
     public function testDeprecatedElementTriggersWarning(): void
     {
-        $helper = $this->getHelper();
+        $helper = $this->getMakeTagHelper();
 
         // Fulfill plugin quota
         $helper('sanity-check', 'this is good');

@@ -22,8 +22,10 @@
 
 .channel-header {
   display: flex;
+  width: 100%;
 
-  @media (max-width: 639px) {
+  /* .channel width */
+  @container (width < 640px) {
     flex-direction: column;
     gap: 0.5rem;
 
@@ -32,7 +34,7 @@
     }
   }
 
-  @media (min-width: 640px) {
+  @container (width >= 640px) {
     align-items: center;
     gap: 1rem;
   }
@@ -46,7 +48,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  @media (min-width: 640px) {
+  /* .channel width */
+  @container (width < 640px) {
     flex: 1 1 0%;
   }
 }
@@ -70,6 +73,7 @@
   padding: 0;
   border-radius: $border-radius;
 
+  /* .channel width */
   @container (width < 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -111,6 +115,8 @@
   text-overflow: ellipsis;
 }
 
+/* Quick Look */
+
 .channel-quick-look-btn {
   position: absolute;
   inset-inline: 0;
@@ -143,4 +149,12 @@
 .ql-btn-group {
   width: 100%;
   margin-block-end: 1rem;
+}
+
+/* Record Tab styles */
+
+.channels-tab .channel {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
 }

@@ -52,9 +52,10 @@ interface SimilarBuilderInterface
     /**
      * Build SOLR query based on VuFind query object.
      *
-     * @param string $id Record id
+     * @param string    $id     Record id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
-    public function build($id);
+    public function build(string $id, ?ParamBag $params = null): ParamBag;
 }

@@ -60,18 +60,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Database::class => AbstractBaseFactory::class,
-        File::class => AbstractBaseFactory::class,
-        Memcache::class => AbstractBaseFactory::class,
-        Redis::class => RedisFactory::class,
-    ];
-
-    /**
      * Default delegator factories.
      *
      * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]

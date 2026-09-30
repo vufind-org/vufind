@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -41,23 +41,16 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ThemeConfig extends AbstractHelper
+class ThemeConfig
 {
-    /**
-     * ThemeInfo object to access themeConfig.
-     *
-     * @var ThemeInfo
-     */
-    protected $themeInfo;
-
     /**
      * Constructor.
      *
      * @param ThemeInfo $themeInfo ThemeInfo
      */
-    public function __construct(ThemeInfo $themeInfo)
+    #[Autowire]
+    public function __construct(protected ThemeInfo $themeInfo)
     {
-        $this->themeInfo = $themeInfo;
     }
 
     /**

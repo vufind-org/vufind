@@ -1,0 +1,29 @@
+<?php
+  $pageTitle = 'Translation Test Tool';
+
+  $this->breadcrumbs()->set('Development Tools', $this->url('devtools-home'))
+    ->add($pageTitle, active: true);
+?>
+<?= $this->component('page-title', ['title' => $pageTitle]) ?>
+<form method="GET">
+  <label for="key">Translation Key: </label>
+  <input type="text" name="key" id="key" value="<?= $this->escapeHtml($this->key) ?>"><br>
+  <label for="placeholders">Placeholders (name=value pairs, separated by semicolons, e.g. "placeholder1=foo;placeholder2=bar")</label><br>
+  <textarea name="placeholders" id="placeholders"><?= $this->escapeHtml($this->placeholders) ?></textarea><br>
+  <input type="checkbox" name="icu" id="icu" value="1"<?= $this->icu ? ' checked' : '' ?>> <label for="icu">Use ICU Formatting</label><br>
+  <input type="checkbox" name="noescape" id="noescape" value="1"<?= $this->escape ? '' : ' checked' ?>> <label for="noescape">Bypass HTML Escaping</label><br>
+  <input type="submit" name="submitButton">
+</form>
+
+<?php if ($this->submitted): ?>
+  <?php
+    $processedPlaceholders = [];
+    foreach (explode(';', $this->placeholders) as $pair) {
+      [$key, $value] = explode('=', $pair . '=');
+      $processedPlaceholders[$key] = $value;
+    }
+    $helper = $this->escape ? 'transEsc' : 'translate';
+    $translation = $this->$helper($this->key, $processedPlaceholders, useIcuFormatter: $this->icu);
+  ?>
+  <div class="alert alert-info"><?= $translation ?></div>
+<?php endif; ?>

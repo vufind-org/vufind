@@ -78,7 +78,7 @@ class Similar implements RelatedInterface
     {
         $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
-            $driver->getUniqueId()
+            $driver->getUniqueID()
         );
         $this->results = $this->searchService->invoke($command)->getResult();
     }

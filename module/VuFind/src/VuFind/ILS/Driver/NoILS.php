@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function strlen;
 
@@ -50,20 +51,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader.
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Record\Loader $loader Record loader
+     * @param \VuFind\Record\Loader $recordLoader Record loader
      */
-    public function __construct(\VuFind\Record\Loader $loader)
+    #[Autowire]
+    public function __construct(protected \VuFind\Record\Loader $recordLoader)
     {
-        $this->recordLoader = $loader;
     }
 
     /**
@@ -91,9 +85,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**
@@ -304,31 +298,6 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get New Items.
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        return [];
-    }
-
-    /**
      * Get Offline Mode.
      *
      * This is responsible for returning the offline mode
@@ -371,22 +340,6 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         // Block authentication:
         return null;
-    }
-
-    /**
-     * Get Funds.
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @throws ILSException
-     * @return array An associative array with key = fund ID, value = fund name.
-     *
-     * @deprecated
-     */
-    public function getFunds()
-    {
-        // Does not work while ILS offline:
-        return [];
     }
 
     /**

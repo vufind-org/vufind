@@ -76,42 +76,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        \VuFind\Search\Blender\Options::class => OptionsFactory::class,
-        \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
-        \VuFind\Search\Combined\Options::class => \VuFind\Search\Combined\OptionsFactory::class,
-        \VuFind\Search\EDS\Options::class =>
-            \VuFind\Search\EDS\OptionsFactory::class,
-        \VuFind\Search\EIT\Options::class => OptionsFactory::class,
-        \VuFind\Search\EPF\Options::class => OptionsFactory::class,
-        \VuFind\Search\EmptySet\Options::class => OptionsFactory::class,
-        \VuFind\Search\Favorites\Options::class => OptionsFactory::class,
-        \VuFind\Search\LibGuides\Options::class => OptionsFactory::class,
-        \VuFind\Search\LibGuidesAZ\Options::class => OptionsFactory::class,
-        \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
-        \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
-        \VuFind\Search\Primo\Options::class => OptionsFactory::class,
-        \VuFind\Search\ProQuestFSG\Options::class => OptionsFactory::class,
-        \VuFind\Search\Search2\Options::class => OptionsFactory::class,
-        \VuFind\Search\Search2Collection\Options::class => OptionsFactory::class,
-        \VuFind\Search\Solr\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrAuth\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrAuthor\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrAuthorFacets\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrCollection\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrReserves\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrWeb\Options::class => OptionsFactory::class,
-        \VuFind\Search\Summon\Options::class => OptionsFactory::class,
-        \VuFind\Search\Tags\Options::class => OptionsFactory::class,
-        \VuFind\Search\WorldCat\Options::class => OptionsFactory::class,
-        \VuFind\Search\WorldCat2\Options::class => OptionsFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
