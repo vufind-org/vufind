@@ -260,8 +260,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
                         $params->addFacet($facet);
                     }
                 }
-                // Set limit to 0 if no record fields were requested to
-                // prevent unnecessary loading.
+                // Set limit to 0 if no record fields were requested to prevent unnecessary loading.
                 $params->setLimit($recordFields ? $limit : 0);
             }
         );
