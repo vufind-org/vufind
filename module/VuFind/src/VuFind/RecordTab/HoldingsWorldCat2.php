@@ -52,7 +52,6 @@ class HoldingsWorldCat2 extends AbstractBase
      * @param array   $defaults      Default parameters to include in API requests
      */
     public function __construct(
-        #[Autowire]
         protected Service $searchService,
         #[Autowire(config: 'WorldCat2', path: 'Holdings', default: [])]
         protected array $defaults = []
