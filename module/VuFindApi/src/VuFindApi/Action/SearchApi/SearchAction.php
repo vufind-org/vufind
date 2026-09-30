@@ -145,7 +145,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
         $requestParams = $request->getQueryParams() + $request->getParsedBody();
 
         // Perform the search:
-        $isCursorSearch = ($requestParams['resumptionToken'] ?? false);
+        $isCursorSearch = (bool)($requestParams['resumptionToken'] ?? false);
         try {
             $result = $isCursorSearch
                 ? $this->doCursorSearch($requestParams)
