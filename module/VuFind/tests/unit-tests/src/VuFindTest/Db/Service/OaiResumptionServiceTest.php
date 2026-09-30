@@ -31,8 +31,8 @@
 namespace VuFindTest\Db\Service;
 
 use DateTime;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Generator;
@@ -133,11 +133,11 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->getPluginManager();
         $resumptionService = $this->getService($entityManager, $pluginManager);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->expects($this->once())->method('execute')
             ->willReturn(0);
 
-        $subQuery = $this->createMock(AbstractQuery::class);
+        $subQuery = $this->createMock(Query::class);
         $subQuery->expects($this->once())->method('getResult')
             ->willReturn([]);
         $subQueryBuilder = $this->getMockBuilder(QueryBuilder::class)
@@ -179,7 +179,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $resumptionService->expects($this->once())->method('getDateTime')
             ->willReturn($dateTime);
 
-        $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
+        $query = $this->createMock(\Doctrine\ORM\Query::class);
         $entityManager->expects($this->once())->method('createQuery')
             ->with($queryStmt)
             ->willReturn($query);
