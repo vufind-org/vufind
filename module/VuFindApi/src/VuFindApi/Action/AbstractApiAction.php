@@ -124,8 +124,6 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ?ResponseInterface {
-        $this->disableSessionWrites();
-
         if ($result = parent::validateActionConfig($request, $response)) {
             return $result;
         }
@@ -334,5 +332,21 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
             401,
             $this->developerSettingsService->getApiKeyMode()->getUnauthorizedMessage()
         );
+    }
+
+    /**
+     * Get shared template params for OpenAPI templates.
+     *
+     * @return array
+     */
+    protected function getOpenApiTemplateParams(): array
+    {
+        return [
+            'config' => $this->config,
+            'version' => \VuFind\Config\Version::getBuildVersion(),
+            'apiKeysEnabled' => $this->developerSettingsService->apiKeysEnabled(),
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService->getApiKeyMode(),
+        ];
     }
 }

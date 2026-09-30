@@ -36,12 +36,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ActionConfigManager;
 use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\ActionHelper\ResponseHelper;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Action\AbstractApiAction;
 use VuFindApi\Action\ApiInterface;
-
-use function is_array;
 
 /**
  * API index page action.
@@ -97,26 +96,35 @@ class IndexAction extends AbstractApiAction
             $url = "$base/swagger-ui/?url=" . urlencode("$base/api?openapi");
             return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
         }
-        $response = $response->withHeader('Content-Type', 'application/json; charset=utf8');
-        $response->getBody()->write(json_encode($this->getApiSpecs(), JSON_PRETTY_PRINT));
-        return $response;
+        return $this->getHelper(ResponseHelper::class)->getJsonResponse(
+            $response,
+            $this->getApiSpecs(),
+            jsonFlags: JSON_PRETTY_PRINT
+        );
     }
 
     /**
      * Get API specification fragment for services provided by the action.
      *
-     * @return array|string An array or a JSON string
+     * @return array
      */
-    public function getApiSpecFragment(): array|string
+    public function getApiSpecFragment(): array
     {
-        $params = [
-            'config' => $this->config,
-            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
-            'apiKeyHeaderField' => $this->apiKeyHeaderField,
-            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
-            'version' => \VuFind\Config\Version::getBuildVersion(),
-        ];
-        return $this->getTemplateRenderer()->renderTemplateAsString(template: 'api/openapi', params: $params);
+        return json_decode(
+            $this->getTemplateRenderer()
+                ->renderTemplateAsString(template: 'api/openapi', params: $this->getOpenApiTemplateParams()),
+            true
+        );
+    }
+
+    /**
+     * Initialize the action.
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+        $this->disableSessionWrites();
     }
 
     /**
@@ -139,20 +147,17 @@ class IndexAction extends AbstractApiAction
         }
 
         $results = [];
-        foreach ($fragments as $actionId => $fragment) {
-            $specs = is_array($fragment) ? $fragment : json_decode($fragment, true);
-            if (null === $specs) {
-                throw new \Exception(
-                    'Could not parse API spec fragment of ' . $actionId . ': ' . json_last_error_msg()
-                );
-            }
-            foreach ($specs as $key => $spec) {
+        foreach ($fragments as $fragment) {
+            foreach ($fragment as $key => $spec) {
                 if (isset($results[$key])) {
                     if ('components' === $key) {
                         $results['components']['schemas'] = array_merge(
                             $results['components']['schemas'] ?? [],
                             $spec['schemas'] ?? []
                         );
+                        if (array_diff(array_keys($spec), ['schemas'])) {
+                            throw new Exception("Only 'schemas' element is supported for 'components'");
+                        }
                     } else {
                         $results[$key] = array_merge($results[$key], $spec);
                     }

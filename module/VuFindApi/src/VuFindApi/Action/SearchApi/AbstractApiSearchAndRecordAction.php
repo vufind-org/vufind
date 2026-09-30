@@ -242,20 +242,13 @@ abstract class AbstractApiSearchAndRecordAction extends AbstractApiAction implem
     }
 
     /**
-     * Get API specification fragment for services provided by the action.
+     * Initialize the action.
      *
-     * @return array|string An array or a JSON string
+     * @return void
      */
-    public function getApiSpecFragment(): array|string
+    protected function init(): void
     {
-        $params = [
-            'config' => $this->config,
-            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
-            'apiKeyHeaderField' => $this->apiKeyHeaderField,
-            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
-            'version' => \VuFind\Config\Version::getBuildVersion(),
-        ];
-        return $this->getTemplateRenderer()->renderTemplateAsString(template: 'api/openapi', params: $params);
+        $this->disableSessionWrites();
     }
 
     /**
@@ -351,9 +344,6 @@ abstract class AbstractApiSearchAndRecordAction extends AbstractApiAction implem
      */
     protected function getRecordFieldConfigFile(): string
     {
-        if (null === $this->recordFieldConfigFile) {
-            throw new ConfigException('Record field config file not properly configured.');
-        }
         return $this->recordFieldConfigFile;
     }
 }

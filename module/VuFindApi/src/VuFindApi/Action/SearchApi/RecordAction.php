@@ -130,7 +130,6 @@ class RecordAction extends AbstractApiSearchAndRecordAction
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $results = [];
         try {
             if (is_array($requestParams['id'])) {
                 if (count($requestParams['id']) > $this->maxLimit) {
@@ -138,7 +137,9 @@ class RecordAction extends AbstractApiSearchAndRecordAction
                 }
                 $results = $this->recordLoader->loadBatchForSource($requestParams['id'], $this->getBackendId());
             } else {
-                $results[] = $this->recordLoader->load($requestParams['id'], $this->getBackendId());
+                $results = [
+                    $this->recordLoader->load($requestParams['id'], $this->getBackendId()),
+                ];
             }
         } catch (Exception $e) {
             return $this->output(
@@ -181,9 +182,9 @@ class RecordAction extends AbstractApiSearchAndRecordAction
     /**
      * Get API specification fragment for services provided by the action.
      *
-     * @return array|string An array or a JSON string
+     * @return array
      */
-    public function getApiSpecFragment(): array|string
+    public function getApiSpecFragment(): array
     {
         // All specs are provided by SearchAction.
         return [];

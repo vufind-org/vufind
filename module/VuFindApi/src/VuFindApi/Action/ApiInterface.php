@@ -43,7 +43,7 @@ interface ApiInterface
     /**
      * Get API specification fragment for services provided by the action.
      *
-     * @return array|string An array or a JSON string
+     * @return array
      */
-    public function getApiSpecFragment(): array|string;
+    public function getApiSpecFragment(): array;
 }

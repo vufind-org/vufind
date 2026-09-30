@@ -108,7 +108,6 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      */
     public function __construct()
     {
-        $this->init();
     }
 
     /**
@@ -219,6 +218,8 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
         $this->request = $request;
         $this->response = $response;
 
+        $this->init();
+
         try {
             $this->configureDefaultAccessPermission();
 
@@ -247,7 +248,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      */
     protected function init(): void
     {
-        // This function is called after constructor for any initialization required.
+        // This function is called in the beginning of action invokation for any initialization required.
     }
 
     /**

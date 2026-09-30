@@ -163,9 +163,9 @@ class SearchAction extends AbstractApiSearchAndRecordAction
     /**
      * Get API specification fragment for services provided by the action.
      *
-     * @return array|string An array or a JSON string
+     * @return array
      */
-    public function getApiSpecFragment(): array|string
+    public function getApiSpecFragment(): array
     {
         $this->applyApiSettings();
 
@@ -173,9 +173,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
         $options = $results->getOptions();
         $params = $results->getParams();
 
-        $templateParams = [
-            'config' => $this->config,
-            'version' => \VuFind\Config\Version::getBuildVersion(),
+        $templateParams = $this->getOpenApiTemplateParams() + [
             'searchTypes' => $options->getBasicHandlers(),
             'defaultSearchType' => $options->getDefaultHandler(),
             'recordFields' => $this->recordFormatter->getRecordFieldSpec($this->getRecordFieldConfig()),
@@ -190,12 +188,12 @@ class SearchAction extends AbstractApiSearchAndRecordAction
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
             'maxLimit' => $this->maxLimit,
-            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
-            'apiKeyHeaderField' => $this->apiKeyHeaderField,
-            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
         ];
-        return $this->getTemplateRenderer()
-            ->renderTemplateAsString(template: 'searchapi/openapi', params: $templateParams);
+        return json_decode(
+            $this->getTemplateRenderer()
+                ->renderTemplateAsString(template: 'searchapi/openapi', params: $templateParams),
+            true
+        );
     }
 
     /**
@@ -265,7 +263,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
             }
         );
         // If we received an EmptySet back, that indicates that the real search failed due to some kind of syntax
-		// error, and we should display a warning to the user; otherwise, we should proceed with normal post-search
+        // error, and we should display a warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             throw new ApiException(ApiException::INVALID_SEARCH, 400);
@@ -339,7 +337,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
             }
         );
         // If we received an EmptySet back, that indicates that the real search failed due to some kind of syntax
-		// error, and we should display a warning to the user; otherwise, we should proceed with normal post-search
+        // error, and we should display a warning to the user; otherwise, we should proceed with normal post-search
         // processing.
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             throw new ApiException(ApiException::INVALID_SEARCH, 400);
