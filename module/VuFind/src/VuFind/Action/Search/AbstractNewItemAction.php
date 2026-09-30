@@ -186,8 +186,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
         $queryParams['hiddenFilters'] = $newItemParams['hiddenFilters'] ?? [];
         $queryParams['hiddenFilters'][] = $this->newItemsHelper->getSolrFilter($newItemParams['range']);
 
-        // Flag this as a specialized search to avoid bleeding defaults into the
-        // standard search box:
+        // Flag this as a specialized search to avoid bleeding defaults into the standard search box:
         $queryParams['specializedSearch'] = true;
 
         return $request->withQueryParams($queryParams);
