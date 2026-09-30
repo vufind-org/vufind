@@ -81,11 +81,14 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
     public function testSchemaValidation(): void
     {
         $container = $this->getLiveDatabaseContainer();
-        // Flush the Doctrine cache to be sure we're validating the latest data:
-        // TODO: figure out a new way to do this
-        //$cache = $container->get('doctrine.cache.filesystem');
-        //$cache->flushAll();
         $entityManager = $container->get('doctrine.entitymanager.orm_vufind');
+        // Flush the Doctrine cache to be sure we're validating the latest data:
+        if ($cache = $entityManager->getCache()) {
+            $cache->evictCollectionRegions();
+            $cache->evictEntityRegions();
+            $cache->evictQueryRegions();
+        }
+
         $platform = strtolower(get_class($entityManager->getConnection()->getDatabasePlatform()));
         $validator = new SchemaValidator($entityManager);
         $errorList = $validator->validateMapping();
