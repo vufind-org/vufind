@@ -99,7 +99,7 @@ class EmailAction extends AbstractTemplateRenderingAction
             ?? $this->getHelper(ContextHelper::class)->getReferrer($request)
             ?? null;
         if (!$url || !$this->getHelper(UrlHelper::class)->isLocalUrl($url)) {
-            throw new \Exception('Unexpected value passed to emailAction: ' . ($url ?? '<null>'));
+            throw new \Exception('Unexpected value passed to EmailAction: ' . ($url ?? '<null>'));
         }
 
         $templateParams = $this->getHelper(EmailHelper::class)->createEmailTemplateParams(
