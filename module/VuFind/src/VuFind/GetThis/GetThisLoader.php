@@ -126,6 +126,53 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
+     * The function returns whether the regex matches :
+     *  - the value of $item's given key
+     *  - the result of a local function
+     * The result is negated if the first char is "!".
+     *
+     * @param array{name: string, value: string} $config The config containing the regex name
+     *                                                    and the value to match against
+     *
+     * @return bool
+     * @throws Exception
+     */
+    protected function isRegexMatching(array $config): bool
+    {
+        if (
+            !isset($config['name'], $config['value'])
+            || !is_string($config['name'])
+            || !is_string($config['value'])
+        ) {
+            throw new Exception(
+                'The config for a regex should contain the ' .
+                'keys "name" and "value" with a string value'
+            );
+        }
+
+        $item = $this->getItem();
+        $regex = $config['name'];
+        $negate = false;
+        if (str_starts_with($regex, '!')) {
+            $regex = substr($regex, 1);
+            $negate = true;
+        }
+
+        if (isset($item[$config['value']])) {
+            $result = $this->matches($regex, $item[$config['value']]);
+        } elseif (method_exists($this, $config['value'])) {
+            $value = call_user_func([$this, $config['value']]);
+            $result = $this->matches($regex, $value);
+        } else {
+            throw new Exception(
+                'The value "' . $config['value'] . '" for the regex is not a valid array key ' .
+                'for $item nor a function in ' . static::class
+            );
+        }
+        return $negate ? !$result : $result;
+    }
+
+    /**
      * Whether the condition block contains an operator "and".
      *
      * @param array $conditions Array of conditions to determine the result
@@ -183,7 +230,9 @@ class GetThisLoader implements LoggerAwareInterface
      */
     protected function areConditionsFilled(array $condition): bool
     {
-        if (isset($condition['condition_function'])) {
+        if (isset($condition['regex'])) {
+            return $this->isRegexMatching($condition['regex']);
+        } elseif (isset($condition['condition_function'])) {
             return $this->isConditionFunctionFilled($condition['condition_function']);
         } elseif (isset($condition['condition_group'])) {
             return $this->loopThroughConditionBlock($condition['condition_group']);
@@ -255,7 +304,11 @@ class GetThisLoader implements LoggerAwareInterface
                     // If condition_function is not present we display the templates
                     // If it's present we display the template only if the function exists and return true
                     if (
-                        !isset($template['condition_function']) && !isset($template['condition_group'])
+                        (
+                            !isset($template['condition_function'])
+                            && !isset($template['condition_group'])
+                            && !isset($template['regex'])
+                        )
                         || $this->areConditionsFilled($template)
                     ) {
                         $this->addSubTemplates($templateName, $template);
@@ -691,6 +744,10 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
+     * @deprecated In your GetThis.yaml instead of condition_function: showMicroForm use :
+     *             regex:
+     *              name: 'LOCATION_MICROFORMS'
+     *              value: 'getLocation'
      * Determine if the microform template should display.
      *
      * @return bool If the template should display
