@@ -610,7 +610,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCite(): void
     {
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Click Cite
         $this->clickCss($page, '.cite-record');
