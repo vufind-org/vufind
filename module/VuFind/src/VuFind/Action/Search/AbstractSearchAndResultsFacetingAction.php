@@ -234,15 +234,12 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
                 $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
                     . $facet . ':"' . $value['value'] . '"';
 
-                // If we haven't already found a selected facet and the current
-                // facet has been applied to the search, we should store it as
-                // the selected facet for the current control.
+                // If we haven't already found a selected facet and the current facet has been applied to the search, we
+                // should store it as the selected facet for the current control.
                 if ($searchObject?->getParams()->hasFilter($fullFilter)) {
                     $list['list'][$key]['selected'] = true;
-                    // Remove the filter from the search object -- we don't want
-                    // it to show up in the "applied filters" sidebar since it
-                    // will already be accounted for by being selected in the
-                    // filter select list!
+                    // Remove the filter from the search object -- we don't want it to show up in the "applied filters"
+                    // sidebar since it will already be accounted for by being selected in the filter select list!
                     $searchObject->getParams()->removeFilter($fullFilter);
                 }
             }

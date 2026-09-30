@@ -98,8 +98,8 @@ class HistoryAction extends AbstractTemplateRenderingAction
             $this->memory->forgetSearch();
         }
         $templateParams = $this->history->getSearchHistory($userId);
-        // Eliminate schedule settings if scheduled searches are disabled; add
-        // user email data if scheduled searches are enabled.
+        // Eliminate schedule settings if scheduled searches are disabled; add user email data if scheduled searches are
+        // enabled.
         $scheduleOptions = $this->history->getScheduleOptions();
         if (!$scheduleOptions) {
             unset($templateParams['schedule']);

@@ -575,23 +575,20 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     {
         $search = $this->retrieveSearchSecurely($id);
         if (empty($search)) {
-            // User is trying to view a saved search from another session
-            // (deliberate or expired) or associated with another user.
+            // User is trying to view a saved search from another session (deliberate or expired) or associated with
+            // another user.
             throw new \Exception('Attempt to access invalid search ID');
         }
 
-        // If we got this far, the user is allowed to view the search, so we can
-        // deminify it to a new object.
+        // If we got this far, the user is allowed to view the search, so we can deminify it to a new object.
         $savedSearch = $search->getSearchObject()?->deminify($this->resultsPluginManager);
         if (!$savedSearch) {
             throw new Exception("Problem getting search object from search {$search->getId()}.");
         }
 
-        // Now redirect to the URL associated with the saved search; this
-        // simplifies problems caused by mixing different classes of search
-        // object, and it also prevents the user from ever landing on a
-        // "?saved=xxxx" URL, which may not persist beyond the current session.
-        // (We want all searches to be persistent and bookmarkable).
+        // Now redirect to the URL associated with the saved search; this simplifies problems caused by mixing different
+        // classes of search object, and it also prevents the user from ever landing on a "?saved=xxxx" URL, which may
+        // not persist beyond the current session. (We want all searches to be persistent and bookmarkable).
         return $this->getHelper(RedirectHelper::class)->redirectToRoute(
             $this->response,
             $savedSearch->getOptions()->getSearchAction(),
@@ -617,8 +614,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             $this->searchMemory->rememberSearch($searchUrl, $results->getSearchId());
         }
 
-        // Always save search parameters, since these are namespaced by search
-        // class ID.
+        // Always save search parameters, since these are namespaced by search class ID.
         $this->searchMemory->rememberParams($results->getParams());
     }
 
@@ -673,8 +669,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
                 }
             }
 
-            // Special case: override recommend settings through parameter (used by
-            // combined search)
+            // Special case: override recommend settings through parameter (used by combined search)
             if (is_array($override)) {
                 $config = array_merge($config, $override);
             }
@@ -685,8 +680,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     }
 
     /**
-     * If the search backend has thrown a "deep paging" exception, we should show a
-     * flash message and redirect the user to a legal page.
+     * If the search backend has thrown a "deep paging" exception, we should show a flash message and redirect the user
+     * to a legal page.
      *
      * @param array $request Incoming request parameters
      * @param int   $page    Legal page number
@@ -791,8 +786,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      */
     protected function processJumpToOnlyResult(Results $results): ?ResponseInterface
     {
-        // If jumpto is explicitly disabled (set to false, e.g. by combined search),
-        // we should NEVER jump to a result regardless of other factors.
+        // If jumpto is explicitly disabled (set to false, e.g. by combined search), we should NEVER jump to a result
+        // regardless of other factors.
         $jumpto = $this->getQueryParam('jumpto', '1');
         if (
             $jumpto
@@ -942,8 +937,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     }
 
     /**
-     * Get the range facet configurations from the specified config section and
-     * filter them appropriately.
+     * Get the range facet configurations from the specified config section and filter them appropriately.
      *
      * @param string $config  Name of config file
      * @param string $section Configuration section to check
@@ -1123,7 +1117,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
-        if (str_starts_with($section, '~')) {        // reverse flag
+        if (str_starts_with($section, '~')) { // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
@@ -1137,9 +1131,8 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         foreach ($checkboxFacets as $filter => $desc) {
             $current = compact('desc', 'filter');
             $current['selected'] = $savedSearch && $savedSearch->getParams()->hasFilter($filter);
-            // We don't want to double-display checkboxes on advanced search, so
-            // if they are checked, we should remove them from the object to
-            // prevent display in the "other filters" area.
+            // We don't want to double-display checkboxes on advanced search, so if they are checked, we should remove
+            // them from the object to prevent display in the "other filters" area.
             if ($current['selected']) {
                 $savedSearch->getParams()->removeFilter($filter);
             }

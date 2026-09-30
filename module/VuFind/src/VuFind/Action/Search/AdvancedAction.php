@@ -137,8 +137,7 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
     ): array {
         $options = null;
         foreach ($facetList as $facet => &$list) {
-            // Hierarchical facets: format display texts and sort facets
-            // to a flat array according to the hierarchy
+            // Hierarchical facets: format display texts and sort facets to a flat array according to the hierarchy
             if (in_array($facet, $hierarchicalFacets)) {
                 // Process the facets
                 if (!$options) {
@@ -161,15 +160,12 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
                 $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
                     . $facet . ':"' . $value['value'] . '"';
 
-                // If we haven't already found a selected facet and the current
-                // facet has been applied to the search, we should store it as
-                // the selected facet for the current control.
+                // If we haven't already found a selected facet and the current facet has been applied to the search, we
+                // should store it as the selected facet for the current control.
                 if ($searchObject?->getParams()->hasFilter($fullFilter)) {
                     $list['list'][$key]['selected'] = true;
-                    // Remove the filter from the search object -- we don't want
-                    // it to show up in the "applied filters" sidebar since it
-                    // will already be accounted for by being selected in the
-                    // filter select list!
+                    // Remove the filter from the search object -- we don't want it to show up in the "applied filters"
+                    // sidebar since it will already be accounted for by being selected in the filter select list!
                     $searchObject->getParams()->removeFilter($fullFilter);
                 }
             }
@@ -196,9 +192,8 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
             'text' => 'No Preference', 'value' => -1, 'selected' => false,
         ];
 
-        // Find the selected value by analyzing facets -- if we find match, remove
-        // the offending facet to avoid inappropriate items appearing in the
-        // "applied filters" sidebar!
+        // Find the selected value by analyzing facets -- if we find match, remove the offending facet to avoid
+        // inappropriate items appearing in the "applied filters" sidebar!
         $params = $savedSearch?->getParams();
         if ($params?->hasFilter('illustrated:Illustrated')) {
             $illYes['selected'] = true;

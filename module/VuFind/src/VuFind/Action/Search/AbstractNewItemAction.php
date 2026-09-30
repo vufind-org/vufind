@@ -57,8 +57,6 @@ use VuFind\View\Helper\Root\ResultFeed;
 use VuFind\View\Helper\Root\SearchTabs;
 use VuFindTheme\ThemeInfo;
 
-use function intval;
-
 /**
  * Abstract base class for new item actions.
  *
@@ -209,7 +207,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
         $templateParams = parent::getSearchResultsTemplateParams($request, $searchClassId, $setupCallback);
 
         // Customize the URL helper to make sure it builds proper new item URLs (check it's set first -- RSS feed will
-		// return a response model rather than a view model):
+        // return a response model rather than a view model):
         if ($results = $templateParams['results'] ?? null) {
             $results->getOptions()->setFacetListAction('search-newitemfacetlist');
             $results->getUrlQuery()
