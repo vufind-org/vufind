@@ -135,6 +135,15 @@ class ActionConfigManager
                             }
                             $action->setCheckEnabled($value);
                             break;
+                        case 'customConfig':
+                            if (!($action instanceof CustomConfigInterface)) {
+                                throw new ConfigException(
+                                    $action::class . ' (action ' . $actionIdentifier . ')'
+                                    . " does not implement CustomConfigInterface for $key configuration"
+                                );
+                            }
+                            $action->setCustomConfig($value);
+                            break;
                         case 'defaultTab':
                         case 'fallbackDefaultTab':
                             if (!($action instanceof DefaultTabInterface)) {

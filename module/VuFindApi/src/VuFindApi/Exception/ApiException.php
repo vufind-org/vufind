@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 
-namespace VuFindApi\Controller;
+namespace VuFindApi\Exception;
 
 use Exception;
 
