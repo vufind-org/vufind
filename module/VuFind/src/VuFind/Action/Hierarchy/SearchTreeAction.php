@@ -96,9 +96,7 @@ class SearchTreeAction extends AbstractAction
         $params->addFilter('hierarchy_top_id:' . $hierarchyID);
         $facets = $results->getFullFieldFacets(['id'], false, null === $limit ? -1 : $limit + 1);
 
-        $callback = fn ($data) => $data['value'];
-        $resultIDs = array_map($callback, $facets['id']['data']['list'] ?? []);
-
+        $resultIDs = array_column($facets['id']['data']['list'] ?? [], 'value');
         $limitReached = ($limit > 0 && count($resultIDs) > $limit);
         $results = array_slice($resultIDs, 0, $limit);
 
