@@ -303,8 +303,6 @@ class SearchAction extends AbstractApiSearchAndRecordAction
      *               - resultCount: Total result count
      *               - resumptionToken: Array containing info about resumption token
      *                  - token
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function doCursorSearch(array $request): array
     {
