@@ -151,8 +151,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
                 ? $this->doCursorSearch($requestParams)
                 : $this->doDefaultSearch($requestParams);
         } catch (Exception $e) {
-            // Filter output from exceptions and only allow messages from
-            // ApiExceptions to be sent to user.
+            // Filter output from exceptions and only allow messages from ApiExceptions to be sent to user.
             $isSafeError = $e instanceof ApiException;
             $message = $isSafeError ? $e->getMessage() : 'Error occurred.';
             $errorCode = $isSafeError ? $e->getCode() : 500;
