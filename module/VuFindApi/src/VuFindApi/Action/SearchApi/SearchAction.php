@@ -192,7 +192,8 @@ class SearchAction extends AbstractApiSearchAndRecordAction
         return json_decode(
             $this->getTemplateRenderer()
                 ->renderTemplateAsString(template: 'searchapi/openapi', params: $templateParams),
-            true
+            true,
+            flags: JSON_THROW_ON_ERROR
         );
     }
 

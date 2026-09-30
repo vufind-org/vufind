@@ -113,7 +113,8 @@ class IndexAction extends AbstractApiAction
         return json_decode(
             $this->getTemplateRenderer()
                 ->renderTemplateAsString(template: 'api/openapi', params: $this->getOpenApiTemplateParams()),
-            true
+            true,
+            flags: JSON_THROW_ON_ERROR
         );
     }
 
