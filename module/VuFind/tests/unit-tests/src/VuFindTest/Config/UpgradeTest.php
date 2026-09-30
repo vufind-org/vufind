@@ -800,6 +800,22 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test citation format upgrade.
+     *
+     * @return void
+     */
+    public function testCitationFormatUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('citation-format');
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'APA,Chicago',
+            $configs['config']['Citation']['formats']
+        );
+        $this->assertFalse(isset($configs['config']['Record']['citation_formats']));
+    }
+
+    /**
      * Test upgrades for subject limit config.
      *
      * @return void

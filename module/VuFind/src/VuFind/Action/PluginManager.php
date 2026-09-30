@@ -63,6 +63,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'author/facetlist' => Author\FacetListAction::class,
 
+        'cart/cite' => Cart\CiteAction::class,
         'cart/doexport' => Cart\DoExportAction::class,
         'cart/myresearchbulk' => Cart\MyResearchBulkAction::class,
         'cart/printcart' => Cart\PrintCartAction::class,
