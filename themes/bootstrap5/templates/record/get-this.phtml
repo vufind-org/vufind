@@ -8,8 +8,10 @@ $recordTitle = $this->driver->getRawData()['title_full'] ?? '';
 echo $this->component(
     'page-title',
     [
-        'title' => $this->translate('Get This') . ' : ' . $recordTitle,
+        'title' => $this->translate('Get This') . ' : <span class="title-in-heading">' . $recordTitle . '</span>',
         'level' => 1,
+        'headTitle' => $this->translate('Get This') . ' : ' . $recordTitle,
+        'escape' => false,
     ]
 );
 
