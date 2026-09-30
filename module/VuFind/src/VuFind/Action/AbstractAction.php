@@ -248,7 +248,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      */
     protected function init(): void
     {
-        // This function is called in the beginning of action invokation for any initialization required.
+        // This function is called in the beginning of action invocation for any initialization required.
     }
 
     /**
