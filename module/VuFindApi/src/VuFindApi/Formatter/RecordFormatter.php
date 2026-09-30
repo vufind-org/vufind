@@ -256,7 +256,7 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function format($results, $requestedFields, array $recordFieldConfig)
+    public function format(array $results, array $requestedFields, array $recordFieldConfig): array
     {
         $records = [];
         foreach ($results as $result) {
