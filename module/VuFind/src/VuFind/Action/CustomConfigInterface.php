@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class Search2RecordFormatterFactory.
+ * Custom Config Interface -- provides a setter for custom configuration array.
  *
  * PHP version 8
  *
- * Copyright (C) Moravian Library 2020.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFindApi\Formatter;
+namespace VuFind\Action;
 
 /**
- * Record Formatter factory.
+ * Custom Config Interface -- provides a setter for custom configuration array.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
-class Search2RecordFormatterFactory extends RecordFormatterFactory
+interface CustomConfigInterface extends ActionConfigInterface
 {
     /**
-     * Record fields configuration file name.
+     * Set custom configuration.
      *
-     * @var string
+     * @param array $config Configuration
+     *
+     * @return static
      */
-    protected $configFile = 'Search2ApiRecordFields';
+    public function setCustomConfig(array $config): static;
 }

@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Search api controller test.
+ * Search and record API actions test.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,43 +24,49 @@
  * @category VuFind
  * @package  Tests
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
 declare(strict_types=1);
 
-namespace VuFindTest\Controller;
+namespace VuFindTest\Action;
 
 use Generator;
-use Laminas\Stdlib\Parameters;
-use PHPUnit\Framework\MockObject\MockObject;
+use GuzzleHttp\Psr7\Response;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use VuFind\ActionHelper\PermissionHelper;
+use VuFind\ActionHelper\ResponseHelper;
 use VuFind\Config\ConfigManager;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsStatus;
-use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\SolrMarc;
+use VuFind\Search\Base\Results;
 use VuFind\Search\Options\PluginManager as SearchPluginManager;
+use VuFind\Search\Results\PluginManager as ResultsPluginManager;
+use VuFind\Search\SearchRunner;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Options;
-use VuFindApi\Controller\SearchApiController;
+use VuFindApi\Action\SearchApi\RecordAction;
+use VuFindApi\Action\SearchApi\SearchAction;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
-use VuFindTest\Container\MockContainer;
 
 /**
- * Search api controller tests.
+ * Search and record API actions test.
  *
  * @category VuFind
  * @package  Tests
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
+class SearchAndRecordActionsTest extends AbstractActionTestCase
 {
     /**
      * Data provider for testApiKeys functions.
@@ -71,7 +78,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys disabled' => [
             [],
             [
-                'queryAndPost' => [
+                'queryParams' => [
                     'id' => 'record.1111',
                 ],
             ],
@@ -90,11 +97,11 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enabled and provided' => [
             $config,
             [
-                'queryAndPost' => [
+                'queryParams' => [
                     'id' => 'record.1111',
                 ],
                 'headers' => [
-                    ['test-field', '999999'],
+                    'test-field' => '999999',
                 ],
             ],
             [
@@ -105,11 +112,11 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enabled and provided non-working' => [
             $config,
             [
-                'queryAndPost' => [
+                'queryParams' => [
                     'id' => 'record.1111',
                 ],
                 'headers' => [
-                    ['test-field', '51'],
+                    'test-field' => '51',
                 ],
             ],
             [
@@ -120,7 +127,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enabled and not provided' => [
             $config,
             [
-                'queryAndPost' => [
+                'queryParams' => [
                     'id' => 'record.1111',
                 ],
             ],
@@ -133,11 +140,11 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enforced and provided' => [
             $config,
             [
-                'queryAndPost' => [
+                'queryParams' => [
                     'id' => 'record.1111',
                 ],
                 'headers' => [
-                    ['test-field', '999999'],
+                    'test-field' => '999999',
                 ],
             ],
             [
@@ -148,7 +155,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enforced and not provided' => [
             $config,
             [
-                'queryAndPost' => [
+                'queryParams' => [
                     'id' => 'record.1111',
                 ],
             ],
@@ -160,17 +167,17 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an instance of a searchApiController.
+     * Get an instance of an action class.
      *
-     * @param array $config      Main config
-     * @param array $paramsArray Parameters
+     * @param bool  $recordAction Create record action instead of search action?
+     * @param array $config       Main config
      *
-     * @return MockObject&SearchApiController
+     * @return SearchAction|RecordAction
      */
-    protected function createController(
+    protected function createAction(
+        bool $recordAction,
         array $config = [],
-        array $paramsArray = [],
-    ): MockObject&SearchApiController {
+    ): SearchAction|RecordAction {
         $solrOptions = $this->createMock(Options::class);
         $solrOptions->method('getAPISettings')->willReturn([]);
         $solrOptions->method('getFacetsIni')->willReturn('');
@@ -213,9 +220,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $dbPluginManager = $this->getMockBuilder(DbPluginManager::class)->disableOriginalConstructor()
             ->onlyMethods(['get'])->getMock();
         $dbPluginManager->method('get')->willReturnMap($dbServiceMap);
-        $facetFormatter = $this->createMock(FacetFormatter::class);
         $recordFormatter = $this->createMock(RecordFormatter::class);
-        $recordFormatter->method('getRecordFields')->willReturn([]);
         $recordFormatter->method('format')->willReturn([
             [
                 'id' => 'record.1111',
@@ -225,43 +230,59 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->createMock(ConfigManager::class);
         $configManager->method('getConfigArray')->willReturn($config);
 
-        $container = new MockContainer($this);
-        $container->set(SearchPluginManager::class, $optionsPluginManager);
-        $container->set(Loader::class, $recordLoader);
-        $container->set(DeveloperSettingsService::class, $developerSettingsService);
-        $container->set(DbPluginManager::class, $dbPluginManager);
-        $container->set(ConfigManagerInterface::class, $configManager);
-        $controller = $this->getMockBuilder(SearchApiController::class)
-            ->onlyMethods(
-                [
-                    'getRequest',
-                    'disableSessionWrites',
-                    'determineOutputMode',
-                    'isAccessDenied',
-                    'doCursorSearch',
-                    'doDefaultSearch',
-                    'getConfig',
-                    'setResumptionService',
-                    'getAllRequestParams',
-                    'getHeader',
-                ]
-            )->setConstructorArgs([$container, $recordFormatter, $facetFormatter])
-            ->getMock();
-        $controller->method('isAccessDenied')->willReturn(false);
-        $controller->method('getAllRequestParams')->willReturn($paramsArray['queryAndPost']);
-        $controller->method('getHeader')->willReturnMap($paramsArray['headers'] ?? []);
-        $searchResponse = [
-            'resultCount' => 1,
-            'records' => [
-                ['id' => 'record.1111', 'title' => 'hai!'],
-            ],
+        $authorizationService = $this->createMock(AuthorizationService::class);
+
+        if ($recordAction) {
+            $action = new RecordAction(
+                $authorizationService,
+                $developerSettingsService,
+                $config,
+                $recordFormatter,
+                $configManager,
+                $optionsPluginManager,
+                $recordLoader
+            );
+        } else {
+            $facetFormatter = $this->createMock(FacetFormatter::class);
+            $resultsPluginManager = $this->createMock(ResultsPluginManager::class);
+            $results = $this->createMock(Results::class);
+            $results->method('getResults')
+                ->willReturn([$mockRecord]);
+            $results->method('getResultTotal')
+                ->willReturn(1);
+            $searchRunner = $this->createMock(SearchRunner::class);
+            $searchRunner->method('run')
+                ->willReturn($results);
+            $hierarchicalFacetHelper = $this->createMock(HierarchicalFacetHelper::class);
+
+            $action = new SearchAction(
+                $authorizationService,
+                $developerSettingsService,
+                $config,
+                $recordFormatter,
+                $configManager,
+                $optionsPluginManager,
+                $facetFormatter,
+                $resultsPluginManager,
+                $searchRunner,
+                $resumptionService,
+                $hierarchicalFacetHelper
+            );
+        }
+
+        $helpers = [
+            PermissionHelper::class => $this->createMock(PermissionHelper::class),
+            ResponseHelper::class => new ResponseHelper(),
         ];
-        $controller->method('doDefaultSearch')->willReturn($searchResponse);
-        return $controller;
+        $this->initializeAction($action, $helpers);
+
+        $action->setBackendId('Solr');
+
+        return $action;
     }
 
     /**
-     * Test API Keys record.
+     * Test record endpoint.
      *
      * @param array $config        Main config
      * @param array $requestParams Users request as params array
@@ -270,16 +291,13 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getTestApiKeysData')]
-    public function testApiKeysRecord(array $config, array $requestParams, array $expected): void
+    public function testRecord(array $config, array $requestParams, array $expected): void
     {
-        $controller = $this->createController($config, $requestParams);
-        $result = $controller->recordAction();
-        $this->assertEquals($expected['code'], $result->getStatusCode());
-        $this->assertEquals($expected['content'], $result->getContent());
+        $this->doTest(true, $config, $requestParams, $expected);
     }
 
     /**
-     * Test API Keys search.
+     * Test search endpoint.
      *
      * @param array $config        Main config
      * @param array $requestParams Users request as params array
@@ -288,11 +306,33 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getTestApiKeysData')]
-    public function testApiKeysSearch(array $config, array $requestParams, array $expected): void
+    public function testSearch(array $config, array $requestParams, array $expected): void
     {
-        $controller = $this->createController($config, $requestParams);
-        $result = $controller->searchAction();
+        $this->doTest(false, $config, $requestParams, $expected);
+    }
+
+    /**
+     * Do test action.
+     *
+     * @param bool  $recordAction  Create record action instead of search action?
+     * @param array $config        Main config
+     * @param array $requestParams Users request as params array
+     * @param array $expected      Expected results
+     *
+     * @return void
+     */
+    public function doTest(bool $recordAction, array $config, array $requestParams, array $expected): void
+    {
+        $action = $this->createAction($recordAction, $config);
+        $request = $this->getServerRequest(
+            queryParams: $requestParams['queryParams'] ?? [],
+            headers: $requestParams['headers'] ?? []
+        );
+        $response = (new Response())->withStatus(200);
+        $result = $action($request, $response);
         $this->assertEquals($expected['code'], $result->getStatusCode());
-        $this->assertEquals($expected['content'], $result->getContent());
+        $body = $result->getBody();
+        $body->rewind();
+        $this->assertEquals($expected['content'], $body->getContents());
     }
 }
