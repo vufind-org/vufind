@@ -183,6 +183,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
             ],
         ];
         yield [
@@ -191,6 +192,7 @@ class GetThisLoaderTest extends TestCase
                 // Expected templates
                 'holdings',
                 'biblio-info',
+                'place-request',
                 'staff-office-delivery',
                 'inter-library',
                 'remote-delivery',
@@ -210,6 +212,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'inter-library',
             ],
         ];
@@ -227,6 +230,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'inter-library',
             ],
         ];
@@ -244,6 +248,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
             ],
         ];
         yield [
@@ -260,6 +265,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'inter-library',
             ],
         ];
@@ -277,6 +283,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'micro-form',
                 'staff-office-delivery',
                 'remote-delivery',

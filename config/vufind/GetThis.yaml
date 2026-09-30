@@ -66,6 +66,9 @@ templates:
   biblio-info:
     enabled: true
 
+  place-request:
+    enabled: true
+
   micro-form:
     # Template displayed if the location matches LOCATION_MICROFORMS in Regex.yaml
     regex:
