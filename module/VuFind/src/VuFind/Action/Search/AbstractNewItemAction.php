@@ -150,7 +150,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
     protected function getNewItemParameters(): array
     {
         // Retrieve new item list:
-        $range = intval($this->getQueryParam('range', 0));
+        $range = (int)($this->getQueryParam('range', 0));
 
         // Validate the range parameter -- it should not exceed the greatest configured value:
         $maxAge = $this->newItemsHelper->getMaxAge();
