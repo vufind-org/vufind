@@ -31,6 +31,7 @@
 namespace VuFind\Role;
 
 use VuFind\Exception\ConfigException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
@@ -46,13 +47,6 @@ use function count;
  */
 class PermissionDeniedManager
 {
-    /**
-     * List config.
-     *
-     * @var array
-     */
-    protected $config;
-
     /**
      * Default behavior for denied permissions at the action level.
      *
@@ -73,10 +67,10 @@ class PermissionDeniedManager
      *
      * @param array $config configuration
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-
+    public function __construct(
+        #[Autowire(config: 'permissionBehavior')]
+        protected array $config
+    ) {
         // Throw an exception if the config contains legacy settings:
         if (isset($config['global']['defaultDeniedControllerBehavior'])) {
             throw new ConfigException(
