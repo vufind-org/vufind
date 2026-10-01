@@ -383,6 +383,6 @@ class LoginHelper implements HelperInterface
         );
         $referrerNorm = $this->urlHelper->normalizeUrlForComparison($referrer);
         return $referrerNorm === $myResearchHomeUrlNorm
-            || $referrerNorm === $myResearchUserLoginNorm;
+            || str_starts_with($referrerNorm, $myResearchUserLoginNorm);
     }
 }
