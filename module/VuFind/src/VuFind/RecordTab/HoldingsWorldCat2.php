@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -50,8 +51,11 @@ class HoldingsWorldCat2 extends AbstractBase
      * @param Service $searchService Search service
      * @param array   $defaults      Default parameters to include in API requests
      */
-    public function __construct(protected Service $searchService, protected array $defaults = [])
-    {
+    public function __construct(
+        protected Service $searchService,
+        #[Autowire(config: 'WorldCat2', path: 'Holdings', default: [])]
+        protected array $defaults = []
+    ) {
     }
 
     /**

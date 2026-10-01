@@ -110,6 +110,7 @@ abstract class AbstractActionTestCase extends TestCase
      * @param array   $queryParams      Query parameters
      * @param array   $parsedBody       Parsed request body (i.e. POST parameters)
      * @param ?string $matchedRouteName Matched route name to set on the route match
+     * @param array   $headers          Headers
      *
      * @return ServerRequestInterface
      */
@@ -117,13 +118,14 @@ abstract class AbstractActionTestCase extends TestCase
         array $routeParams = [],
         array $queryParams = [],
         array $parsedBody = [],
-        ?string $matchedRouteName = null
+        ?string $matchedRouteName = null,
+        array $headers = []
     ): ServerRequestInterface {
         $routeMatch = new RouteMatch($routeParams);
         if (null !== $matchedRouteName) {
             $routeMatch->setMatchedRouteName($matchedRouteName);
         }
-        return (new ServerRequest())
+        return (new ServerRequest(headers: $headers))
             ->withQueryParams($queryParams)
             ->withParsedBody($parsedBody)
             ->withAttribute('route-match', $routeMatch);
