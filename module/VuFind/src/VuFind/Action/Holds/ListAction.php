@@ -265,19 +265,6 @@ class ListAction extends AbstractHoldAction
     }
 
     /**
-     * Get a unique cache id for a patron.
-     *
-     * @param array  $patron Patron
-     * @param string $type   Type of cached data
-     *
-     * @return string
-     */
-    protected function getCacheId(array $patron, string $type): string
-    {
-        return "$type::" . $patron['id'] . '::' . ($patron['cat_id'] ?? $patron['cat_username'] ?? '');
-    }
-
-    /**
      * Grab the Container object for storing helper-specific session data.
      *
      * @return Container
