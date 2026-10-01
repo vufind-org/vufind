@@ -32,8 +32,8 @@ namespace VuFind\Recommend;
 
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Solr\Utils as SolrUtils;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Solr\Utils as SolrUtils;
 
 use function get_class;
 use function in_array;
