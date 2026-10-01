@@ -48,7 +48,7 @@ class NewItemsHelper
      * @param array $config Configuration
      */
     public function __construct(
-        #[Autowire(config: 'config', path: 'NewItem', default: [])]
+        #[Autowire(config: 'searches', path: 'NewItem', default: [])]
         protected array $config
     ) {
     }
