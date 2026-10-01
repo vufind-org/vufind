@@ -156,9 +156,7 @@ class VersionsAction extends AbstractSearchAndResultsAction
             if ($query instanceof WorkKeysQuery) {
                 $this->recordId = $query->getId();
             }
-            $defaultCallback = is_callable([$this, 'getSearchSetupCallback'])
-                ? $this->getSearchSetupCallback($request) : null;
-            if (is_callable($defaultCallback)) {
+            if (is_callable($defaultCallback = $this->getSearchSetupCallback($request))) {
                 $defaultCallback($runner, $params, $searchId);
             }
             $options = $params->getOptions();
