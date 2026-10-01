@@ -55,7 +55,8 @@ class OpenSearchAction extends AbstractTemplateRenderingAction
      * @param array $config VuFind configuration
      */
     public function __construct(
-        #[Autowire(config: 'config')] protected array $config,
+        #[Autowire(config: 'config')]
+        protected array $config,
     ) {
         parent::__construct();
     }
