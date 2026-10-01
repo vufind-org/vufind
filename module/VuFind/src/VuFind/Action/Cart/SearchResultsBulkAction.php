@@ -66,10 +66,7 @@ class SearchResultsBulkAction extends AbstractCartAction
         // site in the referrer, we should ignore that!
         $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
         $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
-        if (
-            $referrer
-            && !str_ends_with($referrer, $bulk)
-        ) {
+        if ($referrer && !str_ends_with($referrer, $bulk)) {
             $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referrer;
         }
 
