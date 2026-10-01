@@ -35,10 +35,10 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
-use function intval;
 
 /**
  * Channel loader.
@@ -64,12 +64,14 @@ class ChannelLoader
      * @param HttpRequest    $request        HTTP request
      * @param string         $locale         Current locale (used for caching)
      */
+    #[Autowire]
     public function __construct(
         protected array $config,
         protected CacheManager $cacheManager,
         protected ChannelManager $channelManager,
         protected SearchRunner $searchRunner,
         protected RecordLoader $recordLoader,
+        #[Autowire(service: 'Request')]
         protected HttpRequest $request,
         protected string $locale = ''
     ) {
@@ -251,7 +253,7 @@ class ChannelLoader
         }
 
         // Only use the cache for the first page of results:
-        $page = intval($this->request->getQuery('page', 1));
+        $page = (int)($this->request->getQuery('page', 1));
         $useCache = ($cacheKey && $page === 1);
 
         // Fetch channel data from cache, or populate cache if necessary:
