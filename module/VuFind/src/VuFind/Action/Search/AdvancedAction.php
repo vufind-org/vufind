@@ -33,8 +33,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Base\Results;
 
-use function in_array;
-
 /**
  * Advanced search action.
  *
