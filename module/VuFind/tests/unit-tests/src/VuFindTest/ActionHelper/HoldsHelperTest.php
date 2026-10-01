@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds controller plugin test class.
+ * HoldsHelper test class.
  *
  * PHP version 8
  *
@@ -23,58 +23,40 @@
  * @category VuFind
  * @package  Tests
  * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
 declare(strict_types=1);
 
-namespace VuFindTest\Controller\Plugin;
+namespace VuFindTest\ActionHelper;
 
 use Laminas\Session\SessionManager;
-use VuFind\Controller\Plugin\Holds;
-use VuFind\Crypt\HMAC;
-use VuFind\Date\Converter as DateConverter;
+use PHPUnit\Framework\TestCase;
+use VuFind\ActionHelper\HoldsHelper;
+use VuFindTest\Feature\AutowireTrait;
 
 /**
- * Class HoldsTest.
+ * HoldsHelper test class.
  *
  * @category VuFind
  * @package  Tests
  * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class HoldsTest extends \PHPUnit\Framework\TestCase
+class HoldsHelperTest extends TestCase
 {
-    /**
-     * Mock container.
-     *
-     * @var \VuFindTest\Container\MockContainer
-     */
-    protected $container;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $this->container = new \VuFindTest\Container\MockContainer($this);
-    }
+    use AutowireTrait;
 
     /**
      * Test validateIds method.
      *
      * @return void
      */
-    public function testValidateIds()
+    public function testValidateIds(): void
     {
-        $hmac = $this->container->createMock(HMAC::class);
-        $sessionManager = new SessionManager();
-        $dateConverter = $this->container->createMock(DateConverter::class);
-        $plugin = new Holds($hmac, $sessionManager, $dateConverter);
+        $plugin = $this->getAutowiredObject(HoldsHelper::class, [SessionManager::class => new SessionManager()]);
         $plugin->rememberValidId('1');
         $plugin->rememberValidId('2');
         $this->assertTrue($plugin->validateIds(['1', '2']));
