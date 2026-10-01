@@ -31,7 +31,6 @@ namespace VuFindTest\Related;
 
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\Bookplate;
-use VuFind\Related\BookplateFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 
