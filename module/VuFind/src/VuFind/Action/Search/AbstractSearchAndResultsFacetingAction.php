@@ -57,7 +57,7 @@ use VuFindTheme\ThemeInfo;
 use function in_array;
 
 /**
- * Abstract base class for search actions.
+ * Abstract base class for search actions with facet-related methods.
  *
  * @category VuFind
  * @package  Action
