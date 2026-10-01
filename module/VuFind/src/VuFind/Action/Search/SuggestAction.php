@@ -80,7 +80,7 @@ class SuggestAction extends AbstractAction
         $query = new Parameters($request->getQueryParams());
         $query->set('type', 'AllFields');
 
-        // Get suggestions and make sure they are an array (we don't want to JSON encode them into an object):
+        // Get suggestions:
         $suggestions = $this->suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
