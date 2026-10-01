@@ -611,7 +611,7 @@ class GetItemStatuses extends AbstractBase implements
                 if ($result === 0) {
                     continue;
                 }
-                return $order !== 'reversed' ? $result : -$result;
+                return $order !== 'descending' ? $result : -$result;
             }
             return 0;
         });

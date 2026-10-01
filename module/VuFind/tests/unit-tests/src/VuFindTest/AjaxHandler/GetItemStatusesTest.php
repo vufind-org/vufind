@@ -146,7 +146,6 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             ],
             'config' => [
                 'Record' => [
-                    'getStatusesSorting' => 'false',
                 ],
             ],
         ];
@@ -161,7 +160,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             'config' => [
                 'Record' => [
                     'getStatusesSorting' => [
-                        'location' => '',
+                        'location' => 'ascending',
                     ],
                 ],
             ],
@@ -177,7 +176,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             'config' => [
                 'Record' => [
                     'getStatusesSorting' => [
-                        'location' => 'reversed',
+                        'location' => 'descending',
                     ],
                 ],
             ],
@@ -193,8 +192,8 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             'config' => [
                 'Record' => [
                     'getStatusesSorting' => [
-                        'availability' => 'reversed',
-                        'location' => '',
+                        'availability' => 'descending',
+                        'location' => 'ascending',
                     ],
                 ],
             ],
@@ -210,8 +209,8 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             'config' => [
                 'Record' => [
                     'getStatusesSorting' => [
-                        'location' => '',
-                        'availability' => 'reversed',
+                        'location' => 'ascending',
+                        'availability' => 'descending',
                     ],
                 ],
             ],
@@ -230,7 +229,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             'config' => [
                 'Record' => [
                     'getStatusesSorting' => [
-                        'compareLocationFilters' => '',
+                        'compareLocationFilters' => 'ascending',
                     ],
                 ],
             ],
@@ -250,8 +249,8 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             'config' => [
                 'Record' => [
                     'getStatusesSorting' => [
-                        'compareLocationFilters' => '',
-                        'availability' => 'reversed',
+                        'compareLocationFilters' => 'ascending',
+                        'availability' => 'descending',
                     ],
                 ],
             ],

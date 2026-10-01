@@ -74,7 +74,7 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         $getThisEnabled = ($config['Record']['getThisEnabled'] ?? null) == true;
         $getThis = $getThisEnabled ? $container->get(\VuFind\GetThis\GetThisLoader::class) : null;
 
-        $getStatusesSorting = ($this->config->Record->getStatusesSorting ?? 'false') !== 'false';
+        $getStatusesSorting = isset($config->Record->getStatusesSorting);
 
         $handler = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
