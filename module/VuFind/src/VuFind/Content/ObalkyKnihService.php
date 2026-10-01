@@ -89,7 +89,7 @@ class ObalkyKnihService implements
     /**
      * Constructor.
      *
-     * @param array                                    $config Configuration for service
+     * @param array                                    $config       Configuration for service
      * @param ?\Laminas\Cache\Storage\StorageInterface $cacheStorage Cache storage
      */
     public function __construct(
