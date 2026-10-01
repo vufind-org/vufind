@@ -33,12 +33,8 @@ namespace VuFindTest\ActionHelper;
 
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
-use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\HoldsHelper;
-use VuFind\Crypt\HMAC;
-use VuFind\Date\Converter as DateConverter;
-use VuFind\Http\RouteHelper;
-use VuFind\View\FlashMessenger\FlashMessengerInterface;
+use VuFindTest\Feature\AutowireTrait;
 
 /**
  * HoldsHelper test class.
@@ -51,6 +47,8 @@ use VuFind\View\FlashMessenger\FlashMessengerInterface;
  */
 class HoldsHelperTest extends TestCase
 {
+    use AutowireTrait;
+
     /**
      * Test validateIds method.
      *
@@ -58,15 +56,7 @@ class HoldsHelperTest extends TestCase
      */
     public function testValidateIds(): void
     {
-        $sessionManager = new SessionManager();
-        $plugin = new HoldsHelper(
-            $this->createMock(HMAC::class),
-            $sessionManager,
-            $this->createMock(DateConverter::class),
-            $this->createMock(RouteHelper::class),
-            $this->createMock(ForwardHelper::class),
-            $this->createMock(FlashMessengerInterface::class)
-        );
+        $plugin = $this->getAutowiredObject(HoldsHelper::class, [SessionManager::class => new SessionManager()]);
         $plugin->rememberValidId('1');
         $plugin->rememberValidId('2');
         $this->assertTrue($plugin->validateIds(['1', '2']));
