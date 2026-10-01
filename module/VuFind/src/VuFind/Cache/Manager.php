@@ -36,12 +36,12 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
-use Psr\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 use function dirname;
 use function is_array;
@@ -172,6 +172,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
             $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
         }
     }
+
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
@@ -186,7 +187,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
     {
         return $this->getCache($id);
     }
-    
+
     /**
      * Returns true if the container can return an entry for the given identifier.
      * Returns false otherwise.
