@@ -32,13 +32,14 @@ namespace VuFind\ChannelProvider;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
-use function intval;
 
 /**
  * Channel loader.
@@ -54,6 +55,13 @@ class ChannelLoader
     use BatchTrait;
 
     /**
+     * Current locale (used for caching).
+     *
+     * @var string
+     */
+    protected string $locale;
+
+    /**
      * Constructor.
      *
      * @param array          $config         Channels configuration
@@ -62,17 +70,24 @@ class ChannelLoader
      * @param SearchRunner   $searchRunner   Search runner
      * @param RecordLoader   $recordLoader   Record loader
      * @param HttpRequest    $request        HTTP request
-     * @param string         $locale         Current locale (used for caching)
+     * @param string         $locale         Current locale, or LocalSettings to provide it (used for caching)
      */
+    #[Autowire]
     public function __construct(
+        #[Autowire(config: 'channels')]
         protected array $config,
         protected CacheManager $cacheManager,
         protected ChannelManager $channelManager,
         protected SearchRunner $searchRunner,
         protected RecordLoader $recordLoader,
+        #[Autowire(service: 'Request')]
         protected HttpRequest $request,
-        protected string $locale = ''
+        #[Autowire(service: LocaleSettings::class)]
+        string|LocaleSettings $locale = ''
     ) {
+        $this->locale = $locale instanceof LocaleSettings
+            ? $locale->getUserLocale()
+            : $locale;
     }
 
     /**
@@ -251,7 +266,7 @@ class ChannelLoader
         }
 
         // Only use the cache for the first page of results:
-        $page = intval($this->request->getQuery('page', 1));
+        $page = (int)($this->request->getQuery('page', 1));
         $useCache = ($cacheKey && $page === 1);
 
         // Fetch channel data from cache, or populate cache if necessary:
