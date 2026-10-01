@@ -84,7 +84,8 @@ class OpenSearchAction extends AbstractTemplateRenderingAction
         return $this->getHelper(ResponseHelper::class)->getAjaxResponse(
             $response,
             'text/xml',
-            $xml
+            $xml,
+            allowCaching: true
         );
     }
 }
