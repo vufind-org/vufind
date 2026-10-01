@@ -201,7 +201,7 @@ class EditAction extends AbstractHoldAction implements TranslatorAwareInterface
         array $patron,
         array $selectedIds,
         int $checkLimit = 0
-    ): ?array {
+    ): array {
         // Get holds from cache if available:
         $holds = $this->getCachedData($this->getCacheId($patron, 'holds'))
             ?? $this->ilsConnection->getMyHolds($patron, $this->getPageOptions($patron)['ilsParams']);
