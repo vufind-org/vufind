@@ -95,7 +95,7 @@ class ObalkyKnihService implements
         #[Autowire(config: 'obalkyknih', path: 'ObalkyKnih', default: [])]
         array $config,
         #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
-        --
+        ?\Laminas\Cache\Storage\StorageInterface $cacheStorage = null
         )
     {
         if (
@@ -118,6 +118,10 @@ class ObalkyKnihService implements
         }
         $this->checkServersAvailability
             = $config['checkServersAvailability'] ?? false;
+
+        if ($cacheStorage) {
+            $this->setCacheStorage($cacheStorage);
+        }
     }
 
     /**
