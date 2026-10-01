@@ -66,6 +66,7 @@ class ChannelLoader
      */
     #[Autowire]
     public function __construct(
+        #[Autowire(config: 'channels')]
         protected array $config,
         protected CacheManager $cacheManager,
         protected ChannelManager $channelManager,
