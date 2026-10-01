@@ -241,7 +241,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an exception triggered by the framework for administrative purposes.
      *
-     * @param \Exception                 $error  Exception to log
+     * @param \Throwable                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void

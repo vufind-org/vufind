@@ -198,7 +198,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      * Log an exception triggered by the framework for administrative purposes.
      * (Part of ExtendedLoggerInterface).
      *
-     * @param \Exception                 $error  Exception to log
+     * @param \Throwable                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void
