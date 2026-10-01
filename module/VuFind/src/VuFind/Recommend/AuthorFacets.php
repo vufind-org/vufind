@@ -30,7 +30,6 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Http\Request;
 use Laminas\Stdlib\Parameters;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Query\Query;
