@@ -217,9 +217,7 @@ class EditAction extends AbstractHoldAction implements TranslatorAwareInterface
                     } else {
                         $ids1 = array_column($pickupLocations, 'locationID');
                         $ids2 = array_column($locations, 'locationID');
-                        if (
-                            count($ids1) !== count($ids2) || array_diff($ids1, $ids2)
-                        ) {
+                        if (count($ids1) !== count($ids2) || array_diff($ids1, $ids2)) {
                             $differences = true;
                             // Find out any common pickup locations:
                             $common = array_intersect($ids1, $ids2);
