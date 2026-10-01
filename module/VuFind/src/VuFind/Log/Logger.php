@@ -67,10 +67,15 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      */
     protected MonologLogger $monologLogger;
 
+    /**
+     * Translation map to convert non-standard short levels to standard levels.
+     *
+     * @var array
+     */
     protected const LEVEL_MAP = [
-        'crit'       => LogLevel::CRITICAL,
-        'err'       => LogLevel::ERROR,
-        'warn'      => LogLevel::WARNING,
+        'crit' => LogLevel::CRITICAL,
+        'err'  => LogLevel::ERROR,
+        'warn' => LogLevel::WARNING,
     ];
 
     /**
@@ -314,9 +319,9 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @param \Exception $error Exception to analyze
      *
-     * @return int
+     * @return string
      */
-    protected function getSeverityFromException($error)
+    protected function getSeverityFromException(\Exception $error): string
     {
         // If the exception provides the severity level, use it:
         if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {
