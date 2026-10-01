@@ -79,7 +79,7 @@ class OpenSearchAction extends AbstractTemplateRenderingAction
                 params: ['site' => $this->config['Site'] ?? '']
             ),
             default => $this->getTemplateRenderer()->renderTemplateAsString(template: 'search/opensearch-error.phtml'),
-        }
+        };
 
         return $this->getHelper(ResponseHelper::class)->getAjaxResponse(
             $response,
