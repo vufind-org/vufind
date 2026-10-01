@@ -1497,8 +1497,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Should we display a warning in restricted views?
      *
-     * @param ?string $context Optional context (If omitted, returns true if ANY
-     * contexts are enabled)
+     * @param ?string $context Optional context (If omitted, returns true if ANY contexts are enabled)
      *
      * @return bool
      */
