@@ -569,6 +569,20 @@ class LoginHelperTest extends TestCase
             null,
             [],
         ];
+        yield 'Login URL not allowed as referrer' => [
+            'http://localhost/vufind/MyResearch/UserLogin?foo=bar',
+            true,
+            [],
+            null,
+            [],
+        ];
+        yield 'MyResearch/Home not allowed as referrer' => [
+            'http://localhost/vufind/MyResearch/Home',
+            true,
+            [],
+            null,
+            [],
+        ];
     }
 
     /**
