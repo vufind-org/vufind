@@ -317,11 +317,11 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Given an exception, return a severity level for logging purposes.
      *
-     * @param \Exception $error Exception to analyze
+     * @param \Throwable $error Exception to analyze
      *
      * @return string
      */
-    protected function getSeverityFromException(\Exception $error): string
+    protected function getSeverityFromException(\Throwable $error): string
     {
         // If the exception provides the severity level, use it:
         if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {
