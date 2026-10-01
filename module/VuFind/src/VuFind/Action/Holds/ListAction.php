@@ -67,6 +67,13 @@ use function is_array;
 class ListAction extends AbstractHoldAction
 {
     /**
+     * Session data.
+     *
+     * @var ?Container
+     */
+    protected ?Container $session = null;
+
+    /**
      * Constructor.
      *
      * @param Connection        $ilsConnection     ILS connection

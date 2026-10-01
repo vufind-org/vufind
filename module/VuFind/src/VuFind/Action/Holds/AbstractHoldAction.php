@@ -59,13 +59,6 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
     use HandleIlsExceptionsTrait;
 
     /**
-     * Session data.
-     *
-     * @var ?Container
-     */
-    protected ?Container $session = null;
-
-    /**
      * ILS Pagination Helper.
      *
      * @var ?PaginationHelper
