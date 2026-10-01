@@ -48,7 +48,7 @@ use VuFind\Search\Base\Results;
 class ResultsAction extends \VuFind\Action\Search\ResultsAction
 {
     /**
-     * Get a redirection response to a single record.
+     * Get a redirection response to a single record (or null if a redirect is impossible/inappropriate).
      *
      * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
      * @param array                             $queryParams Any query parameters
