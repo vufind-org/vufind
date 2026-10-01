@@ -39,6 +39,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
+use Psr\Container\ContainerInterface;
 
 use function dirname;
 use function is_array;
@@ -57,7 +58,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements LoggerAwareInterface
+class Manager implements ContainerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -170,6 +171,15 @@ class Manager implements LoggerAwareInterface
         }
     }
 
+    public function get(string $serviceName)
+    {
+        return $this->getCache($serviceName);
+    }
+    
+    public function has(string $serviceName): bool
+    {
+        return isset($this->cacheSettings[$serviceName]);
+    }
     /**
      * Retrieve the specified cache object.
      *
