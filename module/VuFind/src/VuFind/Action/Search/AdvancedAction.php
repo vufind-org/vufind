@@ -29,7 +29,6 @@
 
 namespace VuFind\Action\Search;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Base\Results;
@@ -86,63 +85,6 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
         $templateParams['ranges'] = $this->getAllRangeSettings($specialFacets, $saved);
 
         return $templateParams;
-    }
-
-    /**
-     * Process the facets to be used as limits on the Advanced Search screen.
-     *
-     * @param array    $facetList                     The advanced facet values
-     * @param ?Results $searchObject                  Saved search object, or null if none
-     * @param array    $hierarchicalFacets            Hierarchical facet list (if any)
-     * @param array    $hierarchicalFacetsSortOptions Hierarchical facet sort options
-     *                                                (if any)
-     *
-     * @return array Sorted facets, with selected values flagged.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function processAdvancedFacets(
-        array $facetList,
-        ?Results $searchObject = null,
-        array $hierarchicalFacets = [],
-        array $hierarchicalFacetsSortOptions = []
-    ): array {
-        $options = null;
-        foreach ($facetList as $facet => &$list) {
-            // Hierarchical facets: format display texts and sort facets to a flat array according to the hierarchy
-            if (in_array($facet, $hierarchicalFacets)) {
-                // Process the facets
-                if (!$options) {
-                    $options = $this->getOptionsForClass();
-                }
-
-                $tmpList = $list['list'];
-                if ($options->getFilterHierarchicalFacetsInAdvanced()) {
-                    $tmpList = $this->hierarchicalFacetHelper->filterFacets(
-                        $facet,
-                        $tmpList,
-                        $options
-                    );
-                }
-                $list['list'] = $this->hierarchicalFacetHelper->flattenFacetHierarchy($tmpList);
-            }
-
-            foreach ($list['list'] as $key => $value) {
-                // Build the filter string for the URL:
-                $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
-                    . $facet . ':"' . $value['value'] . '"';
-
-                // If we haven't already found a selected facet and the current facet has been applied to the search, we
-                // should store it as the selected facet for the current control.
-                if ($searchObject?->getParams()->hasFilter($fullFilter)) {
-                    $list['list'][$key]['selected'] = true;
-                    // Remove the filter from the search object -- we don't want it to show up in the "applied filters"
-                    // sidebar since it will already be accounted for by being selected in the filter select list!
-                    $searchObject->getParams()->removeFilter($fullFilter);
-                }
-            }
-        }
-        return $facetList;
     }
 
     /**

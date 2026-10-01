@@ -195,8 +195,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      * @param array    $facetList                     The advanced facet values
      * @param ?Results $searchObject                  Saved search object, or null if none
      * @param array    $hierarchicalFacets            Hierarchical facet list (if any)
-     * @param array    $hierarchicalFacetsSortOptions Hierarchical facet sort options
-     *                                                (if any)
+     * @param array    $hierarchicalFacetsSortOptions Hierarchical facet sort options (if any)
      *
      * @return array Sorted facets, with selected values flagged.
      *
@@ -210,8 +209,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
     ): array {
         $options = null;
         foreach ($facetList as $facet => &$list) {
-            // Hierarchical facets: format display texts and sort facets
-            // to a flat array according to the hierarchy
+            // Hierarchical facets: format display texts and sort facets to a flat array according to the hierarchy
             if (in_array($facet, $hierarchicalFacets)) {
                 // Process the facets
                 if (!$options) {
