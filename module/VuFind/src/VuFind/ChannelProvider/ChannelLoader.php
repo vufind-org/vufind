@@ -36,6 +36,7 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\I18n\Locale\LocaleSettings;
 
 use function count;
 use function in_array;
@@ -74,8 +75,12 @@ class ChannelLoader
         protected RecordLoader $recordLoader,
         #[Autowire(service: 'Request')]
         protected HttpRequest $request,
-        protected string $locale = ''
+        #[Autowire(service: LocaleSettings::class)]
+        protected string|LocaleSettings $locale = ''
     ) {
+        $this->locale = $locale instanceof LocaleSettings
+            ? $locale->getUserLocale()
+            : $locale;
     }
 
     /**
