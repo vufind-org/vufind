@@ -29,6 +29,8 @@
 
 namespace VuFind\Content;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 
 /**
@@ -89,7 +91,12 @@ class ObalkyKnihService implements
      *
      * @param array $config Configuration for service
      */
-    public function __construct(array $config)
+    public function __construct(
+        #[Autowire(config: 'obalkyknih', path: 'ObalkyKnih', default: [])]
+        array $config,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        --
+        )
     {
         if (
             !isset($config['base_url']) || count($config['base_url']) < 1
