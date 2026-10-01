@@ -38,11 +38,11 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 /**
  * Factory for instantiating recommendation modules with Results plugin manager.
  *
- * @category VuFind
- * @package  Recommendations
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @category   VuFind
+ * @package    Recommendations
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org/wiki/development Wiki
  * @deprecated This factory is deprecated and will be removed in release 13.0.
  */
 class InjectResultsManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
