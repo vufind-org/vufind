@@ -30,6 +30,7 @@
 namespace VuFindTest\Action\Install;
 
 use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Install\FixBasicConfigAction;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
@@ -55,14 +56,15 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
     {
         $captured = [];
         $routeHelper = $this->createMock(RouteHelper::class);
-        $routeHelper->method('getUrlFromRoute')->with('home')->willReturn('/');
+        $homePath = '/';
+        $routeHelper->method('getUrlFromRoute')->with('home')->willReturn($homePath);
         $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
-        $serverUrlHelper->method('getUrlForPath')->willReturn('https://vufind.example.edu/');
+        $serverUrlHelper->method('getUrlForPath')->with($homePath)->willReturn('https://vufind.example.edu/');
 
         $expectedResponse = new Response();
         $redirectHelper = $this->createMock(RedirectHelper::class);
         $redirectHelper->expects($this->once())->method('redirectToRoute')
-            ->with($this->anything(), 'install-home')->willReturn($expectedResponse);
+            ->with($this->isInstanceOf(ResponseInterface::class), 'install-home')->willReturn($expectedResponse);
 
         $action = $this->buildActionMock(
             FixBasicConfigAction::class,
@@ -98,12 +100,13 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
             ['installBasicConfig', 'getForcedLocalConfigPath'],
             ['System' => ['autoConfigure' => true]]
         );
+        $configDir = '/usr/local/vufind/local/config/vufind';
         $action->method('installBasicConfig')->willReturn(false);
-        $action->method('getForcedLocalConfigPath')->willReturn('/usr/local/vufind/local/config/vufind/config.ini');
+        $action->method('getForcedLocalConfigPath')->willReturn($configDir . '/config.ini');
         $action($this->getServerRequest(), new Response());
 
         $this->assertSame('Cannot copy file into position.', $this->capturedTemplateParams['errorMessage']);
-        $this->assertArrayHasKey('configDir', $this->capturedTemplateParams);
+        $this->assertSame($configDir, $this->capturedTemplateParams['configDir']);
         $this->assertArrayHasKey('runningUser', $this->capturedTemplateParams);
     }
 }

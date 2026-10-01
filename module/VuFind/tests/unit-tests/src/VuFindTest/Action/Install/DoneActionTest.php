@@ -66,8 +66,8 @@ class DoneActionTest extends AbstractInstallActionTestCase
      */
     public function testForwardsToFixBasicConfigWhenConfigWriteFails(): void
     {
-        $configManager = $this->createMock(ConfigManagerInterface::class);
-        $configManager->method('getConfigArray')->willReturn([]);
+        $config = ['System' => ['autoConfigure' => true]];
+        $configManager = $this->getMockConfigManager(compact('config'));
         $configManager->method('writeConfig')->willThrowException(new \Exception('cannot write'));
 
         $expectedResponse = new Response();
@@ -79,8 +79,7 @@ class DoneActionTest extends AbstractInstallActionTestCase
         $action = $this->buildAction(
             DoneAction::class,
             [ConfigManagerInterface::class => $configManager],
-            ['System' => ['autoConfigure' => true]],
-            [ForwardHelper::class => $forwardHelper]
+            helpers: [ForwardHelper::class => $forwardHelper]
         );
         $this->assertSame($expectedResponse, $action($this->getServerRequest(), new Response()));
     }

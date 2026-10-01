@@ -34,12 +34,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Install\AbstractInstallAction;
 use VuFind\ActionHelper\HelperInterface;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Http\RouteHelper;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Action\AbstractActionTestCase;
 use VuFindTest\Feature\AutowireTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
@@ -54,6 +56,7 @@ use VuFindTest\Feature\ReflectionTrait;
 abstract class AbstractInstallActionTestCase extends AbstractActionTestCase
 {
     use AutowireTrait;
+    use ConfigRelatedServicesTrait;
     use ReflectionTrait;
 
     /**
@@ -71,8 +74,7 @@ abstract class AbstractInstallActionTestCase extends AbstractActionTestCase
     protected array $capturedTemplateParams = [];
 
     /**
-     * Build an Install action with autowired dependencies, optional service overrides,
-     * and configuration applied directly to the action.
+     * Build an Install action with autowired dependencies and optional service overrides.
      *
      * @param class-string      $class       Action class to build
      * @param array             $services    Constructor dependencies to override, keyed by class name
@@ -89,9 +91,9 @@ abstract class AbstractInstallActionTestCase extends AbstractActionTestCase
         array $helpers = [],
         ?RouteHelper $routeHelper = null
     ): AbstractInstallAction {
+        $services[ConfigManagerInterface::class] ??= $this->getMockConfigManager(compact('config'));
         $services[PathResolver::class] ??= $this->getDefaultPathResolver();
         $action = $this->getAutowiredObject($class, $services);
-        $this->setProperty($action, 'config', $config);
         $this->initializeAction($action, $helpers, $routeHelper, $this->getCapturingRenderer());
         return $action;
     }

@@ -37,9 +37,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Action\Install\AbstractInstallAction;
 use VuFind\Action\Install\HomeAction;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFindTest\Feature\AutowireTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
 use function strlen;
@@ -57,6 +60,7 @@ use function strlen;
 class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
 {
     use AutowireTrait;
+    use ConfigRelatedServicesTrait;
     use ReflectionTrait;
 
     /**
@@ -235,6 +239,7 @@ class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
         $config = ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]];
         $fixed = $this->callMethod($action, 'getFixedSecurityConfiguration', [$config])['Authentication'];
         $this->assertArrayNotHasKey('hash_passwords', $fixed);
+        $this->assertArrayNotHasKey('encrypt_ils_password', $fixed);
         $this->assertSame(32, strlen($fixed['ils_encryption_key']));
     }
 
@@ -274,7 +279,7 @@ class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
      * Test that database security depends on both the configuration and the absence of insecure rows.
      *
      * @param bool $secureConfig Whether hashing/encryption are enabled in the configuration
-     * @param int  $insecureRows Number of insecure rows reported by each database service
+     * @param int  $insecureRows Number of insecure rows reported by the user database service
      * @param bool $expected     Expected result
      *
      * @return void
@@ -282,20 +287,23 @@ class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
     #[DataProvider('hasSecureDatabaseProvider')]
     public function testHasSecureDatabase(bool $secureConfig, int $insecureRows, bool $expected): void
     {
-        $rows = array_fill(0, $insecureRows, $this->createStub(\stdClass::class));
+        $rows = array_fill(0, $insecureRows, $this->createStub(UserEntityInterface::class));
         $userService = $this->createMock(UserServiceInterface::class);
         $userService->method('getInsecureRows')->willReturn($rows);
         $userCardService = $this->createMock(UserCardServiceInterface::class);
         $userCardService->method('getInsecureRows')->willReturn([]);
 
-        $action = $this->getAutowiredObject(
-            HomeAction::class,
-            [UserServiceInterface::class => $userService, UserCardServiceInterface::class => $userCardService]
-        );
         $config = $secureConfig
             ? ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]]
             : [];
-        $this->setProperty($action, 'config', $config);
+        $action = $this->getAutowiredObject(
+            HomeAction::class,
+            [
+                ConfigManagerInterface::class => $this->getMockConfigManager(compact('config')),
+                UserServiceInterface::class => $userService,
+                UserCardServiceInterface::class => $userCardService,
+            ]
+        );
         $this->assertSame($expected, $this->callMethod($action, 'hasSecureDatabase'));
     }
 
@@ -309,11 +317,13 @@ class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
         $userService = $this->createMock(UserServiceInterface::class);
         $userService->method('getInsecureRows')->willThrowException(new \RuntimeException('no db'));
 
-        $action = $this->getAutowiredObject(HomeAction::class, [UserServiceInterface::class => $userService]);
-        $this->setProperty(
-            $action,
-            'config',
-            ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]]
+        $config = ['Authentication' => ['hash_passwords' => true, 'encrypt_ils_password' => true]];
+        $action = $this->getAutowiredObject(
+            HomeAction::class,
+            [
+                ConfigManagerInterface::class => $this->getMockConfigManager(compact('config')),
+                UserServiceInterface::class => $userService,
+            ]
         );
         $this->assertFalse($this->callMethod($action, 'hasSecureDatabase'));
     }
