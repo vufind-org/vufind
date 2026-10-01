@@ -33,6 +33,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\ContentBlock\PluginManager as BlockManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Content block plugin manager.
@@ -52,6 +53,7 @@ class BlockLoader
      * @param ConfigManagerInterface $configManager  Config manager
      * @param BlockManager           $blockManager   Block manager
      */
+    #[Autowire]
     public function __construct(
         protected OptionsManager $optionsManager,
         protected ConfigManagerInterface $configManager,

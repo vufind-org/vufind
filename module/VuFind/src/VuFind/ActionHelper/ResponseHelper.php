@@ -175,7 +175,7 @@ class ResponseHelper implements HelperInterface, TranslatorAwareInterface
         $response = $response
             ->withHeader('Access-Control-Allow-Methods', implode(', ', $allowedMethods))
             ->withHeader('Access-Control-Allow-Origin', $allowedOrigin)
-            ->withHeader('Access-Control-Max-Age', $maxAge);
+            ->withHeader('Access-Control-Max-Age', (string)$maxAge);
 
         if ($allowedHeaders) {
             $response = $response->withHeader('Access-Control-Allow-Headers', implode(', ', $allowedHeaders));

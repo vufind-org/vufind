@@ -113,9 +113,27 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eitrecord/save' => Record\SaveAction::class,
         'eitrecord/sms' => Record\SmsAction::class,
 
+        'epfrecord/addtag' => Record\AddTagAction::class,
+        'epfrecord/deletetag' => Record\DeleteTagAction::class,
+        'epfrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'epfrecord/cite' => Record\CiteAction::class,
+        'epfrecord/email' => Record\EmailAction::class,
+        'epfrecord/export' => Record\ExportAction::class,
+        'epfrecord/hold' => Record\HoldAction::class,
+        'epfrecord/home' => Record\HomeAction::class,
+        'epfrecord/permalink' => Record\PermalinkAction::class,
+        'epfrecord/rating' => Record\RatingAction::class,
+        'epfrecord/rdf' => Record\RdfAction::class,
+        'epfrecord/save' => Record\SaveAction::class,
+        'epfrecord/sms' => Record\SmsAction::class,
+
         'error/permissiondenied' => Error\PermissionDeniedAction::class,
 
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
+
+        'hierarchy/getrecord' => Hierarchy\GetRecordAction::class,
+        'hierarchy/gettree' => Hierarchy\GetTreeAction::class,
+        'hierarchy/searchtree' => Hierarchy\SearchTreeAction::class,
 
         'install/fixbasicconfig' => Install\FixBasicConfigAction::class,
         'install/fixcache' => Install\FixCacheAction::class,
@@ -288,6 +306,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        // These objects are not meant to be shared -- every time we retrieve one, we are building a brand new object.
+        $this->sharedByDefault = false;
+
         $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);

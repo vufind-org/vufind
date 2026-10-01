@@ -66,7 +66,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord(string $id = 'testbug1'): Element
+    protected function goToRecord(string $id = 'testbug1'): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl('/Record/' . rawurlencode($id)));
@@ -109,7 +109,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Go to a record view
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         // Click to add tag
         $this->clickCss($page, '.tag-record');
         // Make account
@@ -130,7 +130,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Verify that there are duplicates on the page:
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->assertSame(['foo', 'foo', 'foo'], $this->getTagsFromPage($page));
         // Now go to the upgrade page:
         $this->getMinkSession()->visit($this->getVuFindUrl('/Upgrade'));
@@ -150,7 +150,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertStringContainsString('Upgrade complete.', $this->findCssAndGetText($page, 'p'));
         // Upgrade should now be complete; verify that deduplication worked.
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $this->assertSame(['foo'], $this->getTagsFromPage($page));
         // Clean up the tag now that we're done by deleting in tag admin:
         $page = $this->goToTagAdmin('/Manage');
