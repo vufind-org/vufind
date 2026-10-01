@@ -646,25 +646,24 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      *
      * @param ServerRequestInterface $request Current request
      *
-     * @return mixed
+     * @return ?callable
      */
-    protected function getSearchSetupCallback(ServerRequestInterface $request)
+    protected function getSearchSetupCallback(ServerRequestInterface $request): ?callable
     {
         // Setup callback to attach listener if appropriate:
-        $activeRecs = $this->getActiveRecommendationSettings($request);
-        if (empty($activeRecs)) {
+        if (!($activeRecommendations = $this->getActiveRecommendationSettings($request))) {
             return null;
         }
 
         $override = $request->getQueryParams()['recommendOverride'] ?? null;
 
         // Retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($activeRecs, $override): void {
+        return function ($runner, $params, $searchId) use ($activeRecommendations, $override): void {
             $listener = new RecommendListener($this->recommendPluginManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()->getRecommendationSettings($params->getSearchHandler());
             foreach ($rawConfig as $key => $value) {
-                if (in_array($key, $activeRecs)) {
+                if (in_array($key, $activeRecommendations)) {
                     $config[$key] = $value;
                 }
             }
