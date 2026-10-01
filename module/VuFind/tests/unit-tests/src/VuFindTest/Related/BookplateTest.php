@@ -154,8 +154,8 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      */
     protected function getBookplate(?MockContainer $container = null): Bookplate
     {
-        $factory = new BookplateFactory();
-        return $factory($container ?? $this->getContainer(), Bookplate::class);
+        $container ??= $this->getContainer();
+        return new Bookplate($container->get(ConfigManagerInterface::class));
     }
 
     /**
