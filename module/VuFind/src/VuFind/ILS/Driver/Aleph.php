@@ -41,6 +41,7 @@ namespace VuFind\ILS\Driver;
 use Laminas\Mvc\I18n\Translator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
@@ -220,6 +221,7 @@ class Aleph extends AbstractBase implements
      * @param ?\VuFind\Cache\Manager $cacheManager  Cache manager (optional)
      * @param ?Translator            $translator    Translator (optional)
      */
+    #[Autowire]
     public function __construct(
         protected \VuFind\Date\Converter $dateConverter,
         protected ?\VuFind\Cache\Manager $cacheManager = null,
