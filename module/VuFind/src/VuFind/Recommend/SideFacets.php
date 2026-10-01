@@ -33,10 +33,10 @@ namespace VuFind\Recommend;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function get_class;
 use function in_array;
-use function intval;
 use function is_array;
 
 /**
@@ -152,6 +152,7 @@ class SideFacets extends AbstractFacets
      * @param ?HierarchicalFacetHelper              $hierarchicalFacetHelper Helper for handling
      * hierarchical facets
      */
+    #[Autowire]
     public function __construct(
         \VuFind\Config\ConfigManagerInterface $configManager,
         protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null
@@ -424,9 +425,9 @@ class SideFacets extends AbstractFacets
         // default. If neither is found, initialize return value to null.
         $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
-            $val = intval($this->showMoreSettings[$facetName]);
+            $val = (int)($this->showMoreSettings[$facetName]);
         } elseif (isset($this->showMoreSettings['*'])) {
-            $val = intval($this->showMoreSettings['*']);
+            $val = (int)($this->showMoreSettings['*']);
         }
 
         // Validate the return value, using default if missing/invalid
