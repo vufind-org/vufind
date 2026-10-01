@@ -34,12 +34,12 @@ namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
-use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function is_object;
