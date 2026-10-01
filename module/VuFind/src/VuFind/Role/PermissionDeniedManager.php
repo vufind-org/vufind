@@ -65,7 +65,7 @@ class PermissionDeniedManager
     /**
      * Constructor.
      *
-     * @param array $config configuration
+     * @param array $config Configuration
      */
     public function __construct(
         #[Autowire(config: 'permissionBehavior')]
