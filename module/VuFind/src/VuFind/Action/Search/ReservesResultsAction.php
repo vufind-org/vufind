@@ -75,7 +75,7 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
      *
      * @var array
      */
-    protected array $resultReserves = [];
+    protected array $results = [];
 
     /**
      * Constructor.
@@ -155,13 +155,13 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
         $course = $this->getQueryParam('course');
         $inst = $this->getQueryParam('inst');
         $dept = $this->getQueryParam('dept');
-        $this->resultReserves = $this->reservesHelper->findReserves($course, $inst, $dept);
+        $this->results = $this->reservesHelper->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
         $callback = function ($i) {
             return $i['BIB_ID'];
         };
-        $bibIDs = array_unique(array_map($callback, $this->resultReserves));
+        $bibIDs = array_unique(array_map($callback, $this->results));
 
         // Truncate the list if it is too long:
         $limit = $this->resultsPluginManager->get($this->getSearchClassId())->getParams()->getQueryIDLimit();
@@ -203,10 +203,10 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
         $templateParams = parent::getSearchResultsTemplateParams($request, $searchClassId, $setupCallback);
 
         // Pass some key values to the template, if found:
-        if ($instructor = $this->resultReserves[0]['instructor'] ?? null) {
+        if ($instructor = $this->results[0]['instructor'] ?? null) {
             $templateParams['instructor'] = $instructor;
         }
-        if ($course = $this->resultReserves[0]['course'] ?? null) {
+        if ($course = $this->results[0]['course'] ?? null) {
             $templateParams['course'] = $course;
         }
 
