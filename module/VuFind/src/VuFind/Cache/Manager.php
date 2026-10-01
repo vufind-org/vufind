@@ -212,7 +212,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      * value of $name.
      *
      * @return StorageInterface
-     * @throws \Exception
+     * @throws NotFoundException
      */
     public function getCache($name, $namespace = null)
     {
@@ -222,7 +222,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
 
         if (!isset($this->caches[$key])) {
             if (!isset($this->cacheSettings[$name])) {
-                throw new \Exception('Requested unknown cache: ' . $name);
+                throw new NotFoundException('Requested unknown cache: ' . $name);
             }
             $settings = $this->cacheSettings[$name];
             $settings['options']['namespace'] = $namespace;
