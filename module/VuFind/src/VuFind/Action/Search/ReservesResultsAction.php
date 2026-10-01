@@ -158,10 +158,7 @@ class ReservesResultsAction extends AbstractSearchAndResultsAction
         $this->results = $this->reservesHelper->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
-        $callback = function ($i) {
-            return $i['BIB_ID'];
-        };
-        $bibIDs = array_unique(array_map($callback, $this->results));
+        $bibIDs = array_unique(array_column($this->results, 'BIB_ID'));
 
         // Truncate the list if it is too long:
         $limit = $this->resultsPluginManager->get($this->getSearchClassId())->getParams()->getQueryIDLimit();
