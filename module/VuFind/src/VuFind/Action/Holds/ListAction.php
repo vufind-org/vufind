@@ -265,16 +265,6 @@ class ListAction extends AbstractHoldAction
     }
 
     /**
-     * Return a session container for hold update results.
-     *
-     * @return Container
-     */
-    protected function getHoldUpdateResultsContainer(): Container
-    {
-        return new \Laminas\Session\Container('hold_update', $this->sessionManager);
-    }
-
-    /**
      * Get a unique cache id for a patron.
      *
      * @param array  $patron Patron
