@@ -73,16 +73,12 @@ class OpenSearchAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        switch ($this->getQueryParam('method')) {
-            case 'describe':
-                $xml = $this->getTemplateRenderer()->renderTemplateAsString(
-                    template: 'search/opensearch-describe.phtml',
-                    params: ['site' => $this->config['Site'] ?? '']
-                );
-                break;
-            default:
-                $xml = $this->getTemplateRenderer()->renderTemplateAsString(template: 'search/opensearch-error.phtml');
-                break;
+        $xml = match ($this->getQueryParam('method')) {
+            'describe' => $this->getTemplateRenderer()->renderTemplateAsString(
+                template: 'search/opensearch-describe.phtml',
+                params: ['site' => $this->config['Site'] ?? '']
+            ),
+            default => $this->getTemplateRenderer()->renderTemplateAsString(template: 'search/opensearch-error.phtml'),
         }
 
         return $this->getHelper(ResponseHelper::class)->getAjaxResponse(
