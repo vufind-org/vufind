@@ -41,6 +41,7 @@ use function array_key_exists;
 use function call_user_func;
 use function count;
 use function is_array;
+use function is_string;
 
 /**
  * Class to hold data for the Get This button.
@@ -132,7 +133,7 @@ class GetThisLoader implements LoggerAwareInterface
      * The result is negated if the first char is "!".
      *
      * @param array{name: string, value: string} $config The config containing the regex name
-     *                                                    and the value to match against
+     *                                                   and the value to match against
      *
      * @return bool
      * @throws Exception
@@ -744,13 +745,13 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
+     * Determine if the microform template should display.
+     *
+     * @return     bool If the template should display
      * @deprecated In your GetThis.yaml instead of condition_function: showMicroForm use :
      *             regex:
      *              name: 'LOCATION_MICROFORMS'
      *              value: 'getLocation'
-     * Determine if the microform template should display.
-     *
-     * @return bool If the template should display
      */
     public function showMicroForm(): bool
     {

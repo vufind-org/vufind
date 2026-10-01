@@ -30,6 +30,7 @@ templates:
   #     value: The value to match the regex against. It can either be :
   #       - A key of the item array (callnumber will match the value of $item['callnumber'] against the regex)
   #       - A local function (getLocation, will match the result of the function against the regex)
+  #     The result of the regex can be negated if prefixed with "!".
   #   condition_group: if condition_function is limiting for you, condition_group replaces it to give more flexibility.
   #     This element defines a set of logical conditions.
   #     If any entry is true, the whole list is considered true (logical OR).
