@@ -127,9 +127,7 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
      */
     protected function getPaginationHelper()
     {
-        if (null === $this->paginationHelper) {
-            $this->paginationHelper = new PaginationHelper();
-        }
+        $this->paginationHelper ??= new PaginationHelper();
         return $this->paginationHelper;
     }
 
