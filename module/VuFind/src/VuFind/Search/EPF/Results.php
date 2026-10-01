@@ -50,9 +50,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'EPF';
+    protected ?string $backendId = 'EPF';
 
     /**
      * Facet list.

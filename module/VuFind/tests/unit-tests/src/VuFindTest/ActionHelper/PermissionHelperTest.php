@@ -34,9 +34,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\PermissionHelper;
-use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
@@ -96,15 +96,19 @@ class PermissionHelperTest extends TestCase
 
         $permissionDeniedManager = $this->createMock(PermissionDeniedManager::class);
         $permissionDeniedManager->method('getDeniedActionBehavior')
-            ->willReturn(['action' => $accessDeniedBehavior, 'value' => 'Messsage!']);
+            ->willReturn(['action' => $accessDeniedBehavior, 'value' => 'Message!']);
 
         $forceLoginResponse = new Response(302, ['Location' => '/MyResearch/Home']);
         $loginHelper = $this->createMock(LoginHelper::class);
         $loginHelper->method('forceLogin')->willReturn($forceLoginResponse);
 
-        $messageResponse = new Response(302, ['Location' => '/Error/PermissionDenied']);
-        $redirectHelper = $this->createMock(RedirectHelper::class);
-        $redirectHelper->method('redirectToRoute')->willReturn($messageResponse);
+        $forwardHelper = $this->createMock(ForwardHelper::class);
+        $forwardHelper->method('forwardTo')->willReturnCallback(
+            function ($request, $response) {
+                $response->getBody()->write($request->getQueryParams()['msg']);
+                return $response->withStatus(403);
+            }
+        );
 
         $helper = $this->getAutowiredObject(
             PermissionHelper::class,
@@ -112,7 +116,7 @@ class PermissionHelperTest extends TestCase
                 LoginHelper::class => $loginHelper,
                 PermissionManager::class => $permissionManager,
                 PermissionDeniedManager::class => $permissionDeniedManager,
-                RedirectHelper::class => $redirectHelper,
+                ForwardHelper::class => $forwardHelper,
             ]
         );
         if (!$expectAuthorized && 'exception' === $accessDeniedBehavior) {
@@ -128,11 +132,16 @@ class PermissionHelperTest extends TestCase
             $this->assertNull($result);
         } else {
             $this->assertInstanceOf(ResponseInterface::class, $result);
-            $this->assertSame(302, $result->getStatusCode());
-            $expectedLocation = 'promptlogin' === $accessDeniedBehavior
-                ? '/MyResearch/Home'
-                : '/Error/PermissionDenied';
-            $this->assertSame([$expectedLocation], $result->getHeader('Location'));
+            if ('promptlogin' === $accessDeniedBehavior) {
+                $this->assertSame(302, $result->getStatusCode());
+                $this->assertSame(['/MyResearch/Home'], $result->getHeader('Location'));
+            } else {
+                $this->assertSame(403, $result->getStatusCode());
+                $this->assertEmpty($result->getHeader('Location'));
+                $body = $result->getBody();
+                $body->rewind();
+                $this->assertSame('Message!', $body->getContents());
+            }
         }
     }
 }

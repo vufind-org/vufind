@@ -408,7 +408,7 @@ class AssetManager
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $this->inlineScript->setScript($script, $type, $attrs);
-        $result = ($this->inlineScript)();
+        $result = (string)($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
             $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
@@ -439,7 +439,7 @@ class AssetManager
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
         $this->inlineScript->setFile($src, $type, $attrs);
-        $result = ($this->inlineScript)();
+        $result = (string)($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
             $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }

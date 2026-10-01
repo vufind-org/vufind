@@ -798,4 +798,26 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // check that only default full sections included in the base config are added
         $this->assertFalse(isset($authorityConfig['Sort']));
     }
+
+    /**
+     * Test upgrades for subject limit config.
+     *
+     * @return void
+     */
+    public function testSubjectLimitUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('subject-limit');
+        $results = $upgrader->getNewConfigs();
+        $config = $results['config'];
+        $this->assertFalse(isset($config['Record']['subjectLimit']));
+        $recordDataFormatterConfig = $results['RecordDataFormatter/DefaultRecord'];
+        $this->assertEquals(
+            [
+                'truncateRows' => 5,
+                'truncateTopToggle' => 30,
+                'truncateElement' => '.subject-line',
+            ],
+            $recordDataFormatterConfig['Field_Subjects']
+        );
+    }
 }

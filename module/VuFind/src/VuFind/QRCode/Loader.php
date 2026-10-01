@@ -61,14 +61,13 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config  $config VuFind configuration
+     * @param array                  $config VuFind configuration
      * @param \VuFindTheme\ThemeInfo $theme  VuFind theme tools
      */
-    public function __construct($config, \VuFindTheme\ThemeInfo $theme)
+    public function __construct(array $config, \VuFindTheme\ThemeInfo $theme)
     {
         $this->setThemeInfo($theme);
-        $this->configuredFailImage
-            = $config->QRCode->noQRCodeAvailableImage ?? null;
+        $this->configuredFailImage = $config['QRCode']['noQRCodeAvailableImage'] ?? null;
         $this->defaultFailImage = 'images/noQRCode.gif';
     }
 

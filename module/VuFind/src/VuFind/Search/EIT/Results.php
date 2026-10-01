@@ -49,9 +49,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'EIT';
+    protected ?string $backendId = 'EIT';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the

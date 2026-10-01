@@ -63,13 +63,11 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testExplicitlyDisabledScheduleOptions(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => false,
-                ],
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => false,
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals([], $history->getScheduleOptions());
     }
@@ -82,13 +80,11 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultScheduleOptions(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => true,
-                ],
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => true,
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals(
             [0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'],
@@ -103,14 +99,12 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testSingleNonDefaultScheduleOption(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => true,
-                    'scheduled_search_frequencies' => 'Always',
-                ],
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => true,
+                'scheduled_search_frequencies' => 'Always',
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals([0 => 'Always'], $history->getScheduleOptions());
     }
@@ -122,16 +116,14 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testMultipleNonDefaultScheduleOptions(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => true,
-                    'scheduled_search_frequencies' => [
-                        1 => 'One', 2 => 'Two',
-                    ],
+        $config = [
+            'Account' => [
+                'schedule_searches' => true,
+                'scheduled_search_frequencies' => [
+                    1 => 'One', 2 => 'Two',
                 ],
-            ]
-        );
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals(
             [1 => 'One', 2 => 'Two'],
@@ -157,14 +149,14 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?SearchServiceInterface $searchService  Search service
      * @param ?ResultsManager         $resultsManager Results manager
-     * @param ?\VuFind\Config\Config  $config         Configuration
+     * @param ?array                  $config         Configuration
      *
      * @return History
      */
     protected function getHistory(
         ?SearchServiceInterface $searchService = null,
         ?ResultsManager $resultsManager = null,
-        ?\VuFind\Config\Config $config = null
+        ?array $config = null
     ): History {
         return new History(
             $searchService ?? $this->createStub(SearchServiceInterface::class),

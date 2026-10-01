@@ -47,9 +47,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'WorldCat2';
+    protected ?string $backendId = 'WorldCat2';
 
     /**
      * Facet list.

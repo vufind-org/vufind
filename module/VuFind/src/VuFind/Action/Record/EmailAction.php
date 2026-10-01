@@ -40,6 +40,7 @@ use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Config\ConfigManager;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Mailer\Mailer;
@@ -68,6 +69,7 @@ class EmailAction extends AbstractRecordAction
      * @param SearchMemory        $searchMemory        Search memory
      * @param TabManager          $tabManager          Tab manager
      * @param AuthManager         $authManager         Authentication manager
+     * @param ConfigManager       $configManager       Configuration manager
      * @param RecordLoader        $recordLoader        Record loader
      * @param RecordRouter        $recordRouter        Record router
      * @param ResultScroller      $resultScroller      Result scroller
@@ -80,6 +82,7 @@ class EmailAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -93,6 +96,7 @@ class EmailAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

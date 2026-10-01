@@ -34,7 +34,6 @@ use Laminas\Http\Request;
 use VuFind\Auth\Shibboleth;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
-use VuFind\Config\Config;
 
 /**
  * Shibboleth authentication test class.
@@ -142,7 +141,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
         $obj->setDbServiceManager($this->getLiveDbServiceManager());
-        $obj->setConfig(new Config($config));
+        $obj->setConfig($config);
         return $obj;
     }
 
