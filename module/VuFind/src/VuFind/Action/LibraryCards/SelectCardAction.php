@@ -34,6 +34,7 @@ namespace VuFind\Action\LibraryCards;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
@@ -115,9 +116,7 @@ class SelectCardAction extends AbstractTemplateRenderingAction
             $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('authentication_error_technical');
         }
 
-        $loginHelper = $this->getHelper(LoginHelper::class);
-        $loginHelper->setFollowupUrlToReferrer($request, false);
-        if ($url = $loginHelper->getAndClearFollowupUrl($request)) {
+        if ($url = $this->getHelper(ContextHelper::class)->getReferrer($request, true)) {
             return $redirectHelper->redirectToUrl($response, $this->adjustCardRedirectUrl($url));
         }
         return $redirectHelper->redirectToUrl($response, 'myresearch-home');
