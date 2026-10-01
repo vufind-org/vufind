@@ -502,7 +502,6 @@ $config = [
             // Course reserves (two backends!):
             'vufind_course_reserves_search' => [
                 'actionIds' => [
-                    'search/reserves',
                     'search/reservesfacetlist',
                     'search/reservessearch',
                 ],
@@ -684,7 +683,7 @@ $config = [
                 'searchClassId' => 'MixedList',
             ],
 
-            // Search (Default backend) including collection facets and reserves:
+            // Search (Default backend) including collection facets:
             'vufind_default_search' => [
                 'actionIds' => [
                     'search/advanced',
@@ -702,12 +701,6 @@ $config = [
                     'search/collectionfacetlist',
                 ],
                 'backendId' => 'SolrCollection',
-            ],
-            'vufind_search_reserves' => [
-                'actionIds' => [
-                    'search/reserves',
-                ],
-                'backendId' => 'SolrReserves',
             ],
 
             // Search2:

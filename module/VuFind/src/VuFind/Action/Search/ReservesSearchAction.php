@@ -42,7 +42,6 @@ use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Record\Router as RecordRouter;
-use VuFind\Search\Base\Results;
 use VuFind\Search\History as SearchHistory;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\Options\PluginManager as SearchOptionsPluginManager;
