@@ -89,34 +89,6 @@ class AdvancedAction extends AbstractSearchAndResultsFacetingAction
     }
 
     /**
-     * Get an array of hierarchical facets.
-     *
-     * @param string $config Name of facet configuration file to load.
-     *
-     * @return array Facets
-     */
-    protected function getHierarchicalFacets($config)
-    {
-        $facetConfig = $this->configManager->getConfigArray($config);
-        return $facetConfig['SpecialFacets']['hierarchical'] ?? [];
-    }
-
-    /**
-     * Get an array of hierarchical facet sort options for Advanced search.
-     *
-     * @param string $config Name of facet configuration file to load.
-     *
-     * @return array
-     */
-    protected function getAdvancedHierarchicalFacetsSortOptions($config)
-    {
-        $facetConfig = $this->configManager->getConfigArray($config);
-        $baseConfig = $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions'] ?? [];
-        $advancedConfig = $facetConfig['Advanced_Settings']['hierarchicalFacetSortOptions'] ?? [];
-        return array_merge($baseConfig, $advancedConfig);
-    }
-
-    /**
      * Process the facets to be used as limits on the Advanced Search screen.
      *
      * @param array    $facetList                     The advanced facet values
