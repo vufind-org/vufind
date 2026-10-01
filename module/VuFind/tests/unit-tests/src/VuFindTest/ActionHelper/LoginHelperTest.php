@@ -638,6 +638,7 @@ class LoginHelperTest extends TestCase
         $followupHelper->expects($expectedStoredReferrer ? $this->once() : $this->never())
             ->method('store')
             ->with($expectedStoredExtras, $expectedStoredReferrer);
+
         $helper = $this->getAutowiredObject(
             ActionHelperLoginHelper::class,
             [
@@ -645,7 +646,7 @@ class LoginHelperTest extends TestCase
                 RouteHelper::class => $routeHelper,
                 ServerUrlHelper::class => $serverUrlHelper,
                 UrlHelper::class => $urlHelper,
-                ContextHelper::class => new ContextHelper(),
+                ContextHelper::class => new ContextHelper($urlHelper),
             ]
         );
         $request = new ServerRequest(uri: 'http://localhost/vufind/current');
