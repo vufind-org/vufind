@@ -32,11 +32,11 @@ namespace VuFind\ChannelProvider;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\I18n\Locale\LocaleSettings;
 
 use function count;
 use function in_array;
