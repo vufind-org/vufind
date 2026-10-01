@@ -323,16 +323,11 @@ class SearchController extends AbstractSolrSearch
      */
     protected function setUpNewItemView(ViewModel $view, array $newItemParams): ViewModel
     {
-        // Customize the URL helper to make sure it builds proper new item URLs
-        // (check it's set first -- RSS feed will return a response model rather
-        // than a view model):
-        if (isset($view->results)) {
-            $view->results->getOptions()->setFacetListAction('search-newitemfacetlist');
-            $view->results->getUrlQuery()
-                ->setDefaultParameter('range', $newItemParams['range'])
-                ->disableHiddenFilters()
-                ->setSuppressQuery(true);
-        }
+        $view->results?->getOptions()->setFacetListAction('search-newitemfacetlist');
+        $view->results?->getUrlQuery()
+            ->setDefaultParameter('range', $newItemParams['range'])
+            ->disableHiddenFilters()
+            ->setSuppressQuery(true);
 
         // We don't want new items hidden filters to propagate to other searches:
         $this->serviceLocator->get('ViewHelperManager')->get('searchTabs')->disableCurrentHiddenFilterParams();
@@ -352,7 +347,7 @@ class SearchController extends AbstractSolrSearch
         // The facet list needs one extra parameter to generate appropriate links:
         $this->getRequest()->getQuery()->set('searchAction', $this->url()->fromRoute('search-newitem'));
         $view = $this->facetListAction();
-        return $this->setUpNewItemView($view, $newItemParams);
+        return $view instanceof ViewModel ? $this->setUpNewItemView($view, $newItemParams) : $view;
     }
 
     /**
@@ -370,9 +365,13 @@ class SearchController extends AbstractSolrSearch
         $this->saveToHistory = false;
         $this->getSearchMemory()->disable();
 
+        // Set up RSS feed title just in case:
+        $this->getViewRenderer()->plugin('resultfeed')
+            ->setOverrideTitle('New Items');
+
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
-        return $this->setUpNewItemView($view, $newItemParams);
+        return $view instanceof ViewModel ? $this->setUpNewItemView($view, $newItemParams) : $view;
     }
 
     /**
