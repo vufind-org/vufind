@@ -41,6 +41,8 @@ use VuFind\ServiceManager\Factory\Autowire;
 use function count;
 use function in_array;
 
+
+
 /**
  * Channel loader.
  *
@@ -53,6 +55,13 @@ use function in_array;
 class ChannelLoader
 {
     use BatchTrait;
+    
+    /**
+     * Current locale (used for caching).
+     *
+     * @var string
+     */
+    protected string $locale;
 
     /**
      * Constructor.
