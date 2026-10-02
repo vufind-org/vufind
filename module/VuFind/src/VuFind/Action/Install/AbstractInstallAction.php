@@ -166,46 +166,6 @@ abstract class AbstractInstallAction extends AbstractInstallOrUpgradeAction
     }
 
     /**
-     * Get an array containing an ILS encryption algorithm and a randomly generated
-     * key.
-     *
-     * @return array
-     */
-    protected function getSecureAlgorithmAndKey(): array
-    {
-        // Make example hash for AES
-        $alpha = 'abcdefghijklmnopqrstuvwxyz';
-        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#%^&*', 4);
-        return ['aes', substr(str_shuffle($chars), 0, 32)];
-    }
-
-    /**
-     * Does the instance have secure database configuration and contents?
-     *
-     * @return bool
-     */
-    protected function hasSecureDatabase(): bool
-    {
-        // Are configuration settings missing?
-        $status = ($this->config['Authentication']['hash_passwords'] ?? false)
-            && ($this->config['Authentication']['encrypt_ils_password'] ?? false);
-
-        // If we're correctly configured, check that the data in the database is ok:
-        if ($status) {
-            try {
-                $userRows = $this->userService->getInsecureRows();
-                $cardRows = $this->userCardService->getInsecureRows();
-                $status = count($userRows) + count($cardRows) === 0;
-            } catch (\Exception $e) {
-                // Any exception means we have a problem!
-                $status = false;
-            }
-        }
-
-        return $status;
-    }
-
-    /**
      * Support method for check/fix dependencies code -- do we have a new enough
      * version of PHP?
      *
