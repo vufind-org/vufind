@@ -190,8 +190,7 @@ class FixDatabaseAction extends AbstractUpgradeAction
         } catch (Exception $e) {
             $this->session->warnings->append(
                 'Could not fix checksums in table search - maybe column ' .
-                'checksum is missing? Exception thrown with ' .
-                'message: ' . $e->getMessage()
+                'checksum is missing? Exception thrown: ' . (string)$e
             );
         }
 
