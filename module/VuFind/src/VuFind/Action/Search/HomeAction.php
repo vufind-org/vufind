@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author search action.
+ * Search home action.
  *
  * PHP version 8
  *
@@ -27,14 +27,13 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\Search;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
 
 /**
- * Author search action.
+ * Search home action.
  *
  * @category VuFind
  * @package  Action
@@ -42,10 +41,10 @@ use VuFind\Action\Search\AbstractSearchAndResultsAction;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class HomeAction extends AbstractSearchAndResultsAction
 {
     /**
-     * Display author facet results.
+     * Display home page.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -56,8 +55,6 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
+        return $this->renderHomePage();
     }
 }

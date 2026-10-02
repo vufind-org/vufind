@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Author search action.
+ * SolrWeb results action.
  *
  * PHP version 8
  *
+ * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,42 +23,43 @@
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Author;
+namespace VuFind\Action\Web;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Search\Base\Results;
 
 /**
- * Author search action.
+ * SolrWeb results action.
  *
  * @category VuFind
  * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SearchAction extends AbstractSearchAndResultsAction
+class ResultsAction extends \VuFind\Action\Search\ResultsAction
 {
     /**
-     * Display author facet results.
+     * Get a redirection response to a single record (or null if a redirect is impossible/inappropriate).
      *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
+     * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
+     * @param array                             $queryParams Any query parameters
      *
-     * @return ResponseInterface
+     * @return ?ResponseInterface
      */
-    public function action(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        $this->saveToHistory = false;
-        $this->rememberSearch = false;
-        return $this->renderSearchResults($request, $response);
+    protected function getRedirectForRecord(
+        \VuFind\RecordDriver\AbstractBase $record,
+        array $queryParams = []
+    ): ?ResponseInterface {
+        $url = $record->tryMethod('getUrl');
+        return $url ? $this->getHelper(RedirectHelper::class)->redirectToUrl($this->response, $url) : null;
     }
 }
