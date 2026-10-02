@@ -105,9 +105,8 @@ abstract class AbstractUpgradeAction extends AbstractInstallOrUpgradeAction
             $config
         );
 
-        // We want to use cookies for tracking the state of the upgrade, since the
-        // session is unreliable -- if the user upgrades a configuration that uses
-        // a different session handler than the default one, we'll lose track of our
+        // We want to use cookies for tracking the state of the upgrade, since the session is unreliable -- if the user
+        // upgrades a configuration that uses a different session handler than the default one, we'll lose track of our
         // upgrade state in the middle of the process!
         $this->cookie = new CookieContainer('vfup', $cookieManager);
 
