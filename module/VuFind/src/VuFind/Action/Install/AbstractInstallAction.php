@@ -31,10 +31,6 @@
 
 namespace VuFind\Action\Install;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
@@ -48,7 +44,6 @@ use VuFindHttp\HttpService;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service as SearchService;
 
-use function count;
 use function defined;
 use function function_exists;
 use function is_callable;
@@ -64,92 +59,39 @@ use function sprintf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AbstractInstallAction extends AbstractTemplateRenderingAction
+abstract class AbstractInstallAction extends AbstractInstallOrUpgradeAction
 {
     /**
      * Constructor.
      *
-     * @param CacheManager             $cacheManager    Cache manager
-     * @param Connection               $ilsConnection   ILS connection
-     * @param SearchService            $searchService   Search service
      * @param PathResolver             $pathResolver    Path resolver
      * @param ConfigManagerInterface   $configManager   Config manager
-     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
-     * @param HttpService              $httpService     HTTP service
-     * @param TagServiceInterface      $tagService      Tags database service
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService User card database service
      * @param array                    $config          VuFind configuration
+     * @param Connection               $ilsConnection   ILS connection
+     * @param SearchService            $searchService   Search service
+     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
+     * @param HttpService              $httpService     HTTP service
+     * @param TagServiceInterface      $tagService      Tags database service
      */
     public function __construct(
-        protected CacheManager $cacheManager,
+        PathResolver $pathResolver,
+        ConfigManagerInterface $configManager,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserServiceInterface $userService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserCardServiceInterface $userCardService,
+        #[Autowire(config: 'config')]
+        protected array $config,
         protected Connection $ilsConnection,
         protected SearchService $searchService,
-        protected PathResolver $pathResolver,
-        protected ConfigManagerInterface $configManager,
         protected ServerUrlHelper $serverUrlHelper,
         protected HttpService $httpService,
         #[Autowire(container: DbServicePluginManager::class)]
         protected TagServiceInterface $tagService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        protected UserServiceInterface $userService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        protected UserCardServiceInterface $userCardService,
-        #[Autowire(config: 'config')]
-        protected array $config,
     ) {
-        parent::__construct();
-    }
-
-    /**
-     * Check that everything is in order for the action to be executed.
-     *
-     * This method is executed in the very beginning of the action invocation before any permission checks etc.
-     * It is meant for technical checks such as route-based configuration being correctly applied.
-     * It may return a suitable response or throw an exception if there are issues.
-     *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response
-     *
-     * @return ?ResponseInterface
-     */
-    protected function validateActionConfig(
-        ServerRequestInterface $request,
-        ResponseInterface $response
-    ): ?ResponseInterface {
-        // If auto-configuration is disabled, prevent any other action from being accessed:
-        if (!($this->config['System']['autoConfigure'] ?? false)) {
-            return $this->renderTemplate($request, $response, template: 'install/disabled');
-        }
-        return null;
-    }
-
-    /**
-     * Get path to base configuration file.
-     *
-     * @param string $configName Configuration name
-     *
-     * @return string
-     */
-    protected function getBaseConfigFilePath(string $configName): string
-    {
-        return $this->pathResolver
-            ->getBaseConfigLocation($configName)
-            ->getPath();
-    }
-
-    /**
-     * Get path to local configuration file (even if it does not yet exist).
-     *
-     * @param string $configName Configuration name
-     *
-     * @return string
-     */
-    protected function getForcedLocalConfigPath(string $configName): string
-    {
-        return $this->pathResolver
-            ->getForcedLocalConfigLocation($configName)
-            ->getPath();
+        parent::__construct($pathResolver, $configManager, $userService, $userCardService, $config);
     }
 
     /**
@@ -220,46 +162,6 @@ abstract class AbstractInstallAction extends AbstractTemplateRenderingAction
             ? $configLocation
             : $this->pathResolver->getBaseConfigLocation($configName);
         $this->configManager->writeConfig($configLocation, $currentConfig, $baseConfigLocation);
-    }
-
-    /**
-     * Get an array containing an ILS encryption algorithm and a randomly generated
-     * key.
-     *
-     * @return array
-     */
-    protected function getSecureAlgorithmAndKey(): array
-    {
-        // Make example hash for AES
-        $alpha = 'abcdefghijklmnopqrstuvwxyz';
-        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#%^&*', 4);
-        return ['aes', substr(str_shuffle($chars), 0, 32)];
-    }
-
-    /**
-     * Does the instance have secure database configuration and contents?
-     *
-     * @return bool
-     */
-    protected function hasSecureDatabase(): bool
-    {
-        // Are configuration settings missing?
-        $status = ($this->config['Authentication']['hash_passwords'] ?? false)
-            && ($this->config['Authentication']['encrypt_ils_password'] ?? false);
-
-        // If we're correctly configured, check that the data in the database is ok:
-        if ($status) {
-            try {
-                $userRows = $this->userService->getInsecureRows();
-                $cardRows = $this->userCardService->getInsecureRows();
-                $status = count($userRows) + count($cardRows) === 0;
-            } catch (\Exception $e) {
-                // Any exception means we have a problem!
-                $status = false;
-            }
-        }
-
-        return $status;
     }
 
     /**
