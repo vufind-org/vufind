@@ -167,7 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -187,8 +186,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'Holds' => 'VuFind\Controller\HoldsController',
-            'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
             'LibGuides' => 'VuFind\Controller\LibGuidesController',

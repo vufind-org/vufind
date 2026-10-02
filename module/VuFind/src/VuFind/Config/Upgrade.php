@@ -898,6 +898,10 @@ class Upgrade implements LoggerAwareInterface
             $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
         }
 
+        if (($newBaseConfig['General']['show_restricted_view_warning'] ?? '') == '1') {
+            $newBaseConfig['General']['show_restricted_view_warning'] = 'result_list_top,record_view';
+        }
+
         // Move several settings to RecordDataFormatter/EDS
         foreach ($newBaseConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
             $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Label', $label);
