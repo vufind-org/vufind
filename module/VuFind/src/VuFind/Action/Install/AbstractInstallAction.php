@@ -31,8 +31,6 @@
 
 namespace VuFind\Action\Install;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
@@ -95,57 +93,6 @@ abstract class AbstractInstallAction extends AbstractInstallOrUpgradeAction
         protected TagServiceInterface $tagService,
     ) {
         parent::__construct($pathResolver, $configManager, $userService, $userCardService, $config);
-    }
-
-    /**
-     * Check that everything is in order for the action to be executed.
-     *
-     * This method is executed in the very beginning of the action invocation before any permission checks etc.
-     * It is meant for technical checks such as route-based configuration being correctly applied.
-     * It may return a suitable response or throw an exception if there are issues.
-     *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response
-     *
-     * @return ?ResponseInterface
-     */
-    protected function validateActionConfig(
-        ServerRequestInterface $request,
-        ResponseInterface $response
-    ): ?ResponseInterface {
-        // If auto-configuration is disabled, prevent any other action from being accessed:
-        if (!($this->config['System']['autoConfigure'] ?? false)) {
-            return $this->renderTemplate($request, $response, template: 'install/disabled');
-        }
-        return null;
-    }
-
-    /**
-     * Get path to base configuration file.
-     *
-     * @param string $configName Configuration name
-     *
-     * @return string
-     */
-    protected function getBaseConfigFilePath(string $configName): string
-    {
-        return $this->pathResolver
-            ->getBaseConfigLocation($configName)
-            ->getPath();
-    }
-
-    /**
-     * Get path to local configuration file (even if it does not yet exist).
-     *
-     * @param string $configName Configuration name
-     *
-     * @return string
-     */
-    protected function getForcedLocalConfigPath(string $configName): string
-    {
-        return $this->pathResolver
-            ->getForcedLocalConfigLocation($configName)
-            ->getPath();
     }
 
     /**
