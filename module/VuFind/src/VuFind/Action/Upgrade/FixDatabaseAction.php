@@ -72,6 +72,15 @@ use function count;
 class FixDatabaseAction extends AbstractUpgradeAction
 {
     /**
+     * Root database connection.
+     *
+     * Retrieve with getRootDbConnection().
+     *
+     * @var ?DbConnection
+     */
+    protected ?DbConnection $rootDbConnection = null;
+
+    /**
      * Constructor.
      *
      * @param PathResolver                 $pathResolver        Path resolver
@@ -314,12 +323,10 @@ class FixDatabaseAction extends AbstractUpgradeAction
      */
     protected function getRootDbConnection(): DbConnection
     {
-        // Use static cache to avoid loading connection more than once on subsequent calls.
-        static $connection = false;
-        if (!$connection) {
-            $connection
+        if (!$this->rootDbConnection) {
+            $this->rootDbConnection
                 = $this->connectionFactory->getConnection($this->session->dbRootUser, $this->session->dbRootPass);
         }
-        return $connection;
+        return $this->rootDbConnection;
     }
 }
