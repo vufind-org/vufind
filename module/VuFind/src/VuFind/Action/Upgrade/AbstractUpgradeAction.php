@@ -110,9 +110,8 @@ abstract class AbstractUpgradeAction extends AbstractInstallOrUpgradeAction
         // upgrade state in the middle of the process!
         $this->cookie = new CookieContainer('vfup', $cookieManager);
 
-        // ...however, once the configuration piece of the upgrade is done, we can
-        // safely use the session for storing some values. We'll use this for the
-        // temporary storage of root database credentials, since it is unwise to
+        // ...however, once the configuration piece of the upgrade is done, we can safely use the session for storing
+        // some values. We'll use this for the temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
         $this->session = new SessionContainer('upgrade', $sessionManager);
 
