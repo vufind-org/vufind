@@ -50,7 +50,6 @@ use function strlen;
 class EDS extends DefaultRecord
 {
     use Feature\IlsAwareTrait;
-    use \VuFind\Http\CachingDownloaderAwareTrait;
     use \VuFind\Cache\CacheTrait;
 
     /**
@@ -719,7 +718,12 @@ class EDS extends DefaultRecord
             if ($loadDirectly) {
                 return $thumbnail;
             } else {
-                $this->putCachedData($this->getUniqueID(), $thumbnail);
+                $cache = $this->getCachedData($this->getUniqueID());
+                if ($cache === null || !is_array($cache)) {
+                    $cache = [];
+                }
+                $cache[$size] = $thumbnail;
+                $this->putCachedData($this->getUniqueID(), $cache);
                 return [
                     'recordid' => $this->getUniqueID(),
                     'size' => $size,
