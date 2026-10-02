@@ -183,6 +183,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
             ],
         ];
         yield [
@@ -191,6 +192,7 @@ class GetThisLoaderTest extends TestCase
                 // Expected templates
                 'holdings',
                 'biblio-info',
+                'place-request',
                 'staff-office-delivery',
                 'inter-library',
                 'remote-delivery',
@@ -210,6 +212,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'inter-library',
             ],
         ];
@@ -227,6 +230,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'inter-library',
             ],
         ];
@@ -244,6 +248,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
             ],
         ];
         yield [
@@ -260,6 +265,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'inter-library',
             ],
         ];
@@ -277,6 +283,7 @@ class GetThisLoaderTest extends TestCase
             [
                 // Expected templates
                 'biblio-info',
+                'place-request',
                 'micro-form',
                 'staff-office-delivery',
                 'remote-delivery',
@@ -353,6 +360,44 @@ class GetThisLoaderTest extends TestCase
                 // Expected templates
             ],
         ];
+        yield [
+            [
+                // Config
+                'my_template1' => [
+                    'enabled' => true,
+                ],
+                'my_template2' => [
+                    'enabled' => true,
+                    'exclusive' => 'only',
+                ],
+                'my_template3' => [
+                    'enabled' => true,
+                ],
+
+            ],
+            [
+                'my_template2',
+            ],
+        ];
+        yield [
+            [
+                // Config
+                'my_template1' => [
+                    'enabled' => true,
+                ],
+                'my_template2' => [
+                    'enabled' => true,
+                    'exclusive' => 'preventNext',
+                ],
+                'my_template3' => [
+                    'enabled' => true,
+                ],
+            ],
+            [
+                'my_template1',
+                'my_template2',
+            ],
+        ];
     }
 
     /**
@@ -371,6 +416,69 @@ class GetThisLoaderTest extends TestCase
         $config['templates'] = $templateConfig;
         $getThis = $this->getGetThis($config);
         $getThis->setItems(static::getItems());
+        $templates = $getThis->getSubTemplates();
+        $this->assertEquals($expected, $templates);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return Iterator<(int | string), array>
+     */
+    public static function provideRegexData(): Iterator
+    {
+        yield [
+            [
+                // Config
+                'my_template1' => [
+                    'regex' => [
+                        'name' => 'LOCATION_ONLINE',
+                        'value' => 'getLocation',
+                    ],
+                ],
+                'my_template2' => [
+                    'enabled' => true,
+                    'regex' => [
+                        'name' => '!LOCATION_ONLINE',
+                        'value' => 'getLocation',
+                    ],
+                ],
+                'my_template3' => [
+                    'enabled' => true,
+                ],
+            ],
+            [
+                'my_template1',
+                'my_template3',
+            ],
+        ];
+    }
+
+    /**
+     * Test method getSubTemplates for regex conditional display in GetThis config.
+     *
+     * @param $templateConfig array Sub config for GetThis loader templates
+     * @param $expected       array Expected templates to display
+     *
+     * @return void
+     * @throws Exception
+     */
+    #[DataProvider('provideRegexData')]
+    public function testRegexConditionsFunctions(array $templateConfig, array $expected): void
+    {
+        $config = $this->baseConfig;
+        $config['templates'] = $templateConfig;
+        $getThis = $this->getGetThis($config);
+        $items = [
+            [
+                'item_id' => 8,
+                'location' => 'Online resource',
+                'location_code' => 'some_website',
+                'temporary_loan_type' => 'Available',
+                'callnumber' => 'call_the_internet',
+            ],
+        ];
+        $getThis->setItems($items);
         $templates = $getThis->getSubTemplates();
         $this->assertEquals($expected, $templates);
     }
