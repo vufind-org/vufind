@@ -214,6 +214,7 @@ class ResponseHelper implements HelperInterface, TranslatorAwareInterface
             case 'text/plain':
                 return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ') . $data;
             case 'text/html':
+            case 'text/xml':
                 return $data ?: '';
             default:
                 throw new \Exception("Unsupported content type: $type");

@@ -291,37 +291,12 @@ class LoginHelper implements HelperInterface
         bool $allowCurrentUrl = true,
         array $extras = []
     ): void {
-        // lbreferer is the stored current url of the lightbox which overrides the url from the server request when
-        // present
-        $referrer = $request->getQueryParams()['lbreferer'] ?? $this->contextHelper->getReferrer($request);
-        // Get the referrer -- if it's empty, there's nothing to store! Also, if the referrer lives outside of VuFind,
-        // don't store it! We only want internal post-login redirects.
-        if (empty($referrer) || !$this->urlHelper->isLocalUrl($referrer)) {
+        if (!($referrer = $this->contextHelper->getReferrer($request, true, allowCurrentUrl: $allowCurrentUrl))) {
             return;
         }
-        // If the referrer is the MyResearch/Home action, it probably means that the user is repeatedly mistyping their
-        // password. We should ignore this and instead rely on any previously stored referrer.
-        $referrerNorm = $this->urlHelper->normalizeUrlForComparison($referrer);
-        $myResearchHomeUrl = $this->serverUrlHelper->getUrlForPath(
-            $this->routeHelper->getUrlFromRoute('myresearch-home')
-        );
-        $mrhuNorm = $this->urlHelper->normalizeUrlForComparison($myResearchHomeUrl);
-        if ($mrhuNorm === $referrerNorm) {
-            return;
-        }
-
-        // If the referrer is the MyResearch/UserLogin action, it probably means that the user is repeatedly mistyping
-        // their password. We should ignore this and instead rely on any previously stored referrer.
-        $myUserLogin = $this->serverUrlHelper->getUrlForPath(
-            $this->routeHelper->getUrlFromRoute('myresearch-userlogin')
-        );
-        $mulNorm = $this->urlHelper->normalizeUrlForComparison($myUserLogin);
-        if (str_starts_with($referrerNorm, $mulNorm)) {
-            return;
-        }
-
-        // Check that the referrer is not current URL if not allowed:
-        if (!$allowCurrentUrl && (string)$request->getUri() === $referrer) {
+        // If the referrer points to a login action, it probably means that the user is repeatedly mistyping their
+        // password.  We should ignore this and instead rely on any previously stored referrer.
+        if ($this->referrerIsLoginAction($referrer)) {
             return;
         }
 
@@ -374,5 +349,30 @@ class LoginHelper implements HelperInterface
         $this->followupHelper->clear('isReferrer');
         $this->followupHelper->clear('lightboxParent');
         $this->followupHelper->clear('url');
+    }
+
+    /**
+     * Check if referrer points to a likely login action.
+     *
+     * @param string $referrer Referrer
+     *
+     * @return bool
+     */
+    protected function referrerIsLoginAction(string $referrer): bool
+    {
+        // Check for MyResearch/Home or MyResearch/UserLogin:
+        $myResearchHomeUrlNorm = $this->urlHelper->normalizeUrlForComparison(
+            $this->serverUrlHelper->getUrlForPath(
+                $this->routeHelper->getUrlFromRoute('myresearch-home')
+            )
+        );
+        $myResearchUserLoginNorm = $this->urlHelper->normalizeUrlForComparison(
+            $this->serverUrlHelper->getUrlForPath(
+                $this->routeHelper->getUrlFromRoute('myresearch-userlogin')
+            )
+        );
+        $referrerNorm = $this->urlHelper->normalizeUrlForComparison($referrer);
+        return $referrerNorm === $myResearchHomeUrlNorm
+            || str_starts_with($referrerNorm, $myResearchUserLoginNorm);
     }
 }
