@@ -304,12 +304,10 @@ class SearchTabs implements LoggerAwareInterface
         }
         // Find matching handler for new query (and use default if no match):
         $options = $results->getOptions();
-        $targetHandler = $options->getHandlerForLabel(
-            $activeOptions->getLabelForBasicHandler($handler)
-        );
+        $handlerLabel = $activeOptions->getLabelForBasicHandler($handler);
 
         // Build new URL:
-        $params->setBasicSearch($query, $targetHandler);
+        $params->setBasicSearch($query, $handlerLabel ? 'label:' . $handlerLabel : null);
         return ($this->url)($options->getSearchAction())
             . $results->getUrlQuery()->getParams(false);
     }
