@@ -67,6 +67,8 @@ trait HasSorterTrait
      * Get the sorter.
      *
      * @return SorterInterface
+     *
+     * @throws BadConfigException
      */
     public function getSorter(): SorterInterface
     {
