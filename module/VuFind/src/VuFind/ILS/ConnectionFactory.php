@@ -80,6 +80,7 @@ class ConnectionFactory implements FactoryInterface
         $catalog->setHoldConfig(
             $container->get(\VuFind\ILS\HoldSettings::class)
         );
+        $catalog->setDigitizationConfig($config);
         $catalog->setCacheStorage($container->get(\VuFind\Cache\Manager::class)->getCache('object'));
         $manager = $container->get(\Laminas\Session\SessionManager::class);
         $catalog->setSessionCache(new \Laminas\Session\Container('ILS', $manager));

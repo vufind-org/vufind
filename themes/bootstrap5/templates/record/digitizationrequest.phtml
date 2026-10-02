@@ -1,0 +1,124 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+      ->add($this->translate('digitization_request_place_text'), active: true);
+
+    $enumchronRaw = $this->gatheredDetails['requestedItem']['enumchron'] ?? '';
+    $enumchron = $enumchronRaw !== '' ? " ($enumchronRaw)" : '';
+?>
+<?=$this->component('page-title', ['title' => $this->translate('digitization_request_place_text'), 'headTitle' => $this->translate('digitization_request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
+<?php if ($this->helpTextHtml): ?>
+  <p class="helptext"><?=$this->helpTextHtml?></p>
+<?php endif; ?>
+
+<form class="form-record-digitization" method="post" name="placeDigitizationRequest" data-clear-account-cache="digitizationRequests">
+  <?=$this->flashmessages()?>
+
+  <p class="form-control-static"><?=$this->escapeHtml($this->driver->getBreadcrumb() . $enumchron) ?></p>
+  <?php if (!empty($this->gatheredDetails['description'])): ?>
+    <p><?=$this->escapeHtmlAttr($this->gatheredDetails['description'])?></p>
+  <?php endif; ?>
+
+  <fieldset class="form-group">
+    <?php if (in_array('volume', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc('digitization_request_volume')?>:</label>
+      <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="form-control">
+    <?php endif; ?>
+
+    <?php if (in_array('issue', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc('digitization_request_issue')?>:</label>
+      <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtmlAttr($this->gatheredDetails['issue']) : ''?>" class="form-control">
+    <?php endif; ?>
+
+    <?php if (in_array('part', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc('digitization_request_part')?>:</label>
+      <input type="text" name="gatheredDetails[part]" value="<?=isset($this->gatheredDetails['part']) ? $this->escapeHtmlAttr($this->gatheredDetails['part']) : ''?>" class="form-control">
+    <?php endif; ?>
+  </fieldset>
+
+  <?php if (in_array('digitizationType', $this->extraDigitizationFields)): ?>
+    <div class="form-radio">
+      <input type="radio" class="form-radio-input" name="gatheredDetails[digitizationType]" id="digitizationTypeFull" value="full" <?=$this->gatheredDetails['digitizationType'] == 'full' ? ' checked="checked"' : ''?>>
+      <label class="form-radio-label" for="digitizationTypeFull">
+        <?=$this->transEsc('digitization_request_full_digitization')?>
+      </label>
+      <input type="radio" class="form-radio-input" name="gatheredDetails[digitizationType]" id="digitizationTypePartial" value="partial" <?=$this->gatheredDetails['digitizationType'] == 'partial' ? ' checked="checked"' : ''?>>
+      <label class="form-radio-label" for="digitizationTypePartial">
+        <?=$this->transEsc('digitization_request_partial_digitization')?>
+      </label>
+    </div>
+  <?php endif; ?>
+
+
+  <fieldset class="form-group" id="partialFields">
+    <?php if (in_array('chapterArticleTitle', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc('digitization_request_chapter_article_title')?>:</label>
+      <input type="text" name="gatheredDetails[chapterArticleTitle]" value="<?=isset($this->gatheredDetails['chapterArticleTitle']) ? $this->escapeHtmlAttr($this->gatheredDetails['chapterArticleTitle']) : ''?>" class="form-control">
+    <?php endif; ?>
+
+    <?php if (in_array('chapterArticleAuthor', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc('digitization_request_chapter_article_author')?>:</label>
+      <input type="text" name="gatheredDetails[chapterArticleAuthor]" value="<?=isset($this->gatheredDetails['chapterArticleAuthor']) ? $this->escapeHtmlAttr($this->gatheredDetails['chapterArticleAuthor']) : ''?>" class="form-control">
+    <?php endif; ?>
+
+    <?php if (in_array('partialDigitizationType', $this->extraDigitizationFields)): ?>
+      <div class="form-radio">
+        <input type="radio" class="form-radio-input" name="gatheredDetails[partialDigitizationType]" id="partialDigitizationTypeFull" value="full"<?=$this->gatheredDetails['partialDigitizationType'] == 'full' ? ' checked="checked"' : ''?>>
+        <label class="form-radio-label" for="partialDigitizationTypeFull">
+          <?=$this->transEsc('digitization_request_full_chapter_or_article')?>
+        </label>
+        <input type="radio" class="form-radio-input" name="gatheredDetails[partialDigitizationType]" id="partialDigitizationTypePageRange" value="pageRange"<?=$this->gatheredDetails['partialDigitizationType'] == 'pageRange' ? ' checked="checked"' : ''?>>
+        <label class="form-radio-label" for="partialDigitizationTypePageRange">
+          <?=$this->transEsc('digitization_request_specified_pages')?>
+        </label>
+      </div>
+    <?php endif; ?>
+
+    <?php if (in_array('startPage', $this->extraDigitizationFields) && in_array('endPage', $this->extraDigitizationFields)): ?>
+    <fieldset class="form-group" id="pageRangeFields">
+      <label class="form-label"><?=$this->transEscAttr('digitization_request_start_page')?></label>
+      <input type="text" id="startPage" name="gatheredDetails[startPage]"
+             value="<?=$this->escapeHtmlAttr($this->gatheredDetails['startPage'] ?? '')?>"
+             class="form-control" placeholder="<?=$this->transEscAttr('digitization_request_start_page')?>">
+      <label class="form-label"><?=$this->transEscAttr('digitization_request_end_page')?></label>
+      <input type="text" id="endPage" name="gatheredDetails[endPage]"
+             value="<?=$this->escapeHtmlAttr($this->gatheredDetails['endPage'] ?? '')?>"
+             class="form-control" placeholder="<?=$this->transEscAttr('digitization_request_end_page')?>">
+    </fieldset>
+  <?php endif; ?>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <?php if (in_array('requiredByDate', $this->extraDigitizationFields) || in_array('requiredByDateOptional', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc(in_array('requiredByDateOptional', $this->extraDigitizationFields) ? 'digitization_request_required_by_optional' : 'digitization_request_required_by')?> (<?=$this->dateTime()->getDisplayDateFormat()?>):</label>
+      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate ?? '')?>" size="10" class="form-control">
+    <?php endif; ?>
+    <?php if (in_array('comments', $this->extraDigitizationFields)): ?>
+      <label class="form-label"><?=$this->transEsc('Comments')?>:</label>
+      <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+    <?php endif; ?>
+  </fieldset>
+
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" name="placeDigitizationRequest" value="<?=$this->transEscAttr('digitization_request_submit_text')?>">
+  </div>
+</form>
+
+<?php
+  echo $this->assetManager()->outputInlineScriptLink('digitization.js');
+
+  $js = <<<JS
+      if ($.isReady) {
+          setUpDigitizationRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+      } else {
+          $(document).ready(function() {
+              setUpDigitizationRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+          });
+      }
+      JS;
+
+  echo $this->assetManager()->outputInlineScriptString($js);

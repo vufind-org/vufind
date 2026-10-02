@@ -47,6 +47,8 @@ enum AuditEventSubtype: string
     case PlaceStorageRetrievalRequest = 'place_storage_retrieval_request';
     case RenewLoans = 'renew_loans';
     case UpdateHolds = 'update_holds';
+    case PlaceDigitizationRequest = 'place_digitization_request';
+    case CancelDigitizationRequest = 'cancel_digitization_request';
 
     // Payment
     case Payment = 'payment';

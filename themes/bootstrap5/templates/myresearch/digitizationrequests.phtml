@@ -1,0 +1,215 @@
+<?php
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('My Digitization Requests'), active: true);
+
+  $this->assetManager()->appendScriptLink('requests.js');
+
+  // Check if "Cancel All" button can be displayed:
+  $paginator = $this->paginator;
+  $cancelAll = !$this->ilsPaging || !$paginator;
+?>
+
+<?=$this->component('show-account-menu-button')?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?=
+    $this->component('page-title', [
+      'title' => $this->translate('Your Digitization Requests'),
+      'level' => 1,
+    ])
+  ?>
+
+  <?=$this->flashmessages()?>
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+
+  <?php if (!empty($this->recordList)): ?>
+    <nav class="search-header hidden-print">
+      <?php if ($paginator): ?>
+        <div class="search-stats">
+          <?php
+            $startRecord = $paginator->getAbsoluteItemNumber(1);
+            $abs = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
+            $end = min($abs, $paginator->getTotalItemCount());
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($startRecord),
+              '%%end%%' => $this->localizedNumber($end),
+              '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
+            ];
+          ?>
+          <?=$this->translate('showing_items_of_html', $transParams); ?>
+        </div>
+      <?php else: ?>
+        <?php $startRecord = 1; ?>
+      <?php endif; ?>
+    </nav>
+
+    <?php if ($this->cancelForm || $this->updateForm): ?>
+      <form name="updateForm" class="inline" method="post" id="update_digitization_requests" data-clear-account-cache="digitizationRequests">
+        <input type="hidden" id="submitType" name="cancelSelected" value="1">
+        <input type="hidden" id="cancelConfirm" name="confirm" value="0">
+        <div class="toolbar account-action-toolbar">
+          <?php if ($this->updateForm): ?>
+            <div class="btn-group">
+              <input id="update_selected" name="updateSelected" type="submit" value="<?=$this->transEscAttr('digitization_request_edit_selected') ?>" class="btn btn-default hidden">
+            </div>
+          <?php endif; ?>
+          <?php if ($this->cancelForm): ?>
+            <?=
+              $this->component(
+                  'confirm-button',
+                  [
+                    'buttonId' => 'cancelSelected',
+                    'buttonName' => 'cancelSelected',
+                    'buttonLabel' => 'digitization_request_cancel_selected',
+                    'header' => 'confirm_digitization_request_cancel_selected_text',
+                    'confirmId' => 'confirm_cancel_selected_yes',
+                    'cancelClass' => 'confirm_cancel_no',
+                    'ignoreLightbox' => true,
+                  ]
+              )
+            ?>
+            <?php if ($cancelAll): ?>
+              <?=
+                $this->component(
+                    'confirm-button',
+                    [
+                      'buttonId' => 'cancelAll',
+                      'buttonName' => 'cancelAll',
+                      'buttonLabel' => 'digitization_request_cancel_all',
+                      'header' => 'confirm_digitization_request_cancel_all_text',
+                      'confirmId' => 'confirm_cancel_all_yes',
+                      'confirmTitle' => 'confirm_digitization_request_cancel_all_text',
+                      'cancelClass' => 'confirm_cancel_no',
+                      'ignoreLightbox' => true,
+                    ]
+                )
+              ?>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
+        <div class="select-all-container">
+          <label class="select-all-label">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </label>
+        </div>
+      <?php endif; ?>
+
+    <ul class="record-list">
+      <?php foreach ($this->recordList as $i => $resource): ?>
+        <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+        <li class="result">
+          <label class="checkbox-select">
+            <?php if (
+              ($this->cancelForm && isset($ilsDetails['cancel_details'])) ||
+              ($this->updateForm && isset($ilsDetails['updateDetails']))
+            ): ?>
+              <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
+                <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
+              <?php endif; ?>
+              <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']); ?>
+              <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-label="<?=$this->transEscAttr('select_item_digitization_request_cancel')?>">
+            <?php endif; ?>
+            <span class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></span>
+          </label>
+
+          <?php
+            $coverDetails = $this->record($resource)->getCoverDetails('digitizationrequests', 'small', $this->recordLinker()->getUrl($resource));
+            $cover = $coverDetails['html'];
+            $thumbnail = false;
+            $thumbnailAlignment = $this->record($resource)->getThumbnailAlignment('account');
+            if ($cover):
+              ob_start(); ?>
+              <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+                <?=$cover ?>
+              </div>
+              <?php $thumbnail = ob_get_contents(); ?>
+            <?php ob_end_clean(); ?>
+          <?php endif; ?>
+          <div class="media">
+            <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+              <?=$thumbnail ?>
+            <?php endif ?>
+            <div class="media-body">
+              <?=$this->record($resource)->renderTemplate('account-entry.phtml')?>
+              <br>
+              <?php if (!empty($ilsDetails['chapter_or_article_title'])): ?>
+                <strong><?=$this->transEsc('digitization_request_chapter_article') ?>:</strong> "<?=$this->escapeHtml($ilsDetails['chapter_or_article_title'])?>"
+                <?php if (!empty($ilsDetails['chapter_or_article_author'])): ?> <?=$this->transEsc('by')?> <?=$this->escapeHtml($ilsDetails['chapter_or_article_author']) ?><?php endif; ?>
+                <br>
+              <?php endif; ?>
+
+              <?php if (!empty($ilsDetails['startPage'])): ?>
+                <strong><?=$this->transEsc('digitization_request_start_page') ?>:</strong> <?=$this->escapeHtml($ilsDetails['startPage']) ?>
+                <?php if (!empty($ilsDetails['endPage'])): ?> - <?=$this->escapeHtml($ilsDetails['endPage']) ?><?php endif; ?>
+                <br>
+              <?php endif; ?>
+
+              <?php if (!empty($ilsDetails['comment'])): ?>
+                <strong><?=$this->transEsc('Your comment') ?>:</strong> <?=$this->escapeHtml($ilsDetails['comment']) ?>
+                <br>
+              <?php endif; ?>
+
+              <?php if (!empty($ilsDetails['create'])): ?>
+                <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+                <?php if (!empty($ilsDetails['expire'])): ?>|<?php endif; ?>
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['expire'])): ?>
+                <strong><?=$this->transEsc('digitization_request_expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+              <?php endif; ?>
+              <br>
+              <?php if (isset($ilsDetails['position'])): ?>
+                <p><strong><?=$this->transEsc('digitization_request_queue_position') ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
+              <?php endif; ?>
+
+              <?php if (isset($ilsDetails['cancel_link'])): ?>
+                <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc('digitization_request_cancel') ?></a></p>
+              <?php endif; ?>
+              <?php if (false && !empty($ilsDetails['updateDetails'])): ?>
+                <p><a class="digitization_requests-edit" href="<?=$this->escapeHtmlAttr($this->url('digitization_requests-edit', [], ['query' => ['selectedIDS[]' => $ilsDetails['updateDetails']]])) ?>" data-lightbox><?=$this->transEsc('Edit') ?></a></p>
+              <?php endif; ?>
+              <?php if (isset($this->cancelResults['items'])): ?>
+                <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
+                  <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
+                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php
+                      if ($cancelResult['sysMessage'] ?? false) {
+                        echo ' : ' . $this->transEsc($cancelResult['sysMessage']);
+                      }
+                    ?></div>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              <?php endif; ?>
+
+              <?php if (isset($ilsDetails['reqnum']) && !empty($this->updateResults[$ilsDetails['reqnum']])): ?>
+                <?php $updateResult = $this->updateResults[$ilsDetails['reqnum']]; ?>
+                <?php if (!$updateResult['success']): ?>
+                  <div class="alert alert-danger"><?=$this->transEsc($updateResult['status']) ?><?php
+                    if (!empty($updateResult['sysMessage'])) {
+                      echo ': ' . $this->transEsc($updateResult['sysMessage']);
+                    }
+                  ?></div>
+                <?php endif; ?>
+              <?php endif; ?>
+            </div>
+            <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+              <?=$thumbnail ?>
+            <?php endif ?>
+          </div>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+    <?php if ($this->cancelForm): ?></form><?php endif; ?>
+    <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', compact('params')) : ''?>
+  <?php else: ?>
+    <?=$this->transEsc('You do not have any digitization requests placed') ?>.
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'digitizationRequests'])?>
+</div>
+
+<?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'digitizationRequests', 'accountStatus' => $this->accountStatus]); ?>

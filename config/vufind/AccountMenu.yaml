@@ -67,6 +67,13 @@ Account:
       status: true
       checkMethod: checkHolds
 
+    - name: digitizationRequests
+      label: Digitization Requests
+      route: myresearch-digitizationrequests
+      icon: file-lines
+      status: true
+      checkMethod: checkDigitizationRequests
+
     - name: storageRetrievalRequests
       label: Storage Retrieval Requests
       route: myresearch-storageretrievalrequests

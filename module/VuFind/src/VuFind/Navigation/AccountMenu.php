@@ -202,6 +202,13 @@ class AccountMenu extends AbstractMenu
                   status: true
                   checkMethod: checkStorageRetrievalRequests
 
+                - name: digitizationRequests
+                  label: Digitization Requests
+                  route: myresearch-digitizationrequests
+                  icon: digitization
+                  status: true
+                  checkMethod: checkDigitizationRequests
+
                 - name: ILLRequests
                   label: Interlibrary Loan Requests
                   route: myresearch-illrequests
@@ -317,6 +324,16 @@ class AccountMenu extends AbstractMenu
     public function checkStorageRetrievalRequests(): bool
     {
         return $this->checkIlsFunction('StorageRetrievalRequests');
+    }
+
+    /**
+     * Check whether to show DigitizationRequests item.
+     *
+     * @return bool
+     */
+    public function checkDigitizationRequests(): bool
+    {
+        return $this->checkIlsCapability('getMyDigitizationRequests');
     }
 
     /**
