@@ -31,6 +31,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
+use VuFind\Http\GuzzleService;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
 /**
@@ -115,6 +116,31 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
             'Showing 11 - 20 results of 20 New Items',
             $this->findCssAndGetText($page, '.search-stats')
         );
+    }
+
+    /**
+     * Test that RSS works as expected for new items.
+     *
+     * @return void
+     */
+    public function testSolrDrivenNewItemsRssFeed(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'NewItem' => [
+                        'method' => 'solr',
+                    ],
+                ],
+            ]
+        );
+        $http = new GuzzleService([]);
+        $response = $http->get($this->getVuFindUrl('/Search/NewItem?range=1&view=rss'));
+        $body = (string)$response->getBody();
+        $xml = simplexml_load_string($body);
+        $this->assertEquals('New Items', $xml->channel->title);
+        $this->assertEquals('Showing 1 - 20 results of 20', $xml->channel->description);
+        $this->assertCount(20, $xml->channel->item);
     }
 
     /**
