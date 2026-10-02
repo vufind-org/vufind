@@ -69,7 +69,7 @@ class NewItemResultsAction extends AbstractNewItemAction
         $this->searchMemory->disable();
 
         // Set up RSS feed title just in case:
-        //$this->resultFeedHelper->setOverrideTitle('New Items');
+        $this->resultFeedHelper->setOverrideTitle('New Items');
 
         return $this->renderSearchResults($request, $response);
     }
