@@ -97,4 +97,33 @@ then
 fi
 
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} --port "$SOLR_PORT" --solr-home "$SOLR_HOME" -m "$SOLR_HEAP" --user-managed --jvm-opts "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR -Dsolr.config.lib.enabled=true $SOLR_ADDITIONAL_JVM_OPTIONS"
+
+# The biblio core needs several jars on its classpath. Solr 10 no longer
+# supports <lib/> entries in solrconfig.xml, and the core lib/ directory only
+# picks up jar files directly inside it (not subdirectories). We therefore
+# (re)generate the lib/ symlinks on every start, from:
+#   - the stable jars checked into the VuFind repo, and
+#   - the "analysis-extras" module (e.g. ICU4J for the browse normalizers).
+# Every symlink in lib/ is regenerated, so the directory is a pure runtime
+# artifact (git-ignored) and self-heals across Solr upgrades.
+BIBLIO_LIB="$SOLR_HOME/biblio/lib"
+mkdir -p "$BIBLIO_LIB"
+for link in "$BIBLIO_LIB"/*
+do
+  [ -L "$link" ] && rm -f "$link"
+done
+for jar in "$SOLR_HOME/jars"/*.jar \
+           "$VUFIND_HOME/import"/solrmarc_core_*.jar \
+           "$VUFIND_HOME/import/lib"/marc4j-*.jar
+do
+  [ -e "$jar" ] && ln -sf "$jar" "$BIBLIO_LIB/"
+done
+if [ -d "$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib" ]
+then
+  for jar in "$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib"/*.jar
+  do
+    ln -sf "$jar" "$BIBLIO_LIB/"
+  done
+fi
+
+"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} --port "$SOLR_PORT" --solr-home "$SOLR_HOME" -m "$SOLR_HEAP" --user-managed --jvm-opts "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"
