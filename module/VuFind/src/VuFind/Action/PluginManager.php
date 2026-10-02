@@ -210,6 +210,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'primorecord/sms' => Record\SmsAction::class,
 
         'proquestfsg/home' => Search\HomeAction::class,
+        'proquestfsg/results' => Search\ResultsAction::class,
         'proquestfsg/search' => Search\ResultsAction::class,
 
         'proquestfsgrecord/addtag' => Record\AddTagAction::class,
