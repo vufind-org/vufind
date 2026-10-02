@@ -244,6 +244,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search/opensearch' => Search\OpenSearchAction::class,
         'search/reservesfacetlist' => Search\FacetListAction::class,
         'search/reservesresults' => Search\ReservesResultsAction::class,
+        'search/reservessearch' => Search\ReservesSearchAction::class,
 
         'search2/advanced' => Search\AdvancedAction::class,
         'search2/facetlist' => Search\FacetListAction::class,
