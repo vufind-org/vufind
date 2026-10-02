@@ -31,6 +31,7 @@
 
 namespace VuFind\Action\Holds;
 
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -41,6 +42,7 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\ILS\Connection;
 use VuFind\ILS\PaginationHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Validator\CsrfInterface;
 
 /**
@@ -73,7 +75,7 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
      * @param AuthManager       $authManager       Authentication manager
      * @param CsrfInterface     $csrf              CSRF validator
      * @param AuditEventService $auditEventService Audit event service
-     * @param CacheManager      $cacheManager      Cache manager
+     * @param StorageInterface  $objectCache       Object cache
      */
     public function __construct(
         protected Connection $ilsConnection,
@@ -81,11 +83,12 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
         protected AuthManager $authManager,
         protected CsrfInterface $csrf,
         protected AuditEventService $auditEventService,
-        CacheManager $cacheManager,
+        #[Autowire(container: CacheManager::class, service: 'object')]
+        StorageInterface $objectCache,
     ) {
         parent::__construct();
 
-        $this->setCacheStorage($cacheManager->getCache('object'));
+        $this->setCacheStorage($objectCache);
         // Cache the data related to holds for up to 10 minutes:
         $this->cacheLifetime = 600;
     }
