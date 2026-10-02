@@ -255,7 +255,7 @@ class FixDatabaseAction extends AbstractUpgradeAction
             }
         } catch (Exception $e) {
             $this->session->warnings->append(
-                'Could not fix hashes in table shortlinks - maybe column hash is missing? Exception thrown:'
+                'Could not fix hashes in table shortlinks - maybe column hash is missing? Exception thrown: '
                 . (string)$e
             );
         }

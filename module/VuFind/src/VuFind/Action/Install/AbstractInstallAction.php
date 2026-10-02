@@ -44,7 +44,6 @@ use VuFindHttp\HttpService;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service as SearchService;
 
-use function count;
 use function defined;
 use function function_exists;
 use function is_callable;
