@@ -794,11 +794,11 @@ $config = [
                     // Legacy WorldCat actions:
                     'worldcat/advanced',
                     'worldcat/home',
-                    'worldcat/results',
+                    'worldcat/search',
                     // Current WorldCat2 actions:
                     'worldcat2/advanced',
                     'worldcat2/home',
-                    'worldcat2/results',
+                    'worldcat2/search',
                 ],
                 'backendId' => 'WorldCat2',
             ],
