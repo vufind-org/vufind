@@ -305,8 +305,7 @@ class FixDatabaseAction extends AbstractUpgradeAction
      */
     protected function hasDatabaseRootCredentials()
     {
-        return isset($this->session->dbRootUser)
-            && isset($this->session->dbRootPass);
+        return isset($this->session->dbRootUser) && isset($this->session->dbRootPass);
     }
 
     /**
