@@ -177,6 +177,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'libguidesaz/home' => Search\HomeAction::class,
         'libguidesaz/results' => Search\ResultsAction::class,
 
+        'librarycards/connectcard' => LibraryCards\ConnectCardAction::class,
+        'librarycards/connectcardlogin' => LibraryCards\ConnectCardLoginAction::class,
+        'librarycards/deletecard' => LibraryCards\DeleteCardAction::class,
+        'librarycards/editcard' => LibraryCards\EditCardAction::class,
+        'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
+        'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
@@ -342,6 +349,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
         'Shortlink' => 'ShortLink',
