@@ -87,11 +87,11 @@ trait LoggerAwareTrait
     /**
      * Log an exception.
      *
-     * @param \Exception $exception Exception to log
+     * @param \Throwable $exception Exception to log
      *
      * @return void
      */
-    public function logException(\Exception $exception): void
+    public function logException(\Throwable $exception): void
     {
         if ($this->logger instanceof ExtendedLoggerInterface) {
             $this->logger->logException($exception, new \Laminas\Stdlib\Parameters());
