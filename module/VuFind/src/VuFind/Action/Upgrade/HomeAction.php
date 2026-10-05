@@ -88,7 +88,7 @@ class HomeAction extends AbstractUpgradeAction
         CookieManager $cookieManager,
         SessionManager $sessionManager,
         #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
-        protected EntityManager $entityManager,
+        EntityManager $entityManager,
         protected MigrationManager $migrationManager,
         protected CacheManager $cacheManager,
     ) {
