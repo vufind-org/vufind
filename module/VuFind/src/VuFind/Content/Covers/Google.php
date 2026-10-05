@@ -129,7 +129,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
             throw new \Exception('CachingDownloader initialization failed.');
         }
 
-        $json = $this->cachingDownloader->download($url, [], $decodeCallback);
+        $json = $this->cachingDownloader->download($url, [], [], $decodeCallback);
         // find the first thumbnail URL and process it:
         foreach ((array)$json as $current) {
             if (isset($current['thumbnail_url'])) {
