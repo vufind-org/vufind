@@ -91,11 +91,24 @@ class VuFind
      *
      * @param string $config Configuration name
      *
-     * @return \VuFind\Config\Config
+     * @return     \VuFind\Config\Config
+     * @deprecated Use getConfigArray()
      */
     public static function getConfig($config = 'config')
     {
         return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($config);
+    }
+
+    /**
+     * Get a configuration file.
+     *
+     * @param string $config Configuration name
+     *
+     * @return array
+     */
+    public static function getConfigArray($config = 'config')
+    {
+        return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($config);
     }
 
     /**
@@ -158,20 +171,20 @@ class VuFind
      */
     public static function getParser()
     {
-        $settings = static::getConfig('fulltext');
+        $settings = static::getConfigArray('fulltext');
 
         // Is user preference explicitly set?
-        if (isset($settings->General->parser)) {
-            return $settings->General->parser;
+        if (isset($settings['General']['parser'])) {
+            return $settings['General']['parser'];
         }
 
         // Is Aperture enabled?
-        if (isset($settings->Aperture->webcrawler)) {
+        if (isset($settings['Aperture']['webcrawler'])) {
             return 'Aperture';
         }
 
         // Is Tika enabled?
-        if (isset($settings->Tika->path)) {
+        if (isset($settings['Tika']['path'])) {
             return 'Tika';
         }
 
@@ -215,11 +228,11 @@ class VuFind
         $method = 'webcrawler'
     ) {
         // get the path to our sh/bat from the config
-        $settings = static::getConfig('fulltext');
-        if (!isset($settings->Aperture->webcrawler)) {
+        $settings = static::getConfigArray('fulltext');
+        if (!isset($settings['Aperture']['webcrawler'])) {
             return '';
         }
-        $cmd = $settings->Aperture->webcrawler;
+        $cmd = $settings['Aperture']['webcrawler'];
 
         // if we're using another method - substitute that into the path
         $cmd = ($method != 'webcrawler')
@@ -295,11 +308,11 @@ class VuFind
      */
     public static function getTikaCommand($input, $output, $arg)
     {
-        $settings = static::getConfig('fulltext');
-        if (!isset($settings->Tika->path)) {
+        $settings = static::getConfigArray('fulltext');
+        if (!isset($settings['Tika']['path'])) {
             return '';
         }
-        $tika = $settings->Tika->path;
+        $tika = $settings['Tika']['path'];
 
         // We need to use this method to get the output from STDOUT into the file
         $descriptorspec = [
