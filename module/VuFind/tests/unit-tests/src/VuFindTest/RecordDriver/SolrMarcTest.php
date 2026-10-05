@@ -159,7 +159,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 'marcSubjectHeadingsSort' => $marcSubjectHeadingsSortConfig,
             ],
         ];
-        $marc = $this->getFixture('marc/subjectheadingsorder.xml');;
+        $marc = $this->getFixture('marc/subjectheadingsorder.xml');
         $record = new \VuFind\RecordDriver\SolrMarc($configArray);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals($expectedResults, $record->getAllSubjectHeadings());
