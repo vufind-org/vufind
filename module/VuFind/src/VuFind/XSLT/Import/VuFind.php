@@ -92,7 +92,7 @@ class VuFind
      * @param string $config Configuration name
      *
      * @return     \VuFind\Config\Config
-     * @deprecated Use getConfigArray() to reutrn an array instead of an object.
+     * @deprecated Use getConfigArray()
      */
     public static function getConfig($config = 'config')
     {
