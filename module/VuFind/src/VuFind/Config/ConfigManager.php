@@ -130,6 +130,7 @@ class ConfigManager implements ConfigManagerInterface
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return Config
+     * @deprecated   Use getConfigArray()
      */
     public function getConfigObject(string $configName, bool $forceReload = false, bool $useLocalConfig = true): Config
     {
