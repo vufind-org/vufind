@@ -129,7 +129,7 @@ class HomeAction extends AbstractUpgradeAction
         }
 
         // Check for critical upgrades:
-        $criticalFixForward = $this->performCriticalChecks() ?? null;
+        $criticalFixForward = $this->performCriticalChecks();
         if ($criticalFixForward !== null) {
             return $forwardHelper->forwardTo($request, $response, $criticalFixForward);
         }
