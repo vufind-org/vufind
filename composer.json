@@ -49,7 +49,7 @@
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.17.1",
-        "composer/semver": "3.4.4",
+        "composer/semver": "3.5.0",
         "doctrine/doctrine-orm-module": "^6.3",
         "doctrine/orm": "^2.20.9",
         "elgigi/commonmark-emoji": "2.0.0",
