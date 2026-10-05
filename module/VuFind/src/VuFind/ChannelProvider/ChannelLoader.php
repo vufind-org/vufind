@@ -64,12 +64,12 @@ class ChannelLoader
     /**
      * Constructor.
      *
-     * @param array          $config         Channels configuration
-     * @param CacheManager   $cacheManager   Cache manager
-     * @param ChannelManager $channelManager Channel manager
-     * @param SearchRunner   $searchRunner   Search runner
-     * @param RecordLoader   $recordLoader   Record loader
-     * @param HttpRequest    $request        HTTP request
+     * @param array                 $config         Channels configuration
+     * @param CacheManager          $cacheManager   Cache manager
+     * @param ChannelManager        $channelManager Channel manager
+     * @param SearchRunner          $searchRunner   Search runner
+     * @param RecordLoader          $recordLoader   Record loader
+     * @param HttpRequest           $request        HTTP request
      * @param string|LocaleSettings $locale         Current locale, or LocalSettings to provide it (used for caching)
      */
     #[Autowire]
