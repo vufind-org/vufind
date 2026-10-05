@@ -149,7 +149,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
 
         // Add new item to cache if not exists
         try {
-            $response = $this->guzzleService->get($url, $params);
+            $response = $this->guzzleService->get($url, [], null, $params);
         } catch (\Exception $e) {
             throw new HttpDownloadException(
                 'HttpService download failed (error)',
