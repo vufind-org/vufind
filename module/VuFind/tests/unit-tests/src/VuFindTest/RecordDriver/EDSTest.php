@@ -157,7 +157,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param ?array  $config        Driver configuration (null to use default)
      * @param ?array  $mockedMethods List of methods to mock on the EDS class
      *
-     * @return EDS|\PHPUnit\Framework\MockObject\MockObject
+     * @return EDS&\PHPUnit\Framework\MockObject\MockObject
      */
     protected function getDriver(?string $test = null, ?array $config = null, ?array $mockedMethods = []): EDS
     {
