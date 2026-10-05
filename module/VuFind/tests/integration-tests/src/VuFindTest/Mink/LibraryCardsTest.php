@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -46,6 +47,7 @@ use Behat\Mink\Element\NodeElement;
  */
 final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
     use \VuFindTest\Feature\DemoDriverTestTrait;
@@ -66,7 +68,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
      * @param Element $page    Page element.
      * @param string  $name    Library card name.
      * @param string  $user    Username
-     * @param string  $pass    Password
+     * @param ?string $pass    Password, if any
      * @param bool    $inModal Should we assume the login box is in a lightbox?
      * @param string  $prefix  Extra selector prefix
      *
@@ -76,32 +78,39 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         Element $page,
         string $name,
         string $user,
-        string $pass,
+        ?string $pass,
         bool $inModal = false,
         string $prefix = '.form-edit-card '
     ): void {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $this->findCssAndSetValue($page, $prefix . '[name="card_name"]', $name);
         $this->findCssAndSetValue($page, $prefix . '[name="username"]', $user);
-        $this->findCssAndSetValue($page, $prefix . '[name="password"]', $pass);
+        if (null !== $pass) {
+            $this->findCssAndSetValue($page, $prefix . '[name="password"]', $pass);
+        }
     }
 
     /**
      * Set up configuration for library card functionality.
      *
-     * @param bool  $enabled              Are library cards enabled?
-     * @param array $extraCatalogSettings Extra settings for Catalog section of config.ini
+     * @param bool  $enabled                  Are library cards enabled?
+     * @param array $extraCatalogSettings     Extra settings for Catalog section of config.ini
+     * @param array $extraDemoCatalogSettings Extra settings for Catalog section of Demo.ini
      *
      * @return void
      */
-    protected function setUpLibraryCardConfigs(bool $enabled = true, $extraCatalogSettings = []): void
-    {
+    protected function setUpLibraryCardConfigs(
+        bool $enabled = true,
+        array $extraCatalogSettings = [],
+        array $extraDemoCatalogSettings = []
+    ): void {
         // Setup config
         $demoSettings = $this->getDemoIniOverrides();
         $demoSettings['Users'] = [
             'catuser1' => 'catpass1',
             'catuser2' => 'catpass2',
         ];
+        $demoSettings['Catalog'] = $extraDemoCatalogSettings + ($demoSettings['Catalog'] ?? []);
         $this->changeConfigs(
             [
                 'Demo' => $demoSettings,
@@ -109,6 +118,12 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
                     'Catalog' => $extraCatalogSettings + [
                         'driver' => 'Demo',
                         'library_cards' => $enabled,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                        'default_from' => 'noreply@vufind.org',
                     ],
                 ],
             ]
@@ -173,10 +188,67 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test adding a card with email authentication.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
+    public function testAddCardsByEmail(): void
+    {
+        $this->setUpLibraryCardConfigs(
+            extraDemoCatalogSettings: [
+                'loginMethod' => 'email',
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        $this->resetEmailLog();
+
+        // Go to library cards page:
+        $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
+        $this->waitForPageLoad($page);
+
+        // Now click add card button:
+        $this->clickCss($page, '.add-card span.icon-link__label');
+        $this->waitForPageLoad($page);
+
+        // Fill in the fields:
+        $this->fillInLibraryCardForm($page, 'card 3', 'catuser1@vufind.org', null);
+        $this->clickCss($page, '.form-edit-card .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertSame(
+            'catuser1@vufind.org',
+            $this->findCssAndGetText($page, '.form-edit-card .form-control-static')
+        );
+
+        // Enter verification code:
+        $code = $this->extractLoginCodeFromEmail('catuser1@vufind.org');
+        $this->findCssAndSetValue($page, '#card_password', $code);
+        $this->clickCss($page, '.form-edit-card .btn.btn-primary');
+
+        // Check results:
+        $this->waitForPageLoad($page);
+        $this->assertSame(
+            'card 3',
+            $this->findCssAndGetText($this->findCss($page, 'tr', index: 3), 'td')
+        );
+
+        $this->resetEmailLog();
+    }
+
+    /**
      * Test that disabling the allowUserLogin setting disables the "add card" button.
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testAllowUserLoginDisablesButton()
     {
         $this->setUpLibraryCardConfigs(true, ['allowUserLogin' => false]);
@@ -347,7 +419,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
             'Edited Card',
             $this->findCssAndGetText($page, 'tr:nth-child(2) td')
         );
-        $this->unFindCss($page, 'tr:nth-child(3) td');
+        $this->unFindCss($page, 'tr', index: 3);
     }
 
     /**
