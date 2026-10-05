@@ -86,7 +86,6 @@ class HomeAction extends AbstractTemplateRenderingAction
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
-        // Connect to the ILS for login drivers:
         $templateParams = [
             'libraryCards' => $this->userCardService->getLibraryCards($user),
             'multipleTargets' => $this->ilsConnection->checkCapability('getLoginDrivers'),
