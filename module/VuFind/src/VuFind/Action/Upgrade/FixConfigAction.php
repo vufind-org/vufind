@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Install "fix cache" action.
+ * "Fix config" upgrade action.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010, 2022.
- * Copyright (C) The National Library of Finland 2026.
+ * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2016-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,25 +29,26 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Action\Install;
+namespace VuFind\Action\Upgrade;
 
+use Doctrine\ORM\EntityManager;
+use Exception;
+use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Cache\Manager as CacheManager;
+use VuFind\ActionHelper\FlashMessagesHelper;
+use VuFind\ActionHelper\ForwardHelper;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
+use VuFind\Config\Upgrade as ConfigUpgrader;
+use VuFind\Cookie\CookieManager;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
-use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Http\ServerUrlHelper;
-use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFindHttp\HttpService;
-use VuFindSearch\Service as SearchService;
 
 /**
- * Install "fix cache" action.
+ * "Fix config" upgrade action.
  *
  * @category VuFind
  * @package  Action
@@ -56,7 +57,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FixCacheAction extends AbstractInstallAction
+class FixConfigAction extends AbstractUpgradeAction
 {
     /**
      * Constructor.
@@ -66,12 +67,10 @@ class FixCacheAction extends AbstractInstallAction
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService User card database service
      * @param array                    $config          VuFind configuration
-     * @param Connection               $ilsConnection   ILS connection
-     * @param SearchService            $searchService   Search service
-     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
-     * @param HttpService              $httpService     HTTP service
-     * @param TagServiceInterface      $tagService      Tags database service
-     * @param CacheManager             $cacheManager    Cache manager
+     * @param CookieManager            $cookieManager   Cookie manager
+     * @param SessionManager           $sessionManager  Session manager
+     * @param EntityManager            $entityManager   Entity manager
+     * @param ConfigUpgrader           $configUpgrader  Configuration upgrader
      */
     public function __construct(
         PathResolver $pathResolver,
@@ -82,13 +81,11 @@ class FixCacheAction extends AbstractInstallAction
         UserCardServiceInterface $userCardService,
         #[Autowire(config: 'config')]
         array $config,
-        Connection $ilsConnection,
-        SearchService $searchService,
-        ServerUrlHelper $serverUrlHelper,
-        HttpService $httpService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        TagServiceInterface $tagService,
-        protected CacheManager $cacheManager,
+        CookieManager $cookieManager,
+        SessionManager $sessionManager,
+        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
+        EntityManager $entityManager,
+        protected ConfigUpgrader $configUpgrader,
     ) {
         parent::__construct(
             $pathResolver,
@@ -96,16 +93,14 @@ class FixCacheAction extends AbstractInstallAction
             $userService,
             $userCardService,
             $config,
-            $ilsConnection,
-            $searchService,
-            $serverUrlHelper,
-            $httpService,
-            $tagService
+            $cookieManager,
+            $sessionManager,
+            $entityManager
         );
     }
 
     /**
-     * Display instructions for fixing cache issues.
+     * Upgrade the configuration files.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -116,10 +111,16 @@ class FixCacheAction extends AbstractInstallAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $templateParams = [
-            'cacheDir' => $this->cacheManager->getCacheDir(),
-            'runningUser' => $this->getProcessUserName(),
-        ];
-        return $this->renderTemplate($request, $response, $templateParams);
+        try {
+            $this->configUpgrader->run($this->cookie->newVersion);
+            $this->cookie->warnings = $this->configUpgrader->getWarnings();
+            $this->cookie->configOkay = true;
+            return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'upgrade/home');
+        } catch (Exception $e) {
+            $extra = ($e instanceof \VuFind\Exception\FileAccess) ? '  Check file permissions.' : '';
+            $this->getHelper(FlashMessagesHelper::class)
+                ->addErrorMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
+            return $this->renderTemplate($request, $response, template: 'upgrade/error');
+        }
     }
 }
