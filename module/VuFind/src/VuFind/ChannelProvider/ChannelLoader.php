@@ -70,7 +70,7 @@ class ChannelLoader
      * @param SearchRunner   $searchRunner   Search runner
      * @param RecordLoader   $recordLoader   Record loader
      * @param HttpRequest    $request        HTTP request
-     * @param string         $locale         Current locale, or LocalSettings to provide it (used for caching)
+     * @param string|LocaleSettings $locale         Current locale, or LocalSettings to provide it (used for caching)
      */
     #[Autowire]
     public function __construct(
