@@ -67,11 +67,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         IpRange::class => IpRangeFactory::class,
         IpRegEx::class => IpRegExFactory::class,
         Role::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
-        ServerParam::class => InjectRequestFactory::class,
         SessionKey::class => SessionKeyFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
-        User::class => InjectAuthorizationServiceFactory::class,
-        Username::class => InjectAuthorizationServiceFactory::class,
     ];
 
     /**
