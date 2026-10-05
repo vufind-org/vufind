@@ -107,7 +107,7 @@ class VerifyOtpAction extends AbstractTemplateRenderingAction
         }
 
         // Process form submission:
-        if ($this->getHelper(FormHelper::class)) {
+        if ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
             if (!$this->csrf->isValid($this->getPostParam('csrf'))) {
                 throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             } else {
