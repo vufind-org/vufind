@@ -85,7 +85,7 @@ class GetDbCredentialsAction extends AbstractUpgradeAction
         CookieManager $cookieManager,
         SessionManager $sessionManager,
         #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
-        protected EntityManager $entityManager,
+        EntityManager $entityManager,
         protected ConnectionFactory $connectionFactory,
     ) {
         parent::__construct(
