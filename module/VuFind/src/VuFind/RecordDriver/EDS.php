@@ -31,6 +31,7 @@ namespace VuFind\RecordDriver;
 
 use Laminas\Cache\Storage\StorageInterface;
 
+use function array_key_exists;
 use function count;
 use function floatval;
 use function in_array;
@@ -722,8 +723,11 @@ class EDS extends DefaultRecord
                 if ($cache === null || !is_array($cache)) {
                     $cache = [];
                 }
-                $cache[$size] = $thumbnail;
-                $this->putCachedData($this->getUniqueID(), $cache);
+                // Only update and save if the cached value is missing or different
+                if (!array_key_exists($size, $cache) || $cache[$size] !== $thumbnail) {
+                    $cache[$size] = $thumbnail;
+                    $this->putCachedData($this->getUniqueID(), $cache);
+                }
                 return [
                     'recordid' => $this->getUniqueID(),
                     'size' => $size,
