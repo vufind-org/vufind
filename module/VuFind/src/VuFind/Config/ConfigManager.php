@@ -37,6 +37,7 @@ use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\ConfigException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 use function strval;
@@ -67,6 +68,7 @@ class ConfigManager implements ConfigManagerInterface
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param CacheManager         $cacheManager         Cache manager
      */
+    #[Autowire]
     public function __construct(
         protected ConfigLoader $configLoader,
         protected HandlerPluginManager $configHandlerManager,
@@ -127,29 +129,12 @@ class ConfigManager implements ConfigManagerInterface
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
-     * @return Config
+     * @return     Config
+     * @deprecated Use getConfigArray()
      */
     public function getConfigObject(string $configName, bool $forceReload = false, bool $useLocalConfig = true): Config
     {
         return new Config($this->getConfigArray($configName, $forceReload, $useLocalConfig));
-    }
-
-    /**
-     * Get config in PluginManager style.
-     *
-     * @param string $name    Service name of plugin to retrieve.
-     * @param ?array $options Options to use when creating the instance.
-     *
-     * @return mixed
-     *
-     * @deprecated Use getConfigArray, getConfigObject or getConfig instead
-     */
-    public function get($name, ?array $options = null)
-    {
-        return $this->getConfigObject(
-            $name,
-            forceReload: $options['forceReload'] ?? false
-        );
     }
 
     /**

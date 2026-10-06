@@ -31,7 +31,6 @@ namespace VuFindTest\Related;
 
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\Bookplate;
-use VuFind\Related\BookplateFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 
@@ -154,8 +153,8 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      */
     protected function getBookplate(?MockContainer $container = null): Bookplate
     {
-        $factory = new BookplateFactory();
-        return $factory($container ?? $this->getContainer(), Bookplate::class);
+        $container ??= $this->getContainer();
+        return new Bookplate($container->get(ConfigManagerInterface::class));
     }
 
     /**

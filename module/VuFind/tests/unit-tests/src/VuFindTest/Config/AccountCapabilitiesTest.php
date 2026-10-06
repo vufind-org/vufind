@@ -31,7 +31,6 @@ namespace VuFindTest\Config;
 
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Config\Config;
 
 /**
  * Account Capabilities Test Class.
@@ -58,7 +57,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
         $getAuth = function () use ($auth) {
             return $auth;
         };
-        return new AccountCapabilities(new Config($config), $getAuth);
+        return new AccountCapabilities($config, $getAuth);
     }
 
     /**

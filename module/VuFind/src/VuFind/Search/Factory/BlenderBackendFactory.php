@@ -107,9 +107,8 @@ class BlenderBackendFactory implements FactoryInterface
     ) {
         $this->container = $container;
         $this->configManager = $container->get(ConfigManagerInterface::class);
-        $blenderConfig = $this->configManager->getConfigObject($this->searchConfig);
-        $backendConfig = $blenderConfig->Backends
-            ? $blenderConfig->Backends->toArray() : [];
+        $blenderConfig = $this->configManager->getConfigArray($this->searchConfig);
+        $backendConfig = $blenderConfig['Backends'] ?? [];
         if (!$backendConfig) {
             throw new \Exception("No backends enabled in {$this->searchConfig}.ini");
         }

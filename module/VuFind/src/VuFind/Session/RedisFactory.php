@@ -72,7 +72,7 @@ class RedisFactory implements FactoryInterface
         }
 
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject('config')->Session ?? null;
+            ->getConfigArray('config')['Session'] ?? null;
         $service = new $requestedName($this->getConnection($config), $config);
         $service->setDbServiceManager(
             $container->get(\VuFind\Db\Service\PluginManager::class)
@@ -83,19 +83,19 @@ class RedisFactory implements FactoryInterface
     /**
      * Given a configuration, build the client object.
      *
-     * @param \VuFind\Config\Config $config Session configuration
+     * @param array $config Session configuration
      *
      * @return \Credis_Client
      */
-    protected function getConnection(\VuFind\Config\Config $config)
+    protected function getConnection(array $config)
     {
         // Set defaults if nothing set in config file.
-        $host = $config->redis_host ?? 'localhost';
-        $port = $config->redis_port ?? 6379;
-        $timeout = $config->redis_connection_timeout ?? 0.5;
-        $password = $config->redis_auth ?? null;
-        $username = $config->redis_user ?? null;
-        $redisDb = $config->redis_db ?? 0;
+        $host = $config['redis_host'] ?? 'localhost';
+        $port = $config['redis_port'] ?? 6379;
+        $timeout = $config['redis_connection_timeout'] ?? 0.5;
+        $password = $config['redis_auth'] ?? null;
+        $username = $config['redis_user'] ?? null;
+        $redisDb = $config['redis_db'] ?? 0;
 
         // Create Credis client, the connection is established lazily
         $client = new \Credis_Client(
@@ -107,7 +107,7 @@ class RedisFactory implements FactoryInterface
             $password,
             $username
         );
-        if ((bool)($config->redis_standalone ?? true)) {
+        if ((bool)($config['redis_standalone'] ?? true)) {
             $client->forceStandalone();
         }
         return $client;

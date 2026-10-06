@@ -75,7 +75,7 @@ class GeneratorFactory implements FactoryInterface
         );
         return new $requestedName(
             $configManager->getConfigArray('config')['Site']['url'] ?? '',
-            $configManager->getConfigObject('sitemap'),
+            $configManager->getConfigArray('sitemap'),
             $enabledLocales,
             $container->get(\VuFind\Sitemap\PluginManager::class)
         );

@@ -41,9 +41,9 @@ namespace VuFind\Search\Search2Collection;
 class Results extends \VuFind\Search\SolrCollection\Results
 {
     /**
-     * Search backend identifiers.
+     * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'Search2Collection';
+    protected ?string $backendId = 'Search2Collection';
 }

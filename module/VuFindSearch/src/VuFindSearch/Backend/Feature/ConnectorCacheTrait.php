@@ -144,7 +144,7 @@ trait ConnectorCacheTrait
     protected function logCacheWarning(string $msg): void
     {
         if (($this->logger ?? null) instanceof LoggerInterface) {
-            $this->logger->warn("Cache: $msg");
+            $this->logger->warning("Cache: $msg");
         } else {
             error_log("Warning: Cache: $msg");
         }

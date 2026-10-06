@@ -33,6 +33,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\ActionConfigManager;
 use VuFind\Action\ActionInterface;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
@@ -61,7 +62,7 @@ class ForwardHelperTest extends TestCase
         $this->expectExceptionMessage("Unknown action 'foo'");
         $mockPluginManager = $this->createMock(\VuFind\Action\PluginManager::class);
         $mockPluginManager->expects($this->once())->method('has')->with('foo')->willReturn(false);
-        $helper = new ForwardHelper($mockPluginManager);
+        $helper = new ForwardHelper($mockPluginManager, $this->createMock(ActionConfigManager::class));
         $helper->forwardTo(
             $this->createMock(ServerRequestInterface::class),
             $this->createMock(ResponseInterface::class),
@@ -148,7 +149,7 @@ class ForwardHelperTest extends TestCase
         $mockPluginManager = $this->createMock(\VuFind\Action\PluginManager::class);
         $mockPluginManager->expects($this->once())->method('has')->with('foo')->willReturn(true);
         $mockPluginManager->expects($this->once())->method('get')->with('foo')->willReturn($action);
-        $helper = new ForwardHelper($mockPluginManager);
+        $helper = new ForwardHelper($mockPluginManager, $this->createMock(ActionConfigManager::class));
         $this->assertEquals($response, $helper->forwardTo($request, $response, 'foo'));
     }
 }

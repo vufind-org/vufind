@@ -35,6 +35,7 @@ use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordTab\TabManager;
@@ -42,7 +43,6 @@ use VuFind\Search\Explanation\PluginManager as ExplanationPluginManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\ResultScroller;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Helper\Root\Record;
 
 /**
  * Record explain action.
@@ -62,6 +62,7 @@ class ExplainAction extends AbstractRecordAction
      * @param SearchMemory             $searchMemory             Search memory
      * @param TabManager               $tabManager               Tab manager
      * @param AuthManager              $authManager              Authentication manager
+     * @param ConfigManager            $configManager            Configuration manager
      * @param RecordLoader             $recordLoader             Record loader
      * @param RecordRouter             $recordRouter             Record router
      * @param ResultScroller           $resultScroller           Result scroller
@@ -72,6 +73,7 @@ class ExplainAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -83,6 +85,7 @@ class ExplainAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

@@ -590,7 +590,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
                     $handlers = array_merge(
                         $handlers,
                         // Only indent alphabrowse handlers if label is non-empty:
-                        $this->getAlphaBrowseHandlers($activeHandler, !empty($label))
+                        $this->getAlphabrowseHandlers($activeHandler, !empty($label))
                     );
                 }
             } elseif ($type == 'External') {
@@ -607,7 +607,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
         if (!$addedBrowseHandlers && $this->alphaBrowseOptionsEnabled()) {
             $handlers = array_merge(
                 $handlers,
-                $this->getAlphaBrowseHandlers($activeHandler, false)
+                $this->getAlphabrowseHandlers($activeHandler, false)
             );
         }
 

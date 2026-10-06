@@ -36,7 +36,7 @@ $autocomplete-secondary   : darkgray !default; // item description
     &:hover { background-color: $autocomplete-hover-bg; }
     &.is-selected {
       background-color: $autocomplete-active-bg;
-      color: contrast($autocomplete-active-bg);
+      color: color-contrast($autocomplete-active-bg);
     }
   }
 
@@ -47,7 +47,7 @@ $autocomplete-secondary   : darkgray !default; // item description
 
   .ac-header {
     white-space: nowrap;
-    color: contrast($autocomplete-disabled-bg);
+    color: color-contrast($autocomplete-disabled-bg);
     background-color: $autocomplete-disabled-bg;
     cursor: default;
   }

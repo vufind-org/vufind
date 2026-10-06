@@ -85,7 +85,7 @@ class DefaultRecordFactory implements FactoryInterface
             $warningMessage = 'Using deprecated configuration file RecordDataFormatter.ini! '
                 . 'Please move to RecordDataFormatter/DefaultRecord.ini instead. '
                 . 'You can do that manually or use the config upgrader.';
-            $logger->warn(get_class($this) . ': ' . $warningMessage);
+            $logger->warning(get_class($this) . ': ' . $warningMessage);
             $config = $oldConfig;
         }
         $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
