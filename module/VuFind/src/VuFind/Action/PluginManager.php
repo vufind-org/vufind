@@ -360,6 +360,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Gvi' => 'GVI',
+        'Gvirecord' => 'GVIRecord',
         'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
