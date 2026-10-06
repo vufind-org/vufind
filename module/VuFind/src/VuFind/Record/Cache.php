@@ -72,7 +72,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
         protected RecordFactory $recordFactoryManager,
         #[Autowire(config: 'RecordCache')]
         protected array $cacheConfig,
-        #[Autowire(container: \Vufind\Db\Service\PluginManager::class)]
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RecordServiceInterface $recordService
     ) {
         $this->setContext(Cache::CONTEXT_DEFAULT);
