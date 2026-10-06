@@ -51,13 +51,11 @@ class GetRecordDetails extends AbstractBase
     /**
      * Constructor.
      *
-     * @param array                     $config       Framework configuration
      * @param Loader                    $recordLoader Record loader
      * @param TabManager                $tabManager   Record Tab manager
      * @param TemplateRendererInterface $renderer     Template renderer
      */
     public function __construct(
-        protected array $config,
         protected Loader $recordLoader,
         protected TabManager $tabManager,
         protected TemplateRendererInterface $renderer,
@@ -86,8 +84,7 @@ class GetRecordDetails extends AbstractBase
 
         $details = $this->tabManager->getTabDetailsForRecord(
             $driver,
-            Psr7ServerRequest::toLaminas($request),
-            'Information'
+            Psr7ServerRequest::toLaminas($request)
         );
 
         $html = $this->renderer->renderTemplateAsString(
@@ -95,6 +92,9 @@ class GetRecordDetails extends AbstractBase
             'record/ajaxview-' . $viewtype . '.phtml',
             [
                 'defaultTab' => $details['default'],
+                'defaultEmbeddedTab' => $this->tabManager
+                    ->getDefaultEmbeddedTabForRecord($driver),
+                'embeddedTabs' => $this->tabManager->getEmbeddedTabs($driver),
                 'driver' => $driver,
                 'tabs' => $details['tabs'],
                 'backgroundTabs' => $this->tabManager
