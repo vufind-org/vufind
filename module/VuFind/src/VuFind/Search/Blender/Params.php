@@ -136,7 +136,9 @@ class Params extends \VuFind\Search\Solr\Params
             if ($type = $translatedRequest->get('type')) {
                 $translatedRequest->set(
                     'type',
-                    $this->translateSearchType($type, $backendId)
+                    preg_match('/^label:(.*)$/', $type, $matches)
+                        ? $params->getOptions()->getHandlerForLabel($matches[1])
+                        : $this->translateSearchType($type, $backendId)
                 );
             }
             // Map advanced search types:
@@ -172,8 +174,9 @@ class Params extends \VuFind\Search\Solr\Params
             $backendId = $params->getSearchClassId();
             $params->setBasicSearch(
                 $lookfor,
-                $handler
-                    ? $this->translateSearchType($handler, $backendId) : $handler
+                ($handler && !str_starts_with($handler, 'label:'))
+                    ? $this->translateSearchType($handler, $backendId)
+                    : $handler
             );
         }
         parent::setBasicSearch($lookfor, $handler);

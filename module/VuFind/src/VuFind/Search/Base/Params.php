@@ -99,9 +99,9 @@ class Params
     /**
      * Result limit.
      *
-     * @var int
+     * @var ?int
      */
-    protected int $limit = 20;
+    protected ?int $limit = null;
 
     /**
      * Search type (basic or advanced).
@@ -477,6 +477,17 @@ class Params
      */
     protected function initSearch(Parameters $request): void
     {
+        $handler = $request->get('type');
+
+        // Flatten type arrays for backward compatibility with legacy URLs:
+        if (is_array($handler)) {
+            $handler = $handler[0];
+        }
+        if ($handler && preg_match('/^label:(.*)$/', $handler, $matches)) {
+            $handler = $this->getOptions()->getHandlerForLabel($matches[1]);
+        }
+        $request->set('type', $handler);
+
         // Try to initialize a basic search; if that fails, try for an advanced
         // search next!
         if (!$this->initBasicSearch($request)) {
@@ -511,14 +522,8 @@ class Params
             $lookfor = $lookfor[0];
         }
 
-        // Flatten type arrays for backward compatibility with legacy URLs:
-        $handler = $request->get('type');
-        if (is_array($handler)) {
-            $handler = $handler[0];
-        }
-
         // Set the search:
-        $this->setBasicSearch($lookfor, $handler);
+        $this->setBasicSearch($lookfor, $request->get('type'));
         return true;
     }
 
@@ -669,13 +674,23 @@ class Params
     }
 
     /**
-     * Return the current limit value.
+     * Return the currently set limit value.
+     *
+     * @return ?int
+     */
+    public function getSetLimit(): ?int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Return the limit value and fallback to default.
      *
      * @return int
      */
     public function getLimit(): int
     {
-        return $this->limit;
+        return $this->limit ?? $this->getOptions()->getDefaultLimit();
     }
 
     /**
