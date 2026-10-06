@@ -97,6 +97,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
         $contexts = $noticeFormConfig['contexts'] ?? [];
         $context = $contexts[array_key_first($contexts)] ?? [];
         return [
+            'enabled' => true,
             'position' => $context['position'] ?? 'default',
             'conditions' => $context['conditions'] ?? [],
             'contentType' => $noticeFormConfig['contentTypes'][0] ?? 'text',
@@ -126,7 +127,8 @@ class NoticeManager implements LocaleSettingsAwareInterface
         $activeNotices = [];
         foreach ($this->getNotices() as $notice) {
             if (
-                ($position === null || $position === ($notice['position'] ?? 'default'))
+                ($notice['enabled'] ?? true)
+                && ($position === null || $position === ($notice['position'] ?? 'default'))
                 && $this->conditionManager->evaluateConditions($notice['conditions'] ?? [])
             ) {
                 $activeNotices[] = $notice;
