@@ -383,7 +383,7 @@ class ILS extends AbstractBase
             } catch (\Exception $e) {
                 $context = [ 'type' => $e::class, 'message' => $e->getMessage(), 'code' => $e->getCode() ];
                 $this->logError('The ILS driver signaled a technical error: {type} {message} {code}', $context);
-                throw new AuthException('authentication_error_technical', 0, $e);
+                throw new AuthException('authentication_error_technical', previous: $e);
             }
         }
 
