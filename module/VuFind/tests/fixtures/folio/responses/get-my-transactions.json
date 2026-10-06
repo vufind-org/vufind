@@ -1,0 +1,198 @@
+[
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/loans",
+        "expectedParams": {
+            "query": "userId==foo and status.name==Open",
+            "offset": 0,
+            "limit": 1000
+        },
+        "comment": "User with two open loans; the first is overdue, the second is not due for a long time.",
+        "status": 200,
+        "bodyType": "json",
+        "body": {
+            "loans": [
+                {
+                    "id": "e14a7962-d980-4b2a-89a1-8d26e4768ab3",
+                    "userId": "c3d702d4-1a22-4a0b-99f5-19e8df6a7e12",
+                    "itemId": "7f8b9e10-3c2a-4f51-87b6-9d0123456789",
+                    "itemEffectiveLocationIdAtCheckOut": "550e8400-e29b-41d4-a716-446655440000",
+                    "status": {
+                        "name": "Open"
+                    },
+                    "loanDate": "2023-09-11T20:54:10.589Z",
+                    "dueDate": "2023-10-12T03:59:59.000+00:00",
+                    "action": "checkedout",
+                    "loanPolicyId": "8f3a1c92-7b4d-4e20-bf18-6c5d4e3f2a10",
+                    "checkoutServicePointId": "d41d8cd9-8f00-4b24-ad61-6a008b4f6b1e",
+                    "isDcb": false,
+                    "overdueFinePolicyId": "3b2a1098-4c5d-4e6f-8a9b-0c1d2e3f4a5b",
+                    "lostItemPolicyId": "6c7d8e9f-0a1b-4c2d-8e3f-4a5b6c7d8e9f",
+                    "metadata": {
+                        "createdDate": "2023-09-11T20:54:10.856+00:00",
+                        "createdByUserId": "a1b2c3d4-e5f6-4789-a012-3456789abcde",
+                        "updatedDate": "2023-09-11T20:54:10.856+00:00",
+                        "updatedByUserId": "a1b2c3d4-e5f6-4789-a012-3456789abcde"
+                    },
+                    "patronGroupAtCheckout": {
+                        "id": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "Staff"
+                    },
+                    "item": {
+                        "id": "7f8b9e10-3c2a-4f51-87b6-9d0123456789",
+                        "holdingsRecordId": "b2c3d4e5-f6a7-4890-b123-456789abcdef",
+                        "instanceId": "9a8b7c6d-5e4f-4321-a098-76543210fedc",
+                        "instanceHrid": "00012087756",
+                        "title": "Stranger at the gate : to be gay and Christian in America / Mel White.",
+                        "barcode": "39151010417158",
+                        "contributors": [
+                            {
+                                "name": "White, Mel, 1940-"
+                            }
+                        ],
+                        "primaryContributor": "White, Mel, 1940-",
+                        "callNumber": "PRIDE 261.83 Whi",
+                        "datesOfPublication": [
+                            "1995"
+                        ],
+                        "physicalDescriptions": [
+                            "347 pages, 8 unnumbered pages of plates : illustrations ; 23 cm"
+                        ],
+                        "callNumberComponents": {
+                            "callNumber": "PRIDE 261.83 Whi"
+                        },
+                        "status": {
+                            "name": "Checked out",
+                            "date": "2023-09-11T20:54:10.819+00:00"
+                        },
+                        "location": {
+                            "name": "Pride Center"
+                        },
+                        "materialType": {
+                            "name": "book"
+                        }
+                    },
+                    "checkoutServicePoint": {
+                        "name": "Self Checkout",
+                        "code": "SELF",
+                        "discoveryDisplayName": "Self Checkout",
+                        "description": null,
+                        "shelvingLagTime": null,
+                        "pickupLocation": false
+                    },
+                    "borrower": {
+                        "firstName": "Joe",
+                        "lastName": "Schmoe",
+                        "middleName": null,
+                        "barcode": "582602845",
+                        "preferredFirstName": null,
+                        "patronGroup": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "loanPolicy": {
+                        "name": "30 Day Loan"
+                    },
+                    "overdueFinePolicy": {
+                        "name": "Default Overdue Fine Policy"
+                    },
+                    "lostItemPolicy": {
+                        "name": "Default Lost Item Fee Policy"
+                    },
+                    "feesAndFines": {
+                        "amountRemainingToPay": 0.0
+                    }
+                },
+                {
+                    "id": "a9b8c7d6-e5f4-4321-b098-76543210fedc",
+                    "userId": "c3d702d4-1a22-4a0b-99f5-19e8df6a7e12",
+                    "itemId": "4a5b6c7d-8e9f-4012-a345-6789abcdef01",
+                    "itemEffectiveLocationIdAtCheckOut": "550e8400-e29b-41d4-a716-446655440000",
+                    "status": {
+                        "name": "Open"
+                    },
+                    "loanDate": "2099-09-14T13:00:14.354Z",
+                    "dueDate": "2099-10-15T03:59:59.000+00:00",
+                    "action": "checkedout",
+                    "renewalCount": 2,
+                    "loanPolicyId": "8f3a1c92-7b4d-4e20-bf18-6c5d4e3f2a10",
+                    "checkoutServicePointId": "d41d8cd9-8f00-4b24-ad61-6a008b4f6b1e",
+                    "isDcb": false,
+                    "overdueFinePolicyId": "3b2a1098-4c5d-4e6f-8a9b-0c1d2e3f4a5b",
+                    "lostItemPolicyId": "6c7d8e9f-0a1b-4c2d-8e3f-4a5b6c7d8e9f",
+                    "metadata": {
+                        "createdDate": "2099-09-14T13:00:14.544+00:00",
+                        "createdByUserId": "a1b2c3d4-e5f6-4789-a012-3456789abcde",
+                        "updatedDate": "2099-09-14T13:00:14.544+00:00",
+                        "updatedByUserId": "a1b2c3d4-e5f6-4789-a012-3456789abcde"
+                    },
+                    "patronGroupAtCheckout": {
+                        "id": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "Staff"
+                    },
+                    "item": {
+                        "id": "4a5b6c7d-8e9f-4012-a345-6789abcdef01",
+                        "holdingsRecordId": "d5e6f7a8-b9c0-4123-a456-789abcdef012",
+                        "instanceId": "f0e9d8c7-b6a5-4432-910f-e8d7c6b5a432",
+                        "instanceHrid": "00012087755",
+                        "title": "God and difference : the trinity, sexuality, and the transformation of finitude / Linn Marie Tonstad.",
+                        "barcode": "39151010416952",
+                        "contributors": [
+                            {
+                                "name": "Tonstad, Linn Marie, 1978-"
+                            }
+                        ],
+                        "primaryContributor": "Tonstad, Linn Marie, 1978-",
+                        "callNumber": "PRIDE 231.04 Ton",
+                        "datesOfPublication": [
+                            "2017"
+                        ],
+                        "physicalDescriptions": [
+                            "x, 302 pages ; 23 cm"
+                        ],
+                        "callNumberComponents": {
+                            "callNumber": "PRIDE 231.04 Ton"
+                        },
+                        "status": {
+                            "name": "Checked out",
+                            "date": "2099-09-14T13:00:14.531+00:00"
+                        },
+                        "location": {
+                            "name": "Linderman Library"
+                        },
+                        "materialType": {
+                            "name": "book"
+                        }
+                    },
+                    "checkoutServicePoint": {
+                        "name": "Self Checkout",
+                        "code": "SELF",
+                        "discoveryDisplayName": "Self Checkout",
+                        "description": null,
+                        "shelvingLagTime": null,
+                        "pickupLocation": false
+                    },
+                    "borrower": {
+                        "firstName": "Joe",
+                        "lastName": "Schmoe",
+                        "middleName": null,
+                        "barcode": "582602845",
+                        "preferredFirstName": null,
+                        "patronGroup": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "loanPolicy": {
+                        "name": "30 Day Loan"
+                    },
+                    "overdueFinePolicy": {
+                        "name": "Default Overdue Fine Policy"
+                    },
+                    "lostItemPolicy": {
+                        "name": "Default Lost Item Fee Policy"
+                    },
+                    "feesAndFines": {
+                        "amountRemainingToPay": 0.0
+                    }
+                }
+            ],
+            "totalRecords": 2
+        }
+    }
+]

@@ -643,6 +643,73 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetMyTransactions.
+     *
+     * @return \Iterator<(int | string), array<mixed>>
+     */
+    public static function getMyTransactionsProvider(): \Iterator
+    {
+        yield 'borrowing locations disabled' => [[], [null, null]];
+        yield 'all borrowing locations' => [['/.*/'], ['Pride Center', 'Linderman Library']];
+        yield 'one matching borrowing location' => [['/^Pride/'], ['Pride Center', null]];
+        yield 'multiple patterns' => [['/^Pride/', '/Linderman/'], ['Pride Center', 'Linderman Library']];
+        yield 'no matching borrowing location' => [['/Fairchild/'], [null, null]];
+    }
+
+    /**
+     * Test successful call to get transactions.
+     *
+     * @param string[]  $locationPatterns  Value of the display_borrowing_location_pattern setting
+     * @param ?string[] $expectedLocations Expected borrowing location of each transaction (null for none)
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMyTransactionsProvider')]
+    public function testGetMyTransactions(array $locationPatterns, array $expectedLocations): void
+    {
+        $config = $this->defaultDriverConfig;
+        if (!empty($locationPatterns)) {
+            $config['Loans']['display_borrowing_location_pattern'] = $locationPatterns;
+        }
+        $this->createConnector('get-my-transactions', $config);
+        $expected = [
+            'count' => 2,
+            'records' => [
+                [
+                    'duedate' => '10-11-2023',
+                    'dueTime' => '23:59',
+                    'dueStatus' => 'overdue',
+                    'id' => '9a8b7c6d-5e4f-4321-a098-76543210fedc',
+                    'item_id' => '7f8b9e10-3c2a-4f51-87b6-9d0123456789',
+                    'barcode' => '39151010417158',
+                    'renew' => 0,
+                    'renewable' => true,
+                    'title' => 'Stranger at the gate : to be gay and Christian in America / Mel White.',
+                ],
+                [
+                    'duedate' => '10-14-2099',
+                    'dueTime' => '23:59',
+                    'dueStatus' => false,
+                    'id' => 'f0e9d8c7-b6a5-4432-910f-e8d7c6b5a432',
+                    'item_id' => '4a5b6c7d-8e9f-4012-a345-6789abcdef01',
+                    'barcode' => '39151010416952',
+                    'renew' => 2,
+                    'renewable' => true,
+                    'title' => 'God and difference : the trinity, sexuality, and the transformation of finitude '
+                        . '/ Linn Marie Tonstad.',
+                ],
+            ],
+        ];
+        foreach ($expectedLocations as $i => $expectedLocation) {
+            if (null !== $expectedLocation) {
+                $expected['records'][$i]['borrowingLocation'] = $expectedLocation;
+            }
+        }
+        $this->assertEquals($expected, $this->driver->getMyTransactions(['id' => 'foo']));
+    }
+
+    /**
      * Test successful call to holds, no items.
      *
      * @return void
