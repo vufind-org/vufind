@@ -212,7 +212,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             ? self::LEVEL_MAP[$level]
             : $level;
 
-        // If the details is set in context, fill in any missing parts
+        // If the details key is set in context, fill in any missing parts
         $context = $this->fillInMissingDetails($context);
 
         $this->monologLogger->log($monologLevel, $message, $context);
@@ -238,19 +238,19 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
 
         foreach ($levels as $level) {
             // This level has data, no need to look further
-            if (!empty(($details[$level] ?? ''))) {
+            if (!empty($details[$level] ?? '')) {
                 $filledDetails[$level] = $details[$level];
                 continue;
             }
 
             // Try prior index (Backfill)
-            if (!empty(($details[$level - 1] ?? ''))) {
+            if (!empty($details[$level - 1] ?? '')) {
                 $filledDetails[$level] = $details[$level - 1];
                 continue;
             }
 
             // Try next index (Frontfill)
-            if (!empty(($details[$level + 1] ?? ''))) {
+            if (!empty($details[$level + 1] ?? '')) {
                 $filledDetails[$level] = $details[$level + 1];
                 continue;
             }
@@ -285,8 +285,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @param \Throwable                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
-     * @param mixed                      $level  Optional log level. Will determine from the
-     * exception if not provided. (e.g., 'err', 'warn')
+     * @param ?string                    $level  Optional log level. Will determine from the
+     * exception if not provided. (e.g., a \Psr\Log\LogLevel constant)
      *
      * @return void
      */
