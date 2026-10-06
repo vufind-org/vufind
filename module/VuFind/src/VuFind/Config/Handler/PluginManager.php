@@ -54,7 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ini' => Ini::class,
         'yaml' => Yaml::class,
     ];
- 
+
     /**
      * Constructor.
      *
