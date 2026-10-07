@@ -44,6 +44,7 @@
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
     <?=$this->flashmessages()?>
+    <?=$this->render('record/ill-local-holdings.phtml')?>
     <?=$this->record($this->driver)->getCoreMetadata()?>
 
     <?php if (count($this->tabs) > 0): ?>
