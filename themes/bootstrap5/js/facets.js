@@ -925,7 +925,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     });
     const updateFacetListHeightFunc = function () {
       const margin = 230;
-      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
+      $('#modal .lightbox-scroll').css('max-height', (window.innerHeight - margin) + 'px');
     };
     $(window).on('resize', updateFacetListHeightFunc);
     // Initial resize:
