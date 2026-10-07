@@ -32,7 +32,10 @@ namespace VuFind\ActionHelper;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\FlashMessenger\FlashMessenger;
 
 use function intval;
 
@@ -45,18 +48,21 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class EmailHelper implements HelperInterface
+class EmailHelper implements HelperInterface, TranslatorAwareInterface
 {
     use EmailSettingsTrait;
+    use TranslatorAwareTrait;
 
     /**
      * Constructor.
      *
-     * @param AuthManager $authManager Authentication manager
-     * @param array       $config      VuFind configuration
+     * @param AuthManager    $authManager    Authentication manager
+     * @param FlashMessenger $flashMessenger Flash messenger
+     * @param array          $config         VuFind configuration
      */
     public function __construct(
         protected AuthManager $authManager,
+        protected FlashMessenger $flashMessenger,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {

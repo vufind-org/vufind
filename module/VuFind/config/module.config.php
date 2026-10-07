@@ -170,7 +170,6 @@ $config = [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\QRCodeController' => 'VuFind\Controller\QRCodeControllerFactory',
             'VuFind\Controller\RelaisController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -191,8 +190,6 @@ $config = [
             'libguides' => 'VuFind\Controller\LibGuidesController',
             'LibGuidesAZ' => 'VuFind\Controller\LibGuidesAZController',
             'libguidesaz' => 'VuFind\Controller\LibGuidesAZController',
-            'MyResearch' => 'VuFind\Controller\MyResearchController',
-            'myresearch' => 'VuFind\Controller\MyResearchController',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
             'QRCode' => 'VuFind\Controller\QRCodeController',
@@ -940,6 +937,7 @@ $dynamicRoutes = [
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
+    'Ajax/OnlinePaymentNotify',
     'Alphabrowse/Home',
     'Author/FacetList',
     'Author/Home',
@@ -976,6 +974,7 @@ $staticRoutes = [
     'Channels/Record',
     'Channels/Search',
     'Checkouts/History',
+    'Checkouts/List',
     'Checkouts/PurgeHistory',
     'Comments/DeleteComments',
     'Comments/UserList',

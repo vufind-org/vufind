@@ -240,7 +240,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'delete',
                 'username2',
                 null,
-                '{"user_id":<userid>,"__method":"VuFind\\\\Controller\\\\MyResearchController::deleteAccountAction"}',
+                '{"user_id":<userid>,"__method":"VuFind\\\\Action\\\\MyResearch\\DeleteAccountAction::action"}',
                 true,
                 true,
                 true,

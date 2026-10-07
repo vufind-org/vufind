@@ -571,13 +571,13 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
                 AuditEventSubtype::PaymentRegistration->value,
                 'Registration requested',
                 null,
-                'VuFind\\Controller\\MyResearchController::handleOnlinePayment',
+                'VuFind\\Action\\MyResearch\\FinesAction::handleOnlinePayment',
             ],
             [
                 AuditEventSubtype::PaymentResponseHandler->value,
                 'Response handler called',
                 null,
-                'VuFind\\Controller\\MyResearchController::handleOnlinePayment',
+                'VuFind\\Action\\MyResearch\\FinesAction::handleOnlinePayment',
             ],
             [
                 AuditEventSubtype::Payment->value,

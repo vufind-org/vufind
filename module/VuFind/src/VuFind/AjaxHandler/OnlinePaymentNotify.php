@@ -77,10 +77,11 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
             return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
 
-        $this->addPaymentEvent($payment, AuditEventSubtype::PaymentNotifyHandler, 'Handler called');
+        $this->auditEventService->addPaymentEvent($payment, AuditEventSubtype::PaymentNotifyHandler, 'Handler called');
 
         if ($payment->isRegistered()) {
-            $this->addPaymentEvent($payment, AuditEventSubtype::PaymentNotifyHandler, 'Payment already registered');
+            $this->auditEventService
+                ->addPaymentEvent($payment, AuditEventSubtype::PaymentNotifyHandler, 'Payment already registered');
             // Already registered, treat as success:
             return $this->formatResponse('');
         }
@@ -93,7 +94,7 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
                 'Error processing payment notification for ' . $payment->getSourceIls() . ", payment $localIdentifier"
             );
             $this->logException($e);
-            $this->addPaymentEvent(
+            $this->auditEventService->addPaymentEvent(
                 $payment,
                 AuditEventSubtype::PaymentNotifyHandler,
                 'Exception processing request',

@@ -90,4 +90,16 @@ class RedirectHelper implements HelperInterface
         $url = $this->routeHelper->getUrlFromRoute($name, $routeParams, $queryParams);
         return $this->redirectToUrl($response, $url);
     }
+
+    /**
+     * Return a response that redirects to MyResearch/Home with any further redirects disabled.
+     *
+     * @param ResponseInterface $response Response
+     *
+     * @return ResponseInterface
+     */
+    public function getNonRedirectingMyResearchHomeRedirect(ResponseInterface $response): ResponseInterface
+    {
+        return $this->redirectToRoute($response, 'myresearch-home', queryParams: ['redirect' => 0]);
+    }
 }
