@@ -108,7 +108,11 @@ class ExternalVuFind implements
         }
 
         try {
-            $arr = $this->cachingDownloader->downloadJson($this->baseUrl . '/search', $params, true);
+            $arr = $this->cachingDownloader->downloadJson(
+                url: $this->baseUrl . '/search',
+                params: $params,
+                associative: true
+            );
         } catch (Exception $ex) {
             $this->logError(
                 'Exception during request: ' .
