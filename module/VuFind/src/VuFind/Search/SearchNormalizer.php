@@ -35,6 +35,7 @@ use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
@@ -57,6 +58,7 @@ class SearchNormalizer
      */
     public function __construct(
         protected ResultsManager $resultsManager,
+        #[Autowire (container: \VuFind\Db\Service\PluginManager::class)]
         protected SearchServiceInterface $searchService
     ) {
     }
