@@ -532,7 +532,7 @@ class MyResearchController extends AbstractBase
             ]
         );
 
-        return $this->redirect()->toRoute('search-history');
+        return $this->redirect()->toRoute('searchhistory-list');
     }
 
     /**
@@ -684,7 +684,7 @@ class MyResearchController extends AbstractBase
 
         // Forward to the appropriate place:
         if ($this->params()->fromQuery('mode') == 'history') {
-            return $this->redirect()->toRoute('search-history');
+            return $this->redirect()->toRoute('searchhistory-list');
         } else {
             // Forward to the Search/Results action with the "saved" parameter set;
             // this will in turn redirect the user to the appropriate results screen.

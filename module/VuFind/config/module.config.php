@@ -802,6 +802,13 @@ $config = [
                 'backendId' => 'WorldCat2',
             ],
         ],
+
+        // Redirects from legacy actions to current ones (key is action id in all lowercase, value is route name to
+        // redirect to):
+        'action_redirects' => [
+            'search/history' => 'searchhistory-list',
+        ],
+
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
@@ -1094,6 +1101,7 @@ $staticRoutes = [
     'Search2/Home',
     'Search2/Results',
     'Search2/Versions',
+    'SearchHistory/List',
     'SimulatedSSO/Login',
     'SiteMap/Home',
     'Summon/Advanced',

@@ -759,7 +759,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function getSearchHistory(): array
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         $matches = $page->findAll('css', '#recent-searches td:nth-child(2) a');
