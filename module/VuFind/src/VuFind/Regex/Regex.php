@@ -38,7 +38,7 @@ class Regex
     public function __construct(
         #[Autowire (config: 'Regex')]
         protected array $config
-    ){
+    ) {
     }
 
     /**
