@@ -33,6 +33,7 @@ namespace VuFind\Search;
 
 use Laminas\Http\Request;
 use VuFind\Search\Results\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Search tabs" helper.
@@ -58,10 +59,15 @@ class SearchTabsHelper
      */
     public function __construct(
         protected PluginManager $results,
+        #[Autowire (config: 'config', path: 'SearchTabs', default: [])]
         protected array $tabConfig,
+        #[Autowire (config: 'config', path: 'SearchTabsFilters', default: [])]
         protected array $filterConfig,
+        #[Autowire (service: 'Request')]
         protected Request $request,
+        #[Autowire (config: 'config', path: 'SearchTabsPermissions', default: [])]
         protected array $permissionConfig = [],
+        #[Autowire (config: 'config', path: 'SearchTabsSettings', default: [])]
         protected array $settings = []
     ) {
     }
