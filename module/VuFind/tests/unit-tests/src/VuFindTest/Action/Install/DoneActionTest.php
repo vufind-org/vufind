@@ -30,6 +30,7 @@
 namespace VuFindTest\Action\Install;
 
 use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Install\DoneAction;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\Config\ConfigManagerInterface;
@@ -73,7 +74,7 @@ class DoneActionTest extends AbstractInstallActionTestCase
         $expectedResponse = new Response();
         $forwardHelper = $this->createMock(ForwardHelper::class);
         $forwardHelper->expects($this->once())->method('forwardTo')
-            ->with($this->anything(), $this->anything(), 'Install/FixBasicConfig')
+            ->with($this->anything(), $this->isInstanceOf(ResponseInterface::class), 'Install/FixBasicConfig')
             ->willReturn($expectedResponse);
 
         $action = $this->buildAction(
