@@ -51,7 +51,7 @@ class IpRegEx implements PermissionProviderInterface
      * @param UserIpReader $userIpReader User IP address reader
      */
     public function __construct(
-        #[Autowire(container: 'Request')]
+        #[Autowire(service: 'Request')]
         protected Request $request,
         protected UserIpReader $userIpReader
     ) {
