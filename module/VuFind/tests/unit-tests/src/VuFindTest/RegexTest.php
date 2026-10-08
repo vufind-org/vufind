@@ -16,10 +16,7 @@ namespace VuFindTest;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\Regex\Regex;
-use VuFind\Regex\RegexFactory;
-use VuFindTest\Container\MockContainer;
 
 /**
  * Regex Test Class.

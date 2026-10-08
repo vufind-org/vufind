@@ -36,7 +36,7 @@ class Regex
      * @param array $config Regular expression configuration
      */
     public function __construct(
-        #[Autowire (config: 'Regex')]
+        #[Autowire(config: 'Regex')]
         protected array $config
     ) {
     }
