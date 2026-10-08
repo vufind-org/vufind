@@ -33,6 +33,18 @@ namespace VuFind\Action\Install;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\PathResolver;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\ILS\Connection;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindHttp\HttpService;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Install "fix cache" action.
@@ -46,6 +58,52 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class FixCacheAction extends AbstractInstallAction
 {
+    /**
+     * Constructor.
+     *
+     * @param PathResolver             $pathResolver    Path resolver
+     * @param ConfigManagerInterface   $configManager   Config manager
+     * @param UserServiceInterface     $userService     User database service
+     * @param UserCardServiceInterface $userCardService User card database service
+     * @param array                    $config          VuFind configuration
+     * @param Connection               $ilsConnection   ILS connection
+     * @param SearchService            $searchService   Search service
+     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
+     * @param HttpService              $httpService     HTTP service
+     * @param TagServiceInterface      $tagService      Tags database service
+     * @param CacheManager             $cacheManager    Cache manager
+     */
+    public function __construct(
+        PathResolver $pathResolver,
+        ConfigManagerInterface $configManager,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserServiceInterface $userService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserCardServiceInterface $userCardService,
+        #[Autowire(config: 'config')]
+        array $config,
+        Connection $ilsConnection,
+        SearchService $searchService,
+        ServerUrlHelper $serverUrlHelper,
+        HttpService $httpService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        TagServiceInterface $tagService,
+        protected CacheManager $cacheManager,
+    ) {
+        parent::__construct(
+            $pathResolver,
+            $configManager,
+            $userService,
+            $userCardService,
+            $config,
+            $ilsConnection,
+            $searchService,
+            $serverUrlHelper,
+            $httpService,
+            $tagService
+        );
+    }
+
     /**
      * Display instructions for fixing cache issues.
      *

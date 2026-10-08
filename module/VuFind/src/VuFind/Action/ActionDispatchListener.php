@@ -30,6 +30,7 @@
 namespace VuFind\Action;
 
 use Laminas\EventManager\EventManagerInterface;
+use Laminas\Http\Request;
 use Laminas\Http\Response as LaminasResponse;
 use Laminas\Http\Response\Stream as LaminasResponseStream;
 use Laminas\Mvc\Application;
@@ -38,6 +39,8 @@ use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
+use VuFind\ActionHelper\PluginManager as HelperPluginManager;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
@@ -56,19 +59,24 @@ class ActionDispatchListener
     /**
      * Constructor.
      *
-     * @param PluginManager       $actionPluginManager Action plugin manager
-     * @param RouteHelper         $routeHelper         Route helper
-     * @param GlobalsContainer    $globalsContainer    Global data container
-     * @param ActionConfigManager $actionConfigManager Action configuration manager
-     * @param array               $config              VuFind configuration
+     * @param PluginManager       $actionPluginManager       Action plugin manager
+     * @param HelperPluginManager $actionHelperPluginManager Action helper plugin manager
+     * @param RouteHelper         $routeHelper               Route helper
+     * @param GlobalsContainer    $globalsContainer          Global data container
+     * @param ActionConfigManager $actionConfigManager       Action configuration manager
+     * @param array               $config                    VuFind configuration
+     * @param array               $redirectConfig            Redirects from legacy actions to current ones
      */
     public function __construct(
         protected PluginManager $actionPluginManager,
+        protected HelperPluginManager $actionHelperPluginManager,
         protected RouteHelper $routeHelper,
         protected GlobalsContainer $globalsContainer,
         protected ActionConfigManager $actionConfigManager,
         #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(service: 'Config', path: 'vufind/action_redirects')]
+        protected array $redirectConfig,
     ) {
     }
 
@@ -99,12 +107,18 @@ class ActionDispatchListener
             return;
         }
 
+        if ($response = $this->getRedirectResponse($e)) {
+            $e->setResult($response);
+            return $response;
+        }
+
         $route = $e->getRouteMatch();
         $id = $this->actionPluginManager
             ->getActionHandlerName($route->getParam('controller'), $route->getParam('action'));
         if (!$id) {
             return;
         }
+
         $action = $this->actionPluginManager->get($id);
 
         $routeMatch = $e->getRouteMatch();
@@ -134,6 +148,45 @@ class ActionDispatchListener
             $e->setResult($return);
         }
         return $e->getResult();
+    }
+
+    /**
+     * Return a redirect for actions that should be redirected.
+     *
+     * @param MvcEvent $e Event
+     *
+     * @return ?LaminasResponse
+     */
+    protected function getRedirectResponse(MvcEvent $e): ?LaminasResponse
+    {
+        // Only support GET requests:
+        $request = $e->getRequest();
+        if (!($request instanceof Request) || $request->getMethod() !== 'GET') {
+            return null;
+        }
+
+        $route = $e->getRouteMatch();
+
+        $redirectParts = [];
+        if ($controller = $route->getParam('controller')) {
+            $redirectParts[] = $controller;
+        }
+        if ($action = $route->getParam('action')) {
+            $redirectParts[] = $action;
+        }
+        $actionId = strtolower(implode('/', $redirectParts));
+        if ($redirectRoute = $this->redirectConfig[$actionId] ?? null) {
+            $laminasResponse = $e->getApplication()->getResponse();
+            $response = $this->actionHelperPluginManager->get(RedirectHelper::class)->redirectToRoute(
+                Psr7Response::fromLaminas($laminasResponse),
+                $redirectRoute,
+                queryParams: $request->getQuery()->toArray()
+            );
+            $laminasResponse = $this->updateLaminasResponse($laminasResponse, $response);
+            $e->setResult($laminasResponse);
+            return $laminasResponse;
+        }
+        return null;
     }
 
     /**

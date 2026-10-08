@@ -179,11 +179,9 @@ class PathResolver
 
             // loading DirLocations.ini of currentDir
             $systemConfigFile = $currentDir . '/DirLocations.ini';
-            $systemConfig = new Config(
-                file_exists($systemConfigFile)
-                    ? parse_ini_file($systemConfigFile, true)
-                    : []
-            );
+            $systemConfig = file_exists($systemConfigFile)
+                ? parse_ini_file($systemConfigFile, true)
+                : [];
 
             // adding directory to the stack
             array_unshift(

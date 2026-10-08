@@ -664,7 +664,7 @@ VuFind.register('sideFacets', function SideFacets() {
    */
   function activateFacetBlocking(context) {
     const finalContext = (typeof context === "undefined") ? $(document.body) : context;
-    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
+    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').on('click', showLoadingOverlay);
   }
 
   /**
@@ -899,7 +899,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       if (button.attr('disabled')) {
         return false;
       }
-      button.attr('disabled', 1);
+      button.attr('disabled', 'disabled');
       button.html(VuFind.translate('loading_ellipsis'));
 
       const overrideParams = { facetpage: page, layout: 'lightbox', ajax: 1 };
@@ -925,7 +925,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     });
     const updateFacetListHeightFunc = function () {
       const margin = 230;
-      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
+      $('#modal .lightbox-scroll').css('max-height', (window.innerHeight - margin) + 'px');
     };
     $(window).on('resize', updateFacetListHeightFunc);
     // Initial resize:

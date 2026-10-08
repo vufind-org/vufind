@@ -36,6 +36,9 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
@@ -57,7 +60,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements LoggerAwareInterface
+class Manager implements ContainerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -171,6 +174,37 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
+     * @throws ContainerExceptionInterface Error while retrieving the entry.
+     *
+     * @return mixed Entry.
+     */
+    public function get(string $id)
+    {
+        return $this->getCache($id);
+    }
+
+    /**
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
+     *
+     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
+     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @return bool
+     */
+    public function has(string $id): bool
+    {
+        return isset($this->cacheSettings[$id]);
+    }
+
+    /**
      * Retrieve the specified cache object.
      *
      * @param string      $name      Name of the requested cache.
@@ -178,7 +212,7 @@ class Manager implements LoggerAwareInterface
      * value of $name.
      *
      * @return StorageInterface
-     * @throws \Exception
+     * @throws NotFoundException
      */
     public function getCache($name, $namespace = null)
     {
@@ -188,7 +222,7 @@ class Manager implements LoggerAwareInterface
 
         if (!isset($this->caches[$key])) {
             if (!isset($this->cacheSettings[$name])) {
-                throw new \Exception('Requested unknown cache: ' . $name);
+                throw new NotFoundException('Requested unknown cache: ' . $name);
             }
             $settings = $this->cacheSettings[$name];
             $settings['options']['namespace'] = $namespace;
