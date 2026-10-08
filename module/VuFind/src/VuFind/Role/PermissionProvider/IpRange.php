@@ -35,6 +35,7 @@ namespace VuFind\Role\PermissionProvider;
 use Laminas\Stdlib\RequestInterface;
 use VuFind\Net\IpAddressUtils;
 use VuFind\Net\UserIpReader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * IpRange permission provider for VuFind.
@@ -57,34 +58,19 @@ class IpRange implements PermissionProviderInterface
     protected $request;
 
     /**
-     * IpAddressUtils object.
-     *
-     * @var IpAddressUtils
-     */
-    protected $ipAddressUtils;
-
-    /**
-     * User IP address reader.
-     *
-     * @var UserIpReader
-     */
-    protected $userIpReader;
-
-    /**
      * Constructor.
      *
      * @param RequestInterface $request      Request object
-     * @param IpAddressUtils   $ipUtils      IpAddressUtils object
+     * @param IpAddressUtils   $ipAddressUtils      IpAddressUtils object
      * @param UserIpReader     $userIpReader User IP address reader
      */
     public function __construct(
+        #[Autowire (container: 'Request')]
         RequestInterface $request,
-        IpAddressUtils $ipUtils,
-        UserIpReader $userIpReader
+        protected IpAddressUtils $ipAddressUtils,
+        protected UserIpReader $userIpReader
     ) {
         $this->request = $request;
-        $this->ipAddressUtils = $ipUtils;
-        $this->userIpReader = $userIpReader;
     }
 
     /**
