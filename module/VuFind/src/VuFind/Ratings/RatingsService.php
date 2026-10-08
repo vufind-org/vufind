@@ -59,7 +59,7 @@ class RatingsService
      * @param ResourcePopulator       $resourcePopulator Resource populator
      */
     public function __construct(
-        #[Autowire(container: \VuFInd\Db\Service\PluginManager::class)]
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RatingsServiceInterface $dbService,
         protected ResourcePopulator $resourcePopulator
     ) {
