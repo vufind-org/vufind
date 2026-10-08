@@ -150,7 +150,7 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   $newGroup.find('.search_bool')
     .attr('for', 'search_bool' + nextGroup);
   if (join.length > 0) {
-    $newGroup.find('option[value="' + join + '"]').attr('selected','selected');
+    $newGroup.find('option[value="' + join + '"]').attr('selected', 'selected');
   }
 
   // Insert
