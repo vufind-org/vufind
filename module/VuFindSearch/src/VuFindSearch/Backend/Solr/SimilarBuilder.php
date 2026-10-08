@@ -109,7 +109,7 @@ class SimilarBuilder implements SimilarBuilderInterface
                 $this->useHandler = true;
                 $this->handlerParams = $mlt['params'] ?? '';
             }
-            if (isset($mlt['useQtParam']) && $mlt['useQtParam']) {
+            if ($mlt['useQtParam'] ?? false) {
                 $this->useQtParam = true;
             }
             if (isset($mlt['count'])) {
