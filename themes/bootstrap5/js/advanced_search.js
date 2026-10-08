@@ -91,7 +91,7 @@ deleteSearch = function _deleteSearch(group, sindex) {
     var parent = toRemove.parent();
     toRemove.remove();
     if (parent.length) {
-      parent.find('.adv-search input.form-control').focus();
+      parent.find('.adv-search input.form-control').trigger('focus');
     }
     if (groupLength[group] === 1) {
       $('#group' + group + ' .adv-term-remove').addClass('hidden'); // Hide x
