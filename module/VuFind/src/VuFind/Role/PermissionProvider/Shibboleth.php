@@ -63,10 +63,10 @@ class Shibboleth extends ServerParam
      */
     public function __construct(
         #[Autowire(service: 'Request')]
-        Request $request, 
+        Request $request,
         #[Autowire(config: 'config')]
         array $config
-    ){
+    ) {
         parent::__construct($request);
 
         $this->idpServerParam = $config['Shibboleth']['idpserverparam']

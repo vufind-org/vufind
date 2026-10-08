@@ -44,7 +44,6 @@ use VuFind\ServiceManager\Factory\Autowire;
  */
 class IpRegEx implements PermissionProviderInterface
 {
-
     /**
      * Constructor.
      *
@@ -52,10 +51,10 @@ class IpRegEx implements PermissionProviderInterface
      * @param UserIpReader $userIpReader User IP address reader
      */
     public function __construct(
-        #[Autowire (container: 'Request')]
-        protected Request $request, 
-        protected UserIpReader $userIpReader)
-    {
+        #[Autowire(container: 'Request')]
+        protected Request $request,
+        protected UserIpReader $userIpReader
+    ) {
     }
 
     /**

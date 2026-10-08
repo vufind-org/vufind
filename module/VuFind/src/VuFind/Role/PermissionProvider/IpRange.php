@@ -51,26 +51,18 @@ use VuFind\ServiceManager\Factory\Autowire;
 class IpRange implements PermissionProviderInterface
 {
     /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Constructor.
      *
-     * @param RequestInterface $request      Request object
-     * @param IpAddressUtils   $ipAddressUtils      IpAddressUtils object
-     * @param UserIpReader     $userIpReader User IP address reader
+     * @param RequestInterface $request        Request object
+     * @param IpAddressUtils   $ipAddressUtils IpAddressUtils object
+     * @param UserIpReader     $userIpReader   User IP address reader
      */
     public function __construct(
-        #[Autowire (container: 'Request')]
-        RequestInterface $request,
+        #[Autowire(container: 'Request')]
+        protected RequestInterface $request,
         protected IpAddressUtils $ipAddressUtils,
         protected UserIpReader $userIpReader
     ) {
-        $this->request = $request;
     }
 
     /**
