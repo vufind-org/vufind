@@ -102,7 +102,7 @@
 <?php
   $changeHandler = <<<'JS'
       $(document).ready(function() {
-        $("input[type='radio']").change(function() {
+        $("input[type='radio']").on('change', function() {
           if ($('#storageRetrievalRequestItem').is(':checked')) {
             $('#storageRetrievalRequestReference input').attr('disabled', 'disabled');
           } else {

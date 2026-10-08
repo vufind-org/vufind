@@ -240,7 +240,7 @@
             $escId = $this->escapeJs($id);
             $escSource = $this->escapeJs($source);
             $script = <<<JS
-                $('#confirm_delete_item_{$md5Id}').click(function(e) {
+                $('#confirm_delete_item_{$md5Id}').on('click', function(e) {
                     e.preventDefault();
                     $.post('{$deleteUrl}', {
                                 'delete':'{$escId}',
