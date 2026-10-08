@@ -59,15 +59,15 @@ class SearchTabsHelper
      */
     public function __construct(
         protected PluginManager $results,
-        #[Autowire (config: 'config', path: 'SearchTabs', default: [])]
+        #[Autowire(config: 'config', path: 'SearchTabs', default: [])]
         protected array $tabConfig,
-        #[Autowire (config: 'config', path: 'SearchTabsFilters', default: [])]
+        #[Autowire(config: 'config', path: 'SearchTabsFilters', default: [])]
         protected array $filterConfig,
-        #[Autowire (service: 'Request')]
+        #[Autowire(service: 'Request')]
         protected Request $request,
-        #[Autowire (config: 'config', path: 'SearchTabsPermissions', default: [])]
+        #[Autowire(config: 'config', path: 'SearchTabsPermissions', default: [])]
         protected array $permissionConfig = [],
-        #[Autowire (config: 'config', path: 'SearchTabsSettings', default: [])]
+        #[Autowire(config: 'config', path: 'SearchTabsSettings', default: [])]
         protected array $settings = []
     ) {
     }

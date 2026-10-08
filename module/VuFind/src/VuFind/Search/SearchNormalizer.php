@@ -58,7 +58,7 @@ class SearchNormalizer
      */
     public function __construct(
         protected ResultsManager $resultsManager,
-        #[Autowire (container: \VuFind\Db\Service\PluginManager::class)]
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SearchServiceInterface $searchService
     ) {
     }
