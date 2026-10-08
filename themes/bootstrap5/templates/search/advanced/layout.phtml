@@ -228,7 +228,7 @@
 </div>
 <?php
 $script = <<<JS
-    $('#groupPlaceHolder').click(function(e) {
+    $('#groupPlaceHolder').on('click', function(e) {
       addGroup(null, null, null, true);
       return false;
     })

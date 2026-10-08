@@ -664,7 +664,7 @@ VuFind.register('sideFacets', function SideFacets() {
    */
   function activateFacetBlocking(context) {
     const finalContext = (typeof context === "undefined") ? $(document.body) : context;
-    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
+    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').on('click', showLoadingOverlay);
   }
 
   /**
