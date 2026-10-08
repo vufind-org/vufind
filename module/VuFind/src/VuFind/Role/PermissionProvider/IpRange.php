@@ -58,7 +58,7 @@ class IpRange implements PermissionProviderInterface
      * @param UserIpReader     $userIpReader   User IP address reader
      */
     public function __construct(
-        #[Autowire(container: 'Request')]
+        #[Autowire(service: 'Request')]
         protected RequestInterface $request,
         protected IpAddressUtils $ipAddressUtils,
         protected UserIpReader $userIpReader
