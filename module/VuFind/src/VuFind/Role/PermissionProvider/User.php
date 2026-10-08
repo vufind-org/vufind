@@ -51,21 +51,13 @@ class User implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authorization object.
-     *
-     * @var AuthorizationService
-     */
-    protected $auth;
-
-    /**
      * Constructor.
      *
-     * @param AuthorizationService $authorization Authorization service
+     * @param AuthorizationService $auth Authorization service
      */
     #[Autowire]
-    public function __construct(AuthorizationService $authorization)
+    public function __construct(protected AuthorizationService $auth)
     {
-        $this->auth = $authorization;
     }
 
     /**
