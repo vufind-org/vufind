@@ -192,7 +192,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'history',
                     'label' => 'Search History',
-                    'route' => 'search-history',
+                    'route' => 'searchhistory-list',
                     'icon' => 'search',
                     'checkMethod' => 'checkHistory',
                 ],

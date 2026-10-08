@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search history action.
+ * Search history list action.
  *
  * PHP version 8
  *
@@ -29,7 +29,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Search;
+namespace VuFind\Action\SearchHistory;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -42,7 +42,7 @@ use VuFind\Search\Memory;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Search history action.
+ * Search history list action.
  *
  * @category VuFind
  * @package  Action
@@ -51,7 +51,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HistoryAction extends AbstractTemplateRenderingAction
+class ListAction extends AbstractTemplateRenderingAction
 {
     /**
      * Constructor.
@@ -86,7 +86,7 @@ class HistoryAction extends AbstractTemplateRenderingAction
         if ($this->getQueryParam('require_login', 'no') !== 'no') {
             // If user is already logged in, drop the require_login parameter to allow for a cleaner log-out experience:
             return $user
-                ? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'search-history')
+                ? $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'searchhistory-list')
                 : $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         $userId = $user?->getId();

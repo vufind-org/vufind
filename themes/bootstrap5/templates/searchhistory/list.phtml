@@ -39,7 +39,7 @@
   <?php if ($saveSupported): ?>
     <h2><?=$this->transEsc('history_saved_searches')?></h2>
     <?php if (!empty($this->saved)): ?>
-      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
+      <?=$this->context()->renderInContext('searchhistory/history-table.phtml', ['showSaved' => true]);?>
     <?php else: ?>
       <?=
         $loggedInUser
@@ -51,7 +51,7 @@
 
   <h2><?=$this->transEsc('history_recent_searches')?></h2>
   <?php if (!empty($this->unsaved)): ?>
-    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
+    <?=$this->context()->renderInContext('searchhistory/history-table.phtml', ['showSaved' => false]);?>
     <a class="icon-link" href="?purge=true">
       <?=$this->icon('search-delete', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc($saveSupported ? 'history_purge' : 'history_purge_all')?></span>
