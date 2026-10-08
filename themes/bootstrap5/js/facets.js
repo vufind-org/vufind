@@ -899,7 +899,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       if (button.attr('disabled')) {
         return false;
       }
-      button.attr('disabled', 1);
+      button.attr('disabled', 'disabled');
       button.html(VuFind.translate('loading_ellipsis'));
 
       const overrideParams = { facetpage: page, layout: 'lightbox', ajax: 1 };
