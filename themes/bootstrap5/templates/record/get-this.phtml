@@ -5,6 +5,12 @@ $templates = $this->getThisLoader->getSubTemplates();
 $commentTemplateName = $this->getThisLoader->commentTemplateName();
 
 $recordTitle = $this->driver->getRawData()['title_full'] ?? '';
+if (
+    $this->getThisLoader->getTruncateTitleLength() > 0
+    && strlen($recordTitle) > $this->getThisLoader->getTruncateTitleLength()
+) {
+    $recordTitle = substr($recordTitle, 0, $this->getThisLoader->getTruncateTitleLength()) . '...';
+}
 echo $this->component(
     'page-title',
     [

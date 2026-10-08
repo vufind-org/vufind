@@ -317,7 +317,11 @@ class GetThisLoader implements LoggerAwareInterface
                 }
             }
         } catch (Throwable $t) {
-            throw new Exception('Error with the get this configuration : ' . $t->getMessage(), previous: $t);
+            throw new Exception(
+                'Error with the get this configuration : "'
+                . $t->getMessage() . '" in ' . $t->getFile() . ' line ' . $t->getLine(),
+                previous: $t
+            );
         }
         $this->sortSubTemplateParams();
         $this->applyExclusiveFlag();
@@ -897,5 +901,15 @@ class GetThisLoader implements LoggerAwareInterface
     public function makeHoldingsDropdown(): bool
     {
         return (bool)($this->config['holdingsDropdown'] ?? false);
+    }
+
+    /**
+     * Return the value of the config for truncateTitle.
+     *
+     * @return int
+     */
+    public function getTruncateTitleLength(): int
+    {
+        return (int)($this->config['truncateTitle'] ?? 0);
     }
 }

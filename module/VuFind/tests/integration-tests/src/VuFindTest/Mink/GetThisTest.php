@@ -436,6 +436,60 @@ class GetThisTest extends MinkTestCase
     }
 
     /**
+     * Testing if the title truncation feature in the config works.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testTitleTruncate(): void
+    {
+        $this->changeConfigs(
+            static::getVufindConfigArray(
+                'autocomplete1',
+                false,
+                [
+                    'CallNumberOne',
+                    'CallNumberTwo',
+                    'CallNumberThree',
+                    'CallNumberFour',
+                ]
+            )
+        );
+
+        $page = $this->openGetThisLoaderForSearch(static::SEARCH);
+        $lightbox = $this->getLightbox($page);
+        $this->assertInstanceOf(NodeElement::class, $lightbox);
+        // title-in-heading"> is needed as the title is present elsewhere
+        $presence = str_contains($lightbox->getHtml(), 'title-in-heading">Letterhead enclosure');
+        $this->assertTrue($presence);
+
+        $this->changeConfigs(
+            static::getVufindConfigArray(
+                'autocomplete1',
+                false,
+                [
+                    'CallNumberOne',
+                    'CallNumberTwo',
+                    'CallNumberThree',
+                    'CallNumberFour',
+                ]
+            )
+        );
+        $this->changeYamlConfigs([
+            'GetThis' => [
+                'truncateTitle' => 10,
+            ],
+        ]);
+        $page = $this->openGetThisLoaderForSearch(static::SEARCH);
+        $lightbox = $this->getLightbox($page);
+        $this->assertInstanceOf(NodeElement::class, $lightbox);
+        $presence = str_contains($lightbox->getHtml(), 'title-in-heading">Letterhead enclosure');
+        $this->assertFalse($presence);
+        $presence = str_contains($lightbox->getHtml(), 'title-in-heading">Letterhead...');
+        $this->assertTrue($presence);
+    }
+
+    /**
      * Test changing holdings in the dropdown.
      *
      * @return void
@@ -489,6 +543,7 @@ class GetThisTest extends MinkTestCase
      * Test the record page with standard and extended template.
      *
      * @return void
+     * @throws Exception
      */
     public function testRecordPage(): void
     {
