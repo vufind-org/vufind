@@ -34,6 +34,7 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
@@ -56,20 +57,14 @@ class GeneratorTools
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Laminas configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
      * @param array $config Laminas configuration
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(service: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
@@ -352,7 +347,7 @@ class GeneratorTools
                 $method->setParameters([$param1, $param2, $param3]);
                 // Copy doc block from this class' factory:
                 $reflection = new \Laminas\Code\Reflection\MethodReflection(
-                    GeneratorToolsFactory::class,
+                    \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
                     '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);
