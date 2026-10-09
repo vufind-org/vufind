@@ -41,6 +41,7 @@ use function array_key_exists;
 use function call_user_func;
 use function count;
 use function is_array;
+use function is_string;
 
 /**
  * Class to hold data for the Get This button.
@@ -126,6 +127,63 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
+     * The function returns whether the regex matches the given element, it can be only one of :
+     *  - itemKey : the value of $item's given key
+     *  - function : the result of a local function
+     * The result is negated if the first char is "!".
+     *
+     * @param array{name: string, itemKey: string, function: string} $config The config containing the regex name
+     *                                                                       and the value to match against
+     *
+     * @return bool
+     * @throws Exception
+     */
+    protected function isRegexMatching(array $config): bool
+    {
+        if (
+            !isset($config['name'])
+            || (
+                !isset($config['itemKey'])
+                && !isset($config['function'])
+            )
+            || !is_string($config['name'])
+            || (isset($config['itemKey']) && !is_string($config['itemKey']))
+            || (isset($config['function']) && !is_string($config['function']))
+        ) {
+            throw new Exception(
+                'The config for a regex should contain the ' .
+                'keys "name" and ("itemKey" or "function") with a string value'
+            );
+        }
+
+        $item = $this->getItem();
+        $regex = $config['name'];
+        $negate = false;
+        if (str_starts_with($regex, '!')) {
+            $regex = substr($regex, 1);
+            $negate = true;
+        }
+
+        if (isset($config['itemKey']) && isset($item[$config['itemKey']])) {
+            $result = $this->matches($regex, $item[$config['itemKey']]);
+        } elseif (isset($config['function']) && method_exists($this, $config['function'])) {
+            $value = call_user_func([$this, $config['function']]);
+            $result = $this->matches($regex, $value);
+        } elseif (isset($config['itemKey'])) {
+            throw new Exception(
+                'The given itemKey "' . $config['itemKey'] . '" to match with regex ' .
+                '"' . $regex . '" is not a valid array key for $item in ' . static::class
+            );
+        } else {
+            throw new Exception(
+                'The given function "' . $config['function'] . '" to match with regex ' .
+                '"' . $regex . '" is not a valid method in ' . static::class
+            );
+        }
+        return $negate ? !$result : $result;
+    }
+
+    /**
      * Whether the condition block contains an operator "and".
      *
      * @param array $conditions Array of conditions to determine the result
@@ -183,7 +241,9 @@ class GetThisLoader implements LoggerAwareInterface
      */
     protected function areConditionsFilled(array $condition): bool
     {
-        if (isset($condition['condition_function'])) {
+        if (isset($condition['regex'])) {
+            return $this->isRegexMatching($condition['regex']);
+        } elseif (isset($condition['condition_function'])) {
             return $this->isConditionFunctionFilled($condition['condition_function']);
         } elseif (isset($condition['condition_group'])) {
             return $this->loopThroughConditionBlock($condition['condition_group']);
@@ -255,7 +315,11 @@ class GetThisLoader implements LoggerAwareInterface
                     // If condition_function is not present we display the templates
                     // If it's present we display the template only if the function exists and return true
                     if (
-                        !isset($template['condition_function']) && !isset($template['condition_group'])
+                        (
+                            !isset($template['condition_function'])
+                            && !isset($template['condition_group'])
+                            && !isset($template['regex'])
+                        )
                         || $this->areConditionsFilled($template)
                     ) {
                         $this->addSubTemplates($templateName, $template);
@@ -263,9 +327,14 @@ class GetThisLoader implements LoggerAwareInterface
                 }
             }
         } catch (Throwable $t) {
-            throw new Exception('Error with the get this configuration : ' . $t->getMessage(), previous: $t);
+            throw new Exception(
+                'Error with the get this configuration : "'
+                . $t->getMessage() . '" in ' . $t->getFile() . ' line ' . $t->getLine(),
+                previous: $t
+            );
         }
         $this->sortSubTemplateParams();
+        $this->applyExclusiveFlag();
         return $this->subTemplates ?? [];
     }
 
@@ -283,6 +352,32 @@ class GetThisLoader implements LoggerAwareInterface
         usort($this->subTemplates, function ($a, $b) use ($orderMap) {
             return isset($orderMap[$a], $orderMap[$b]) ? $orderMap[$a] <=> $orderMap[$b] : 0;
         });
+    }
+
+    /**
+     * Apply the exclusive flag from the config.
+     *
+     * @return void
+     */
+    public function applyExclusiveFlag(): void
+    {
+        $preventFollowing = false;
+        foreach ($this->subTemplates ?? [] as $i => $subTemplate) {
+            if ($preventFollowing) {
+                unset($this->subTemplates[$i]);
+                continue;
+            }
+            if (!isset($this->config['templates'][$subTemplate]['exclusive'])) {
+                continue;
+            }
+            if ($this->config['templates'][$subTemplate]['exclusive'] === 'only') {
+                $this->subTemplates = [$subTemplate];
+                break;
+            }
+            if ($this->config['templates'][$subTemplate]['exclusive'] === 'preventFollowing') {
+                $preventFollowing = true;
+            }
+        }
     }
 
     /**
@@ -326,7 +421,7 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return mixed
      */
-    protected function matches(string $regexName, string|array $haystack, bool $default = false): bool
+    public function matches(string $regexName, string|array $haystack, bool $default = false): bool
     {
         if (is_array($haystack)) {
             foreach ($haystack as $item) {
@@ -600,18 +695,16 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the faculty delivery template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool  If the template should display
      */
-    public function showStaffDelivery(?string $itemId = null): bool
+    public function showStaffDelivery(): bool
     {
-        $item = $this->getItem($itemId);
+        $item = $this->getItem();
         if (
             empty($item)
             || empty($item['availability'])
-            || $this->isOut($itemId)
-            || $this->isUnavailable($itemId)
+            || $this->isOut()
+            || $this->isUnavailable()
             || !$item['availability'] instanceof AvailabilityStatusInterface
         ) {
             return false;
@@ -624,18 +717,16 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the remote parton template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool  If the template should display
      */
-    public function showRemoteDelivery(?string $itemId = null): bool
+    public function showRemoteDelivery(): bool
     {
-        $item = $this->getItem($itemId);
+        $item = $this->getItem();
         if (
             empty($item)
             || empty($item['availability'])
-            || $this->isOut($itemId)
-            || $this->isUnavailable($itemId)
+            || $this->isOut()
+            || $this->isUnavailable()
             || !$item['availability'] instanceof AvailabilityStatusInterface
         ) {
             return false;
@@ -647,13 +738,11 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the other library links template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
      * @return bool  If the template should display
      */
-    public function showInterLibrary(?string $itemId = null): bool
+    public function showInterLibrary(): bool
     {
-        $itemId = $this->getItemId($itemId);
+        $itemId = $this->getItemId();
         $haystack = [];
         if ($location = $this->getLocation($itemId)) {
             $haystack[] = $location;
@@ -672,13 +761,15 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the microform template should display.
      *
-     * @param ?string $itemId Item ID to filter for
-     *
-     * @return bool If the template should display
+     * @return     bool If the template should display
+     * @deprecated In your GetThis.yaml instead of condition_function: showMicroForm use :
+     *             regex:
+     *              name: 'LOCATION_MICROFORMS'
+     *              function: 'getLocation'
      */
-    public function showMicroForm(?string $itemId = null): bool
+    public function showMicroForm(): bool
     {
-        $location = $this->getLocation($itemId);
+        $location = $this->getLocation();
         return $this->matches('LOCATION_MICROFORMS', $location);
     }
 
@@ -820,5 +911,15 @@ class GetThisLoader implements LoggerAwareInterface
     public function makeHoldingsDropdown(): bool
     {
         return (bool)($this->config['holdingsDropdown'] ?? false);
+    }
+
+    /**
+     * Return the value of the config for truncateTitle.
+     *
+     * @return int
+     */
+    public function getTruncateTitleLength(): int
+    {
+        return (int)($this->config['truncateTitle'] ?? 0);
     }
 }
