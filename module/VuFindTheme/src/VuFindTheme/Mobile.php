@@ -61,7 +61,7 @@ class Mobile
      *
      * @param ?MobileDetect $detector Detector object to wrap (null to create one)
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(?MobileDetect $detector = null)
     {
         $this->detector = $detector ?? new MobileDetect();

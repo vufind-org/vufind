@@ -67,6 +67,6 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
         $detector = $this->createMock(MobileDetect::class);
         $detector->expects($this->once())->method('isMobile')->willReturn($active);
         $mobile = new Mobile($detector);
-        $this->assertEquals($active, $mobile->detect());
+        $this->assertSame($active, $mobile->detect());
     }
 }
