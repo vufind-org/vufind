@@ -60,7 +60,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $staffViewTab = $this->findCss($page, '.record-tabs #tab-button-details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $url . '/Details',
             [$session, 'getCurrentUrl']
         );

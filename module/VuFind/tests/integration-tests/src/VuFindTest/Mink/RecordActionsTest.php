@@ -217,7 +217,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             3,
             function () use ($page): int {
                 $tags = $page->findAll('css', '.tagList .tag');
@@ -739,7 +739,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Make sure we're printing
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'print=1',
             function () {
                 return $this->getCurrentQueryString(true);
@@ -904,7 +904,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'form.comment-form a');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         // Check result (wait for the value to update):
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             [1, '80'],
             function () use ($page, $checked) {
                 $inputs = $page->findAll('css', $checked);
@@ -917,7 +917,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, 'form.comment-form a');
             $this->clickCss($page, 'form.comment-form .btn-primary');
             // Check result (wait for the value to update):
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 [1, '70'],
                 function () use ($page, $checked) {
                     $inputs = $page->findAll('css', $checked);
