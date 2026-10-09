@@ -30,6 +30,7 @@
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Module definition for the VuFind theme system.
@@ -87,6 +88,7 @@ class Module
             ],
             'factories' => [
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
+                Mobile::class => InvokableFactory::class,
                 ThemeCompiler::class => ThemeInfoInjectorFactory::class,
             ],
         ];
