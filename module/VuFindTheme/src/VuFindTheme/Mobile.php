@@ -35,7 +35,8 @@
 
 namespace VuFindTheme;
 
-use uagent_info;
+use Detection\MobileDetect;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Mobile Device Detection Wrapper.
@@ -51,18 +52,19 @@ class Mobile
     /**
      * Mobile detection object.
      *
-     * @var uagent_info
+     * @var MobileDetect
      */
-    protected $detector;
+    protected MobileDetect $detector;
 
     /**
      * Constructor.
      *
-     * @param ?uagent_info $detector Detector object to wrap (null to create one)
+     * @param ?MobileDetect $detector Detector object to wrap (null to create one)
      */
-    public function __construct(?uagent_info $detector = null)
+    #[Autowire()]
+    public function __construct(?MobileDetect $detector = null)
     {
-        $this->detector = $detector ?? new uagent_info();
+        $this->detector = $detector ?? new MobileDetect();
     }
 
     /**
@@ -70,11 +72,8 @@ class Mobile
      *
      * @return bool
      */
-    public function detect()
+    public function detect(): bool
     {
-        // Do the most exhaustive device detection possible; other method calls
-        // may be used instead of DetectMobileLong if you want to target a narrower
-        // class of devices.
-        return $this->detector->DetectMobileLong();
+        return $this->detector->isMobile();
     }
 }

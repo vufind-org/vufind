@@ -236,6 +236,7 @@ $config = [
             \VuFind\ServiceManager\AbstractTopLevelServiceFactory::class,
         ],
         'factories' => [
+            \Detection\MobileDetect::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             \League\CommonMark\MarkdownConverter::class => \VuFind\Service\MarkdownFactory::class,
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,

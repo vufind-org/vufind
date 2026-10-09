@@ -88,7 +88,6 @@ class Module
             ],
             'factories' => [
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
-                Mobile::class => InvokableFactory::class,
                 ThemeCompiler::class => ThemeInfoInjectorFactory::class,
             ],
         ];
