@@ -152,7 +152,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
                 'routeDetails' => $this->recordRouter
                     ? $this->recordRouter->getTabRouteDetails($current)
                     : false,
-                'id' => $current->getUniqueId(),
+                'id' => $current->getUniqueID(),
             ];
         }
         return $summary;

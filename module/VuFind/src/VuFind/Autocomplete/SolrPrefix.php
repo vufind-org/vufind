@@ -47,13 +47,6 @@ use function is_object;
 class SolrPrefix implements AutocompleteInterface
 {
     /**
-     * Results manager.
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
      * Search object.
      *
      * @var \VuFind\Search\Solr\Results
@@ -98,12 +91,11 @@ class SolrPrefix implements AutocompleteInterface
     /**
      * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    #[Autowire()]
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**

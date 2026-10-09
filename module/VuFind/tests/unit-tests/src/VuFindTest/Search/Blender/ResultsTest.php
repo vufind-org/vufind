@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Blender;
 
-use VuFind\Config\Config;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Blender\Results;
@@ -90,7 +89,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $paramsClasses,
-            new Config([]),
             []
         );
         $searchService = $this->createMock(\VuFindSearch\Service::class);

@@ -34,6 +34,7 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\ServiceManager\FactoryDetector;
 
 use function count;
@@ -62,8 +63,11 @@ class GeneratorTools
      * @param array           $config          Laminas configuration
      * @param FactoryDetector $factoryDetector Factory detector
      */
-    public function __construct(protected array $config, protected FactoryDetector $factoryDetector)
-    {
+    public function __construct(
+        #[Autowire(service: 'config')]
+        protected array $config,
+        protected FactoryDetector $factoryDetector
+    ) {
     }
 
     /**
@@ -344,9 +348,9 @@ class GeneratorTools
                     'defaultValue' => null,
                 ];
                 $method->setParameters([$param1, $param2, $param3]);
-                // Copy doc block from this class' factory:
+                // Copy doc block from a factory that is unlikely to be removed from the project:
                 $reflection = new \Laminas\Code\Reflection\MethodReflection(
-                    GeneratorToolsFactory::class,
+                    \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
                     '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);

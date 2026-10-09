@@ -64,7 +64,7 @@ class UrlHelper implements HelperInterface
      * @param RouteHelper     $routeHelper     Route helper
      * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected RouteHelper $routeHelper,
         protected ServerUrlHelper $serverUrlHelper,

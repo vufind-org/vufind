@@ -30,7 +30,6 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\HeadMeta;
-use VuFind\Config\Config;
 use VuFind\MetadataVocabulary\PluginManager;
 use VuFind\MetadataVocabulary\PRISM;
 use VuFind\View\Helper\Root\Metadata;
@@ -109,7 +108,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new Metadata(
             $this->getPluginManager(),
-            new Config(['Vocabularies' => [TestHarness::class => ['PRISM']]]),
+            ['Vocabularies' => [TestHarness::class => ['PRISM']]],
             $this->getMetaHelper()
         );
         $helper->generateMetatags(

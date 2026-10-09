@@ -52,14 +52,14 @@ class Captcha
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config          $config       Config
+     * @param array                          $config       Config
      * @param \VuFind\Captcha\AbstractBase[] $captchas     Captchas
      * @param RendererInterface              $viewRenderer View renderer
      * @param ResolverInterface              $viewResolver View resolver
      * @param Context                        $context      Context helper
      */
     public function __construct(
-        protected \VuFind\Config\Config $config,
+        protected array $config,
         protected array $captchas,
         RendererInterface $viewRenderer,
         ResolverInterface $viewResolver,
@@ -139,6 +139,6 @@ class Captcha
     protected function active(): bool
     {
         return count($this->captchas) > 0
-            && isset($this->config->Captcha->forms);
+            && isset($this->config['Captcha']['forms']);
     }
 }

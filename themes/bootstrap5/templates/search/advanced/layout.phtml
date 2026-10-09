@@ -3,7 +3,7 @@
   $this->headTitle($this->translate('Advanced Search'));
 
   // Disable top search box -- this page has a special layout.
-  $this->layout()->searchbox = false;
+  $this->globals()['searchbox'] = false;
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Search'), $this->searchMemory()->getLastSearchUrl())
@@ -228,7 +228,7 @@
 </div>
 <?php
 $script = <<<JS
-    $('#groupPlaceHolder').click(function(e) {
+    $('#groupPlaceHolder').on('click', function(e) {
       addGroup(null, null, null, true);
       return false;
     })

@@ -67,10 +67,15 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      */
     protected MonologLogger $monologLogger;
 
+    /**
+     * Translation map to convert non-standard short levels to standard levels.
+     *
+     * @var array
+     */
     protected const LEVEL_MAP = [
-        'crit'       => LogLevel::CRITICAL,
-        'err'       => LogLevel::ERROR,
-        'warn'      => LogLevel::WARNING,
+        'crit' => LogLevel::CRITICAL,
+        'err'  => LogLevel::ERROR,
+        'warn' => LogLevel::WARNING,
     ];
 
     /**
@@ -95,21 +100,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     public function emergency(string|\Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::EMERGENCY, $message, $context);
-    }
-
-    /**
-     * System is unusable.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function emerg(string|\Stringable $message, array $context = []): void
-    {
-        $this->emergency($message, $context);
     }
 
     /**
@@ -139,21 +129,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Critical conditions.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function crit(string|\Stringable $message, array $context = []): void
-    {
-        $this->critical($message, $context);
-    }
-
-    /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
@@ -168,22 +143,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Runtime errors that do not require immediate action but should typically
-     * be logged and monitored.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function err(string|\Stringable $message, array $context = []): void
-    {
-        $this->error($message, $context);
-    }
-
-    /**
      * Exceptional occurrences that are not errors.
      *
      * @param string|\Stringable $message Log message
@@ -194,21 +153,6 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     public function warning(string|\Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::WARNING, $message, $context);
-    }
-
-    /**
-     * Exceptional occurrences that are not errors.
-     *
-     * @param string|\Stringable $message Log message
-     * @param mixed[]            $context Additional context data
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function warn(string|\Stringable $message, array $context = []): void
-    {
-        $this->warning($message, $context);
     }
 
     /**
@@ -297,7 +241,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an exception triggered by the framework for administrative purposes.
      *
-     * @param \Exception                 $error  Exception to log
+     * @param \Throwable                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void
@@ -373,11 +317,11 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Given an exception, return a severity level for logging purposes.
      *
-     * @param \Exception $error Exception to analyze
+     * @param \Throwable $error Exception to analyze
      *
-     * @return int
+     * @return string
      */
-    protected function getSeverityFromException($error)
+    protected function getSeverityFromException(\Throwable $error): string
     {
         // If the exception provides the severity level, use it:
         if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {

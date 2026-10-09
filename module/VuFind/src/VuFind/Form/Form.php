@@ -591,6 +591,7 @@ class Form extends \Laminas\Form\Form implements
             'type' => 'email',
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
+            'autocomplete' => 'email',
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderName['required'] = true;
@@ -840,6 +841,7 @@ class Form extends \Laminas\Form\Form implements
             'required',
             'requireOne',
             'value',
+            'autocomplete',
         ];
     }
 
@@ -905,6 +907,10 @@ class Form extends \Laminas\Form\Form implements
         }
         if (!empty($el['settings'])) {
             $attributes += $el['settings'];
+        }
+        // Add autocomplete only for text and email fields
+        if (!empty($el['autocomplete']) && in_array($type, ['text', 'email'])) {
+            $attributes['autocomplete'] = $el['autocomplete'];
         }
         // Add aria-label only if not a hidden field and no aria-label specified:
         if (

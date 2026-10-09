@@ -49,7 +49,7 @@ abstract class AbstractChannelsAction extends AbstractTemplateRenderingAction
      *
      * @param ChannelLoader $channelLoader Channel loader
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected ChannelLoader $channelLoader,
     ) {

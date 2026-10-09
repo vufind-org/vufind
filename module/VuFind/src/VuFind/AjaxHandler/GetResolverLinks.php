@@ -31,7 +31,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Resolver\Connection;
 use VuFind\Resolver\Driver\PluginManager as ResolverManager;
@@ -61,13 +61,13 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      * @param SessionSettings           $ss            Session settings
      * @param ResolverManager           $pluginManager Resolver driver plugin manager
      * @param TemplateRendererInterface $renderer      Template renderer
-     * @param Config                    $config        Top-level VuFind configuration (config.ini)
+     * @param array                     $config        Top-level VuFind configuration (config.ini)
      */
     public function __construct(
         SessionSettings $ss,
         protected ResolverManager $pluginManager,
         protected TemplateRendererInterface $renderer,
-        protected Config $config
+        protected array $config
     ) {
         parent::__construct($ss);
     }
@@ -85,16 +85,16 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         $openUrl = $this->getQueryParam($request, 'openurl', '');
         $searchClassId = $this->getQueryParam($request, 'searchClassId', '');
 
-        $resolverType = $this->config->OpenURL->resolver ?? 'generic';
+        $resolverType = $this->config['OpenURL']['resolver'] ?? 'generic';
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         $resolver = new Connection($this->pluginManager->get($resolverType));
-        if (isset($this->config->OpenURL->resolver_cache)) {
-            $resolver->enableCache($this->config->OpenURL->resolver_cache);
+        if (isset($this->config['OpenURL']['resolver_cache'])) {
+            $resolver->enableCache($this->config['OpenURL']['resolver_cache']);
         }
         $result = $resolver->fetchLinks($openUrl);
 
@@ -123,10 +123,10 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         }
 
         // Get the OpenURL base:
-        if (isset($this->config->OpenURL->url)) {
+        if (isset($this->config['OpenURL']['url'])) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            [$base] = explode('?', $this->config->OpenURL->url);
+            [$base] = explode('?', $this->config['OpenURL']['url']);
         } else {
             $base = false;
         }

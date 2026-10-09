@@ -112,7 +112,7 @@ class AvailabilityStatus
      *
      * @param RendererInterface $view View renderer
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(protected RendererInterface $view)
     {
     }

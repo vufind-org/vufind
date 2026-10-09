@@ -67,15 +67,4 @@ class HomeAction extends AbstractSearchAndResultsAction
         }
         return $this->renderSearchResults($request, $response);
     }
-
-    /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        parent::init();
-        $this->searchClassId = 'Tags';
-    }
 }

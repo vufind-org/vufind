@@ -42,6 +42,8 @@ use Behat\Mink\Element\Element;
  */
 class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\RetryClickTrait;
+
     /**
      * Get config settings for combined.ini.
      *
@@ -129,6 +131,57 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Test that bulk export options open in a lightbox.
+     *
+     * @return void
+     */
+    public function testCombinedSearchBulkExportLightbox(): void
+    {
+        $this->changeConfigs(
+            [
+                'combined' => $this->getCombinedIniOverrides(),
+                'config' => ['Site' => ['showBulkOptions' => true]],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        $this->assertResultsForDefaultQuery($page);
+
+        // Confirm that an appropriate message appears if no items are checked:
+        $buttonSelector = '#ribbon-export';
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $alert->getText()
+        );
+
+        // Now do it for real -- we should get a lightbox prompt.
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+
+        // Select EndNote option
+        try {
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $select = $this->findCss($page, '#format', 1500);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
+            $select = $this->findCss($page, '#format');
+        }
+        $select->selectOption('EndNote');
+
+        // Do the export:
+        $this->clickCss($page, '.form-cart-export input[name=submitButton]');
+        $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
+        $this->assertSame('Download File', $buttonText);
     }
 
     /**

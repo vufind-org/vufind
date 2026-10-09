@@ -56,7 +56,7 @@ class LoginAction extends AbstractTemplateRenderingAction
      *
      * @param AuthManager $authManager Authentication manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected AuthManager $authManager,
     ) {

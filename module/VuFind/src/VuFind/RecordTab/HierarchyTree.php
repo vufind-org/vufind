@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 use function is_object;
 
@@ -54,26 +56,20 @@ class HierarchyTree extends AbstractBase
     protected $treeList = null;
 
     /**
-     * Configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config = null;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config Configuration
+     * @param array $config Configuration
      */
-    public function __construct(\VuFind\Config\Config $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
      * Get the VuFind configuration.
      *
-     * @return \VuFind\Config\Config
+     * @return array
      */
     protected function getConfig()
     {
@@ -158,7 +154,7 @@ class HierarchyTree extends AbstractBase
         }
         // If displaying the top of the tree, we should show the full hierarchy;
         // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
-        return $this->getActiveTree() == $recordDriver->getUniqueId();
+        return $this->getActiveTree() == $recordDriver->getUniqueID();
     }
 
     /**
@@ -189,7 +185,7 @@ class HierarchyTree extends AbstractBase
     public function searchActive()
     {
         $config = $this->getConfig();
-        return !isset($config->Hierarchy->search) || $config->Hierarchy->search;
+        return (bool)($config['Hierarchy']['search'] ?? false);
     }
 
     /**
@@ -200,7 +196,7 @@ class HierarchyTree extends AbstractBase
     public function getSearchLimit()
     {
         $config = $this->getConfig();
-        return $config->Hierarchy->treeSearchLimit ?? -1;
+        return $config['Hierarchy']['treeSearchLimit'] ?? -1;
     }
 
     /**
@@ -210,7 +206,8 @@ class HierarchyTree extends AbstractBase
      */
     public function hidePreviewInNarrowDisplays(): bool
     {
-        return (bool)$this->config->Hierarchy?->hide_preview_in_narrow_displays;
+        $config = $this->getConfig();
+        return (bool)($config['Hierarchy']['hide_preview_in_narrow_displays'] ?? false);
     }
 
     /**

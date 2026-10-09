@@ -19,3 +19,8 @@ updates:
       - "themes/bootstrap5"
     schedule:
       interval: "weekly"
+    groups:
+      simple-keyboard:
+        patterns:
+          - "simple-keyboard"
+          - "simple-keyboard-layouts"

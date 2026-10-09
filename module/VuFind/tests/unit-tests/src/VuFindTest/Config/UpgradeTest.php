@@ -58,6 +58,23 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     protected string $targetVersion = '11.1';
 
     /**
+     * Assert that the upgrader produced the expected warning(s).
+     *
+     * @param Upgrade         $upgrader Upgrade object
+     * @param string|string[] $expected Warning or warnings expected
+     * @param string          $message  Custom error message (empty by default)
+     *
+     * @return void
+     */
+    protected function assertContainsWarnings(Upgrade $upgrader, string|array $expected, string $message = ''): void
+    {
+        $actualWarnings = $upgrader->getWarnings();
+        foreach ((array)$expected as $expectedWarning) {
+            $this->assertContains($expectedWarning, $actualWarnings, $message);
+        }
+    }
+
+    /**
      * Get an upgrade object for the specified source version:
      *
      * @param string $fixture Fixture
@@ -441,16 +458,15 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testPiwikAndMatomoConflict(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('piwik-and-matomo');
-        $warnings = $upgrader->getWarnings();
         $configs = $upgrader->getNewConfigs();
         $this->assertEquals(
             ['url' => 'bar', 'site_id' => 2],
             $configs['config']['Matomo']
         );
-        $this->assertContains(
+        $this->assertContainsWarnings(
+            $upgrader,
             'You are using the deprecated [Piwik] section for analytics but also have [Matomo] settings.'
-            . ' The [Piwik] settings have been removed.',
-            $warnings
+            . ' The [Piwik] settings have been removed.'
         );
     }
 
@@ -477,14 +493,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testGoogleWarnings(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
-        $warnings = $upgrader->getWarnings();
-        $this->assertContains(
-            'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
-            $warnings
-        );
-        $this->assertContains(
-            'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
-            $warnings
+        $this->assertContainsWarnings(
+            $upgrader,
+            [
+                'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
+                'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
+            ]
         );
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
@@ -531,6 +545,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'list_test',
             $results[$configName]['General']['default_view']
+        );
+        $this->assertEquals(
+            'result_list_top,record_view',
+            $results[$configName]['General']['show_restricted_view_warning']
         );
     }
 
@@ -647,7 +665,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertContains($expectedWarning, $upgrader->getWarnings());
+        $this->assertContainsWarnings($upgrader, $expectedWarning);
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',
@@ -666,12 +684,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testObsoleteCoverWarning(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
-        $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertContains(
+            $this->assertContainsWarnings(
+                $upgrader,
                 "WARNING: You have $service content enabled, but VuFind no longer sup"
                 . "ports it. You should remove $service references from config.ini.",
-                $warnings,
                 "Missing $service warning"
             );
         }
@@ -685,12 +702,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testObsoleteReviewWarnings(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
-        $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertContains(
+            $this->assertContainsWarnings(
+                $upgrader,
                 "WARNING: You have $service content enabled, but VuFind no longer sup"
                 . "ports it. You should remove $service references from config.ini.",
-                $warnings,
                 "Missing $service warning"
             );
         }
@@ -785,5 +801,27 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('relevance', $authorityConfig['General']['default_sort']);
         // check that only default full sections included in the base config are added
         $this->assertFalse(isset($authorityConfig['Sort']));
+    }
+
+    /**
+     * Test upgrades for subject limit config.
+     *
+     * @return void
+     */
+    public function testSubjectLimitUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('subject-limit');
+        $results = $upgrader->getNewConfigs();
+        $config = $results['config'];
+        $this->assertFalse(isset($config['Record']['subjectLimit']));
+        $recordDataFormatterConfig = $results['RecordDataFormatter/DefaultRecord'];
+        $this->assertEquals(
+            [
+                'truncateRows' => 5,
+                'truncateTopToggle' => 30,
+                'truncateElement' => '.subject-line',
+            ],
+            $recordDataFormatterConfig['Field_Subjects']
+        );
     }
 }

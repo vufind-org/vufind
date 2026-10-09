@@ -71,7 +71,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return \Behat\Mink\Element\DocumentElement
      */
-    protected function gotoUserAccount()
+    protected function goToUserAccount()
     {
         $session = $this->getMinkSession();
         $path = '/Search/Home';
@@ -99,7 +99,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     protected function setupTest($config)
     {
         $this->changeConfigs(['config' => ['Social' => $config]]);
-        return $this->gotoUserAccount();
+        return $this->goToUserAccount();
     }
 
     /**
@@ -346,7 +346,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function gotoPrevPage($page)
+    protected function goToPrevPage($page)
     {
         $this->clickCss($page, $this->pagePrevSelector);
     }
@@ -358,7 +358,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function gotoNextPage(Element $page)
+    protected function goToNextPage(Element $page)
     {
         $this->clickCss($page, $this->pageNextSelector);
     }
@@ -428,10 +428,10 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::NONE, self::NONE, 2, 2);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::NONE, self::NONE, 0, 0);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::NONE, self::NONE, 0, 0);
     }
 
@@ -469,7 +469,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0);
 
         $this->clickSelectSingleElement($page, 0);
@@ -481,7 +481,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllOnPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 0);
     }
 
@@ -546,13 +546,13 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::NONE, self::NONE, 2, 2, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::NONE, self::NONE, 0, 2, true);
 
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::NONE, self::NONE, 1, 3, true);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::NONE, self::NONE, 2, 3, true);
 
         $this->clickSelectSingleElement($page, 1);
@@ -590,7 +590,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllOnPage($page);
         $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
@@ -608,7 +608,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllOnPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::NONE, 0, 20, true);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::CHECKED, self::NONE, 20, 20, true);
 
         $this->clickClearSelection($page);
@@ -646,13 +646,13 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         }
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 20, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 1, 21, true);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 21, true);
 
         $this->clickSelectSingleElement($page, 10);
@@ -662,7 +662,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllGlobal($page);
         $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::NONE, self::CHECKED, 20, 100, true);
 
         $this->clickSelectSingleElement($page, 0);
@@ -674,7 +674,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 19, 99, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::NONE, self::UNCHECKED, 20, 99, true);
 
         $this->clickSelectAllGlobal($page);
@@ -715,13 +715,13 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         }
         $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 1, 21, true);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 21, true);
 
         $this->clickSelectSingleElement($page, 10);
@@ -731,7 +731,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllGlobal($page);
         $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::CHECKED, self::CHECKED, 20, 100, true);
 
         $this->clickSelectSingleElement($page, 0);
@@ -743,7 +743,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectSingleElement($page, 0);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 19, 99, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 99, true);
 
         $this->clickSelectAllGlobal($page);
@@ -755,7 +755,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllOnPage($page);
         $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20, true);
 
         $this->clickSelectSingleElement($page, 0);
@@ -773,7 +773,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllOnPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 20, true);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 20, true);
 
         $this->clickSelectAllGlobal($page);
@@ -782,10 +782,10 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickSelectAllOnPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 80, true);
 
-        $this->gotoNextPage($page);
+        $this->goToNextPage($page);
         $this->checkStatus($page, self::CHECKED, self::UNCHECKED, 20, 80, true);
 
-        $this->gotoPrevPage($page);
+        $this->goToPrevPage($page);
         $this->checkStatus($page, self::UNCHECKED, self::UNCHECKED, 0, 80, true);
 
         $this->clickSelectAllOnPage($page);

@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Icon helper factory.
@@ -90,7 +91,7 @@ class IconFactory implements FactoryInterface
             $cache,
             $helpers->get('escapeHtmlAttr'),
             $renderer,
-            $container->get('ViewManager')->getViewModel()->rtl
+            $container->get(GlobalsContainer::class)['rtl']
         );
     }
 }

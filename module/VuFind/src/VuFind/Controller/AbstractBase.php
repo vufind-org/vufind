@@ -56,6 +56,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\FlashMessenger\FlashMessengerInterface;
+use VuFind\View\GlobalsContainer;
 
 use function intval;
 use function is_object;
@@ -218,9 +219,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $query = $lightboxParentUrl->getQueryAsArray();
         unset($query['lightboxChild']);
         $lightboxParentUrl->setQuery($query);
-        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
+        $globals = $this->getService(GlobalsContainer::class);
+        $globals['lightboxParent'] = $lightboxParentUrl->toString();
         if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
-            $this->layout()->lightboxChild = $lightboxChild;
+            $globals['lightboxChild'] = $lightboxChild;
         }
         return new ViewModel($params);
     }

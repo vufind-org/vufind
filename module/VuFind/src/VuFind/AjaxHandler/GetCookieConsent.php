@@ -51,7 +51,7 @@ class GetCookieConsent extends AbstractBase
      *
      * @param TemplateRendererInterface $renderer Template renderer
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected TemplateRendererInterface $renderer
     ) {

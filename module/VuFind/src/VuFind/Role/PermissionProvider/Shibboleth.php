@@ -33,6 +33,7 @@ namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth as ShibbolethAuth;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Shibboleth permission provider for VuFind.
@@ -48,13 +49,6 @@ use VuFind\Auth\Shibboleth as ShibbolethAuth;
 class Shibboleth extends ServerParam
 {
     /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Server param with the identity provider entityID.
      *
      * @var string
@@ -64,14 +58,18 @@ class Shibboleth extends ServerParam
     /**
      * Constructor.
      *
-     * @param Request               $request Request object
-     * @param \VuFind\Config\Config $config  VuFind configuration
+     * @param Request $request Request object
+     * @param array   $config  VuFind configuration
      */
-    public function __construct(Request $request, $config)
-    {
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        Request $request,
+        #[Autowire(config: 'config')]
+        array $config
+    ) {
         parent::__construct($request);
 
-        $this->idpServerParam = $config->Shibboleth->idpserverparam
+        $this->idpServerParam = $config['Shibboleth']['idpserverparam']
             ?? ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
 
         $this->aliases = ['idpentityid' => $this->idpServerParam];

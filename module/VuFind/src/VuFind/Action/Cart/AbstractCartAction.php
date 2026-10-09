@@ -56,7 +56,7 @@ abstract class AbstractCartAction extends AbstractTemplateRenderingAction
      * @param Cart           $cart           Cart handler
      * @param FollowupHelper $followupHelper Followup helper
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected Export $export,
         protected Cart $cart,

@@ -113,12 +113,12 @@
   $script = <<<'JS'
         function submitFormWithButton(link, name) {
           $('#dropdown_value').attr('name', name).val(1);
-          $(link).closest('form').submit();
+          $(link).closest('form').trigger('submit');
         }
-        $("#cart-confirm-delete").click(function($e) {
+        $("#cart-confirm-delete").on('click', function($e) {
             submitFormWithButton(this, 'delete');
         });
-        $("#cart-confirm-empty").click(function($e) {
+        $("#cart-confirm-empty").on('click', function($e) {
             submitFormWithButton(this, 'empty');
         });
       JS;

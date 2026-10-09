@@ -228,7 +228,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Log in as user A and get the ID of their saved search:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $page = $session->getPage();
         $this->clickCss($page, '#loginOptions a');
         $this->fillInLoginForm($page, 'username1', 'test');

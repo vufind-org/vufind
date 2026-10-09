@@ -60,7 +60,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $staffViewTab = $this->findCss($page, '.record-tabs #tab-button-details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $url . '/Details',
             [$session, 'getCurrentUrl']
         );
@@ -138,20 +138,6 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             'theplus+andtheminus-',
             false
         );
-    }
-
-    /**
-     * Test that tabs work correctly with loadInitialTabWithAjax turned on.
-     *
-     * @return void
-     */
-    public function testLoadInitialTabWithAjax(): void
-    {
-        $this->changeConfigs(
-            ['config' => ['Site' => ['loadInitialTabWithAjax' => 1]]]
-        );
-        $this->tryRecordTabsOnId('testsample1');
-        $this->tryLoadingTabHashAndReturningToDefault('testsample2');
     }
 
     /**

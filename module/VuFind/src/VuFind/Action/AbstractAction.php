@@ -49,7 +49,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractAction implements ActionInterface
+abstract class AbstractAction implements ActionInterface, AccessPermissionInterface
 {
     /**
      * Current request.
@@ -90,9 +90,9 @@ abstract class AbstractAction implements ActionInterface
      * Permission that must be granted to access this action (false for no restriction, null to use configured default
      * (which is usually the same as false)).
      *
-     * @var string|bool|null
+     * @var string|false|null
      */
-    protected $accessPermission = null;
+    protected string|false|null $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through permissionBehavior.ini). Valid values are
@@ -101,14 +101,13 @@ abstract class AbstractAction implements ActionInterface
      *
      * @var ?string
      */
-    protected $accessDeniedBehavior = null;
+    protected ?string $accessDeniedBehavior = null;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->init();
     }
 
     /**
@@ -151,6 +150,60 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Get access permission.
+     *
+     * @return string|false|null
+     *
+     * @see AbstractAction::$accessPermission
+     */
+    public function getAccessPermission(): string|false|null
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Set access permission.
+     *
+     * @param string|false|null $permission Permission to require
+     *
+     * @return static
+     *
+     * @see AbstractAction::$accessPermission
+     */
+    public function setAccessPermission(string|false|null $permission): static
+    {
+        $this->accessPermission = $permission;
+        return $this;
+    }
+
+    /**
+     * Get access denied behavior.
+     *
+     * @return ?string
+     *
+     * @see AbstractAction::$accessDeniedBehavior
+     */
+    public function getAccessDeniedBehavior(): ?string
+    {
+        return $this->accessDeniedBehavior;
+    }
+
+    /**
+     * Set access denied behavior.
+     *
+     * @param ?string $behavior Access denied behavior
+     *
+     * @return static
+     *
+     * @see AbstractAction::$accessDeniedBehavior
+     */
+    public function setAccessDeniedBehavior(?string $behavior): static
+    {
+        $this->accessDeniedBehavior = $behavior;
+        return $this;
+    }
+
+    /**
      * Invoke the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -164,10 +217,24 @@ abstract class AbstractAction implements ActionInterface
     ): ResponseInterface {
         $this->request = $request;
         $this->response = $response;
+
+        $this->init();
+
         try {
+            $this->configureDefaultAccessPermission();
+
+            if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
+                return $actionConfigResponse;
+            }
+
             if ($accessDeniedResponse = $this->validateAccessPermission()) {
                 return $accessDeniedResponse;
             }
+
+            if ($preprocessResponse = $this->preprocessRequest($request, $response)) {
+                return $preprocessResponse;
+            }
+
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -181,7 +248,45 @@ abstract class AbstractAction implements ActionInterface
      */
     protected function init(): void
     {
-        // This function is called after constructor for any initialization required.
+        // This function is called in the beginning of action invocation for any initialization required.
+    }
+
+    /**
+     * Check that everything is in order for the action to be executed.
+     *
+     * This method is executed in the very beginning of the action invocation before any permission checks etc.
+     * It is meant for technical checks such as route-based configuration being correctly applied.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function validateActionConfig(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
+    }
+
+    /**
+     * Preprocess a request before the actual action is executed.
+     *
+     * This method is executed just before the actual action (i.e. after permission checks etc.).
+     * It is meant for preprocessing of requests in a shared base class of multiple actions.
+     * It may return a suitable response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function preprocessRequest(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
     }
 
     /**
@@ -236,13 +341,22 @@ abstract class AbstractAction implements ActionInterface
     /**
      * Get a parameter from POST fields or query string.
      *
-     * @param string            $param   Param name
-     * @param array|string|null $default Default value
+     * @param string            $param       Param name
+     * @param array|string|null $default     Default value
+     * @param bool              $preferQuery Prefer query param if both POST and query param is available?
      *
      * @return array|string|null
      */
-    protected function getPostOrQueryParam(string $param, array|string|null $default = null): array|string|null
-    {
+    protected function getPostOrQueryParam(
+        string $param,
+        array|string|null $default = null,
+        bool $preferQuery = false
+    ): array|string|null {
+        if ($preferQuery) {
+            return $this->getQueryParam($param)
+                ?? $this->getPostParam($param)
+                ?? $default;
+        }
         return $this->getPostParam($param)
             ?? $this->getQueryParam($param)
             ?? $default;
@@ -331,11 +445,11 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
-     * Validate any access permission for the action.
+     * Configure default access permission for the action.
      *
-     * @return ?ResponseInterface A response if access is denied, null otherwise
+     * @return void
      */
-    public function validateAccessPermission(): ?ResponseInterface
+    protected function configureDefaultAccessPermission(): void
     {
         $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
         $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
@@ -389,7 +503,15 @@ abstract class AbstractAction implements ActionInterface
             // Check for a default permission if a more specific permission was not found above:
             $this->accessPermission ??= $actionPermissions['*'] ?? null;
         }
+    }
 
+    /**
+     * Validate any access permission for the action.
+     *
+     * @return ?ResponseInterface A response if access is denied, null otherwise
+     */
+    protected function validateAccessPermission(): ?ResponseInterface
+    {
         // If there is an access permission set for this action, pass it through to the permission helper and return the
         // response:
         if ($this->accessPermission) {

@@ -56,7 +56,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Missing configuration for Unpaywall DOI linker: unpaywall_email');
 
-        new Unpaywall(new \VuFind\Config\Config([]));
+        new Unpaywall([]);
     }
 
     /**
@@ -101,7 +101,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
         $config = [
             'unpaywall_email' => 'foo@myuniversity.edu',
         ];
-        $unpaywall = new Unpaywall(new \VuFind\Config\Config($config));
+        $unpaywall = new Unpaywall($config);
 
         foreach ($testData as $data) {
             $responseObj = HttpResponse::fromString($data['fixture']);

@@ -48,10 +48,9 @@ class ThemeConfig
      *
      * @param ThemeInfo $themeInfo ThemeInfo
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(protected ThemeInfo $themeInfo)
     {
-        $this->themeInfo = $themeInfo;
     }
 
     /**

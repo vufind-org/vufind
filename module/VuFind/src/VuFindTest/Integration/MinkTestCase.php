@@ -40,7 +40,7 @@ use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
-use WebSocket\ConnectionException;
+use WebSocket\Exception\ConnectionLevelInterface as ConnectionException;
 
 use function call_user_func;
 use function count;
@@ -1069,7 +1069,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wait for a callback to return the expected value.
+     * Wait for a callback to return the expected value (non-strict comparison).
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
@@ -1086,9 +1086,34 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $expected,
             $callback,
             function ($expected, $result): bool {
-                return $expected === $result;
+                return $expected == $result;
             },
             [$this, 'assertEquals'],
+            $timeout
+        );
+    }
+
+    /**
+     * Wait for a callback to return the expected value (strict comparison).
+     *
+     * @param mixed    $expected Expected value
+     * @param callable $callback Callback
+     * @param ?int     $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertSameWithTimeout(
+        $expected,
+        callable $callback,
+        ?int $timeout = null
+    ): void {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === $result;
+            },
+            [$this, 'assertSame'],
             $timeout
         );
     }

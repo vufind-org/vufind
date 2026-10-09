@@ -125,7 +125,7 @@ class WorldCat2Similar extends Similar
             $result = $this->searchService->invoke($command)->getResult();
             foreach ($result->getRecords() as $record) {
                 if (
-                    !in_array($record->getUniqueId(), $idsToExclude)
+                    !in_array($record->getUniqueID(), $idsToExclude)
                     && count($this->results) < $this->maxRecommendations
                 ) {
                     $this->results[] = $record;

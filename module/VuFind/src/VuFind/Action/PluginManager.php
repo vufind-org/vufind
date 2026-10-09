@@ -60,23 +60,294 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ajax/json' => Ajax\JsonAction::class,
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
-        'author/facetlist' => Author\FacetListAction::class,
+
+        // author/home, author/results and author/search have custom implementations that are autodiscovered
+        'author/facetlist' => Search\FacetListAction::class,
+
+        // authority/home has a custom implementation that is autodiscovered
+        'authority/search' => Search\ResultsAction::class,
+
+        'blender/advanced' => Search\AdvancedAction::class,
+        'blender/home' => Search\HomeAction::class,
+        'blender/results' => Search\ResultsAction::class,
+
+        'blender2/advanced' => Search\AdvancedAction::class,
+        'blender2/home' => Search\HomeAction::class,
+        'blender2/results' => Search\ResultsAction::class,
+
+        'browzine/home' => Search\HomeAction::class,
+        'browzine/search' => Search\ResultsAction::class,
+
         'cart/doexport' => Cart\DoExportAction::class,
         'cart/myresearchbulk' => Cart\MyResearchBulkAction::class,
         'cart/printcart' => Cart\PrintCartAction::class,
         'cart/searchresultsbulk' => Cart\SearchResultsBulkAction::class,
+
         'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
+
+        // At least hierarchy tree links use the collection AjaxTab route:
+        'collection/ajaxtab' => Record\AjaxTabAction::class,
+
         'collections/bytitle' => Collections\ByTitleAction::class,
+
         'comments/deletecomments' => Comments\DeleteCommentsAction::class,
         'comments/userlist' => Comments\UserListAction::class,
+
         'developersettings/deleteapikey' => DeveloperSettings\DeleteApiKeyAction::class,
         'developersettings/displaysettings' => DeveloperSettings\DisplaySettingsAction::class,
         'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
+
+        // eds/advanced has a custom implementation that is autodiscovered
+        'eds/home' => Search\HomeAction::class,
+        'eds/search' => Search\ResultsAction::class,
+
+        'edsrecord/addtag' => Record\AddTagAction::class,
+        'edsrecord/deletetag' => Record\DeleteTagAction::class,
+        'edsrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'edsrecord/cite' => Record\CiteAction::class,
+        'edsrecord/email' => Record\EmailAction::class,
+        'edsrecord/epub' => EdsRecord\EPubAction::class,
+        'edsrecord/export' => Record\ExportAction::class,
+        'edsrecord/hold' => Record\HoldAction::class,
+        'edsrecord/home' => Record\HomeAction::class,
+        'edsrecord/linkedtext' => EdsRecord\LinkedTextAction::class,
+        'edsrecord/permalink' => Record\PermalinkAction::class,
+        'edsrecord/pdf' => EdsRecord\PdfAction::class,
+        'edsrecord/rating' => Record\RatingAction::class,
+        'edsrecord/rdf' => Record\RdfAction::class,
+        'edsrecord/save' => Record\SaveAction::class,
+        'edsrecord/sms' => Record\SmsAction::class,
+
+        'eit/advanced' => Search\AdvancedAction::class,
+        'eit/home' => Search\HomeAction::class,
+        'eit/search' => Search\ResultsAction::class,
+
+        'eitrecord/addtag' => Record\AddTagAction::class,
+        'eitrecord/deletetag' => Record\DeleteTagAction::class,
+        'eitrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'eitrecord/cite' => Record\CiteAction::class,
+        'eitrecord/email' => Record\EmailAction::class,
+        'eitrecord/export' => Record\ExportAction::class,
+        'eitrecord/hold' => Record\HoldAction::class,
+        'eitrecord/home' => Record\HomeAction::class,
+        'eitrecord/permalink' => Record\PermalinkAction::class,
+        'eitrecord/rating' => Record\RatingAction::class,
+        'eitrecord/rdf' => Record\RdfAction::class,
+        'eitrecord/save' => Record\SaveAction::class,
+        'eitrecord/sms' => Record\SmsAction::class,
+
+        'epf/home' => Search\HomeAction::class,
+        'epf/search' => Search\ResultsAction::class,
+
+        'epfrecord/addtag' => Record\AddTagAction::class,
+        'epfrecord/deletetag' => Record\DeleteTagAction::class,
+        'epfrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'epfrecord/cite' => Record\CiteAction::class,
+        'epfrecord/email' => Record\EmailAction::class,
+        'epfrecord/export' => Record\ExportAction::class,
+        'epfrecord/hold' => Record\HoldAction::class,
+        'epfrecord/home' => Record\HomeAction::class,
+        'epfrecord/permalink' => Record\PermalinkAction::class,
+        'epfrecord/rating' => Record\RatingAction::class,
+        'epfrecord/rdf' => Record\RdfAction::class,
+        'epfrecord/save' => Record\SaveAction::class,
+        'epfrecord/sms' => Record\SmsAction::class,
+
+        'error/permissiondenied' => Error\PermissionDeniedAction::class,
+
+        'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
+
+        'hierarchy/getrecord' => Hierarchy\GetRecordAction::class,
+        'hierarchy/gettree' => Hierarchy\GetTreeAction::class,
+        'hierarchy/searchtree' => Hierarchy\SearchTreeAction::class,
+
+        'install/fixbasicconfig' => Install\FixBasicConfigAction::class,
+        'install/fixcache' => Install\FixCacheAction::class,
+        'install/fixdatabase' => Install\FixDatabaseAction::class,
+        'install/fixdependencies' => Install\FixDependenciesAction::class,
+        'install/fixils' => Install\FixIlsAction::class,
+        'install/fixsolr' => Install\FixSolrAction::class,
+        'install/fixsecurity' => Install\FixSecurityAction::class,
+        'install/performsecurityfix' => Install\PerformSecurityFixAction::class,
+        'install/fixsslcerts' => Install\FixSslCertsAction::class,
+
+        'libguides/home' => Search\HomeAction::class,
+        'libguides/results' => Search\ResultsAction::class,
+
+        'libguidesaz/home' => Search\HomeAction::class,
+        'libguidesaz/results' => Search\ResultsAction::class,
+
+        'librarycards/connectcard' => LibraryCards\ConnectCardAction::class,
+        'librarycards/connectcardlogin' => LibraryCards\ConnectCardLoginAction::class,
+        'librarycards/deletecard' => LibraryCards\DeleteCardAction::class,
+        'librarycards/editcard' => LibraryCards\EditCardAction::class,
+        'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
+        'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
+
+        'missingrecord/home' => MissingRecord\HomeAction::class,
+
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
+
+        'oai/authserver' => Oai\AuthServerAction::class,
+
+        'pazpar2/home' => Search\HomeAction::class,
+        'pazpar2/search' => Search\ResultsAction::class,
+
+        'primo/advanced' => Search\AdvancedAction::class,
+        'primo/citedby' => Primo\CitedByAction::class,
+        // primo/cites has a custom implementation that is autodiscovered
+        'primo/home' => Search\HomeAction::class,
+        'primo/search' => Search\ResultsAction::class,
+
+        'oauth2/userinfo' => OAuth2\UserInfoAction::class,
+        'oauth2/wellknownconfiguration' => OAuth2\WellKnownConfigurationAction::class,
+
+        'primorecord/addtag' => Record\AddTagAction::class,
+        'primorecord/deletetag' => Record\DeleteTagAction::class,
+        'primorecord/ajaxtab' => Record\AjaxTabAction::class,
+        'primorecord/cite' => Record\CiteAction::class,
+        'primorecord/email' => Record\EmailAction::class,
+        'primorecord/export' => Record\ExportAction::class,
+        'primorecord/hold' => Record\HoldAction::class,
+        'primorecord/home' => Record\HomeAction::class,
+        'primorecord/permalink' => Record\PermalinkAction::class,
+        'primorecord/rating' => Record\RatingAction::class,
+        'primorecord/rdf' => Record\RdfAction::class,
+        'primorecord/save' => Record\SaveAction::class,
+        'primorecord/sms' => Record\SmsAction::class,
+
+        'proquestfsg/home' => Search\HomeAction::class,
+        'proquestfsg/results' => Search\ResultsAction::class,
+        'proquestfsg/search' => Search\ResultsAction::class,
+
+        'proquestfsgrecord/addtag' => Record\AddTagAction::class,
+        'proquestfsgrecord/deletetag' => Record\DeleteTagAction::class,
+        'proquestfsgrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'proquestfsgrecord/cite' => Record\CiteAction::class,
+        'proquestfsgrecord/email' => Record\EmailAction::class,
+        'proquestfsgrecord/export' => Record\ExportAction::class,
+        'proquestfsgrecord/hold' => Record\HoldAction::class,
+        'proquestfsgrecord/home' => Record\HomeAction::class,
+        'proquestfsgrecord/permalink' => Record\PermalinkAction::class,
+        'proquestfsgrecord/rating' => Record\RatingAction::class,
+        'proquestfsgrecord/rdf' => Record\RdfAction::class,
+        'proquestfsgrecord/save' => Record\SaveAction::class,
+        'proquestfsgrecord/sms' => Record\SmsAction::class,
+
         'ratings/deleteratings' => Ratings\DeleteRatingsAction::class,
         'ratings/userlist' => Ratings\UserListAction::class,
+
+        'record/addtag' => Record\AddTagAction::class,
+        'record/deletetag' => Record\DeleteTagAction::class,
+        'record/ajaxtab' => Record\AjaxTabAction::class,
+        'record/getthis' => Record\GetThisAction::class,
+        'record/illrequest' => Record\IllRequestAction::class,
+        'record/storageretrievalrequest' => Record\StorageRetrievalRequestAction::class,
+
+        'search/collectionfacetlist' => Search\FacetListAction::class,
+        'search/editmemory' => Search\EditMemoryAction::class,
+        'search/facetlist' => Search\FacetListAction::class,
+        'search/newitem' => Search\NewItemAction::class,
+        'search/newitemresults' => Search\NewItemResultsAction::class,
+        'search/opensearch' => Search\OpenSearchAction::class,
+        'search/reservesfacetlist' => Search\FacetListAction::class,
+        'search/reservesresults' => Search\ReservesResultsAction::class,
+        'search/reservessearch' => Search\ReservesSearchAction::class,
+
+        'search2/advanced' => Search\AdvancedAction::class,
+        'search2/facetlist' => Search\FacetListAction::class,
+        'search2/home' => Search\HomeAction::class,
+        'search2/results' => Search\ResultsAction::class,
+        'search2/versions' => Search\VersionsAction::class,
+
+        'search2collection/home' => Collection\HomeAction::class,
+        // At least hierarchy tree links use the collection AjaxTab route:
+        'search2collection/ajaxtab' => Record\AjaxTabAction::class,
+
+        'search2record/addtag' => Record\AddTagAction::class,
+        'search2record/deletetag' => Record\DeleteTagAction::class,
+        'search2record/ajaxtab' => Record\AjaxTabAction::class,
+        'search2record/cite' => Record\CiteAction::class,
+        'search2record/email' => Record\EmailAction::class,
+        'search2record/export' => Record\ExportAction::class,
+        'search2record/hold' => Record\HoldAction::class,
+        'search2record/home' => Record\HomeAction::class,
+        'search2record/permalink' => Record\PermalinkAction::class,
+        'search2record/rating' => Record\RatingAction::class,
+        'search2record/rdf' => Record\RdfAction::class,
+        'search2record/save' => Record\SaveAction::class,
+        'search2record/sms' => Record\SmsAction::class,
+
+        // summon/advanced has a custom implementation that is autodiscovered
+        'summon/home' => Search\HomeAction::class,
+        'summon/search' => Search\ResultsAction::class,
+
+        'summonrecord/addtag' => Record\AddTagAction::class,
+        'summonrecord/deletetag' => Record\DeleteTagAction::class,
+        'summonrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'summonrecord/cite' => Record\CiteAction::class,
+        'summonrecord/email' => Record\EmailAction::class,
+        'summonrecord/export' => Record\ExportAction::class,
+        'summonrecord/hold' => Record\HoldAction::class,
+        'summonrecord/home' => Record\HomeAction::class,
+        'summonrecord/permalink' => Record\PermalinkAction::class,
+        'summonrecord/rating' => Record\RatingAction::class,
+        'summonrecord/rdf' => Record\RdfAction::class,
+        'summonrecord/save' => Record\SaveAction::class,
+        'summonrecord/sms' => Record\SmsAction::class,
+
+        'tags/home' => Search\ResultsAction::class,
+
+        'web/facetlist' => Search\FacetListAction::class,
+        'web/home' => Search\HomeAction::class,
+        // web/results has a custom implementation that is autodiscovered
+
+        // Legacy WorldcatRecord actions:
+        'worldcatrecord/addtag' => Record\AddTagAction::class,
+        'worldcatrecord/deletetag' => Record\DeleteTagAction::class,
+        'worldcatrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'worldcatrecord/cite' => Record\CiteAction::class,
+        'worldcatrecord/email' => Record\EmailAction::class,
+        'worldcatrecord/export' => Record\ExportAction::class,
+        'worldcatrecord/hold' => Record\HoldAction::class,
+        'worldcatrecord/home' => Record\HomeAction::class,
+        'worldcatrecord/permalink' => Record\PermalinkAction::class,
+        'worldcatrecord/rating' => Record\RatingAction::class,
+        'worldcatrecord/rdf' => Record\RdfAction::class,
+        'worldcatrecord/save' => Record\SaveAction::class,
+        'worldcatrecord/sms' => Record\SmsAction::class,
+
+        'worldcat2/advanced' => Search\AdvancedAction::class,
+        'worldcat2/home' => Search\HomeAction::class,
+        'worldcat2/search' => Search\ResultsAction::class,
+
+        'worldcat2record/addtag' => Record\AddTagAction::class,
+        'worldcat2record/deletetag' => Record\DeleteTagAction::class,
+        'worldcat2record/ajaxtab' => Record\AjaxTabAction::class,
+        'worldcat2record/cite' => Record\CiteAction::class,
+        'worldcat2record/email' => Record\EmailAction::class,
+        'worldcat2record/export' => Record\ExportAction::class,
+        'worldcat2record/hold' => Record\HoldAction::class,
+        'worldcat2record/home' => Record\HomeAction::class,
+        'worldcat2record/permalink' => Record\PermalinkAction::class,
+        'worldcat2record/rating' => Record\RatingAction::class,
+        'worldcat2record/rdf' => Record\RdfAction::class,
+        'worldcat2record/save' => Record\SaveAction::class,
+        'worldcat2record/sms' => Record\SmsAction::class,
+
         'tag/deletetags' => Tag\DeleteTagsAction::class,
         'tag/userlist' => Tag\UserListAction::class,
+
+        'upgrade/criticalfixblowfish' => Upgrade\CriticalFixBlowfishAction::class,
+        'upgrade/criticalfixinsecuredatabase' => Upgrade\CriticalFixInsecureDatabaseAction::class,
+        'upgrade/fixanonymoustags' => Upgrade\FixAnonymousTagsAction::class,
+        'upgrade/fixconfig' => Upgrade\FixConfigAction::class,
+        'upgrade/fixdatabase' => Upgrade\FixDatabaseAction::class,
+        'upgrade/fixduplicatetags' => Upgrade\FixDuplicateTagsAction::class,
+        'upgrade/fixmetadata' => Upgrade\FixMetadataAction::class,
+        'upgrade/getdbcredentials' => Upgrade\GetDbCredentialsAction::class,
+        'upgrade/getsourceversion' => Upgrade\GetSourceVersionAction::class,
+        'upgrade/showsql' => Upgrade\ShowSqlAction::class,
     ];
 
     /**
@@ -89,8 +360,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
+        'Oauth2' => 'OAuth2',
+        'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
+        'Worldcat' => 'WorldCat',
     ];
 
     /**
@@ -127,6 +402,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        // These objects are not meant to be shared -- every time we retrieve one, we are building a brand new object.
+        $this->sharedByDefault = false;
+
         $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);

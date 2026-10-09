@@ -95,7 +95,6 @@ class HomeAction extends AbstractTemplateRenderingAction
      * @param SearchService $searchService Search service
      * @param array         $config        VuFind configuration
      */
-    #[Autowire()]
     public function __construct(
         protected SearchService $searchService,
         #[Autowire(config: 'config')] protected array $config,

@@ -29,8 +29,10 @@
 
 namespace VuFind\ActionHelper;
 
+use Laminas\Router\RouteMatch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\ActionConfigManager;
 use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -49,10 +51,12 @@ class ForwardHelper implements HelperInterface
      * Constructor.
      *
      * @param ActionPluginManager $actionPluginManager Action plugin manager
+     * @param ActionConfigManager $actionConfigManager Action configuration manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected ActionPluginManager $actionPluginManager,
+        protected ActionConfigManager $actionConfigManager,
     ) {
     }
 
@@ -74,8 +78,51 @@ class ForwardHelper implements HelperInterface
             throw new \InvalidArgumentException("Unknown action '$actionId'");
         }
         $action = $this->actionPluginManager->get($actionId);
+        $this->actionConfigManager->applyActionConfig($action, actionIdentifier: $actionId);
         return $action(
             $request->withAttribute('action-id', $actionId),
+            $response
+        );
+    }
+
+    /**
+     * Forward the request to the confirmation action.
+     *
+     * @param ServerRequestInterface $request   Request
+     * @param ResponseInterface      $response  Response
+     * @param string                 $title     Title of confirm dialog
+     * @param string                 $yesTarget Form target for "confirm" action
+     * @param string                 $noTarget  Form target for "cancel" action
+     * @param string|array           $messages  Info messages for confirm dialog
+     * @param array                  $extras    Extra details to include in form
+     *
+     * @return ResponseInterface
+     */
+    public function forwardToConfirm(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        string $title,
+        string $yesTarget,
+        string $noTarget,
+        string|array $messages = [],
+        array $extras = []
+    ): ResponseInterface {
+        $action = $this->actionPluginManager->get('confirm/confirm');
+        $routeMatch = new RouteMatch(
+            [
+                'data' => [
+                    'title' => $title,
+                    'confirm' => $yesTarget,
+                    'cancel' => $noTarget,
+                    'messages' => (array)$messages,
+                    'extras' => $extras,
+                ],
+            ]
+        );
+        $routeMatch->setMatchedRouteName('Confirm/Confirm');
+        return $action(
+            $request->withAttribute('action-id', 'confirm/confirm')
+                ->withAttribute('route-match', $routeMatch),
             $response
         );
     }

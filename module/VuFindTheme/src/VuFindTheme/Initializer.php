@@ -33,8 +33,8 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
+use VuFind\View\GlobalsContainer;
 
 /**
  * VuFind Theme Initializer.
@@ -47,13 +47,6 @@ use VuFind\Cookie\CookieManager;
  */
 class Initializer
 {
-    /**
-     * Theme configuration object.
-     *
-     * @var Config
-     */
-    protected $config;
-
     /**
      * Map of theme aliases to theme names (null if uninitialized).
      *
@@ -106,7 +99,7 @@ class Initializer
     /**
      * Constructor.
      *
-     * @param Config                      $config           Configuration object
+     * @param array                       $config           Configuration array
      * containing these keys:
      * <ul>
      *   <li>theme - the name of the default theme for non-mobile devices</li>
@@ -125,11 +118,8 @@ class Initializer
      * @param MvcEvent|ContainerInterface $eventOrContainer Laminas MVC Event object
      * OR service container object
      */
-    public function __construct(Config $config, $eventOrContainer)
+    public function __construct(protected array $config, $eventOrContainer)
     {
-        // Store parameters:
-        $this->config = $config;
-
         if ($eventOrContainer instanceof MvcEvent) {
             $this->event = $eventOrContainer;
             $this->serviceManager = $this->event->getApplication()
@@ -209,16 +199,16 @@ class Initializer
     {
         if ($this->themeMap === null) {
             // Set up special-case 'standard', 'mobile' and 'admin' aliases:
-            $this->themeMap = ['standard' => $this->config->theme];
-            if (isset($this->config->mobile_theme)) {
-                $this->themeMap['mobile'] = $this->config->mobile_theme;
+            $this->themeMap = ['standard' => $this->config['theme']];
+            if (isset($this->config['mobile_theme'])) {
+                $this->themeMap['mobile'] = $this->config['mobile_theme'];
             }
-            if (isset($this->config->admin_theme)) {
-                $this->themeMap['admin'] = $this->config->admin_theme;
+            if (isset($this->config['admin_theme'])) {
+                $this->themeMap['admin'] = $this->config['admin_theme'];
             }
 
             // Parse the alternate theme settings for additional options:
-            $parts = explode(',', $this->config->alternate_themes ?? '');
+            $parts = explode(',', $this->config['alternate_themes'] ?? '');
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 if (!empty($subparts[1])) {
@@ -250,7 +240,7 @@ class Initializer
             isset($this->event)
             && ($routeMatch = $this->event->getRouteMatch())
             && $routeMatch->getParam('admin_route')
-            && ($this->config->admin_enabled ?? false)
+            && ($this->config['admin_enabled'] ?? false)
             && isset($themes['admin'])
         ) {
             return 'admin';
@@ -291,12 +281,10 @@ class Initializer
      */
     protected function sendThemeOptionsToView(string $selectedUI, string $currentTheme): void
     {
-        // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
-            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
-
-            // Send down the view options:
-            $viewModel->setVariable('themeOptions', $this->getThemeOptions($selectedUI, $currentTheme));
+            // Store view options in globals:
+            $this->serviceManager->get(GlobalsContainer::class)['themeOptions']
+                = $this->getThemeOptions($selectedUI, $currentTheme);
         }
     }
 
@@ -312,8 +300,8 @@ class Initializer
     protected function getThemeOptions(string $selectedUI, string $currentTheme): array
     {
         $options = [];
-        if (isset($this->config->selectable_themes)) {
-            $parts = explode(',', $this->config->selectable_themes);
+        if (isset($this->config['selectable_themes'])) {
+            $parts = explode(',', $this->config['selectable_themes']);
             $foundSelected = false;
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
@@ -375,8 +363,8 @@ class Initializer
         $resources = $this->serviceManager->get(ResourceContainer::class);
 
         // Set generator if necessary:
-        if (isset($this->config->generator)) {
-            $resources->setGenerator($this->config->generator);
+        if (isset($this->config['generator'])) {
+            $resources->setGenerator($this->config['generator']);
         }
 
         // Determine doctype and apply it:

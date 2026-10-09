@@ -75,8 +75,8 @@ class LoginHelper implements HelperInterface
      * @param UserSessionPersistenceInterface $userSession        User session persistence service
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param UrlHelper                       $urlHelper          URL helper
+     * @param ContextHelper                   $contextHelper      Context helper
      */
-    #[Autowire()]
     public function __construct(
         protected RouteHelper $routeHelper,
         protected FollowupHelper $followupHelper,
@@ -96,6 +96,8 @@ class LoginHelper implements HelperInterface
         protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(container: HelperPluginManager::class)]
         protected UrlHelper $urlHelper,
+        #[Autowire(container: HelperPluginManager::class)]
+        protected ContextHelper $contextHelper,
     ) {
     }
 
@@ -202,7 +204,7 @@ class LoginHelper implements HelperInterface
                     }
                     // Don't reveal the result
                     $this->userSession->setLibraryCardAuthenticationData($authData);
-                    $this->setFollowupUrlToReferer($request);
+                    $this->setFollowupUrlToReferrer($request);
                     return $this->redirectHelper->redirectToRoute($response, 'myresearch-verifyotp');
                 } else {
                     $patron = $this->ilsAuthenticator->newCatalogLogin($username, $password, $user);
@@ -230,7 +232,7 @@ class LoginHelper implements HelperInterface
         }
 
         // Send either null or patron array back to caller:
-        return $patron ?? null;
+        return $patron ?: null;
     }
 
     /**
@@ -274,11 +276,9 @@ class LoginHelper implements HelperInterface
     }
 
     /**
-     * Store a referer (if appropriate) to keep post-login redirect pointing
-     * to an appropriate location. This is used when the user clicks the
-     * log in link from an arbitrary page or when a password is mistyped;
-     * separate logic is used for storing followup information when VuFind
-     * forces the user to log in from another context.
+     * Store a referrer (if appropriate) to keep post-login redirect pointing to an appropriate location. This is used
+     * when the user clicks the log in link from an arbitrary page or when a password is mistyped; separate logic is
+     * used for storing followup information when VuFind forces the user to log in from another context.
      *
      * @param ServerRequestInterface $request         Request
      * @param bool                   $allowCurrentUrl Whether the current URL is valid for followup
@@ -286,53 +286,57 @@ class LoginHelper implements HelperInterface
      *
      * @return void
      */
-    public function setFollowupUrlToReferer(
+    public function setFollowupUrlToReferrer(
         ServerRequestInterface $request,
         bool $allowCurrentUrl = true,
         array $extras = []
     ): void {
-        // lbreferer is the stored current url of the lightbox
-        // which overrides the url from the server request when present
-        $referer = $request->getQueryParams()['lbreferer'] ?? $request->getHeader('Referer')[0] ?? null;
-        // Get the referer -- if it's empty, there's nothing to store! Also,
-        // if the referer lives outside of VuFind, don't store it! We only
-        // want internal post-login redirects.
-        if (empty($referer) || !$this->urlHelper->isLocalUrl($referer)) {
+        if (!($referrer = $this->contextHelper->getReferrer($request, true, allowCurrentUrl: $allowCurrentUrl))) {
             return;
         }
-        // If the referer is the MyResearch/Home action, it probably means
-        // that the user is repeatedly mistyping their password. We should
-        // ignore this and instead rely on any previously stored referer.
-        $refererNorm = $this->urlHelper->normalizeUrlForComparison($referer);
-        $myResearchHomeUrl = $this->serverUrlHelper->getUrlForPath(
-            $this->routeHelper->getUrlFromRoute('myresearch-home')
-        );
-        $mrhuNorm = $this->urlHelper->normalizeUrlForComparison($myResearchHomeUrl);
-        if ($mrhuNorm === $refererNorm) {
+        // If the referrer points to a login action, it probably means that the user is repeatedly mistyping their
+        // password.  We should ignore this and instead rely on any previously stored referrer.
+        if ($this->referrerIsLoginAction($referrer)) {
             return;
         }
 
-        // If the referer is the MyResearch/UserLogin action, it probably means
-        // that the user is repeatedly mistyping their password. We should
-        // ignore this and instead rely on any previously stored referer.
-        $myUserLogin = $this->serverUrlHelper->getUrlForPath(
-            $this->routeHelper->getUrlFromRoute('myresearch-userlogin')
-        );
-        $mulNorm = $this->urlHelper->normalizeUrlForComparison($myUserLogin);
-        if (str_starts_with($refererNorm, $mulNorm)) {
-            return;
-        }
-
-        // Check that the referer is not current URL if not allowed:
-        if (!$allowCurrentUrl && (string)$request->getUri() === $referer) {
-            return;
-        }
-
-        // Clear previously stored lightboxParent.
+        // Clear previously stored lightboxParent:
         $this->followupHelper->clear('lightboxParent');
 
-        // If we got this far, we want to store the referer:
-        $this->followupHelper->store($extras, $referer);
+        // If we got this far, we want to store the referrer:
+        $this->followupHelper->store($extras, $referrer);
+    }
+
+    /**
+     * Retrieve a referrer to keep post-login redirect pointing to an appropriate location. Unset the followup before
+     * returning.
+     *
+     * @param ServerRequestInterface $request       Request
+     * @param bool                   $checkRedirect Whether the query should be checked for param 'redirect'
+     *
+     * @return ?string
+     */
+    public function getAndClearFollowupUrl(
+        ServerRequestInterface $request,
+        $checkRedirect = false
+    ): ?string {
+        if ($url = $this->followupHelper->retrieveAndClear('url')) {
+            $lightboxParent = $this->followupHelper->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || ($request->getQueryParams()['redirect'] ?? true)) {
+                if (null !== $lightboxParent && !$this->contextHelper->inLightbox($request)) {
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
+                    $params['lightboxChild'] = $url;
+                    $parentUrl->setQuery($params);
+                    return (string)$parentUrl;
+                }
+                return $url;
+            }
+        }
+        return null;
     }
 
     /**
@@ -345,5 +349,30 @@ class LoginHelper implements HelperInterface
         $this->followupHelper->clear('isReferrer');
         $this->followupHelper->clear('lightboxParent');
         $this->followupHelper->clear('url');
+    }
+
+    /**
+     * Check if referrer points to a likely login action.
+     *
+     * @param string $referrer Referrer
+     *
+     * @return bool
+     */
+    protected function referrerIsLoginAction(string $referrer): bool
+    {
+        // Check for MyResearch/Home or MyResearch/UserLogin:
+        $myResearchHomeUrlNorm = $this->urlHelper->normalizeUrlForComparison(
+            $this->serverUrlHelper->getUrlForPath(
+                $this->routeHelper->getUrlFromRoute('myresearch-home')
+            )
+        );
+        $myResearchUserLoginNorm = $this->urlHelper->normalizeUrlForComparison(
+            $this->serverUrlHelper->getUrlForPath(
+                $this->routeHelper->getUrlFromRoute('myresearch-userlogin')
+            )
+        );
+        $referrerNorm = $this->urlHelper->normalizeUrlForComparison($referrer);
+        return $referrerNorm === $myResearchHomeUrlNorm
+            || str_starts_with($referrerNorm, $myResearchUserLoginNorm);
     }
 }

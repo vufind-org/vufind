@@ -34,8 +34,8 @@ namespace VuFind\QRCode;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+use VuFind\ServiceManager\Factory\Autowire;
 
-use function intval;
 use function strlen;
 
 /**
@@ -61,14 +61,16 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config  $config VuFind configuration
+     * @param array                  $config VuFind configuration
      * @param \VuFindTheme\ThemeInfo $theme  VuFind theme tools
      */
-    public function __construct($config, \VuFindTheme\ThemeInfo $theme)
-    {
+    public function __construct(
+        #[Autowire(config: 'config')]
+        array $config,
+        \VuFindTheme\ThemeInfo $theme
+    ) {
         $this->setThemeInfo($theme);
-        $this->configuredFailImage
-            = $config->QRCode->noQRCodeAvailableImage ?? null;
+        $this->configuredFailImage = $config['QRCode']['noQRCodeAvailableImage'] ?? null;
         $this->defaultFailImage = 'images/noQRCode.gif';
     }
 
@@ -99,8 +101,8 @@ class Loader extends \VuFind\ImageLoader
         // do some math to try to map old PHPQRCode-style settings to new
         // Endroid\QrCode equivalents. When the size setting is 30 or higher,
         // treat 'size' and 'margin' as literal pixel sizes.
-        $size = intval($params['size']);
-        $margin = intval($params['margin']);
+        $size = (int)$params['size'];
+        $margin = (int)$params['margin'];
         $level = $this->mapErrorLevel($params['level']);
         if ($size < 30) {
             // In the old system, the margin was multiplied by the size....

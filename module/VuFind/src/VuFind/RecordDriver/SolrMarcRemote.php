@@ -67,12 +67,9 @@ class SolrMarcRemote extends SolrMarc implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      *
      * @throws \Exception
      */
@@ -84,7 +81,7 @@ class SolrMarcRemote extends SolrMarc implements
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
 
         // get config values for remote fullrecord service
-        $this->uriPattern = $mainConfig->Record->remote_marc_url ?? null;
+        $this->uriPattern = $mainConfig['Record']['remote_marc_url'] ?? null;
         if (!$this->uriPattern) {
             throw new \Exception('SolrMarcRemote baseUrl-setting missing.');
         }

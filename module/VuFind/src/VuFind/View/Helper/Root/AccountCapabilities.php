@@ -48,8 +48,8 @@ class AccountCapabilities
      *
      * @param Helper $helper Capabilities helper
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire]
         protected Helper $helper
     ) {
     }

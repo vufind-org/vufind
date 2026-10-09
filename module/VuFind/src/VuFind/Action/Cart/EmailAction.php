@@ -113,7 +113,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
         $ids = $bulkActionHelper->getSelectedIds($request);
 
         // Retrieve follow-up information if necessary:
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             $ids = $this->followupHelper->retrieveAndClear('cartIds') ?? [];
         }
         $actionLimit = $bulkActionHelper->getBulkActionLimit('email');

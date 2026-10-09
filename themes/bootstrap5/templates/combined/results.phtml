@@ -6,7 +6,7 @@
   $this->headTitle($headTitle);
 
   // Set up search box:
-  $this->layout()->searchbox = $this->context($this)->renderInContext(
+  $this->globals()['searchbox'] = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
       [
         'lookfor' => $lookfor,
@@ -64,7 +64,7 @@
     )
   ?>
 <?php endif; ?>
-<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
 </form>
 <?php

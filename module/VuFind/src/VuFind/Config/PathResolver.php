@@ -179,11 +179,9 @@ class PathResolver
 
             // loading DirLocations.ini of currentDir
             $systemConfigFile = $currentDir . '/DirLocations.ini';
-            $systemConfig = new Config(
-                file_exists($systemConfigFile)
-                    ? parse_ini_file($systemConfigFile, true)
-                    : []
-            );
+            $systemConfig = file_exists($systemConfigFile)
+                ? parse_ini_file($systemConfigFile, true)
+                : [];
 
             // adding directory to the stack
             array_unshift(
@@ -272,7 +270,7 @@ class PathResolver
         $baseConfigLocation = $this->getBaseConfigLocation($configName);
         $destinationLocation = clone $baseConfigLocation;
         $destinationLocation->setBasePath(
-            $this->getLocalConfigDirPath()
+            $this->getLocalConfigDirPath() . ($this->getConfigNameParts($configName)['subDir'] ?? '')
         );
         return $destinationLocation;
     }
@@ -383,11 +381,11 @@ class PathResolver
         array $dirSpec,
         ?string $overrideConfigSubdir
     ): ?ConfigLocationInterface {
-        $configNameParts = explode('/', $configName, 2);
-        $subDir = (count($configNameParts) > 1) ? '/' . $configNameParts[0] : '';
+        $configNameParts = $this->getConfigNameParts($configName);
+        $subDir = $configNameParts['subDir'] ?? '';
         return $this->getMatchingConfigLocation(
             $this->buildPath($dirSpec, $overrideConfigSubdir) . $subDir,
-            $configNameParts[1] ?? $configName
+            $configNameParts['mainName'] ?? $configName
         );
     }
 
@@ -508,5 +506,23 @@ class PathResolver
             $path .= '/' . $filename;
         }
         return $path;
+    }
+
+    /**
+     * Splits the subdirectory in a config name from the main name and returns those parts.
+     *
+     * @param string $configName Config name
+     *
+     * @return array
+     */
+    protected function getConfigNameParts(string $configName): array
+    {
+        $configNameParts = explode('/', $configName);
+        if (count($configNameParts) > 1) {
+            $res = ['mainName' => array_pop($configNameParts)];
+            $res['subDir'] = '/' . implode('/', $configNameParts);
+            return $res;
+        }
+        return ['mainName' => $configName];
     }
 }

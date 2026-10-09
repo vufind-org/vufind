@@ -321,7 +321,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         // Send notify event:
         $this->clickCss($page, '.button-notify');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'OK Notify done',
             function () use ($page) {
                 return $this->findCssAndGetText($page, 'body');
@@ -415,7 +415,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $windowCount = count($session->getWindowNames());
         $this->clickCss($page, '.last-payment-information a');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $windowCount + 1,
             function () use ($session) {
                 return count($session->getWindowNames());

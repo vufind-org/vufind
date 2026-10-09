@@ -78,21 +78,10 @@ interface ConfigManagerInterface
      * @param bool   $forceReload    If cache should be ignored
      * @param bool   $useLocalConfig Use local configuration if available
      *
-     * @return Config
+     * @return     Config
+     * @deprecated Use getConfigArray()
      */
     public function getConfigObject(string $configName, bool $forceReload = false, bool $useLocalConfig = true): Config;
-
-    /**
-     * Get config in PluginManager style.
-     *
-     * @param string $name    Service name of plugin to retrieve.
-     * @param ?array $options Options to use when creating the instance.
-     *
-     * @return mixed
-     *
-     * @deprecated Use getConfigArray, getConfigObject or getConfig instead
-     */
-    public function get($name, ?array $options = null);
 
     /**
      * Load config from a specific location.

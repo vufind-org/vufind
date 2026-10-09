@@ -101,4 +101,76 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->findCss($page, 'nav .pager');
     }
+
+    /**
+     * If the total result count decreases during the next-prev navigation controls should update.
+     *
+     * @return void
+     */
+    public function testDecreasedResultCountChangesCauseNoProblems(): void
+    {
+        $this->changeConfigs(
+            ['config' => ['Record' => ['next_prev_navigation' => true, 'first_last_navigation' => true]]]
+        );
+
+        // when a search returns no results
+        // make sure no errors occur when visiting a collection record after
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=Author&type=AllFields&limit=2&page=6');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '#result1 a.getFull');
+        $this->waitForPageLoad($page);
+
+        $pagerText = $this->findCssAndGetText($page, '.pager .pager-text');
+        $this->assertSame('#12 of 16 results', $pagerText);
+
+        // Change searchspecs.yaml to reduce total results to 14.
+        $this->changeYamlConfigs(
+            [
+                'searchspecs' => [
+                    'AllFields' => [
+                        'DismaxFields' => [
+                            'author',
+                        ],
+                    ],
+                ],
+            ],
+            ['searchspecs']
+        );
+
+        $this->clickCss($page, '.pager .page-next a');
+        $this->waitForPageLoad($page);
+
+        $pagerText = $this->findCssAndGetText($page, '.pager .pager-text');
+        $this->assertSame('#13 of 16 results', $pagerText);
+
+        // Test that reaching end of search results updates pager info
+        $this->clickCss($page, '.pager .page-next a');
+        $this->waitForPageLoad($page);
+
+        $pagerText = $this->findCssAndGetText($page, '.pager .pager-text');
+        $this->assertSame('#14 of 14 results', $pagerText);
+
+        $this->findCss($page, '.pager .page-next.disabled');
+        $this->findCss($page, '.pager .page-last.disabled');
+
+        $lastPageUrl = $session->getCurrentUrl();
+
+        // Test that updated info persists when going back
+        $this->clickCss($page, '.pager .page-prev a');
+        $this->waitForPageLoad($page);
+
+        $pagerText = $this->findCssAndGetText($page, '.pager .pager-text');
+        $this->assertSame('#13 of 14 results', $pagerText);
+
+        $this->unFindCss($page, '.pager .page-next.disabled');
+
+        // Test that link to last result is updated
+        $this->clickCss($page, '.pager .page-last a');
+        $this->waitForPageLoad($page);
+        $this->assertSame($lastPageUrl, $session->getCurrentUrl());
+    }
 }

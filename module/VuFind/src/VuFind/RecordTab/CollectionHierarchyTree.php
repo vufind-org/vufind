@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * HierarchyTree tab.
  *
@@ -41,24 +43,17 @@ namespace VuFind\RecordTab;
 class CollectionHierarchyTree extends HierarchyTree
 {
     /**
-     * Record loader.
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $loader;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config Configuration
+     * @param array                 $config Configuration
      * @param \VuFind\Record\Loader $loader Record loader
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        \VuFind\Record\Loader $loader
+        #[Autowire(config: 'config')]
+        array $config,
+        protected \VuFind\Record\Loader $loader
     ) {
         parent::__construct($config);
-        $this->loader = $loader;
     }
 
     /**
