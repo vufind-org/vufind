@@ -31,9 +31,6 @@ namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
-use VuFind\ServiceManager\Factory\DefaultFactory;
 
 /**
  * VuFind Abstract Plugin Factory.
@@ -46,8 +43,6 @@ use VuFind\ServiceManager\Factory\DefaultFactory;
  */
 class AbstractPluginFactory implements AbstractFactoryInterface
 {
-    use Factory\AutowireableTrait;
-
     /**
      * Default namespace for building class names (null to use class names as-is).
      *
@@ -77,6 +72,24 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     protected ?string $defaultFactory = null;
 
     /**
+     * Factory detector.
+     *
+     * @var FactoryDetector
+     */
+    protected ?FactoryDetector $factoryDetector = null;
+
+    /**
+     * Get factory detector.
+     *
+     * @return FactoryDetector
+     */
+    protected function getFactoryDetector(): FactoryDetector
+    {
+        $this->factoryDetector ??= new FactoryDetector();
+        return $this->factoryDetector;
+    }
+
+    /**
      * Get the name of a class for a given plugin name.
      *
      * @param string $requestedName Name of service
@@ -98,62 +111,6 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     }
 
     /**
-     * Given the name of a class, check if it has default factory behavior assigned; return an array
-     * of values from the DefaultFactory attribute.
-     *
-     * @param string $class Class name
-     *
-     * @return array{name: ?string, autodetect: bool}
-     */
-    protected function getDefaultFactorySettings(string $class): array
-    {
-        $reflectionClass = new ReflectionClass($class);
-        $matches = $reflectionClass->getAttributes(DefaultFactory::class);
-        if (!$matches) {
-            $matches = $reflectionClass->getConstructor()?->getAttributes(DefaultFactory::class);
-        }
-        return isset($matches[0]) ? $matches[0]->getArguments() : ['name' => null, 'autodetect' => true];
-    }
-
-    /**
-     * Given a class name, detect the best matching factory. Return null if none can be found.
-     * This is a support method for getFactoryForClass and should not be called directly; use
-     * getFactoryForClass to take advantage of internal caching.
-     *
-     * @param string $class Class name
-     *
-     * @return ?string
-     */
-    protected function detectFactoryForClass(string $class): ?string
-    {
-        $defaultFactorySettings = $this->getDefaultFactorySettings($class);
-        if ($defaultFactorySettings['name']) {
-            return $defaultFactorySettings['name'];
-        }
-        // If the class is autowireable, take advantage of that:
-        if ($this->isAutowireable($class)) {
-            return AutowiringFactory::class;
-        }
-        // Autodetect a factory if desired:
-        if ($defaultFactorySettings['autodetect']) {
-            // If the class has an explicit factory, use that:
-            if (class_exists($class . 'Factory')) {
-                return $class . 'Factory';
-            }
-            // Check if parent classes have factories:
-            $parentClass = get_parent_class($class);
-            while ($parentClass) {
-                if (class_exists($parentClass . 'Factory')) {
-                    return $parentClass . 'Factory';
-                }
-                $parentClass = get_parent_class($parentClass);
-            }
-        }
-        // If we got this far, we'll fall back on the default factory for lack of a better option:
-        return $this->defaultFactory;
-    }
-
-    /**
      * Given a class name, find the best matching factory. Return null if none can be found.
      *
      * @param string $class Class name
@@ -163,7 +120,8 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     protected function getFactoryForClass(string $class): ?string
     {
         if (!isset($this->factoryForClass[$class])) {
-            $this->factoryForClass[$class] = $this->detectFactoryForClass($class);
+            $this->factoryForClass[$class] = $this->getFactoryDetector()->detectFactoryForClass($class)
+                ?? $this->defaultFactory;
         }
         return $this->factoryForClass[$class];
     }
