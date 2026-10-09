@@ -31,6 +31,7 @@
 
 namespace VuFindTest\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
@@ -62,6 +63,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'default_sort' => 'relevance',
         ],
         'ItemGlobalOrder' => [],
+        'Cover' => [
+            'loadDirectly' => false,
+        ],
     ];
 
     /**
@@ -149,14 +153,26 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param ?string $test   Name of test fixture to load
-     * @param ?array  $config Driver configuration (null to use default)
+     * @param ?string $test          Name of test fixture to load
+     * @param ?array  $config        Driver configuration (null to use default)
+     * @param ?array  $mockedMethods List of methods to mock on the EDS class
      *
-     * @return EDS
+     * @return EDS&\PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getDriver(?string $test = null, ?array $config = null): EDS
+    protected function getDriver(?string $test = null, ?array $config = null, ?array $mockedMethods = []): EDS
     {
-        $record = new EDS(null, $config ?? $this->defaultDriverConfig);
+        $cache = $this->createMock(StorageInterface::class);
+        $driverConfig = $config ?? $this->defaultDriverConfig;
+
+        if (!empty($mockedMethods)) {
+            $record = $this->getMockBuilder(EDS::class)
+                ->setConstructorArgs([$driverConfig, $cache])
+                ->onlyMethods($mockedMethods)
+                ->getMock();
+        } else {
+            $record = new EDS($driverConfig, $cache);
+        }
+
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);
@@ -612,23 +628,128 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     public static function getThumbnailProvider(): \Iterator
     {
+        yield 'thumb is upscaled to small' => ['small'];
+        yield 'medium is used as-is' => ['medium'];
+        yield 'medium is upscaled to large' => ['large'];
+    }
+
+    /**
+     * Data provider for testGetThumbnailDirect().
+     *
+     * @return \Iterator
+     */
+    public static function getThumbnailProviderDirect(): \Iterator
+    {
         yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
         yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
         yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
     }
 
     /**
-     * Test getThumbnail for a record.
+     * Data provider for testGetThumbnailCacheBehavior.
+     *
+     * @return \Iterator
+     */
+    public static function cacheBehaviorProvider(): \Iterator
+    {
+        yield 'cache is null -> calls putCachedData' => [
+            'initialCache' => null,
+            'shouldPut' => true,
+        ];
+
+        yield 'cache is non-array -> calls putCachedData' => [
+            'initialCache' => 'invalid-cache-string',
+            'shouldPut' => true,
+        ];
+
+        yield 'cache key missing -> calls putCachedData' => [
+            'initialCache' => ['medium' => 'some medium link'],
+            'shouldPut' => true,
+        ];
+
+        yield 'cache value mismatched -> calls putCachedData' => [
+            'initialCache' => ['small' => 'old or different link'],
+            'shouldPut' => true,
+        ];
+
+        yield 'cache value matches -> skips putCachedData' => [
+            'initialCache' => ['small' => 'small thumbnail link'],
+            'shouldPut' => false,
+        ];
+    }
+
+    /**
+     * Test getThumbnail proxy caching scenarios using a partial mock of cache methods.
+     *
+     * @param mixed $initialCache State returned by getCachedData
+     * @param bool  $shouldPut    Whether putCachedData should be invoked
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('cacheBehaviorProvider')]
+    public function testGetThumbnailCacheBehavior(mixed $initialCache, bool $shouldPut): void
+    {
+        $size = 'small';
+        $recordId = 'edsgob,edsgob.14707011';
+
+        // Initialize the driver mocking the cache methods
+        $driver = $this->getDriver('valid-eds-record', null, ['getCachedData', 'putCachedData']);
+
+        // Ensure the get cache is called
+        $driver->expects($this->once())
+            ->method('getCachedData')
+            ->with($recordId)
+            ->willReturn($initialCache);
+
+        // If the cache should be updated, ensure the put cache is called
+        if ($shouldPut) {
+            $driver->expects($this->once())
+                ->method('putCachedData');
+        } else {
+            $driver->expects($this->never())
+                ->method('putCachedData');
+        }
+
+        $expected = [
+            'recordid' => $recordId,
+            'size' => $size,
+            'source' => 'EDS',
+        ];
+
+        $this->assertEquals($expected, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record using the proxy image URL loader.
+     *
+     * @param string $size Size to request
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
+    public function testGetThumbnail(string $size): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $results = [
+            'recordid' => 'edsgob,edsgob.14707011',
+            'size' => $size,
+            'source' => 'EDS',
+        ];
+        $this->assertEquals($results, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record when using direct URL loader.
      *
      * @param string $size     Size to request
      * @param string $expected Expected result
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
-    public function testGetThumbnail(string $size, string $expected): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProviderDirect')]
+    public function testGetThumbnailDirect(string $size, string $expected): void
     {
-        $driver = $this->getDriver('valid-eds-record');
+        $driver = $this->getDriver('valid-eds-record', ['Cover' => ['loadDirectly' => true]]);
         $this->assertEquals($expected, $driver->getThumbnail($size));
     }
 
