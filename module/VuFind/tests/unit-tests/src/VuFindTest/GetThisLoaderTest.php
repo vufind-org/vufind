@@ -387,7 +387,7 @@ class GetThisLoaderTest extends TestCase
                 ],
                 'my_template2' => [
                     'enabled' => true,
-                    'exclusive' => 'preventNext',
+                    'exclusive' => 'preventFollowing',
                 ],
                 'my_template3' => [
                     'enabled' => true,
@@ -433,14 +433,39 @@ class GetThisLoaderTest extends TestCase
                 'my_template1' => [
                     'regex' => [
                         'name' => 'LOCATION_ONLINE',
-                        'value' => 'getLocation',
+                        'function' => 'getLocation',
                     ],
                 ],
                 'my_template2' => [
                     'enabled' => true,
                     'regex' => [
                         'name' => '!LOCATION_ONLINE',
-                        'value' => 'getLocation',
+                        'function' => 'getLocation',
+                    ],
+                ],
+                'my_template3' => [
+                    'enabled' => true,
+                ],
+            ],
+            [
+                'my_template1',
+                'my_template3',
+            ],
+        ];
+        yield [
+            [
+                // Config
+                'my_template1' => [
+                    'regex' => [
+                        'name' => 'LOCATION_ONLINE',
+                        'itemKey' => 'location',
+                    ],
+                ],
+                'my_template2' => [
+                    'enabled' => true,
+                    'regex' => [
+                        'name' => '!LOCATION_ONLINE',
+                        'itemKey' => 'location',
                     ],
                 ],
                 'my_template3' => [

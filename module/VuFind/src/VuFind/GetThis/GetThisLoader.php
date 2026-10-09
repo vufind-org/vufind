@@ -127,13 +127,13 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * The function returns whether the regex matches :
-     *  - the value of $item's given key
-     *  - the result of a local function
+     * The function returns whether the regex matches the given element, it can be only one of :
+     *  - itemKey : the value of $item's given key
+     *  - function : the result of a local function
      * The result is negated if the first char is "!".
      *
-     * @param array{name: string, value: string} $config The config containing the regex name
-     *                                                   and the value to match against
+     * @param array{name: string, itemKey: string, function: string} $config The config containing the regex name
+     *                                                                       and the value to match against
      *
      * @return bool
      * @throws Exception
@@ -141,13 +141,18 @@ class GetThisLoader implements LoggerAwareInterface
     protected function isRegexMatching(array $config): bool
     {
         if (
-            !isset($config['name'], $config['value'])
+            !isset($config['name'])
+            || (
+                !isset($config['itemKey'])
+                && !isset($config['function'])
+            )
             || !is_string($config['name'])
-            || !is_string($config['value'])
+            || (isset($config['itemKey']) && !is_string($config['itemKey']))
+            || (isset($config['function']) && !is_string($config['function']))
         ) {
             throw new Exception(
                 'The config for a regex should contain the ' .
-                'keys "name" and "value" with a string value'
+                'keys "name" and ("itemKey" or "function") with a string value'
             );
         }
 
@@ -159,15 +164,20 @@ class GetThisLoader implements LoggerAwareInterface
             $negate = true;
         }
 
-        if (isset($item[$config['value']])) {
-            $result = $this->matches($regex, $item[$config['value']]);
-        } elseif (method_exists($this, $config['value'])) {
-            $value = call_user_func([$this, $config['value']]);
+        if (isset($config['itemKey']) && isset($item[$config['itemKey']])) {
+            $result = $this->matches($regex, $item[$config['itemKey']]);
+        } elseif (isset($config['function']) && method_exists($this, $config['function'])) {
+            $value = call_user_func([$this, $config['function']]);
             $result = $this->matches($regex, $value);
+        } elseif (isset($config['itemKey'])) {
+            throw new Exception(
+                'The given itemKey "' . $config['itemKey'] . '" to match with regex ' .
+                '"' . $regex . '" is not a valid array key for $item in ' . static::class
+            );
         } else {
             throw new Exception(
-                'The value "' . $config['value'] . '" for the regex is not a valid array key ' .
-                'for $item nor a function in ' . static::class
+                'The given function "' . $config['function'] . '" to match with regex ' .
+                '"' . $regex . '" is not a valid method in ' . static::class
             );
         }
         return $negate ? !$result : $result;
@@ -351,9 +361,9 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function applyExclusiveFlag(): void
     {
-        $preventNext = false;
+        $preventFollowing = false;
         foreach ($this->subTemplates ?? [] as $i => $subTemplate) {
-            if ($preventNext) {
+            if ($preventFollowing) {
                 unset($this->subTemplates[$i]);
                 continue;
             }
@@ -364,8 +374,8 @@ class GetThisLoader implements LoggerAwareInterface
                 $this->subTemplates = [$subTemplate];
                 break;
             }
-            if ($this->config['templates'][$subTemplate]['exclusive'] === 'preventNext') {
-                $preventNext = true;
+            if ($this->config['templates'][$subTemplate]['exclusive'] === 'preventFollowing') {
+                $preventFollowing = true;
             }
         }
     }
@@ -755,7 +765,7 @@ class GetThisLoader implements LoggerAwareInterface
      * @deprecated In your GetThis.yaml instead of condition_function: showMicroForm use :
      *             regex:
      *              name: 'LOCATION_MICROFORMS'
-     *              value: 'getLocation'
+     *              function: 'getLocation'
      */
     public function showMicroForm(): bool
     {
