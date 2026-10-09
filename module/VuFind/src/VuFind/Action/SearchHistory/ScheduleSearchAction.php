@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MyResearch "schedule search" action.
+ * "Schedule search" action.
  *
  * PHP version 8
  *
@@ -29,10 +29,9 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\SearchHistory;
 
 use Exception;
-use Laminas\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\LoginHelper;
@@ -41,7 +40,7 @@ use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
- * MyResearch "schedule search" action.
+ * "Schedule search" action.
  *
  * @category VuFind
  * @package  Action
@@ -68,13 +67,11 @@ class ScheduleSearchAction extends AbstractSearchHistoryAction
         if ($this->accountCapabilities->getSavedSearchSetting() === 'disabled') {
             throw new ForbiddenException('Saved searches disabled.');
         }
-        $scheduleOptions = $this->searchHistory->getScheduleOptions();
-        if (!$scheduleOptions) {
+        if (!($scheduleOptions = $this->searchHistory->getScheduleOptions())) {
             throw new ForbiddenException('Scheduled searches disabled.');
         }
         // Fail if search ID is missing.
-        $searchId = $this->getQueryParam('searchid');
-        if (!$searchId) {
+        if (!($searchId = $this->getQueryParam('searchid'))) {
             throw new BadRequestException('searchid missing');
         }
         // Not logged in?  Force user to log in:
@@ -87,8 +84,7 @@ class ScheduleSearchAction extends AbstractSearchHistoryAction
 
         // If the user has just logged in, the search might be a duplicate; if so, let's switch to the pre-existing
         // version instead.
-        $duplicateId = $search ? $this->isDuplicateOfSavedSearch($search, $user) : 0;
-        if ($duplicateId) {
+        if ($duplicateId = $search ? $this->isDuplicateOfSavedSearch($search, $user) : 0) {
             $this->searchService->deleteSearch($search);
             return $this->getHelper(RedirectHelper::class)->redirectToRoute(
                 $response,

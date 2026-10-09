@@ -202,8 +202,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'myresearch/mylist' => MyResearch\MyListAction::class,
         'myresearch/newpassword' => MyResearch\NewPasswordAction::class,
         'myresearch/resetpassword' => MyResearch\ResetPasswordAction::class,
-        'myresearch/savesearch' => MyResearch\SaveSearchAction::class,
-        'myresearch/schedulesearch' => MyResearch\ScheduleSearchAction::class,
         'myresearch/storageretrievalrequests' => MyResearch\StorageRetrievelRequestsAction::class,
         'myresearch/usercontent' => MyResearch\UserContentAction::class,
         'myresearch/userlogin' => MyResearch\UserLoginAction::class,
@@ -301,6 +299,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/rdf' => Record\RdfAction::class,
         'search2record/save' => Record\SaveAction::class,
         'search2record/sms' => Record\SmsAction::class,
+
+        'searchhistory/savesearch' => SearchHistory\SaveSearchAction::class,
+        'searchhistory/schedulesearch' => SearchHistory\ScheduleSearchAction::class,
+        'searchhistory/unsubscribesearch' => SearchHistory\UnsubscribeSearchAction::class,
 
         // summon/advanced has a custom implementation that is autodiscovered
         'summon/home' => Search\HomeAction::class,

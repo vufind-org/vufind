@@ -29,13 +29,12 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\SearchHistory;
 
 use Exception;
 use Laminas\Session\SessionManager;
-use VuFind\Auth\EmailAuthenticator;
+use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Auth\Manager as AuthManager;
-use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
@@ -45,13 +44,11 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Http\ServerUrlHelper;
-use VuFind\ILS\Connection;
-use VuFind\Mailer\Mailer;
 use VuFind\Search\History;
+use VuFind\Search\Memory;
 use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
 use VuFind\Search\SearchNormalizer;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\Session\Helper\FollowupHelper;
 
 /**
  * Abstract base class for actions that manage the search history.
@@ -63,62 +60,42 @@ use VuFind\Session\Helper\FollowupHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-abstract class AbstractSearchHistoryAction extends AbstractMyResearchAction
+abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingAction
 {
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager                Authentication manager
-     * @param FollowupHelper                  $followupHelper             Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator         Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService         User session service
-     * @param AuditEventServiceInterface      $auditEventService          Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper            Server URL helper
-     * @param Mailer                          $mailer                     Mailer
-     * @param SessionManager                  $sessionManager             Session manager
-     * @param Connection                      $ilsConnection              ILS connection
-     * @param array                           $config                     VuFind configuration
-     * @param AccountCapabilities             $accountCapabilities        Account capabilities
-     * @param History                         $searchHistory              Search history
-     * @param SearchServiceInterface          $searchService              Search service
-     * @param SearchNormalizer                $searchNormalizer           Search normalizer
-     * @param SearchResultsPluginManager      $searchResultsPluginManager Search results plugin manager
-     * @param SecretCalculator                $secretCalculator           Secret calculator
+     * @param array                      $config                     VuFind configuration
+     * @param AuthManager                $authManager                Authentication manager
+     * @param AuditEventServiceInterface $auditEventService          Audit event service
+     * @param SessionManager             $sessionManager             Session manager
+     * @param AccountCapabilities        $accountCapabilities        Account capabilities
+     * @param Memory                     $searchMemory               Search memory
+     * @param History                    $searchHistory              Search history
+     * @param ServerUrlHelper            $serverUrlHelper            Server URL helper
+     * @param SearchServiceInterface     $searchService              Search service
+     * @param SearchNormalizer           $searchNormalizer           Search normalizer
+     * @param SearchResultsPluginManager $searchResultsPluginManager Search results plugin manager
+     * @param SecretCalculator           $secretCalculator           Secret calculator
      */
     public function __construct(
-        AuthManager $authManager,
-        FollowupHelper $followupHelper,
-        EmailAuthenticator $emailAuthenticator,
-        #[Autowire(container: DbServicePluginManager::class)]
-        UserSessionPersistenceInterface $userSessionService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
-        Mailer $mailer,
-        SessionManager $sessionManager,
-        Connection $ilsConnection,
         #[Autowire(config: 'config')]
-        array $config,
+        protected array $config,
+        protected AuthManager $authManager,
+        #[Autowire(container: DbServicePluginManager::class)]
+        protected AuditEventServiceInterface $auditEventService,
+        protected SessionManager $sessionManager,
         protected AccountCapabilities $accountCapabilities,
+        protected Memory $searchMemory,
         protected History $searchHistory,
+        protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected SearchNormalizer $searchNormalizer,
         protected SearchResultsPluginManager $searchResultsPluginManager,
         protected SecretCalculator $secretCalculator,
     ) {
-        parent::__construct(
-            $authManager,
-            $followupHelper,
-            $emailAuthenticator,
-            $userSessionService,
-            $auditEventService,
-            $serverUrlHelper,
-            $mailer,
-            $sessionManager,
-            $ilsConnection,
-            $config
-        );
+        parent::__construct();
     }
 
     /**

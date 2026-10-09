@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MyResearch "save/unsave search" action.
+ * "Save/unsave search" action.
  *
  * PHP version 8
  *
@@ -29,12 +29,9 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\SearchHistory;
 
 use DateTime;
-use Exception;
-use Laminas\Http\Response;
-use Laminas\Mvc\Controller\Plugin\Redirect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -47,7 +44,7 @@ use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
- * MyResearch "save/unsave search" action.
+ * Save/unsave search action.
  *
  * @category VuFind
  * @package  Action
@@ -84,7 +81,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         $sid = $this->getQueryParam('searchid');
         if (null !== $schedule && null !== $sid) {
             $this->scheduleSearch($user, $schedule, $sid);
-            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'search-history');
+            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'searchhistory-list');
         }
 
         // Check for the save / delete parameters and process them appropriately:
@@ -112,7 +109,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
 
         // Forward to the appropriate place:
         if ($this->getQueryParam('mode') === 'history') {
-            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'search-history');
+            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'searchhistory-list');
         }
 
         // Forward to the Search/Results action with the "saved" parameter set; this will in turn redirect the user to

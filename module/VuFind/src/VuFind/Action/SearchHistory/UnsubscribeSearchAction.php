@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MyResearch "unsubscribe from a scheduled search" action.
+ * "Unsubscribe from a scheduled search" action.
  *
  * PHP version 8
  *
@@ -29,16 +29,15 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\SearchHistory;
 
-use Laminas\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 
 /**
- * MyResearch "unsubscribe from a scheduled search" action.
+ * "Unsubscribe from a scheduled search" action.
  *
  * @category VuFind
  * @package  Action
@@ -47,10 +46,10 @@ use VuFind\Db\Type\AuditEventType;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class UnsubscribeAction extends AbstractSearchHistoryAction
+class UnsubscribeSearchAction extends AbstractSearchHistoryAction
 {
     /**
-     * Schedule a search.
+     * Unsubscribe from a scheduled search.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response

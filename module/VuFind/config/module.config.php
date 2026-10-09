@@ -804,6 +804,9 @@ $config = [
         // redirect to):
         'action_redirects' => [
             'search/history' => 'searchhistory-list',
+            'myresearch/unsubscribe' => 'searchhistory-unsubscribesearch',
+            'myresearch/savesearch' => 'searchhistory-savesearch',
+            'myresearch/schedulesearch' => 'searchhistory-schedulesearch',
         ],
 
         // This section contains service manager configurations for all VuFind
@@ -1101,6 +1104,9 @@ $staticRoutes = [
     'Search2/Results',
     'Search2/Versions',
     'SearchHistory/List',
+    'SearchHistory/SaveSearch',
+    'SearchHistory/ScheduleSearch',
+    'SearchHistory/UnsubscribeSearch',
     'SimulatedSSO/Login',
     'SiteMap/Home',
     'Summon/Advanced',
