@@ -70,6 +70,13 @@
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
   </a>
 <?php endif; ?>
+<?php $titleDigitizationRequest = $this->driver->tryMethod('getRealTimeTitleDigitizationRequest'); ?>
+<?php if (!empty($titleDigitizationRequest)): ?>
+  <a class="placeDigitizationRequest icon-link hidden-print" data-lightbox title="<?=$this->transEscAttr('digitization_request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($titleDigitizationRequest))?>">
+    <?=$this->icon('place-digitization', 'icon-link__icon') ?>
+    <span class="icon-link__label"><?=$this->transEsc('title_digitization_request_place')?></span>
+  </a>
+<?php endif; ?>
 <?php if ($hasExternalLinks): ?>
   <h2><?=$this->transEsc('Internet')?></h2>
   <?php if (!empty($urls)): ?>
