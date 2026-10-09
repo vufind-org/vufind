@@ -1,5 +1,5 @@
 <?=$this->component('page-title', ['title' => $this->translate('delete_selected_favorites')])?>
-<form action="<?=$this->url('myresearch-delete')?>" method="post" name="bulkDelete" data-lightbox-ignore>
+<form action="<?=$this->url('lists-deleteitems')?>" method="post" name="bulkDelete" data-lightbox-ignore>
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
     <?php if (!$this->list): ?>

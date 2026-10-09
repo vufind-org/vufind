@@ -436,6 +436,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     public function testListSorting(): void
     {
         $session = $this->getMinkSession();
+        // Use legacy path intentionally:
         $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username2', 'test', false);
@@ -476,7 +477,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     public function testFavoriteFaceting(): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $session->visit($this->getVuFindUrl() . '/Lists/AllItems');
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username2', 'test', false);
         $this->submitLoginForm($page, false);

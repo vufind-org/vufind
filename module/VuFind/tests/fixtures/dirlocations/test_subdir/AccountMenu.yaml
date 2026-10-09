@@ -1,5 +1,5 @@
 MenuItems:
   - name: parent-test
     label: parent test
-    route: myresearch-favorites
+    route: lists-allitems
     icon: user-favorites

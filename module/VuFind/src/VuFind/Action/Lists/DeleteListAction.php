@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Delete favorites list action.
+ * "Delete list" action.
  *
  * PHP version 8
  *
@@ -29,10 +29,9 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\Lists;
 
 use Exception;
-use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -40,24 +39,12 @@ use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Auth\EmailAuthenticator;
-use VuFind\Auth\Manager as AuthManager;
-use VuFind\Auth\UserSessionPersistenceInterface;
-use VuFind\Db\Service\AuditEventServiceInterface;
-use VuFind\Db\Service\PluginManager as DbServicePluginManager;
-use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
-use VuFind\Favorites\FavoritesService;
-use VuFind\Http\ServerUrlHelper;
-use VuFind\ILS\Connection;
-use VuFind\Mailer\Mailer;
-use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\Session\Helper\FollowupHelper;
 
 /**
- * Delete favorites list action.
+ * "Delete list" action.
  *
  * @category VuFind
  * @package  Action
@@ -66,58 +53,10 @@ use VuFind\Session\Helper\FollowupHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class DeleteListAction extends AbstractMyResearchAction
+class DeleteListAction extends AbstractListsAction
 {
     /**
-     * Constructor.
-     *
-     * @param AuthManager                     $authManager        Authentication manager
-     * @param FollowupHelper                  $followupHelper     Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService User session service
-     * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
-     * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
-     * @param Connection                      $ilsConnection      ILS connection
-     * @param array                           $config             VuFind configuration
-     * @param UserListServiceInterface        $userListService    User list database service
-     * @param FavoritesService                $favoritesService   Favorites service
-     */
-    public function __construct(
-        AuthManager $authManager,
-        FollowupHelper $followupHelper,
-        EmailAuthenticator $emailAuthenticator,
-        #[Autowire(container: DbServicePluginManager::class)]
-        UserSessionPersistenceInterface $userSessionService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
-        Mailer $mailer,
-        SessionManager $sessionManager,
-        Connection $ilsConnection,
-        #[Autowire(config: 'config')]
-        array $config,
-        #[Autowire(container: DbServicePluginManager::class)]
-        protected UserListServiceInterface $userListService,
-        protected FavoritesService $favoritesService,
-    ) {
-        parent::__construct(
-            $authManager,
-            $followupHelper,
-            $emailAuthenticator,
-            $userSessionService,
-            $auditEventService,
-            $serverUrlHelper,
-            $mailer,
-            $sessionManager,
-            $ilsConnection,
-            $config
-        );
-    }
-
-    /**
-     * Delete favorites.
+     * Delete a list.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -153,8 +92,8 @@ class DeleteListAction extends AbstractMyResearchAction
                 // Logged in? Then we have to rethrow the exception!
                 throw $e;
             }
-            // Redirect to MyResearch home
-            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'myresearch-favorites');
+            // Redirect to Lists home
+            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'lists-allitems');
         }
 
         // If we got this far, we must display a confirmation message:
@@ -162,7 +101,7 @@ class DeleteListAction extends AbstractMyResearchAction
             $request,
             $response,
             'confirm_delete_list_brief',
-            $this->getRouteHelper()->getUrlFromRoute('myresearch-deletelist'),
+            $this->getRouteHelper()->getUrlFromRoute('lists-deletelist'),
             $this->getRouteHelper()->getUrlFromRoute('userList', ['id' => $listID]),
             'confirm_delete_list_text',
             ['listID' => $listID]

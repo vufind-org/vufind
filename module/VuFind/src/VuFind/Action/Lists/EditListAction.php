@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorite list edit action.
+ * "Edit list" action.
  *
  * PHP version 8
  *
@@ -29,9 +29,8 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\Lists;
 
-use Laminas\Session\SessionManager;
 use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,30 +40,16 @@ use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Auth\EmailAuthenticator;
-use VuFind\Auth\Manager as AuthManager;
-use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\AuditEventServiceInterface;
-use VuFind\Db\Service\PluginManager as DbServicePluginManager;
-use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Favorites\FavoritesService;
-use VuFind\Http\ServerUrlHelper;
-use VuFind\ILS\Connection;
-use VuFind\Mailer\Mailer;
-use VuFind\Record\Loader as RecordLoader;
-use VuFind\Record\Router as RecordRouter;
-use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\Session\Helper\FollowupHelper;
-use VuFind\Tags\TagsService;
 
 /**
- * Favorite list edit action.
+ * "Edit list" action.
  *
  * @category VuFind
  * @package  Action
@@ -73,64 +58,10 @@ use VuFind\Tags\TagsService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EditListAction extends AbstractMyResearchAction
+class EditListAction extends AbstractListsAction
 {
     /**
-     * Constructor.
-     *
-     * @param AuthManager                     $authManager        Authentication manager
-     * @param FollowupHelper                  $followupHelper     Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService User session service
-     * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
-     * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
-     * @param Connection                      $ilsConnection      ILS connection
-     * @param array                           $config             VuFind configuration
-     * @param UserListServiceInterface        $userListService    User list database service
-     * @param FavoritesService                $favoritesService   Favorites service
-     * @param TagsService                     $tagsService        Tags service
-     * @param RecordLoader                    $recordLoader       Record loader
-     * @param RecordRouter                    $recordRouter       Record router
-     */
-    public function __construct(
-        AuthManager $authManager,
-        FollowupHelper $followupHelper,
-        EmailAuthenticator $emailAuthenticator,
-        #[Autowire(container: DbServicePluginManager::class)]
-        UserSessionPersistenceInterface $userSessionService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
-        Mailer $mailer,
-        SessionManager $sessionManager,
-        Connection $ilsConnection,
-        #[Autowire(config: 'config')]
-        array $config,
-        #[Autowire(container: DbServicePluginManager::class)]
-        protected UserListServiceInterface $userListService,
-        protected FavoritesService $favoritesService,
-        protected TagsService $tagsService,
-        protected RecordLoader $recordLoader,
-        protected RecordRouter $recordRouter,
-    ) {
-        parent::__construct(
-            $authManager,
-            $followupHelper,
-            $emailAuthenticator,
-            $userSessionService,
-            $auditEventService,
-            $serverUrlHelper,
-            $mailer,
-            $sessionManager,
-            $ilsConnection,
-            $config
-        );
-    }
-
-    /**
-     * Edit a favorite list.
+     * Edit a list.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response

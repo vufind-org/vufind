@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MyResearch favorites action.
+ * "All list items" action.
  *
  * PHP version 8
  *
@@ -29,7 +29,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\Lists;
 
 use Laminas\Http\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -39,7 +39,7 @@ use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\PermissionHelper;
 
 /**
- * MyResearch favorites action.
+ * "All list items" action.
  *
  * @category VuFind
  * @package  Action
@@ -48,10 +48,10 @@ use VuFind\ActionHelper\PermissionHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class FavoritesAction extends AbstractAction
+class AllItemsAction extends AbstractAction
 {
     /**
-     * Display favorites.
+     * Display items from all lists.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -68,7 +68,7 @@ class FavoritesAction extends AbstractAction
             return $result;
         }
 
-        // Favorites is the same as MyList, but without the list ID parameter.
-        return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'myresearch/mylist');
+        // This is the same as Lists/List, but without the list ID parameter.
+        return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'lists/list');
     }
 }

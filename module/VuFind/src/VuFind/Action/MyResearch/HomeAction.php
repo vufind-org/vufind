@@ -127,13 +127,31 @@ class HomeAction extends AbstractMyResearchAction
             return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
         }
 
-        $page = $this->config['Site']['defaultAccountPage'] ?? 'Favorites';
+        $page = $this->mapAccountPage($this->config['Site']['defaultAccountPage'] ?? 'lists/allitems');
 
         // Default to search history if favorites are disabled:
-        if ($page == 'Favorites' && !$this->getHelper(UserContentHelper::class)->listsEnabled()) {
+        if (str_starts_with($page, 'lists/') && !$this->getHelper(UserContentHelper::class)->listsEnabled()) {
             return $forwardHelper->forwardTo($request, $response, 'search/history');
         }
-        return $forwardHelper->forwardTo($request, $response, "myresearch/$page");
+        return $forwardHelper->forwardTo($request, $response, $page);
+    }
+
+    /**
+     * Map MyResearch pages to correct actions.
+     *
+     * @param string $page Page
+     *
+     * @return string
+     */
+    protected function mapAccountPage(string $page): string
+    {
+        // Note: This is not an exhaustive list. It contains only pages that could be used in the defaultAccountPage
+        // setting.
+        return match ($page) {
+            'CheckedOut' => 'checkouts/list',
+            'Favorites' => 'lists/allitems',
+            default => strtolower($page),
+        };
     }
 
     /**

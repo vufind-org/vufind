@@ -171,7 +171,7 @@ class AccountMenu extends AbstractMenu
               MenuItems:
                 - name: favorites
                   label: saved_items
-                  route: myresearch-favorites
+                  route: lists-allitems
                   icon: user-favorites
                   checkMethod: checkFavorites
 

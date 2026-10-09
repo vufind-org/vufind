@@ -184,6 +184,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
         'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
 
+        'lists/allitems' => Lists\AllItemsAction::class,
+        'lists/deleteitems' => Lists\DeleteItemsAction::class,
+        'lists/deletelist' => Lists\DeleteListAction::class,
+        'lists/edititem' => Lists\EditItemAction::class,
+        'lists/editlist' => Lists\EditListAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
@@ -192,14 +198,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'myresearch/checkedout' => MyResearch\CheckedOutAction::class,
         'myresearch/completelogin' => MyResearch\CompleteLoginAction::class,
         'myresearch/deleteaccount' => MyResearch\DeleteAccountAction::class,
-        'myresearch/deletelist' => MyResearch\DeleteListAction::class,
         'myresearch/deletelogintoken' => MyResearch\DeleteLoginTokenAction::class,
         'myresearch/deleteuserlogintokens' => MyResearch\DeleteUserLoginTokensAction::class,
-        'myresearch/editlist' => MyResearch\EditListAction::class,
         'myresearch/emailnotverified' => MyResearch\EmailNotVerifiedAction::class,
         'myresearch/historicloans' => MyResearch\HistoricLoansAction::class,
         'myresearch/illrequests' => MyResearch\IllRequestsAction::class,
-        'myresearch/mylist' => MyResearch\MyListAction::class,
         'myresearch/newpassword' => MyResearch\NewPasswordAction::class,
         'myresearch/resetpassword' => MyResearch\ResetPasswordAction::class,
         'myresearch/storageretrievalrequests' => MyResearch\StorageRetrievelRequestsAction::class,

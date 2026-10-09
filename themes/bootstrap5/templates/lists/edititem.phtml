@@ -3,7 +3,7 @@
   $this->headTitle($this->translate('Edit') . ' : ' . $this->driver->getBreadcrumb());
 
   // Set up breadcrumbs:
-  $listLink = isset($listID) ? $this->url('userList', ['id' => $listID]) : $this->url('myresearch-favorites');
+  $listLink = isset($listID) ? $this->url('userList', ['id' => $listID]) : $this->url('lists-allitems');
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate(isset($listID) ? 'List' : 'saved_items'), $listLink)
     ->add($this->translate('Edit'), active: true);

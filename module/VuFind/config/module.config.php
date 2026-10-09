@@ -803,6 +803,12 @@ $config = [
         // Redirects from legacy actions to current ones (key is action id in all lowercase, value is route name to
         // redirect to):
         'action_redirects' => [
+            'myresearch/delete' => 'lists-deleteitems',
+            'myresearch/deletelist' => 'lists-deletelist',
+            'myresearch/edit' => 'lists-edititem',
+            'myresearch/editlist' => 'lists-editlist',
+            'myresearch/favorites' => 'lists-allitems',
+            'myresearch/mylist' => 'userList',
             'search/history' => 'searchhistory-list',
             'myresearch/unsubscribe' => 'searchhistory-unsubscribesearch',
             'myresearch/savesearch' => 'searchhistory-savesearch',
@@ -934,8 +940,15 @@ $nonTabRecordActions = [
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'Feedback' => ['feedback-form' => 'Form/[:id]'],
-    'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
+    'Lists' => [
+        'userList' => 'List/[:id]',
+        'editList' => 'EditList/[:id]',
+    ],
+    'MyResearch' => [
+        'userListLegacy' => 'MyList/[:id]',
+        'editListLegacy' => 'EditList/[:id]',
+    ],
 ];
 
 // Define static routes -- Controller/Action strings
@@ -1029,6 +1042,10 @@ $staticRoutes = [
     'LibraryCards/ConnectCardLogin',
     'LibraryCards/DeleteCard',
     'LibraryCards/VerifyOtp',
+    'Lists/DeleteItems',
+    'Lists/DeleteList',
+    'Lists/EditItem',
+    'Lists/AllItems',
     'MyResearch/Account',
     'MyResearch/ChangeEmail',
     'MyResearch/ChangePassword',

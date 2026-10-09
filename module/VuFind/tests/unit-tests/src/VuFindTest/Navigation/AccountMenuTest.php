@@ -118,7 +118,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'favorites',
                     'label' => 'saved_items',
-                    'route' => 'myresearch-favorites',
+                    'route' => 'lists-allitems',
                     'icon' => 'user-favorites',
                     'checkMethod' => 'checkFavorites',
                 ],

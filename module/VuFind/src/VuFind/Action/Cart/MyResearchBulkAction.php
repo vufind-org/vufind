@@ -65,26 +65,26 @@ class MyResearchBulkAction extends AbstractCartAction
         $listID = $this->getPostParam('listID');
         $routeHelper = $this->getRouteHelper();
         $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = empty($listID)
-            ? $routeHelper->getUrlFromRoute('myresearch-favorites')
+            ? $routeHelper->getUrlFromRoute('lists-allitems')
             : $routeHelper->getUrlFromRoute('userList', ['id' => $listID]);
 
         // Now forward to the requested controller/action:
         $action = null;
         if ('' !== $this->getPostParam('email', '')) {
-            $action = 'Cart/Email';
+            $action = 'cart/email';
         } elseif ('' !== $this->getPostParam('print', '')) {
-            $action = 'Cart/PrintCart';
+            $action = 'cart/printcart';
         } elseif ('' !== $this->getPostParam('delete', '')) {
-            $action = 'MyResearch/Delete';
+            $action = 'lists/deleteitems';
         } elseif ('' !== $this->getPostParam('add', '')) {
-            $action = 'Cart/Home';
+            $action = 'cart/home';
         } elseif ('' !== $this->getPostParam('export', '')) {
-            $action = 'Cart/Export';
+            $action = 'cart/export';
         } else {
             if (!($action = $this->followupHelper->retrieveAndClear('cartAction', null))) {
                 throw new \Exception('Unrecognized bulk action.');
             }
-            $action = "Cart/$action";
+            $action = "cart/$action";
         }
         return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, $action);
     }
