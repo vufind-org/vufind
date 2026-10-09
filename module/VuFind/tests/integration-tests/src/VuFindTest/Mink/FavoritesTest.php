@@ -702,7 +702,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->selectAllItemsInList($page);
         $this->clickCss($page, '[name=bulkActionForm] [name=print]');
 
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'print=true',
             function () {
                 return $this->getCurrentQueryString(true);
