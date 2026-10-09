@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f913272b0ae4277a9021b3f63b460594",
+    "content-hash": "83712af2d52b54df6566bcfc56303f0b",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -12345,16 +12345,16 @@
         },
         {
             "name": "dmore/chrome-mink-driver",
-            "version": "2.11.0",
+            "version": "2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/behat-chrome/chrome-mink-driver.git",
-                "reference": "a648949812445d1b9efa264a75708cb159ab6143"
+                "reference": "fd3545b4677cbb43d69f375f1d75a5415fb41f6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/behat-chrome%2Fchrome-mink-driver/repository/archive.zip?sha=a648949812445d1b9efa264a75708cb159ab6143",
-                "reference": "a648949812445d1b9efa264a75708cb159ab6143",
+                "url": "https://gitlab.com/api/v4/projects/behat-chrome%2Fchrome-mink-driver/repository/archive.zip?sha=fd3545b4677cbb43d69f375f1d75a5415fb41f6e",
+                "reference": "fd3545b4677cbb43d69f375f1d75a5415fb41f6e",
                 "shasum": ""
             },
             "require": {
@@ -12391,9 +12391,9 @@
             "homepage": "https://gitlab.com/behat-chrome/chrome-mink-driver",
             "support": {
                 "issues": "https://gitlab.com/behat-chrome/chrome-mink-driver/-/issues",
-                "source": "https://gitlab.com/behat-chrome/chrome-mink-driver/-/tree/2.11.0"
+                "source": "https://gitlab.com/behat-chrome/chrome-mink-driver/-/tree/2.11.1"
             },
-            "time": "2026-10-02T21:58:40+00:00"
+            "time": "2026-10-07T14:13:51+00:00"
         },
         {
             "name": "ergebnis/agent-detector",
