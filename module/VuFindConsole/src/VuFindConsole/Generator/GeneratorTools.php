@@ -345,7 +345,7 @@ class GeneratorTools
                     'defaultValue' => null,
                 ];
                 $method->setParameters([$param1, $param2, $param3]);
-                // Copy doc block from this class' factory:
+                // Copy doc block from a factory that is unlikely to be removed from the project:
                 $reflection = new \Laminas\Code\Reflection\MethodReflection(
                     \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
                     '__invoke'
