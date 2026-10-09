@@ -31,14 +31,12 @@ namespace VuFindTest\Action\Collections;
 
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
 use VuFind\ActionHelper\HelperInterface;
 use VuFind\I18n\Sorter;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results as SearchResults;
 use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
-use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindSearch\Command\AbstractBase as AbstractCommand;
 use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\Service as SearchService;
@@ -55,13 +53,6 @@ use VuFindTest\Action\AbstractActionTestCase;
  */
 abstract class AbstractCollectionsActionTestCase extends AbstractActionTestCase
 {
-    /**
-     * Template parameters captured from the renderTemplate() call.
-     *
-     * @var array
-     */
-    protected array $capturedTemplateParams = [];
-
     /**
      * Command captured from the search service invoke() call.
      *
@@ -101,30 +92,8 @@ abstract class AbstractCollectionsActionTestCase extends AbstractActionTestCase
             $resultsManager,
             $sorter ?? $this->createStub(Sorter::class),
         );
-        $this->initializeAction($action, $helpers, renderer: $this->getTemplateRenderer());
+        $this->initializeAction($action, $helpers, renderer: $this->getCapturingRenderer());
         return $action;
-    }
-
-    /**
-     * Get a template renderer and capture the parameters passed to renderTemplate().
-     *
-     * @return TemplateRendererInterface
-     */
-    protected function getTemplateRenderer(): TemplateRendererInterface
-    {
-        $renderer = $this->createMock(TemplateRendererInterface::class);
-        $renderer->method('renderTemplate')->willReturnCallback(
-            function (
-                ServerRequestInterface $request,
-                ResponseInterface $response,
-                ?string $template = null,
-                array $params = [],
-            ): ResponseInterface {
-                $this->capturedTemplateParams = $params;
-                return $response;
-            }
-        );
-        return $renderer;
     }
 
     /**
