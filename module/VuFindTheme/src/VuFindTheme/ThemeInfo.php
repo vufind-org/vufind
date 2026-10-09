@@ -76,7 +76,7 @@ class ThemeInfo
      * Constructor.
      *
      * @param string $baseDir   Base directory for theme files.
-     * @param string $safeTheme Theme that should be guaranteed to exist.
+     * @param string $safeTheme A safe theme (guaranteed to exist) to be loaded if provided configuration is invalid.
      */
     public function __construct(protected string $baseDir, protected string $safeTheme)
     {
