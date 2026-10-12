@@ -811,7 +811,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      * @throws AuthException
      * @return void
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function updateEmail(UserEntityInterface $user, string $email): void
     {
         // Depending on verification setting, either do a direct update or else

@@ -59,7 +59,6 @@ class DeleteRecordCommentFactory implements \Laminas\ServiceManager\Factory\Fact
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,

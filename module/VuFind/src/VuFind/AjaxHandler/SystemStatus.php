@@ -96,7 +96,6 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return array [response data, HTTP status code]
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function handleRequest(ServerRequestInterface $request): array
     {
 

@@ -370,7 +370,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      *
      * @return ?string
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function renderAnalytics(
         ServerRequestInterface $request,
         Results $results
