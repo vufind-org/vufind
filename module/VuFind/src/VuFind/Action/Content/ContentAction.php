@@ -32,6 +32,8 @@
 namespace VuFind\Action\Content;
 
 use InvalidArgumentException;
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\UnusedFormalParameter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -121,9 +123,8 @@ class ContentAction extends AbstractTemplateRenderingAction
      * @param string $path    Full path to file with content (if applicable)
      *
      * @return ResponseInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[SuppressWarnings(UnusedFormalParameter::class)]
     protected function getViewForMd(string $page, string $relPath, string $path): ResponseInterface
     {
         return $this->renderTemplate(
@@ -142,9 +143,8 @@ class ContentAction extends AbstractTemplateRenderingAction
      * @param string $path    Full path to file with content (if applicable)
      *
      * @return ResponseInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[SuppressWarnings(UnusedFormalParameter::class)]
     protected function getViewForPhtml(string $page, string $relPath, string $path): ResponseInterface
     {
         // Convert relative path to a relative page name:

@@ -134,9 +134,8 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      * @param array                      $settings Parameter array (passed by reference)
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function initLookFor($params, $request, &$settings)
     {
         // Map the user-specified query field to 'lookfor' for simplicity:
@@ -157,9 +156,8 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      * @param \VuFind\Search\Base\Results $results Search results object
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function process($results)
     {
         // No action needed

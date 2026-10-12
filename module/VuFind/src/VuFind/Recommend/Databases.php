@@ -231,9 +231,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      * request.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function init($params, $request)
     {
         // No action needed.

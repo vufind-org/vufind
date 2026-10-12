@@ -234,9 +234,8 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array of recipients, each consisting of an array with
      * name, email or null if not configured
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRecipient(?array $postParams = null): array
     {
         $recipient = $this->formConfig['recipient'] ?? [null];

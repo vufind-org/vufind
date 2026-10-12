@@ -372,9 +372,8 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsPasswordRecovery(?string $target = null): bool
     {
         return true;
@@ -451,9 +450,8 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPasswordPolicy(?string $target = null): array
     {
         $policy = parent::getPasswordPolicy();

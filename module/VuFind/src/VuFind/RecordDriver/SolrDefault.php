@@ -32,6 +32,8 @@
 
 namespace VuFind\RecordDriver;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\ExcessivePublicCount;
 use VuFind\ServiceManager\Factory\DefaultFactory;
 use VuFindSearch\Command\SearchCommand;
 
@@ -51,9 +53,8 @@ use function is_array;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
- *
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
+#[SuppressWarnings(ExcessivePublicCount::class)]
 class SolrDefault extends DefaultRecord implements
     Feature\PreviousUniqueIdInterface,
     Feature\VersionAwareInterface

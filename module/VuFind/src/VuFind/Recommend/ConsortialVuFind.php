@@ -163,9 +163,8 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      * request.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function init($params, $request)
     {
         // No action needed.

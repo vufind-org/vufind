@@ -70,9 +70,8 @@ class KeepAlive extends AbstractBase
      * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function handleRequest(ServerRequestInterface $request): array
     {
         // Request ID from session to mark it active

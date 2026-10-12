@@ -70,9 +70,8 @@ class GoogleAnalytics
      * Returns GA Javascript code.
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getRawJavascript()
     {
         return <<<JS

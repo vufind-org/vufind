@@ -48,9 +48,8 @@ class Deprecated extends \VuFind\Content\AbstractCover
      * @param array $ids IDs that will later be sent to load() -- see below.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supports($ids)
     {
         error_log('Deprecated cover provider called; check configuration.');
@@ -66,9 +65,8 @@ class Deprecated extends \VuFind\Content\AbstractCover
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getUrl($key, $size, $ids)
     {
         return false;

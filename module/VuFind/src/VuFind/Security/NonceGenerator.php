@@ -29,6 +29,9 @@
 
 namespace VuFind\Security;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
+
 /**
  * VuFind class for generating nonce (number used once) used by content security
  * policy.
@@ -38,9 +41,8 @@ namespace VuFind\Security;
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 class NonceGenerator
 {
     /**

@@ -123,9 +123,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function preLoginCheck($request)
     {
         // By default, do no checking.
@@ -161,9 +160,8 @@ abstract class AbstractBase implements
      * @param Request $request Request object.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function needsCsrfCheck($request)
     {
         // Enabled by default
@@ -176,9 +174,8 @@ abstract class AbstractBase implements
      * @param Request $request Request object.
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDelegateAuthMethod(Request $request)
     {
         // No delegate by default
@@ -272,9 +269,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return UserEntityInterface New user entity.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function create($request)
     {
         throw new AuthException(
@@ -289,9 +285,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function updatePassword($request)
     {
         throw new AuthException(
@@ -307,9 +302,8 @@ abstract class AbstractBase implements
      *
      * @throws AuthException
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function resetPassword(array $recoveryData, array $params)
     {
         throw new AuthException('Account password reset not supported by ' . static::class);
@@ -333,9 +327,8 @@ abstract class AbstractBase implements
      * send user after login (some drivers may override this).
      *
      * @return ?string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getSessionInitiator(string $target): ?string
     {
         return null;
@@ -398,9 +391,8 @@ abstract class AbstractBase implements
      *   string email    User's email address
      *   string username Username (optional, for display)
      *   array  details  Array of user details required for resetPassword request
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPasswordRecoveryData(array $params): ?array
     {
         // By default, don't return password recovery data

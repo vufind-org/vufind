@@ -54,9 +54,8 @@ class Deprecated extends AbstractChannelProvider
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,
@@ -73,9 +72,8 @@ class Deprecated extends AbstractChannelProvider
      * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         return [];

@@ -66,9 +66,8 @@ class TranslatorFactory implements DelegatorFactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,

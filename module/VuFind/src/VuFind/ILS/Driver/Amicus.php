@@ -445,9 +445,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $items = 'select CPY_ID.BRCDE_NBR, CPY_ID.BIB_ITM_NBR, ' .
@@ -753,9 +752,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param array  $details  Item details from getHoldings return array
      *
      * @return string          URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHoldLink($recordId, $details)
     {
         return $this->config['Catalog']['hold'] . $recordId;
@@ -772,9 +770,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         $recordList = [];

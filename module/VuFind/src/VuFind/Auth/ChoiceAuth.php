@@ -382,8 +382,6 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object.
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDelegateAuthMethod(Request $request)
     {
@@ -520,8 +518,6 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function needsCsrfCheck($request)
     {

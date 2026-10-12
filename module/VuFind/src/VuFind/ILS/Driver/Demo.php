@@ -264,9 +264,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         return is_callable([$this, $method]);
@@ -455,9 +454,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestBlocks($patron)
     {
         return $this->isFailing(__METHOD__, 10)
@@ -471,9 +469,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getAccountBlocks($patron)
     {
         return $this->isFailing(__METHOD__, 10)
@@ -750,9 +747,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getSimulatedStatus($id, ?array $patron = null)
     {
         $id = (string)$id;
@@ -1163,9 +1159,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's fines on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyFines($patron)
     {
         $this->checkIntermittentFailure();
@@ -1192,9 +1187,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @throws ILSException
      * @return array Associative array with keys success (bool, always) and reason (string, on error)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function registerPayment(
         array $patron,
         int $amount,
@@ -1246,9 +1240,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $params Parameters
      *
      * @return mixed        Array of the patron's holds on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyHolds($patron, $params = [])
     {
         $this->checkIntermittentFailure();
@@ -1277,9 +1270,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyStorageRetrievalRequests($patron)
     {
         $this->checkIntermittentFailure();
@@ -1299,9 +1291,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyILLRequests($patron)
     {
         $this->checkIntermittentFailure();
@@ -1433,9 +1424,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $params Parameters
      *
      * @return mixed        Array of the patron's transactions on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyTransactions($patron, $params = [])
     {
         $this->checkIntermittentFailure();
@@ -1558,9 +1548,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $params Parameters
      *
      * @return mixed        Array of the patron's historic transactions on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyTransactionHistory($patron, $params)
     {
         $this->checkIntermittentFailure();
@@ -1670,9 +1659,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
@@ -1706,9 +1694,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * placeHold, minus the patron data.
      *
      * @return int|null
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
         $this->checkIntermittentFailure();
@@ -1731,9 +1718,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
@@ -1752,9 +1738,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * options or may be ignored.
      *
      * @return false|string      The default request group for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
@@ -1778,9 +1763,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array  False if request groups not in use or an array of
      * associative arrays with id and name keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestGroups(
         $bibId = null,
         $patron = null,
@@ -1906,9 +1890,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         $this->checkIntermittentFailure();
@@ -2094,9 +2077,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($request, $patron)
     {
         return $request['reqnum'];
@@ -2203,9 +2185,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkRequestIsValid($id, $data, $patron)
     {
         $this->checkIntermittentFailure();
@@ -2328,9 +2309,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
         $this->checkIntermittentFailure();
@@ -2458,9 +2438,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkILLRequestIsValid($id, $data, $patron)
     {
         $this->checkIntermittentFailure();
@@ -2591,9 +2570,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLibraries($id, $patron)
     {
         $this->checkIntermittentFailure();
@@ -2628,9 +2606,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array  $patron    Patron
      *
      * @return bool|array False if request not allowed, or an array of locations.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         $this->checkIntermittentFailure();
@@ -2719,9 +2696,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelILLRequestDetails($request, $patron)
     {
         return $request['reqnum'];
@@ -2740,9 +2716,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function changePassword($details)
     {
         $this->checkIntermittentFailure();
@@ -2842,9 +2817,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         $this->checkIntermittentFailure();
@@ -2963,9 +2937,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron Patron Data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRecentlyReturnedBibs(
         $limit = 30,
         $maxage = 30,
@@ -3002,9 +2975,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array with username and password
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getProxiedUsers(array $patron): array
     {
         return $this->config['ProxiedUsers'] ?? [];
@@ -3016,9 +2988,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array with username and password
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getProxyingUsers(array $patron): array
     {
         return $this->config['ProxyingUsers'] ?? [];

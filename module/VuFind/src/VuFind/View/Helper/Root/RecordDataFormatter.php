@@ -494,9 +494,8 @@ class RecordDataFormatter
      * @param array $options Rendering options.
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function renderSimple(mixed $data, array $options): string
     {
         $escaper = ($options['translate'] ?? false)

@@ -55,9 +55,8 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
      * @param array|null         $options   Service options
      *
      * @return AbstractBase
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,

@@ -280,9 +280,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param string                 $navClass Additional class for the nav element
      *
      * @return ?string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function renderPagination(
         ServerRequestInterface $request,
         Results $results,
@@ -370,8 +369,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param Results                $results Search results
      *
      * @return ?string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderAnalytics(
         ServerRequestInterface $request,

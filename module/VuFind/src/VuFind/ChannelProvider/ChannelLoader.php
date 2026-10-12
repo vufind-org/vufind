@@ -158,9 +158,8 @@ class ChannelLoader
      * @param string $source        Backend to use
      *
      * @return Results
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function performChannelSearch($searchRequest, $providers, $source)
     {
         // Perform search and configure providers:
