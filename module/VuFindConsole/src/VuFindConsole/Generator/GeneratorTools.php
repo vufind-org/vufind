@@ -583,7 +583,7 @@ class GeneratorTools
     protected function cloneFactory($factory, $module)
     {
         if ($factory === AutowiringFactory::class) {
-            $this->writeln("WARNING: you are extending AutowiringFactory, which is not recommended.");
+            $this->writeln('WARNING: you are extending AutowiringFactory, which is not recommended.');
         }
         // If the factory is a stand-alone class, it's simple to clone:
         if (class_exists($factory)) {
