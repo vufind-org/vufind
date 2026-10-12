@@ -332,6 +332,18 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
+     * Return response that is shown after unsuccessful form submit.
+     *
+     * @return string
+     */
+    public function getSubmitFailureResponse(): string
+    {
+        return !empty($this->formConfig['failureResponse'])
+            ? $this->formConfig['failureResponse']
+            : 'could_not_process_feedback';
+    }
+
+    /**
      * Return email from address.
      *
      * @return string
@@ -811,6 +823,7 @@ class Form extends \Laminas\Form\Form implements
             'reportReferrer',
             'reportUserAgent',
             'response',
+            'failureResponse',
             'senderEmailRequired',
             'senderInfoRequired',
             'senderNameRequired',
