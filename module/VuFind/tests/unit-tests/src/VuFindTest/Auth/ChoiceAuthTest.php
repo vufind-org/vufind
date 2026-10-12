@@ -255,11 +255,10 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         ?Container $session = null,
         string $strategies = 'Database,Shibboleth'
     ): ChoiceAuth {
-        $ca = new ChoiceAuth($session ?: $this->getSessionContainer());
+        $ca = new ChoiceAuth($session ?: $this->getSessionContainer(), $pm ?: $this->getMockPluginManager());
         $ca->setConfig(
             ['ChoiceAuth' => ['choice_order' => $strategies]]
         );
-        $ca->setPluginManager($pm ?: $this->getMockPluginManager());
         return $ca;
     }
 
