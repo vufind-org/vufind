@@ -58,22 +58,8 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('One or more ChoiceAuth parameters are missing.');
 
-        $ca = new ChoiceAuth($this->getSessionContainer());
+        $ca = new ChoiceAuth($this->getSessionContainer(), $this->getMockPluginManager());
         $ca->setConfig([]);
-    }
-
-    /**
-     * Test default getPluginManager behavior.
-     *
-     * @return void
-     */
-    public function testMissingPluginManager(): void
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Plugin manager missing.');
-
-        $ca = new ChoiceAuth($this->getSessionContainer());
-        $ca->getPluginManager();
     }
 
     /**
