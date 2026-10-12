@@ -52,7 +52,7 @@
 #                             whole feedback send action fails. You can add your own handler
 #                             by implementing \VuFind\Form\Handler\HandlerInterface, and adding
 #                             it to module config under key:
-#                               'vufind' -> 'plugin_manager' -> 'form_handler'
+#                               'vufind' -> 'plugin_managers' -> 'form_handler'
 #                             Example:
 #                               primaryHandler: database
 #   secondaryHandlers (array) Additional handlers could be defined here. They can fail silently,
