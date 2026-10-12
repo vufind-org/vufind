@@ -31,7 +31,7 @@ namespace VuFind\Session;
 
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
-use PSR\Container\Containerinterface;
+use PSR\Container\ContainerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -43,7 +43,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SessionContainerRegistry implements Containerinterface
+class SessionContainerRegistry implements ContainerInterface
 {
     /**
      * Session containers.
