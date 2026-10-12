@@ -31,7 +31,7 @@ namespace VuFind\Session;
 
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
-use PSR\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
