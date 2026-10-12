@@ -1432,9 +1432,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string      Formatted year.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function formatYearForDateRange(?string $year, bool $rangeEnd = false): string
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
@@ -1465,9 +1464,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string     Formatted number.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function formatValueForNumericRange(?string $num, bool $rangeEnd = false): string
     {
         // empty strings, null values and non-numeric values are treated as wildcards:
@@ -1963,9 +1961,8 @@ class Params
      * @param array $ids Record IDs to load
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function setQueryIDs(array $ids): void
     {
         // This needs to be defined in child classes:

@@ -382,9 +382,8 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object.
      *
      * @return string|bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDelegateAuthMethod(Request $request)
     {
         return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
@@ -520,9 +519,8 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function needsCsrfCheck($request)
     {
         if (!$this->strategy) {

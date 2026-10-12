@@ -538,9 +538,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
@@ -582,9 +581,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         if (!$this->locations) {
@@ -674,9 +672,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * or may be ignored.
      *
      * @return string The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultLocation;
@@ -820,9 +817,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $this->debug(
@@ -1047,9 +1043,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+
     /*public function getHoldLink($id, $details)
     {
         // Web link of the ILS for placing hold on the item
@@ -1270,9 +1266,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reserve_id'];
@@ -1605,9 +1600,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @throws ILSException
      * @return array An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         try {
@@ -1998,9 +1992,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Loan history is only available if properly configured

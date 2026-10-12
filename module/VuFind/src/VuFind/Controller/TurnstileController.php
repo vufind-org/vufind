@@ -30,6 +30,8 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\UnusedLocalVariable;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Log\LoggerAwareTrait;
@@ -98,9 +100,8 @@ class TurnstileController extends AbstractBase implements
      * Verify the Turnstile widget result against the Turnstile backend.
      *
      * @return mixed
-     *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
+    #[SuppressWarnings(UnusedLocalVariable::class)]
     public function verifyAction()
     {
         $token = $this->params()->fromPost('token');

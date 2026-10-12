@@ -60,9 +60,8 @@ class LoggedIn extends AbstractBase
      * @param array $condition Optionally used for handler specific parameters
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getBaseValue(array $condition): string
     {
         return ($this->authManager->getIdentity() === null) ? 'false' : 'true';

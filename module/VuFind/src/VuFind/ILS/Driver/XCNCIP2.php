@@ -928,9 +928,8 @@ class XCNCIP2 extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConsortialHoldings(
         $id,
         ?array $patron = null,
@@ -1026,9 +1025,8 @@ class XCNCIP2 extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $ids = null;
@@ -1056,9 +1054,8 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // NCIP is not able to send acquisition data
@@ -1537,9 +1534,8 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // NCIP does not support course reserves
@@ -1566,9 +1562,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         if ($function == 'Holds') {
@@ -1612,9 +1607,8 @@ class XCNCIP2 extends AbstractBase implements
      * or may be ignored.
      *
      * @return string A location ID
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron, $holdDetails = null)
     {
         return $this->pickupLocations[$patron['patronAgencyId']][0]['locationID'];
@@ -1686,9 +1680,8 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron, $holdDetails = null)
     {
         if (!isset($this->pickupLocations)) {
@@ -1721,9 +1714,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
         return true;
@@ -1971,9 +1963,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $this->getCancelRequestDetails($holdDetails);
@@ -2008,9 +1999,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $this->getCancelRequestDetails($details);
@@ -2854,9 +2844,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function invalidateResponseCache(string $message, string $key): void
     {
         unset($this->responses['LookupUser'][$key]);

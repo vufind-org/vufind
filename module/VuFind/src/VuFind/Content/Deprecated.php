@@ -50,9 +50,8 @@ class Deprecated extends \VuFind\Content\AbstractBase
      *
      * @throws \Exception
      * @return array     Returns array with table of contents data.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         error_log('Deprecated content provider called; check configuration.');

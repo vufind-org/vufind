@@ -246,8 +246,7 @@ interface AuthInterface
      *   string email    User's email address
      *   string username Username (optional, for display)
      *   array  details  Array of user details required for resetPassword request
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPasswordRecoveryData(array $params): ?array;
 }

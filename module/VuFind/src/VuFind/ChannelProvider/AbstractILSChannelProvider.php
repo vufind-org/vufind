@@ -118,9 +118,8 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,
@@ -137,9 +136,8 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         return $this->getChannel();

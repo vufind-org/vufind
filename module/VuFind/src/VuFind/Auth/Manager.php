@@ -263,9 +263,8 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      * the one in config file
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsEmailChange(?string $authMethod = null): bool
     {
         return $this->config['Authentication']['change_email'] ?? false;
@@ -811,9 +810,8 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      *
      * @throws AuthException
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function updateEmail(UserEntityInterface $user, string $email): void
     {
         // Depending on verification setting, either do a direct update or else

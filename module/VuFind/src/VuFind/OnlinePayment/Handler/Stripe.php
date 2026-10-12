@@ -98,9 +98,8 @@ class Stripe extends AbstractBase implements
      * @return Response
      *
      * @throws PaymentException
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function startPayment(
         string $returnBaseUrl,
         string $notifyBaseUrl,
@@ -216,9 +215,8 @@ class Stripe extends AbstractBase implements
      * @return int One of the result codes defined in AbstractBase
      *
      * @throws PaymentException
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function processPaymentResponse(
         PaymentEntityInterface $payment,
         \Laminas\Http\Request $request

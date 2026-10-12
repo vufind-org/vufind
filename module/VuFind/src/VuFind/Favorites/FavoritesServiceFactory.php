@@ -61,9 +61,8 @@ class FavoritesServiceFactory implements FactoryInterface
      * @param array              $options   Extra options (unused)
      *
      * @return FavoritesService
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(ContainerInterface $container, $name, ?array $options = null)
     {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);

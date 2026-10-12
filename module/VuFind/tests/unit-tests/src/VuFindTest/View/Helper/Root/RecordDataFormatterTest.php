@@ -251,9 +251,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              * getAuthorDataFields)
              *
              * @return array
-             *
-             * @SuppressWarnings(PHPMD.UnusedFormalParameter)
              */
+            #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
             public function getDeduplicatedAuthors($dataFields = [])
             {
                 return [

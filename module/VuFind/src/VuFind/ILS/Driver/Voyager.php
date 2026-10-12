@@ -1067,9 +1067,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws DateException
      * @throws ILSException
      * @return array Keyed data
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function processHoldingData($data, $id, $patron = null)
     {
         $holding = [];
@@ -1160,9 +1159,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $possibleQueries = [];
@@ -1438,9 +1436,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @throws DateException
      * @return array Keyed data for display by template files
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function processMyTransactionsData($sqlRow, $patron = false)
     {
         // Convert Voyager Format to display format
@@ -2107,9 +2104,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @param array  $details  Item details from getHoldings return array
      *
      * @return string          URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHoldLink($recordId, $details)
     {
         // There is no easy way to link directly to hold screen; let's just use
@@ -2342,9 +2338,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @param array $patron Patron Data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRecentlyReturnedBibs(
         $limit = 30,
         $maxage = 30,
@@ -2394,9 +2389,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @param array $patron Patron Data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getTrendingBibs($limit = 30, $maxage = 30, $patron = null)
     {
         $recordList = [];

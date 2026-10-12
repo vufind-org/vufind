@@ -175,9 +175,8 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      * @param string             $requestedName Name of service
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function canCreate(ContainerInterface $container, $requestedName)
     {
         $className = $this->getClassName($requestedName);

@@ -50,9 +50,8 @@ trait ILSMockTrait
      * of strings returned in holds' cancel_details field.
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function cancelHolds($cancelDetails)
     {
         return [];
@@ -68,9 +67,8 @@ trait ILSMockTrait
      * @param array $cancelDetails An array of item and patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function cancelILLRequests($cancelDetails)
     {
         return [];
@@ -86,9 +84,8 @@ trait ILSMockTrait
      * @param array $cancelDetails An array of item and patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
         return [];
@@ -106,9 +103,8 @@ trait ILSMockTrait
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkRequestIsValid($id, $data, $patron)
     {
     }
@@ -125,9 +121,8 @@ trait ILSMockTrait
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkILLRequestIsValid($id, $data, $patron)
     {
     }
@@ -144,9 +139,8 @@ trait ILSMockTrait
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
     }
@@ -158,9 +152,8 @@ trait ILSMockTrait
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($request, $patron = [])
     {
         return '';
@@ -173,9 +166,8 @@ trait ILSMockTrait
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelILLRequestDetails($request, $patron)
     {
         return '';
@@ -188,9 +180,8 @@ trait ILSMockTrait
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($request, $patron)
     {
         return '';
@@ -203,9 +194,8 @@ trait ILSMockTrait
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         return [];
@@ -225,9 +215,8 @@ trait ILSMockTrait
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return '';
@@ -245,9 +234,8 @@ trait ILSMockTrait
      * options or may be ignored.
      *
      * @return false|string      The default request group for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         return false;
@@ -261,9 +249,8 @@ trait ILSMockTrait
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyILLRequests($patron)
     {
     }
@@ -278,9 +265,8 @@ trait ILSMockTrait
      *
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLibraries($id, $patron)
     {
         return false;
@@ -297,9 +283,8 @@ trait ILSMockTrait
      * @param array  $patron    Patron
      *
      * @return bool|array False if request not allowed, or an array of locations.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         return false;
@@ -323,9 +308,8 @@ trait ILSMockTrait
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         return [];
@@ -342,9 +326,8 @@ trait ILSMockTrait
      * @param array $checkoutDetails An array of item data
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRenewDetails($checkoutDetails)
     {
         return '';
@@ -363,9 +346,8 @@ trait ILSMockTrait
      *
      * @return array  False if request groups not in use or an array of
      * associative arrays with id and name keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
     {
         return [];
@@ -391,9 +373,8 @@ trait ILSMockTrait
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function placeHold($holdDetails)
     {
     }
@@ -408,9 +389,8 @@ trait ILSMockTrait
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function placeILLRequest($holdDetails)
     {
     }
@@ -425,9 +405,8 @@ trait ILSMockTrait
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function placeStorageRetrievalRequest($details)
     {
     }
@@ -442,9 +421,8 @@ trait ILSMockTrait
      * including the Patron ID and an array of renewal IDS
      *
      * @return array              An array of renewal information keyed by item ID
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function renewMyItems($renewDetails)
     {
         return [];
@@ -457,9 +435,8 @@ trait ILSMockTrait
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getAccountBlocks($patron)
     {
         return false;
@@ -472,9 +449,8 @@ trait ILSMockTrait
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestBlocks($patron)
     {
         return false;

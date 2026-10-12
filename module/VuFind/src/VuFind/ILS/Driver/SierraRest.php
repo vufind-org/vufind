@@ -624,9 +624,8 @@ class SierraRest extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBib($id, true, $patron);
@@ -641,9 +640,8 @@ class SierraRest extends AbstractBase implements
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         return [];
@@ -659,9 +657,8 @@ class SierraRest extends AbstractBase implements
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         return [];
@@ -677,9 +674,8 @@ class SierraRest extends AbstractBase implements
      *
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function patronLogin($username, $password)
     {
         // If we are using a patron-specific access grant, we can bypass
@@ -1394,9 +1390,8 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         if (!empty($this->config['pickUpLocations'])) {
@@ -1462,9 +1457,8 @@ class SierraRest extends AbstractBase implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultPickUpLocation;
@@ -1670,9 +1664,8 @@ class SierraRest extends AbstractBase implements
      *
      * @throws ILSException
      * @return array Associative array with keys success (bool, always) and reason (string, on error)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function registerPayment(
         array $patron,
         int $amount,
@@ -1979,9 +1972,8 @@ class SierraRest extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactions' === $function) {
@@ -2027,9 +2019,8 @@ class SierraRest extends AbstractBase implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Changing password is only available if properly configured.
@@ -3988,9 +3979,8 @@ WHERE
      * @param array $sierraFine Sierra fine entry
      *
      * @return int 1/100ths of a percent
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getFineTaxRate(array $fine, array $sierraFine): int
     {
         $code = $sierraFine['chargeType']['code'] ?? 0;

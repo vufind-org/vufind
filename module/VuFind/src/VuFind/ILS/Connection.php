@@ -441,9 +441,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         An array of function-specific params (or null)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodcancelHolds(array $functionConfig, array $params): array
     {
         $response = [];
@@ -475,9 +474,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         An array of function-specific params (or null)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodRenewals(array $functionConfig, array $params): array
     {
         $response = [];
@@ -544,9 +542,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         An array of function-specific params (or null)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodcancelStorageRetrievalRequests(
         array $functionConfig,
         array $params
@@ -629,9 +626,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         An array of function-specific params (or null)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodcancelILLRequests(array $functionConfig, array $params): array
     {
         $response = [];
@@ -675,9 +671,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         Patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodchangePassword(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('changePassword', [$params ?: []])) {
@@ -729,9 +724,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         Patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodgetMyTransactions(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('getMyTransactions', [$params ?: []])) {
@@ -751,9 +745,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         Patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodgetMyTransactionHistory(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('getMyTransactionHistory', [$params ?: []])) {
@@ -773,9 +766,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         Patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodpurgeTransactionHistory(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('purgeTransactionHistory', [$params ?: []])) {
@@ -795,9 +787,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         Patron data
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodgetMyHolds(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('getMyHolds', [$params ?: []])) {
@@ -817,9 +808,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         An array of function-specific params (or null)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodpatronLogin(array $functionConfig, array $params): array
     {
         return $functionConfig;
@@ -832,9 +822,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $params         An array of function-specific params (or null)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkMethodregisterPayment(array $functionConfig, array $params): array
     {
         if ($this->checkCapability('registerPayment', [$params ?: []])) {

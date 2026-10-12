@@ -397,9 +397,8 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->combineArraysOfAssociativeArrays(
@@ -762,9 +761,8 @@ class ComposedDriver extends AbstractMultiDriver
      * @param string $id The record id to retrieve the holdings for
      *
      * @return bool True if holdings exist, False if they do not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function hasHoldings($id)
     {
         return $this->defaultCall('hasHoldings', func_get_args());
