@@ -31,7 +31,9 @@ namespace VuFind\Session;
 
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -85,6 +87,9 @@ class SessionContainerRegistry implements ContainerInterface
      * @param string $id Identifier of the entry to look for.
      *
      * @return mixed Entry.
+     *
+     * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
+     * @throws ContainerExceptionInterface Error while retrieving the entry.
      */
     public function get(string $id)
     {
