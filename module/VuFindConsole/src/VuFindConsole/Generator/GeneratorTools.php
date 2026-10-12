@@ -35,6 +35,7 @@ use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\ServiceManager\Factory\AutowiringFactory;
 use VuFind\ServiceManager\FactoryDetector;
 
 use function count;
@@ -581,6 +582,9 @@ class GeneratorTools
      */
     protected function cloneFactory($factory, $module)
     {
+        if ($factory === AutowiringFactory::class) {
+            $this->writeln("WARNING: you are extending AutowiringFactory, which is not recommended.");
+        }
         // If the factory is a stand-alone class, it's simple to clone:
         if (class_exists($factory)) {
             return $this->createSubclassInModule($factory, $module);
