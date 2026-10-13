@@ -31,6 +31,7 @@
 
 namespace VuFind\Action\Holds;
 
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
@@ -78,25 +79,26 @@ class ListAction extends AbstractHoldAction
      *
      * @param Connection        $ilsConnection     ILS connection
      * @param SessionManager    $sessionManager    Session manager
-     * @param CacheManager      $cacheManager      Cache manager
      * @param AuthManager       $authManager       Authentication manager
      * @param CsrfInterface     $csrf              CSRF validator
      * @param AuditEventService $auditEventService Audit event service
+     * @param StorageInterface  $objectCache       Object cache
      * @param RecordsHelper     $recordsHelper     Records helper
      * @param array             $config            VuFind configuration
      */
     public function __construct(
         Connection $ilsConnection,
         SessionManager $sessionManager,
-        CacheManager $cacheManager,
         AuthManager $authManager,
         CsrfInterface $csrf,
         AuditEventService $auditEventService,
+        #[Autowire(container: CacheManager::class, service: 'object')]
+        StorageInterface $objectCache,
         protected RecordsHelper $recordsHelper,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {
-        parent::__construct($ilsConnection, $sessionManager, $authManager, $csrf, $auditEventService, $cacheManager);
+        parent::__construct($ilsConnection, $sessionManager, $authManager, $csrf, $auditEventService, $objectCache);
     }
 
     /**

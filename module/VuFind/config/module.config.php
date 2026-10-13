@@ -170,7 +170,6 @@ $config = [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\QRCodeController' => 'VuFind\Controller\QRCodeControllerFactory',
@@ -192,8 +191,6 @@ $config = [
             'libguides' => 'VuFind\Controller\LibGuidesController',
             'LibGuidesAZ' => 'VuFind\Controller\LibGuidesAZController',
             'libguidesaz' => 'VuFind\Controller\LibGuidesAZController',
-            'LibraryCards' => 'VuFind\Controller\LibraryCardsController',
-            'librarycards' => 'VuFind\Controller\LibraryCardsController',
             'MyResearch' => 'VuFind\Controller\MyResearchController',
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
@@ -805,6 +802,13 @@ $config = [
                 'backendId' => 'WorldCat2',
             ],
         ],
+
+        // Redirects from legacy actions to current ones (key is action id in all lowercase, value is route name to
+        // redirect to):
+        'action_redirects' => [
+            'search/history' => 'searchhistory-list',
+        ],
+
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
@@ -1097,6 +1101,7 @@ $staticRoutes = [
     'Search2/Home',
     'Search2/Results',
     'Search2/Versions',
+    'SearchHistory/List',
     'SimulatedSSO/Login',
     'SiteMap/Home',
     'Summon/Advanced',

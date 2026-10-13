@@ -158,21 +158,21 @@ VuFind.register('truncate', function Truncate() {
           } else {
             container.css('height', truncatedHeight + 'px');
           }
-          btnWrapperBtm.find('.more-btn').focus();
+          btnWrapperBtm.find('.more-btn').trigger('focus');
         };
-        btnWrapperBtm.find('.less-btn').click(onClickLessBtnHandler);
+        btnWrapperBtm.find('.less-btn').on('click', onClickLessBtnHandler);
         if (btnWrapperTop) {
-          btnWrapperTop.find('.less-btn').click(onClickLessBtnHandler);
+          btnWrapperTop.find('.less-btn').on('click', onClickLessBtnHandler);
         }
 
-        btnWrapperBtm.find('.more-btn').click(function onClickMoreBtn(/*event*/) {
+        btnWrapperBtm.find('.more-btn').on('click', function onClickMoreBtn(/*event*/) {
           $(this).hide();
           btnWrapperBtm.find('.less-btn').show();
           if (btnWrapperTop) {
             btnWrapperTop.show();
-            btnWrapperTop.find('.less-btn').focus();
+            btnWrapperTop.find('.less-btn').trigger('focus');
           } else {
-            btnWrapperBtm.find('.less-btn').focus();
+            btnWrapperBtm.find('.less-btn').trigger('focus');
           }
           if (element) {
             toggleElements.forEach(function showToggles(toggleElement) {

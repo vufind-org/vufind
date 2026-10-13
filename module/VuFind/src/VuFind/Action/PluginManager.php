@@ -177,6 +177,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'libguidesaz/home' => Search\HomeAction::class,
         'libguidesaz/results' => Search\ResultsAction::class,
 
+        'librarycards/connectcard' => LibraryCards\ConnectCardAction::class,
+        'librarycards/connectcardlogin' => LibraryCards\ConnectCardLoginAction::class,
+        'librarycards/deletecard' => LibraryCards\DeleteCardAction::class,
+        'librarycards/editcard' => LibraryCards\EditCardAction::class,
+        'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
+        'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
@@ -330,6 +337,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'tag/deletetags' => Tag\DeleteTagsAction::class,
         'tag/userlist' => Tag\UserListAction::class,
+
+        'upgrade/criticalfixblowfish' => Upgrade\CriticalFixBlowfishAction::class,
+        'upgrade/criticalfixinsecuredatabase' => Upgrade\CriticalFixInsecureDatabaseAction::class,
+        'upgrade/fixanonymoustags' => Upgrade\FixAnonymousTagsAction::class,
+        'upgrade/fixconfig' => Upgrade\FixConfigAction::class,
+        'upgrade/fixdatabase' => Upgrade\FixDatabaseAction::class,
+        'upgrade/fixduplicatetags' => Upgrade\FixDuplicateTagsAction::class,
+        'upgrade/fixmetadata' => Upgrade\FixMetadataAction::class,
+        'upgrade/getdbcredentials' => Upgrade\GetDbCredentialsAction::class,
+        'upgrade/getsourceversion' => Upgrade\GetSourceVersionAction::class,
+        'upgrade/showsql' => Upgrade\ShowSqlAction::class,
     ];
 
     /**
@@ -342,8 +360,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
+        'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
         'Worldcat' => 'WorldCat',
     ];
