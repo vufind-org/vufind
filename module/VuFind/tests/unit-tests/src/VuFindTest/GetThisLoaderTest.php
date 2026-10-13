@@ -761,7 +761,7 @@ class GetThisLoaderTest extends TestCase
         ]);
         $getThis->setRecordDriver($driver);
         $this->assertSame('https://what_a_great_link.com', $getThis->getLink());
-        $getThis->setDefaultItemId(4);
+        $getThis->setDefaultItemId('4');
         $this->assertSame('https://really_good_link.com', $getThis->getLink());
         $this->assertSame('https://what_another_great_link.com', $getThis->getLink('3'));
     }
