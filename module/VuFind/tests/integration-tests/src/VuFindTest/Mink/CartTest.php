@@ -542,7 +542,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             '#bottom_updateCart',
             '#bottom_addFormCheckboxSelectAll'
         );
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             '2',
             function () use ($page) {
                 return $this->findCssAndGetText($page, '#cartItems strong');
@@ -734,7 +734,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $windowCount + 1,
             function () use ($session) {
                 return count($session->getWindowNames());
@@ -743,7 +743,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $newWindows = array_diff($session->getWindowNames(), $windowNames);
         $this->assertCount(1, $newWindows);
         $session->switchToWindow(reset($newWindows));
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $exportUrl,
             [$session, 'getCurrentUrl']
         );
@@ -785,7 +785,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInCart($page);
         $this->clickCss($page, '.cart-controls button[name=print]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             [$this, 'getCurrentQueryString']
         );

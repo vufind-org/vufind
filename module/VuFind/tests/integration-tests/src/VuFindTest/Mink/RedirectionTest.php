@@ -49,7 +49,7 @@ class RedirectionTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/History?foo=bar&bar=baz');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $this->getVuFindUrl() . '/SearchHistory/List?foo=bar&bar=baz',
             [$session, 'getCurrentUrl']
         );

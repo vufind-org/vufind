@@ -674,7 +674,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         if ($multiBackend) {
             // Check that there's no visible recovery link for the default target:
             $this->findCss($page, '.modal-body #login_MultiILS_username');
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 'btn btn-link recover-account-link hidden',
                 function () use ($page) {
                     return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
@@ -683,7 +683,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
             // Switch to demo2 and check that there's now a visible recovery link:
             $this->clickCss($page, '.modal-body #login_MultiILS_target option', null, 1);
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 'btn btn-link recover-account-link',
                 function () use ($page) {
                     return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
@@ -698,7 +698,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', '');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Username cannot be blank',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -707,7 +707,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
         $this->findCssAndSetValue($page, '#recovery_email', '');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Email address missing.',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -716,7 +716,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
         $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'We could not find your account',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -726,7 +726,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Password recovery instructions have been sent to the email address registered with this account.',
             fn () => $this->findCssAndGetText($page, '.alert-info')
         );

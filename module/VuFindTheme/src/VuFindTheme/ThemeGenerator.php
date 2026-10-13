@@ -32,6 +32,7 @@ namespace VuFindTheme;
 
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.
@@ -53,6 +54,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
      * @param ThemeInfo    $info         Theme info object
      * @param PathResolver $pathResolver Config file path resolver
      */
+    #[Autowire]
     public function __construct(ThemeInfo $info, protected PathResolver $pathResolver)
     {
         parent::__construct($info);
