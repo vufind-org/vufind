@@ -713,6 +713,7 @@ class GetThisLoaderTest extends TestCase
         $getThis->setItems([
             ['item_id' => 2],
             ['item_id' => 3],
+            ['item_id' => 4],
             ['item_id' => 1],
         ]);
         $driver = $this->getMockRecordDriver();
@@ -743,6 +744,14 @@ class GetThisLoaderTest extends TestCase
                 [
                     'items' => [
                         [
+                            'item_id' => 4,
+                            'link' => 'https://really_good_link.com',
+                        ],
+                    ],
+                ],
+                [
+                    'items' => [
+                        [
                             'item_id' => 1,
                             'link' => 'https://what_a_great_link.com',
                         ],
@@ -752,6 +761,8 @@ class GetThisLoaderTest extends TestCase
         ]);
         $getThis->setRecordDriver($driver);
         $this->assertSame('https://what_a_great_link.com', $getThis->getLink());
+        $getThis->setDefaultItemId(4);
+        $this->assertSame('https://really_good_link.com', $getThis->getLink());
         $this->assertSame('https://what_another_great_link.com', $getThis->getLink('3'));
     }
 

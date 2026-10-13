@@ -489,7 +489,6 @@ class GetThisLoader implements LoggerAwareInterface
                     break 2;
                 } elseif ($itemId === null || $isProvidedItemIdNull) {
                     $link = $item['link'];
-                    break;
                 }
             }
         }
