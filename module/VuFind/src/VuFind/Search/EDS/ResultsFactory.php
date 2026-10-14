@@ -76,7 +76,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $configManager = $container->get(ConfigManagerInterface::class);
-        $config = $configManager->getConfigObject($this->configName);
+        $config = $configManager->getConfigArray($this->configName);
         return parent::__invoke($container, $requestedName, [$config]);
     }
 }

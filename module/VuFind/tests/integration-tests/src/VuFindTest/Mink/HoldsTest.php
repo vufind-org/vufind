@@ -122,7 +122,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function gotoRecordById(string $id = 'testsample1'): DocumentElement
+    protected function goToRecordById(string $id = 'testsample1'): DocumentElement
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -138,7 +138,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function gotoRecordWithSearch(
+    protected function goToRecordWithSearch(
         string $id = 'testsample1'
     ): DocumentElement {
         $session = $this->getMinkSession();
@@ -240,7 +240,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch();
+        $page = $this->goToRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -319,7 +319,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch();
+        $page = $this->goToRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -368,7 +368,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch('testsample2');
+        $page = $this->goToRecordWithSearch('testsample2');
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -421,7 +421,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         // Use search to find a record to simulate a typical use case:
-        $page = $this->gotoRecordWithSearch();
+        $page = $this->goToRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals(
             'Login for hold and recall information',
@@ -530,7 +530,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -541,7 +541,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         for ($i = 2; $i <= $itemCount; $i++) {
             $this->placeHold($page);
             $this->closeLightbox($page);
-            $page = $this->gotoRecordById('testsample' . $i);
+            $page = $this->goToRecordById('testsample' . $i);
         }
 
         // Place the hold on last item:
@@ -708,7 +708,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     protected function setUpFrozenHold(int $itemCount = 1): DocumentElement
     {
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -723,7 +723,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         for ($i = 2; $i <= $itemCount; $i++) {
             $this->placeHold($page, ['#startDate' => $futureDate]);
             $this->closeLightbox($page);
-            $page = $this->gotoRecordById('testsample' . $i);
+            $page = $this->goToRecordById('testsample' . $i);
         }
 
         $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
@@ -882,7 +882,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->setUpFrozenHold();
 
         // Place the second hold:
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $page = $this->goToRecordById('dollar$ign/slashcombo');
         $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'C']);
 
         // Open the edit dialog box using the button:
@@ -912,7 +912,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
 
         // Place a third hold:
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $page = $this->goToRecordById('dollar$ign/slashcombo');
         $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'A']);
 
         // Update the two holds that have same possible pick up locations to
@@ -998,7 +998,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
                 'Demo' => $this->getDemoIniOverrides(),
             ]
         );
-        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $page = $this->goToRecordById('dollar$ign/slashcombo');
         // No login at top
         $this->unFindCss($page, '.alert.alert-info a');
         // Hold links should be visible
@@ -1053,7 +1053,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Create account and log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
@@ -1102,7 +1102,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Create account and log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();

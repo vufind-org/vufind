@@ -133,10 +133,6 @@
 </div>
 <?php /* End Listing Options */ ?>
 
-<?php if ($results->getOptions()->showRestrictedViewWarning() && $results->isRestrictedView()): ?>
-  <?=$this->render('error/restrictedViewWarning.phtml')?>
-<?php endif; ?>
-
 <?php foreach ($this->extraErrors ?? [] as $error): ?>
   <div class="alert alert-danger"><?=$this->transEsc($error)?></div>
 <?php endforeach; ?>
@@ -166,6 +162,9 @@
     <?php endif; ?>
   <?php endforeach; ?>
 <?php else: ?>
+  <?php if ($results->getOptions()->showRestrictedViewWarning('result_list_top') && $results->isRestrictedView()): ?>
+    <?=$this->render('error/restrictedViewWarning.phtml')?>
+  <?php endif; ?>
   <?php
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();

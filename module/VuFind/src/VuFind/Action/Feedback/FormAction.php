@@ -33,6 +33,7 @@ namespace VuFind\Action\Feedback;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
@@ -102,8 +103,8 @@ class FormAction extends AbstractTemplateRenderingAction
 
         $prefill = $request->getQueryParams();
         $params = [];
-        if ($referer = $request->getHeader('Referer')[0] ?? null) {
-            $params['referrer'] = $referer;
+        if ($referrer = $this->getHelper(ContextHelper::class)->getReferrer($request)) {
+            $params['referrer'] = $referrer;
         }
         if ($userAgent = $request->getHeader('User-Agent')[0] ?? null) {
             $params['userAgent'] = $userAgent;

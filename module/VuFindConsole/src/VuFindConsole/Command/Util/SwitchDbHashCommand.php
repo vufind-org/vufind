@@ -36,7 +36,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\BlockCipher;
@@ -66,7 +65,7 @@ class SwitchDbHashCommand extends Command
     /**
      * Constructor.
      *
-     * @param Config                   $config          VuFind configuration
+     * @param array                    $config          VuFind configuration
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService UserCard database service
      * @param Closure                  $cipherFactory   Callback to generate a BlockCipher object (must
@@ -76,7 +75,7 @@ class SwitchDbHashCommand extends Command
      * it must be set in configure()
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
         protected Closure $cipherFactory,
@@ -155,15 +154,15 @@ class SwitchDbHashCommand extends Command
 
         // Pull existing encryption settings from the configuration:
         if (
-            !isset($this->config->Authentication->ils_encryption_key)
-            || !($this->config->Authentication->encrypt_ils_password ?? false)
+            !isset($this->config['Authentication']['ils_encryption_key'])
+            || !($this->config['Authentication']['encrypt_ils_password'] ?? false)
         ) {
             $oldhash = 'none';
             $oldkey = null;
         } else {
-            $oldhash = $this->config->Authentication->ils_encryption_algo
+            $oldhash = $this->config['Authentication']['ils_encryption_algo']
                 ?? 'blowfish';
-            $oldkey = $this->config->Authentication->ils_encryption_key;
+            $oldkey = $this->config['Authentication']['ils_encryption_key'];
         }
 
         // Pull new encryption settings from argument or config:

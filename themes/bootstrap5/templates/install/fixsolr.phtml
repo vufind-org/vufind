@@ -11,6 +11,9 @@
 
 <ol>
   <li>Did you start the Solr server?  See <a href="https://vufind.org/wiki/administration:starting_and_stopping_solr">Starting and Stopping Solr</a> in the documentation.</li>
-  <li>Have you checked the Solr admin panel for errors?  You may be able to find it <a href="<?=$this->escapeHtmlAttr($this->userUrl)?>">here</a>.</li>
+  <li>Have you checked the Solr admin panel for errors?  You may be able to find it at <a href="<?=$this->escapeHtmlAttr($this->userUrl)?>"><?=$this->escapeHtml($this->userUrl)?></a>.</li>
   <li>Are you using non-default Solr settings?  If your Solr URL is not <strong><?=$this->escapeHtml($this->rawUrl)?></strong> or your core name is not <strong><?=$this->escapeHtml($this->core)?></strong>, you will need to customize the [Index] section of <?=$this->escapeHtml($this->configFile)?>.</li>
+  <?php if (str_contains($this->rawUrl, 'localhost')): ?>
+    <li>Try replacing localhost with <code>127.0.0.1</code> or <code>::1</code> in the Solr URL.</li>
+  <?php endif; ?>
 </ol>

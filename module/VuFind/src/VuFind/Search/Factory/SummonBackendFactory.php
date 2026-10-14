@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFind\Http\GuzzleService;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
@@ -63,16 +62,16 @@ class SummonBackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $config;
+    protected array $config;
 
     /**
      * Summon configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $summonConfig;
+    protected array $summonConfig;
 
     /**
      * Create an object.
@@ -97,8 +96,8 @@ class SummonBackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
-        $this->config = $configManager->getConfigObject('config');
-        $this->summonConfig = $configManager->getConfigObject('Summon');
+        $this->config = $configManager->getConfigArray('config');
+        $this->summonConfig = $configManager->getConfigArray('Summon');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -130,8 +129,8 @@ class SummonBackendFactory extends AbstractBackendFactory
     protected function createConnector(): Connector
     {
         // Load credentials:
-        $id = $this->config->Summon->apiId ?? null;
-        $key = $this->config->Summon->apiKey ?? null;
+        $id = $this->config['Summon']['apiId'] ?? null;
+        $key = $this->config['Summon']['apiKey'] ?? null;
         if (null === $id || null === $key) {
             throw new \Exception('Credentials missing from [Summon] section of config.ini.');
         }
@@ -142,7 +141,7 @@ class SummonBackendFactory extends AbstractBackendFactory
             $id,
             $key,
             $options,
-            $this->getService(GuzzleService::class)->createClient(null, $this->summonConfig->General->timeout ?? 30)
+            $this->getService(GuzzleService::class)->createClient(null, $this->summonConfig['General']['timeout'] ?? 30)
         );
         $connector->setLogger($this->logger);
         return $connector;
@@ -168,7 +167,7 @@ class SummonBackendFactory extends AbstractBackendFactory
     {
         $builder = new QueryBuilder();
         $caseSensitiveBooleans
-            = $this->summonConfig->General->case_sensitive_bools ?? true;
+            = $this->summonConfig['General']['case_sensitive_bools'] ?? true;
         $helper = new LuceneSyntaxHelper($caseSensitiveBooleans);
         $builder->setLuceneHelper($helper);
         return $builder;
@@ -182,7 +181,7 @@ class SummonBackendFactory extends AbstractBackendFactory
     protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
-        $stripSnippets = !($this->summonConfig->General->snippets ?? false);
+        $stripSnippets = !($this->summonConfig['General']['snippets'] ?? false);
         $callback = function ($data) use ($manager, $stripSnippets) {
             $driver = $manager->get('Summon');
             if ($stripSnippets) {

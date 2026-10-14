@@ -37,6 +37,7 @@ use VuFind\Config\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\ConfigException;
 use VuFind\Feature\MergeRecursiveTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_array;
@@ -72,6 +73,7 @@ class ConfigLoader
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param PathResolver         $pathResolver         Path resolver
      */
+    #[Autowire]
     public function __construct(
         protected HandlerPluginManager $configHandlerManager,
         protected PathResolver $pathResolver

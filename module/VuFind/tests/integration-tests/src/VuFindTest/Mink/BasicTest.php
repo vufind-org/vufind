@@ -148,7 +148,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Default theme does not have an h1:
-        $this->unfindCss($page, 'h1');
+        $this->unFindCss($page, 'h1');
 
         // Change the theme:
         $this->clickCss($page, '.theme-selector.dropdown');

@@ -32,6 +32,7 @@
 
 namespace VuFind\ILS\Driver;
 
+use Composer\Semver\Comparator;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
@@ -276,6 +277,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $includeSuspendedHoldsInQueueLength = false;
 
     /**
+     * Koha version.
+     *
+     * 20.05 is the oldest we support and is used as default.
+     *
+     * @var string
+     */
+    protected string $kohaVersion = '20.05';
+
+    /**
      * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter     Date converter object
@@ -363,6 +373,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $this->includeSuspendedHoldsInQueueLength
             = $this->config['Holdings']['includeSuspendedHoldsInQueueLength'] ?? false;
+
+        if ($kohaVersion = $this->config['Catalog']['kohaVersion'] ?? null) {
+            $this->kohaVersion = $kohaVersion;
+        }
 
         // Init session cache for session-specific data
         $namespace = md5($this->config['Catalog']['host']);
@@ -854,6 +868,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getMyHolds($patron)
     {
+        $embedBiblios = Comparator::greaterThanOrEqualTo($this->kohaVersion, '23.11');
+        $embedItems = Comparator::greaterThanOrEqualTo($this->kohaVersion, '25.11');
+
+        $embed = [];
+        if ($embedBiblios) {
+            $embed[] = 'biblio';
+        }
+        if ($embedItems) {
+            $embed[] = 'item';
+        }
+        $headers = $embed ? [
+            'x-koha-embed' => implode(',', $embed),
+        ] : [];
+
         $result = $this->makeRequest(
             [
                 'path' => 'v1/holds',
@@ -862,16 +890,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '_match' => 'exact',
                     '_per_page' => -1,
                 ],
+                'headers' => $headers,
             ]
         );
 
         $holds = [];
         foreach ($result['data'] as $entry) {
-            $biblio = $this->getBiblio($entry['biblio_id']);
+            $biblio = $embedBiblios ? $entry['biblio'] : $this->getBiblio($entry['biblio_id']);
             $frozen = !empty($entry['suspended']);
             $volume = '';
             if ($entry['item_id'] ?? null) {
-                $item = $this->getItem($entry['item_id']);
+                $item = $embedItems ? $entry['item'] : $this->getItem($entry['item_id']);
                 $volume = $item['serial_issue_number'];
             }
             $available = !empty($entry['waiting_date']);

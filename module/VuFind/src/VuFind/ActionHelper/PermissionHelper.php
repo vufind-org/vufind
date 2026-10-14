@@ -67,7 +67,7 @@ class PermissionHelper implements
      * @param PermissionDeniedManager $permissionDeniedManager  Permission Denied Manager
      * @param AuthManager             $authManager              Auth manager
      * @param LoginHelper             $loginHelper              Login helper
-     * @param RedirectHelper          $redirectHelper           Redirect helper
+     * @param ForwardHelper           $forwardHelper            Forward helper
      * @param array                   $permissionBehaviorConfig Permission behavior configuration
      */
     public function __construct(
@@ -77,7 +77,7 @@ class PermissionHelper implements
         #[Autowire(container: PluginManager::class)]
         protected LoginHelper $loginHelper,
         #[Autowire(container: PluginManager::class)]
-        protected RedirectHelper $redirectHelper,
+        protected ForwardHelper $forwardHelper,
         #[Autowire(config: 'permissionBehavior')]
         protected array $permissionBehaviorConfig,
     ) {
@@ -153,11 +153,10 @@ class PermissionHelper implements
                     $msg = empty($dl['value']) ? null : $dl['value'];
                     return $this->loginHelper->forceLogin($request, $response, $msg, [], false);
                 case 'showmessage':
-                    return $this->redirectHelper->redirectToRoute(
+                    return $this->forwardHelper->forwardTo(
+                        $request->withQueryParams(['msg' => $dl['value']]),
                         $response,
-                        'error-permissiondenied',
-                        [],
-                        ['msg' => $dl['value']]
+                        'error/permissiondenied'
                     );
                 case 'exception':
                     $exceptionClass

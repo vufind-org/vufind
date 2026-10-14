@@ -57,7 +57,7 @@ trait AutocompleteTrait
         string $text,
         ?string $highlight = null
     ): NodeElement {
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $text,
             fn () => $this->findCssAndGetText($page, '.autocomplete-results .ac-item')
         );

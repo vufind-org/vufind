@@ -34,7 +34,6 @@ use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PluginManager;
@@ -47,8 +46,6 @@ use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
 use VuFind\View\Helper\Root\Url;
 use VuFindTheme\ThemeInfo;
-
-use function is_array;
 
 /**
  * Record view helper Test Class.
@@ -294,7 +291,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetPreviews(): void
     {
         $driver = $this->loadRecordFixture('testbug1.json');
-        $config = new \VuFind\Config\Config(['foo' => 'bar']);
+        $config = ['foo' => 'bar'];
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
             ->with(compact('driver', 'config'))
@@ -762,7 +759,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Get a Record object ready for testing.
      *
      * @param RecordDriver $driver                   Record driver
-     * @param array|Config $config                   Configuration
+     * @param array        $config                   Configuration
      * @param ?Context     $context                  Context helper
      * @param bool|string  $url                      Should we add a URL helper? False if no, expected route if yes.
      * @param bool         $serverurl                Should we add a ServerURL helper?
@@ -773,7 +770,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecord(
         RecordDriver $driver,
-        array|Config $config = [],
+        array $config = [],
         ?Context $context = null,
         bool|string $url = false,
         bool $serverurl = false,
@@ -790,8 +787,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         $view->method('resolver')->willReturn($resolver);
-
-        $config = is_array($config) ? new Config($config) : $config;
 
         $serverUrlHelper = $this->getMockServerUrl($serverurl);
         $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(\VuFind\View\Helper\Root\Url::class);

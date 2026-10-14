@@ -30,8 +30,8 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Http\Request;
 use Laminas\Stdlib\Parameters;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Query\Query;
 
 /**
@@ -64,20 +64,13 @@ class AuthorFacets implements RecommendInterface
     protected $results;
 
     /**
-     * Results plugin manager.
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**

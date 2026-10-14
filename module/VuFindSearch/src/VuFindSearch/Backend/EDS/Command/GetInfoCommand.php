@@ -49,10 +49,12 @@ class GetInfoCommand extends CallMethodCommand
      *
      * @param string    $backendId Search backend identifier
      * @param ?ParamBag $params    Search backend parameters
+     * @param bool      $bustCache If request cache should be busted
      */
     public function __construct(
         string $backendId = 'EDS',
-        ?ParamBag $params = null
+        ?ParamBag $params = null,
+        protected bool $bustCache = false
     ) {
         parent::__construct(
             $backendId,
@@ -69,6 +71,6 @@ class GetInfoCommand extends CallMethodCommand
      */
     public function getArguments(): array
     {
-        return [];
+        return ['bustCache' => $this->bustCache];
     }
 }

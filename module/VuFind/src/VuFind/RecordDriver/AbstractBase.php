@@ -65,14 +65,14 @@ abstract class AbstractBase implements
     /**
      * Main VuFind configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $mainConfig;
 
     /**
      * Record-specific configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $recordConfig;
 
@@ -93,10 +93,8 @@ abstract class AbstractBase implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \VuFind\Config\Config $recordConfig Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
+     * @param ?array $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig Record-specific configuration file (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
@@ -156,7 +154,7 @@ abstract class AbstractBase implements
     public function getComments()
     {
         return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
-            $this->getUniqueId(),
+            $this->getUniqueID(),
             $this->getSourceIdentifier()
         );
     }
@@ -198,7 +196,7 @@ abstract class AbstractBase implements
                 \VuFind\Db\Service\RatingsServiceInterface::class
             );
             $this->ratingCache[$cacheKey] = $ratingsService->getRecordRatings(
-                $this->getUniqueId(),
+                $this->getUniqueID(),
                 $this->getSourceIdentifier(),
                 $userId
             );
@@ -225,7 +223,7 @@ abstract class AbstractBase implements
     {
         return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
             ->getCountsForRecord(
-                $this->getUniqueId(),
+                $this->getUniqueID(),
                 $this->getSourceIdentifier(),
                 $groups
             );
@@ -243,7 +241,7 @@ abstract class AbstractBase implements
     public function getContainingLists($user_id = null)
     {
         return $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
-            $this->getUniqueId(),
+            $this->getUniqueID(),
             $this->getSourceIdentifier(),
             $user_id
         );
@@ -286,7 +284,7 @@ abstract class AbstractBase implements
      */
     public function isRatingAllowed(): bool
     {
-        return !empty($this->recordConfig->Social->rating);
+        return !empty($this->recordConfig['Social']['rating']);
     }
 
     /**
@@ -309,7 +307,7 @@ abstract class AbstractBase implements
      */
     public function getCitationFormats()
     {
-        $formatSetting = $this->mainConfig->Record->citation_formats ?? true;
+        $formatSetting = $this->mainConfig['Record']['citation_formats'] ?? true;
 
         // Default behavior: use all supported options.
         if ($formatSetting === true || $formatSetting === 'true') {
