@@ -155,8 +155,8 @@ abstract class AbstractSearch extends AbstractCapabilities
             $results->getResults(),
             $this->responseFields
         );
-        $resultsPage = $this->serverUrlHelper->getBaseUrl() .
-            $this->routeHelper->getUrlFromRoute(
+        $resultsPage = $this->serverUrlHelper->getBaseUrl()
+            . $this->routeHelper->getUrlFromRoute(
                 $this->getSearchActionRoute(),
                 [],
                 [$this->getRequestParam() => $keywords]

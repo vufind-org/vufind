@@ -70,7 +70,7 @@ class FirewallContainer implements ContainerInterface
      *
      * @param ContainerInterface $container            Container to delegate allowed lookups to
      * @param string[]           $allowedServices      FQCNs of services callers may retrieve
-     *                                                 directly from the wrapped container
+     * directly from the wrapped container
      * @param string[]           $capabilityNamespaces Namespace prefixes (each including a
      * trailing backslash) that a class may be under to be built by reflection, e.g.
      * ['VuFindApi\Mcp\Capabilities\']
