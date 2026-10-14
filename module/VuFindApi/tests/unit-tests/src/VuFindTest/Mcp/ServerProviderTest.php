@@ -40,6 +40,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\Version;
 use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
@@ -181,24 +182,24 @@ class ServerProviderTest extends TestCase
     {
         yield 'all defaults' => [
             [],
-            ['Site' => ['generator' => 'VuFind 10.2', 'title' => 'My Library']],
-            ['name' => 'VuFind® Server', 'version' => '10.2', 'description' => 'My Library'],
+            ['Site' => ['title' => 'My Library']],
+            ['name' => 'VuFind® Server', 'description' => 'My Library'],
         ];
-        yield 'custom name, version suffix, and description' => [
-            ['name' => 'MyLibrary VuFind® Server', 'versionSuffix' => '-a', 'description' => 'Custom description'],
-            ['Site' => ['generator' => 'VuFind 10.2.1', 'title' => 'My Library']],
-            ['name' => 'MyLibrary VuFind® Server', 'version' => '10.2.1-a', 'description' => 'Custom description'],
+        yield 'custom name and description' => [
+            ['name' => 'MyLibrary VuFind® Server', 'description' => 'Custom description'],
+            ['Site' => ['title' => 'My Library']],
+            ['name' => 'MyLibrary VuFind® Server', 'description' => 'Custom description'],
         ];
     }
 
     /**
-     * Test that setServerInfo() derives the version from config.ini's Site->generator (with the
-     * "VuFind " prefix stripped) plus an optional suffix, and falls back to Site->title for the
-     * description when none is configured.
+     * Test that setServerInfo() reports VuFind's build version, and falls back to Site->title for
+     * the description when none is configured.
      *
      * @param array $general      ModelContextProtocol.yaml's General section
      * @param array $siteConfig   config.ini's Site section
-     * @param array $expectedInfo Expected serverInfo returned by a real initialize call
+     * @param array $expectedInfo Expected serverInfo returned by a real initialize call, apart from
+     * the version (always the build version)
      *
      * @return void
      */
@@ -216,7 +217,10 @@ class ServerProviderTest extends TestCase
         [$result] = $this->sendMcpRequest($server, $this->getInitializeRequest(), null);
         // assertEquals rather than assertSame: key order in the SDK's own response is an
         // implementation detail this test should not be coupled to.
-        $this->assertEquals($expectedInfo, $result['result']['serverInfo']);
+        $this->assertEquals(
+            $expectedInfo + ['version' => Version::getBuildVersion()],
+            $result['result']['serverInfo']
+        );
     }
 
     /**
