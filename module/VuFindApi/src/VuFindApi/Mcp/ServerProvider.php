@@ -34,6 +34,7 @@ use Mcp\Server\Builder;
 use Mcp\Server\Session\FileSessionStore;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Version;
@@ -64,7 +65,7 @@ class ServerProvider
     /**
      * Directory to store MCP session files in.
      */
-    protected string $sessionDir = LOCAL_CACHE_DIR . '/mcp/session';
+    protected string $sessionDir = 'mcp/session';
 
     /**
      * FQCNs of services core capability classes need. Always allowed, regardless of config; see
@@ -112,13 +113,16 @@ class ServerProvider
         ContainerInterface $serviceManager,
         #[Autowire(service: \VuFind\Log\Logger::class)]
         LoggerInterface $logger,
+        #[Autowire(service: \VuFind\Cache\Manager::class)]
+        CacheManager $cacheManager,
     ) {
         if (!($this->mcpConfig['General']['enabled'] ?? false)) {
             return;
         }
 
+        $cacheDir = $cacheManager->getCacheDir() . $this->sessionDir;
         $builder = Server::builder()
-            ->setSession(new FileSessionStore($this->sessionDir))
+            ->setSession(new FileSessionStore($cacheDir))
             ->setContainer($this->buildContainer($serviceManager))
             ->setLogger($logger);
         $this->setServerInfo($builder);
