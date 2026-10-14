@@ -110,7 +110,7 @@ class ServerProvider
         // this unfiltered reference.
         #[Autowire(service: 'ServiceManager')]
         ContainerInterface $serviceManager,
-        #[Autowire(service: 'VuFind\Logger')]
+        #[Autowire(service: \VuFind\Log\Logger::class)]
         LoggerInterface $logger,
     ) {
         if (!($this->mcpConfig['General']['enabled'] ?? false)) {
