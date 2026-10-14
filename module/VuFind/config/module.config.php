@@ -803,12 +803,15 @@ $config = [
         // Redirects from legacy actions to current ones (key is action id in all lowercase, value is route name to
         // redirect to):
         'action_redirects' => [
+            'myresearch/checkedout' => 'checkouts-list',
             'myresearch/delete' => 'lists-deleteitems',
             'myresearch/deletelist' => 'lists-deletelist',
             'myresearch/edit' => 'lists-edititem',
             'myresearch/editlist' => 'lists-editlist',
             'myresearch/favorites' => 'lists-allitems',
             'myresearch/fines' => 'fines-list',
+            'myresearch/historicloans' => 'checkouts-history',
+            'myresearch/holds' => 'holds-list',
             'myresearch/mylist' => 'userList',
             'search/history' => 'searchhistory-list',
             'myresearch/unsubscribe' => 'searchhistory-unsubscribesearch',
