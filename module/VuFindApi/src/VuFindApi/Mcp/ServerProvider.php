@@ -35,7 +35,6 @@ use Mcp\Server\Session\FileSessionStore;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Version;
 use VuFind\Exception\ConfigException;
@@ -92,7 +91,7 @@ class ServerProvider
      * Constructor.
      *
      * @param array              $mcpConfig      MCP configuration
-     * @param Config             $topConfig      config.ini
+     * @param array              $topConfig      config.ini
      * @param ContainerInterface $serviceManager Application service container -- firewalled down to
      * an allowlist of services before capability code ever sees it; not kept as a property since it
      * is only needed here in the constructor
@@ -102,8 +101,8 @@ class ServerProvider
     public function __construct(
         #[Autowire(config: 'ModelContextProtocol')]
         protected array $mcpConfig,
-        #[Autowire(config: 'config', configType: 'object')]
-        protected Config $topConfig,
+        #[Autowire(config: 'config')]
+        protected array $topConfig,
         // Unlike anywhere else in VuFind, this autowires the raw application service container
         // itself ('ServiceManager' is a self-referencing alias Laminas MVC registers for it). That
         // is safe here only because it is immediately passed to buildContainer(), which firewalls
