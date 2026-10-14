@@ -383,8 +383,10 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function receiptProvider(): \Iterator
     {
-        yield 'no VAT breakdown' => [false];
-        yield 'VAT breakdown' => [true];
+        yield 'no VAT breakdown' => [false, false];
+        yield 'VAT breakdown' => [true, false];
+        yield 'no VAT breakdown, legacy URL' => [false, true];
+        yield 'VAT breakdown, legacy URL' => [true, true];
     }
 
     /**
@@ -393,13 +395,14 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * This test is excluded from HTML validation because the server returns HTML used for PDF creation.
      *
      * @param bool $vatBreakdown VAT breakdown enabled?
+     * @param bool $legacyUrl    Use legacy URL?
      *
      * @return void
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
     #[\PHPUnit\Framework\Attributes\DataProvider('receiptProvider')]
     #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
-    public function testReceipt(bool $vatBreakdown): void
+    public function testReceipt(bool $vatBreakdown, bool $legacyUrl): void
     {
         $this->changeConfigs(
             [
@@ -423,7 +426,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Check contents of HTML version of the receipt (the PDF version can't be loaded in chrome-headless-shell):
-        $session->visit($this->getVuFindUrl('/MyResearch/Fines?paymentReceipt=true&html=true'));
+        $url = $this->getVuFindUrl(
+            $legacyUrl
+            ? '/MyResearch/Fines?paymentReceipt=true&html=true'
+            : '/Fines/Receipt?html=true'
+        );
+        $session->visit($url);
         $this->findCss($page, '.fee-table');
         if ($vatBreakdown) {
             $vatBreakdownEl = $this->findCss($page, '.vat-breakdown tbody');
@@ -571,13 +579,13 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
                 AuditEventSubtype::PaymentRegistration->value,
                 'Registration requested',
                 null,
-                'VuFind\\Action\\MyResearch\\FinesAction::handleOnlinePayment',
+                'VuFind\\Action\\Fines\\ListAction::processPaymentHandlerResponse',
             ],
             [
                 AuditEventSubtype::PaymentResponseHandler->value,
                 'Response handler called',
                 null,
-                'VuFind\\Action\\MyResearch\\FinesAction::handleOnlinePayment',
+                'VuFind\\Action\\Fines\\ListAction::processPaymentHandlerResponse',
             ],
             [
                 AuditEventSubtype::Payment->value,
@@ -630,7 +638,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Fines');
+        $session->visit($this->getVuFindUrl() . '/Fines/List');
         $page = $session->getPage();
 
         // Set up user account if necessary:

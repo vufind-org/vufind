@@ -1,12 +1,12 @@
 <?php
-  $termsTemplate = 'myresearch/payment/terms-' . strtolower($this->paymentHandler);
+  $termsTemplate = 'fines/payment/terms-' . strtolower($this->paymentHandler);
   if (!$this->resolver($termsTemplate)):
 ?>
   <div class="alert alert-danger">Template <strong><?=$this->escapeHtml($termsTemplate)?></strong> missing</div>
   <?php return; ?>
 <?php endif; ?>
 <h2><?=$this->transEsc('Payment::terms_heading')?></h2>
-<form id="confirm_pay" class="confirm-payment confirm-payment__<?=$this->escapeHtmlAttr($this->paymentHandler)?>" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox-ignore data-disable-on-submit>
+<form id="confirm_pay" class="confirm-payment confirm-payment__<?=$this->escapeHtmlAttr($this->paymentHandler)?>" action="<?=$this->url('fines-pay')?>" method="post" data-lightbox-ignore data-disable-on-submit>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
   <?=$this->render($termsTemplate)?>
   <?php foreach ($this->selectedIds as $fineId): ?>
