@@ -8,7 +8,11 @@ General:
   #enabled: false
   # name: Default is "VuFind® Server"
   #name: MyLibrary VuFind® Server
-  # versionSuffix: Appended to the VuFind release string. If used, start with punctuation.
+  # versionSuffix: Appended to the VuFind release string to produce an MCP server version.
+  # For example, a suffix "-a" running under VuFind 12.0 would yield version "12.0-a".
+  # The version string is used only for logging and debugging by client apps; you may want
+  # to change this as you add/remove/change capabilities below. 
+  # If used, start with punctuation.
   #versionSuffix: -a
   # description: Default is config.ini -> Site -> title.
   #description: The library catalog, offering search capabilities
