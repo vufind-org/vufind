@@ -96,6 +96,7 @@ class ServerProvider
      * an allowlist of services before capability code ever sees it; not kept as a property since it
      * is only needed here in the constructor
      * @param LoggerInterface    $logger         Logger
+     * @param CacheManager       $cacheManager   Cache manager
      */
     #[Autowire]
     public function __construct(
