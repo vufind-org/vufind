@@ -38,7 +38,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
-use VuFind\Config\Config;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Version;
 use VuFind\Exception\ConfigException;
@@ -88,9 +88,10 @@ class ServerProviderTest extends TestCase
     {
         $provider = new ServerProvider(
             $mcpConfig,
-            new Config([]),
+            [],
             $this->createMock(ContainerInterface::class),
             new NullLogger(),
+            $this->createMock(CacheManager::class),
         );
         $this->assertNotInstanceOf(\Mcp\Server::class, $provider->getServer());
     }
@@ -486,7 +487,7 @@ class ServerProviderTest extends TestCase
 
     /**
      * Build a ServerProvider without running its constructor (which would otherwise try to create a
-     * FileSessionStore under LOCAL_CACHE_DIR -- a real, shared directory this test should not depend
+     * FileSessionStore under the cache directory -- a real, shared directory this test should not depend
      * on being writable). Used by every test that exercises an individual protected method directly.
      *
      * @param array $mcpConfig  MCP configuration (ModelContextProtocol.yaml)
@@ -498,7 +499,7 @@ class ServerProviderTest extends TestCase
     {
         $provider = $this->getInstanceWithoutConstructor(ServerProvider::class);
         $this->setProperty($provider, 'mcpConfig', $mcpConfig);
-        $this->setProperty($provider, 'topConfig', new Config(['Site' => $siteConfig['Site'] ?? []]));
+        $this->setProperty($provider, 'topConfig', ['Site' => $siteConfig['Site'] ?? []]);
         return $provider;
     }
 
