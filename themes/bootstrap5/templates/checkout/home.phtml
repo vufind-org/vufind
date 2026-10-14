@@ -5,6 +5,7 @@
   $this->headTitle($this->translate('checkout_self'));
 
   $this->jsTranslations()->addStrings([
+      'checkout_barcode_manual' => 'checkout_barcode_manual',
       'checkout_scan_aim' => 'checkout_scan_aim',
       'checkout_scan_failed' => 'checkout_scan_failed',
       'checkout_scan_start' => 'checkout_scan_start',
@@ -45,11 +46,11 @@
 
     <?php
       /* This is the field that carries the barcode either way: a scan fills
-         it in, and it posts whether or not it is on screen. It shows when
-         the camera cannot be used, or when a barcode came back rejected.
+         it in, and it posts whether or not it is on screen. It shows
+         alongside the camera preview as a backup, when the camera cannot be
+         used, or when a barcode came back rejected.
          inputmode rather than type=number, which would add spinners and
-         mangle leading zeros. */
-    ?>
+         mangle leading zeros. */    ?>
     <div id="barcode-entry">
       <label class="form-label" for="barcode"><?= $this->transEsc('checkout_barcode') ?></label>
       <input type="text" class="form-control" id="barcode" name="barcode"

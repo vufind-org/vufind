@@ -175,11 +175,34 @@ VuFind.register('checkoutScanner', function checkoutScanner() {
     stop();
     elements.scanner.classList.add('typing', 'no-camera');
     setStatus(VuFind.translate('checkout_scan_failed'), true);
+    if (elements.label) {
+      // With no camera, typing is no longer the backup but the only way in.
+      elements.label.textContent = elements.labelText;
+    }
     if (elements.input) {
       // Only now that it is on screen: a required field that cannot be seen
       // blocks submission with nothing to focus and no way to fix it.
       elements.input.required = true;
       elements.input.focus();
+    }
+  }
+
+  /**
+   * Offer the typed field alongside the preview, for a barcode the camera
+   * will not read.
+   *
+   * Left on screen once shown, even if scanning is stopped: whoever stopped
+   * it may well be about to type the barcode instead. Not focused, which on
+   * a phone would bring up the keyboard over the preview.
+   */
+  function showTypingBackup() {
+    elements.scanner.classList.add('typing');
+    if (elements.label) {
+      elements.label.textContent = VuFind.translate('checkout_barcode_manual');
+    }
+    if (elements.input) {
+      // Safe now that it is visible; see fallBackToTyping().
+      elements.input.required = true;
     }
   }
 
@@ -312,6 +335,7 @@ VuFind.register('checkoutScanner', function checkoutScanner() {
       elements.scanner.classList.add('scanning');
       elements.toggle.textContent = VuFind.translate('checkout_scan_stop');
       setStatus(VuFind.translate('checkout_scan_aim'), false);
+      showTypingBackup();
     });
     video.play().catch(fallBackToTyping);
   }
@@ -362,6 +386,10 @@ VuFind.register('checkoutScanner', function checkoutScanner() {
     elements.status = elements.scanner.querySelector('#scanner-status');
     elements.form = document.querySelector('#checkout-form');
     elements.input = document.querySelector('#barcode');
+    elements.label = document.querySelector('label[for="barcode"]');
+    // Kept for fallBackToTyping() to put back, so the plain label stays
+    // translated server-side.
+    elements.labelText = elements.label ? elements.label.textContent : '';
     if (!elements.preview || !elements.toggle) {
       return;
     }

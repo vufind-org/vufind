@@ -28,8 +28,8 @@
         display: block;
     }
 
-    /* Shown only once the camera has failed; the field inside posts either
-       way, so it is hidden rather than absent. */
+    /* Shown once the camera is running, as a backup, or once it has failed;
+       the field inside posts either way, so it is hidden rather than absent. */
     #barcode-entry {
         display: none;
         max-width: 640px;
