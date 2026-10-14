@@ -35,6 +35,7 @@ use Mcp\Server\Session\FileSessionStore;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Config\Config;
+use VuFind\Config\Version;
 use VuFind\Config\YamlReader;
 use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
@@ -165,13 +166,8 @@ class ServerProvider
     protected function setServerInfo(Builder $builder): void
     {
         $name = $this->mcpConfig['General']['name'] ?? 'VuFind® Server';
-
-        $baseVersion = $this->topConfig['Site']['generator'];
-        $baseVersion = str_replace('VuFind ', '', $baseVersion);
-        $version = $baseVersion . ($this->mcpConfig['General']['versionSuffix'] ?? '');
-
+        $version = Version::getBuildVersion();
         $description = $this->mcpConfig['General']['description'] ?? $this->topConfig['Site']['title'];
-
         $builder->setServerInfo(name: $name, version: $version, description: $description);
     }
 
