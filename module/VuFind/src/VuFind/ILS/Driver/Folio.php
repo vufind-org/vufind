@@ -2909,12 +2909,6 @@ class Folio extends AbstractAPI implements
      */
     public function checkCheckoutIsValid($id, $data, $patron)
     {
-        // Check if self-checkout is enabled at all
-        if (!($this->config['Checkout']['enabled'] ?? false)) {
-            $this->logWarning('Self checkout is disabled.');
-            return ['valid' => false, 'status' => 'checkout_error_blocked'];
-        }
-
         $itemBarcode = $data['barcode'] ?? null;
         if (!$itemBarcode) {
             $this->logWarning('No item barcode');

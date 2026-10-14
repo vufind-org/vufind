@@ -125,6 +125,10 @@ class CheckoutAction extends AbstractRecordAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
+        if (!($this->config['Catalog']['checkout_enabled'] ?? false)) {
+            return $this->redirectToRecord();
+        }
+
         $driver = $this->loadRecord();
 
         // TODO Need to understand this logic from HoldAction
