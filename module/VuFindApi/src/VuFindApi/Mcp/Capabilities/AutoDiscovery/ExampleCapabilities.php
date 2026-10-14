@@ -2,6 +2,8 @@
 
 /**
  * Example capabilities provider for Model Context Protocol (MCP).
+ * See the AutoDiscovery section in ModelContextProtocol.yaml for how
+ * to automatically include any capabilities defined in this folder.
  *
  * PHP version 8
  *
@@ -33,6 +35,8 @@ use Mcp\Capability\Attribute\McpTool;
 
 /**
  * Example capabilities provider for Model Context Protocol (MCP).
+ * See the AutoDiscovery section in ModelContextProtocol.yaml for how
+ * to automatically include any capabilities defined in this folder.
  *
  * @category VuFind
  * @package  Mcp
