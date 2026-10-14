@@ -66,8 +66,6 @@ class FactoryDetector
 
     /**
      * Given a class name, detect the best matching factory. Return null if none can be found.
-     * This is a support method for getFactoryForClass and should not be called directly; use
-     * getFactoryForClass to take advantage of internal caching.
      *
      * @param string $class Class name
      *
