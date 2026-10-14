@@ -135,14 +135,6 @@ class ServerProvider
     /**
      * Build the container the MCP SDK will use to auto-wire capability class constructors.
      *
-     * Firewalls capability code away from the rest of the application: only classes under an
-     * allowed capability namespace are ever built at all, and even those may only be built from
-     * an allowed list of services -- so nothing else in the application is ever reachable, no
-     * matter how trivially reflectable it might otherwise be. coreAllowedServices and
-     * coreCapabilityNamespaces are always allowed; ModelContextProtocol.yaml's AllowedServices and
-     * CapabilityNamespaces settings can deliberately add more, e.g. for a site's own custom
-     * capability class (in its own package/namespace) that needs a service beyond these.
-     *
      * @param ContainerInterface $serviceManager Application service container
      *
      * @return ContainerInterface
