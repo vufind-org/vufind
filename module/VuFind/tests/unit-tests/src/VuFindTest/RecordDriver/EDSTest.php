@@ -657,23 +657,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
             'shouldPut' => true,
         ];
 
-        yield 'cache is non-array -> calls putCachedData' => [
-            'initialCache' => 'invalid-cache-string',
-            'shouldPut' => true,
-        ];
-
-        yield 'cache key missing -> calls putCachedData' => [
-            'initialCache' => ['medium' => 'some medium link'],
-            'shouldPut' => true,
-        ];
-
         yield 'cache value mismatched -> calls putCachedData' => [
-            'initialCache' => ['small' => 'old or different link'],
+            'initialCache' => 'old or different link',
             'shouldPut' => true,
         ];
 
         yield 'cache value matches -> skips putCachedData' => [
-            'initialCache' => ['small' => 'small thumbnail link'],
+            'initialCache' => 'small thumbnail link',
             'shouldPut' => false,
         ];
     }
@@ -691,6 +681,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $size = 'small';
         $recordId = 'edsgob,edsgob.14707011';
+        $cacheKey = "vfcover-{$size}-{$recordId}";
 
         // Initialize the driver mocking the cache methods
         $driver = $this->getDriver('valid-eds-record', null, ['getCachedData', 'putCachedData']);
@@ -698,7 +689,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         // Ensure the get cache is called
         $driver->expects($this->once())
             ->method('getCachedData')
-            ->with($recordId)
+            ->with($cacheKey)
             ->willReturn($initialCache);
 
         // If the cache should be updated, ensure the put cache is called

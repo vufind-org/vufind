@@ -31,7 +31,6 @@ namespace VuFind\RecordDriver;
 
 use Laminas\Cache\Storage\StorageInterface;
 
-use function array_key_exists;
 use function count;
 use function floatval;
 use function in_array;
@@ -719,14 +718,11 @@ class EDS extends DefaultRecord
             if ($loadDirectly) {
                 return $thumbnail;
             } else {
-                $cache = $this->getCachedData($this->getUniqueID());
-                if ($cache === null || !is_array($cache)) {
-                    $cache = [];
-                }
+                $cacheKey = "vfcover-{$size}-{$this->getUniqueID()}";
+                $cache = $this->getCachedData($cacheKey);
                 // Only update and save if the cached value is missing or different
-                if (!array_key_exists($size, $cache) || $cache[$size] !== $thumbnail) {
-                    $cache[$size] = $thumbnail;
-                    $this->putCachedData($this->getUniqueID(), $cache);
+                if ($cache === null || $cache !== $thumbnail) {
+                    $this->putCachedData($cacheKey, $thumbnail);
                 }
                 return [
                     'recordid' => $this->getUniqueID(),
