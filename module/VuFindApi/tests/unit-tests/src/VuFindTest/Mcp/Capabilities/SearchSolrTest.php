@@ -37,7 +37,7 @@ use Mcp\Exception\ResourceReadException;
 use Mcp\Exception\ToolCallException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\RecordMissing;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
@@ -83,8 +83,8 @@ class SearchSolrTest extends TestCase
         ?RouteHelper $routeHelper = null,
         ?ServerUrlHelper $serverUrlHelper = null
     ): SearchSolr {
-        $yamlReader = $this->createMock(YamlReader::class);
-        $yamlReader->method('get')->willReturn($config);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
+        $configManager->method('getConfigArray')->willReturn($config);
 
         if (!$routeHelper) {
             $routeHelper = $this->createMock(RouteHelper::class);
@@ -96,7 +96,7 @@ class SearchSolrTest extends TestCase
         }
 
         return new SearchSolr(
-            $yamlReader,
+            $configManager,
             $recordLoader ?? $this->createMock(Loader::class),
             $recordFormatter ?? $this->createMock(RecordFormatter::class),
             $searchRunner ?? $this->createMock(SearchRunner::class),

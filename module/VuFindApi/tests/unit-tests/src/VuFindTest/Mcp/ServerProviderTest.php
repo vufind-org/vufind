@@ -39,7 +39,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use VuFind\Config\Config;
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
@@ -107,7 +107,10 @@ class ServerProviderTest extends TestCase
     public function testBuildContainerAllowsCapabilityClassToBeAutowired(): void
     {
         $services = [
-            YamlReader::class => $this->createConfiguredMock(YamlReader::class, ['get' => []]),
+            ConfigManagerInterface::class => $this->createConfiguredMock(
+                ConfigManagerInterface::class,
+                ['getConfigArray' => []]
+            ),
             Loader::class => $this->createMock(Loader::class),
             RecordFormatter::class => $this->createMock(RecordFormatter::class),
             SearchRunner::class => $this->createMock(SearchRunner::class),

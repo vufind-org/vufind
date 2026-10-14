@@ -36,7 +36,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\Record\Loader;
@@ -171,7 +171,10 @@ class FirewallContainerTest extends TestCase
     public function testGetAutowiresCapabilityClassFromAllowedServices(): void
     {
         $services = [
-            YamlReader::class => $this->createConfiguredMock(YamlReader::class, ['get' => []]),
+            ConfigManagerInterface::class => $this->createConfiguredMock(
+                ConfigManagerInterface::class,
+                ['getConfigArray' => []]
+            ),
             Loader::class => $this->createMock(Loader::class),
             RecordFormatter::class => $this->createMock(RecordFormatter::class),
             SearchRunner::class => $this->createMock(SearchRunner::class),

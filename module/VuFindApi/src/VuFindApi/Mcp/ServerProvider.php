@@ -35,8 +35,8 @@ use Mcp\Server\Session\FileSessionStore;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Version;
-use VuFind\Config\YamlReader;
 use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
@@ -71,7 +71,7 @@ class ServerProvider
      * buildContainer().
      */
     protected array $coreAllowedServices = [
-        YamlReader::class,
+        ConfigManagerInterface::class,
         Loader::class,
         RecordFormatter::class,
         SearchRunner::class,
@@ -99,7 +99,7 @@ class ServerProvider
      */
     #[Autowire]
     public function __construct(
-        #[Autowire(config: 'ModelContextProtocol', configType: 'yaml')]
+        #[Autowire(config: 'ModelContextProtocol')]
         protected array $mcpConfig,
         #[Autowire(config: 'config', configType: 'object')]
         protected Config $topConfig,

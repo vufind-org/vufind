@@ -51,7 +51,7 @@ class McpAction extends AbstractAction
 {
     /**
      * MCP server object (null if disabled).
-     * 
+     *
      * @var ?Server
      */
     protected ?Server $server;

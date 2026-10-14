@@ -34,7 +34,7 @@ use Mcp\Exception\InvalidArgumentException;
 use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
 use Mcp\Exception\ToolCallException;
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\RecordMissing;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
@@ -66,22 +66,22 @@ abstract class AbstractSearch extends AbstractCapabilities
     /**
      * Constructor.
      *
-     * @param YamlReader      $yamlReader      YAML reader
-     * @param Loader          $recordLoader    Record loader
-     * @param RecordFormatter $recordFormatter Record formatter
-     * @param SearchRunner    $searchRunner    Search runner
-     * @param RouteHelper     $routeHelper     Route helper
-     * @param ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param ConfigManagerInterface $configManager   Config manager
+     * @param Loader                 $recordLoader    Record loader
+     * @param RecordFormatter        $recordFormatter Record formatter
+     * @param SearchRunner           $searchRunner    Search runner
+     * @param RouteHelper            $routeHelper     Route helper
+     * @param ServerUrlHelper        $serverUrlHelper Server URL helper
      */
     public function __construct(
-        protected YamlReader $yamlReader,
+        protected ConfigManagerInterface $configManager,
         protected Loader $recordLoader,
         protected RecordFormatter $recordFormatter,
         protected SearchRunner $searchRunner,
         protected RouteHelper $routeHelper,
         protected ServerUrlHelper $serverUrlHelper
     ) {
-        parent::__construct($yamlReader, $recordLoader, $recordFormatter, $searchRunner);
+        parent::__construct($configManager, $recordLoader, $recordFormatter, $searchRunner);
         $this->responseFields = $this->config['ResponseFields'] ?? $this->responseFields;
     }
 

@@ -29,7 +29,7 @@
 
 namespace VuFindApi\Mcp\Capabilities;
 
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
@@ -58,17 +58,17 @@ abstract class AbstractCapabilities
     /**
      * Constructor.
      *
-     * @param YamlReader      $yamlReader      YAML reader
-     * @param Loader          $recordLoader    Record loader
-     * @param RecordFormatter $recordFormatter Record formatter
-     * @param SearchRunner    $searchRunner    Search runner
+     * @param ConfigManagerInterface $configManager   Config manager
+     * @param Loader                 $recordLoader    Record loader
+     * @param RecordFormatter        $recordFormatter Record formatter
+     * @param SearchRunner           $searchRunner    Search runner
      */
     public function __construct(
-        protected YamlReader $yamlReader,
+        protected ConfigManagerInterface $configManager,
         protected Loader $recordLoader,
         protected RecordFormatter $recordFormatter,
         protected SearchRunner $searchRunner
     ) {
-        $this->config = $this->yamlReader->get($this->configName . '.yaml');
+        $this->config = $this->configManager->getConfigArray($this->configName);
     }
 }
