@@ -112,14 +112,13 @@ class Memcache extends AbstractBase
     }
 
     /**
-     * Read function must return string value always to make save handler work as
-     * expected. Return empty string if there is no data to read.
+     * A function that is called internally when session data is to be loaded.
      *
-     * @param string $sessId The session ID to read
+     * @param string $sessId The current session ID
      *
      * @return string
      */
-    public function read($sessId): string
+    protected function loadSession($sessId): string
     {
         // For some reason, Memcache tests fail if we do not pass exactly three
         // parameters to the get method, even though this seems inconsistent with

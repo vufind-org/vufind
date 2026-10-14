@@ -30,6 +30,11 @@
 namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Db\Service\Feature\DeleteExpiredInterface;
+use VuFind\Db\Service\PluginManager as ServiceManager;
+use VuFind\Session\SessionDatabaseTrait;
 
 /**
  * Console command: expire sessions.
@@ -45,6 +50,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
 )]
 class ExpireSessionsCommand extends AbstractExpireCommand
 {
+    use SessionDatabaseTrait;
+
     /**
      * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
      *
@@ -73,4 +80,55 @@ class ExpireSessionsCommand extends AbstractExpireCommand
      * @var string
      */
     protected $rowLabel = 'sessions';
+
+    /**
+     * Constructor.
+     *
+     * @param DeleteExpiredInterface $service        Service on which to expire rows
+     * @param ServiceManager         $serviceManager Service manager
+     * @param ?string                $name           The name of the command; passing null means it
+     *                                               must be set in configure()
+     */
+    public function __construct(
+        DeleteExpiredInterface $service,
+        protected ServiceManager $serviceManager,
+        ?string $name = null
+    ) {
+        parent::__construct($service, $name);
+    }
+
+    /**
+     * Run some processes after expiring.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return void
+     */
+    protected function postProcess(InputInterface $input, OutputInterface $output): void
+    {
+        $batchSize = $input->getOption('batch');
+        $sleepTime = $input->getOption('sleep');
+        foreach ($this->getSessionDatabaseServices() as $serviceName => $serviceClass) {
+            $service = $this->serviceManager->get($serviceClass);
+
+            // Delete the rows without related session.
+            $total = 0;
+            do {
+                $count = $service->deleteExpired($batchSize);
+                if ($count > 0) {
+                    $output->writeln(
+                        $this->getTimestampedMessage("$count {$serviceName} deleted.")
+                    );
+                    $total += $count;
+                    // Be nice to others and wait between batches
+                    usleep($sleepTime * 1000);
+                }
+            } while ($count > 0);
+
+            $output->writeln(
+                $this->getTimestampedMessage("Total $total {$serviceName} deleted.")
+            );
+        }
+    }
 }

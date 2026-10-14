@@ -85,6 +85,24 @@ class SessionService extends AbstractDbService implements
     }
 
     /**
+     * Update last used value of a session.
+     *
+     * @param string $sid Session ID
+     *
+     * @return void
+     */
+    public function updateLastUsed(string $sid): void
+    {
+        $s = $this->getSessionById($sid);
+        $s->setLastUsed(time());
+        try {
+            $this->persistEntity($s);
+        } catch (\Exception $e) {
+            $this->logError('Could not update session last use: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Retrieve data for the given session ID.
      *
      * @param string $sid      Session ID to retrieve

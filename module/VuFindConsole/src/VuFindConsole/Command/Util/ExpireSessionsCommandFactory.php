@@ -68,6 +68,7 @@ class ExpireSessionsCommandFactory implements FactoryInterface
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $serviceManager->get(\VuFind\Db\Service\SessionServiceInterface::class),
+            $serviceManager,
             ...($options ?? [])
         );
     }
