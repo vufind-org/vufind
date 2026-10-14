@@ -42,6 +42,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Validator\CsrfInterface;
 
 use function is_array;
+use function strlen;
 
 /**
  * Checkout action.
@@ -92,8 +93,12 @@ class HomeAction extends AbstractTemplateRenderingAction
         // correct it rather than rescan a label that will misread the same
         // way again.
         $barcodePattern = $this->config['Catalog']['checkout_item_barcode_pattern'] ?? '^\d{14}$';
+        // Optional. The part every barcode starts with, filled into the typed
+        // field so that only the rest has to be entered.
+        $barcodePrefix = $this->config['Catalog']['checkout_suggest_prefix'] ?? '';
         $templateParams = [
             'barcodePattern' => $barcodePattern,
+            'barcodePrefix' => $barcodePrefix,
             'barcode' => '',
         ];
 
@@ -105,13 +110,27 @@ class HomeAction extends AbstractTemplateRenderingAction
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         if (!$this->csrf->isValid($this->getPostParam('csrf'))) {
             $flashMessagesHelper->addErrorMessage('error_inconsistent_parameters');
-            return $this->renderTemplate($request, $response, [], 'checkout/home');
+            return $this->renderTemplate($request, $response, $templateParams, 'checkout/home');
         }
 
         // The D modifier so that $ cannot be satisfied by a trailing newline.
         $barcode = trim($this->getPostParam('barcode', ''));
-        $templateParams['barcode'] = $barcode;
-        if (!preg_match('/' . $barcodePattern . '/D', $barcode)) {
+        $matches = function ($candidate) use ($barcodePattern) {
+            return preg_match('/' . $barcodePattern . '/D', $candidate) === 1;
+        };
+        // The prefix is already in the field, so someone typing the whole
+        // barcode from the label ends up entering it twice. Try once more
+        // without the extra copy.
+        if (
+            !$matches($barcode)
+            && $barcodePrefix !== ''
+            && str_starts_with($barcode, $barcodePrefix)
+            && $matches($withoutPrefix = substr($barcode, strlen($barcodePrefix)))
+        ) {
+            $barcode = $withoutPrefix;
+            $templateParams['barcode'] = $barcode;
+        }
+        if (!$matches($barcode)) {
             $this->logWarning('Self checkout: malformed barcode submitted');
             $flashMessagesHelper->addErrorMessage('checkout_barcode_invalid');
             return $this->renderTemplate($request, $response, $templateParams, 'checkout/home');

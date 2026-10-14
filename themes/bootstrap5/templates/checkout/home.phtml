@@ -50,12 +50,14 @@
          alongside the camera preview as a backup, when the camera cannot be
          used, or when a barcode came back rejected.
          inputmode rather than type=number, which would add spinners and
-         mangle leading zeros. */    ?>
+         mangle leading zeros. A rejected barcode takes the place of the
+         prefix, so it can be corrected rather than retyped. */
+    ?>
     <div id="barcode-entry">
       <label class="form-label" for="barcode"><?= $this->transEsc('checkout_barcode') ?></label>
       <input type="text" class="form-control" id="barcode" name="barcode"
              inputmode="numeric" autocomplete="off"
-             value="<?= $this->escapeHtmlAttr($this->barcode) ?>">
+             value="<?= $this->escapeHtmlAttr($this->barcode ?: $this->barcodePrefix) ?>">
       <button type="submit" class="btn btn-primary"><?= $this->transEsc('checkout_item') ?></button>
     </div>
   </div>

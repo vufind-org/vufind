@@ -203,6 +203,10 @@ VuFind.register('checkoutScanner', function checkoutScanner() {
     if (elements.input) {
       // Safe now that it is visible; see fallBackToTyping().
       elements.input.required = true;
+      elements.input.focus();
+      // After any prefix the server filled in, which is where typing goes.
+      var end = elements.input.value.length;
+      elements.input.setSelectionRange(end, end);
     }
   }
 
