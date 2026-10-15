@@ -148,7 +148,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'storageRetrievalRequests',
                     'label' => 'Storage Retrieval Requests',
-                    'route' => 'myresearch-storageretrievalrequests',
+                    'route' => 'storageretrievalrequests-list',
                     'icon' => 'user-storage-retrievals',
                     'status' => true,
                     'checkMethod' => 'checkStorageRetrievalRequests',
@@ -156,7 +156,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'ILLRequests',
                     'label' => 'Interlibrary Loan Requests',
-                    'route' => 'myresearch-illrequests',
+                    'route' => 'illrequests-list',
                     'icon' => 'user-ill-requests',
                     'status' => true,
                     'checkMethod' => 'checkILLRequests',

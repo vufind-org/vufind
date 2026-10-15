@@ -197,14 +197,14 @@ class AccountMenu extends AbstractMenu
 
                 - name: storageRetrievalRequests
                   label: Storage Retrieval Requests
-                  route: myresearch-storageretrievalrequests
+                  route: storageretrievalrequests-list
                   icon: user-storage-retrievals
                   status: true
                   checkMethod: checkStorageRetrievalRequests
 
                 - name: ILLRequests
                   label: Interlibrary Loan Requests
-                  route: myresearch-illrequests
+                  route: illrequests-list
                   icon: user-ill-requests
                   status: true
                   checkMethod: checkILLRequests

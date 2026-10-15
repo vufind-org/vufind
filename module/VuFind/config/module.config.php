@@ -212,19 +212,13 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
-            'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
-            'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'holds' => 'VuFind\Controller\Plugin\Holds',
-            'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'permission' => 'VuFind\Controller\Plugin\Permission',
-            'storageRetrievalRequests' => 'VuFind\Controller\Plugin\StorageRetrievalRequests',
         ],
     ],
     'service_manager' => [
@@ -812,11 +806,13 @@ $config = [
             'myresearch/fines' => 'fines-list',
             'myresearch/historicloans' => 'checkouts-history',
             'myresearch/holds' => 'holds-list',
+            'myresearch/illrequests' => 'illrequests-list',
             'myresearch/mylist' => 'userList',
-            'search/history' => 'searchhistory-list',
-            'myresearch/unsubscribe' => 'searchhistory-unsubscribesearch',
             'myresearch/savesearch' => 'searchhistory-savesearch',
             'myresearch/schedulesearch' => 'searchhistory-schedulesearch',
+            'myresearch/storageretrievalrequests' => 'storageretrievalrequests-list',
+            'myresearch/unsubscribe' => 'searchhistory-unsubscribesearch',
+            'search/history' => 'searchhistory-list',
         ],
 
         // This section contains service manager configurations for all VuFind
@@ -1027,6 +1023,7 @@ $staticRoutes = [
     'Help/Home',
     'Holds/Edit',
     'Holds/List',
+    'IllRequests/List',
     'Install/Done',
     'Install/FixBasicConfig',
     'Install/FixCache',
@@ -1133,6 +1130,7 @@ $staticRoutes = [
     'SearchHistory/UnsubscribeSearch',
     'SimulatedSSO/Login',
     'SiteMap/Home',
+    'StorageRetrievalRequests/List',
     'Summon/Advanced',
     'Summon/FacetList',
     'Summon/Home',

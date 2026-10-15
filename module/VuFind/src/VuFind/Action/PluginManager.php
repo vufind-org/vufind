@@ -200,10 +200,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'myresearch/deletelogintoken' => MyResearch\DeleteLoginTokenAction::class,
         'myresearch/deleteuserlogintokens' => MyResearch\DeleteUserLoginTokensAction::class,
         'myresearch/emailnotverified' => MyResearch\EmailNotVerifiedAction::class,
-        'myresearch/illrequests' => MyResearch\IllRequestsAction::class,
         'myresearch/newpassword' => MyResearch\NewPasswordAction::class,
         'myresearch/resetpassword' => MyResearch\ResetPasswordAction::class,
-        'myresearch/storageretrievalrequests' => MyResearch\StorageRetrievelRequestsAction::class,
         'myresearch/usercontent' => MyResearch\UserContentAction::class,
         'myresearch/userlogin' => MyResearch\UserLoginAction::class,
         'myresearch/verifyemail' => MyResearch\VerifyEmailAction::class,
@@ -387,11 +385,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Illrequests' => 'IllRequests',
         'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
+        'Storageretrievalrequests' => 'StorageRetrievalRequests',
         'Worldcat' => 'WorldCat',
     ];
 

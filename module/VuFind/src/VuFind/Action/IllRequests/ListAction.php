@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Storage retrieval requests list action.
+ * Interlibrary loan requests list action.
  *
  * PHP version 8
  *
@@ -29,32 +29,26 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\MyResearch;
+namespace VuFind\Action\IllRequests;
 
-use Laminas\Http\Response;
-use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\IllRequestsHelper;
 use VuFind\ActionHelper\LoginHelper;
-use VuFind\ActionHelper\StorageRetrievalRequestsHelper;
-use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
-use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\RecordsHelper;
-use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\Session\Helper\FollowupHelper;
 
 use function is_array;
 
 /**
- * Storage retrieval requests list action.
+ * Interlibrary loan requests list action.
  *
  * @category VuFind
  * @package  Action
@@ -63,55 +57,28 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class StorageRetrievelRequestsAction extends AbstractMyResearchAction
+class ListAction extends AbstractTemplateRenderingAction
 {
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager        Authentication manager
-     * @param FollowupHelper                  $followupHelper     Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService User session database service
-     * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
-     * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
-     * @param Connection                      $ilsConnection      ILS connection
-     * @param array                           $config             VuFind configuration
-     * @param RecordsHelper                   $ilsRecordsHelper   ILS records helper
+     * @param AuthManager                $authManager       Authentication manager
+     * @param AuditEventServiceInterface $auditEventService Audit event service
+     * @param Connection                 $ilsConnection     ILS connection
+     * @param RecordsHelper              $ilsRecordsHelper  ILS records helper
      */
     public function __construct(
-        AuthManager $authManager,
-        FollowupHelper $followupHelper,
-        EmailAuthenticator $emailAuthenticator,
+        protected AuthManager $authManager,
         #[Autowire(container: DbServicePluginManager::class)]
-        UserSessionPersistenceInterface $userSessionService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        AuditEventServiceInterface $auditEventService,
-        ServerUrlHelper $serverUrlHelper,
-        Mailer $mailer,
-        SessionManager $sessionManager,
-        Connection $ilsConnection,
-        #[Autowire(config: 'config')]
-        array $config,
+        protected AuditEventServiceInterface $auditEventService,
+        protected Connection $ilsConnection,
         protected RecordsHelper $ilsRecordsHelper,
     ) {
-        parent::__construct(
-            $authManager,
-            $followupHelper,
-            $emailAuthenticator,
-            $userSessionService,
-            $auditEventService,
-            $serverUrlHelper,
-            $mailer,
-            $sessionManager,
-            $ilsConnection,
-            $config
-        );
+        parent::__construct();
     }
 
     /**
-     * Display storage retrieval requests.
+     * Display interlibrary loan requests.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -131,15 +98,10 @@ class StorageRetrievelRequestsAction extends AbstractMyResearchAction
         }
 
         // Process cancel requests if necessary:
-        $storageRetrievalRequestsHelper = $this->getHelper(StorageRetrievalRequestsHelper::class);
-        $cancelStatus = $this->ilsConnection->checkFunction('cancelStorageRetrievalRequests', compact('patron'));
+        $illRequestsHelper = $this->getHelper(IllRequestsHelper::class);
+        $cancelStatus = $this->ilsConnection->checkFunction('cancelILLRequests', compact('patron'));
         $cancelResults = $cancelStatus
-            ? $storageRetrievalRequestsHelper->cancelStorageRetrievalRequests(
-                $request,
-                $response,
-                $this->ilsConnection,
-                $patron
-            )
+            ? $illRequestsHelper->cancelIllRequests($request, $response, $this->ilsConnection, $patron)
             : [];
         // Check if we need to confirm cancellation:
         if ($cancelResults instanceof ResponseInterface) {
@@ -148,7 +110,7 @@ class StorageRetrievelRequestsAction extends AbstractMyResearchAction
         if ($cancelResults) {
             $this->auditEventService->addEvent(
                 AuditEventType::ILS,
-                AuditEventSubtype::CancelStorageRetrievalRequests,
+                AuditEventSubtype::CancelILLRequests,
                 $this->authManager->getUserObject(),
                 data: [
                     'username' => $patron['cat_username'],
@@ -164,12 +126,12 @@ class StorageRetrievelRequestsAction extends AbstractMyResearchAction
         ];
 
         // Get request details:
-        $result = $this->ilsConnection->getMyStorageRetrievalRequests($patron);
+        $result = $this->ilsConnection->getMyILLRequests($patron);
         $driversNeeded = [];
-        $storageRetrievalRequestsHelper->resetValidation();
+        $illRequestsHelper->resetValidation();
         foreach ($result as $current) {
             // Add cancel details if appropriate:
-            $current = $storageRetrievalRequestsHelper->addCancelDetails(
+            $current = $illRequestsHelper->addCancelDetails(
                 $this->ilsConnection,
                 $current,
                 $cancelStatus,
@@ -177,7 +139,7 @@ class StorageRetrievelRequestsAction extends AbstractMyResearchAction
             );
             if (
                 $cancelStatus
-                && $cancelStatus['function'] !== 'getCancelStorageRetrievalRequestLink'
+                && $cancelStatus['function'] !== 'getCancelILLRequestLink'
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
@@ -185,14 +147,6 @@ class StorageRetrievelRequestsAction extends AbstractMyResearchAction
             }
 
             $driversNeeded[] = $current;
-        }
-
-        // Get List of PickUp Libraries based on patron's home library
-        try {
-            $templateParams['pickup'] = $this->ilsConnection->getPickUpLocations($patron);
-        } catch (\Exception $e) {
-            // Do nothing; if we're unable to load information about pickup
-            // locations, they are not supported and we should ignore them.
         }
 
         $templateParams['recordList'] = $this->ilsRecordsHelper->getDrivers($driversNeeded);
