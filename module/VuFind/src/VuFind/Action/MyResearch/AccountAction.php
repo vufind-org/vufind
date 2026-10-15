@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\MyResearch;
 
-use Laminas\Http\Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;

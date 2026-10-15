@@ -32,7 +32,6 @@
 namespace VuFind\Action\MyResearch;
 
 use DateTime;
-use Laminas\Http\Response;
 use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

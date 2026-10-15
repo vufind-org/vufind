@@ -31,8 +31,6 @@
 
 namespace VuFind\Action\MyResearch;
 
-use Laminas\Http\Response;
-use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
