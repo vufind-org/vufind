@@ -33,6 +33,7 @@ use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Collection list tab.
@@ -53,27 +54,6 @@ class CollectionList extends AbstractBase
     protected $results = null;
 
     /**
-     * Search runner.
-     *
-     * @var SearchRunner
-     */
-    protected $runner;
-
-    /**
-     * Recommendation manager.
-     *
-     * @var RecommendManager
-     */
-    protected $recommendManager;
-
-    /**
-     * Search memory.
-     *
-     * @var SearchMemory
-     */
-    protected $searchMemory;
-
-    /**
      * Search class id.
      *
      * @var string
@@ -83,18 +63,16 @@ class CollectionList extends AbstractBase
     /**
      * Constructor.
      *
-     * @param SearchRunner     $runner Search runner
-     * @param RecommendManager $recMan Recommendation manager
-     * @param SearchMemory     $sm     Search memory
+     * @param SearchRunner     $runner           Search runner
+     * @param RecommendManager $recommendManager Recommendation manager
+     * @param SearchMemory     $searchMemory     Search memory
      */
+    #[Autowire]
     public function __construct(
-        SearchRunner $runner,
-        RecommendManager $recMan,
-        SearchMemory $sm
+        protected SearchRunner $runner,
+        protected RecommendManager $recommendManager,
+        protected SearchMemory $searchMemory
     ) {
-        $this->runner = $runner;
-        $this->recommendManager = $recMan;
-        $this->searchMemory = $sm;
     }
 
     /**

@@ -29,7 +29,6 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Config\Config;
 use VuFind\Connection\ExternalVuFind as Connection;
 
 use function intval;
@@ -66,20 +65,6 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      * @var int
      */
     protected $limit = 5;
-
-    /**
-     * Connection to consortial VuFind API.
-     *
-     * @var Connection
-     */
-    protected $connection;
-
-    /**
-     * ConsortialVuFind.ini configuration.
-     *
-     * @var Config
-     */
-    protected $config;
 
     /**
      * Base URL of a search results page.
@@ -119,15 +104,13 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
     /**
      * Constructor.
      *
-     * @param Config     $config     ConsortialVuFind.ini configuration
+     * @param array      $config     ConsortialVuFind.ini configuration
      * @param Connection $connection Connection to consortial VuFind API
      */
     public function __construct(
-        Config $config,
-        Connection $connection
+        protected array $config,
+        protected Connection $connection
     ) {
-        $this->config = $config;
-        $this->connection = $connection;
     }
 
     /**
@@ -146,20 +129,20 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
         $configSectionName = $settings[2] ?? 'ReShare';
 
         // Read config file
-        $configSection = $this->config->get($configSectionName);
+        $configSection = $this->config[$configSectionName] ?? [];
         if ($configSection) {
-            $this->resultsBaseUrl = $configSection->results_base_url;
-            $this->recordBaseUrl = $configSection->record_base_url;
-            $this->searchFilters = $configSection->filters?->toArray() ?? [];
-
-            // Configure connection
-            $this->connection->setBaseUrl($configSection->api_base_url);
+            $this->resultsBaseUrl = $configSection['results_base_url'] ?? null;
+            $this->recordBaseUrl = $configSection['record_base_url'] ?? null;
+            $this->searchFilters = $configSection['filters'] ?? [];
 
             // Confirm that required configuration is present
             $this->hasMinimumConfig = $this->resultsBaseUrl
                 && $this->recordBaseUrl
-                && $configSection->api_base_url;
-            if (!$this->hasMinimumConfig) {
+                && ($configSection['api_base_url'] ?? null);
+            if ($this->hasMinimumConfig) {
+                // Configure connection
+                $this->connection->setBaseUrl($configSection['api_base_url']);
+            } else {
                 $this->logError("Required configuration missing in '$configSectionName'
                     section of ConsortialVuFind.ini.");
             }

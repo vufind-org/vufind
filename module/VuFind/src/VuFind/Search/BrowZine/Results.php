@@ -45,9 +45,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'BrowZine';
+    protected ?string $backendId = 'BrowZine';
 
     /**
      * Returns the stored list of facets for the last search.

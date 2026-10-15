@@ -30,6 +30,7 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
 use function intval;
@@ -200,10 +201,15 @@ abstract class AbstractSearchObject implements RecommendInterface
     /**
      * Get search results.
      *
-     * @return \VuFind\Search\Base\Results
+     * @return Results
+     *
+     * @throws \Exception
      */
-    public function getResults()
+    public function getResults(): Results
     {
+        if (null === $this->results) {
+            throw new \Exception(static::class . '::getResults() called before init().');
+        }
         return $this->results;
     }
 

@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * Relais: Check item availability using a generic patron ID.
@@ -59,7 +60,7 @@ class RelaisAvailability extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 

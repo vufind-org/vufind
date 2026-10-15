@@ -128,11 +128,11 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     public function testCallbackDependencyInjection(): void
     {
         // Before running the test, there will be no dependencies injected
-        // into the static callback container, and trying to call getConfig
+        // into the static callback container, and trying to call getConfigArray
         // will throw an exception due to the missing dependency.
         $errorMsg = '';
         try {
-            \VuFind\XSLT\Import\VuFind::getConfig();
+            \VuFind\XSLT\Import\VuFind::getConfigArray();
         } catch (\Throwable $t) {
             $errorMsg = $t->getMessage();
         }
@@ -144,7 +144,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         );
         // After running the test, dependencies will have been injected, so
         // we can now call the same method without errors:
-        \VuFind\XSLT\Import\VuFind::getConfig();
+        \VuFind\XSLT\Import\VuFind::getConfigArray();
     }
 
     /**

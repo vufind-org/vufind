@@ -29,6 +29,7 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
 
 /**
@@ -49,6 +50,7 @@ class Tag implements AutocompleteInterface
      *
      * @param TagsService $tagsService Tag database service
      */
+    #[Autowire]
     public function __construct(protected TagsService $tagsService)
     {
     }

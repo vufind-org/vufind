@@ -154,4 +154,45 @@ class ConfigUpgradeTest extends ConfigTestCase
             $movedConfig
         );
     }
+
+    /**
+     * Upgrade with subdirectories test provider.
+     *
+     * @return \Iterator
+     */
+    public static function upgradeWithSubdirectoryTestProvider(): \Iterator
+    {
+        yield 'upgrade-without-exisiting-sub-dir' => [
+            'upgrade-create-sub-dir',
+        ];
+        yield 'upgrade-with-exisiting-sub-dir' => [
+            'upgrade-existing-sub-dir',
+        ];
+    }
+
+    /**
+     * Test upgrading with config subdirectories.
+     *
+     * @param string $fixture Fixture
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeWithSubdirectoryTestProvider')]
+    public function testUpgradingInSubdirectoryWithoutExistingDir(string $fixture): void
+    {
+        $upgrader = $this->getUpgrader($fixture);
+        $upgrader->run(self::$targetVersion);
+        $upgradedConfig = $this->readConfig('RecordDataFormatter/EDS');
+        $expectedConfig = $this->readConfig('RecordDataFormatter/EDS', $this->baseDirPath);
+        $expectedConfig['CoreItems']['extraLineOptions'][] = 'CoreItems_Filter_Label_Availability';
+        $expectedConfig['CoreItems_Filter_Label_Availability'] = [
+            'lineIdentifierKey' => 'Label',
+            'lineIdentifierValue' => 'Availability',
+            'multiEnabled' => false,
+        ];
+        $this->assertEquals(
+            $expectedConfig,
+            $upgradedConfig
+        );
+    }
 }

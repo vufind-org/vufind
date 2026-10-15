@@ -47,23 +47,21 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspEnabled(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'CSP' => [
-                    'use_nonce' => true,
-                    'enabled' => [
-                        'development' => true,
-                        'production' => true,
-                        'testing' => true,
-                    ],
+        $config = [
+            'CSP' => [
+                'use_nonce' => true,
+                'enabled' => [
+                    'development' => true,
+                    'production' => true,
+                    'testing' => true,
                 ],
-                'Directives' => [
-                    'script-src' => [
-                        "'unsafe-inline'",
-                    ],
+            ],
+            'Directives' => [
+                'script-src' => [
+                    "'unsafe-inline'",
                 ],
-            ]
-        );
+            ],
+        ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
         $cspHeaderGenerator
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
@@ -91,21 +89,19 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspReportOnly(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'CSP' => [
-                    'use_nonce' => true,
-                    'enabled' => [
-                        'testing' => 'report_only',
-                    ],
+        $config = [
+            'CSP' => [
+                'use_nonce' => true,
+                'enabled' => [
+                    'testing' => 'report_only',
                 ],
-                'Directives' => [
-                    'script-src' => [
-                        "'unsafe-inline'",
-                    ],
+            ],
+            'Directives' => [
+                'script-src' => [
+                    "'unsafe-inline'",
                 ],
-            ]
-        );
+            ],
+        ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
         $cspHeaderGenerator
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
@@ -119,7 +115,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         );
         $headers->addHeader($header);
         $added = $headers->get('Content-Security-Policy-Report-Only');
-        $this->assertFalse(is_iterable($added));
+        $this->assertIsNotIterable($added);
 
         $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
         $csp->disablePolicy();
@@ -133,23 +129,21 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspDisabled(): void
     {
-        $config = new \VuFind\Config\Config(
-            [
-                'CSP' => [
-                    'use_nonce' => true,
-                    'enabled' => [
-                        'development' => false,
-                        'production' => false,
-                        'testing' => false,
-                    ],
+        $config = [
+            'CSP' => [
+                'use_nonce' => true,
+                'enabled' => [
+                    'development' => false,
+                    'production' => false,
+                    'testing' => false,
                 ],
-                'Directives' => [
-                    'script-src' => [
-                        "'unsafe-inline'",
-                    ],
+            ],
+            'Directives' => [
+                'script-src' => [
+                    "'unsafe-inline'",
                 ],
-            ]
-        );
+            ],
+        ];
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
         $cspHeaderGenerator
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);

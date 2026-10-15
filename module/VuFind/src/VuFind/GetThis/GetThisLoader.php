@@ -35,6 +35,7 @@ use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\RecordDriver\DefaultRecord as RecordDriver;
 use VuFind\Regex\Regex;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function call_user_func;
@@ -96,6 +97,7 @@ class GetThisLoader implements LoggerAwareInterface
      * @param Regex $regex  Regex service
      */
     public function __construct(
+        #[Autowire(config: 'GetThis')]
         protected array $config,
         protected Regex $regex
     ) {

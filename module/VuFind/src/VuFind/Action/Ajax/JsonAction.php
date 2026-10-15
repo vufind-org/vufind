@@ -31,6 +31,7 @@ namespace VuFind\Action\Ajax;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\ResponseHelper;
 
 /**
  * JSON action.
@@ -57,10 +58,9 @@ class JsonAction extends AbstractAjaxAction
     ): ResponseInterface {
         $method = $this->getQueryParam('method');
         if (!$method) {
-            return $this->getAjaxResponse(
+            return $this->getHelper(ResponseHelper::class)->getJsonResponse(
                 $response,
-                'application/json',
-                ['error' => 'Parameter "method" missing'],
+                ['data' => ['error' => 'Parameter "method" missing']],
                 400
             );
         }

@@ -67,7 +67,7 @@ class PermissionHelper implements
      * @param PermissionDeniedManager $permissionDeniedManager  Permission Denied Manager
      * @param AuthManager             $authManager              Auth manager
      * @param LoginHelper             $loginHelper              Login helper
-     * @param RedirectHelper          $redirectHelper           Redirect helper
+     * @param ForwardHelper           $forwardHelper            Forward helper
      * @param array                   $permissionBehaviorConfig Permission behavior configuration
      */
     public function __construct(
@@ -77,7 +77,7 @@ class PermissionHelper implements
         #[Autowire(container: PluginManager::class)]
         protected LoginHelper $loginHelper,
         #[Autowire(container: PluginManager::class)]
-        protected RedirectHelper $redirectHelper,
+        protected ForwardHelper $forwardHelper,
         #[Autowire(config: 'permissionBehavior')]
         protected array $permissionBehaviorConfig,
     ) {
@@ -104,7 +104,7 @@ class PermissionHelper implements
      * @param ServerRequestInterface $request         Request
      * @param ResponseInterface      $response        Response
      * @param string                 $permission      Permission to check
-     * @param ?string                $defaultBehavior Default behavior to use if none configured (null to use default
+     * @param string|null|false      $defaultBehavior Default behavior to use if none configured (null to use default
      * configured in the manager, false to take no action).
      * @param bool                   $passIfUndefined Should the check pass if no rules are defined for $permission in
      * permissions.ini?
@@ -115,7 +115,7 @@ class PermissionHelper implements
         ServerRequestInterface $request,
         ResponseInterface $response,
         string $permission,
-        ?string $defaultBehavior = null,
+        string|null|false $defaultBehavior = null,
         bool $passIfUndefined = false
     ): ?ResponseInterface {
         // If no permission rule is defined and we're only checking defined
@@ -153,11 +153,10 @@ class PermissionHelper implements
                     $msg = empty($dl['value']) ? null : $dl['value'];
                     return $this->loginHelper->forceLogin($request, $response, $msg, [], false);
                 case 'showmessage':
-                    return $this->redirectHelper->redirectToRoute(
+                    return $this->forwardHelper->forwardTo(
+                        $request->withQueryParams(['msg' => $dl['value']]),
                         $response,
-                        'error-permissiondenied',
-                        [],
-                        ['msg' => $dl['value']]
+                        'error/permissiondenied'
                     );
                 case 'exception':
                     $exceptionClass

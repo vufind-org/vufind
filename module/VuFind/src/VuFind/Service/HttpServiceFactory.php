@@ -68,21 +68,20 @@ class HttpServiceFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $options = [];
-        if (isset($config->Proxy->host)) {
-            $options['proxy_host'] = $config->Proxy->host;
-            if (isset($config->Proxy->port)) {
-                $options['proxy_port'] = $config->Proxy->port;
+        if (isset($config['Proxy']['host'])) {
+            $options['proxy_host'] = $config['Proxy']['host'];
+            if (isset($config['Proxy']['port'])) {
+                $options['proxy_port'] = $config['Proxy']['port'];
             }
-            if (isset($config->Proxy->type)) {
-                $options['proxy_type'] = $config->Proxy->type;
+            if (isset($config['Proxy']['type'])) {
+                $options['proxy_type'] = $config['Proxy']['type'];
             }
         }
-        $defaults = isset($config->Http)
-            ? $config->Http->toArray() : [];
-        $config = !empty($config->Proxy->local_addresses)
-            ? ['localAddressesRegEx' => $config->Proxy->local_addresses] : [];
+        $defaults = $config['Http'] ?? [];
+        $config = !empty($config['Proxy']['local_addresses'])
+            ? ['localAddressesRegEx' => $config['Proxy']['local_addresses']] : [];
         return new $requestedName($options, $defaults, $config);
     }
 }

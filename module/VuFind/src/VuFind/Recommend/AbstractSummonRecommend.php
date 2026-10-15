@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Abstract base class for pulling Summon-specific recommendations.
  *
@@ -62,20 +64,13 @@ abstract class AbstractSummonRecommend implements RecommendInterface
     protected $lookfor;
 
     /**
-     * Results plugin manager.
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**

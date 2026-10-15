@@ -7,4 +7,20 @@
 
 <?=$this->flashmessages()?>
 
-<?php if ($this->problems == 0): ?><p><?=$this->transEsc('No dependency problems found') ?>.</p><?php endif; ?>
+<?php if ($this->missingExtensions): ?>
+  <div class="alert alert-danger">
+    <p>
+        <?=$this->transEsc('Your PHP installation appears to be missing the following extensions that need to be installed:')?>
+        <?=implode(', ', array_map([$this, 'escapeHtml'], $this->missingExtensions)) ?>
+    </p>
+    <p>
+        <?=$this->translate('For details on how to do this, see <a href="https://vufind.org/wiki/installation">https://vufind.org/wiki/installation</a> and look at the PHP installation instructions for your platform.')?>
+    </p>
+  </div>
+<?php endif; ?>
+
+<?php if ($this->problems == 0): ?>
+  <p>
+    <?=$this->transEsc('No dependency problems found') ?>.
+  </p>
+<?php endif; ?>

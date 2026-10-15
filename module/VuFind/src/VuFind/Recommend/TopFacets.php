@@ -78,13 +78,12 @@ class TopFacets extends AbstractFacets
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
-        $config = $this->configManager->getConfigObject($iniName);
-        $this->facets = isset($config->$mainSection)
-            ? $config->$mainSection->toArray() : [];
+        $config = $this->configManager->getConfigArray($iniName);
+        $this->facets = $config[$mainSection] ?? [];
 
         // Load other relevant settings:
         $this->baseSettings = [
-            'rows' => $config->Results_Settings->top_rows,
+            'rows' => $config['Results_Settings']['top_rows'] ?? 2,
         ];
 
         // Load boolean configurations:

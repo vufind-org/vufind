@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Form\Handler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -86,9 +86,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');
-        $params = $this->createMock(Params::class);
-        $params->expects($this->once())->method('fromPost')->willReturn([]);
-        $this->assertTrue($handler->handle($form, $params, $user));
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([]);
+        $this->assertTrue($handler->handle($form, $request, $user));
     }
 
     /**
@@ -108,8 +107,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');
-        $params = $this->createMock(Params::class);
-        $params->expects($this->once())->method('fromPost')->willReturn([]);
-        $this->assertTrue($handler->handle($form, $params, $user));
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([]);
+        $this->assertTrue($handler->handle($form, $request, $user));
     }
 }

@@ -32,8 +32,6 @@
 
 namespace VuFind\DigitalContent;
 
-use VuFind\Config\Config;
-
 /**
  * FakeOverdriveConnector.
  *
@@ -51,12 +49,12 @@ class FakeOverdriveConnector extends OverdriveConnector
     /**
      * Constructor.
      *
-     * @param Config $mainConfig   VuFind main conf
-     * @param Config $recordConfig Record-specific conf file
+     * @param array $mainConfig   VuFind main conf
+     * @param array $recordConfig Record-specific conf file
      */
     public function __construct(
-        Config $mainConfig,
-        Config $recordConfig
+        array $mainConfig,
+        array $recordConfig
     ) {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
