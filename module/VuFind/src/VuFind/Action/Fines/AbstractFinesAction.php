@@ -142,6 +142,7 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
     {
         $templateParams['fines'] = $fines = $this->getFines($patron);
         $templateParams['accountStatus'] = $this->getAccountStatus($fines);
+        $templateParams['onlinePayment'] = false;
         $templateParams['onlinePaymentEnabled'] = false;
         $sourceIls = $patron['__source'] ?? 'default';
 

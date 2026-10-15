@@ -57,6 +57,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'account/cataloglogin' => Account\CatalogLoginAction::class,
+        'account/changeemail' => Account\ChangeEmailAction::class,
+        'account/changepassword' => Account\ChangePasswordAction::class,
+        'account/completelogin' => Account\CompleteLoginAction::class,
+        'account/createaccount' => Account\CreateAccountAction::class,
+        'account/deleteaccount' => Account\DeleteAccountAction::class,
+        'account/deletelogintoken' => Account\DeleteLoginTokenAction::class,
+        'account/deleteuserlogintokens' => Account\DeleteUserLoginTokensAction::class,
+        'account/emailnotverified' => Account\EmailNotVerifiedAction::class,
+        'account/newpassword' => Account\NewPasswordAction::class,
+        'account/resetpassword' => Account\ResetPasswordAction::class,
+        'account/usercontent' => Account\UserContentAction::class,
+        'account/userlogin' => Account\UserLoginAction::class,
+        'account/verifyemail' => Account\VerifyEmailAction::class,
+        'account/verifyotp' => Account\VerifyOtpAction::class,
+        'account/verifyrecoveryotp' => Account\VerifyRecoveryOtpAction::class,
+
         'ajax/json' => Ajax\JsonAction::class,
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
@@ -191,22 +208,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'lists/editlist' => Lists\EditListAction::class,
 
         'missingrecord/home' => MissingRecord\HomeAction::class,
-
-        'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
-        'myresearch/changeemail' => MyResearch\ChangeEmailAction::class,
-        'myresearch/changepassword' => MyResearch\ChangePasswordAction::class,
-        'myresearch/completelogin' => MyResearch\CompleteLoginAction::class,
-        'myresearch/deleteaccount' => MyResearch\DeleteAccountAction::class,
-        'myresearch/deletelogintoken' => MyResearch\DeleteLoginTokenAction::class,
-        'myresearch/deleteuserlogintokens' => MyResearch\DeleteUserLoginTokensAction::class,
-        'myresearch/emailnotverified' => MyResearch\EmailNotVerifiedAction::class,
-        'myresearch/newpassword' => MyResearch\NewPasswordAction::class,
-        'myresearch/resetpassword' => MyResearch\ResetPasswordAction::class,
-        'myresearch/usercontent' => MyResearch\UserContentAction::class,
-        'myresearch/userlogin' => MyResearch\UserLoginAction::class,
-        'myresearch/verifyemail' => MyResearch\VerifyEmailAction::class,
-        'myresearch/verifyotp' => MyResearch\VerifyOtpAction::class,
-        'myresearch/verifyrecoveryotp' => MyResearch\VerifyRecoveryOtpAction::class,
 
         'oai/authserver' => Oai\AuthServerAction::class,
 
@@ -387,7 +388,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Browzine' => 'BrowZine',
         'Illrequests' => 'IllRequests',
         'Librarycards' => 'LibraryCards',
-        'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',

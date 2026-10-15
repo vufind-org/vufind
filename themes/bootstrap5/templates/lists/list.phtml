@@ -4,7 +4,7 @@
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
-  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
     ->add($this->translate($currPage), active: true);
 
   // Load Javascript dependencies into header:
@@ -99,14 +99,14 @@
   <?php if ($recordTotal > 0): ?>
     <?php $multiPageSelection = ($this->config()->getArray('config')['Social']['multi_page_favorites_selection'] ?? true) ? ' multi-page-selection' : ''; ?>
     <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?=($listId = $list?->getId()) ? '-' . $listId : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
-      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
+      <?=$this->context($this)->renderInContext('account/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
       <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
       <ul class="record-list">
         <?php foreach ($this->results->getResults() as $i => $current): ?>
           <?=$this->record($current)->getListEntry($list, $user, $this->results->getStartRecord() + $i)?>
         <?php endforeach; ?>
       </ul>
-      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['isBottom' => true, 'list' => $list ?? null, 'account' => $this->account])?>
+      <?=$this->context($this)->renderInContext('account/bulk-action-buttons.phtml', ['isBottom' => true, 'list' => $list ?? null, 'account' => $this->account])?>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results]])?>
   <?php else: ?>
@@ -115,7 +115,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => isset($list) ? 'list' . $list->getId() : 'favorites'])?>
+  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => isset($list) ? 'list' . $list->getId() : 'favorites'])?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

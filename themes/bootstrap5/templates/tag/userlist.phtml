@@ -1,6 +1,6 @@
 <?php
   // Set up breadcrumbs:
-  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
     ->add($this->translate('Tags'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
@@ -37,7 +37,7 @@
       <div class="search-stats">
         <?=$this->translate('showing_items_of_html', $transParams); ?>
       </div>
-      <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+      <?=$this->context($this)->renderInContext('account/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
     </nav>
     <form action="<?=$this->url('tag-deletetags')?>" name="updateForm" id="select_all_tags" method="post">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
@@ -104,5 +104,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'usercontent'])?>
+  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'usercontent'])?>
 </div>

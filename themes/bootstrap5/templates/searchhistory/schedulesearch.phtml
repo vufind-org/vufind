@@ -3,7 +3,7 @@
   $this->headTitle($this->translate('Manage Scheduled Alerts'));
 
   // Set up breadcrumbs:
-  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
     ->add($this->translate('Manage Scheduled Alerts'), active: true);
 
   $user = $this->auth()->getUserObject();
@@ -16,12 +16,12 @@
     <div class="alert alert-info alert-email-notification">
       <?=$this->transEsc('alert_email_address') . ': ' . $this->escapeHtml($user->getEmail()) ?>
       <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
-        (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('edit');?></a>)
+        (<a href="<?=$this->url('account-profile');?>"><?=$this->transEsc('edit');?></a>)
       <?php endif; ?>
     </div>
   <?php else: ?>
     <div class="alert alert-danger alert-email-notification">
-      <?=$this->transEsc('no_email_address') . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc('check_profile');?></a>
+      <?=$this->transEsc('no_email_address') . ' ';?><a href="<?=$this->url('account-profile');?>"><?=$this->transEsc('check_profile');?></a>
     </div>
   <?php endif; ?>
   <table>
@@ -49,5 +49,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'history'])?>
+  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'history'])?>
 </div>

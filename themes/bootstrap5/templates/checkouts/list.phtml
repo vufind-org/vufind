@@ -1,6 +1,6 @@
 <?php
   // Set up breadcrumbs:
-  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
     ->add($this->translate('Checked Out Items'), active: true);
 
   $this->assetManager()->appendScriptLink('checkouts.js');
@@ -42,7 +42,7 @@
         <?php $startRecord = 1; ?>
       <?php endif; ?>
       <?php if ($this->sortList): ?>
-        <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+        <?=$this->context($this)->renderInContext('account/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
       <?php endif; ?>
     </nav>
     <?php if ($this->renewForm): ?>
@@ -207,7 +207,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'checkedout'])?>
+  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'checkedout'])?>
 </div>
 
-<?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>
+<?=$this->render('account/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

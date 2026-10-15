@@ -90,7 +90,7 @@ Account:
 
     - name: profile
       label: Profile
-      route: myresearch-profile
+      route: account-profile
       icon: profile
 
     - name: librarycards
@@ -113,13 +113,13 @@ Account:
 
     - name: usercontent
       label: user_content
-      route: myresearch-usercontent
+      route: account-usercontent
       icon: user-content
       checkMethod: checkUserContent
 
     - name: logout
       label: Log Out
-      route: myresearch-logout
+      route: account-logout
       icon: sign-out
       checkMethod: checkLogout
 
@@ -128,7 +128,7 @@ Lists:
   id: acc-menu-lists-header
   checkMethod: checkUserlistMode
   MenuItems:
-    - template: myresearch/menu-mylists.phtml
+    - template: account/menu-mylists.phtml
       icon: user-list
 
     - name: newlist

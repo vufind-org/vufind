@@ -1,6 +1,6 @@
 <?php
     // Set up breadcrumbs:
-    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
       ->add($this->translate('Interlibrary Loan Requests'), active: true);
 
     $this->assetManager()->appendScriptLink('requests.js');
@@ -170,7 +170,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'ILLRequests'])?>
+  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'ILLRequests'])?>
 </div>
 
-<?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'illRequests', 'accountStatus' => $this->accountStatus]); ?>
+<?=$this->render('account/notify-account-status.phtml', ['method' => 'illRequests', 'accountStatus' => $this->accountStatus]); ?>

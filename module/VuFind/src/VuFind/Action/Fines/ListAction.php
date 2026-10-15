@@ -91,7 +91,9 @@ class ListAction extends AbstractFinesAction
             $templateParams['registerPaymentLocalIdentifier'] = $localIdentifier;
         }
 
-        $templateParams = $this->handleOnlinePayment($patron, $templateParams);
+        if ($templateParams['onlinePayment']) {
+            $templateParams = $this->handleOnlinePayment($patron, $templateParams);
+        }
 
         return $this->renderTemplate($request, $response, $templateParams);
     }

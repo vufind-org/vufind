@@ -88,7 +88,7 @@ class ScheduleSearchAction extends AbstractSearchHistoryAction
             $this->searchService->deleteSearch($search);
             return $this->getHelper(RedirectHelper::class)->redirectToRoute(
                 $response,
-                'myresearch-schedulesearch',
+                'searchhistory-schedulesearch',
                 queryParams: ['searchid' => $duplicateId]
             );
         }

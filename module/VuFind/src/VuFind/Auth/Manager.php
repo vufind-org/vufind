@@ -407,7 +407,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         if ($this->defaultSessionInitiatorTarget === null) {
             $serverHelper = $this->viewRenderer->plugin('serverurl');
             $urlHelper = $this->viewRenderer->plugin('url');
-            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('account-home'));
         }
         return $this->defaultSessionInitiatorTarget;
     }

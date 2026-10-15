@@ -164,7 +164,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         if (
             !empty($referrer)
             && !str_ends_with($referrer, '/Save')
-            && stripos($referrer, 'MyResearch/EditList/NEW') === false
+            && stripos($referrer, 'Lists/Edit/NEW') === false
         ) {
             $loginHelper->setFollowupUrlToReferrer($request);
         } else {

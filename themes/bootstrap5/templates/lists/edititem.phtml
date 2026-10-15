@@ -4,7 +4,7 @@
 
   // Set up breadcrumbs:
   $listLink = isset($listID) ? $this->url('userList', ['id' => $listID]) : $this->url('lists-allitems');
-  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
     ->add($this->translate(isset($listID) ? 'List' : 'saved_items'), $listLink)
     ->add($this->translate('Edit'), active: true);
 ?>
@@ -66,5 +66,5 @@
   </form>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
+  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
 </div>

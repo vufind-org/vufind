@@ -570,7 +570,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
         $this->waitForPageLoad($page);
         // Go to saved lists
-        $path = '/MyResearch/Home';
+        $path = '/Account/Home';
         $session->visit($this->getVuFindUrl() . $path);
         $this->waitForPageLoad($page);
         return $page;

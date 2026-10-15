@@ -92,14 +92,14 @@ class RedirectHelper implements HelperInterface
     }
 
     /**
-     * Return a response that redirects to MyResearch/Home with any further redirects disabled.
+     * Return a response that redirects to Account/Home with any further redirects disabled.
      *
      * @param ResponseInterface $response Response
      *
      * @return ResponseInterface
      */
-    public function getNonRedirectingMyResearchHomeRedirect(ResponseInterface $response): ResponseInterface
+    public function getNonRedirectingAccountHomeRedirect(ResponseInterface $response): ResponseInterface
     {
-        return $this->redirectToRoute($response, 'myresearch-home', queryParams: ['redirect' => 0]);
+        return $this->redirectToRoute($response, 'account-home', queryParams: ['redirect' => 0]);
     }
 }

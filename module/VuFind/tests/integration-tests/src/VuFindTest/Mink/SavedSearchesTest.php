@@ -241,7 +241,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         [, $params] = explode('?', $delete);
         // We expect an error, so let's act like production mode for realistic testing:
         $session->setWhoopsDisabled(true);
-        $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/SaveSearch?' . $params);
         $page = $session->getPage();
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm(

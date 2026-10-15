@@ -177,7 +177,7 @@ class AccountMenu extends AbstractMenu
 
                 - name: checkedout
                   label: Checked Out Items
-                  route: myresearch-checkedout
+                  route: checkouts-list
                   icon: user-checked-out
                   status: true
                   checkMethod: checkCheckedout
@@ -211,14 +211,14 @@ class AccountMenu extends AbstractMenu
 
                 - name: fines
                   label: Fines
-                  route: myresearch-fines
+                  route: fines-list
                   status: true
                   checkMethod: checkFines
                   iconMethod: finesIcon
 
                 - name: profile
                   label: Profile
-                  route: myresearch-profile
+                  route: account-profile
                   icon: profile
 
                 - name: librarycards
@@ -241,13 +241,13 @@ class AccountMenu extends AbstractMenu
 
                 - name: usercontent
                   label: user_content
-                  route: myresearch-usercontent
+                  route: account-usercontent
                   icon: user-content
                   checkMethod: checkUserContent
 
                 - name: logout
                   label: Log Out
-                  route: myresearch-logout
+                  route: account-logout
                   icon: sign-out
                   checkMethod: checkLogout
 
@@ -256,7 +256,7 @@ class AccountMenu extends AbstractMenu
               id: acc-menu-lists-header
               checkMethod: checkUserlistMode
               MenuItems:
-                - template: myresearch/menu-mylists.phtml
+                - template: account/menu-mylists.phtml
                   icon: user-list
 
                 - name: newlist

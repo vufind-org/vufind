@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart MyResearch bulk action.
+ * Cart Account bulk action.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\ForwardHelper;
 
 /**
- * Cart MyResearch bulk action.
+ * Cart Account bulk action.
  *
  * @category VuFind
  * @package  Action
@@ -49,7 +49,7 @@ use VuFind\ActionHelper\ForwardHelper;
 class MyResearchBulkAction extends AbstractCartAction
 {
     /**
-     * Process a MyResearch bulk action.
+     * Process an Account bulk action.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -60,7 +60,7 @@ class MyResearchBulkAction extends AbstractCartAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // We came in from the MyResearch section -- let's remember which list (if any) we came from so we can redirect
+        // We came in from the Account section -- let's remember which list (if any) we came from so we can redirect
         // there when we're done:
         $listID = $this->getPostParam('listID');
         $routeHelper = $this->getRouteHelper();
