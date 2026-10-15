@@ -70,12 +70,12 @@
 <?php
   $explanation = $this->transEsc('schedule_explanation');
   $script = <<<JS
-    document.querySelectorAll(".search-schedule-header").forEach(el => new bootstrap.Popover(el, {
-      content: '$explanation',
-      placement: 'top',
-      trigger: 'hover',
-      container: 'body',
-    }));
-    JS;
+      document.querySelectorAll(".search-schedule-header").forEach(el => new bootstrap.Popover(el, {
+        content: '$explanation',
+        placement: 'top',
+        trigger: 'hover',
+        container: 'body',
+      }));
+      JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($script) ?>
