@@ -128,11 +128,18 @@ abstract class AbstractSessionDataService extends AbstractDbService implements S
         $total = 0;
         foreach (array_chunk($sessionsIdsToDelete, 10) as $sessionIdsChunk) {
             do {
+                $subQueryBuilder = $this->entityManager->createQueryBuilder();
+                $subQueryBuilder->select('e.id')
+                    ->from($this->getEntityClass(), 'e')
+                    ->where('e.sessionId IN (:sessionIds)')
+                    ->setParameter('sessionIds', $sessionIdsChunk);
+                if ($limit) {
+                    $subQueryBuilder->setMaxResults($limit);
+                }
                 $queryBuilder = $this->entityManager->createQueryBuilder();
                 $queryBuilder->delete($this->getEntityClass(), 'e')
-                    ->where('e.sessionId IN (:rows)')
-                    ->setParameter('rows', $sessionIdsChunk)
-                    ->setMaxResults($limit);
+                    ->where('e.id IN (:rows)')
+                    ->setParameter('rows', $subQueryBuilder->getQuery()->getResult());
                 $count = $queryBuilder->getQuery()->execute();
                 if ($count > 0) {
                     $total += $count;
