@@ -104,9 +104,9 @@ class SearchSolrTest extends TestCase
 
         return new SearchSolr(
             $configManager,
-            $recordLoader ?? $this->createMock(Loader::class),
-            $recordFormatter ?? $this->createMock(RecordFormatter::class),
-            $searchRunner ?? $this->createMock(SearchRunner::class),
+            $recordLoader ?? $this->createStub(Loader::class),
+            $recordFormatter ?? $this->createStub(RecordFormatter::class),
+            $searchRunner ?? $this->createStub(SearchRunner::class),
             $routeHelper,
             $serverUrlHelper,
         );
