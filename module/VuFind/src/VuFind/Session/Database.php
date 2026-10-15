@@ -29,6 +29,7 @@
 
 namespace VuFind\Session;
 
+use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
@@ -50,7 +51,7 @@ class Database extends AbstractBase
      *
      * @return string
      */
-    public function loadSession($sessId): string
+    public function read($sessId): string
     {
         // Try to read the session, but destroy it if it has expired:
         try {
@@ -59,6 +60,25 @@ class Database extends AbstractBase
             $this->destroy($sessId);
             return '';
         }
+    }
+
+    /**
+     * The destroy handler, this is executed when a session is destroyed with
+     * session_destroy() and takes the session id as its only parameter.
+     *
+     * @param string $sessId The session ID to destroy
+     *
+     * @return bool
+     */
+    public function destroy($sessId): bool
+    {
+        // Perform standard actions required by all session methods:
+        parent::destroy($sessId);
+
+        // Now do database-specific destruction:
+        $this->getSessionService()->destroySession($sessId);
+
+        return true;
     }
 
     /**
@@ -85,5 +105,15 @@ class Database extends AbstractBase
     protected function saveSession($sessId, $data): bool
     {
         return $this->getSessionService()->writeSession($sessId, $data);
+    }
+
+    /**
+     * Get a session service object.
+     *
+     * @return SessionServiceInterface
+     */
+    protected function getSessionService(): SessionServiceInterface
+    {
+        return $this->getDbService(SessionServiceInterface::class);
     }
 }

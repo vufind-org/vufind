@@ -109,23 +109,10 @@ class ExpireSessionsCommand extends AbstractExpireCommand
     {
         $batchSize = $input->getOption('batch');
         $sleepTime = $input->getOption('sleep');
+        $orphanSessionsCache = [];
         foreach ($this->getSessionDatabaseServices() as $serviceName => $serviceClass) {
             $service = $this->serviceManager->get($serviceClass);
-
-            // Delete the rows without related session.
-            $total = 0;
-            do {
-                $count = $service->deleteExpired($batchSize);
-                if ($count > 0) {
-                    $output->writeln(
-                        $this->getTimestampedMessage("$count {$serviceName} deleted.")
-                    );
-                    $total += $count;
-                    // Be nice to others and wait between batches
-                    usleep($sleepTime * 1000);
-                }
-            } while ($count > 0);
-
+            $total = $service->deleteRowsWithoutSession($sleepTime, $batchSize, $orphanSessionsCache);
             $output->writeln(
                 $this->getTimestampedMessage("Total $total {$serviceName} deleted.")
             );

@@ -148,7 +148,6 @@ abstract class AbstractBase implements HandlerInterface
         foreach ($this->getSessionDatabaseServices() as $service) {
             $this->getDbService($service)->destroySession($sessId);
         }
-        $this->getSessionService()->destroySession($sessId);
         return true;
     }
 
@@ -179,20 +178,6 @@ abstract class AbstractBase implements HandlerInterface
     }
 
     /**
-     * Read function must return string value always to make save handler work as
-     * expected. Return empty string if there is no data to read.
-     *
-     * @param string $sessId The session ID to read
-     *
-     * @return string
-     */
-    public function read($sessId): string
-    {
-        $this->getSessionService()->updateLastUsed($sessId);
-        return $this->loadSession($sessId);
-    }
-
-    /**
      * Write function that is called when session data is to be saved.
      *
      * @param string $sessId The current session ID
@@ -205,18 +190,8 @@ abstract class AbstractBase implements HandlerInterface
         if ($this->writesDisabled) {
             return true;
         }
-        $this->getSessionService()->updateLastUsed($sessId);
         return $this->saveSession($sessId, $data);
     }
-
-    /**
-     * A function that is called internally when session data is to be loaded.
-     *
-     * @param string $sessId The current session ID
-     *
-     * @return string
-     */
-    abstract protected function loadSession($sessId): string;
 
     /**
      * A function that is called internally when session data is to be saved.
@@ -227,14 +202,4 @@ abstract class AbstractBase implements HandlerInterface
      * @return bool
      */
     abstract protected function saveSession($sessId, $data): bool;
-
-    /**
-     * Get a session service object.
-     *
-     * @return SessionServiceInterface
-     */
-    protected function getSessionService(): SessionServiceInterface
-    {
-        return $this->getDbService(SessionServiceInterface::class);
-    }
 }

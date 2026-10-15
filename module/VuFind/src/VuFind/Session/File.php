@@ -79,13 +79,14 @@ class File extends AbstractBase
     }
 
     /**
-     * A function that is called internally when session data is to be loaded.
+     * Read function must return string value always to make save handler work as
+     * expected. Return empty string if there is no data to read.
      *
-     * @param string $sessId The current session ID
+     * @param string $sessId The session ID to read
      *
      * @return string
      */
-    protected function loadSession($sessId): string
+    public function read($sessId): string
     {
         $sessFile = $this->path . '/sess_' . $sessId;
         if (!file_exists($sessFile)) {

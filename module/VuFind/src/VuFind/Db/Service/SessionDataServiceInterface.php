@@ -56,5 +56,5 @@ interface SessionDataServiceInterface extends DBServiceInterface
      *
      * @return int Number of rows deleted
      */
-    public function deleteExpired(?int $limit = null): int;
+    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null, array &$orphanSessionsCache = []): int;
 }

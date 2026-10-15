@@ -35,6 +35,7 @@ use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\PersistenceManager;
+use VuFind\Session\HandlerInterface;
 
 /**
  * Abstract database service for session related data.
@@ -66,6 +67,7 @@ abstract class AbstractSessionDataService extends AbstractDbService implements S
         EntityPluginManager $entityPluginManager,
         PersistenceManager $persistenceManager,
         protected SessionManager $sessionManager,
+        protected HandlerInterface $sessionHandler,
     ) {
         parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
@@ -106,24 +108,40 @@ abstract class AbstractSessionDataService extends AbstractDbService implements S
      *
      * @return int Number of rows deleted
      */
-    public function deleteExpired(?int $limit = null): int
+    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null, array &$orphanSessionsCache = []): int
     {
-        $dql = 'SELECT e.id '
-            . 'FROM ' . $this->getEntityClass() . ' e '
-            . 'LEFT JOIN ' . SessionEntityInterface::class . ' s '
-            . 'WITH e.sessionId = s.sessionId '
-            . 'WHERE s.sessionId IS NULL';
+        $dql = 'SELECT DISTINCT e.sessionId '
+            . 'FROM ' . $this->getEntityClass() . ' e';
 
-        $subQueryBuilder = $this->entityManager->createQuery($dql);
-        if ($limit) {
-            $subQueryBuilder->setMaxResults($limit);
+        $sessionIdsQuery = $this->entityManager->createQuery($dql);
+
+        $sessionIds = array_map(fn ($row) => $row['sessionId'], $sessionIdsQuery->getResult());
+
+        foreach ($sessionIds as $sessionId) {
+            if (!key_exists($sessionId, $orphanSessionsCache)) {
+                $orphanSessionsCache[$sessionId] = empty($this->sessionHandler->read($sessionId));
+            }
         }
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->delete($this->getEntityClass(), 'e')
-            ->where('e.id IN (:rows)')
-            ->setParameter('rows', $subQueryBuilder->getResult());
+        $sessionsIdsToDelete = array_filter($sessionIds, fn ($sessionId) => $orphanSessionsCache[$sessionId]);
 
-        return $queryBuilder->getQuery()->execute();
+        $total = 0;
+        foreach (array_chunk($sessionsIdsToDelete, 10) as $sessionIdsChunk) {
+            do {
+                $queryBuilder = $this->entityManager->createQueryBuilder();
+                $queryBuilder->delete($this->getEntityClass(), 'e')
+                    ->where('e.sessionId IN (:rows)')
+                    ->setParameter('rows', $sessionIdsChunk)
+                    ->setMaxResults($limit);
+                $count = $queryBuilder->getQuery()->execute();
+                if ($count > 0) {
+                    $total += $count;
+                    // Be nice to others and wait between batches
+                    usleep($sleepTime * 1000);
+                }
+            } while ($count > 0);
+        }
+
+        return $total;
     }
 }
