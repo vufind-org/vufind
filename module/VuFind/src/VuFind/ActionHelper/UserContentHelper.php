@@ -89,6 +89,8 @@ class UserContentHelper implements HelperInterface
      */
     public function getUserContentRecordTitles(Paginator $contents): Paginator
     {
+        // Clone the object to avoid modifying the original data as a side-effect:
+        $contents = clone $contents;
         $ids = array_map(
             fn (array $content) => $content['source'] . '|' . $content['record_id'],
             iterator_to_array($contents)

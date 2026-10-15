@@ -29,7 +29,7 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Config\Config;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -72,6 +72,7 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
+    #[Autowire]
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
     }
@@ -127,29 +128,29 @@ abstract class AbstractFacets implements RecommendInterface
     /**
      * Read boolean (OR/NOT) settings from the provided configuration.
      *
-     * @param Config $config    Configuration to read
+     * @param array  $config    Configuration to read
      * @param array  $allFacets All facets (to use when config = *)
      * @param string $section   Configuration section containing settings
      *
      * @return void
      */
     protected function loadBooleanConfigs(
-        Config $config,
+        array $config,
         $allFacets,
         $section = 'Results_Settings'
     ) {
         // Which facets are excludable?
-        if (isset($config->$section->exclude)) {
-            $this->excludableFacets = ($config->$section->exclude === '*')
+        if (isset($config[$section]['exclude'])) {
+            $this->excludableFacets = ($config[$section]['exclude'] === '*')
                 ? $allFacets
-                : array_map('trim', explode(',', $config->$section->exclude));
+                : array_map('trim', explode(',', $config[$section]['exclude']));
         }
 
         // Which facets are ORed?
-        if (isset($config->$section->orFacets)) {
-            $this->orFacets = ($config->$section->orFacets === '*')
+        if (isset($config[$section]['orFacets'])) {
+            $this->orFacets = ($config[$section]['orFacets'] === '*')
                 ? $allFacets
-                : array_map('trim', explode(',', $config->$section->orFacets));
+                : array_map('trim', explode(',', $config[$section]['orFacets']));
         }
     }
 }

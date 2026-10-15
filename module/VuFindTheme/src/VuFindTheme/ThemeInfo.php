@@ -49,26 +49,11 @@ class ThemeInfo
     use \VuFind\Feature\MergeRecursiveTrait;
 
     /**
-     * Base directory for theme files.
-     *
-     * @var string
-     */
-    protected $baseDir;
-
-    /**
      * Current selected theme.
      *
      * @var string
      */
     protected $currentTheme;
-
-    /**
-     * A safe theme (guaranteed to exist) that can be loaded if an invalid
-     * configuration is passed in.
-     *
-     * @var string
-     */
-    protected $safeTheme;
 
     /**
      * Theme configuration cache.
@@ -91,9 +76,9 @@ class ThemeInfo
      * Constructor.
      *
      * @param string $baseDir   Base directory for theme files.
-     * @param string $safeTheme Theme that should be guaranteed to exist.
+     * @param string $safeTheme A safe theme (guaranteed to exist) to be loaded if provided configuration is invalid.
      */
-    public function __construct($baseDir, $safeTheme)
+    public function __construct(protected string $baseDir, protected string $safeTheme)
     {
         $this->baseDir = $baseDir;
         $this->currentTheme = $this->safeTheme = $safeTheme;

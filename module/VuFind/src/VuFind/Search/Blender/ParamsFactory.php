@@ -86,9 +86,8 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $blenderConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->blenderIni);
-        $backendConfig = $blenderConfig->Backends
-            ? $blenderConfig->Backends->toArray() : [];
+            ->getConfigArray($this->blenderIni);
+        $backendConfig = $blenderConfig['Backends'] ?? [];
         if (!$backendConfig) {
             throw new \Exception('No backends enabled in ' . $this->blenderIni . '.ini');
         }
@@ -108,7 +107,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$facetHelper, $searchParams, $blenderConfig, $blenderMappings]
+            [$facetHelper, $searchParams, $blenderMappings]
         );
     }
 }

@@ -17,7 +17,7 @@
   echo $this->render('search/results.phtml');
 
   // Override searchbox:
-  $this->layout()->searchbox = $this->context($this)->renderInContext(
+  $this->globals()['searchbox'] = $this->context($this)->renderInContext(
       'search/no-input-searchbox.phtml',
       [
         'searchType' => 'basic',

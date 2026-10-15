@@ -116,7 +116,7 @@ class SourceAndIdList
      */
     public function getRecordPositions(Record $record)
     {
-        $id = $record->getUniqueId();
+        $id = $record->getUniqueID();
         $source = $record->getSourceIdentifier();
 
         // In some cases (e.g. Summon), the ID may have changed, so also check the

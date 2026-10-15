@@ -120,22 +120,23 @@ class Writer
                     $currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
-                    $line = $this->buildContentLine($setting, $value, 0)
+                    $this->content = rtrim($this->content);
+                    $line = "\n" . $this->buildContentLine($setting, $value, 0)
                         . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
-            } elseif (strstr($content, '=')) {
+            } elseif ($currentSection == $section && strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
                 $key = trim($contentParts[0]);
                 // If the key we are trying to set is already present as an array,
                 // we need to clear out the multiple existing values before writing
                 // in a new one:
-                if ($key == $setting . '[]') {
+                if (str_starts_with($key, $setting . '[')) {
                     continue;
                 }
                 // Standard case for match on section + key:
-                if ($currentSection == $section && $key == $setting) {
+                if ($key == $setting) {
                     $settingSet = true;
                     if ($value === null) {
                         continue;

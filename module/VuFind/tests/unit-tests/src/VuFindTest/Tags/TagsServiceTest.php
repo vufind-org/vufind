@@ -60,7 +60,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
             $this->createMock(TagServiceInterface::class),
             $this->createMock(ResourceTagsService::class),
             $this->createMock(UserListServiceInterface::class),
-            $resourcePopulator ?? $this->createMock(ResourcePopulator::class),
+            $resourcePopulator ?? $this->createStub(ResourcePopulator::class),
             $maxLength
         );
     }

@@ -126,7 +126,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $repo = new IdentityRepository(
             $this->getMockUserService(),
             $accessTokenService,
-            $this->getMockILSConnection($blocks),
+            $this->getMockIlsConnection($blocks),
             $this->oauth2Config,
             $this->getMockILSAuthenticator()
         );

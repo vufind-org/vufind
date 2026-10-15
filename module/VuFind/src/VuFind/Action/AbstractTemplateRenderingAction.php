@@ -32,7 +32,10 @@ namespace VuFind\Action;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerAwareInterface;
 use Throwable;
+use VuFind\Log\ExtendedLoggerInterface;
+use VuFind\Log\LoggerAwareTrait;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
@@ -44,8 +47,10 @@ use VuFind\View\Renderer\TemplateRendererInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractTemplateRenderingAction extends AbstractAction
+abstract class AbstractTemplateRenderingAction extends AbstractAction implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Template renderer.
      *
@@ -75,6 +80,10 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
      */
     protected function handleException(Throwable $exception): ResponseInterface
     {
+        if ($this->logger instanceof ExtendedLoggerInterface) {
+            $this->logger->logException($exception, new \Laminas\Stdlib\Parameters($this->request->getServerParams()));
+        }
+
         $message = 'An error occurred during execution; please try again later.';
         return $this->renderErrorPage(
             $this->request,

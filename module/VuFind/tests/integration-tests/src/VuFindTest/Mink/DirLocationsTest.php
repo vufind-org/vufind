@@ -126,7 +126,7 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     public function testYamlConfigs(): void
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $page = $session->getPage();
         $this->findCss($page, '.account-menu .parent-test');
         $this->changeYamlConfigs(
@@ -143,7 +143,7 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $page = $session->getPage();
         $this->unFindCss($page, '.account-menu a.parent-test');
         $this->findCss($page, '.account-menu a.child-test');

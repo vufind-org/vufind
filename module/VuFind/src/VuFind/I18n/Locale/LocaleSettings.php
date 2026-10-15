@@ -7,7 +7,7 @@
  *
  * Copyright (C) Villanova University 2018,
  * Copyright (C) Leipzig University Library <info@ub.uni-leipzig.de> 2018.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,9 +33,11 @@
 
 namespace VuFind\I18n\Locale;
 
-use VuFind\Config\Config;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
+use function floatval;
 use function in_array;
 
 /**
@@ -56,14 +58,14 @@ class LocaleSettings
      *
      * @var string
      */
-    protected $defaultLocale;
+    protected string $defaultLocale;
 
     /**
      * Associative (code => description) array of enabled locales.
      *
      * @var array
      */
-    protected $enabledLocales;
+    protected array $enabledLocales;
 
     /**
      * Prioritized array of locales to use when strings are missing from the
@@ -71,40 +73,47 @@ class LocaleSettings
      *
      * @var string[]
      */
-    protected $fallbackLocales;
+    protected array $fallbackLocales;
 
     /**
      * Array of locales that use right-to-left formatting.
      *
      * @var string[]
      */
-    protected $rightToLeftLocales;
+    protected array $rightToLeftLocales;
 
     /**
      * Array of locales that have been initialized.
      *
      * @var string[]
      */
-    protected $initializedLocales = [];
+    protected array $initializedLocales = [];
 
     /**
      * Should we use auto-detect language based on browser settings?
      *
      * @var bool
      */
-    protected $browserDetectLanguage;
+    protected bool $browserDetectLanguage;
+
+    /**
+     * Has locale been detected already?
+     *
+     * @var bool
+     */
+    protected bool $localeDetected = false;
 
     /**
      * Constructor.
      *
-     * @param Config $config Configuration object
+     * @param array $config Configuration object
      */
-    public function __construct(Config $config)
-    {
-        $this->enabledLocales = $config->Languages ? $config->Languages->toArray()
-            : [];
-        $this->browserDetectLanguage
-            = (bool)($config->Site->browserDetectLanguage ?? true);
+    public function __construct(
+        #[Autowire(config: 'config')]
+        array $config
+    ) {
+        $this->enabledLocales = $config['Languages'] ?? [];
+        $this->browserDetectLanguage = (bool)($config['Site']['browserDetectLanguage'] ?? true);
         $this->defaultLocale = $this->parseDefaultLocale($config);
         $this->fallbackLocales = $this->parseFallbackLocales($config);
         $this->rightToLeftLocales = $this->parseRightToLeftLocales($config);
@@ -190,14 +199,14 @@ class LocaleSettings
     /**
      * Extract and validate default locale from configuration.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return string
      * @throws \Exception
      */
-    protected function parseDefaultLocale(Config $config): string
+    protected function parseDefaultLocale(array $config): string
     {
-        $locale = $config->Site->language ?? null;
+        $locale = $config['Site']['language'] ?? null;
         if (empty($locale)) {
             throw new \Exception('Default locale not configured!');
         }
@@ -210,18 +219,18 @@ class LocaleSettings
     /**
      * Parses the configured language fallbacks.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return string[]
      */
-    protected function parseFallbackLocales(Config $config): array
+    protected function parseFallbackLocales(array $config): array
     {
-        $value = trim($config->Site->fallback_languages ?? '', ',');
+        $value = trim($config['Site']['fallback_languages'] ?? '', ',');
         $languages = $value ? array_map('trim', explode(',', $value)) : [];
         return array_unique(
             [
                 ...$languages,
-                $config->Site->language,
+                $config['Site']['language'],
                 'en',
             ]
         );
@@ -230,13 +239,13 @@ class LocaleSettings
     /**
      * Parses the right-to-left language configuration.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return string[]
      */
-    protected function parseRightToLeftLocales(Config $config): array
+    protected function parseRightToLeftLocales(array $config): array
     {
-        $value = trim($config->LanguageSettings->rtl_langs ?? '', ',');
+        $value = trim($config['LanguageSettings']['rtl_langs'] ?? '', ',');
         return $value ? array_map('trim', explode(',', $value)) : [];
     }
 
@@ -262,5 +271,135 @@ class LocaleSettings
     public function isLocaleInitialized($locale)
     {
         return in_array($locale, $this->initializedLocales);
+    }
+
+    /**
+     * Detect locale from query string, cookies or the Accept-Language header.
+     *
+     * @param ?ServerRequestInterface $request Request, if available
+     *
+     * @return string
+     */
+    public function detectLocale(?ServerRequestInterface $request): string
+    {
+        if (!class_exists(\Locale::class)) {
+            error_log('Locale class is missing; please enable intl extension.');
+            return $this->getDefaultLocale();
+        }
+
+        $locale = null;
+        if ($request) {
+            $locale = $this->getLocaleFromQueryString($request);
+            if (!$locale) {
+                $locale = $this->getLocaleFromCookie($request);
+            }
+            if (!$locale) {
+                $locale = $this->getLocaleFromAcceptLanguageHeader($request);
+            }
+        }
+        if (!$locale) {
+            $locale = $this->getDefaultLocale();
+        }
+        \Locale::setDefault($locale);
+
+        return $locale;
+    }
+
+    /**
+     * Get locale from query string.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return ?string
+     */
+    protected function getLocaleFromQueryString(ServerRequestInterface $request): ?string
+    {
+        if (
+            ($locale = $request->getQueryParams()['lng'] ?? null)
+            && isset($this->getEnabledLocales()[$locale])
+        ) {
+            return $locale;
+        }
+        return null;
+    }
+
+    /**
+     * Get locale from cookies.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return ?string
+     */
+    protected function getLocaleFromCookie(ServerRequestInterface $request): ?string
+    {
+        if (
+            ($locale = $request->getCookieParams()['language'] ?? null)
+            && isset($this->getEnabledLocales()[$locale])
+        ) {
+            return $locale;
+        }
+        return null;
+    }
+
+    /**
+     * Get locale from the Accept-Language header.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return ?string
+     */
+    protected function getLocaleFromAcceptLanguageHeader(ServerRequestInterface $request): ?string
+    {
+        if (
+            !$this->browserLanguageDetectionEnabled()
+            || !($acceptLanguageHeader = $request->getHeader('Accept-Language')[0] ?? null)
+        ) {
+            return null;
+        }
+
+        $enabled = array_keys($this->getEnabledLocales());
+        foreach ($this->parseAcceptLanguageHeader($acceptLanguageHeader) as $acceptedLanguage) {
+            if ('*' === $acceptedLanguage['lng']) {
+                return $this->getDefaultLocale();
+            }
+            if ($match = \Locale::lookup($enabled, $acceptedLanguage['lng'])) {
+                return $match;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse and sort the Accept-Language header.
+     *
+     * @param string $header Header
+     *
+     * @return array
+     */
+    protected function parseAcceptLanguageHeader(string $header): array
+    {
+        $sort = function (array $a, array $b): int {
+            // Compare quality first:
+            if ($diff = $b['q'] <=> $a['q']) {
+                return $diff;
+            }
+
+            // Order:
+            return $a['idx'] <=> $b['idx'];
+        };
+
+        $acceptedLanguages = [];
+        foreach (array_map('trim', explode(',', $header)) as $idx => $current) {
+            $parts = explode(';', $current);
+            $acceptedLanguages[] = [
+                'idx' => $idx,
+                'lng' => $parts[0],
+                'q' => floatval($parts[1] ?? 1),
+            ];
+        }
+        usort($acceptedLanguages, $sort);
+
+        return $acceptedLanguages;
     }
 }

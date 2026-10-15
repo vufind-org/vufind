@@ -188,11 +188,16 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                      * @param RecordDriver $driver       Record driver
                      * @param string       $channelToken Token identifying a single specific channel
                      * to load (if omitted, all channels will be loaded)
+                     * @param string       $context      Context of channel load ('default' for normal
+                     * Channels page, 'tab' for record tab)
                      *
                      * @return array
                      */
-                    public function getFromRecord(\VuFind\RecordDriver\AbstractBase $driver, $channelToken = null)
-                    {
+                    public function getFromRecord(
+                        \VuFind\RecordDriver\AbstractBase $driver,
+                        ?string $channelToken = null,
+                        string $context = 'default'
+                    ): array {
                         return [['contents' => $this->settings, 'providerId' => 'mock']];
                     }
 
@@ -200,12 +205,12 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                      * Return channel information derived from a search results object.
                      *
                      * @param Results $results      Search results
-                     * @param string  $channelToken Token identifying a single specific channel
+                     * @param ?string $channelToken Token identifying a single specific channel
                      * to load (if omitted, all channels will be loaded)
                      *
                      * @return array
                      */
-                    public function getFromSearch(Results $results, $channelToken = null)
+                    public function getFromSearch(Results $results, ?string $channelToken = null): array
                     {
                         return [['contents' => $this->settings, 'providerId' => 'mock']];
                     }

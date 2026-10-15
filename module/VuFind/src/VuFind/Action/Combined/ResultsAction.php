@@ -32,6 +32,7 @@ namespace VuFind\Action\Combined;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
+use VuFind\ActionHelper\GlobalsHelper;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -88,21 +89,8 @@ class ResultsAction extends AbstractCombinedSearchAndResultsAction implements Lo
             } catch (\Exception $e) {
                 // Prevent errors from any of the combined search results
                 // from raising up to the user interface and instead just skip them
-                $baseMsg = "Failed get combined options for {$searchClassId}.";
-                $shortDetails = $e->getMessage();
-                $fullDetails = (string)$e;
-                $this->logError(
-                    $baseMsg,
-                    [
-                        'details' => [
-                            1 => "$baseMsg $shortDetails",
-                            2 => "$baseMsg $shortDetails",
-                            3 => "$baseMsg $shortDetails",
-                            4 => "$baseMsg $fullDetails",
-                            5 => "$baseMsg $fullDetails",
-                        ],
-                    ]
-                );
+                $this->logError("Failed to get combined options for {$searchClassId}.");
+                $this->logException($e);
                 continue;
             }
             $adjustedRequest = $this->adjustQueryForSettings(
@@ -131,10 +119,8 @@ class ResultsAction extends AbstractCombinedSearchAndResultsAction implements Lo
 
             // Special case: include appropriate "powered by" message:
             if (strtolower($searchClassId) == 'summon') {
-                if (!($layout = $request->getAttribute('view-model'))) {
-                    throw new \Exception('view-model missing in request!');
-                }
-                $layout->poweredBy = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
+                $this->getHelper(GlobalsHelper::class)->getContainer()['poweredBy']
+                    = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
             }
         }
 

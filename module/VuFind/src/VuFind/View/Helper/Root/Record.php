@@ -29,10 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Layout;
+use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
-use VuFind\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -45,6 +44,7 @@ use VuFind\Search\Memory;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
+use VuFind\View\GlobalsContainer;
 
 use function get_class;
 use function in_array;
@@ -91,8 +91,8 @@ class Record implements DbServiceAwareInterface
      * @param Auth              $auth              Auth helper
      * @param Url               $url               Url helper
      * @param ServerUrl         $serverUrl         ServerUrl helper
-     * @param Layout            $layout            Layout helper
-     * @param ?Config           $config            Configuration from config.ini
+     * @param GlobalsContainer  $globalsContainer  Global data container
+     * @param ?array            $config            Configuration from config.ini
      */
     public function __construct(
         protected TagsService $tagsService,
@@ -119,11 +119,10 @@ class Record implements DbServiceAwareInterface
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
-        protected \Laminas\View\Helper\ServerUrl $serverUrl,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Layout $layout,
-        #[Autowire(config: 'config', configType: 'object')]
-        protected ?Config $config = null
+        protected ServerUrl $serverUrl,
+        protected GlobalsContainer $globalsContainer,
+        #[Autowire(config: 'config', configType: 'array')]
+        protected ?array $config = null
     ) {
         $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
@@ -204,7 +203,7 @@ class Record implements DbServiceAwareInterface
     public function getComments(): array
     {
         return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier()
         );
     }
@@ -299,7 +298,7 @@ class Record implements DbServiceAwareInterface
     public function getListNotes($list_id = null, $user_id = null)
     {
         $data = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier(),
             $list_id,
             $user_id
@@ -399,7 +398,7 @@ class Record implements DbServiceAwareInterface
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
         return $this->tagsService->getRecordTags(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier(),
             0,
             $listOrId,
@@ -427,7 +426,7 @@ class Record implements DbServiceAwareInterface
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
         return $this->tagsService->getRecordTagsFromFavorites(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier(),
             0,
             $listOrId,
@@ -606,10 +605,10 @@ class Record implements DbServiceAwareInterface
     {
         static $previewContexts = false;
         if (false === $previewContexts) {
-            $previewContexts = isset($this->config->Content->linkPreviewsToCovers)
+            $previewContexts = isset($this->config['Content']['linkPreviewsToCovers'])
                 ? array_map(
                     'trim',
-                    explode(',', $this->config->Content->linkPreviewsToCovers)
+                    explode(',', $this->config['Content']['linkPreviewsToCovers'])
                 ) : ['*'];
         }
         return in_array('*', $previewContexts)
@@ -665,15 +664,12 @@ class Record implements DbServiceAwareInterface
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (
-            isset($this->config->Content->coversize)
-            && !$this->config->Content->coversize
-        ) {
+        if (!($this->config['Content']['coversize'] ?? true)) {
             // covers disabled entirely
             return false;
         }
         // check for context-specific overrides
-        return $this->config->Content->coversize[$context] ?? $default;
+        return $this->config['Content']['coversize'][$context] ?? $default;
     }
 
     /**
@@ -686,11 +682,9 @@ class Record implements DbServiceAwareInterface
     public function getThumbnailAlignment($context = 'result')
     {
         $configField = $context . 'ThumbnailsOnLeft';
-        $left = !isset($this->config->Site->$configField)
-            ? true : $this->config->Site->$configField;
-        $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
-            ? true : $this->config->Site->mirrorThumbnailsRTL;
-        if (($this->layout)()->rtl && !$mirror) {
+        $left = $this->config['Site'][$configField] ?? true;
+        $mirror = $this->config['Site']['mirrorThumbnailsRTL'] ?? true;
+        if ($this->globalsContainer['rtl'] && !$mirror) {
             $left = !$left;
         }
         return $left ? 'left' : 'right';
@@ -714,7 +708,7 @@ class Record implements DbServiceAwareInterface
         $size = 3,
         $margin = 4
     ) {
-        if (!isset($this->config->QRCode)) {
+        if (!isset($this->config['QRCode'])) {
             return false;
         }
 
@@ -727,10 +721,7 @@ class Record implements DbServiceAwareInterface
                 return false;
         }
 
-        if (
-            !isset($this->config->QRCode->$key)
-            || !$this->config->QRCode->$key
-        ) {
+        if (!($this->config['QRCode'][$key] ?? false)) {
             return false;
         }
 
@@ -761,7 +752,7 @@ class Record implements DbServiceAwareInterface
         // Find out whether or not AJAX covers are enabled; this will control
         // whether dynamic URLs are resolved immediately or deferred until later
         // (see third parameter of getUrl() below).
-        $ajaxcovers = $this->config->Content->ajaxcovers ?? false;
+        $ajaxcovers = $this->config['Content']['ajaxcovers'] ?? false;
         return $this->coverRouter
             ? $this->coverRouter->getUrl($this->driver, $size, !$ajaxcovers)
             : false;
@@ -839,7 +830,7 @@ class Record implements DbServiceAwareInterface
      */
     protected function hasOpenUrlReplaceSetting()
     {
-        return $this->config?->OpenURL?->replace_other_urls ?? false;
+        return $this->config['OpenURL']['replace_other_urls'] ?? false;
     }
 
     /**
@@ -873,7 +864,7 @@ class Record implements DbServiceAwareInterface
             '_',
             ($idPrefix ? $idPrefix . '-' : '')
             . ($resultSetId ? $resultSetId . '-' : '')
-            . $this->driver->getUniqueId()
+            . $this->driver->getUniqueID()
         );
     }
 
@@ -886,7 +877,7 @@ class Record implements DbServiceAwareInterface
     {
         if ($this->driver) {
             return "{$this->driver->getSourceIdentifier()}"
-                . "|{$this->driver->getUniqueId()}";
+                . "|{$this->driver->getUniqueID()}";
         }
         throw new \Exception('No record driver found.');
     }

@@ -30,7 +30,7 @@ footer-left:
   label: footer_header_search_options
   MenuItems:
     - label: 'Search History'
-      route: search-history
+      route: searchhistory-list
 
     - label: 'Advanced Search'
       route: search-advanced

@@ -35,6 +35,7 @@ use Laminas\View\Helper\EscapeHtml;
 use VuFind\RecordDataFormatter\Specs\PluginManager as SpecsManager;
 use VuFind\RecordDataFormatter\Specs\SpecInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\String\PropertyStringInterface;
 
 use function call_user_func;
@@ -72,9 +73,12 @@ class RecordDataFormatter
      */
     public function __construct(
         protected SpecsManager $specsManager,
+        #[Autowire(container: 'ViewHelperManager')]
         protected Record $recordHelper,
+        #[Autowire(container: 'ViewHelperManager')]
         protected TransEsc $transEsc,
-        protected EscapeHtml $escapeHtml
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
     ) {
     }
 
@@ -172,6 +176,23 @@ class RecordDataFormatter
             return $value;
         }
 
+        if ($rows = $options['truncateRows'] ?? false) {
+            $truncateSettings = ['rows' => $rows];
+            if ($topToggle = $options['truncateTopToggle'] ?? null) {
+                $truncateSettings['top-toggle'] = $topToggle;
+            }
+            if ($truncateElement = $options['truncateElement'] ?? null) {
+                $truncateSettings['element'] = $truncateElement;
+            }
+            $value = ($this->recordHelper)($this->driver)->renderTemplate(
+                'truncated-field.phtml',
+                [
+                    'truncateSettings' => $truncateSettings,
+                    'content' => $value,
+                ]
+            );
+        }
+
         // Allow dynamic label override:
         $label = is_callable($options['labelFunction'] ?? null)
             ? call_user_func($options['labelFunction'], $data, $this->driver)
@@ -235,25 +256,6 @@ class RecordDataFormatter
             throw new \Exception('Using the RecordDataFormatter view helper with a driver that is not supported.');
         }
         return $specs->getDefaults($key);
-    }
-
-    /**
-     * Set default configuration.
-     *
-     * @param string         $key    Key for configuration to set.
-     * @param array|callable $values Defaults to store (either an array, or a
-     * callable returning an array).
-     *
-     * @return void
-     *
-     * @deprecated Set defaults on spec class directly
-     */
-    public function setDefaults(string $key, array|callable $values): void
-    {
-        $specs = $this->getSpecPluginForDriver();
-        if ($specs !== null && method_exists($specs, 'setDefaults')) {
-            $specs->setDefaults($key, $values);
-        }
     }
 
     /**

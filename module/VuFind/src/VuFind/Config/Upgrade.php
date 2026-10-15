@@ -35,6 +35,7 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function dirname;
@@ -112,6 +113,7 @@ class Upgrade implements LoggerAwareInterface
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,
@@ -206,28 +208,6 @@ class Upgrade implements LoggerAwareInterface
     protected function addWarning(string $msg): void
     {
         $this->warnings[] = $msg;
-    }
-
-    /**
-     * Support function -- merge the contents of two arrays parsed from ini files.
-     *
-     * @param array $config_ini The base config array.
-     * @param array $custom_ini Overrides to apply on top of the base array.
-     *
-     * @return array             The merged results.
-     *
-     * @deprecated
-     */
-    public static function iniMerge($config_ini, $custom_ini)
-    {
-        foreach ($custom_ini as $k => $v) {
-            // Make a recursive call if we need to merge array values into an
-            // existing key... otherwise just drop the value in place.
-            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
-                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
-                : $v;
-        }
-        return $config_ini;
     }
 
     /**
@@ -571,7 +551,7 @@ class Upgrade implements LoggerAwareInterface
                 = ['link' => $newConfig['Content']['GoogleOptions']];
         }
 
-        // Disable unused, obsolete settings:
+        // Remove unused, obsolete settings:
         unset($newConfig['Index']['local']);
         if (isset($newConfig['Cache']['umask'])) {
             unset($newConfig['Cache']['umask']);
@@ -580,10 +560,19 @@ class Upgrade implements LoggerAwareInterface
                 . 'if you need a custom umask, please configure it at the operating system level.'
             );
         }
+        unset($newConfig['Site']['loadInitialTabWithAjax']);
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
+
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
+            $this->addWarning(
+                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
+                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
+            );
+        }
 
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
@@ -678,6 +667,17 @@ class Upgrade implements LoggerAwareInterface
             }
             unset($newConfig['LDAP']['host']);
             unset($newConfig['LDAP']['port']);
+        }
+
+        $this->applyOldSettings('RecordDataFormatter/DefaultRecord');
+        if ($subjectLimit = $newConfig['Record']['subjectLimit'] ?? null) {
+            unset($newConfig['Record']['subjectLimit']);
+            $this->newConfigs['RecordDataFormatter/DefaultRecord']['Field_Subjects'] = [
+                'truncateRows' => $subjectLimit,
+                'truncateTopToggle' => 30,
+                'truncateElement' => '.subject-line',
+            ];
+            $this->saveModifiedConfig('RecordDataFormatter/DefaultRecord', true);
         }
 
         // Translate obsolete permission settings:
@@ -896,6 +896,10 @@ class Upgrade implements LoggerAwareInterface
 
         if (!str_contains($newBaseConfig['General']['default_view'], '_')) {
             $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
+        }
+
+        if (($newBaseConfig['General']['show_restricted_view_warning'] ?? '') == '1') {
+            $newBaseConfig['General']['show_restricted_view_warning'] = 'result_list_top,record_view';
         }
 
         // Move several settings to RecordDataFormatter/EDS

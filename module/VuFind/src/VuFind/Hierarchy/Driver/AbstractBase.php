@@ -48,32 +48,11 @@ use VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
 abstract class AbstractBase
 {
     /**
-     * Driver configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Tree data source plugin manager.
-     *
-     * @var DataManager
-     */
-    protected $dataManager;
-
-    /**
      * Are trees globally enabled?
      *
      * @var bool
      */
     protected $enabled = true;
-
-    /**
-     * Tree renderer plugin manager.
-     *
-     * @var RendererManager
-     */
-    protected $rendererManager;
 
     /**
      * Find out whether or not to show the tree.
@@ -85,20 +64,17 @@ abstract class AbstractBase
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config          Configuration
-     * @param DataManager           $dataManager     Tree data source plugin manager
-     * @param RendererManager       $rendererManager Tree renderer plugin manager
-     * @param array                 $options         Extra options (if any)
+     * @param array           $config          Driver configuration
+     * @param DataManager     $dataManager     Tree data source plugin manager
+     * @param RendererManager $rendererManager Tree renderer plugin manager
+     * @param array           $options         Extra options (if any)
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        DataManager $dataManager,
-        RendererManager $rendererManager,
+        protected array $config,
+        protected DataManager $dataManager,
+        protected RendererManager $rendererManager,
         $options = []
     ) {
-        $this->config = $config;
-        $this->dataManager = $dataManager;
-        $this->rendererManager = $rendererManager;
         if (isset($options['enabled'])) {
             $this->enabled = (bool)$options['enabled'];
         }
