@@ -48,4 +48,11 @@ class Explanation extends \VuFind\Search\Solr\Explanation
      * @var string
      */
     protected $searchIni = 'Search2';
+
+    /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected string $backendId = 'Search2';
 }
