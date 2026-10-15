@@ -1748,9 +1748,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Get Renew Details.
      *
-     * This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
