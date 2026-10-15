@@ -66,12 +66,13 @@ class SearchSolrTest extends TestCase
      * Build a SearchSolr instance. Any collaborator left null gets a bare mock with sensible defaults;
      * pass a pre-configured mock for any collaborator a test needs to set expectations on.
      *
-     * @param array            $config          ModelContextProtocol.yaml contents
-     * @param ?SearchRunner    $searchRunner    Search runner
-     * @param ?RecordFormatter $recordFormatter Record formatter
-     * @param ?Loader          $recordLoader    Record loader
-     * @param ?RouteHelper     $routeHelper     Route helper
-     * @param ?ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param array            $config            ModelContextProtocol.yaml contents
+     * @param ?SearchRunner    $searchRunner      Search runner
+     * @param ?RecordFormatter $recordFormatter   Record formatter
+     * @param ?Loader          $recordLoader      Record loader
+     * @param ?RouteHelper     $routeHelper       Route helper
+     * @param ?ServerUrlHelper $serverUrlHelper   Server URL helper
+     * @param array            $recordFieldConfig SearchApiRecordFields.yaml contents
      *
      * @return SearchSolr
      */
@@ -81,10 +82,16 @@ class SearchSolrTest extends TestCase
         ?RecordFormatter $recordFormatter = null,
         ?Loader $recordLoader = null,
         ?RouteHelper $routeHelper = null,
-        ?ServerUrlHelper $serverUrlHelper = null
+        ?ServerUrlHelper $serverUrlHelper = null,
+        array $recordFieldConfig = []
     ): SearchSolr {
         $configManager = $this->createMock(ConfigManagerInterface::class);
-        $configManager->method('getConfigArray')->willReturn($config);
+        $configManager->method('getConfigArray')->willReturnCallback(
+            fn (string $configName): array => match ($configName) {
+                'ModelContextProtocol' => $config,
+                'SearchApiRecordFields' => $recordFieldConfig,
+            }
+        );
 
         if (!$routeHelper) {
             $routeHelper = $this->createMock(RouteHelper::class);
@@ -119,19 +126,28 @@ class SearchSolrTest extends TestCase
         $searchRunner = $this->createMock(SearchRunner::class);
         $searchRunner->expects($this->once())
             ->method('run')
-            ->with(['lookfor' => 'test keywords'], 'Solr', $this->isType('callable'))
+            ->with(['lookfor' => 'test keywords'], 'Solr', $this->isCallable())
             ->willReturn($results);
 
+        $recordFieldConfig = ['title' => ['vufind.method' => 'getTitle']];
         $recordFormatter = $this->createMock(RecordFormatter::class);
         $recordFormatter->expects($this->once())
             ->method('format')
-            ->with(['recordA'], ['recordPageAbsoluteLink', 'title', 'authors'])
+            ->with(['recordA'], ['recordPageAbsoluteLink', 'title', 'authors'], $recordFieldConfig)
             ->willReturn([['id' => 'recordA', 'title' => 'A Title']]);
 
         $routeHelper = $this->createMock(RouteHelper::class);
         $routeHelper->method('getUrlFromRoute')->willReturn('/Search/Results?lookfor=test+keywords');
 
-        $searchSolr = $this->getSearchSolr([], $searchRunner, $recordFormatter, null, $routeHelper);
+        $searchSolr = $this->getSearchSolr(
+            [],
+            $searchRunner,
+            $recordFormatter,
+            null,
+            $routeHelper,
+            null,
+            $recordFieldConfig
+        );
 
         $this->assertSame(
             [
@@ -157,7 +173,7 @@ class SearchSolrTest extends TestCase
         $searchRunner = $this->createMock(SearchRunner::class);
         $searchRunner->expects($this->once())
             ->method('run')
-            ->with(['lookfor' => 'keywords', 'filter' => '(format:Book)'], 'Solr', $this->isType('callable'))
+            ->with(['lookfor' => 'keywords', 'filter' => '(format:Book)'], 'Solr', $this->isCallable())
             ->willReturn($results);
 
         $searchSolr = $this->getSearchSolr($config, $searchRunner);
@@ -275,13 +291,14 @@ class SearchSolrTest extends TestCase
         $recordLoader = $this->createMock(Loader::class);
         $recordLoader->expects($this->once())->method('load')->with('rec1', 'Solr')->willReturn($record);
 
+        $recordFieldConfig = ['title' => ['vufind.method' => 'getTitle']];
         $recordFormatter = $this->createMock(RecordFormatter::class);
         $recordFormatter->expects($this->once())
             ->method('format')
-            ->with([$record], ['recordPageAbsoluteLink', 'title', 'authors'])
+            ->with([$record], ['recordPageAbsoluteLink', 'title', 'authors'], $recordFieldConfig)
             ->willReturn([['id' => 'rec1', 'title' => 'A Book']]);
 
-        $searchSolr = $this->getSearchSolr([], null, $recordFormatter, $recordLoader);
+        $searchSolr = $this->getSearchSolr([], null, $recordFormatter, $recordLoader, null, null, $recordFieldConfig);
         $this->assertSame(['id' => 'rec1', 'title' => 'A Book'], $searchSolr->getRecord('rec1'));
     }
 

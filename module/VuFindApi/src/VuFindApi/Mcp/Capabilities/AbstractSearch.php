@@ -64,6 +64,11 @@ abstract class AbstractSearch extends AbstractCapabilities
     protected int $limit = 20;
 
     /**
+     * Record field configuration file name.
+     */
+    protected string $recordFieldConfigFile = 'SearchApiRecordFields';
+
+    /**
      * Constructor.
      *
      * @param ConfigManagerInterface $configManager   Config manager
@@ -110,6 +115,16 @@ abstract class AbstractSearch extends AbstractCapabilities
     }
 
     /**
+     * Get the record field configuration.
+     *
+     * @return array
+     */
+    protected function getRecordFieldConfig(): array
+    {
+        return $this->configManager->getConfigArray($this->recordFieldConfigFile);
+    }
+
+    /**
      * Search records by keywords and content type. Input schema and response fields are defined
      * in config file.
      *
@@ -153,7 +168,8 @@ abstract class AbstractSearch extends AbstractCapabilities
 
         $records = $this->recordFormatter->format(
             $results->getResults(),
-            $this->responseFields
+            $this->responseFields,
+            $this->getRecordFieldConfig()
         );
         $resultsPage = $this->serverUrlHelper->getBaseUrl()
             . $this->routeHelper->getUrlFromRoute(
@@ -189,7 +205,11 @@ abstract class AbstractSearch extends AbstractCapabilities
             throw new ResourceReadException(message: "Failed to load record for ID: {$recordId}", previous: $e);
         }
 
-        $formattedRecord = $this->recordFormatter->format([$record], $this->responseFields)[0];
+        $formattedRecord = $this->recordFormatter->format(
+            [$record],
+            $this->responseFields,
+            $this->getRecordFieldConfig()
+        )[0];
         return $formattedRecord;
     }
 }
