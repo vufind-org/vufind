@@ -273,15 +273,6 @@ $config = [
             ],
         ],
     ],
-    'vufind' => [
-        'plugin_managers' => [
-            'action' => [
-                'autodiscovery_namespaces' => [
-                    'VuFindApi\Action' => true,
-                ],
-            ],
-        ],
-    ],
 ];
 
 return $config;
