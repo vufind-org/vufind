@@ -190,6 +190,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'oai/authserver' => Oai\AuthServerAction::class,
 
+        'overdrive/getstatus' => Overdrive\GetStatusAction::class,
+
         'pazpar2/home' => Search\HomeAction::class,
         'pazpar2/search' => Search\ResultsAction::class,
 
