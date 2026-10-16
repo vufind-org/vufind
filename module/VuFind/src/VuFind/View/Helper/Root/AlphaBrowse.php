@@ -74,8 +74,7 @@ class AlphaBrowse
         $query = [
             'type' => ucwords($source) . 'Browse',
             // this is needed for appropriate title browsing as searching by sort_key causes issues
-            'lookfor' => ($source == 'title') ?
-                $this->escapeForSolr($item['heading']) : $this->escapeForSolr($item['sort_key']),
+            'lookfor' => $this->escapeForSolr($source == 'title' ? $item['heading'] : $item['sort_key']),
         ];
         if ($this->options['bypass_default_filters'] ?? true) {
             $query['dfApplied'] = 1;
