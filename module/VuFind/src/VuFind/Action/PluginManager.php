@@ -364,6 +364,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
+        'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
         'Worldcat' => 'WorldCat',
