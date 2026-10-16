@@ -36,6 +36,7 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\Cookie\CookieManager;
+use VuFind\Http\ResponseStatus;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
 use VuFind\View\GlobalsContainer;
@@ -365,6 +366,31 @@ class Bootstrapper
             $this->container->get(GlobalsContainer::class)['renderingError'] = true;
         };
         $this->events->attach('render.error', $callback, 10000);
+    }
+
+    /**
+     * Commit the HTTP status code to the SAPI before the response body is rendered.
+     *
+     * @return void
+     */
+    protected function initRenderStatus(): void
+    {
+        // Not needed in console mode:
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        // The status code is finalized before the render event for every
+        // non-success outcome (404s, 500s, redirects, ...), so committing it to
+        // the SAPI now protects against the status line being sent prematurely.
+        $callback = function ($event): void {
+            $response = $event->getResponse();
+            if ($response instanceof Response) {
+                ResponseStatus::commit($response->getStatusCode());
+            }
+        };
+        // Render the status before DefaultRenderingStrategy renders the body,
+        // which may flush output to the SAPI and commit the status line:
+        $this->events->attach('render', $callback, 10000);
     }
 
     /**
