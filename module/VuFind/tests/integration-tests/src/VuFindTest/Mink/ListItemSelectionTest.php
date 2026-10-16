@@ -74,8 +74,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     protected function goToUserAccount()
     {
         $session = $this->getMinkSession();
-        $path = '/Search/Home';
-        $session->visit($this->getVuFindUrl() . $path);
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         // Login
         $this->clickCss($page, '#loginOptions a');
@@ -83,8 +82,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
         $this->waitForPageLoad($page);
         // Go to saved lists
-        $path = '/MyResearch/Home';
-        $session->visit($this->getVuFindUrl() . $path);
+        $session->visit($this->getVuFindUrl() . '/Account/Home');
         $this->waitForPageLoad($page);
         return $page;
     }

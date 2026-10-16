@@ -117,7 +117,7 @@ class IllRequestsHelper extends AbstractRequestBase
         if (!empty($details)) {
             // Confirm?
             if (($postParams['confirm'] ?? null) === '0') {
-                $targetUrl = $this->routeHelper->getUrlFromRoute('myresearch-illrequests');
+                $targetUrl = $this->routeHelper->getUrlFromRoute('illrequests-list');
                 if ($all !== null) {
                     $confirmTitle = 'ill_request_cancel_all';
                     $confirmMessage = 'confirm_ill_request_cancel_all_text';

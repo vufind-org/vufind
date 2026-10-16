@@ -163,7 +163,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             )
         );
 
-        $view->setTemplate('myresearch/odmycontent');
+        $view->setTemplate('account/odmycontent');
         return $view;
     }
 

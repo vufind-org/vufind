@@ -264,12 +264,13 @@ VuFind.register('lightbox', function Lightbox() {
         // Close the lightbox after deliberate login provided that:
         // - is a form
         // - catalog login for holds
-        // - or that matches login/create account
+        // - or that matches login/create account (supports both Account and legacy MyResearch URLs)
         // - not a failed login
         if (
           obj.method && (
             obj.url.match(/catalogLogin/)
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
+            || obj.url.match(/Account\/(?!Bulk|Delete|Recover)/)
           ) && flashMessages.length === 0
         ) {
           let doRefresh = true;
