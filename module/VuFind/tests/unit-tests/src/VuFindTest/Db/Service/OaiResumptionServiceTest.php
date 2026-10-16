@@ -167,7 +167,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFindToken(): void
+    public function testFindWithId(): void
     {
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager();
@@ -189,7 +189,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $query->expects($this->once())->method('setParameters')
             ->with(['id' => 'foo', 'now' => $dateTime])
             ->willReturn($query);
-        $this->assertEquals($oaiResumption, $resumptionService->findToken('foo'));
+        $this->assertEquals($oaiResumption, $resumptionService->findWithId('foo'));
     }
 
     /**

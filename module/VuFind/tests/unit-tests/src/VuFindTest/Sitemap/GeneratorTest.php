@@ -30,7 +30,6 @@
 namespace VuFindTest\Sitemap;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Sitemap\Generator;
 use VuFind\Sitemap\PluginManager;
 use VuFind\Sitemap\SitemapIndex;
@@ -85,7 +84,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     ) {
         return new Generator(
             $baseUrl,
-            new Config($config),
+            $config,
             $locales,
             $objects[PluginManager::class]
                 ?? $this->container->get(PluginManager::class)
@@ -211,7 +210,6 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             // all non-empty configuration sets.
             $config['Sitemap']['fileLocation'] = $this->getFixturePath('sitemap');
         }
-        $config = new Config($config);
         $pluginManager = $this->createMock(PluginManager::class);
         $mockIndex = $this->createMock(SitemapIndex::class);
         $this->$expectationMethod($mockIndex);
@@ -219,12 +217,12 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             /**
              * Constructor.
              *
-             * @param Config        $config        Sitemap configuration settings
+             * @param array         $config        Sitemap configuration settings
              * @param PluginManager $pluginManager Generator plugin manager
              * @param SitemapIndex  $mockIndex     Mock sitemap index to use
              */
             public function __construct(
-                Config $config,
+                array $config,
                 PluginManager $pluginManager,
                 protected $mockIndex
             ) {

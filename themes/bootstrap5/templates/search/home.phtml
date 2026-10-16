@@ -3,13 +3,14 @@
   $this->headTitle($this->translate('Search Home'));
 
   // Disable top search box and notices -- this page has a special layout.
-  $this->layout()->searchbox = false;
-  $this->layout()->disableDefaultNotices = true;
+  $globals = $this->globals();
+  $globals['searchbox'] = false;
+  $globals['disableDefaultNotices'] = true;
 
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {
-    $config = $this->config()->get('config');
-    $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+    $config = $this->config()->getArray('config');
+    $this->searchClassId = $config['Site']['defaultSearchBackend'] ?? 'Solr';
   }
 
   $this->breadcrumbs()->disable();

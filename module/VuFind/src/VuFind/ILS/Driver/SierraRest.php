@@ -890,6 +890,8 @@ class SierraRest extends AbstractBase implements
     /**
      * Get Renew Details.
      *
+     * This function returns the details required to renew items.
+     *
      * @param array $checkOutDetails An array of item data
      *
      * @return string Data for use in a form field

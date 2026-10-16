@@ -1929,7 +1929,7 @@ class Params
         // Some values will transfer without changes
         $this->filterList = $minified->f;
         $this->hiddenFilters = $minified->hf;
-        $this->searchType = $minified->ty;
+        $this->searchType = $minified->ty ?? 'basic';
         $this->searchContextParameters = $minified->scp;
 
         // Deminified searches will always have defaults already applied;

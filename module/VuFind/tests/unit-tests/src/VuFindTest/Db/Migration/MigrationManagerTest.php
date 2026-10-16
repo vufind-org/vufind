@@ -78,7 +78,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
     ): MockObject&MigrationManager {
         $constructorArgs = [
             $connection ?? $this->getMockConnection(),
-            $loader ?? $this->createMock(MigrationLoader::class),
+            $loader ?? $this->createStub(MigrationLoader::class),
             $version,
         ];
         return $this->getMockBuilder(MigrationManager::class)

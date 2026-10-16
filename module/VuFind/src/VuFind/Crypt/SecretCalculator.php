@@ -30,6 +30,7 @@
 namespace VuFind\Crypt;
 
 use VuFind\Db\Entity\SearchEntityInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Secret calculator.
@@ -47,6 +48,7 @@ class SecretCalculator
      *
      * @param HMAC $hmac HMAC generator
      */
+    #[Autowire]
     public function __construct(protected HMAC $hmac)
     {
     }

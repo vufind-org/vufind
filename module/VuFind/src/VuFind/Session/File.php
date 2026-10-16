@@ -29,8 +29,6 @@
 
 namespace VuFind\Session;
 
-use VuFind\Config\Config;
-
 use function function_exists;
 use function strlen;
 
@@ -55,16 +53,16 @@ class File extends AbstractBase
     /**
      * Constructor.
      *
-     * @param ?Config $config Session configuration ([Session] section of
+     * @param ?array $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(?Config $config = null)
+    public function __construct(?array $config = null)
     {
         parent::__construct($config);
 
         // Set defaults if nothing set in config file.
-        if (isset($config->file_save_path)) {
-            $this->path = $config->file_save_path;
+        if (isset($config['file_save_path'])) {
+            $this->path = $config['file_save_path'];
         } else {
             $tempdir = function_exists('sys_get_temp_dir')
                 ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';

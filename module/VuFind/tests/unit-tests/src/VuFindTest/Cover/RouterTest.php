@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Cover;
 
-use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFind\Cover\Router;
 use VuFindHttp\HttpService;
@@ -134,7 +133,6 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         ?ThemeInfo $theme = null,
         ?HttpService $httpService = null
     ): Loader {
-        $config = new Config($config);
         $manager ??= $this->createMock(\VuFind\Content\Covers\PluginManager::class);
         $theme ??= new ThemeInfo($this->getThemeDir(), $this->testTheme);
         $httpService ??= $this->createMock(\VuFindHttp\HttpService::class);

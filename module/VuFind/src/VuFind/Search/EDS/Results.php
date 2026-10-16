@@ -31,7 +31,6 @@
 
 namespace VuFind\Search\EDS;
 
-use VuFind\Config\Config;
 use VuFind\Record\Loader;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
@@ -51,9 +50,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'EDS';
+    protected ?string $backendId = 'EDS';
 
     /**
      * Facet list.
@@ -69,13 +68,13 @@ class Results extends \VuFind\Search\Base\Results
      * search parameters.
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
-     * @param Config                     $config        Backend config
+     * @param array                      $config        Backend config
      */
     public function __construct(
         Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        protected Config $config
+        protected array $config
     ) {
         parent::__construct($params, $searchService, $recordLoader);
     }
@@ -105,12 +104,13 @@ class Results extends \VuFind\Search\Base\Results
         $allTerms = trim($query->getAllTerms());
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
+        $params = $this->getParams();
+        $backendParams = $params->getBackendParameters();
         if ($allTerms === '') {
-            if (!$this->config['General']['limiter_only'] ?? false) {
+            if (!($this->config['General']['limiter_only'] ?? false)) {
                 $this->storeErrorResponse('empty_search_disallowed');
                 return;
-            } elseif (!$this->paramsIncludeLimiter($params)) {
+            } elseif (!$this->paramsIncludeLimiter($backendParams)) {
                 $this->storeErrorResponse('empty_search_no_filters_disallowed');
                 return;
             }
@@ -121,7 +121,7 @@ class Results extends \VuFind\Search\Base\Results
             $query,
             $offset,
             $limit,
-            $params
+            $backendParams
         );
         $collection = $this->getSearchService()->invoke($command)
             ->getResult();
@@ -141,6 +141,12 @@ class Results extends \VuFind\Search\Base\Results
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
             $this->restrictedView = $collection->isRestrictedView();
+
+            // For a page parameter being out of the results list, we do not want
+            // to return any results from another page.
+            if ($this->getResultTotal() > 0 && $params->getPage() > $this->getLastAvailablePage()) {
+                $this->results = [];
+            }
         }
     }
 
@@ -185,7 +191,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $scoreMap = [];
         foreach ($this->results as $record) {
-            $scoreMap[$record->getUniqueId()] = $record->getScore();
+            $scoreMap[$record->getUniqueID()] = $record->getScore();
         }
         return $scoreMap;
     }

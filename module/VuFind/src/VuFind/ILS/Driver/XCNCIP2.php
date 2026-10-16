@@ -1174,40 +1174,40 @@ class XCNCIP2 extends AbstractBase implements
                 $itemType = !empty($itemType) ? (string)$itemType[0] : null;
                 $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
                 $itemResponse = $this->sendRequest($itemRequest);
-            }
-            if ($bibId === null && isset($itemResponse)) {
-                $bibId = $itemResponse->xpath(
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
-                    'ns1:BibliographicItemIdentifier' .
-                    ' | ' .
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
-                    'ns1:BibliographicRecordIdentifier'
-                );
-                // Hack to account for bibs from other non-local institutions
-                // temporarily until consortial functionality is enabled.
-                $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
-            }
-            if ($itemAgencyId === null && isset($itemResponse)) {
-                $itemAgencyId = $itemResponse->xpath(
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
-                    'ns1:AgencyId' .
-                    ' | ' .
-                    'ns1:LookupItemResponse/ns1:ItemId/ns1:AgencyId'
-                );
-                $itemAgencyId = !empty($itemAgencyId)
-                    ? (string)$itemAgencyId[0] : null;
-            }
-            if (empty($due) && isset($itemResponse)) {
-                $rawDueDate = $itemResponse->xpath(
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:DateDue'
-                );
-                $due = $this->displayDate(
-                    !empty($rawDueDate) ? (string)$rawDueDate[0] : null
-                );
+                if ($bibId === null) {
+                    $bibId = $itemResponse->xpath(
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
+                        'ns1:BibliographicItemIdentifier' .
+                        ' | ' .
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                        'ns1:BibliographicRecordIdentifier'
+                    );
+                    // Hack to account for bibs from other non-local institutions
+                    // temporarily until consortial functionality is enabled.
+                    $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
+                }
+                if ($itemAgencyId === null) {
+                    $itemAgencyId = $itemResponse->xpath(
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                        'ns1:AgencyId' .
+                        ' | ' .
+                        'ns1:LookupItemResponse/ns1:ItemId/ns1:AgencyId'
+                    );
+                    $itemAgencyId = !empty($itemAgencyId)
+                        ? (string)$itemAgencyId[0] : null;
+                }
+                if (empty($due)) {
+                    $rawDueDate = $itemResponse->xpath(
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:DateDue'
+                    );
+                    $due = $this->displayDate(
+                        !empty($rawDueDate) ? (string)$rawDueDate[0] : null
+                    );
+                }
             }
 
             $retVal[] = [
@@ -1748,9 +1748,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Get Renew Details.
      *
-     * This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *

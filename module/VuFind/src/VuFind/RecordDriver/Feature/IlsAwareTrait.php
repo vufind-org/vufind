@@ -173,9 +173,9 @@ trait IlsAwareTrait
      */
     public function getURLs()
     {
-        $params = [$this->getUniqueId()];
+        $params = [$this->getUniqueID()];
         return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord', $params)
-            ? $this->ils->getUrlsForRecord($this->getUniqueId())
+            ? $this->ils->getUrlsForRecord($this->getUniqueID())
             : [];
     }
 

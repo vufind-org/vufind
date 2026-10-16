@@ -38,6 +38,7 @@ use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * User account service.
@@ -57,6 +58,7 @@ class UserAccountService implements DbServiceAwareInterface
      *
      * @param FavoritesService $favoritesService Favorites service
      */
+    #[Autowire]
     public function __construct(protected FavoritesService $favoritesService)
     {
     }

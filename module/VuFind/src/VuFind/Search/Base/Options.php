@@ -433,11 +433,11 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $displayCitationLinksInResults;
 
     /**
-     * Should we display a warning in restricted views?
+     * Contexts where the restricted view warning is being displayed.
      *
-     * @var bool
+     * @var array
      */
-    protected bool $showRestrictedViewWarning;
+    protected array $restrictedViewWarningContexts;
 
     /**
      * VuFind main configuration.
@@ -543,8 +543,12 @@ abstract class Options implements TranslatorAwareInterface
 
         $this->displayCitationLinksInResults
             = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
-        $this->showRestrictedViewWarning
-            = (bool)($this->searchSettings['General']['show_restricted_view_warning'] ?? false);
+        $restrictedViewWarningSetting = $this->searchSettings['General']['show_restricted_view_warning'] ?? '';
+        // support legacy config
+        if ($restrictedViewWarningSetting === '1') {
+            $restrictedViewWarningSetting = 'result_list_top,record_view';
+        }
+        $this->restrictedViewWarningContexts = $this->explodeListSetting($restrictedViewWarningSetting);
     }
 
     /**
@@ -1302,29 +1306,12 @@ abstract class Options implements TranslatorAwareInterface
         // otherwise:
         $recommend = [];
 
-        if (
-            null !== $handler
-            && isset($searchSettings['TopRecommendations'][$handler])
-        ) {
-            $recommend['top'] = $searchSettings['TopRecommendations'][$handler];
-        } else {
-            $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? [];
-        }
-        if (
-            null !== $handler
-            && isset($searchSettings['SideRecommendations'][$handler])
-        ) {
-            $recommend['side'] = $searchSettings['SideRecommendations'][$handler];
-        } else {
-            $recommend['side'] = $searchSettings['General']['default_side_recommend'] ?? [];
-        }
-        if (
-            null !== $handler
-            && isset($searchSettings['NoResultsRecommendations'][$handler])
-        ) {
-            $recommend['noresults'] = $searchSettings['NoResultsRecommendations'][$handler];
-        } else {
-            $recommend['noresults'] = $searchSettings['General']['default_noresults_recommend'] ?? [];
+        foreach (['Top', 'Bottom', 'Side', 'NoResults'] as $position) {
+            $lcPosition = strtolower($position);
+            $recommend[$lcPosition]
+                = (null !== $handler ? $searchSettings[$position . 'Recommendations'][$handler] ?? null : null)
+                ?? $searchSettings['General']['default_' . $lcPosition . '_recommend']
+                ?? [];
         }
 
         return $recommend;
@@ -1510,11 +1497,15 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Should we display a warning in restricted views?
      *
+     * @param ?string $context Optional context (If omitted, returns true if ANY contexts are enabled)
+     *
      * @return bool
      */
-    public function showRestrictedViewWarning(): bool
+    public function showRestrictedViewWarning(?string $context = null): bool
     {
-        return $this->showRestrictedViewWarning;
+        return ($context === null)
+            ? !empty($this->restrictedViewWarningContexts)
+            : (bool)array_intersect([$context, '*'], $this->restrictedViewWarningContexts);
     }
 
     /**

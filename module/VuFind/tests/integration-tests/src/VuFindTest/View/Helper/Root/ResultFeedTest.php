@@ -74,7 +74,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
         $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
-        $router = new \VuFind\Record\Router(new \VuFind\Config\Config([]));
+        $router = new \VuFind\Record\Router([]);
         $memory = $this->createMock(\VuFind\Search\Memory::class);
         $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
         $url->method('__invoke')->willReturn('test/url');

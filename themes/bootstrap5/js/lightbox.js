@@ -174,11 +174,11 @@ VuFind.register('lightbox', function Lightbox() {
     _html(finalHTML);
     VuFind.modal('show');
     // Attach capturing events
-    _modalBody.find('a').click(_constrainLink);
+    _modalBody.find('a').on('click', _constrainLink);
     // Handle submit buttons attached to a form as well as those in a form. Store
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
-    _modalBody.find('[type=submit]').click(_storeClickedStatus);
+    _modalBody.find('[type=submit]').on('click', _storeClickedStatus);
 
     var forms = _modalBody.find('form:not([data-lightbox-ignore])');
     for (var i = 0; i < forms.length; i++) {
@@ -576,6 +576,7 @@ VuFind.register('lightbox', function Lightbox() {
     _currentUrl = false;
     _lbReferrerUrl = false;
     _lightboxTitle = false;
+    VuFind.lightbox.refreshOnClose = false;
     _modalParams = {};
   }
 

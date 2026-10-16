@@ -6,7 +6,7 @@
     ->add($pageTitle, active: true);
 
   $uLangs = [];
-  foreach ($this->layout()->allLangs ?? [] as $c => $n) {
+  foreach ($this->globals()['allLangs'] ?? [] as $c => $n) {
     $uLangs[] = $c;
   }
 
@@ -123,7 +123,7 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
           var copyBtn = document.getElementById("template-copy-btn").content.cloneNode(true);
           $(".modal-body h2").after(copyBtn);
           VuFind.copyToClipboard.updateContainer({container: document});
-          $('.translation-output').click(function(e) {
+          $('.translation-output').on('click', function(e) {
             this.select();
           });
         }
@@ -151,24 +151,24 @@ Current filter mode: <?=$includeOptional ? 'Unfiltered' : 'Mandatory strings onl
       }
       var diffManager = createDiffManager();
 
-      $('#lang-summary .btn-missing').click(function(e) {
+      $('#lang-summary .btn-missing').on('click', function(e) {
         var lang = $(this).data('langcode');
         var title = $(this).attr('title');
         return diffManager.showMissing(lang, title);
       });
-      $('#lang-summary .btn-extra').click(function(e) {
+      $('#lang-summary .btn-extra').on('click', function(e) {
         var lang = $(this).data('langcode');
         var title = $(this).attr('title');
         return diffManager.showExtra(lang, title);
       });
-      $('#lang-summary .btn-dupes').click(function(e) {
+      $('#lang-summary .btn-dupes').on('click', function(e) {
         var lang = $(this).data('langcode');
         var title = $(this).attr('title');
         return diffManager.showDupes(lang, title);
       });
 
       $('.show-all').html('<button class="btn btn-default btn-light" type="button">' + $('.show-all:first').data('text') + '</button>');
-      $('.show-all button').click(function() {
+      $('.show-all button').on('click', function() {
         $("#lang-summary tr").each(function() {
           $(this).removeClass("hide");
         });

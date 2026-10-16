@@ -487,6 +487,6 @@ class ILS extends AbstractBase
     protected function getUsernameField()
     {
         $config = $this->getConfig();
-        return $config->Authentication->ILS_username_field ?? 'cat_username';
+        return $config['Authentication']['ILS_username_field'] ?? 'cat_username';
     }
 }

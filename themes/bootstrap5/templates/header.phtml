@@ -1,8 +1,8 @@
 <?=$this->section('HeaderBar')->render()?>
-<?php if ($this->layout()->searchbox !== false): ?>
+<?php if ($searchbox = $this->globals()['searchbox']): ?>
   <div class="search container navbar">
     <div class="nav searchbox hidden-print" role="search">
-      <?=$this->layout()->searchbox ?>
+      <?=$searchbox ?>
     </div>
   </div>
 <?php endif; ?>

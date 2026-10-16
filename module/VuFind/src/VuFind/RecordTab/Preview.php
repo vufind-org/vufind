@@ -41,13 +41,6 @@ namespace VuFind\RecordTab;
 class Preview extends AbstractBase
 {
     /**
-     * Configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config = null;
-
-    /**
      * Is this tab active?
      *
      * @var bool

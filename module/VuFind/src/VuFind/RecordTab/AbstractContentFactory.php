@@ -79,9 +79,9 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         // Only instantiate the loader if the feature is enabled:
-        $loader = isset($config->Content->{$this->tabName})
+        $loader = isset($config['Content'][$this->tabName])
             ? $container->get(ContentManager::class)->get($this->tabName)
             : null;
         return new $requestedName($loader, $this->getHideSetting($config));
@@ -91,13 +91,13 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
      * Support method for construction of AbstractContent objects -- should we
      * hide this tab if it is empty?
      *
-     * @param \VuFind\Config\Config $config VuFind configuration
+     * @param array $config VuFind configuration
      *
      * @return bool
      */
-    protected function getHideSetting(\VuFind\Config\Config $config)
+    protected function getHideSetting(array $config)
     {
-        $setting = $config->Content->hide_if_empty ?? false;
+        $setting = $config['Content']['hide_if_empty'] ?? false;
         if (in_array($setting, [true, false, 1, 0], true)) {
             return (bool)$setting;
         }

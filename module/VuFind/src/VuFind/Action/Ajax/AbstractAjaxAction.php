@@ -29,9 +29,12 @@
 
 namespace VuFind\Action\Ajax;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
-use VuFind\Action\AjaxResponseTrait;
+use VuFind\ActionHelper\ResponseHelper;
 use VuFind\AjaxHandler\PluginManager as AjaxPluginManager;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -47,8 +50,6 @@ use VuFind\ServiceManager\Factory\Autowire;
  */
 abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAwareInterface
 {
-    use AjaxResponseTrait;
-    // For AjaxResponseTrait:
     use TranslatorAwareTrait;
 
     /**
@@ -58,9 +59,52 @@ abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAw
      */
     #[Autowire]
     public function __construct(
-        AjaxPluginManager $ajaxManager
+        protected AjaxPluginManager $ajaxManager
     ) {
         parent::__construct();
-        $this->ajaxManager = $ajaxManager;
+    }
+
+    /**
+     * Call an AJAX method and turn the result into a response.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     * @param string                 $method   AJAX method to call
+     * @param string                 $type     Content type to output
+     *
+     * @return ResponseInterface
+     */
+    protected function callAjaxMethod(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        string $method,
+        string $type = 'application/json'
+    ): ResponseInterface {
+        $responseHelper = $this->getHelper(ResponseHelper::class);
+        if ($this->ajaxManager->has($method)) {
+            try {
+                $handler = $this->ajaxManager->get($method);
+                $result = $handler->handleRequest($request);
+                $data = $result[0];
+                $httpStatus = $result[1] ?? null;
+                return $responseHelper->getAjaxResponse(
+                    $response,
+                    $type,
+                    'application/json' === $type ? compact('data') : $data,
+                    $httpStatus,
+                );
+            } catch (\Exception $e) {
+                return $responseHelper->getExceptionResponse($response, $type, $e);
+            }
+        }
+
+        // If we got this far, we can't handle the requested method:
+        $data = $this->translate('Invalid Method');
+        return $responseHelper->getAjaxResponse(
+            $response,
+            $type,
+            'application/json' === $type ? compact('data') : $data,
+            HttpStatus::BAD_REQUEST
+        );
     }
 }

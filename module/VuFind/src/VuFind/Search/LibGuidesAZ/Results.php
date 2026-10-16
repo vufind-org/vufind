@@ -45,7 +45,7 @@ class Results extends \VuFind\Search\LibGuides\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $backendId = 'LibGuidesAZ';
+    protected ?string $backendId = 'LibGuidesAZ';
 }

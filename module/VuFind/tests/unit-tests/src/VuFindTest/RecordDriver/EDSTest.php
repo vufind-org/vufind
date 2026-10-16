@@ -156,7 +156,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
-        $record = new EDS(null, new \VuFind\Config\Config($config ?? $this->defaultDriverConfig));
+        $record = new EDS(null, $config ?? $this->defaultDriverConfig);
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);
@@ -1131,5 +1131,20 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record-2');
         $this->assertNull($driver->getScore());
+    }
+
+    /**
+     * Test getHighlightedTitle().
+     *
+     * @return void
+     */
+    public function testGetHighlightedTitle(): void
+    {
+        $driver = $this->getDriver('eds-highlighting');
+        $this->assertEquals(
+            '{{{{START_HILITE}}}}highlighted part{{{{END_HILITE}}}} of text. '
+            . 'Also {{{{START_HILITE}}}}more highlights{{{{END_HILITE}}}}',
+            $driver->getHighlightedTitle()
+        );
     }
 }

@@ -273,7 +273,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             'Your saved item(s) were deleted.',
             $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->unfindCss($page, 'button[name="delete"]');
+        $this->unFindCss($page, 'button[name="delete"]');
     }
 
     /**

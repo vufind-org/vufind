@@ -29,10 +29,10 @@
 
 namespace VuFind\ContentBlock;
 
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 
@@ -69,6 +69,7 @@ class FacetList implements ContentBlockInterface
      * @param FacetCacheManager      $facetCacheManager Facet cache plugin manager
      * @param ConfigManagerInterface $configManager     Configuration manager
      */
+    #[Autowire]
     public function __construct(
         protected FacetCacheManager $facetCacheManager,
         protected ConfigManagerInterface $configManager
@@ -78,35 +79,28 @@ class FacetList implements ContentBlockInterface
     /**
      * Get an array of hierarchical facets.
      *
-     * @param Config $facetConfig Facet configuration object.
+     * @param array $facetConfig Facet configuration object.
      *
      * @return array Facets
      */
     protected function getHierarchicalFacets($facetConfig)
     {
-        return isset($facetConfig->SpecialFacets->hierarchical)
-            ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : [];
+        return $facetConfig['SpecialFacets']['hierarchical'] ?? [];
     }
 
     /**
      * Get hierarchical facet sort settings.
      *
-     * @param Config $facetConfig Facet configuration object.
+     * @param array $facetConfig Facet configuration object.
      *
      * @return array Array of sort settings keyed by facet
      */
     protected function getHierarchicalFacetSortSettings($facetConfig)
     {
         $baseConfig
-            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
-            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
-            : [];
+            = $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions'] ?? [];
         $homepageConfig
-            = isset($facetConfig->HomePage_Settings->hierarchicalFacetSortOptions)
-            ? $facetConfig->HomePage_Settings->hierarchicalFacetSortOptions
-                ->toArray()
-            : [];
+            = $facetConfig['HomePage_Settings']['hierarchicalFacetSortOptions'] ?? [];
 
         return array_merge($baseConfig, $homepageConfig);
     }
@@ -152,7 +146,7 @@ class FacetList implements ContentBlockInterface
         $facetCache = $this->facetCacheManager->get($this->searchClassId);
         $results = $facetCache->getResults();
         $facetConfig = $this->configManager
-            ->getConfigObject($results->getOptions()->getFacetsIni());
+            ->getConfigArray($results->getOptions()->getFacetsIni());
         return [
             'searchClassId' => $this->searchClassId,
             'columnSize' => $this->columnSize,
@@ -160,7 +154,7 @@ class FacetList implements ContentBlockInterface
             'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
             'hierarchicalFacetSortOptions' =>
                 $this->getHierarchicalFacetSortSettings($facetConfig),
-            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig->toArray()),
+            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig),
             'results' => $results,
         ];
     }

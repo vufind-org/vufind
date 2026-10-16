@@ -56,7 +56,6 @@ class SearchAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $this->searchClassId = 'SolrAuthorFacets';
         $this->saveToHistory = false;
         $this->rememberSearch = false;
         return $this->renderSearchResults($request, $response);

@@ -41,6 +41,7 @@ namespace VuFind\ILS\Driver;
 use Laminas\Mvc\I18n\Translator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
@@ -220,6 +221,7 @@ class Aleph extends AbstractBase implements
      * @param ?\VuFind\Cache\Manager $cacheManager  Cache manager (optional)
      * @param ?Translator            $translator    Translator (optional)
      */
+    #[Autowire]
     public function __construct(
         protected \VuFind\Date\Converter $dateConverter,
         protected ?\VuFind\Cache\Manager $cacheManager = null,
@@ -898,10 +900,7 @@ class Aleph extends AbstractBase implements
     /**
      * Get Renew Details.
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $details An array of item data
      *

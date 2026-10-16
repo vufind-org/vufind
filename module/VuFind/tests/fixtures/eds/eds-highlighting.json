@@ -1,0 +1,10 @@
+{
+  "Items": [
+    {
+      "Name": "Title",
+      "Label": "Title",
+      "Group": "Ti",
+      "Data": "&lt;highlight&gt;highlighted part&lt;\/highlight&gt; of text. Also &lt;highlight&gt;more highlights&lt;\/highlight&gt;"
+    }
+  ]
+}
