@@ -365,6 +365,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
         'Searchhistory' => 'SearchHistory',
+        'Shibbolethlogoutnotification' => 'ShibbolethLogoutNotification',
         'Shortlink' => 'ShortLink',
         'Worldcat' => 'WorldCat',
     ];

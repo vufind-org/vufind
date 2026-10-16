@@ -174,7 +174,6 @@ $config = [
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\QRCodeController' => 'VuFind\Controller\QRCodeControllerFactory',
             'VuFind\Controller\RelaisController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\ShibbolethLogoutNotificationController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SimulatedSSOController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SiteMapController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
@@ -199,8 +198,6 @@ $config = [
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'Relais' => 'VuFind\Controller\RelaisController',
             'relais' => 'VuFind\Controller\RelaisController',
-            'ShibbolethLogoutNotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
-            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'SimulatedSSO' => 'VuFind\Controller\SimulatedSSOController',
             'simulatedsso' => 'VuFind\Controller\SimulatedSSOController',
             'SiteMap' => 'VuFind\Controller\SiteMapController',
@@ -725,6 +722,16 @@ $config = [
                     'search2/versions',
                 ],
                 'backendId' => 'Search2',
+            ],
+
+            // Shibboleth logout notification:
+            'vufind_shibboleth_logout_notification' => [
+                'actionIds' => [
+                    'shibbolethlogoutnotification/get',
+                    'shibbolethlogoutnotification/post',
+                ],
+                'accessPermission' => 'access.api.ShibbolethLogoutNotification',
+                'accessDeniedBehavior' => 'exception',
             ],
 
             // Summon:
