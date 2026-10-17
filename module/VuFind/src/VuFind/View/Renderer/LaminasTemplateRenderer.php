@@ -37,6 +37,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\ResponseStatus;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
@@ -103,6 +104,10 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         array $params = [],
         array $childTemplates = [],
     ): ResponseInterface {
+        // Commit the final status code to the SAPI before rendering the body.
+        // This runs during dispatch (before the "render" event), so without it a
+        // large body could flush to the SAPI while the status is still 200.
+        ResponseStatus::commit($response->getStatusCode());
         $response->getBody()->write($this->renderTemplateAsString($request, $template, $params, useLayout: true));
         return $response;
     }
