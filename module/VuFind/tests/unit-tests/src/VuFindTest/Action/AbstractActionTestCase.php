@@ -57,7 +57,7 @@ use VuFind\View\Renderer\TemplateRendererInterface;
 abstract class AbstractActionTestCase extends TestCase
 {
     /**
-     * Template name captured from the renderTemplate() call.
+     * Template name captured from the renderTemplate() call in getCapturingRenderer().
      *
      * @var ?string
      */
