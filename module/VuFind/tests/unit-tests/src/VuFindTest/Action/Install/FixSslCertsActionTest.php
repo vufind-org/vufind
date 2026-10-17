@@ -127,6 +127,7 @@ class FixSslCertsActionTest extends AbstractInstallActionTestCase
         );
         $action($this->getServerRequest(queryParams: ['try' => 3]), new Response());
 
+        $this->assertSame(1, $this->renderTemplateCallCount);
         $this->assertNull($this->capturedTemplate);
         $this->assertSame([], $this->capturedTemplateParams);
     }

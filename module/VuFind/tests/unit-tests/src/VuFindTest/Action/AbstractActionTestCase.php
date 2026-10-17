@@ -71,6 +71,13 @@ abstract class AbstractActionTestCase extends TestCase
     protected array $capturedTemplateParams = [];
 
     /**
+     * Number of times the getCapturingRenderer() renderer called renderTemplate().
+     *
+     * @var int
+     */
+    protected int $renderTemplateCallCount = 0;
+
+    /**
      * Wire the setter-injected dependencies onto an action.
      *
      * @param AbstractAction             $action      Action to initialize
@@ -164,6 +171,7 @@ abstract class AbstractActionTestCase extends TestCase
                 ?string $template,
                 array $params
             ): ResponseInterface {
+                $this->renderTemplateCallCount++;
                 $this->capturedTemplate = $template;
                 $this->capturedTemplateParams = $params;
                 return $response;

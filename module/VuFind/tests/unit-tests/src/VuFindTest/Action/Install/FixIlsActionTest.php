@@ -118,6 +118,7 @@ class FixIlsActionTest extends AbstractInstallActionTestCase
 
         $this->assertSame($configPath, $this->capturedTemplateParams['configPath']);
         $this->assertArrayNotHasKey('demo', $this->capturedTemplateParams);
+        $this->assertArrayNotHasKey('drivers', $this->capturedTemplateParams);
     }
 
     /**
