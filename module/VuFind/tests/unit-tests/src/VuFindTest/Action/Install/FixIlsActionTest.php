@@ -136,7 +136,9 @@ class FixIlsActionTest extends AbstractInstallActionTestCase
         $this->assertTrue($this->capturedTemplateParams['demo']);
         $drivers = $this->capturedTemplateParams['drivers'];
         $this->assertNotEmpty($drivers);
-        $this->assertContains('Voyager', $drivers);
+        // The driver list may change over time, but these should always be included:
+        $this->assertContains('MultiBackend', $drivers);
+        $this->assertContains('NoILS', $drivers);
         $this->assertNotContains('Sample', $drivers);
         $this->assertNotContains('Demo', $drivers);
         $this->assertNotContains('DriverInterface', $drivers);
