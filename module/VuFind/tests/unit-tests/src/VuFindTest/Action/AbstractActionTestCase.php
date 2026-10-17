@@ -64,7 +64,7 @@ abstract class AbstractActionTestCase extends TestCase
     protected ?string $capturedTemplate = null;
 
     /**
-     * Template parameters captured from the renderTemplate() call.
+     * Template parameters captured from the renderTemplate() call in getCapturingRenderer().
      *
      * @var array
      */
