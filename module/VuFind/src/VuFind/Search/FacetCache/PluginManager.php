@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'gvi' => \VuFind\Search\GVI\FacetCache::class,
         'search2' => \VuFind\Search\Search2\FacetCache::class,
         'solr' => \VuFind\Search\Solr\FacetCache::class,
         'summon' => \VuFind\Search\Summon\FacetCache::class,

@@ -48,10 +48,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'SolrGviMarcDE604' => GVIDefault::class,
         'browzine' => BrowZine::class,
         'eds' => EDS::class,
         'eit' => EIT::class,
         'epf' => EPF::class,
+        'gvi' => GVIDefault::class,
+        'gvidefault' => GVIDefault::class,
         'libguides' => LibGuides::class,
         'libguidesaz' => LibGuidesAZ::class,
         'missing' => Missing::class,
@@ -149,6 +152,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected function getExpectedInterface()
     {
         return AbstractBase::class;
+    }
+
+    /**
+     * Convenience method to retrieve a populated GVI record driver.
+     *
+     * @param array  $data             Raw Solr data
+     * @param string $defaultKeySuffix Default key suffix
+     *
+     * @return AbstractBase
+     */
+    public function getGVIRecord($data, $defaultKeySuffix = 'Default')
+    {
+        return $this->getSolrRecord($data, 'GVI', $defaultKeySuffix);
     }
 
     /**
