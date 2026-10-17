@@ -69,6 +69,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getSaveStatuses' => GetSaveStatuses::class,
         'getSearchResults' => GetSearchResults::class,
         'getSideFacets' => GetSideFacets::class,
+        'getUserDigitizationRequests' => GetUserDigitizationRequests::class,
         'getUserFines' => GetUserFines::class,
         'getUserHolds' => GetUserHolds::class,
         'getUserILLRequests' => GetUserILLRequests::class,
