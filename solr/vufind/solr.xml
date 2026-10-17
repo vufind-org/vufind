@@ -32,13 +32,8 @@
 
     <str name="host">${host:}</str>
     <int name="hostPort">${jetty.port:8983}</int>
-    <str name="hostContext">${hostContext:solr}</str>
-
-    <bool name="genericCoreNodeNames">${genericCoreNodeNames:true}</bool>
 
     <int name="zkClientTimeout">${zkClientTimeout:30000}</int>
-    <int name="distribUpdateSoTimeout">${distribUpdateSoTimeout:600000}</int>
-    <int name="distribUpdateConnTimeout">${distribUpdateConnTimeout:60000}</int>
 
   </solrcloud>
 

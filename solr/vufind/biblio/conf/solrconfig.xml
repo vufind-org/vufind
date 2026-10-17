@@ -32,7 +32,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>9.11</luceneMatchVersion>
+  <luceneMatchVersion>10.3.2</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -41,11 +41,6 @@
        other than the default ./data under the Solr home.
        If replication is in use, this should match the replication configuration. -->
   <dataDir>${solr.solr.home:./solr}/biblio</dataDir>
-
-  <lib dir="../../../import/lib" regex="marc4j.*\.jar" />
-  <lib dir="../../../import" regex="solrmarc_core.*\.jar" />
-  <lib dir="../../vendor/modules/analysis-extras/lib" regex=".*\.jar" />
-  <lib dir="../jars" regex=".*\.jar" />
 
   <indexConfig>
 
