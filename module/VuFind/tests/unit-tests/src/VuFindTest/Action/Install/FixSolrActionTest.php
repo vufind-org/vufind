@@ -97,7 +97,7 @@ class FixSolrActionTest extends AbstractInstallActionTestCase
      */
     public function testRendersTroubleshootingWhenSolrIsUnreachable(): void
     {
-        $configFile = '/usr/local/vufind/local/config/vufind/config.ini';
+        $configFile = '/path/to/vufind/local/config/vufind/config.ini';
         $location = $this->createMock(ConfigLocationInterface::class);
         $location->method('getPath')->willReturn($configFile);
         $pathResolver = $this->createMock(PathResolver::class);
