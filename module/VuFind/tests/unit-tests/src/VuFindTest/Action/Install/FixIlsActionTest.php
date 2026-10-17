@@ -103,7 +103,7 @@ class FixIlsActionTest extends AbstractInstallActionTestCase
      */
     public function testRendersConfigPathForRealDriver(): void
     {
-        $configPath = '/usr/local/vufind/local/config/vufind/NoILS.ini';
+        $configPath = '/path/to/local/config/vufind/NoILS.ini';
         $location = $this->createMock(ConfigLocationInterface::class);
         $location->method('getPath')->willReturn($configPath);
         $pathResolver = $this->createMock(PathResolver::class);
