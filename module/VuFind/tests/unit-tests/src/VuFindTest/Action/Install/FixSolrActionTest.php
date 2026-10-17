@@ -59,7 +59,7 @@ class FixSolrActionTest extends AbstractInstallActionTestCase
     protected function getSearchService(?\Throwable $throws = null): SearchService
     {
         $searchService = $this->createMock(SearchService::class);
-        if (null !== $throws) {
+        if ($throws) {
             $searchService->method('invoke')->willThrowException($throws);
         } else {
             $command = $this->createMock(AbstractCommand::class);
