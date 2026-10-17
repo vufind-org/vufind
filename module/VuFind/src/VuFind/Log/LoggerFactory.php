@@ -57,6 +57,7 @@ use VuFind\Net\UserIpReader;
 use function constant;
 use function error_log;
 use function explode;
+use function in_array;
 use function is_array;
 use function is_int;
 use function method_exists;
@@ -319,21 +320,33 @@ class LoggerFactory implements FactoryInterface
     ): void {
         $monologLogger->pushProcessor(new PsrLogMessageProcessor());
         $logConfig = $config['Logging'] ?? [];
-        if ($referenceId = $logConfig['reference_id'] ?? false) {
-            if ('username' === $referenceId) {
-                try {
-                    $authManager = $container->get(AuthManager::class);
-                    if ($user = $authManager->getUserObject()) {
-                        $monologLogger->pushProcessor(function (LogRecord $record) use ($user) {
-                            $record['extra'] = array_merge($record['extra'], [
-                                'username' => $user->getUsername(),
-                            ]);
-                            return $record;
-                        });
-                    }
-                } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
-                    error_log('VuFind Log: Could not get AuthManager for ReferenceId processor: ' . $e->getMessage());
+
+        // Cast to array for backward compatibility with legacy single-string config.
+        $reference_ids = (array)($logConfig['reference_id'] ?? []);
+
+        if (in_array('username', $reference_ids)) {
+            try {
+                $authManager = $container->get(AuthManager::class);
+                if ($user = $authManager->getUserObject()) {
+                    $monologLogger->pushProcessor(function (LogRecord $record) use ($user) {
+                        $record['extra'] = array_merge($record['extra'], [
+                            'username' => $user->getUsername(),
+                        ]);
+                        return $record;
+                    });
                 }
+            } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
+                error_log('VuFind Log: Could not get AuthManager for ReferenceId processor: ' . $e->getMessage());
+            }
+        }
+        if (in_array('ip', $reference_ids)) {
+            if ($ip = $container->get(UserIpReader::class)->getUserIp()) {
+                $monologLogger->pushProcessor(function (LogRecord $record) use ($ip) {
+                    $record['extra'] = array_merge($record['extra'], [
+                        'ip' => $ip,
+                    ]);
+                    return $record;
+                });
             }
         }
     }
