@@ -11,6 +11,7 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Filesystem',
     'Laminas\Cache\Storage\Adapter\Memcached',
     'Laminas\Cache\Storage\Adapter\Memory',
+    'Laminas\Diactoros',
     'Laminas\Form',
     'Laminas\Router',
     'Lmc\Rbac',
