@@ -32,6 +32,7 @@
 
 namespace VuFind\Auth;
 
+use DateTime;
 use DomainException;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
@@ -317,6 +318,14 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             if (!empty($attrValue)) {
                 if ($userAttr === 'email') {
                     $userService->updateUserEmail($user, $attrValue);
+                    $treatAsVerified = $this->getConfig('treat_email_as_verified');
+                    if ($treatAsVerified) {
+                        $user->setEmailVerified(new \DateTime());
+                    } elseif (isset($userInfo->email_verified)) {
+                        $user->setEmailVerified(
+                            $userInfo->email_verified ? new DateTime() : null
+                        );
+                    }
                     continue;
                 }
                 if ($userAttr === 'cat_password') {
