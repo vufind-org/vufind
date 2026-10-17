@@ -28,6 +28,19 @@
 <?php endforeach; ?>
 
 <form method="POST" class="content-form notice-form">
+  <div class="form-check">
+    <input
+      type="checkbox"
+      name="enabled"
+      id="enabled-checkbox"
+      class="form-check-input"
+      <?=($this->formData['enabled'] ?? true) ? 'checked' : ''?>
+    >
+    <label for="enabled-checkbox">
+      <?=$this->transEsc('Enabled')?>
+    </label>
+  </div>
+
   <?php if (count($this->formData['contexts'] ?? []) > 1): ?>
     <?php
       $contextValueMapping = [];
