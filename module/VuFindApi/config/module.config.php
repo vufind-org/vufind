@@ -194,6 +194,17 @@ $config = [
                     ],
                 ],
             ],
+            'mcpApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/mcp',
+                    'defaults' => [
+                        'controller' => 'Mcp',
+                        'action'     => 'mcp',
+                    ],
+                ],
+            ],
             'search2Apiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'verb' => 'get,post,options',
