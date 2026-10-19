@@ -177,7 +177,6 @@ $config = [
             'VuFind\Controller\SiteMapController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
             'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
-            'VuFind\Controller\ZoteroController' => 'VuFind\Controller\ZoteroControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -203,8 +202,6 @@ $config = [
             'turnstile' => 'VuFind\Controller\TurnstileController',
             'Upgrade' => 'VuFind\Controller\UpgradeController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
-            'Zotero' => 'VuFind\Controller\ZoteroController',
-            'zotero' => 'VuFind\Controller\ZoteroController',
         ],
     ],
     'controller_plugins' => [
