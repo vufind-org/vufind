@@ -7,7 +7,6 @@ $config = [
         'factories' => [
             'VuFind\Sitemap\Generator' => 'VuFind\Sitemap\GeneratorFactory',
             'VuFindConsole\Command\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
         ],
     ],
     'view_manager' => [
