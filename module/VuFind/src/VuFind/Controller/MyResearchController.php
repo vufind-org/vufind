@@ -299,7 +299,7 @@ class MyResearchController extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->getCaptcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
-        $view->request = $this->getRequest()->getPost()->toArray();
+        $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
         if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             try {
