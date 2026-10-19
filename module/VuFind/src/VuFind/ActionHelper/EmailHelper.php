@@ -32,8 +32,6 @@ namespace VuFind\ActionHelper;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Feature\EmailSettingsTrait;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function intval;
@@ -47,10 +45,9 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class EmailHelper implements HelperInterface, TranslatorAwareInterface
+class EmailHelper implements HelperInterface
 {
     use EmailSettingsTrait;
-    use TranslatorAwareTrait;
 
     /**
      * Constructor.
