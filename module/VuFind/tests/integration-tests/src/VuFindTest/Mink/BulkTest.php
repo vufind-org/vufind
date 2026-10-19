@@ -240,7 +240,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Log in to account that owns the list:
         $session = $this->getMinkSession();
         // Use old path intentionally:
-        $session->visit($this->getVuFindUrl() . '/Lists/AllItems');
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
