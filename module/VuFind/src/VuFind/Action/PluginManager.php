@@ -367,6 +367,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
+        'Simulatedsso' => 'SimulatedSSO',
         'Worldcat' => 'WorldCat',
     ];
 
