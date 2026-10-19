@@ -135,7 +135,7 @@
         <div class="online-payment-info">
           <div class="online-payment-payable-info">
             <div class="online-payment-payable">
-              <?=$this->transEsc('Payment::payable_online'); ?> (<?=$this->payableOnlineCnt ?>):
+              <?=$this->transEsc('Payment::payable_online'); ?> (<?=$this->localizedNumber($this->payableOnlineCnt) ?>):
               <span class="amount"><?=$this->safeMoneyFormat($this->payableOnline / 100.00);?></span>
             </div>
             <div class="online-payment-minimum-payment js-minimum-payment hidden" data-raw="<?=$this->escapeHtmlAttr($this->minimumFee)?>">
