@@ -759,7 +759,8 @@ class GeneratorTools
         $this->createTree($parts);
 
         // Generate the new class:
-        $generator = FileGenerator::fromArray(['classes' => [$classGenerator]]);
+        $generator = new FileGenerator();
+        $generator->setClass($classGenerator);
         $filename = $classGenerator->getName() . '.php';
         $fullPath = APPLICATION_PATH . '/' . implode('/', $parts) . '/' . $filename;
         if (file_exists($fullPath)) {
@@ -876,11 +877,8 @@ class GeneratorTools
      */
     public function writeModuleConfig($configPath, $config)
     {
-        $generator = FileGenerator::fromArray(
-            [
-                'body' => 'return ' . var_export($config, true) . ';',
-            ]
-        );
+        $generator = new FileGenerator();
+        $generator->setBody('return ' . var_export($config, true) . ';');
         if (!file_put_contents($configPath, $generator->generate())) {
             throw new \Exception("Cannot write to $configPath");
         }
