@@ -73,12 +73,12 @@ interface QueryAdapterInterface
      * Convert user request parameters into a query (currently for advanced searches
      * and work keys searches only).
      *
-     * @param Parameters $request        User-submitted parameters
-     * @param string     $defaultHandler Default search handler
+     * @param array  $request        User-submitted parameters
+     * @param string $defaultHandler Default search handler
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function fromRequest(Parameters $request, $defaultHandler);
+    public function fromRequest(array $request, $defaultHandler);
 
     /**
      * Convert a Query or QueryGroup into minified search arguments.
