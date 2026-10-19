@@ -115,7 +115,7 @@ class Wikipedia implements TranslatorAwareInterface
 
         $response = $this->client->setUri($uri)->setMethod('GET')->send();
         if ($response->isSuccess()) {
-            return $this->parseWikipedia(json_decode($response->getBody()));
+            return $this->parseWikipedia(json_decode($response->getBody(), true));
         }
         return null;
     }
