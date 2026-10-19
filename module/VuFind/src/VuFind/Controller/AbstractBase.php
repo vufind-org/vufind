@@ -791,8 +791,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // If the referer is the Account/UserLogin action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
-        $myUserLogin = $this->getServerUrl('account-userlogin');
-        $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
+        $mulNorm = $this->normalizeUrlForComparison($this->getServerUrl('account-userlogin'));
         if (str_starts_with($refererNorm, $mulNorm)) {
             return;
         }
