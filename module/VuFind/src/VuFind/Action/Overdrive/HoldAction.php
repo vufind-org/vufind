@@ -116,8 +116,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
         $actionTitleCode = '';
 
         if (!$action) {
-            // Double check the availability in case it has changed since the page
-            // was loaded.
+            // Double check the availability in case it has changed since the page was loaded.
             $avail = $driver->getOverdriveAvailability();
             $action = ($avail->copiesAvailable > 0) ? 'checkoutConfirm' : 'holdConfirm';
         }
