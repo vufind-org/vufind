@@ -35,7 +35,6 @@ use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\FlashMessenger\FlashMessenger;
 
 use function intval;
 
@@ -56,13 +55,11 @@ class EmailHelper implements HelperInterface, TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param AuthManager    $authManager    Authentication manager
-     * @param FlashMessenger $flashMessenger Flash messenger
-     * @param array          $config         VuFind configuration
+     * @param AuthManager $authManager Authentication manager
+     * @param array       $config      VuFind configuration
      */
     public function __construct(
         protected AuthManager $authManager,
-        protected FlashMessenger $flashMessenger,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {
