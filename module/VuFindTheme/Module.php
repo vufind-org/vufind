@@ -87,9 +87,7 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
-                ThemeCompiler::class => ThemeInfoInjectorFactory::class,
             ],
         ];
     }
