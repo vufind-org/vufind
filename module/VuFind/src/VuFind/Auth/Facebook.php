@@ -58,8 +58,8 @@ class Facebook extends AbstractBase implements
      */
     public function __construct(
         #[Autowire(container: SessionContainerRegistry::class, service: 'Facebook')]
-        protected \Laminas\Session\Container $session)
-    {
+        protected \Laminas\Session\Container $session
+    ) {
     }
 
     /**
