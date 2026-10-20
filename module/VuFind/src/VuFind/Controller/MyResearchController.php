@@ -1450,7 +1450,7 @@ class MyResearchController extends AbstractBase
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewalsHelper = $this->getService(RenewalsHelper::class);
         $renewResult = $renewStatus
-            ? $renewalsHelper->processRenewals(
+            ? $renewalsHelper->processRenewals->toArray(
                 $this->getRequest()->getPost(),
                 $catalog,
                 $patron,
