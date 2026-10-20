@@ -29,6 +29,7 @@
 
 namespace VuFind\Action\ShibbolethLogoutNotification;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -72,9 +73,10 @@ class PostAction extends AbstractShibbolethLogoutNotificationAction
             $request = file_get_contents('php://input');
             $soapServer->handle($request);
             $soapResponse = ob_get_clean();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             ob_end_clean();
-            $soapResponse = (string)$e;
+            // Re-throw:
+            throw $e;
         }
 
         $response = $response->withHeader('Content-Type', 'text/xml');
