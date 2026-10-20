@@ -64,10 +64,8 @@ class VerifyAction extends AbstractTurnstileAction
         $policyId = $this->getPostParam('policyId');
         $destination = $this->getPostParam('destination');
         $priorHash = $this->getPostParam('hash');
+        $siteKey = $this->getSiteKey();
 
-        if (null === ($siteKey = $this->rateLimiterConfig['Turnstile']['siteKey'] ?? null)) {
-            throw new Exception('siteKey setting missing');
-        }
         $newHash = $this->hmac->generate($this->hashKeys, compact($this->hashKeys));
         if ($newHash != $priorHash) {
             throw new Exception('Wrong hash value used in Turnstile verification.');

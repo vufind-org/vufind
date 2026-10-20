@@ -31,6 +31,7 @@
 
 namespace VuFind\Action\Turnstile;
 
+use Exception;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Crypt\HMAC;
 use VuFind\RateLimiter\RateLimiterManager;
@@ -75,5 +76,18 @@ abstract class AbstractTurnstileAction extends AbstractTemplateRenderingAction
         protected GlobalsContainer $globalsContainer,
     ) {
         parent::__construct();
+    }
+
+    /**
+     * Get the siteKey setting.
+     *
+     * @return string
+     */
+    protected function getSiteKey(): string
+    {
+        if (null === ($siteKey = $this->rateLimiterConfig['Turnstile']['siteKey'] ?? null)) {
+            throw new Exception('siteKey setting missing');
+        }
+        return $siteKey;
     }
 }

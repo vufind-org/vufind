@@ -63,9 +63,7 @@ class ChallengeAction extends AbstractTurnstileAction
             throw new Exception('Context parameter missing');
         }
         $context = json_decode(base64_decode($contextParam), true);
-        if (null === ($context['siteKey'] = $this->rateLimiterConfig['Turnstile']['siteKey'] ?? null)) {
-            throw new Exception('siteKey setting missing');
-        }
+        $context['siteKey'] = $this->getSiteKey();
         $context['jsLibraryUrl'] = $this->rateLimiterConfig['Turnstile']['jsLibraryUrl']
             ?? 'https://challenges.cloudflare.com/turnstile/v0/api.js';
         $context['hash'] = $this->hmac->generate($this->hashKeys, $context);
