@@ -129,7 +129,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     {
         $req = unserialize($this->getFixture('searches/advanced/request'));
         $q = unserialize($this->getFixture('searches/advanced/query'));
-        $this->assertEquals($q, $this->getQueryAdapter()->fromRequest($req->toArray(), 'AllFields'));
+        $this->assertEquals($q, $this->getQueryAdapter()->fromRequest($req, 'AllFields'));
     }
 
     /**
