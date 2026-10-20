@@ -57,10 +57,10 @@ abstract class AbstractZoteroAction extends AbstractTemplateRenderingAction impl
     /**
      * Constructor.
      *
-     * @param SessionManager $sessionManager Session manager
-     * @param AuthManager    $authManager    Authentication manager
-     * @param ZoteroService  $zoteroService  Zotero service
-     * @param Container $sessionContainer Session container
+     * @param SessionManager $sessionManager   Session manager
+     * @param AuthManager    $authManager      Authentication manager
+     * @param ZoteroService  $zoteroService    Zotero service
+     * @param Container      $sessionContainer Session container
      */
     #[Autowire]
     public function __construct(
