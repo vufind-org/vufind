@@ -35,6 +35,7 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function dirname;
@@ -112,6 +113,7 @@ class Upgrade implements LoggerAwareInterface
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,
@@ -564,6 +566,14 @@ class Upgrade implements LoggerAwareInterface
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
+            $this->addWarning(
+                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
+                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
+            );
+        }
+
         // Translate legacy auth settings:
         if (strtolower($newConfig['Authentication']['method']) == 'db') {
             $newConfig['Authentication']['method'] = 'Database';
@@ -886,6 +896,10 @@ class Upgrade implements LoggerAwareInterface
 
         if (!str_contains($newBaseConfig['General']['default_view'], '_')) {
             $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
+        }
+
+        if (($newBaseConfig['General']['show_restricted_view_warning'] ?? '') == '1') {
+            $newBaseConfig['General']['show_restricted_view_warning'] = 'result_list_top,record_view';
         }
 
         // Move several settings to RecordDataFormatter/EDS

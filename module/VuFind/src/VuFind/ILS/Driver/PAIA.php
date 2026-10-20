@@ -877,9 +877,9 @@ class PAIA extends DAIA
     }
 
     /**
-     * This method returns a string to use as the input form value for renewing
-     * each hold item. (optional, but required if you implement the
-     * renewMyItems method) Not supported prior to VuFind 1.2.
+     * Get Renew Details.
+     *
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails One of the individual item arrays returned by
      *                               the getMyTransactions method

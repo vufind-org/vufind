@@ -74,7 +74,7 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
         // Do a search and make sure it's in history:
         $page = $this->performSearch('building:weird_ids.mrc');
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $this->findCss($page, 'table#recent-searches');
 
         // Add a session id mapping to external_session table:
@@ -90,7 +90,7 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
         );
         $this->assertSame(200, $result->getStatusCode());
 
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $this->unFindCss($page, 'table#recent-searches');
     }
 }

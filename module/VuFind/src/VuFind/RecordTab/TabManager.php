@@ -32,6 +32,7 @@ namespace VuFind\RecordTab;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -54,11 +55,9 @@ class TabManager
     protected array $contextSettings = [
         'record' => [
             'configFile' => 'RecordTabs',
-            'legacyConfigSection' => 'recorddriver_tabs',
         ],
         'collection' => [
             'configFile' => 'CollectionTabs',
-            'legacyConfigSection' => 'recorddriver_collection_tabs',
         ],
     ];
 
@@ -68,15 +67,6 @@ class TabManager
      * @var array
      */
     protected array $config = [];
-
-    /**
-     * Overall framework configuration (legacy way for fetching configurations).
-     *
-     * @var array
-     *
-     * @deprecated
-     */
-    protected array $legacyConfig;
 
     /**
      * Current active context (defaults to 'record').
@@ -90,15 +80,12 @@ class TabManager
      *
      * @param RecordTabPluginManager $recordTabPluginManager RecordTab plugin manager
      * @param ConfigManagerInterface $configManager          Configuration manager
-     * @param array                  $legacyConfig           Overall framework configuration
-     * (legacy way for fetching configurations).
      */
+    #[Autowire]
     public function __construct(
         protected RecordTabPluginManager $recordTabPluginManager,
         protected ConfigManagerInterface $configManager,
-        array $legacyConfig = []
     ) {
-        $this->legacyConfig = $legacyConfig;
         // Initialize default context.
         $this->initializeCurrentContext();
     }
@@ -127,23 +114,9 @@ class TabManager
      */
     protected function initializeCurrentContext(): void
     {
-        if (!isset($this->config[$this->context])) {
-            $key = $this->contextSettings[$this->context]['legacyConfigSection']
-                ?? 'recorddriver_tabs';
-            $legacyConfig = $this->legacyConfig['vufind'][$key] ?? [];
-            $configFile = $this->contextSettings[$this->context]['configFile'];
-            if (!empty($legacyConfig)) {
-                trigger_error(
-                    'Using deprecated way of fetching tab configuration! ' .
-                    'Use ' . $configFile . '.ini instead.',
-                    E_USER_WARNING
-                );
-            }
-            $iniConfig = $this->configManager->getConfigArray(
-                $configFile
-            );
-            $this->config[$this->context] = array_merge($legacyConfig, $iniConfig);
-        }
+        $this->config[$this->context] ??= $this->configManager->getConfigArray(
+            $this->contextSettings[$this->context]['configFile']
+        );
     }
 
     /**

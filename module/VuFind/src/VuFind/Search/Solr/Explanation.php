@@ -50,6 +50,13 @@ use function strlen;
 class Explanation extends \VuFind\Search\Base\Explanation
 {
     /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected string $backendId = 'Solr';
+
+    /**
      * Value of the relevance score of the best match.
      *
      * @var float
@@ -260,7 +267,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
 
         // perform request
         $explainCommand = new RawJsonSearchCommand(
-            'Solr',
+            $this->backendId,
             $query,
             0,
             0,

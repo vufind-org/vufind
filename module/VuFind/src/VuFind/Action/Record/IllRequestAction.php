@@ -227,10 +227,9 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         $defaultRequiredDate = $this->dateConverter->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
-        $pickupLibraries = $this->ilsConnection->getILLPickUpLibraries(
+        $pickupLibraries = $this->ilsConnection->getILLPickupLibraries(
             $driver->getUniqueID(),
-            $patron,
-            $gatheredDetails
+            $patron
         );
 
         // Get pickup locations. Note that these are independent of pickup library,

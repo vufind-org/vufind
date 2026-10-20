@@ -158,11 +158,11 @@ VuFind.register('truncate', function Truncate() {
           } else {
             container.css('height', truncatedHeight + 'px');
           }
-          btnWrapperBtm.find('.more-btn').focus();
+          btnWrapperBtm.find('.more-btn').trigger('focus');
         };
-        btnWrapperBtm.find('.less-btn').click(onClickLessBtnHandler);
+        btnWrapperBtm.find('.less-btn').on('click', onClickLessBtnHandler);
         if (btnWrapperTop) {
-          btnWrapperTop.find('.less-btn').click(onClickLessBtnHandler);
+          btnWrapperTop.find('.less-btn').on('click', onClickLessBtnHandler);
         }
 
         // For accessibility, we need to move focus to the first element newly revealed
@@ -192,7 +192,7 @@ VuFind.register('truncate', function Truncate() {
           truncateStart.focus();
         };
 
-        btnWrapperBtm.find('.more-btn').click(function onClickMoreBtn(/*event*/) {
+        btnWrapperBtm.find('.more-btn').on('click', function onClickMoreBtn(/*event*/) {
           $(this).hide();
           btnWrapperBtm.find('.less-btn').show();
           if (btnWrapperTop) {

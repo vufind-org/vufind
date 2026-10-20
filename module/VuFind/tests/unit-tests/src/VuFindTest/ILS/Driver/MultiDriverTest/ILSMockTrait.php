@@ -281,7 +281,7 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getILLPickUpLibraries($id, $patron)
+    public function getILLPickupLibraries($id, $patron)
     {
         return false;
     }
@@ -300,7 +300,7 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getILLPickUpLocations($id, $pickupLib, $patron)
+    public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         return false;
     }
@@ -334,10 +334,7 @@ trait ILSMockTrait
     /**
      * Get Renew Details.
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkoutDetails An array of item data
      *

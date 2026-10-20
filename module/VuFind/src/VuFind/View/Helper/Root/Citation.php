@@ -117,9 +117,9 @@ class Citation implements TranslatorAwareInterface
      * Store a record driver object and return this object so that the appropriate
      * template can be rendered.
      *
-     * @param \VuFind\RecordDriver\Base $driver Record driver object.
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
      *
-     * @return Citation
+     * @return static
      */
     public function __invoke($driver)
     {
@@ -178,7 +178,7 @@ class Citation implements TranslatorAwareInterface
         $this->details = [
             'authors' => $authors,
             'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title ?? ''),
+            'title' => trim($title),
             'subtitle' => trim($subtitle ?? ''),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,

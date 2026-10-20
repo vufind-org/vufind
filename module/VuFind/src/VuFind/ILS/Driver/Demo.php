@@ -412,7 +412,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
-        return [$record->getUniqueId(), $record->getTitle()];
+        return [$record->getUniqueID(), $record->getTitle()];
     }
 
     /**
@@ -628,7 +628,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             } else {
                 if ($this->idsInMyResearch) {
                     [$currentItem['id'], $currentItem['title']]
-                        = $this->getRandomBibIdAndtitle();
+                        = $this->getRandomBibIdAndTitle();
                     $currentItem['source'] = $this->getRecordSource();
                 } else {
                     $currentItem['title'] = 'Demo Title ' . $i;
@@ -2177,10 +2177,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     /**
      * Get Renew Details.
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *

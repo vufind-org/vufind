@@ -546,6 +546,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'list_test',
             $results[$configName]['General']['default_view']
         );
+        $this->assertEquals(
+            'result_list_top,record_view',
+            $results[$configName]['General']['show_restricted_view_warning']
+        );
     }
 
     /**

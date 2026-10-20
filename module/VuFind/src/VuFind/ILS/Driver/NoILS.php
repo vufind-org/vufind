@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function strlen;
 
@@ -50,20 +51,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader.
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Record\Loader $loader Record loader
+     * @param \VuFind\Record\Loader $recordLoader Record loader
      */
-    public function __construct(\VuFind\Record\Loader $loader)
+    #[Autowire]
+    public function __construct(protected \VuFind\Record\Loader $recordLoader)
     {
-        $this->recordLoader = $loader;
     }
 
     /**

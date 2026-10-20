@@ -33,6 +33,7 @@ namespace VuFind\Action\Authority;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\Search\AbstractSearchAndResultsAction;
 use VuFind\ActionHelper\RedirectHelper;
 
 /**
@@ -45,7 +46,7 @@ use VuFind\ActionHelper\RedirectHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HomeAction extends AbstractAuthoritySearchAndResultsAction
+class HomeAction extends AbstractSearchAndResultsAction
 {
     /**
      * Display home page.

@@ -154,7 +154,7 @@ abstract class AbstractBase implements
     public function getComments()
     {
         return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
-            $this->getUniqueId(),
+            $this->getUniqueID(),
             $this->getSourceIdentifier()
         );
     }
@@ -196,7 +196,7 @@ abstract class AbstractBase implements
                 \VuFind\Db\Service\RatingsServiceInterface::class
             );
             $this->ratingCache[$cacheKey] = $ratingsService->getRecordRatings(
-                $this->getUniqueId(),
+                $this->getUniqueID(),
                 $this->getSourceIdentifier(),
                 $userId
             );
@@ -223,7 +223,7 @@ abstract class AbstractBase implements
     {
         return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
             ->getCountsForRecord(
-                $this->getUniqueId(),
+                $this->getUniqueID(),
                 $this->getSourceIdentifier(),
                 $groups
             );
@@ -241,7 +241,7 @@ abstract class AbstractBase implements
     public function getContainingLists($user_id = null)
     {
         return $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
-            $this->getUniqueId(),
+            $this->getUniqueID(),
             $this->getSourceIdentifier(),
             $user_id
         );

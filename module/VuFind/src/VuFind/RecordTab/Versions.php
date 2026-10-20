@@ -31,6 +31,7 @@ namespace VuFind\RecordTab;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Versions tab.
@@ -46,21 +47,14 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     use TranslatorAwareTrait;
 
     /**
-     * Search options plugin manager.
-     *
-     * @var \VuFind\Search\Options\PluginManager
-     */
-    protected $searchOptionsManager;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Search\Options\PluginManager $som Search options plugin manager
+     * @param \VuFind\Search\Options\PluginManager $searchOptionsManager Search options plugin manager
      */
+    #[Autowire]
     public function __construct(
-        \VuFind\Search\Options\PluginManager $som
+        protected \VuFind\Search\Options\PluginManager $searchOptionsManager
     ) {
-        $this->searchOptionsManager = $som;
     }
 
     /**
