@@ -46,8 +46,8 @@ class UserIpReader
      * Constructor.
      *
      * @param array       $server            Server parameters
-     * @param string|bool $allowForwardedIps $allowForwardedIps Forwarded header configuration string
-     * (false to disable checking IP-related X- headers)
+     * @param string|bool $allowForwardedIps Configuration specifying allowed HTTP headers containing IPs (false for
+     * none). See [Proxy] allow_forwarded_ips setting in config.ini for more details.
      * @param array       $ipFilter          IP addresses to exclude from
      * consideration
      */
