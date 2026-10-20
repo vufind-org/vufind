@@ -222,7 +222,7 @@ class QueryAdapter implements QueryAdapterInterface
                     $typeArr = (array)($request["type$groupId"] ?? []);
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = (array)($request["op$groupId"] ?? null);
+                    $opArr = (array)($request["op$groupId"] ?? []);
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
