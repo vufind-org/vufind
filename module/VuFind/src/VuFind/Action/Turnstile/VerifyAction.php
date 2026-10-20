@@ -31,10 +31,10 @@
 
 namespace VuFind\Action\Turnstile;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Exception\BadRequest as BadRequestException;
 
 /**
  * Turnstile verify action.
@@ -68,7 +68,7 @@ class VerifyAction extends AbstractTurnstileAction
 
         $newHash = $this->hmac->generate($this->hashKeys, compact($this->hashKeys));
         if ($newHash != $priorHash) {
-            throw new Exception('Wrong hash value used in Turnstile verification.');
+            throw new BadRequestException('Wrong hash value used in Turnstile verification.');
         }
 
         $ipAddress = $request->getServerParams()['REMOTE_ADDR'] ?? '';
