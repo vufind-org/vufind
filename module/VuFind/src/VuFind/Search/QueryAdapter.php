@@ -191,7 +191,7 @@ class QueryAdapter implements QueryAdapterInterface
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function fromRequest(array $request, $defaultHandler)
+    public function fromRequest(array $request, string $defaultHandler): QueryInterface
     {
         // Check for a work keys query first (id and keys included for back-compatibility with legacy code):
         if (
