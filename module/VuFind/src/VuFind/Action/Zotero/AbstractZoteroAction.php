@@ -39,6 +39,7 @@ use VuFind\Export\Zotero\ZoteroService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Abstract base class for Zotero actions.
@@ -54,39 +55,22 @@ abstract class AbstractZoteroAction extends AbstractTemplateRenderingAction impl
     use TranslatorAwareTrait;
 
     /**
-     * Session container.
-     *
-     * @var ?Container
-     */
-    protected ?Container $sessionContainer = null;
-
-    /**
      * Constructor.
      *
      * @param SessionManager $sessionManager Session manager
      * @param AuthManager    $authManager    Authentication manager
      * @param ZoteroService  $zoteroService  Zotero service
+     * @param Container $sessionContainer Session container
      */
     #[Autowire]
     public function __construct(
         protected SessionManager $sessionManager,
         protected AuthManager $authManager,
         protected ZoteroService $zoteroService,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'zotero')]
+        protected Container $sessionContainer,
     ) {
         parent::__construct();
-    }
-
-    /**
-     * Get session container for referrer information.
-     *
-     * @return Container
-     */
-    protected function getSessionContainer(): Container
-    {
-        if (null === $this->sessionContainer) {
-            $this->sessionContainer = new Container('zotero', $this->sessionManager);
-        }
-        return $this->sessionContainer;
     }
 
     /**
@@ -98,11 +82,10 @@ abstract class AbstractZoteroAction extends AbstractTemplateRenderingAction impl
      */
     protected function storeReferrer(ServerRequestInterface $request): void
     {
-        $sessionContainer = $this->getSessionContainer();
-        if (!$sessionContainer->referrer) {
+        if (!$this->sessionContainer->referrer) {
             $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
             if ($referrer && !str_contains($referrer, '/Login')) {
-                $sessionContainer->referrer = $referrer;
+                $this->sessionContainer->referrer = $referrer;
             }
         }
     }
@@ -114,8 +97,7 @@ abstract class AbstractZoteroAction extends AbstractTemplateRenderingAction impl
      */
     protected function getAndClearReferrer(): ?string
     {
-        $sessionContainer = $this->getSessionContainer();
-        $referrer = $sessionContainer->referrer;
+        $referrer = $this->sessionContainer->referrer;
         unset($this->sessionContainer->referrer);
         return $referrer;
     }
