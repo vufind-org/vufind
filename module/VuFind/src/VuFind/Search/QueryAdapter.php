@@ -196,7 +196,7 @@ class QueryAdapter implements QueryAdapterInterface
         // Check for a work keys query first (id and keys included for back-compatibility with legacy code):
         if (
             ($request['search'] ?? null) === 'versions'
-            || (array_key_exists('id', $request) && array_key_exists('keys', $request))
+            || (isset($request['id']) && isset($request['keys']))
         ) {
             if (null !== ($id = $request['id'] ?? null)) {
                 return new WorkKeysQuery($id, true);
