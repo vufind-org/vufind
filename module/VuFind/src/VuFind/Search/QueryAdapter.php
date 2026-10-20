@@ -226,7 +226,7 @@ class QueryAdapter implements QueryAdapterInterface
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = (array)($request["bool$groupId"] ?? null);
+                    $boolArr = (array)($request["bool$groupId"] ?? []);
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
