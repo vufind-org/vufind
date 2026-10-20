@@ -29,8 +29,6 @@
 
 namespace VuFind\Net;
 
-use Laminas\Stdlib\Parameters;
-
 use function count;
 
 /**
@@ -45,40 +43,18 @@ use function count;
 class UserIpReader
 {
     /**
-     * Server parameters.
-     *
-     * @var Parameters
-     */
-    protected $server;
-
-    /**
-     * Configuration specifying allowed HTTP headers containing IPs (false for none).
-     * See [Proxy] allow_forwarded_ips setting in config.ini for more details.
-     *
-     * @var string|bool
-     */
-    protected $allowForwardedIps;
-
-    /**
-     * IP addresses to exclude from consideration.
-     *
-     * @var array
-     */
-    protected $ipFilter;
-
-    /**
      * Constructor.
      *
-     * @param Parameters  $server            Server parameters
+     * @param array       $server            Server parameters
      * @param string|bool $allowForwardedIps Forwarded header configuration string
      * (false to disable checking IP-related X- headers)
      * @param array       $ipFilter          IP addresses to exclude from
      * consideration
      */
     public function __construct(
-        Parameters $server,
-        $allowForwardedIps = false,
-        array $ipFilter = []
+        protected array $server,
+        protected string|bool $allowForwardedIps = false,
+        protected array $ipFilter = []
     ) {
         $this->server = $server;
         $this->allowForwardedIps = $allowForwardedIps;
@@ -98,7 +74,7 @@ class UserIpReader
                 [$field, $behavior] = explode(':', $chunk . ':', 2);
 
                 // Look up field value; skip if empty:
-                $fieldValue = $this->server->get($field);
+                $fieldValue = $this->server[$field] ?? null;
                 if (empty($fieldValue)) {
                     continue;
                 }
@@ -128,6 +104,6 @@ class UserIpReader
             }
         }
         // Default case: use REMOTE_ADDR directly.
-        return $this->server->get('REMOTE_ADDR');
+        return $this->server['REMOTE_ADDR'] ?? null;
     }
 }
