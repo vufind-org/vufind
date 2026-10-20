@@ -31,6 +31,7 @@ namespace VuFindTheme;
 
 use VuFind\Exception\FileAccess;
 use VuFind\Feature\DirUtilityTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base class to hold shared logic for theme utilities.
@@ -64,6 +65,7 @@ abstract class AbstractThemeUtility
      *
      * @param ThemeInfo $info Theme info object
      */
+    #[Autowire]
     public function __construct(ThemeInfo $info)
     {
         $this->info = $info;
