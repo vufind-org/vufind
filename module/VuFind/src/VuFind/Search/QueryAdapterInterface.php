@@ -78,7 +78,7 @@ interface QueryAdapterInterface
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function fromRequest(array $request, $defaultHandler);
+    public function fromRequest(array $request, string $defaultHandler): QueryInterface;
 
     /**
      * Convert a Query or QueryGroup into minified search arguments.
