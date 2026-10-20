@@ -219,7 +219,7 @@ class QueryAdapter implements QueryAdapterInterface
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = (array)($request["type$groupId"] ?? null);
+                    $typeArr = (array)($request["type$groupId"] ?? []);
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
                     $opArr = (array)($request["op$groupId"] ?? null);
