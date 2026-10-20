@@ -173,7 +173,7 @@ VuFind.register('truncate', function Truncate() {
           var truncateStart = $(toggleElements[0] || []);
 
           if (truncateStart.length === 0) {
-            (btnWrapperTop || btnWrapperBtm).find('.less-btn').focus();
+            (btnWrapperTop || btnWrapperBtm).find('.less-btn').trigger('focus');
             return;
           }
           // Set focus on first focusable descendant of the <li> with '.truncate-start'
@@ -181,7 +181,7 @@ VuFind.register('truncate', function Truncate() {
           // then again, individually, when navigating into the element.
           var focusable = getFocusableNodes(truncateStart[0]);
           if (focusable.length > 0) {
-            focusable[0].focus();
+            focusable[0].trigger('focus');
             return;
           }
 
@@ -189,7 +189,7 @@ VuFind.register('truncate', function Truncate() {
           if (typeof truncateStart.attr('tabindex') === 'undefined') {
             truncateStart.attr('tabindex', -1);
           }
-          truncateStart.focus();
+          truncateStart.trigger('focus');
         };
 
         btnWrapperBtm.find('.more-btn').on('click', function onClickMoreBtn(/*event*/) {
