@@ -46,7 +46,7 @@ class UserIpReader
      * Constructor.
      *
      * @param array       $server            Server parameters
-     * @param string|bool $allowForwardedIps Forwarded header configuration string
+     * @param string|bool $allowForwardedIps $allowForwardedIps Forwarded header configuration string
      * (false to disable checking IP-related X- headers)
      * @param array       $ipFilter          IP addresses to exclude from
      * consideration

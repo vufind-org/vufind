@@ -51,9 +51,9 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
     public function testMultipleHeaders()
     {
         $params = [
-                'HTTP_X_REAL_IP' => '1.2.3.4',
-                'HTTP_X_FORWARDED_FOR' => '5.6.7.8',
-                'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_REAL_IP' => '1.2.3.4',
+            'HTTP_X_FORWARDED_FOR' => '5.6.7.8',
+            'REMOTE_ADDR' => '127.0.0.1',
         ];
 
         // Test appropriate behavior with forwarding configured to prefer Real-IP:
@@ -114,16 +114,16 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
         // to make sure both cases are covered correctly (we use different parameters
         // in each situation to allow the support method's assertions to work right)
         $params1 = [
-                'HTTP_X_REAL_IP' => '1.2.3.4',
-                'HTTP_X_FORWARDED_FOR' => '9.10.11.12,5.6.7.8',
-                'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_REAL_IP' => '1.2.3.4',
+            'HTTP_X_FORWARDED_FOR' => '9.10.11.12,5.6.7.8',
+            'REMOTE_ADDR' => '127.0.0.1',
         ];
 
         $this->runFilterTests($params1, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:first');
         $params2 = [
-                'HTTP_X_REAL_IP' => '1.2.3.4',
-                'HTTP_X_FORWARDED_FOR' => '5.6.7.8,9.10.11.12',
-                'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_REAL_IP' => '1.2.3.4',
+            'HTTP_X_FORWARDED_FOR' => '5.6.7.8,9.10.11.12',
+            'REMOTE_ADDR' => '127.0.0.1',
         ];
 
         $this->runFilterTests($params2, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last');
@@ -140,8 +140,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
         // want to extract the middle value of a list, but just making sure edge
         // cases function correctly....
         $params = [
-                'HTTP_X_FORWARDED_FOR' => '1.2.3.4,5.6.7.8,9.10.11.12',
-                'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_FORWARDED_FOR' => '1.2.3.4,5.6.7.8,9.10.11.12',
+            'REMOTE_ADDR' => '127.0.0.1',
         ];
 
         $reader = new UserIpReader(
@@ -161,8 +161,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
     public function testXForwardedForMultiValued()
     {
         $params = [
-                'HTTP_X_FORWARDED_FOR' => '5.6.7.8, 9.10.11.12',
-                'REMOTE_ADDR' => '127.0.0.1',
+            'HTTP_X_FORWARDED_FOR' => '5.6.7.8, 9.10.11.12',
+            'REMOTE_ADDR' => '127.0.0.1',
         ];
 
         // Test appropriate behavior with "first" selector:
@@ -187,7 +187,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
     public function testXForwardedForWithoutHeaders()
     {
         $params = [
-                'REMOTE_ADDR' => '127.0.0.1',
+            'REMOTE_ADDR' => '127.0.0.1',
         ];
 
         // Test appropriate behavior with forwarding enabled:
