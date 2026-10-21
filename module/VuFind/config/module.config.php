@@ -171,7 +171,6 @@ $config = [
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
-            'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\ShibbolethLogoutNotificationController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
             'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
@@ -189,8 +188,6 @@ $config = [
             'libguidesaz' => 'VuFind\Controller\LibGuidesAZController',
             'MyResearch' => 'VuFind\Controller\MyResearchController',
             'myresearch' => 'VuFind\Controller\MyResearchController',
-            'Overdrive' => 'VuFind\Controller\OverdriveController',
-            'overdrive' => 'VuFind\Controller\OverdriveController',
             'ShibbolethLogoutNotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'Turnstile' => 'VuFind\Controller\TurnstileController',
@@ -794,6 +791,7 @@ $config = [
         // Redirects from legacy actions to current ones (key is action id in all lowercase, value is route name to
         // redirect to):
         'action_redirects' => [
+            'overdrive/mycontent' => 'overdrive-content',
             'search/history' => 'searchhistory-list',
         ],
 
@@ -1050,8 +1048,10 @@ $staticRoutes = [
     'MyResearch/VerifyOtp',
     'MyResearch/VerifyRecoveryOtp',
     'OAI/Server',
-    'Overdrive/MyContent',
+    'Overdrive/Content',
+    'Overdrive/GetStatus',
     'Overdrive/Hold',
+    'Overdrive/MyContent',
     'Pazpar2/Home',
     'Pazpar2/Search',
     'Primo/Advanced',
