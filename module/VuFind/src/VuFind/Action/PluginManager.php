@@ -368,6 +368,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
         'Simulatedsso' => 'SimulatedSSO',
+        'Sitemap' => 'SiteMap',
         'Worldcat' => 'WorldCat',
     ];
 
