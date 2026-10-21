@@ -30,3 +30,7 @@
 .devtools-icon-container {
   column-width: 225px;
 }
+
+.api-keys-table {
+  @extend .table;
+}
