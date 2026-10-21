@@ -1,0 +1,255 @@
+// Dark mode color overrides for sandal5 theme
+// Uses Bootstrap's color-mode mixin to apply dark colors when
+// data-bs-theme="dark" is set or when the user's system prefers dark mode.
+
+@include color-mode(dark, true) {
+  body {
+    color: $near-white;
+  }
+
+  /* -- Layout --- */
+  .main .container {
+    background-color: var(--bs-body-bg);
+  }
+
+  /* --- Header --- */
+  header {
+    background-color: #263238; /* Material Blue Grey 900 */
+
+    .nav.navbar-nav > li > a,
+    .nav.navbar-nav button.dropdown-toggle {
+      &:hover,
+      &:focus {
+        color: $white;
+        background-color: #37474f; /* Material Blue Grey 800 */
+      }
+    }
+    .dropdown-menu a {
+      color: var(--bs-body-color);
+    }
+    .dropdown-menu a:not(.active):hover {
+      background-color: #37474f;
+      color: $white;
+    }
+    .dropdown-menu a.active,
+    .dropdown-menu a.active:hover {
+      background-color: #263238;
+    }
+  }
+
+  .banner .dropdown-menu {
+    color: var(--bs-body-color);
+  }
+
+  .searchForm {
+    .btn-primary {
+      color: $white;
+      background-color: #37474f;
+      border-color: #546e7a;
+    }
+    .btn-primary:hover {
+      color: $white;
+      background-color: #455a64;
+      border-color: $white;
+    }
+  }
+
+  #account-icon {
+    &.notification-level-1, &.notification-level-2, &.notification-level-3 {
+      background-color: #37474f;
+    }
+  }
+
+  #login-dropdown .login-dropdown-caret:hover,
+  a:hover .login-dropdown-caret {
+    color: $light-gray;
+  }
+
+  /* --- Breadcrumbs --- */
+  .breadcrumbs {
+    border-bottom-color: #37474f;
+    background-color: #37474f;
+  }
+  .breadcrumb {
+    color: $silver;
+  }
+  .breadcrumb a {
+    color: $light-blue;
+  }
+  .breadcrumb .active {
+    color: $near-white;
+  }
+  .breadcrumb .active a {
+    color: $light-blue;
+  }
+  .breadcrumb .active a:hover {
+    color: $lightest-blue;
+  }
+
+  /* --- Common elements --- */
+  .highlight,
+  mark {
+    background-color: #5c5c00;
+    color: $white;
+  }
+
+  .nav > li > a {
+    color: $light-blue;
+  }
+
+  .alert {
+    .btn {
+      color: $light-gray;
+      background-color: #333;
+      border-color: $gray;
+    }
+    .btn-primary {
+      color: $light-blue;
+      background-color: #222;
+      border-color: $light-blue;
+    }
+  }
+  .alert-info,
+  .alert-info:hover {
+    color: $lightest-blue;
+    background-color: #1a2733;
+    a { color: $light-blue; }
+  }
+  .alert-success,
+  .alert-success:hover {
+    color: $light-green;
+    background-color: #0d2b1f;
+    a { color: $green; }
+  }
+  .alert-danger,
+  .alert-danger:hover {
+    color: $white;
+    background-color: #5c1a1a;
+    a { color: $light-red; }
+  }
+
+  .btn-link {
+    color: $light-blue;
+  }
+  .btn-primary:hover {
+    background-color: #1a1a1a;
+    color: $light-blue;
+    border-color: $primary;
+  }
+
+  /* --- MyResearch --- */
+  .myresearch-menu a:hover {
+    background-color: #2a2a2a;
+  }
+
+  /* --- Sidebar --- */
+  .sidebar {
+    background-color: #1a1a1a;
+
+    .facet-group,
+    .datevis-form {
+      background-color: #2a2a2a;
+      color: $near-white;
+    }
+    .facet-group .title {
+      background-color: #333;
+      color: $near-white;
+
+      .icon--font,
+      .icon--svg {
+        color: $silver;
+      }
+    }
+  }
+
+  .facet .badge {
+    background-color: $mid-gray;
+  }
+
+  /* --- Search --- */
+  .result {
+    border-bottom-color: #444;
+
+    .record-number {
+      color: $silver;
+    }
+  }
+  .result.checked,
+  .grid-result.checked {
+    background-color: #1a3a5c;
+    border-color: #333;
+    .format,
+    .label {
+      color: $lightest-blue;
+      background-color: #1a1a1a;
+    }
+  }
+
+  .searchHomeContent {
+    background-color: #263238;
+  }
+
+  .list-group-item.title {
+    color: $silver;
+  }
+
+  /* --- Active Filters --- */
+  .active-filters .filters .filter-value,
+  .search-filter-dropdown .btn,
+  .search-filter-dropdown .btn:focus {
+    color: $near-white;
+    background-color: #37474f;
+  }
+  .active-filters .search-filter-remove {
+    color: $silver;
+  }
+  .search-filter-dropdown .btn:active {
+    background-color: #455a64;
+  }
+
+  .main .active-filters .reset-filters-btn {
+    border-color: #37474f;
+    background-color: #37474f;
+    color: $white;
+    &:hover {
+      color: $light-blue;
+    }
+  }
+
+  #searchForm-reset {
+    color: $near-white;
+  }
+
+  /* --- PubDateVis --- */
+  #dateVisColorSettings {
+    background-color: #1a1a1a;
+    outline-color: #4a90d955;
+  }
+
+  /* --- Navigation --- */
+  .nav > li > a,
+  .nav > li > button {
+    &:hover,
+    &:focus {
+      color: $white;
+      background-color: #444;
+    }
+  }
+
+  .browse-item {
+    border-color: #444;
+  }
+  .browse-item:hover {
+    background-color: #2a2a2a;
+  }
+
+  /* --- Pagination --- */
+  .pagination > li > a {
+    color: $light-blue;
+  }
+
+  /* --- Keyboard --- */
+  .keyboard-box {
+    color: $near-white;
+  }
+}

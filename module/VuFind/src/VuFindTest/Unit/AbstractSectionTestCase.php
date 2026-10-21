@@ -376,8 +376,10 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(Manager::class, $mockAuthManager);
 
         $checkThemeOptions = $checkMethods['checkThemeOptions'] ?? true;
+        $checkColorSchemeOptions = $checkMethods['checkColorSchemeOptions'] ?? true;
         $globalsContainer = new GlobalsContainer();
         $globalsContainer['themeOptions'] = $checkThemeOptions ? [[], []] : [];
+        $globalsContainer['colorSchemeOptions'] = $checkColorSchemeOptions ? [[], []] : [];
         $container->set(GlobalsContainer::class, $globalsContainer);
 
         $checkAllLangs = $checkMethods['checkAllLangs'] ?? true;
@@ -408,6 +410,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'checkCart' => $value,
             'checkAccount' => $value,
             'checkThemeOptions' => $value,
+            'checkColorSchemeOptions' => $value,
             'checkAllLangs' => $value,
         ];
     }

@@ -1,5 +1,19 @@
 /* ACCESSIBILITY IMPROVEMENTS */
 
+a {
+  text-decoration: underline;
+}
+@include color-mode(light, true) {
+  a:hover {
+    color: black;
+  }
+}
+@include color-mode(dark, true) {
+  a:hover {
+    color: white;
+  }
+}
+
 /* AAA Color Contrasts */
 $breadcrumb-color: #535353 !default;
 $breadcrumb-active-color: #444 !default;
