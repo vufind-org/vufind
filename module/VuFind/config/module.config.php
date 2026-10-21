@@ -899,6 +899,7 @@ $recordRoutes = [
 $nonTabRecordActions = [
     'AddTag',
     'AjaxTab',
+    'Checkout',
     'Cite',
     'DeleteTag',
     'Email',
@@ -963,6 +964,7 @@ $staticRoutes = [
     'Channels/Home',
     'Channels/Record',
     'Channels/Search',
+    'Checkout/Home',
     'Checkouts/History',
     'Checkouts/PurgeHistory',
     'Comments/DeleteComments',
