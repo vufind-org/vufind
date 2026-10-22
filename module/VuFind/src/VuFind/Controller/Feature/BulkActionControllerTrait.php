@@ -80,12 +80,12 @@ trait BulkActionControllerTrait
 
         // If we entered the controller in the expected way (i.e. via the
         // myresearchbulk action), we should have a source set in the followup
-        // memory. If that's missing for some reason, just forward to MyResearch.
+        // memory. If that's missing for some reason, just forward to Account.
         if (isset($this->session->url)) {
             $target = $this->session->url;
             unset($this->session->url);
         } else {
-            $target = $this->url()->fromRoute('myresearch-home');
+            $target = $this->url()->fromRoute('account-home');
         }
         return $this->redirect()->toUrl($target);
     }

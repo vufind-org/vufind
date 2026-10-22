@@ -94,7 +94,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
         $this->findCssAndSetValue($page, '#login_ILS_username', 'username1');
         $this->findCssAndSetValue($page, '#login_ILS_password', 'catpass');
@@ -140,7 +140,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
         $this->findCssAndSetValue($page, '#login_ILS_username', 'username2');
         $this->findCssAndSetValue($page, '#login_ILS_password', 'catpass');
@@ -150,7 +150,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Log in again:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->findCssAndSetValue($page, '#login_ILS_username', 'username2');
         $this->findCssAndSetValue($page, '#login_ILS_password', 'catpass');
         $this->clickCss($page, 'input.btn.btn-primary');
@@ -240,7 +240,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'delete',
                 'username2',
                 null,
-                '{"user_id":<userid>,"__method":"VuFind\\\\Controller\\\\MyResearchController::deleteAccountAction"}',
+                '{"user_id":<userid>,"__method":"VuFind\\\\Action\\\\Account\\DeleteAccountAction::action"}',
                 true,
                 true,
                 true,

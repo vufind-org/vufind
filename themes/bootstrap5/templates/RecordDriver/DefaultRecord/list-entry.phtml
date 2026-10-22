@@ -213,13 +213,13 @@
 
       <div class="result-links hidden-print">
         <?php if ($this->list === null || $this->userlist()->userCanEditList($this->auth()->getManager()->getUserObject(), $this->list)): ?>
-          <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool icon-link">
+          <a href="<?=$this->url('lists-edititem')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool icon-link">
             <?=$this->icon('user-list-entry-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
           </a>
           <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
             $deleteUrl = null === $list_id
-                ? $this->url('myresearch-favorites')
+                ? $this->url('lists-allitems')
                 : $this->url('userList', ['id' => $list_id]);
             $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
             $md5Id = md5($id);

@@ -73,7 +73,7 @@ class IndexController extends AbstractBase
     {
         // Load different configurations depending on whether we're logged in or not:
         if ($this->authManager->getIdentity()) {
-            $controller = $this->config['Site']['defaultLoggedInModule'] ?? 'MyResearch';
+            $controller = $this->config['Site']['defaultLoggedInModule'] ?? 'Account';
             $actionConfig = 'defaultLoggedInAction';
         } else {
             $controller = $this->config['Site']['defaultModule'] ?? 'Search';

@@ -98,7 +98,7 @@ class SelectCardAction extends AbstractTemplateRenderingAction
 
         // Get requested library card ID:
         if (!($cardID = $this->getPostOrQueryParam('cardID'))) {
-            return $redirectHelper->redirectToRoute($response, 'myresearch-home');
+            return $redirectHelper->redirectToRoute($response, 'account-home');
         }
 
         $this->userCardService->activateLibraryCard($user, $cardID);
@@ -119,7 +119,7 @@ class SelectCardAction extends AbstractTemplateRenderingAction
         if ($url = $this->getHelper(ContextHelper::class)->getReferrer($request, true)) {
             return $redirectHelper->redirectToUrl($response, $this->adjustCardRedirectUrl($url));
         }
-        return $redirectHelper->redirectToUrl($response, 'myresearch-home');
+        return $redirectHelper->redirectToUrl($response, 'account-home');
     }
 
     /**

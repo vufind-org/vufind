@@ -256,7 +256,7 @@ class Paytrail extends AbstractBase
         }
 
         $this->logPaymentError("Unknown status $status");
-        $this->addPaymentEvent(
+        $this->auditEventService->addPaymentEvent(
             $payment,
             AuditEventSubtype::PaymentResponseHandler,
             'Received unknown status',
