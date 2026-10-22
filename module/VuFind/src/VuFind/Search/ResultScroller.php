@@ -89,7 +89,7 @@ class ResultScroller
         #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected RouteHelper $routeHelper,
-        protected $enabled = true
+        protected bool $enabled = true
     ) {
     }
 
