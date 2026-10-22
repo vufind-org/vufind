@@ -49,10 +49,9 @@ use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Tags\TagsService;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\SessionContainerRegistry;
-
+use VuFind\Tags\TagsService;
 
 use function count;
 use function func_get_args;
