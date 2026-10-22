@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Shibboleth Logout Notification API Controller.
+ * Abstract base class for Shibboleth logout notification actions.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,120 +21,56 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\ShibbolethLogoutNotification;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use Laminas\Stdlib\ResponseInterface as Response;
+use Laminas\Session\SessionManager;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractAction;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
-
-use function extension_loaded;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Handles Shibboleth back-channel logout notifications.
+ * Abstract base class for Shibboleth logout notification actions.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ShibbolethLogoutNotificationController extends AbstractBase
+abstract class AbstractShibbolethLogoutNotificationAction extends AbstractAction
 {
     /**
      * Constructor.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param SessionManager                  $sessionManager         Session manager
+     * @param ExternalSessionServiceInterface $externalSessionService External session database service
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->accessPermission = 'access.api.ShibbolethLogoutNotification';
-        $this->accessDeniedBehavior = 'exception';
-        parent::__construct($sm);
-    }
-
-    /**
-     * GET method handler for the logout handler.
-     *
-     * @return Response
-     */
-    public function getAction()
-    {
-        $this->disableSessionWrites();
-        $response = $this->getResponse();
-        $response->getHeaders()->addHeaderLine(
-            'Content-Type',
-            'application/wsdl+xml'
-        );
-        $response->setContent($this->getWsdl());
-        return $response;
-    }
-
-    /**
-     * POST method handler for the logout handler.
-     *
-     * @return Response
-     */
-    public function postAction()
-    {
-        if (!extension_loaded('soap')) {
-            throw new \Exception('SOAP extension is not loaded.');
-        }
-        $this->disableSessionWrites();
-        $soapServer = new \SoapServer(
-            'data://text/plain;base64,' . base64_encode($this->getWsdl())
-        );
-        $soapServer->setObject($this);
-
-        ob_start();
-        try {
-            $request = file_get_contents('php://input');
-            $soapServer->handle($request);
-            $soapResponse = ob_get_clean();
-        } catch (\Exception $e) {
-            ob_end_clean();
-            $soapResponse = (string)$e;
-        }
-
-        $response = $this->getResponse();
-        $response->getHeaders()->addHeaderLine('Content-Type', 'text/xml');
-        $response->setContent($soapResponse);
-        return $response;
-    }
-
-    /**
-     * Logout notification handler.
-     *
-     * @param string $sessionId External session id
-     *
-     * @return void
-     */
-    public function logoutNotification($sessionId)
-    {
-        $rows = $this->getDbService(ExternalSessionServiceInterface::class)
-            ->getAllByExternalSessionId(trim($sessionId));
-        if ($rows) {
-            $sessionManager = $this->getService(\Laminas\Session\SessionManager::class);
-            $handler = $sessionManager->getSaveHandler();
-            foreach ($rows as $row) {
-                $handler->destroy($row->getSessionId());
-            }
-        }
+    public function __construct(
+        protected SessionManager $sessionManager,
+        #[Autowire(container: DbServicePluginManager::class)]
+        protected ExternalSessionServiceInterface $externalSessionService,
+    ) {
+        parent::__construct();
     }
 
     /**
      * Get WSDL for the service.
      *
+     * @param ServerRequestInterface $request Request
+     *
      * @return string
      */
-    protected function getWsdl()
+    protected function getWsdl(ServerRequestInterface $request): string
     {
-        [$uri] = explode('?', $this->getRequest()->getUriString());
+        [$uri] = explode('?', (string)$request->getUri());
         return <<<EOT
             <?xml version="1.0" encoding="UTF-8" ?>
             <definitions name="LogoutNotification"
