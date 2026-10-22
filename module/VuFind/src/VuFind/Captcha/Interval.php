@@ -80,7 +80,7 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
         protected SessionContainer $sessionData,
         #[Autowire(config: 'config')]
         array $config
-    ){
+    ) {
         $this->actionInterval = (int)($config['Captcha']['action_interval'] ?? 60);
         $this->timeFromSessionStart = (int)(
             $config['Captcha']['time_from_session_start'] ?? $this->actionInterval
