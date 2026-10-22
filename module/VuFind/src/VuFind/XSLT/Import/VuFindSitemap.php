@@ -100,6 +100,44 @@ class VuFindSitemap extends VuFind
     }
 
     /**
+     * Load JSON data about an HTML document using Tika.
+     *
+     * @param string $url URL or local file containing HTML.
+     *
+     * @return array
+     */
+    protected static function getTikaData($url)
+    {
+        // Extract and decode the full text from the XML:
+        $json = json_decode(static::harvestWithTika($url, '--jsonRecursive --text'), true);
+        $doc = $json[0];
+
+        $title = $doc['dc:title'] ?? $doc['title'] ?? '';
+        $description = $doc['dc:description'] ?? $doc['description'] ?? '';
+        $fulltext = trim($title . ' ' . ($doc['X-TIKA:content'] ?? ''));
+        $keywords = [];
+        if (!empty($doc['keywords'])) {
+            // keywords may come back as a string or an array
+            $raw = is_array($doc['keywords'])
+                ? $doc['keywords']
+                : [$doc['keywords']];
+            foreach ($raw as $current) {
+                $keywords[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
+            }
+        }
+
+        //print("doc  = "); var_dump($doc);
+
+        // Send back the extracted fields:
+        return [
+            'title' => $title,
+            'keywords' => $keywords,
+            'description' => $description,
+            'fulltext' => $title . ' ' . $fulltext,
+        ];
+    }
+
+    /**
      * Load metadata about an HTML document using Tika.
      *
      * @param string $htmlFile File on disk containing HTML.
@@ -247,28 +285,28 @@ class VuFindSitemap extends VuFind
             return [];
         }
 
-        // Grab the HTML and write it to disk:
-        $htmlFile = tempnam('/tmp', 'htm');
-        $html = file_get_contents($url);
-        file_put_contents($htmlFile, $html);
-
         // Use the appropriate full text parser:
         switch ($parser) {
             case 'Aperture':
+                // Grab the HTML and write it to disk:
+                $htmlFile = tempnam('/tmp', 'htm');
+                $html = file_get_contents($url);
+                file_put_contents($htmlFile, $html);
+
                 $fields = static::getApertureFields($htmlFile);
+
+                // Add data loaded directly from HTML:
+                $fields += static::getHtmlFields($html);
+
+                // Clean up HTML file:
+                @unlink($htmlFile);
                 break;
             case 'Tika':
-                $fields = static::getTikaFields($htmlFile);
+                $fields = static::getTikaData($url);
                 break;
             default:
                 throw new \Exception('Unexpected parser: ' . $parser);
         }
-
-        // Clean up HTML file:
-        @unlink($htmlFile);
-
-        // Add data loaded directly from HTML:
-        $fields += static::getHtmlFields($html);
 
         // Clean up/normalize full text:
         $fields['fulltext'] = trim(
