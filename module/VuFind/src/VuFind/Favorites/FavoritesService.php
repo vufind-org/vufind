@@ -50,10 +50,12 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Tags\TagsService;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
+
 
 use function count;
 use function func_get_args;
-use function intval;
 
 /**
  * Favorites service.
@@ -84,15 +86,21 @@ class FavoritesService implements TranslatorAwareInterface
      *                                                          state (optional)
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceServiceInterface $resourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserListServiceInterface $userListService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserResourceServiceInterface $userResourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
         protected TagsService $tagsService,
         protected RecordLoader $recordLoader,
         protected ?RecordCache $recordCache = null,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'List')]
         protected ?Container $session = null
     ) {
     }
@@ -203,7 +211,7 @@ class FavoritesService implements TranslatorAwareInterface
      */
     public function getListIdFromParams(array $params): ?int
     {
-        return intval($params['list'] ?? 'NEW') ?: null;
+        return (int)$params['list'] ?? 'NEW' ?: null;
     }
 
     /**
