@@ -55,9 +55,9 @@ class FollowupHelper
      */
     public function __construct(
         #[Autowire(container: SessionContainerRegistry::class, service: 'Followup')]
-        protected Container $session, 
-        protected ServerUrlHelper $serverUrlHelper)
-    {
+        protected Container $session,
+        protected ServerUrlHelper $serverUrlHelper
+    ) {
     }
 
     /**
