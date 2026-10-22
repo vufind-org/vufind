@@ -368,6 +368,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Oauth2' => 'OAuth2',
         'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
+        'Shibbolethlogoutnotification' => 'ShibbolethLogoutNotification',
         'Shortlink' => 'ShortLink',
         'Simulatedsso' => 'SimulatedSSO',
         'Sitemap' => 'SiteMap',

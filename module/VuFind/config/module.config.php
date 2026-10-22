@@ -170,7 +170,6 @@ $config = [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\ShibbolethLogoutNotificationController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
             'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
         ],
@@ -184,8 +183,6 @@ $config = [
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
-            'ShibbolethLogoutNotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
-            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'Turnstile' => 'VuFind\Controller\TurnstileController',
             'turnstile' => 'VuFind\Controller\TurnstileController',
             'Upgrade' => 'VuFind\Controller\UpgradeController',
@@ -704,6 +701,16 @@ $config = [
                     'search2/versions',
                 ],
                 'backendId' => 'Search2',
+            ],
+
+            // Shibboleth logout notification:
+            'vufind_shibboleth_logout_notification' => [
+                'actionIds' => [
+                    'shibbolethlogoutnotification/get',
+                    'shibbolethlogoutnotification/post',
+                ],
+                'accessPermission' => 'access.api.ShibbolethLogoutNotification',
+                'accessDeniedBehavior' => 'exception',
             ],
 
             // Summon:
