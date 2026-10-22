@@ -230,7 +230,8 @@ trait LiveDatabaseTrait
             $developerSettingsService = $developerSettingsServiceFactory($container, DeveloperSettingsService::class);
             $container->set(DeveloperSettingsService::class, $developerSettingsService);
 
-            $favoritesService = new FavoritesService();
+            $factory = new \VuFind\ServiceManager\Factory\AutowiringFactory();
+            $favoritesService = $factory($container, FavoritesService::class);
             $container->set(FavoritesService::class, $favoritesService);
             $this->liveDatabaseContainer = $container;
         }
