@@ -66,6 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'noils' => NoILS::class,
         'paia' => PAIA::class,
         'polaris' => Polaris::class,
+        'prefixdriver' => PrefixDriver::class,
         'sample' => Sample::class,
         'sierrarest' => SierraRest::class,
         'symphony' => Symphony::class,
