@@ -46,7 +46,6 @@ use VuFind\Db\Service\UserService;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
-use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
 use VuFindTest\Container\MockContainer;
 
@@ -231,8 +230,8 @@ trait LiveDatabaseTrait
             $developerSettingsService = $developerSettingsServiceFactory($container, DeveloperSettingsService::class);
             $container->set(DeveloperSettingsService::class, $developerSettingsService);
 
-            $favoritesFactory = new FavoritesServiceFactory();
-            $favoritesService = $favoritesFactory($container, FavoritesService::class);
+            $factory = new \VuFind\ServiceManager\Factory\AutowiringFactory();
+            $favoritesService = $factory($container, FavoritesService::class);
             $container->set(FavoritesService::class, $favoritesService);
             $this->liveDatabaseContainer = $container;
         }
