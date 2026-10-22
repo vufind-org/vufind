@@ -43,8 +43,8 @@ interface ExtendedLoggerInterface
     /**
      * Log an exception triggered by the framework for administrative purposes.
      *
-     * @param \Throwable                 $error  Exception to log
-     * @param \Laminas\Stdlib\Parameters $server Server metadata
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
      *
      * @return void
      */
