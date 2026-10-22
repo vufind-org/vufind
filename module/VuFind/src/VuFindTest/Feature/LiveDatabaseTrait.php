@@ -46,7 +46,6 @@ use VuFind\Db\Service\UserService;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
-use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
 use VuFindTest\Container\MockContainer;
 
