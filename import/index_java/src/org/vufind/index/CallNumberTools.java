@@ -26,13 +26,13 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import org.marc4j.callnum.DeweyCallNumber;
+import org.marc4j.callnum.LCCallNumber;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Subfield;
 import org.solrmarc.callnum.CallNumUtils;
-import org.solrmarc.callnum.DeweyCallNumber;
-import org.solrmarc.callnum.LCCallNumber;
 import org.solrmarc.index.SolrIndexer;
 
 /**
