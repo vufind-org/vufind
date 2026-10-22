@@ -41,7 +41,8 @@
 #     - name: Recipient 2
 #       email: recipient2@email
 #
-#   response (string) Response after form submit (translation key)
+#   response (string) Response after successful form submit (translation key)
+#   failureResponse (string) Response after unsuccessful form submit (translation key)
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
@@ -51,7 +52,7 @@
 #                             whole feedback send action fails. You can add your own handler
 #                             by implementing \VuFind\Form\Handler\HandlerInterface, and adding
 #                             it to module config under key:
-#                               'vufind' -> 'plugin_manager' -> 'form_handler'
+#                               'vufind' -> 'plugin_managers' -> 'form_handler'
 #                             Example:
 #                               primaryHandler: database
 #   secondaryHandlers (array) Additional handlers could be defined here. They can fail silently,
