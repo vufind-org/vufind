@@ -55,7 +55,7 @@ class SessionTest extends \PHPUnit\Framework\TestCase
         $container->set(\Laminas\Session\SessionManager::class, \Laminas\Session\Container::getDefaultManager());
 
         // Now build the test subject
-        $session = new Session(new Container('SessionTest'));
+        $session = new Session(new Container('SessionTest'), $container->get(\Laminas\Session\SessionManager::class));
         // Values default to null
         $this->assertNull($session->get('foo'));
         // Put returns last assigned value
