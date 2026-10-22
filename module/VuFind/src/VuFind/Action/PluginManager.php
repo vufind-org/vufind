@@ -389,9 +389,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Illrequests' => 'IllRequests',
         'Librarycards' => 'LibraryCards',
         'Oauth2' => 'OAuth2',
+        'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
         'Simulatedsso' => 'SimulatedSSO',
+        'Sitemap' => 'SiteMap',
         'Storageretrievalrequests' => 'StorageRetrievalRequests',
         'Worldcat' => 'WorldCat',
     ];

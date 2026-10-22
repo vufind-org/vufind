@@ -32,7 +32,6 @@
 namespace VuFind\Action\Checkouts;
 
 use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -122,7 +121,7 @@ class ListAction extends AbstractCheckoutsAction
         $renewStatus = $this->ilsConnection->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
             ? $this->ilsRenewalsHelper->processRenewals(
-                new Parameters($request->getParsedBody()),
+                $request->getParsedBody(),
                 $this->ilsConnection,
                 $patron,
                 $this->getHelper(FlashMessagesHelper::class)->getFlashMessenger(),

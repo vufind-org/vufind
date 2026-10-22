@@ -139,8 +139,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyRequest()
     {
-        $req = new \Laminas\Stdlib\Parameters([]);
-        $this->assertEquals(new Query(), $this->getQueryAdapter()->fromRequest($req, 'AllFields'));
+        $this->assertEquals(new Query(), $this->getQueryAdapter()->fromRequest([], 'AllFields'));
     }
 
     /**

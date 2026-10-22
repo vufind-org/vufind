@@ -29,7 +29,6 @@
 
 namespace VuFindTest\ILS\Logic;
 
-use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\RenewalsHelper;
@@ -127,10 +126,10 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsAll(): void
     {
-        $request = new Parameters([
+        $request = [
             'renewAll' => '1',
             'renewAllIDS' => ['id1', 'id2', 'id3'],
-        ]);
+        ];
         $idsToRenew = ['id1', 'id2', 'id3'];
 
         $catalog = $this->createMock(Connection::class);
@@ -174,10 +173,10 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsSelected(): void
     {
-        $request = new Parameters([
+        $request = [
             'renewSelected' => '1',
             'renewSelectedIDS' => ['id_a', 'id_b'],
-        ]);
+        ];
         $idsToRenew = ['id_a', 'id_b'];
 
         $catalog = $this->createMock(Connection::class);
@@ -221,11 +220,11 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsSelectAll(): void
     {
-        $request = new Parameters([
+        $request = [
             'renewSelected' => '1',
             'selectAll' => '1',
             'selectAllIDS' => ['id_x', 'id_y', 'id_z'],
-        ]);
+        ];
         $idsToRenew = ['id_x', 'id_y', 'id_z'];
 
         $catalog = $this->createMock(Connection::class);
@@ -267,7 +266,7 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsNoAction(): void
     {
-        $request = new Parameters([]);
+        $request = [];
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessengerInterface::class);
@@ -293,10 +292,10 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsEmptySelection(): void
     {
-        $request = new Parameters([
+        $request = [
             'renewSelected' => '1',
             'renewSelectedIDS' => null,
-        ]);
+        ];
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessengerInterface::class);
@@ -321,11 +320,11 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsCsrfFailure(): void
     {
-        $request = new Parameters([
+        $request = [
             'renewAll' => '1',
             'renewAllIDS' => ['id1', 'id2', 'id3'],
             'csrf' => 'bad_token',
-        ]);
+        ];
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessengerInterface::class);
@@ -359,10 +358,10 @@ class RenewalsHelperTest extends TestCase
      */
     public function testProcessRenewalsSystemFailure(): void
     {
-        $request = new Parameters([
+        $request = [
             'renewAll' => '1',
             'renewAllIDS' => ['id1', 'id2'],
-        ]);
+        ];
         $idsToRenew = ['id1', 'id2'];
 
         $catalog = $this->createMock(Connection::class);
