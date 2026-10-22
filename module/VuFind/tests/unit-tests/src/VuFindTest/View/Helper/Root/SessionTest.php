@@ -50,12 +50,9 @@ class SessionTest extends \PHPUnit\Framework\TestCase
      */
     public function testSession()
     {
-        // Set up a real session manager so that we can test the factory behavior:
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(\Laminas\Session\SessionManager::class, \Laminas\Session\Container::getDefaultManager());
+        $sessionManager = Container::getDefaultManager();
 
-        // Now build the test subject
-        $session = new Session(new Container('SessionTest'), $container->get(\Laminas\Session\SessionManager::class));
+        $session = new Session(new Container('SessionTest', $sessionManager));
         // Values default to null
         $this->assertNull($session->get('foo'));
         // Put returns last assigned value
