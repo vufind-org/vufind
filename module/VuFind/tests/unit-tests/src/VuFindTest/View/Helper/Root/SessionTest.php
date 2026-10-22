@@ -50,9 +50,7 @@ class SessionTest extends \PHPUnit\Framework\TestCase
      */
     public function testSession()
     {
-        $sessionManager = Container::getDefaultManager();
-
-        $session = new Session(new Container('SessionTest', $sessionManager));
+        $session = new Session(new Container('SessionTest'));
         // Values default to null
         $this->assertNull($session->get('foo'));
         // Put returns last assigned value
