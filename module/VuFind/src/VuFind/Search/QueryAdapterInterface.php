@@ -31,10 +31,10 @@
 
 namespace VuFind\Search;
 
-use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Query\WorkKeysQuery;
 
 /**

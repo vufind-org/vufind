@@ -34,6 +34,7 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Query\WorkKeysQuery;
 
 use function array_key_exists;
