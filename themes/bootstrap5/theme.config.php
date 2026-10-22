@@ -309,6 +309,7 @@ return [
             'page-next-rtl' => 'FontAwesome:angle-left',
             'page-prev' => 'FontAwesome:angle-left',
             'page-prev-rtl' => 'FontAwesome:angle-right',
+            'place-digitization' => 'FontAwesome:scan',
             'place-hold' => 'FontAwesome:flag',
             'place-ill-request' => 'FontAwesome:right-left',
             'place-recall' => 'FontAwesome:flag',
