@@ -81,7 +81,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction implements
     protected function handleException(Throwable $exception): ResponseInterface
     {
         if ($this->logger instanceof ExtendedLoggerInterface) {
-            $this->logger->logException($exception, new \Laminas\Stdlib\Parameters($this->request->getServerParams()));
+            $this->logger->logException($exception, $this->request->getServerParams());
         }
 
         $message = 'An error occurred during execution; please try again later.';

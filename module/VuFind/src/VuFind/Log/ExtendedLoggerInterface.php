@@ -45,8 +45,9 @@ interface ExtendedLoggerInterface
      *
      * @param \Throwable $error  Exception to log
      * @param array      $server Server metadata
+     * @param ?string    $level  Optional log level
      *
      * @return void
      */
-    public function logException($error, $server);
+    public function logException($error, $server, $level = null);
 }
