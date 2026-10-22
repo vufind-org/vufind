@@ -29,8 +29,9 @@
 
 namespace VuFindTest\Connection;
 
-use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
+use Laminas\Http\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Connection\Wikipedia;
 
 /**
@@ -47,15 +48,25 @@ class WikipediaTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Property to capture the first URI requested from the HTTP client.
+     *
+     * @var ?string
+     */
+    protected ?string $firstRequestedUri = null;
+
+    /**
      * Test processing of English-language Jane Austen entry.
      *
      * @return void
      */
-    public function testEnglishJane()
+    public function testEnglishJane(): void
     {
+        $expectedUri = 'https://en.wikipedia.org/w/api.php'
+            . '?action=query&prop=revisions&rvprop=content&format=json&list=allpages&titles=Jane+Austen';
         $client = $this->getClient('en-austen');
         $wiki = new Wikipedia($client);
         $response = $wiki->get('Jane Austen');
+        $this->assertSame($expectedUri, $this->firstRequestedUri);
         $this->assertEquals('en', $response['wiki_lang']);
         $this->assertEquals('Jane Austen', $response['name']);
         $this->assertNotFalse(strstr($response['description'], '16 December 1775'));
@@ -66,14 +77,20 @@ class WikipediaTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $fixture Fixture name
      *
-     * @return HttpClient
+     * @return HttpClient&MockObject
      */
-    protected function getClient($fixture)
+    protected function getClient(string $fixture): HttpClient&MockObject
     {
-        $adapter = new TestAdapter();
-        $adapter->setResponse($this->getFixture("wikipedia/$fixture"));
-        $client = new HttpClient();
-        $client->setAdapter($adapter);
+        $response = $this->createMock(Response::class);
+        $response->method('isSuccess')->willReturn(true);
+        $response->method('getBody')->willReturn($this->getFixture("wikipedia/$fixture"));
+        $client = $this->createMock(HttpClient::class);
+        $client->method('setUri')->willReturnCallback(function ($uri) use ($client) {
+            $this->firstRequestedUri ??= $uri;
+            return $client;
+        });
+        $client->method('setMethod')->with('GET')->willReturn($client);
+        $client->method('send')->willReturn($response);
         return $client;
     }
 }

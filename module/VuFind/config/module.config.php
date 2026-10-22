@@ -168,14 +168,10 @@ $config = [
     'controllers' => [
         'factories' => [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
-            'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\SiteMapController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
             'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
-            'VuFind\Controller\ZoteroController' => 'VuFind\Controller\ZoteroControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -183,22 +179,14 @@ $config = [
         'aliases' => [
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
-            'LibGuides' => 'VuFind\Controller\LibGuidesController',
-            'libguides' => 'VuFind\Controller\LibGuidesController',
-            'LibGuidesAZ' => 'VuFind\Controller\LibGuidesAZController',
-            'libguidesaz' => 'VuFind\Controller\LibGuidesAZController',
             'MyResearch' => 'VuFind\Controller\MyResearchController',
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
-            'SiteMap' => 'VuFind\Controller\SiteMapController',
-            'sitemap' => 'VuFind\Controller\SitemapController',
             'Turnstile' => 'VuFind\Controller\TurnstileController',
             'turnstile' => 'VuFind\Controller\TurnstileController',
             'Upgrade' => 'VuFind\Controller\UpgradeController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
-            'Zotero' => 'VuFind\Controller\ZoteroController',
-            'zotero' => 'VuFind\Controller\ZoteroController',
         ],
     ],
     'controller_plugins' => [

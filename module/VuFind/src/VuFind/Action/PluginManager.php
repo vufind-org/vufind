@@ -349,6 +349,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'upgrade/getdbcredentials' => Upgrade\GetDbCredentialsAction::class,
         'upgrade/getsourceversion' => Upgrade\GetSourceVersionAction::class,
         'upgrade/showsql' => Upgrade\ShowSqlAction::class,
+
+        'zotero/authcallback' => Zotero\AuthCallbackAction::class,
     ];
 
     /**
@@ -369,6 +371,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Shibbolethlogoutnotification' => 'ShibbolethLogoutNotification',
         'Shortlink' => 'ShortLink',
         'Simulatedsso' => 'SimulatedSSO',
+        'Sitemap' => 'SiteMap',
         'Worldcat' => 'WorldCat',
     ];
 
