@@ -31,7 +31,7 @@
 namespace VuFindApi\Action\SearchApi;
 
 use Exception;
-use Laminas\Stdlib\Parameters;
+
 use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -384,7 +384,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
         foreach ($facets as $facet) {
             $params->addFacet($facet, null, false);
         }
-        $params->initFromRequest(new Parameters($this->request->getQueryParams()));
+        $params->initFromRequest($this->request->getQueryParams());
 
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
