@@ -327,9 +327,9 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             = ' (Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
-            . $server['HTTP_USER_AGENT'] ?? 'none'
+            . $server['HTTP_USER_AGENT'] . ', '
             . 'Host = '
-            . $server['HTTP_HOST'] ?? 'none'
+            . $server['HTTP_HOST'] . ', '
             . 'Request URI = '
             . $server['REQUEST_URI'] . ')';
         $detailedServer = "\nServer Context:\n"
