@@ -3,6 +3,8 @@
 
   $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
     ->add($this->translate('Notices'), active: true);
+
+  $this->assetManager()->appendScriptLink('notices.js');
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
@@ -19,6 +21,15 @@
       <?php foreach ($this->noticeList ?? [] as $notice): ?>
         <tr class="notice-row" data-notice-id="<?=$this->escapeHtmlAttr($notice['id'])?>">
           <td>
+            <?php $enabled = $notice['enabled'] ?? true; ?>
+            <button
+              class="btn btn-link content-edit-button notice-enabled-toggle"
+              title="<?=$this->transEsc($enabled ? 'Disable' : 'Enable')?>"
+              <?=$enabled ? 'data-enabled' : ''?>
+            >
+              <?=$this->icon('content-enabled', 'enabled-icon' . ($enabled ? '' : ' hidden'))?>
+              <?=$this->icon('content-disabled', 'disabled-icon' . ($enabled ? ' hidden' : ''))?>
+            </button>
             <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Edit'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Edit')?>"><?=$this->icon('content-edit')?></a>
             <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Delete'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('content-delete')?></a>
           </td>
