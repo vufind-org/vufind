@@ -68,7 +68,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Request token.
      *
-     * @var object
+     * @var array
      */
     protected array $requestTokens = [];
 
