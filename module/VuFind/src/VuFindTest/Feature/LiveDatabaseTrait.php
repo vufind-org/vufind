@@ -231,8 +231,7 @@ trait LiveDatabaseTrait
             $developerSettingsService = $developerSettingsServiceFactory($container, DeveloperSettingsService::class);
             $container->set(DeveloperSettingsService::class, $developerSettingsService);
 
-            $favoritesFactory = new FavoritesServiceFactory();
-            $favoritesService = $favoritesFactory($container, FavoritesService::class);
+            $favoritesService = new FavoritesService();
             $container->set(FavoritesService::class, $favoritesService);
             $this->liveDatabaseContainer = $container;
         }
