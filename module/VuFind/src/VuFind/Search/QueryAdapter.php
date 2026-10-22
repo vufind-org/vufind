@@ -31,10 +31,10 @@
 
 namespace VuFind\Search;
 
-use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Query\WorkKeysQuery;
 
 use function array_key_exists;
@@ -187,19 +187,19 @@ class QueryAdapter implements QueryAdapterInterface
      * Convert user request parameters into a query (currently for advanced searches
      * and work keys searches only).
      *
-     * @param Parameters $request        User-submitted parameters
-     * @param string     $defaultHandler Default search handler
+     * @param array  $request        User-submitted parameters
+     * @param string $defaultHandler Default search handler
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function fromRequest(Parameters $request, $defaultHandler)
+    public function fromRequest(array $request, string $defaultHandler): QueryInterface
     {
         // Check for a work keys query first (id and keys included for back-compatibility with legacy code):
         if (
-            $request->get('search') === 'versions'
-            || ($request->offsetExists('id') && $request->offsetExists('keys'))
+            ($request['search'] ?? null) === 'versions'
+            || (isset($request['id']) && isset($request['keys']))
         ) {
-            if (null !== ($id = $request->offsetGet('id'))) {
+            if (null !== ($id = $request['id'] ?? null)) {
                 return new WorkKeysQuery($id, true);
             }
         }
@@ -220,14 +220,14 @@ class QueryAdapter implements QueryAdapterInterface
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = (array)$request->get("type$groupId");
+                    $typeArr = (array)($request["type$groupId"] ?? []);
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = (array)$request->get("op$groupId");
+                    $opArr = (array)($request["op$groupId"] ?? []);
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = (array)$request->get("bool$groupId");
+                    $boolArr = (array)($request["bool$groupId"] ?? []);
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
@@ -241,8 +241,8 @@ class QueryAdapter implements QueryAdapterInterface
         }
 
         return (count($groups) > 0)
-            ? new QueryGroup($request->get('join', 'AND'), $groups)
-            : new Query(handler: $request->get('type'));
+            ? new QueryGroup($request['join'] ?? 'AND', $groups)
+            : new Query(handler: $request['type'] ?? null);
     }
 
     /**

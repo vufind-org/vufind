@@ -575,7 +575,7 @@ class Params
     protected function initAdvancedSearch(Parameters $request): void
     {
         $this->query = $this->getQueryAdapter()->fromRequest(
-            $request,
+            $request->toArray(),
             $this->getOptions()->getDefaultHandler()
         );
 
