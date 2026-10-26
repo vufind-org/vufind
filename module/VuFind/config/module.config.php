@@ -170,7 +170,6 @@ $config = [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
             'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
         ],
         'initializers' => [
@@ -183,8 +182,6 @@ $config = [
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
-            'Turnstile' => 'VuFind\Controller\TurnstileController',
-            'turnstile' => 'VuFind\Controller\TurnstileController',
             'Upgrade' => 'VuFind\Controller\UpgradeController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
         ],
