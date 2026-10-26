@@ -29,7 +29,6 @@
 
 namespace VuFind\Search\Blender;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -86,12 +85,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Pull the search parameters.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(Parameters $request): void
+    public function initFromRequest(array $request): void
     {
         $this->unsupportedFilters = [];
 
@@ -107,10 +106,10 @@ class Params extends \VuFind\Search\Solr\Params
         ];
         foreach ($this->searchParams as $params) {
             $translatedRequest = clone $request;
-            foreach (array_keys($translatedRequest->getArrayCopy()) as $key) {
+            foreach (array_keys($translatedRequest) as $key) {
                 // Check for filtered param or advanced search types:
                 if (in_array($key, $filteredParams) || preg_match('/^type\d+$/', $key)) {
-                    $translatedRequest->offsetUnset($key);
+                    $translatedRequest[$key];
                 }
             }
             $params->initFromRequest($translatedRequest);
@@ -121,35 +120,29 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(Parameters $request): void
+    protected function initSearch(array $request): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
             $translatedRequest = clone $request;
             // Map basic search type:
-            if ($type = $translatedRequest->get('type')) {
-                $translatedRequest->set(
-                    'type',
-                    $this->translateSearchType($type, $backendId)
-                );
+            if ($type = $translatedRequest['type']) {
+                $translatedRequest['type'] = $this->translateSearchType($type, $backendId);
             }
             // Map advanced search types:
             $i = 0;
-            while ($types = $translatedRequest->get("type$i")) {
-                $translatedRequest->set(
-                    "type$i",
-                    array_map(
-                        function ($type) use ($backendId) {
-                            return $this->translateSearchType($type, $backendId);
-                        },
-                        (array)$types
-                    )
+            while ($types = $translatedRequest["type$i"]) {
+                $translatedRequest["type$i"] = array_map(
+                    function ($type) use ($backendId) {
+                        return $this->translateSearchType($type, $backendId);
+                    },
+                    (array)$types
                 );
                 ++$i;
             }
@@ -182,23 +175,20 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Get the value for which type of sorting to use.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSort(Parameters $request): void
+    protected function initSort(array $request): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
             $translatedRequest = clone $request;
             // Map sort:
-            if ($sort = $translatedRequest->get('sort')) {
-                $translatedRequest->set(
-                    'sort',
-                    $this->translateSort($sort, $backendId)
-                );
+            if ($sort = $translatedRequest['sort']) {
+                $translatedRequest['sort'] = $this->translateSort($sort, $backendId);
             }
             $params->initSort($translatedRequest);
         }
