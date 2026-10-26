@@ -210,7 +210,7 @@ class FavoritesService implements TranslatorAwareInterface
      */
     public function getListIdFromParams(array $params): ?int
     {
-        return (int)$params['list'] ?? 'NEW' ?: null;
+        return intval($params['list'] ?? 'NEW') ?: null;
     }
 
     /**
