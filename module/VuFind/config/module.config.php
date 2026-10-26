@@ -168,15 +168,9 @@ $config = [
     'controllers' => [
         'factories' => [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
-            'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\LibGuidesAZController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\QRCodeController' => 'VuFind\Controller\QRCodeControllerFactory',
-            'VuFind\Controller\ShibbolethLogoutNotificationController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\SiteMapController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
-            'VuFind\Controller\ZoteroController' => 'VuFind\Controller\ZoteroControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -184,24 +178,12 @@ $config = [
         'aliases' => [
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
-            'LibGuides' => 'VuFind\Controller\LibGuidesController',
-            'libguides' => 'VuFind\Controller\LibGuidesController',
-            'LibGuidesAZ' => 'VuFind\Controller\LibGuidesAZController',
-            'libguidesaz' => 'VuFind\Controller\LibGuidesAZController',
             'MyResearch' => 'VuFind\Controller\MyResearchController',
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'Overdrive' => 'VuFind\Controller\OverdriveController',
             'overdrive' => 'VuFind\Controller\OverdriveController',
-            'QRCode' => 'VuFind\Controller\QRCodeController',
-            'qrcode' => 'VuFind\Controller\QRCodeController',
-            'ShibbolethLogoutNotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
-            'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
-            'SiteMap' => 'VuFind\Controller\SiteMapController',
-            'sitemap' => 'VuFind\Controller\SitemapController',
             'Upgrade' => 'VuFind\Controller\UpgradeController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
-            'Zotero' => 'VuFind\Controller\ZoteroController',
-            'zotero' => 'VuFind\Controller\ZoteroController',
         ],
     ],
     'controller_plugins' => [
@@ -716,6 +698,16 @@ $config = [
                     'search2/versions',
                 ],
                 'backendId' => 'Search2',
+            ],
+
+            // Shibboleth logout notification:
+            'vufind_shibboleth_logout_notification' => [
+                'actionIds' => [
+                    'shibbolethlogoutnotification/get',
+                    'shibbolethlogoutnotification/post',
+                ],
+                'accessPermission' => 'access.api.ShibbolethLogoutNotification',
+                'accessDeniedBehavior' => 'exception',
             ],
 
             // Summon:
