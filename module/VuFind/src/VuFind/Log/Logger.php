@@ -305,7 +305,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * if provided, and convert it into an array with keys for each of
      * the 5 verbosity levels.
      *
-     * @param \Exception $error  Exception to log
+     * @param \Throwable $error  Exception to log
      * @param array      $server Server metadata
      *
      * @return array
