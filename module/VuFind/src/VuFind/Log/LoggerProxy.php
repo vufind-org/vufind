@@ -200,7 +200,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @param \Throwable $error  Exception to log
      * @param array      $server Server metadata
-     * @param mixed      $level  Optional log level
+     * @param ?string    $level  Optional log level
      *
      * @return void
      */
