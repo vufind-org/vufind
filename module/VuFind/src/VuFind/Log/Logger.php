@@ -331,7 +331,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             . 'Host = '
             . ($server['HTTP_HOST'] ?? '') . ', '
             . 'Request URI = '
-            . $server['REQUEST_URI'] . ')';
+            . ($server['REQUEST_URI'] ?? '') . ')';
         $detailedServer = "\nServer Context:\n"
             . print_r($server, true);
         $basicBacktrace = $detailedBacktrace = "\nBacktrace:\n";
