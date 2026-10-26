@@ -251,8 +251,10 @@ class Params
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct(protected \VuFind\Search\Base\Options $options, protected ConfigManagerInterface $configManager)
-    {
+    public function __construct(
+        protected \VuFind\Search\Base\Options $options,
+        protected ConfigManagerInterface $configManager
+    ) {
         $this->setOptions($options);
 
         // Make sure we have some sort of query object:

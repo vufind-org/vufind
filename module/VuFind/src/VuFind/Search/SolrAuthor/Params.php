@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\SolrAuthor;
 
-use Laminas\Stdlib\Parameters;
-
 /**
  * Author Search Options.
  *
