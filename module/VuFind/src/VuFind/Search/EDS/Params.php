@@ -124,7 +124,7 @@ class Params extends AbstractEDSParams
     /**
      * Pull the search parameters.
      *
-     * @param array $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void

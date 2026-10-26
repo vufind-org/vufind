@@ -131,13 +131,6 @@ class Params
     protected ?string $lastView = null;
 
     /**
-     * Search options.
-     *
-     * @var \VuFind\Search\Base\Options
-     */
-    protected \VuFind\Search\Base\Options $options;
-
-    /**
      * Main facet configuration.
      *
      * @var array
@@ -258,7 +251,7 @@ class Params
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct(\VuFind\Search\Base\Options $options, protected ConfigManagerInterface $configManager)
+    public function __construct(protected \VuFind\Search\Base\Options $options, protected ConfigManagerInterface $configManager)
     {
         $this->setOptions($options);
 

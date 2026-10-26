@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\SolrAuthorFacets;
 
-use Laminas\Stdlib\Parameters;
-
 /**
  * AuthorFacets Search Parameters.
  *
@@ -45,12 +43,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Set parameters based on a search object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(Parameters $request): void
+    public function initFromRequest(array $request): void
     {
         parent::initFromRequest($request);
 
@@ -71,16 +69,16 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Support method for _initSearch() -- handle basic settings.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch(Parameters $request): bool
+    protected function initBasicSearch(array $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (null === ($lookfor = $request->get('lookfor'))) {
+        if (null === ($lookfor = $request['lookfor'])) {
             return false;
         }
 
@@ -92,12 +90,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize view.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initView(Parameters $request): void
+    protected function initView(array $request): void
     {
         $this->view = 'authorfacets';
     }

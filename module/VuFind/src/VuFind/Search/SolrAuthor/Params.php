@@ -45,16 +45,16 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Support method for _initSearch() -- handle basic settings.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch(Parameters $request): bool
+    protected function initBasicSearch(array $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (null === ($lookfor = $request->get('author'))) {
+        if (null === ($lookfor = $request['author'])) {
             return false;
         }
 
