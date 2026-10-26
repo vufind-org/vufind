@@ -109,7 +109,7 @@ class Params extends \VuFind\Search\Solr\Params
             foreach (array_keys($translatedRequest) as $key) {
                 // Check for filtered param or advanced search types:
                 if (in_array($key, $filteredParams) || preg_match('/^type\d+$/', $key)) {
-                    $translatedRequest[$key];
+                    unset($translatedRequest[$key]);
                 }
             }
             $params->initFromRequest($translatedRequest);
