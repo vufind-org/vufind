@@ -88,7 +88,7 @@ trait LoggerAwareTrait
      * Log an exception.
      *
      * @param \Throwable $exception Exception to log
-     * @param array|null $server    Optional server metadata
+     * @param ?array     $server    Optional server metadata
      * @param mixed      $level     Optional log level. Will determine from the
      * exception if not provided. (e.g., 'err', 'warn')
      *
