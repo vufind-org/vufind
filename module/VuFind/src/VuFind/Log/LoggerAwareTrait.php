@@ -97,7 +97,7 @@ trait LoggerAwareTrait
     public function logException(\Throwable $exception, array $server = [], ?string $level = null): void
     {
         if ($this->logger instanceof ExtendedLoggerInterface) {
-            $this->logger->logException($exception, $server ?? [], $level);
+            $this->logger->logException($exception, $server, $level);
         }
     }
 
