@@ -455,7 +455,7 @@ class Params
      */
     protected function initPage(array $request): void
     {
-        $this->page = (int)$request['page'] ?? 1;
+        $this->page = (int)($request['page'] ?? 1);
         if ($this->page < 1) {
             $this->page = 1;
         }
