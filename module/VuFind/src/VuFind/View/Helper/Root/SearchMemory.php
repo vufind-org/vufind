@@ -198,8 +198,8 @@ class SearchMemory
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
-        $request = new \Laminas\Stdlib\Parameters();
-        $request->fromString($queryParams ?? '');
+        $request = [];
+        $request[$queryParams] ?? '';
         $params = $this->searchParams->get($searchClassId);
         // Make sure the saved URL represents search results from $searchClassId;
         // if the user jumps from search results of one backend to a record of a
