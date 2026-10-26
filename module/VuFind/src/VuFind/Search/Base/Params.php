@@ -419,7 +419,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = (int)$request['limit']) != $defaultLimit) {
+        if (($limit = (int)$request['limit'] ?? $defaultLimit) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -455,7 +455,7 @@ class Params
      */
     protected function initPage(array $request): void
     {
-        $this->page = (int)$request['page'];
+        $this->page = (int)$request['page'] ?? 1;
         if ($this->page < 1) {
             $this->page = 1;
         }
@@ -490,7 +490,7 @@ class Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (null === ($lookfor = $request['lookfor'])) {
+        if (null === ($lookfor = $request['lookfor'] ?? null)) {
             return false;
         }
 
@@ -506,7 +506,7 @@ class Params
         }
 
         // Flatten type arrays for backward compatibility with legacy URLs:
-        $handler = $request['type'];
+        $handler = $request['type'] ?? null;
         if (is_array($handler)) {
             $handler = $handler[0];
         }
@@ -604,7 +604,7 @@ class Params
         if ($request['skip_rss_sort'] ?? 'unset') {
             $this->skipRssSort = true;
         }
-        $this->setSort($request['sort']);
+        $this->setSort($request['sort'] ?? null);
     }
 
     /**
@@ -630,7 +630,7 @@ class Params
     protected function initView(array $request): void
     {
         // Check for a view parameter in the url.
-        $view = $request['view'];
+        $view = $request['view'] ?? null;
         $validViews = array_keys($this->getOptions()->getViewOptions());
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
@@ -1673,7 +1673,7 @@ class Params
     protected function initFilters(array $request): void
     {
         // Handle standard filters:
-        $filter = $request['filter'];
+        $filter = $request['filter'] ?? null;
         if (!empty($filter)) {
             if (is_array($filter)) {
                 foreach ($filter as $current) {
@@ -1686,7 +1686,7 @@ class Params
 
         // If we don't have the special flag indicating that defaults have
         // been applied, and if we do have defaults, apply them:
-        if ($request['dfApplied']) {
+        if ($request['dfApplied'] ?? false) {
             $this->defaultsApplied = true;
         } else {
             $defaults = $this->getOptions()->getDefaultFilters();
@@ -1712,7 +1712,7 @@ class Params
      */
     protected function initHiddenFilters(array $request): void
     {
-        $hiddenFilters = $request['hiddenFilters'];
+        $hiddenFilters = $request['hiddenFilters'] ?? [];
         if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
             foreach ($hiddenFilters as $current) {
                 $this->addHiddenFilter($current);
