@@ -31,6 +31,7 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\Session\SessionManager;
 use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Db\PersistenceManager;
@@ -48,6 +49,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
+use VuFind\Session\SessionContainerRegistry;
 use VuFindTest\Container\MockContainer;
 
 /**
@@ -180,6 +182,10 @@ trait LiveDatabaseTrait
         $container->set(
             PersistenceManager::class,
             new PersistenceManager($container->get(\Doctrine\ORM\EntityManager::class))
+        );
+        $container->set(
+            SessionContainerRegistry::class,
+            new SessionContainerRegistry($container->get(SessionManager::class))
         );
     }
 
