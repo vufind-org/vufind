@@ -88,13 +88,13 @@ trait LoggerAwareTrait
      * Log an exception.
      *
      * @param \Throwable $exception Exception to log
-     * @param ?array     $server    Optional server metadata
+     * @param array      $server    Optional server metadata
      * @param ?string    $level     Optional log level. Will determine from the
      * exception if not provided. (e.g., 'err', 'warn')
      *
      * @return void
      */
-    public function logException(\Throwable $exception, ?array $server = null, $level = null): void
+    public function logException(\Throwable $exception, array $server = [], ?string $level = null): void
     {
         if ($this->logger instanceof ExtendedLoggerInterface) {
             $this->logger->logException($exception, $server ?? [], $level);

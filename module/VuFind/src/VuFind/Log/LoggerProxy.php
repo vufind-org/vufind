@@ -204,7 +204,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return void
      */
-    public function logException($error, $server, $level = null): void
+    public function logException(\Throwable $error, array $server = [], ?string $level = null): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }

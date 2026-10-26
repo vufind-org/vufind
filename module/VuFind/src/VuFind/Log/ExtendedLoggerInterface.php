@@ -49,5 +49,5 @@ interface ExtendedLoggerInterface
      *
      * @return void
      */
-    public function logException($error, $server, $level = null);
+    public function logException(\Throwable $error, array $server = [], ?string $level = null): void;
 }
