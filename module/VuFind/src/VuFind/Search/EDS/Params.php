@@ -134,7 +134,7 @@ class Params extends AbstractEDSParams
         parent::initFromRequest($request);
 
         //make sure that the searchmode parameter is set
-        $searchmode = $request['searchmode'];
+        $searchmode = $request['searchmode'] ?? null;
         if (isset($searchmode)) {
             $this->getOptions()->setSearchMode($searchmode);
         }

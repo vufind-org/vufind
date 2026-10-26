@@ -132,12 +132,12 @@ class Params extends \VuFind\Search\Solr\Params
             // Clone request to avoid tampering the original one:
             $translatedRequest = $request;
             // Map basic search type:
-            if ($type = $translatedRequest['type']) {
+            if ($type = $translatedRequest['type'] ?? null) {
                 $translatedRequest['type'] = $this->translateSearchType($type, $backendId);
             }
             // Map advanced search types:
             $i = 0;
-            while ($types = $translatedRequest["type$i"]) {
+            while ($types = $translatedRequest["type$i"] ?? null) {
                 $translatedRequest["type$i"] = array_map(
                     function ($type) use ($backendId) {
                         return $this->translateSearchType($type, $backendId);
@@ -187,7 +187,7 @@ class Params extends \VuFind\Search\Solr\Params
             // Clone request to avoid tampering the original one:
             $translatedRequest = $request;
             // Map sort:
-            if ($sort = $translatedRequest['sort']) {
+            if ($sort = $translatedRequest['sort'] ?? null) {
                 $translatedRequest['sort'] = $this->translateSort($sort, $backendId);
             }
             $params->initSort($translatedRequest);

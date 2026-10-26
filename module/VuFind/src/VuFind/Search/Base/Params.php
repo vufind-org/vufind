@@ -419,7 +419,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = (int)$request['limit'] ?? $defaultLimit) != $defaultLimit) {
+        if (($limit = (int)($request['limit'] ?? $defaultLimit)) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -1517,13 +1517,13 @@ class Params
         ?callable $valueFilter = null,
         ?callable $filterGenerator = null
     ): void {
-        $rangeFacets = $request[$requestParam];
+        $rangeFacets = $request[$requestParam] ?? [];
         if (!empty($rangeFacets)) {
             $ranges = is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
             foreach ($ranges as $range) {
                 // Load start and end of range:
-                $from = $request[$range . 'from'];
-                $to = $request[$range . 'to'];
+                $from = $request[$range . 'from'] ?? '*';
+                $to = $request[$range . 'to'] ?? '*';
 
                 // Apply filtering/validation if necessary:
                 if (is_callable($valueFilter)) {
