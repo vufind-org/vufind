@@ -105,7 +105,7 @@ class Params extends \VuFind\Search\Solr\Params
             'daterange',
         ];
         foreach ($this->searchParams as $params) {
-            $translatedRequest = clone $request;
+            $translatedRequest = $request;
             foreach (array_keys($translatedRequest) as $key) {
                 // Check for filtered param or advanced search types:
                 if (in_array($key, $filteredParams) || preg_match('/^type\d+$/', $key)) {
@@ -130,7 +130,7 @@ class Params extends \VuFind\Search\Solr\Params
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
-            $translatedRequest = clone $request;
+            $translatedRequest = $request;
             // Map basic search type:
             if ($type = $translatedRequest['type']) {
                 $translatedRequest['type'] = $this->translateSearchType($type, $backendId);
@@ -185,7 +185,7 @@ class Params extends \VuFind\Search\Solr\Params
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
-            $translatedRequest = clone $request;
+            $translatedRequest = $request;
             // Map sort:
             if ($sort = $translatedRequest['sort']) {
                 $translatedRequest['sort'] = $this->translateSort($sort, $backendId);
