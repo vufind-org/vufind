@@ -87,7 +87,7 @@ class SearchRunner
     /**
      * Run the search.
      *
-     * @param array  $rawRequest    Incoming parameters for search
+     * @param array  $request    Incoming parameters for search
      * @param string $searchClassId Type of search to perform
      * @param mixed  $setupCallback Optional callback for setting up params
      * and attaching listeners; if provided, will be passed three parameters:
@@ -101,7 +101,7 @@ class SearchRunner
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
     public function run(
-        $rawRequest,
+        $request,
         $searchClassId = 'Solr',
         $setupCallback = null,
         $lastView = null
@@ -112,7 +112,6 @@ class SearchRunner
         // this point!
         $this->searchId++;
         $runningSearchId = $this->searchId;
-        $request = $rawRequest;
 
         // Set up the search:
         $results = $this->resultsManager->get($searchClassId);
