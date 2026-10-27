@@ -29,6 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
+use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -37,7 +38,6 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 use VuFind\View\Renderer\TemplateRendererInterface;
-use Laminas\Stdlib\Parameters;
 
 /**
  * Load a recommendation module via AJAX.
