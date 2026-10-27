@@ -52,7 +52,7 @@ class Params extends \VuFind\Search\Solr\Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (null === ($lookfor = $request['author'])) {
+        if (null === ($lookfor = $request['author'] ?? null)) {
             return false;
         }
 
