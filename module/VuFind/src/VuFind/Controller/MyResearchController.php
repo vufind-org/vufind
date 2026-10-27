@@ -1451,7 +1451,7 @@ class MyResearchController extends AbstractBase
         $renewalsHelper = $this->getService(RenewalsHelper::class);
         $renewResult = $renewStatus
             ? $renewalsHelper->processRenewals(
-                $this->getRequest()->getPost(),
+                $this->getRequest()->getPost()->toArray(),
                 $catalog,
                 $patron,
                 $this->getFlashMessenger(),
