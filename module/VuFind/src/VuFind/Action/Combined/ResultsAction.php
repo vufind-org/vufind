@@ -96,7 +96,7 @@ class ResultsAction extends AbstractCombinedSearchAndResultsAction implements Lo
             $adjustedRequest = $this->adjustQueryForSettings(
                 $request,
                 $currentSearch,
-                $currentOptions->getHandlerForLabel($initialType)
+                $initialType
             );
             $combinedResults[$current] = $currentSearch;
 
