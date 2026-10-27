@@ -1524,11 +1524,11 @@ class Params
     ): void {
         $rangeFacets = $request[$requestParam] ?? [];
         if (!empty($rangeFacets)) {
-            $ranges = is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
+            $ranges = (array)$rangeFacets;
             foreach ($ranges as $range) {
                 // Load start and end of range:
-                $from = $request[$range . 'from'] ?? '*';
-                $to = $request[$range . 'to'] ?? '*';
+                $from = $request[$range . 'from'] ?? null;
+                $to = $request[$range . 'to'] ?? null;
 
                 // Apply filtering/validation if necessary:
                 if (is_callable($valueFilter)) {
