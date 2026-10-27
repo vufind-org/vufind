@@ -81,13 +81,13 @@ class SearchRunner
     /**
      * Run the search.
      *
-     * @param array            $rawRequest    Incoming parameters for search
-     * @param string           $searchClassId Type of search to perform
-     * @param mixed            $setupCallback Optional callback for setting up params
+     * @param array  $rawRequest    Incoming parameters for search
+     * @param string $searchClassId Type of search to perform
+     * @param mixed  $setupCallback Optional callback for setting up params
      * and attaching listeners; if provided, will be passed three parameters:
      * this object, the search parameters object, and a unique identifier for
      * the current running search.
-     * @param string           $lastView      Last valid view parameter loaded
+     * @param string $lastView      Last valid view parameter loaded
      * from a previous search (optional; used for view persistence).
      *
      * @return \VuFind\Search\Base\Results
