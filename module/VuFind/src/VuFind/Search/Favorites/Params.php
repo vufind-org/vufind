@@ -51,7 +51,7 @@ class Params extends \VuFind\Search\Base\Params
     protected function initFilters(array $request): void
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
-        $id = $request['id'];
+        $id = $request['id'] ?? null;
         if (!empty($id)) {
             $this->addFilter("lists:{$id}");
         }
