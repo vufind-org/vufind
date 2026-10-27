@@ -30,6 +30,7 @@
 
 namespace VuFindDevTools\Action\DevTools;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -77,21 +78,23 @@ class DeminifyAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $min = trim($this->getPostParam('min', ''));
-
         $templateParams = [];
-        if ($min) {
-            $templateParams['min'] = unserialize($min);
-            if ($templateParams['min'] instanceof Minified) {
-                $templateParams['results'] = $templateParams['min']->deminify($this->resultsPluginManager);
-                $params = $templateParams['results']->getParams();
-                $templateParams['query'] = $params->getQuery();
-                if (is_callable([$params, 'getBackendParameters'])) {
-                    $templateParams['backendParams'] = $params->getBackendParameters()->getArrayCopy();
+        if ($min = trim($this->getPostParam('min', ''))) {
+            try {
+                $templateParams['min'] = unserialize($min);
+                if ($templateParams['min'] instanceof Minified) {
+                    $templateParams['results'] = $templateParams['min']->deminify($this->resultsPluginManager);
+                    $params = $templateParams['results']->getParams();
+                    $templateParams['query'] = $params->getQuery();
+                    if (is_callable([$params, 'getBackendParameters'])) {
+                        $templateParams['backendParams'] = $params->getBackendParameters()->getArrayCopy();
+                    }
+                    if ($builder = $this->getQueryBuilder($params->getSearchClassId())) {
+                        $templateParams['queryParams'] = $builder->build($templateParams['query'])->getArrayCopy();
+                    }
                 }
-                if ($builder = $this->getQueryBuilder($params->getSearchClassId())) {
-                    $templateParams['queryParams'] = $builder->build($templateParams['query'])->getArrayCopy();
-                }
+            } catch (Exception $e) {
+                $templateParams['min'] = '<' . $e->getMessage() . '>';
             }
         }
         return $this->renderTemplate($request, $response, $templateParams);
