@@ -310,7 +310,7 @@ class VuFind
     {
         $settings = static::getConfigArray('fulltext');
         if (!isset($settings['Tika']['path'])) {
-            return '';
+            return [];
         }
         $tika = $settings['Tika']['path'];
 
@@ -343,7 +343,9 @@ class VuFind
 
         // Determine the base Tika command and execute
         $tikaCommand = static::getTikaCommand($url, $outputFile, $arg);
-        proc_close(proc_open($tikaCommand[0], $tikaCommand[1], $tikaCommand[2]));
+        if ($tikaCommand) {
+            proc_close(proc_open(...$tikaCommand));
+        }
 
         // If we failed to process the file, give up now:
         if (!file_exists($outputFile)) {
