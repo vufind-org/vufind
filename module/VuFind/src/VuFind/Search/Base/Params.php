@@ -606,7 +606,7 @@ class Params
     protected function initSort(array $request): void
     {
         // Check for special parameter only relevant in RSS mode:
-        if ($request['skip_rss_sort'] ?? 'unset') {
+        if ($request['skip_rss_sort'] ?? null) {
             $this->skipRssSort = true;
         }
         $this->setSort($request['sort'] ?? null);
