@@ -181,9 +181,8 @@ class HomeAction extends AbstractAccountAction
             }
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($this->response, 'account-verifyemail');
         }
-        // If a Shibboleth-style login has failed and the user just logged
-        // out, we need to override the error message with a more relevant
-        // one:
+        // If a Shibboleth-style login has failed and the user just logged out, we need to override the error message
+        // with a more relevant one:
         if (
             $msg == 'authentication_error_admin'
             && $this->authManager->userHasLoggedOut()
