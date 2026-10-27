@@ -589,7 +589,7 @@ class Params
             }
             // If the user submitted the advanced search form, we want to treat
             // the search as advanced even if it evaluated to a basic search.
-            if (array_key_exists('lookfor0', $request)) {
+            if (isset($request['lookfor0'])) {
                 $this->convertToAdvancedSearch();
             }
         }
