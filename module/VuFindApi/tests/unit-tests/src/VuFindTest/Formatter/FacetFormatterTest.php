@@ -168,8 +168,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
         $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
-        $requestParams = $request;
-        $params->initFromRequest($requestParams);
+        $params->initFromRequest($request);
         $factory = new \VuFind\Search\Factory\UrlQueryHelperFactory();
         $urlQuery = $factory->fromParams($params);
         foreach ($data as $facet => $values) {
