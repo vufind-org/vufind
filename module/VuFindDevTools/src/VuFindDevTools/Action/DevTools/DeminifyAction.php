@@ -33,6 +33,7 @@ namespace VuFindDevTools\Action\DevTools;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Search\Minified;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Service as SearchService;
@@ -81,7 +82,7 @@ class DeminifyAction extends AbstractTemplateRenderingAction
         $templateParams = [];
         if ($min) {
             $templateParams['min'] = unserialize($min);
-            if ($templateParams['min']) {
+            if ($templateParams['min'] instanceof Minified) {
                 $templateParams['results'] = $templateParams['min']->deminify($this->resultsPluginManager);
                 $params = $templateParams['results']->getParams();
                 $templateParams['query'] = $params->getQuery();
