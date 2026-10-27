@@ -30,7 +30,10 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\Auth\Manager as AuthManager;
+
+use function count;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -80,6 +83,22 @@ class IndexController extends AbstractBase
             $actionConfig = 'defaultAction';
         }
         $action = $this->config['Site'][$actionConfig] ?? 'Home';
+
+        // Apply any action redirect right away:
+        $redirects = $this->getService('Config')['vufind']['action_redirects'] ?? [];
+        $key = strtolower($controller) . '/' . strtolower($action);
+        if ($routeName = $redirects[$key] ?? null) {
+            // This relies on being able to convert route name to action name, so check for that and fail quietly
+            // if the action is not available:
+            $parts = explode('-', $routeName, 2);
+            if (count($parts) === 2) {
+                $actionPluginManager = $this->getService(ActionPluginManager::class);
+                if ($actionPluginManager->has(implode('/', $parts))) {
+                    $controller = $parts[0];
+                    $action = $parts[1];
+                }
+            }
+        }
 
         // Forward to the appropriate controller and action:
         return $this->forwardTo($controller, $action);
