@@ -319,7 +319,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // to properly populate special controls on the advanced screen.
         if (!$saved && count($options->getDefaultFilters()) > 0) {
             $saved = $this->resultsPluginManager->get($this->getSearchClassId());
-            $saved->getParams()->initFromRequest(new \Laminas\Stdlib\Parameters([]));
+            $saved->getParams()->initFromRequest([]);
         }
 
         $templateParams = $this->createTemplateParams(compact('options', 'saved'));
