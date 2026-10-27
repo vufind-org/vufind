@@ -29,8 +29,8 @@
 
 namespace VuFind\Related;
 
-use VuFindSearch\Command\SimilarCommand;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Command\SimilarCommand;
 
 /**
  * Related Records: Solr-based similarity.
