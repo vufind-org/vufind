@@ -56,6 +56,13 @@ class SearchRunner
     public const EVENT_COMPLETE = 'complete';
 
     /**
+     * Event manager.
+     *
+     * @var EventManager
+     */
+    protected $events = null;
+
+    /**
      * Counter of how many searches we have run (for differentiating listeners).
      *
      * @var int
@@ -70,9 +77,8 @@ class SearchRunner
      */
     public function __construct(
         protected ResultsManager $resultsManager,
-        protected ?EventManager $events = null
+        ?EventManager $events = null
     ) {
-        $this->resultsManager = $resultsManager;
         if (null !== $events) {
             $this->setEventManager($events);
         }
