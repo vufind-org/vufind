@@ -68,6 +68,6 @@ class Params extends \VuFind\Search\Base\Params
     public function initFromRequest(array $request): void
     {
         parent::initFromRequest($request);
-        $this->fuzzy = ('true' == $request['fuzzy'] ?? 'false');
+        $this->fuzzy = ('true' == ($request['fuzzy'] ?? 'false'));
     }
 }
