@@ -90,7 +90,7 @@ class HandleAction extends AbstractPaymentServiceAction
             $request,
             $response,
             compact('requestId', 'returnUrl'),
-            '/devtools/payment/handle.phtml'
+            'devtools/payment/handle'
         );
     }
 
