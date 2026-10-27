@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\Record;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
@@ -114,7 +113,7 @@ class ExplainAction extends AbstractRecordAction
             $explanation = $this->explanationPluginManager->get($record->getSourceIdentifier());
 
             $params = $explanation->getParams();
-            $params->initFromRequest(new Parameters($request->getQueryParams()));
+            $params->initFromRequest($request->getQueryParams());
             $explanation->performRequest($record->getUniqueID());
 
             $templateParams['explanation'] = $explanation;
