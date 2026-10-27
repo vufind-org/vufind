@@ -31,11 +31,9 @@ namespace VuFind\Search;
 
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
-use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\ErrorListener;
 
-use function is_array;
 use function is_callable;
 
 /**
@@ -58,20 +56,6 @@ class SearchRunner
     public const EVENT_COMPLETE = 'complete';
 
     /**
-     * Event manager.
-     *
-     * @var EventManager
-     */
-    protected $events = null;
-
-    /**
-     * Search results object manager.
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
      * Counter of how many searches we have run (for differentiating listeners).
      *
      * @var int
@@ -85,8 +69,8 @@ class SearchRunner
      * @param ?EventManager  $events         Event manager (optional)
      */
     public function __construct(
-        ResultsManager $resultsManager,
-        ?EventManager $events = null
+        protected ResultsManager $resultsManager,
+        protected ?EventManager $events = null
     ) {
         $this->resultsManager = $resultsManager;
         if (null !== $events) {
@@ -97,7 +81,7 @@ class SearchRunner
     /**
      * Run the search.
      *
-     * @param array|Parameters $rawRequest    Incoming parameters for search
+     * @param array            $rawRequest    Incoming parameters for search
      * @param string           $searchClassId Type of search to perform
      * @param mixed            $setupCallback Optional callback for setting up params
      * and attaching listeners; if provided, will be passed three parameters:
@@ -122,11 +106,7 @@ class SearchRunner
         // this point!
         $this->searchId++;
         $runningSearchId = $this->searchId;
-
-        // Format the request object:
-        $request = $rawRequest instanceof Parameters
-            ? $rawRequest
-            : new Parameters(is_array($rawRequest) ? $rawRequest : []);
+        $request = $rawRequest;
 
         // Set up the search:
         $results = $this->resultsManager->get($searchClassId);
