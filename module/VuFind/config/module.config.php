@@ -168,9 +168,6 @@ $config = [
     'controllers' => [
         'factories' => [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
-            'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\TurnstileController' => 'VuFind\Controller\TurnstileControllerFactory',
-            'VuFind\Controller\UpgradeController' => 'VuFind\Controller\UpgradeControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -178,12 +175,6 @@ $config = [
         'aliases' => [
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
-            'Overdrive' => 'VuFind\Controller\OverdriveController',
-            'overdrive' => 'VuFind\Controller\OverdriveController',
-            'Turnstile' => 'VuFind\Controller\TurnstileController',
-            'turnstile' => 'VuFind\Controller\TurnstileController',
-            'Upgrade' => 'VuFind\Controller\UpgradeController',
-            'upgrade' => 'VuFind\Controller\UpgradeController',
         ],
     ],
     'controller_plugins' => [
@@ -819,6 +810,7 @@ $config = [
             'myresearch/verifyemail' => 'account-verifyemail',
             'myresearch/verifyotp' => 'account-verifyotp',
             'myresearch/verifyrecoveryotp' => 'account-verifyrecoveryotp',
+            'overdrive/mycontent' => 'overdrive-content',
             'search/history' => 'searchhistory-list',
         ],
 
@@ -1113,8 +1105,10 @@ $staticRoutes = [
     'MyResearch/VerifyOtp',
     'MyResearch/VerifyRecoveryOtp',
     'OAI/Server',
-    'Overdrive/MyContent',
+    'Overdrive/Content',
+    'Overdrive/GetStatus',
     'Overdrive/Hold',
+    'Overdrive/MyContent',
     'Pazpar2/Home',
     'Pazpar2/Search',
     'Primo/Advanced',
