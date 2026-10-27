@@ -30,8 +30,8 @@
 
 namespace VuFindTest\Form;
 
-use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Date\Converter;
 use VuFind\Form\Form;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
@@ -81,6 +81,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = new Form(
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class),
+            new Converter(),
             $config,
             $feedBackFormConfig
         );
@@ -118,10 +119,6 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
-        $this->assertInstanceOf(
-            \Laminas\InputFilter\InputFilter::class,
-            $form->getInputFilter()
-        );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
 
@@ -266,10 +263,6 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             $expectedFields,
             $form->mapRequestParamsToFieldValues($postParams)
-        );
-        $this->assertInstanceOf(
-            \Laminas\InputFilter\InputFilter::class,
-            $form->getInputFilter()
         );
 
         // Validators: Required field problems
@@ -455,43 +448,43 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $el = $getElement('select', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'value' => 'value-1',
                     'label' => 'label-1',
                 ],
-                'o2' => [
+                [
                     'value' => 'value-2',
                     'label' => 'label-2',
                 ],
             ],
-            $el['optionGroups']['group-1']['options']
+            $el['optionGroups'][0]['options']
         );
 
         // Select element optionGroup: options with values
         $el = $getElement('select2', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'value' => 'option-1',
                     'label' => 'option-1',
                 ],
-                'o2' => [
+                [
                     'value' => 'option-2',
                     'label' => 'option-2',
                 ],
             ],
-            $el['optionGroups']['group-1']['options']
+            $el['optionGroups'][0]['options']
         );
 
         // Select element options with labels and values
         $el = $getElement('select3', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'label' => 'label-1',
                     'value' => 'value-1',
                 ],
-                'o2' => [
+                [
                     'label' => 'label-2',
                     'value' => 'value-2',
                 ],
@@ -503,11 +496,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $el = $getElement('select4', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'label' => 'option-1',
                     'value' => 'option-1',
                 ],
-                'o2' => [
+                [
                     'label' => 'option-2',
                     'value' => 'option-2',
                 ],
@@ -519,11 +512,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $el = $getElement('radio', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'label' => 'label-1',
                     'value' => 'value-1',
                 ],
-                'o2' => [
+                [
                     'label' => 'label-2',
                     'value' => 'value-2',
                 ],
@@ -535,11 +528,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $el = $getElement('radio2', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'label' => 'option-1',
                     'value' => 'option-1',
                 ],
-                'o2' => [
+                [
                     'label' => 'option-2',
                     'value' => 'option-2',
                 ],
@@ -551,11 +544,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $el = $getElement('checkbox', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'label' => 'label-1',
                     'value' => 'value-1',
                 ],
-                'o2' => [
+                [
                     'label' => 'label-2',
                     'value' => 'value-2',
                 ],
@@ -567,11 +560,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $el = $getElement('checkbox2', $elements);
         $this->assertEquals(
             [
-                'o1' => [
+                [
                     'label' => 'option-1',
                     'value' => 'option-1',
                 ],
-                'o2' => [
+                [
                     'label' => 'option-2',
                     'value' => 'option-2',
                 ],
@@ -785,6 +778,30 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->setData(['checkbox' => ['o1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
+    }
+
+    /**
+     * Test date validation.
+     *
+     * @return void
+     */
+    public function testDateValidators(): void
+    {
+        $form = $this->getMockTestForm('TestDate');
+        $form->setData(['date' => '']);
+        $this->assertFalse($form->isValid());
+        $form->setData(['date' => '2131-']);
+        $this->assertFalse($form->isValid());
+        $form->setData(['date' => '2026-01-01']);
+        $this->assertTrue($form->isValid());
+
+        $form = $this->getMockTestForm('TestDateWithLimits');
+        $form->setData(['date' => '2026-01-01']);
+        $this->assertTrue($form->isValid());
+        $form->setData(['date' => '2025-31-12']);
+        $this->assertFalse($form->isValid());
+        $form->setData(['date' => '2027-01-01']);
+        $this->assertFalse($form->isValid());
     }
 
     /**
