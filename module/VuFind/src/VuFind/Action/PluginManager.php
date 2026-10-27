@@ -190,6 +190,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'oai/authserver' => Oai\AuthServerAction::class,
 
+        'overdrive/getstatus' => Overdrive\GetStatusAction::class,
+
         'pazpar2/home' => Search\HomeAction::class,
         'pazpar2/search' => Search\ResultsAction::class,
 
@@ -349,6 +351,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'upgrade/getdbcredentials' => Upgrade\GetDbCredentialsAction::class,
         'upgrade/getsourceversion' => Upgrade\GetSourceVersionAction::class,
         'upgrade/showsql' => Upgrade\ShowSqlAction::class,
+
+        'zotero/authcallback' => Zotero\AuthCallbackAction::class,
     ];
 
     /**
@@ -366,6 +370,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Oauth2' => 'OAuth2',
         'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
+        'Shibbolethlogoutnotification' => 'ShibbolethLogoutNotification',
         'Shortlink' => 'ShortLink',
         'Simulatedsso' => 'SimulatedSSO',
         'Sitemap' => 'SiteMap',
