@@ -95,7 +95,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
@@ -103,7 +103,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
     public function init($params, $request)
     {
         // Save search query in case we need it later:
-        $this->lookfor = $request->get($this->requestParam);
+        $this->lookfor = $request[$this->requestParam];
     }
 
     /**

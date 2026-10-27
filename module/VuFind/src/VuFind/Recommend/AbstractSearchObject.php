@@ -33,7 +33,6 @@ namespace VuFind\Recommend;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
-use function intval;
 use function is_object;
 
 /**
@@ -115,7 +114,7 @@ abstract class AbstractSearchObject implements RecommendInterface
         $this->requestParam = empty($settings[0]) ? 'lookfor' : $settings[0];
         $this->limit
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
-            ? intval($settings[1]) : 5;
+            ? (int)($settings[1]) : 5;
 
         $this->heading = $settings[2] ?? $this->getDefaultHeading();
         $this->filterIniSection = $settings[3] ?? false;
@@ -130,7 +129,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
@@ -140,14 +139,14 @@ abstract class AbstractSearchObject implements RecommendInterface
         // See if we can determine the label for the current search type; first
         // check for an override in the GET parameters, then look at the incoming
         // params object....
-        $typeLabel = $request->get('typeLabel');
-        $type = $request->get('type');
+        $typeLabel = $request['typeLabel'];
+        $type = $request['type'];
         if (empty($typeLabel) && !empty($type)) {
             $typeLabel = $params->getOptions()->getLabelForBasicHandler($type);
         }
 
         // Extract a search query:
-        $lookfor = $request->get($this->requestParam);
+        $lookfor = $request[$this->requestParam];
         if (empty($lookfor) && is_object($params)) {
             $lookfor = $params->getQuery()->getAllTerms();
         }
