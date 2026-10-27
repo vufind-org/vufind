@@ -53,7 +53,6 @@ use VuFind\Tags\TagsService;
 
 use function count;
 use function func_get_args;
-use function intval;
 
 /**
  * Favorites service.
@@ -203,7 +202,8 @@ class FavoritesService implements TranslatorAwareInterface
      */
     public function getListIdFromParams(array $params): ?int
     {
-        return intval($params['list'] ?? 'NEW') ?: null;
+        $list = $params['list'] ?? null;
+        return ($list === 'NEW' || !$list) ? null : (int)$list;
     }
 
     /**
