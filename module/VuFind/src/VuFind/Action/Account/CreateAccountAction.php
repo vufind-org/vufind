@@ -162,7 +162,7 @@ class CreateAccountAction extends AbstractAccountAction
         ) {
             try {
                 $this->authManager->create(Psr7ServerRequest::toLaminas($request));
-                return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'account/home');
+                return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'account-home');
             } catch (AuthEmailNotVerifiedException $e) {
                 $this->sendFirstVerificationEmail($e->getUser());
                 return $this->getHelper(RedirectHelper::class)
