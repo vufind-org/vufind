@@ -82,7 +82,8 @@ class UserLoginAction extends AbstractTemplateRenderingAction
      * Display login.
      *
      * This is used for explicit login links within the UI to differentiate them from contextual login links that are
-     * triggered by attempting to access protected actions.
+     * triggered by attempting to access protected actions. It clears any previous follow-up information prior to
+     * triggering a login process.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
