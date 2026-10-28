@@ -105,8 +105,8 @@ class UserLoginAction extends AbstractTemplateRenderingAction
         // can decide whether to use it:
         $loginHelper->setFollowupUrlToReferrer($request, true, ['isReferrer' => true]);
 
-        if ($sesssionInitiator = $this->authManager->getSessionInitiator()) {
-            return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $sesssionInitiator);
+        if ($sessionInitiator = $this->authManager->getSessionInitiator()) {
+            return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $sessionInitiator);
         }
         return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'Account/Login');
     }
