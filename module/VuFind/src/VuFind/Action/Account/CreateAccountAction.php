@@ -171,10 +171,9 @@ class CreateAccountAction extends AbstractAccountAction
                 $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($e->getMessage());
             }
         } else {
-            // If we are not processing a submission, we need to simply display
-            // an empty form. In case ChoiceAuth is being used, we may need to
-            // override the active authentication method based on request
-            // parameters to ensure display of the appropriate template.
+            // If we are not processing a submission, we need to simply display an empty form. In case ChoiceAuth is
+            // being used, we may need to override the active authentication method based on request parameters to
+            // ensure display of the appropriate template.
             $this->setUpAuthenticationFromRequest();
         }
 
