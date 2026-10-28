@@ -514,7 +514,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
         // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
         $this->findCssAndSetValue($page, $inputSelector, 'd');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -573,7 +573,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
         // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
         $this->findCssAndSetValue($page, $inputSelector, 'd');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -592,7 +592,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
             . 'The Study of "Important" Things 1 results 1 '
@@ -611,7 +611,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // now clear the filter
         $this->clickCss($page, '#modal button[type="reset"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Fiction 7 results 7 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -631,7 +631,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // ...and restore the original sort
         $this->clickCss($page, '[data-sort="count"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Weird IDs 9 results 9 '
             . 'Fiction 7 results 7 '
             . 'The Study Of P|pes 1 results 1 '
@@ -1429,7 +1429,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // format:Book is also a normal facet, but count should still be empty unless enabled:
         $filter = $this->findCss($page, '.checkbox-filter');
         $this->assertSame('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $counts ? '9' : '',
             function () use ($filter) {
                 return $this->findCssAndGetText($filter->getParent(), '.avail-count');

@@ -31,6 +31,7 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\Session\SessionManager;
 use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Db\PersistenceManager;
@@ -46,8 +47,8 @@ use VuFind\Db\Service\UserService;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
-use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
+use VuFind\Session\SessionContainerRegistry;
 use VuFindTest\Container\MockContainer;
 
 /**
@@ -124,6 +125,10 @@ trait LiveDatabaseTrait
             PersistenceManager::class,
             new PersistenceManager($container->get(\Doctrine\ORM\EntityManager::class))
         );
+        $container->set(
+            SessionContainerRegistry::class,
+            new SessionContainerRegistry($container->get(SessionManager::class))
+        );
     }
 
     /**
@@ -174,8 +179,8 @@ trait LiveDatabaseTrait
             $developerSettingsService = $developerSettingsServiceFactory($container, DeveloperSettingsService::class);
             $container->set(DeveloperSettingsService::class, $developerSettingsService);
 
-            $favoritesFactory = new FavoritesServiceFactory();
-            $favoritesService = $favoritesFactory($container, FavoritesService::class);
+            $factory = new \VuFind\ServiceManager\Factory\AutowiringFactory();
+            $favoritesService = $factory($container, FavoritesService::class);
             $container->set(FavoritesService::class, $favoritesService);
             $this->liveDatabaseContainer = $container;
         }
