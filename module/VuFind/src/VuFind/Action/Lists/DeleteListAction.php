@@ -78,8 +78,7 @@ class DeleteListAction extends AbstractListsAction
         }
 
         // Have we confirmed this?
-        $confirm = $this->getPostOrQueryParam('confirm');
-        if ($confirm) {
+        if ($confirm = $this->getPostOrQueryParam('confirm')) {
             $user = $this->authManager->getUserObject();
             try {
                 $list = $this->userListService->getUserListById($listID);
@@ -104,7 +103,7 @@ class DeleteListAction extends AbstractListsAction
             $this->getRouteHelper()->getUrlFromRoute('lists-deletelist'),
             $this->getRouteHelper()->getUrlFromRoute('userList', ['id' => $listID]),
             'confirm_delete_list_text',
-            ['listID' => $listID]
+            compact('listID')
         );
     }
 }

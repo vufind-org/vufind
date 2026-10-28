@@ -86,10 +86,9 @@ class SaveSearchAction extends AbstractSearchHistoryAction
 
         // Check for the save / delete parameters and process them appropriately:
         if (null !== ($id = $this->getQueryParam('save'))) {
-            // If the row the user is trying to save is a duplicate of an already-
-            // saved row, we should just delete the duplicate. (This can happen if
-            // the user clicks "save" before logging in, then logs in during the
-            // save process, but has the same search already saved in their account).
+            // If the row the user is trying to save is a duplicate of an already-saved row, we should just delete the
+            // duplicate. (This can happen if the user clicks "save" before logging in, then logs in during the save
+            // process, but has the same search already saved in their account).
             $sessionId = $this->sessionManager->getId();
             $rowToCheck = $this->searchService->getSearchByIdAndOwner($id, $sessionId, $user);
             $duplicateId = $rowToCheck ? $this->isDuplicateOfSavedSearch($rowToCheck, $user) : 0;
@@ -107,7 +106,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             throw new \Exception('Missing save and delete parameters.');
         }
 
-        // Forward to the appropriate place:
+        // Forward to the appropriate place when coming from search history:
         if ($this->getQueryParam('mode') === 'history') {
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'searchhistory-list');
         }

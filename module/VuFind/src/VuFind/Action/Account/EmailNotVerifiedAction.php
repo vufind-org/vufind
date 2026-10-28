@@ -107,7 +107,7 @@ class EmailNotVerifiedAction extends AbstractAccountAction
     }
 
     /**
-     * Display user profile.
+     * Creates a message that the verification email has been sent to the user's mail address.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response

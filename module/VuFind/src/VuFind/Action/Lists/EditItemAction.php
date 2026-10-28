@@ -92,8 +92,7 @@ class EditItemAction extends AbstractListsAction
         $userResources = $this->userResourceService->getFavoritesForRecord($id, $source, $listID, $user);
         $savedData = [];
         foreach ($userResources as $current) {
-            // There should always be list data based on the way we retrieve this result, but
-            // check just to be on the safe side.
+            // There should always be list data based on the way we retrieve this result, but check just in case.
             if ($currentList = $current->getUserList()) {
                 $savedData[] = [
                     'listId' => $currentList->getId(),
@@ -104,9 +103,8 @@ class EditItemAction extends AbstractListsAction
             }
         }
 
-        // In order to determine which lists contain the requested item, we may
-        // need to do an extra database lookup if the previous lookup was limited
-        // to a particular list ID:
+        // In order to determine which lists contain the requested item, we may need to do an extra database lookup if
+        // the previous lookup was limited to a particular list ID:
         $containingLists = [];
         if (!empty($listID)) {
             $userResources = $this->userResourceService->getFavoritesForRecord($id, $source, null, $user);

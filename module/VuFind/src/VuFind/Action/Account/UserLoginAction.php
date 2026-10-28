@@ -102,8 +102,7 @@ class UserLoginAction extends AbstractTemplateRenderingAction
         }
         $loginHelper = $this->getHelper(LoginHelper::class);
         $loginHelper->clearFollowupUrl();
-        // Set followup with the isReferrer flag so that the post-login process
-        // can decide whether to use it:
+        // Set followup with the isReferrer flag so that the post-login process can decide whether to use it:
         $loginHelper->setFollowupUrlToReferrer($request, true, ['isReferrer' => true]);
 
         if ($sessionInitiator = $this->authManager->getSessionInitiator()) {

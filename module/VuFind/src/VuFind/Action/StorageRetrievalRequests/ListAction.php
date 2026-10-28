@@ -158,8 +158,8 @@ class ListAction extends AbstractTemplateRenderingAction
         try {
             $templateParams['pickup'] = $this->ilsConnection->getPickUpLocations($patron);
         } catch (\Exception $e) {
-            // Do nothing; if we're unable to load information about pickup
-            // locations, they are not supported and we should ignore them.
+            // Do nothing; if we're unable to load information about pickup locations, they are not supported and we
+            // should ignore them.
         }
 
         $templateParams['recordList'] = $this->ilsRecordsHelper->getDrivers($driversNeeded);

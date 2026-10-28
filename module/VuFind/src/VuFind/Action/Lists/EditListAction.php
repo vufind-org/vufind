@@ -82,8 +82,7 @@ class EditListAction extends AbstractListsAction
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
 
-        // Is this a new list or an existing list?  Handle the special 'NEW' value
-        // of the ID parameter:
+        // Is this a new list or an existing list?  Handle the special 'NEW' value of the ID parameter:
         $id = $this->getRouteParam('id') ?? $this->getPostOrQueryParam('id', preferQuery: true);
         $newList = ($id === 'NEW');
         // If this is a new list, use the FavoritesService to pre-populate some values in a fresh object; if it's an

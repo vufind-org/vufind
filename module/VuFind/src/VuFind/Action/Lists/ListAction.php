@@ -96,8 +96,7 @@ class ListAction extends AbstractListsAction
 
         // If we got this far, we just need to display the favorites:
         try {
-            // We want to merge together GET, POST and route parameters to
-            // initialize our search object:
+            // We want to merge together GET, POST and route parameters to initialize our search object:
             $requestParams = $request->getQueryParams()
                 + $request->getParsedBody()
                 + ['id' => $this->getRouteParam('id')];
@@ -177,7 +176,7 @@ class ListAction extends AbstractListsAction
      * @param string $id     ID of record to delete
      * @param string $source Source of record to delete
      *
-     * @return mixed
+     * @return ResponseInterface
      */
     protected function confirmDeleteFavorite(?int $listID, string $id, string $source): ResponseInterface
     {
