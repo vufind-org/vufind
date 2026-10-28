@@ -3,27 +3,34 @@
 VuFind.register('showPassword', () => {
 
   /**
-   * Click event on an eye span
+   * Set up the button
+   * @param {HTMLElement} button The button
+   * @param {boolean}     hide   True if the password should be hidden
+   */
+  function _setupButton(button, hide) {
+    const title = hide ? 'Show password' : 'Hide password';
+    const icon = hide ? 'password-hidden' : 'password-shown';
+    button.setAttribute('title', title);
+    button.setAttribute('aria-label', title);
+    VuFind.setInnerHtml(button, VuFind.icon(icon));
+  }
+
+  /**
+   * Click event
    * @param {Event} event click event
    */
-  function _clickOnEye(event) {
+  function _click(event) {
     event.preventDefault();
-    const eye = event.currentTarget;
-    const passwordInput = eye.parentElement.querySelector('input');
+    const button = event.currentTarget;
+    const passwordInput = button.parentElement.querySelector('input');
     const type = passwordInput.getAttribute('type');
 
     if (type === 'password') {
       passwordInput.setAttribute('type', 'text');
-      eye.classList.remove('fa-eye-slash');
-      eye.classList.add('fa-eye');
-      eye.setAttribute('title', VuFind.translate('Hide password'));
-      eye.setAttribute('aria-label', VuFind.translate('Hide password'));
+      _setupButton(button, false);
     } else {
       passwordInput.setAttribute('type', 'password');
-      eye.classList.remove('fa-eye');
-      eye.classList.add('fa-eye-slash');
-      eye.setAttribute('title', VuFind.translate('Show password'));
-      eye.setAttribute('aria-label', VuFind.translate('Show password'));
+      _setupButton(button, true);
     }
   }
 
@@ -38,18 +45,10 @@ VuFind.register('showPassword', () => {
       section.classList = 'password-section';
       input.replaceWith(section);
       section.appendChild(input);
-      const eye = document.createElement('span');
-      eye.classList = 'fa fa-eye-slash';
-      eye.setAttribute('title', VuFind.translate('Show password'));
-      eye.setAttribute('aria-label', VuFind.translate('Show password'));
-      eye.setAttribute('tabindex', '0')
-      section.appendChild(eye);
-      eye.addEventListener('click', _clickOnEye);
-      eye.addEventListener('keyup', event => {
-        if (event.key === 'Enter') {
-          eye.click();
-        }
-      });
+      const button = document.createElement('button');
+      _setupButton(button, true);
+      section.appendChild(button);
+      button.addEventListener('click', _click);
     }
   }
 

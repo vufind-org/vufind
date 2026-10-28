@@ -183,14 +183,14 @@ form {
 .password-section {
    position: relative;
 
-  .fa-eye, .fa-eye-slash {
+  button {
     position: absolute;
     top: 50%;
     right: 0.5em;
     transform: translateY(-50%);
-    cursor: pointer;
-    background-color: white;
+    border: 0;
     z-index: 100;
+    background-color: white;
   }
 }
 @include media-breakpoint-up(sm) {

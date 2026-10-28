@@ -310,6 +310,8 @@ return [
             'page-next-rtl' => 'FontAwesome:angle-left',
             'page-prev' => 'FontAwesome:angle-left',
             'page-prev-rtl' => 'FontAwesome:angle-right',
+            'password-hidden' => 'FontAwesome:eye-slash',
+            'password-shown' => 'FontAwesome:eye',
             'place-hold' => 'FontAwesome:flag',
             'place-ill-request' => 'FontAwesome:right-left',
             'place-recall' => 'FontAwesome:flag',
