@@ -35,7 +35,14 @@ use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 use Laminas\Cache\Storage\Adapter\BlackHole;
+use Laminas\Cache\Storage\Capabilities;
+use Laminas\Cache\Storage\PostEvent;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use stdClass;
 use VuFind\Db\Mapping\ClassMetadataFactory;
 use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 
@@ -53,6 +60,13 @@ use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
  */
 class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    /**
+     * Cache storage.
+     *
+     * @var ?StorageInterface
+     */
+    protected ?StorageInterface $cacheStorage = null;
+
     /**
      * Create an object.
      *
@@ -76,8 +90,19 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             __DIR__ . '/Entity',
         ];
         $isDevMode = APPLICATION_ENV == 'development';
-        $storage = new BlackHole(); // TODO: use different cache if not in console mode.
-        $cache = new CacheItemPoolDecorator($storage);
+        if ('cli' === PHP_SAPI) {
+            $cache = new CacheItemPoolDecorator(new BlackHole());
+        } else {
+            $this->cacheStorage = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
+
+            // Cache item pool decorator requires static TTL support that file system cache does not provide. Doctrine
+            // doesn't need it, so fake the support:
+            $eventManager = $this->cacheStorage->getEventManager();
+            $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
+            $cache = new CacheItemPoolDecorator($this->cacheStorage);
+            $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
+        }
+
         $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode, cache: $cache);
         $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
         $config->setProxyDir(LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies');
@@ -85,6 +110,9 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $config->setAutoGenerateProxyClasses(
             $isDevMode ? ProxyFactory::AUTOGENERATE_ALWAYS : ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
         );
+        if (PHP_VERSION_ID >= 80400) {
+            $config->enableNativeLazyObjects(true);
+        }
         $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
         $entityManager = new EntityManager($connection, $config);
@@ -102,5 +130,27 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         );
 
         return $entityManager;
+    }
+
+    /**
+     * Cache adapter post capabilities check handler that adds fake TTL support.
+     *
+     * @param PostEvent $event Event
+     *
+     * @return void
+     */
+    public function cacheCapabilitiesHandler(PostEvent $event): void
+    {
+        if ($event->getStorage() !== $this->cacheStorage) {
+            return;
+        }
+        $oldCapacities = $event->getResult();
+        $newCapacities = new Capabilities(
+            $event->getStorage(),
+            new stdClass(),
+            ['staticTtl' => true],
+            $oldCapacities
+        );
+        $event->setResult($newCapacities);
     }
 }
