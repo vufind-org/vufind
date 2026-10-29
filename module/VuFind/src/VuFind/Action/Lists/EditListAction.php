@@ -72,8 +72,9 @@ class EditListAction extends AbstractListsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
+        $userContentHelper = $this->getHelper(UserContentHelper::class);
         // Fail if lists are disabled:
-        if (!$this->getHelper(UserContentHelper::class)->listsEnabled()) {
+        if (!$userContentHelper->listsEnabled()) {
             throw new ForbiddenException('Lists disabled');
         }
 
@@ -104,7 +105,7 @@ class EditListAction extends AbstractListsAction
         }
 
         $listTags = null;
-        if ($this->getHelper(UserContentHelper::class)->listTagsEnabled() && !$newList) {
+        if ($userContentHelper->listTagsEnabled() && !$newList) {
             $listTags = $this->favoritesService
                 ->formatTagStringForEditing($this->tagsService->getListTags($list, $list->getUser()));
         }
