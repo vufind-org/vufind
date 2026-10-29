@@ -72,25 +72,21 @@ class DeleteListAction extends AbstractListsAction
             throw new ForbiddenException('Lists disabled');
         }
 
+        // Force login:
+        if (!($user = $this->authManager->getUserObject())) {
+            return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
+        }
+
         // Get requested list ID:
         if (null === ($listID = $this->getPostOrQueryParam('listID'))) {
             throw new Exception('List ID missing');
         }
 
         // Have we confirmed this?
-        if ($confirm = $this->getPostOrQueryParam('confirm')) {
-            $user = $this->authManager->getUserObject();
-            try {
-                $list = $this->userListService->getUserListById($listID);
-                $this->favoritesService->destroyList($list, $user);
-                $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('fav_list_delete');
-            } catch (LoginRequiredException | ListPermissionException $e) {
-                if (!$user) {
-                    return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
-                }
-                // Logged in? Then we have to rethrow the exception!
-                throw $e;
-            }
+        if ($this->getPostOrQueryParam('confirm')) {
+            $list = $this->userListService->getUserListById($listID);
+            $this->favoritesService->destroyList($list, $user);
+            $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('fav_list_delete');
             // Redirect to Lists home
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'lists-allitems');
         }
