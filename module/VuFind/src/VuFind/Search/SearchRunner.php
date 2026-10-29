@@ -31,6 +31,7 @@ namespace VuFind\Search;
 
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
+use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\ErrorListener;
 
@@ -87,13 +88,13 @@ class SearchRunner
     /**
      * Run the search.
      *
-     * @param array  $request       Incoming parameters for search
-     * @param string $searchClassId Type of search to perform
-     * @param mixed  $setupCallback Optional callback for setting up params
+     * @param array   $request       Incoming parameters for search
+     * @param string  $searchClassId Type of search to perform
+     * @param mixed   $setupCallback Optional callback for setting up params
      * and attaching listeners; if provided, will be passed three parameters:
      * this object, the search parameters object, and a unique identifier for
      * the current running search.
-     * @param string $lastView      Last valid view parameter loaded
+     * @param ?string $lastView      Last valid view parameter loaded
      * from a previous search (optional; used for view persistence).
      *
      * @return \VuFind\Search\Base\Results
@@ -101,10 +102,10 @@ class SearchRunner
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
     public function run(
-        $request,
-        $searchClassId = 'Solr',
+        array $requestArray,
+        string $searchClassId = 'Solr',
         $setupCallback = null,
-        $lastView = null
+        ?string $lastView = null
     ) {
         // Increment the ID counter, then save the current value to a variable;
         // since events within this run could theoretically trigger additional
@@ -117,7 +118,8 @@ class SearchRunner
         $results = $this->resultsManager->get($searchClassId);
         $params = $results->getParams();
         $params->setLastView($lastView);
-        $params->initFromRequest($request);
+        $params->initFromRequest($requestArray);
+        $request = new Parameters($requestArray);
 
         if (is_callable($setupCallback)) {
             $setupCallback($this, $params, $runningSearchId, $results);
