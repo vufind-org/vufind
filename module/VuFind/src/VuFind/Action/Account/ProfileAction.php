@@ -124,11 +124,10 @@ class ProfileAction extends AbstractAccountAction
         // Begin building template params:
         $templateParams = compact('user');
 
-        $allowHomeLibrary = $this->config['Account']['set_home_library'] ?? true;
-
         $patron = $this->getHelper(LoginHelper::class)->catalogLogin($request, $response, false);
         if (is_array($patron)) {
             // Process home library parameter (if present and allowed):
+            $allowHomeLibrary = $this->config['Account']['set_home_library'] ?? true;
             $homeLibrary = $this->getPostParam('home_library');
             if ($allowHomeLibrary && null !== $homeLibrary) {
                 // Note: for backward compatibility user's home library defaults to empty string indicating system
