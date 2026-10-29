@@ -31,7 +31,7 @@
 
 namespace VuFind\Action\Account;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -48,6 +48,7 @@ use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
+use VuFind\Session\SessionContainerRegistry;
 use VuFind\Validator\CsrfInterface;
 
 /**
@@ -65,18 +66,18 @@ class VerifyRecoveryOtpAction extends AbstractAccountAction
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager        Authentication manager
-     * @param FollowupHelper                  $followupHelper     Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService User session database service
-     * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
-     * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
-     * @param Connection                      $ilsConnection      ILS connection
-     * @param array                           $config             VuFind configuration
-     * @param CsrfInterface                   $csrf               CSRF validator
-     * @param ILSAuthenticator                $ilsAuthenticator   ILS authenticator
+     * @param AuthManager                     $authManager               Authentication manager
+     * @param FollowupHelper                  $followupHelper            Followup helper
+     * @param EmailAuthenticator              $emailAuthenticator        Email authenticator
+     * @param UserSessionPersistenceInterface $userSessionService        User session database service
+     * @param AuditEventServiceInterface      $auditEventService         Audit event service
+     * @param ServerUrlHelper                 $serverUrlHelper           Server URL helper
+     * @param Mailer                          $mailer                    Mailer
+     * @param Connection                      $ilsConnection             ILS connection
+     * @param array                           $config                    VuFind configuration
+     * @param CsrfInterface                   $csrf                      CSRF validator
+     * @param ILSAuthenticator                $ilsAuthenticator          ILS authenticator
+     * @param Container                       $passwordRecoveryContainer Session container for password recovery data
      */
     public function __construct(
         AuthManager $authManager,
@@ -88,12 +89,13 @@ class VerifyRecoveryOtpAction extends AbstractAccountAction
         AuditEventServiceInterface $auditEventService,
         ServerUrlHelper $serverUrlHelper,
         Mailer $mailer,
-        SessionManager $sessionManager,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
         array $config,
         protected CsrfInterface $csrf,
         protected ILSAuthenticator $ilsAuthenticator,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'PasswordRecovery')]
+        protected Container $passwordRecoveryContainer,
     ) {
         parent::__construct(
             $authManager,
@@ -103,7 +105,6 @@ class VerifyRecoveryOtpAction extends AbstractAccountAction
             $auditEventService,
             $serverUrlHelper,
             $mailer,
-            $sessionManager,
             $ilsConnection,
             $config
         );
@@ -139,8 +140,7 @@ class VerifyRecoveryOtpAction extends AbstractAccountAction
                 ($authId = $authData['authId'] ?? null)
                 && ($recoveryData = $this->emailAuthenticator->verifyAuthenticationCode($authId, $password))
             ) {
-                $sessionStorage = $this->getPasswordRecoveryDataContainer();
-                $sessionStorage['recoveryData'] = $recoveryData;
+                $this->passwordRecoveryContainer['recoveryData'] = $recoveryData;
                 return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'account-resetpassword');
             }
             $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('authentication_error_invalid');

@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\Account;
 
-use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\LoginHelper;
@@ -72,7 +71,6 @@ class DeleteUserLoginTokensAction extends AbstractAccountAction
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
      * @param CsrfInterface                   $csrf               CSRF validator
@@ -87,7 +85,6 @@ class DeleteUserLoginTokensAction extends AbstractAccountAction
         AuditEventServiceInterface $auditEventService,
         ServerUrlHelper $serverUrlHelper,
         Mailer $mailer,
-        SessionManager $sessionManager,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
         array $config,
@@ -101,7 +98,6 @@ class DeleteUserLoginTokensAction extends AbstractAccountAction
             $auditEventService,
             $serverUrlHelper,
             $mailer,
-            $sessionManager,
             $ilsConnection,
             $config
         );

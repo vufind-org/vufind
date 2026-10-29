@@ -31,8 +31,6 @@
 
 namespace VuFind\Action\Account;
 
-use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\Auth\EmailAuthenticator;
@@ -79,7 +77,6 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
      */
@@ -93,7 +90,6 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
         protected AuditEventServiceInterface $auditEventService,
         protected ServerUrlHelper $serverUrlHelper,
         protected Mailer $mailer,
-        protected SessionManager $sessionManager,
         protected Connection $ilsConnection,
         #[Autowire(config: 'config')]
         protected array $config,
@@ -225,16 +221,6 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
     }
 
     /**
-     * Return a session container for use in user email verification.
-     *
-     * @return Container
-     */
-    protected function getUserVerificationContainer(): Container
-    {
-        return new \Laminas\Session\Container('user_verification', $this->sessionManager);
-    }
-
-    /**
      * Checks if a followup url is set.
      *
      * @return bool
@@ -282,15 +268,5 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
                 ]
             );
         }
-    }
-
-    /**
-     * Return a session container for password recovery data.
-     *
-     * @return Container
-     */
-    protected function getPasswordRecoveryDataContainer(): Container
-    {
-        return new \Laminas\Session\Container('PasswordRecovery', $this->sessionManager);
     }
 }

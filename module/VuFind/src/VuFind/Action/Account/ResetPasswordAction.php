@@ -31,7 +31,7 @@
 
 namespace VuFind\Action\Account;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -50,6 +50,7 @@ use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Reset password action.
@@ -66,17 +67,17 @@ class ResetPasswordAction extends AbstractAccountAction
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager        Authentication manager
-     * @param FollowupHelper                  $followupHelper     Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService User session database service
-     * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
-     * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
-     * @param Connection                      $ilsConnection      ILS connection
-     * @param array                           $config             VuFind configuration
-     * @param CaptchaService                  $captchaService     Captcha service
+     * @param AuthManager                     $authManager               Authentication manager
+     * @param FollowupHelper                  $followupHelper            Followup helper
+     * @param EmailAuthenticator              $emailAuthenticator        Email authenticator
+     * @param UserSessionPersistenceInterface $userSessionService        User session database service
+     * @param AuditEventServiceInterface      $auditEventService         Audit event service
+     * @param ServerUrlHelper                 $serverUrlHelper           Server URL helper
+     * @param Mailer                          $mailer                    Mailer
+     * @param Connection                      $ilsConnection             ILS connection
+     * @param array                           $config                    VuFind configuration
+     * @param CaptchaService                  $captchaService            Captcha service
+     * @param Container                       $passwordRecoveryContainer Session container for password recovery data
      */
     public function __construct(
         AuthManager $authManager,
@@ -88,11 +89,12 @@ class ResetPasswordAction extends AbstractAccountAction
         AuditEventServiceInterface $auditEventService,
         ServerUrlHelper $serverUrlHelper,
         Mailer $mailer,
-        SessionManager $sessionManager,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
         array $config,
         protected CaptchaService $captchaService,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'PasswordRecovery')]
+        protected Container $passwordRecoveryContainer,
     ) {
         parent::__construct(
             $authManager,
@@ -102,7 +104,6 @@ class ResetPasswordAction extends AbstractAccountAction
             $auditEventService,
             $serverUrlHelper,
             $mailer,
-            $sessionManager,
             $ilsConnection,
             $config
         );
@@ -122,9 +123,8 @@ class ResetPasswordAction extends AbstractAccountAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $sessionStorage = $this->getPasswordRecoveryDataContainer();
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
-        if (!($recoveryData = $sessionStorage['recoveryData'])) {
+        if (!($recoveryData = $this->passwordRecoveryContainer['recoveryData'])) {
             $flashMessagesHelper->addErrorMessage('recovery_invalid_hash');
             return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'account/login');
         }
@@ -135,7 +135,7 @@ class ResetPasswordAction extends AbstractAccountAction
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request, useCaptcha: $useCaptcha)) {
             try {
                 $this->authManager->resetPassword($recoveryData, $request->getParsedBody());
-                $sessionStorage['recoveryData'] = null;
+                $this->passwordRecoveryContainer['recoveryData'] = null;
                 $flashMessagesHelper->addSuccessMessage('new_password_success');
                 return $this->getHelper(RedirectHelper::class)->getNonRedirectingAccountHomeRedirect($response);
             } catch (AuthException $e) {

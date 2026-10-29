@@ -32,7 +32,6 @@
 namespace VuFind\Action\Account;
 
 use Laminas\Psr7Bridge\Psr7ServerRequest;
-use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -77,7 +76,6 @@ class NewPasswordAction extends AbstractAccountAction
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
      * @param CaptchaService                  $captchaService     Captcha service
@@ -93,7 +91,6 @@ class NewPasswordAction extends AbstractAccountAction
         AuditEventServiceInterface $auditEventService,
         ServerUrlHelper $serverUrlHelper,
         Mailer $mailer,
-        SessionManager $sessionManager,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
         array $config,
@@ -109,7 +106,6 @@ class NewPasswordAction extends AbstractAccountAction
             $auditEventService,
             $serverUrlHelper,
             $mailer,
-            $sessionManager,
             $ilsConnection,
             $config
         );

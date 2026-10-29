@@ -31,7 +31,7 @@
 
 namespace VuFind\Action\Account;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -47,6 +47,7 @@ use VuFind\ILS\Connection;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Account "email not verified" action.
@@ -63,17 +64,17 @@ class EmailNotVerifiedAction extends AbstractAccountAction
     /**
      * Constructor.
      *
-     * @param AuthManager                     $authManager        Authentication manager
-     * @param FollowupHelper                  $followupHelper     Followup helper
-     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
-     * @param UserSessionPersistenceInterface $userSessionService User session database service
-     * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
-     * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
-     * @param Connection                      $ilsConnection      ILS connection
-     * @param array                           $config             VuFind configuration
-     * @param UserServiceInterface            $userService        User database service
+     * @param AuthManager                     $authManager               Authentication manager
+     * @param FollowupHelper                  $followupHelper            Followup helper
+     * @param EmailAuthenticator              $emailAuthenticator        Email authenticator
+     * @param UserSessionPersistenceInterface $userSessionService        User session database service
+     * @param AuditEventServiceInterface      $auditEventService         Audit event service
+     * @param ServerUrlHelper                 $serverUrlHelper           Server URL helper
+     * @param Mailer                          $mailer                    Mailer
+     * @param Connection                      $ilsConnection             ILS connection
+     * @param array                           $config                    VuFind configuration
+     * @param UserServiceInterface            $userService               User database service
+     * @param Container                       $userVerificationContainer Session container for user verification data
      */
     public function __construct(
         AuthManager $authManager,
@@ -85,12 +86,13 @@ class EmailNotVerifiedAction extends AbstractAccountAction
         AuditEventServiceInterface $auditEventService,
         ServerUrlHelper $serverUrlHelper,
         Mailer $mailer,
-        SessionManager $sessionManager,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
         array $config,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserServiceInterface $userService,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'user_verification')]
+        protected Container $userVerificationContainer,
     ) {
         parent::__construct(
             $authManager,
@@ -100,7 +102,6 @@ class EmailNotVerifiedAction extends AbstractAccountAction
             $auditEventService,
             $serverUrlHelper,
             $mailer,
-            $sessionManager,
             $ilsConnection,
             $config
         );
@@ -121,7 +122,7 @@ class EmailNotVerifiedAction extends AbstractAccountAction
         if ($this->getQueryParam('reverify')) {
             $change = false;
             // Case 1: new user:
-            $username = $this->getUserVerificationContainer()->user;
+            $username = $this->userVerificationContainer->user;
             $user = $username ? $this->userService->getUserByUsername($username) : null;
             // Case 2: pending email change:
             if (!$user) {

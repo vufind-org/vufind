@@ -32,6 +32,7 @@
 namespace VuFind\Action\Account;
 
 use Laminas\Psr7Bridge\Psr7ServerRequest;
+use Laminas\Session\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ContextHelper;
@@ -41,9 +42,20 @@ use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\ActionHelper\UserContentHelper;
+use VuFind\Auth\EmailAuthenticator;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\ILS\Connection;
+use VuFind\Mailer\Mailer;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Helper\FollowupHelper;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Account home action.
@@ -57,6 +69,49 @@ use VuFind\Exception\AuthInProgress as AuthInProgressException;
  */
 class HomeAction extends AbstractAccountAction
 {
+    /**
+     * Constructor.
+     *
+     * @param AuthManager                     $authManager               Authentication manager
+     * @param FollowupHelper                  $followupHelper            Followup helper
+     * @param EmailAuthenticator              $emailAuthenticator        Email authenticator
+     * @param UserSessionPersistenceInterface $userSessionService        User session database service
+     * @param AuditEventServiceInterface      $auditEventService         Audit event service
+     * @param ServerUrlHelper                 $serverUrlHelper           Server URL helper
+     * @param Mailer                          $mailer                    Mailer
+     * @param Connection                      $ilsConnection             ILS connection
+     * @param array                           $config                    VuFind configuration
+     * @param Container                       $userVerificationContainer Session container for user verification data
+     */
+    public function __construct(
+        AuthManager $authManager,
+        FollowupHelper $followupHelper,
+        EmailAuthenticator $emailAuthenticator,
+        #[Autowire(container: DbServicePluginManager::class)]
+        UserSessionPersistenceInterface $userSessionService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        AuditEventServiceInterface $auditEventService,
+        ServerUrlHelper $serverUrlHelper,
+        Mailer $mailer,
+        Connection $ilsConnection,
+        #[Autowire(config: 'config')]
+        array $config,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'user_verification')]
+        protected Container $userVerificationContainer,
+    ) {
+        parent::__construct(
+            $authManager,
+            $followupHelper,
+            $emailAuthenticator,
+            $userSessionService,
+            $auditEventService,
+            $serverUrlHelper,
+            $mailer,
+            $ilsConnection,
+            $config
+        );
+    }
+
     /**
      * Display default page for a logged-in user.
      *
@@ -170,7 +225,7 @@ class HomeAction extends AbstractAccountAction
         if ($e instanceof AuthEmailNotVerifiedException) {
             $this->sendFirstVerificationEmail($e->getUser());
             if ($msg == 'authentication_error_email_not_verified_html') {
-                $this->getUserVerificationContainer()->user = $e->getUser()->getUsername();
+                $this->userVerificationContainer->user = $e->getUser()->getUsername();
                 $url = $this->routeHelper
                     ->getUrlFromRoute('account-emailnotverified', queryParams: ['reverify' => 'true']);
                 $msg = [

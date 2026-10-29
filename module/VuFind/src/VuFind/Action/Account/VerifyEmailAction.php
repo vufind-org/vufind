@@ -32,7 +32,6 @@
 namespace VuFind\Action\Account;
 
 use DateTime;
-use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -75,7 +74,6 @@ class VerifyEmailAction extends AbstractAccountAction
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param Mailer                          $mailer             Mailer
-     * @param SessionManager                  $sessionManager     Session manager
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
      * @param UserServiceInterface            $userService        User database service
@@ -91,7 +89,6 @@ class VerifyEmailAction extends AbstractAccountAction
         AuditEventServiceInterface $auditEventService,
         ServerUrlHelper $serverUrlHelper,
         Mailer $mailer,
-        SessionManager $sessionManager,
         Connection $ilsConnection,
         #[Autowire(config: 'config')]
         array $config,
@@ -107,7 +104,6 @@ class VerifyEmailAction extends AbstractAccountAction
             $auditEventService,
             $serverUrlHelper,
             $mailer,
-            $sessionManager,
             $ilsConnection,
             $config
         );
