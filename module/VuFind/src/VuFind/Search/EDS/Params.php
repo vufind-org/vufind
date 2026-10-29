@@ -31,7 +31,6 @@
 
 namespace VuFind\Search\EDS;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
@@ -125,17 +124,17 @@ class Params extends AbstractEDSParams
     /**
      * Pull the search parameters.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(Parameters $request): void
+    public function initFromRequest(array $request): void
     {
         parent::initFromRequest($request);
 
         //make sure that the searchmode parameter is set
-        $searchmode = $request->get('searchmode');
+        $searchmode = $request['searchmode'] ?? null;
         if (isset($searchmode)) {
             $this->getOptions()->setSearchMode($searchmode);
         }

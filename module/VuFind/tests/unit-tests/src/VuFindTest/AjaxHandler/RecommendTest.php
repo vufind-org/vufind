@@ -108,7 +108,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $results = $this->getMockResults();
         $testRequestInitialization = function ($request) {
             // exactly one parameter: mod = foo
-            return $request->get('mod') === 'foo'
+            return $request['mod'] === 'foo'
                 && count($request) === 1;
         };
         $results->getParams()->expects($this->once())

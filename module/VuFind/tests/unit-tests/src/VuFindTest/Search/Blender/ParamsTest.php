@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
@@ -986,7 +985,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'hiddenFilters' => ['foo:"baz"'],
         ];
         $params = $this->getParams();
-        $params->initFromRequest(new Parameters($query));
+        $params->initFromRequest($query);
         $backendParams = $params->getBackendParameters();
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -1013,7 +1012,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Test empty request:
         $params = $this->getParams();
-        $params->initFromRequest(new Parameters([]));
+        $params->initFromRequest([]);
         $backendParams = $params->getBackendParameters();
 
         $solrParams = $backendParams->get('params_Solr')[0];

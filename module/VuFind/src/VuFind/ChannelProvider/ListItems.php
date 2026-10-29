@@ -29,7 +29,6 @@
 
 namespace VuFind\ChannelProvider;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Http\RouteHelper;
@@ -279,7 +278,7 @@ class ListItems extends AbstractChannelProvider
             return $retVal;
         }
         $results = $this->resultsManager->get('Favorites');
-        $results->getParams()->initFromRequest(new Parameters(['id' => $list->getId()]));
+        $results->getParams()->initFromRequest(['id' => $list->getId()]);
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',

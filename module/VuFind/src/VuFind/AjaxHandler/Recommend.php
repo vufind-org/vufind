@@ -93,11 +93,11 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
         $module = $this->recommendPluginManager->get($moduleName);
         $module->setConfig($this->getQueryParam($request, 'params', ''));
         $paramsObj = $this->results->getParams();
-        $request = new Parameters($request->getQueryParams());
+        $request = $request->getQueryParams();
         // Initialize search parameters from Ajax request parameters in case the
         // original request parameters were passed to the Ajax request.
         $paramsObj->initFromRequest($request);
-        $module->init($paramsObj, $request);
+        $module->init($paramsObj, new Parameters($request));
         $module->process($this->results);
 
         // Render recommendations:
