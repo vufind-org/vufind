@@ -153,7 +153,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
         $capturedCallback = null;
         $runner = $this->createMock(SearchRunner::class);
         $runner->method('run')->willReturnCallback(
-            function ($request, $classId, $callback) use (&$capturedCallback): MockObject {
+            function (array $request, string $classId, $callback) use (&$capturedCallback): MockObject {
                 $capturedCallback = $callback;
                 return $this->createMock(Results::class);
             }
