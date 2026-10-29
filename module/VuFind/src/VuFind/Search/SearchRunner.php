@@ -88,7 +88,7 @@ class SearchRunner
     /**
      * Run the search.
      *
-     * @param array   $request       Incoming parameters for search
+     * @param array   $requestArray  Incoming parameters for search
      * @param string  $searchClassId Type of search to perform
      * @param mixed   $setupCallback Optional callback for setting up params
      * and attaching listeners; if provided, will be passed three parameters:
