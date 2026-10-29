@@ -67,18 +67,6 @@ class UserLoginAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // Default to false rather than null because we don't want a default setting to override the action's
-        // accessibility and break the login process!
-        $this->accessPermission = false;
-    }
-
-    /**
      * Display login.
      *
      * This is used for explicit login links within the UI to differentiate them from contextual login links that are

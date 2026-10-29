@@ -380,6 +380,25 @@ $config = [
         //                           config)
         //   - poweredBy             Set "Powered by" displayed in page footer
         'action_config' => [
+            // Account:
+            'vufind_account' => [
+                'actionIds' => [
+                    'account/completelogin',
+                    'account/createaccount',
+                    'account/login',
+                    'account/logout',
+                    'account/recover',
+                    'account/resetpassword',
+                    'account/userlogin',
+                    'account/verify',
+                    'account/verifyotp',
+                    'account/verifyrecoveryotp',
+                ],
+                // Default to false rather than null because we don't want a default setting to override the action's
+                // accessibility and break login, account creation or account recovery:
+                'accessPermission' => false,
+            ],
+
             // Author (multiple backends!):
             'vufind_author_search_author_facets' => [
                 'actionIds' => [

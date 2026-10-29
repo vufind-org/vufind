@@ -49,18 +49,6 @@ use VuFind\ActionHelper\RedirectHelper;
 class LogoutAction extends AbstractAccountAction
 {
     /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // Default to false rather than null because we don't want a default setting to override the action's
-        // accessibility and break the logout process!
-        $this->accessPermission = false;
-    }
-
-    /**
      * Log out with appropriate redirect(s).
      *
      * @param ServerRequestInterface $request  Server request

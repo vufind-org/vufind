@@ -119,18 +119,6 @@ class RecoverAction extends AbstractAccountAction
     }
 
     /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // Default to false rather than null because we don't want a default setting to override the action's
-        // accessibility and break the login process!
-        $this->accessPermission = false;
-    }
-
-    /**
      * Recover an account.
      *
      * @param ServerRequestInterface $request  Server request

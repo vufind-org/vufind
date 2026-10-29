@@ -109,18 +109,6 @@ class ResetPasswordAction extends AbstractAccountAction
     }
 
     /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // Default to false rather than null because we don't want a default setting to override the action's
-        // accessibility and break the login process!
-        $this->accessPermission = false;
-    }
-
-    /**
      * Reset user's password with details from email authentication code.
      *
      * @param ServerRequestInterface $request  Server request

@@ -110,18 +110,6 @@ class VerifyRecoveryOtpAction extends AbstractAccountAction
     }
 
     /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // Default to false rather than null because we don't want a default setting to override the action's
-        // accessibility and break the login process!
-        $this->accessPermission = false;
-    }
-
-    /**
      * Verify account recovery request using a one-time password.
      *
      * @param ServerRequestInterface $request  Server request
