@@ -134,7 +134,7 @@ class DPLATerms implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void

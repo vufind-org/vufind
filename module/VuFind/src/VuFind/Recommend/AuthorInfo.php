@@ -57,13 +57,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * HTTP client.
-     *
-     * @var \Laminas\Http\Client
-     */
-    protected $client;
-
-    /**
      * Wikipedia client.
      *
      * @var Wikipedia
@@ -78,13 +71,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $searchObject;
 
     /**
-     * Results plugin manager.
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
      * Should we use VIAF for authorized names?
      *
      * @var bool
@@ -92,30 +78,19 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $useViaf = false;
 
     /**
-     * Sources of author data that may be used (comma-delimited string; currently
-     * only 'wikipedia' is supported).
-     *
-     * @var string
-     */
-    protected $sources;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      * @param \Laminas\Http\Client                 $client  HTTP client
      * @param string                               $sources Source identifiers
      * (currently, only 'wikipedia' is supported)
      */
     public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \Laminas\Http\Client $client,
-        $sources = 'wikipedia'
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected \Laminas\Http\Client $client,
+        protected $sources = 'wikipedia'
     ) {
-        $this->resultsManager = $results;
-        $this->client = $client;
         $this->wikipedia = new Wikipedia($client);
-        $this->sources = $sources;
     }
 
     /**
@@ -159,7 +134,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void

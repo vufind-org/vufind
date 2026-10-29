@@ -188,7 +188,7 @@ class EuropeanaResults implements
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
@@ -196,7 +196,7 @@ class EuropeanaResults implements
     public function init($params, $request)
     {
         // Collect the best possible search term(s):
-        $this->lookfor = $request->get('lookfor', '');
+        $this->lookfor = $request['lookfor'] ?? '';
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

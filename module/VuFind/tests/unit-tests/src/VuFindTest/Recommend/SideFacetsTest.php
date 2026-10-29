@@ -358,7 +358,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
      * @param ?Results                               $results       results object
      * @param string                                 $settings      settings
-     * @param ?\Laminas\Stdlib\Parameters            $request       request
+     * @param ?array                                 $request       request
      *
      * @return SideFacets
      */
@@ -366,7 +366,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         ?\VuFind\Config\ConfigManagerInterface $configManager = null,
         ?Results $results = null,
         string $settings = '',
-        ?\Laminas\Stdlib\Parameters $request = null
+        ?array $request = null
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
@@ -375,7 +375,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            $request ?? []
         );
         $sf->process($results);
         return $sf;

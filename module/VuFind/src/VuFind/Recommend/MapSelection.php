@@ -50,13 +50,6 @@ class MapSelection implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Basemap configuration parameters.
-     *
-     * @var array
-     */
-    protected $basemapOptions = [];
-
-    /**
      * Default coordinates. Order is WENS.
      *
      * @var array
@@ -106,13 +99,6 @@ class MapSelection implements
     protected $bboxSearchCoords = [];
 
     /**
-     * Search service.
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
      * Query Object.
      *
      * @var \VuFindSearch\Query\QueryInterface
@@ -129,14 +115,12 @@ class MapSelection implements
     /**
      * Constructor.
      *
-     * @param Service $ss                  Search service
+     * @param Service $searchService       Search service
      * @param array   $basemapOptions      Basemap Options
      * @param array   $mapSelectionOptions Map Options
      */
-    public function __construct($ss, $basemapOptions, $mapSelectionOptions)
+    public function __construct(protected $searchService, protected $basemapOptions, $mapSelectionOptions)
     {
-        $this->searchService = $ss;
-        $this->basemapOptions = $basemapOptions;
         $this->defaultCoordinates = explode(
             ',',
             $mapSelectionOptions['default_coordinates']
@@ -165,7 +149,7 @@ class MapSelection implements
      * be needed.
      *
      * @param \VuFind\Search\Solr\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
