@@ -41,6 +41,7 @@ use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
@@ -103,7 +104,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             $this->setSavedFlagSecurely($id, false, $user);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('search_unsave_success');
         } else {
-            throw new \Exception('Missing save and delete parameters.');
+            throw new BadRequestException('Missing save and delete parameters.');
         }
 
         // Forward to the appropriate place when coming from search history:
@@ -135,7 +136,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         // Fail if scheduled searches are disabled.
         $scheduleOptions = $this->searchHistory->getScheduleOptions();
         if (!isset($scheduleOptions[$schedule])) {
-            throw new ForbiddenException('Illegal schedule option: ' . $schedule);
+            throw new BadRequestException('Illegal schedule option: ' . $schedule);
         }
         $baseurl =  rtrim($this->serverUrlHelper->getUrlForPath($this->getRouteHelper()->getUrlFromRoute('home')), '/');
         $savedRow = $this->getSearchRowSecurely($sid, $user);

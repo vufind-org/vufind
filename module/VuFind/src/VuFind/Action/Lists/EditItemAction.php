@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\RecordDriver\AbstractBase as AbstractDriver;
 
 use function in_array;
@@ -73,7 +74,7 @@ class EditItemAction extends AbstractListsAction
 
         // Get current record (and, if applicable, selected list ID) for convenience:
         if (null === ($id = $this->getPostOrQueryParam('id'))) {
-            throw new \Exception('Missing parameter: id');
+            throw new BadRequestException('Missing parameter: id');
         }
         $source = $this->getPostOrQueryParam('source', DEFAULT_SEARCH_BACKEND);
         $driver = $this->recordLoader->load($id, $source, true);

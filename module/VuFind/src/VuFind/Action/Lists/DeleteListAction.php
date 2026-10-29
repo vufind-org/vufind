@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\Lists;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -39,6 +38,7 @@ use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
+use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
@@ -77,7 +77,7 @@ class DeleteListAction extends AbstractListsAction
 
         // Get requested list ID:
         if (null === ($listID = $this->getPostOrQueryParam('listID'))) {
-            throw new Exception('List ID missing');
+            throw new BadRequestException('List ID missing');
         }
 
         // Have we confirmed this?
