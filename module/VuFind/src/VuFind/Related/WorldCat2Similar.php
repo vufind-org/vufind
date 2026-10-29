@@ -68,16 +68,18 @@ class WorldCat2Similar extends Similar
     /**
      * Constructor.
      *
-     * @param \VuFindSearch\Service            $searchService Search service
-     * @param \VuFind\Search\WorldCat2\Options $options       WorldCat2 search options
+     * @param \VuFindSearch\Service             $searchService Search service
+     * @param ?\VuFind\Search\WorldCat2\Options $options       Search options (optional; used to set term limit)
      */
     public function __construct(
         \VuFindSearch\Service $searchService,
         #[Autowire(container: \VuFind\Search\Options\PluginManager::class, service: 'WorldCat2')]
-        \VuFind\Search\WorldCat2\Options $options
+        ?\VuFind\Search\WorldCat2\Options $options = null
     ) {
         parent::__construct($searchService);
-        $this->termLimit = $options->getQueryTermsLimit();
+        if ($options) {
+            $this->setTermLimit($options->getQueryTermsLimit());
+        }
     }
 
     /**
