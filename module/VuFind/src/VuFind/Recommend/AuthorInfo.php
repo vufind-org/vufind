@@ -81,9 +81,11 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
-     * @param \Laminas\Http\Client                 $client  HTTP client
-     * @param string                               $sources Source identifiers
-     * (currently, only 'wikipedia' is supported)
+     * @param \Laminas\Http\Client                 $client         HTTP client
+     * @param string                               $sources        Source identifiers
+     *                                                             (currently, only
+     *                                                             'wikipedia' is
+     *                                                             supported)
      */
     public function __construct(
         protected \VuFind\Search\Results\PluginManager $resultsManager,

@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Recommend;
 
-
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Recommend\AbstractSearchObject;

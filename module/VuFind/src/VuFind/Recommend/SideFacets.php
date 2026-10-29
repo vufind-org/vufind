@@ -260,7 +260,7 @@ class SideFacets extends AbstractFacets
     {
         $mainFacets = $this->mainFacets;
         $checkboxFacets = $this->checkboxFacets;
-        if ($request != null && ($enabledFacets = $request['enabledFacets'] ?? null)) !== null) {
+        if ($request != null && ($enabledFacets = $request['enabledFacets'] ?? null) !== null) {
             $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
             $checkboxFacets = array_intersect_key($checkboxFacets, array_flip($enabledFacets));
         }
