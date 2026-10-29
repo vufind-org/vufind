@@ -74,8 +74,7 @@ class ListAction extends AbstractListsAction
         }
 
         // Check for "delete item" request; parameter may be in GET or POST depending on calling context.
-        $deleteId = $this->getPostOrQueryParam('delete');
-        if ($deleteId) {
+        if ($deleteId = $this->getPostOrQueryParam('delete')) {
             if (!($user = $this->authManager->getUserObject())) {
                 return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
             }
@@ -87,7 +86,6 @@ class ListAction extends AbstractListsAction
             $listID = $listID ? (int)$listID : null;
             // If the user already confirmed the operation, perform the delete now; otherwise prompt for confirmation:
             if ($this->getPostOrQueryParam('confirm')) {
-                $listID = $this->getRouteParam('id') ?: null;
                 $this->performDeleteFavorite($user, $listID, $deleteId, $deleteSource);
             } else {
                 return $this->confirmDeleteFavorite($listID, $deleteId, $deleteSource);

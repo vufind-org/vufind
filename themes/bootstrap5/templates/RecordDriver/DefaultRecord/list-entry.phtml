@@ -221,7 +221,7 @@
             $deleteUrl = null === $list_id
                 ? $this->url('lists-allitems')
                 : $this->url('userList', ['id' => $list_id]);
-            $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+            $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&source=' . urlencode($source);
             $md5Id = md5($id);
           ?>
           <?=
