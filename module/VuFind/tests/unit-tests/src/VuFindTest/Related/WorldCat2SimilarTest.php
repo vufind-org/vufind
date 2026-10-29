@@ -135,7 +135,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
         $options->expects($this->once())
             ->method('getQueryTermsLimit')
             ->willReturn($termLimit);
-            
+
         $similar = new WorldCat2Similar($service, $options);
         $similar->init('', $driver1);
         $this->assertEquals([$driver2, $driver3], $similar->getResults());
