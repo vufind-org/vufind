@@ -84,7 +84,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
      */
     public static function getResultsProvider(): \Iterator
     {
-        yield 'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', 30];
+        yield 'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', null];
         yield 'limit of 1' => ['"fakesh2"', 1];
         yield 'limit of 2' => ['"fakesh1a fakesh1b"', 2];
         yield 'limit of 3' => ['"fakesh1a fakesh1b" "fakesh2"', 3];
