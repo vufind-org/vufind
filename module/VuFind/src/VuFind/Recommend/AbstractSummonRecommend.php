@@ -103,7 +103,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
     public function init($params, $request)
     {
         // Save search query in case we need it later:
-        $this->lookfor = $request[$this->requestParam];
+        $this->lookfor = $request[$this->requestParam] ?? null;
     }
 
     /**

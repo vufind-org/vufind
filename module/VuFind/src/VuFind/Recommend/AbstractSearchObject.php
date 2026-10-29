@@ -139,14 +139,14 @@ abstract class AbstractSearchObject implements RecommendInterface
         // See if we can determine the label for the current search type; first
         // check for an override in the GET parameters, then look at the incoming
         // params object....
-        $typeLabel = $request['typeLabel'];
-        $type = $request['type'];
+        $typeLabel = $request['typeLabel'] ?? null;
+        $type = $request['type'] ?? null;
         if (empty($typeLabel) && !empty($type)) {
             $typeLabel = $params->getOptions()->getLabelForBasicHandler($type);
         }
 
         // Extract a search query:
-        $lookfor = $request[$this->requestParam];
+        $lookfor = $request[$this->requestParam] ?? null;
         if (empty($lookfor) && is_object($params)) {
             $lookfor = $params->getQuery()->getAllTerms();
         }
