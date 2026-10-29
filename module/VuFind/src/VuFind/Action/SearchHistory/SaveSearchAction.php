@@ -92,8 +92,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
             // process, but has the same search already saved in their account).
             $sessionId = $this->sessionManager->getId();
             $rowToCheck = $this->searchService->getSearchByIdAndOwner($id, $sessionId, $user);
-            $duplicateId = $rowToCheck ? $this->isDuplicateOfSavedSearch($rowToCheck, $user) : 0;
-            if ($duplicateId) {
+            if ($duplicateId = $rowToCheck ? $this->isDuplicateOfSavedSearch($rowToCheck, $user) : null) {
                 $this->searchService->deleteSearch($rowToCheck);
                 $id = $duplicateId;
             } else {
