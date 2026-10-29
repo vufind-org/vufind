@@ -131,10 +131,11 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
 
-        $options = $this->createMock(\VuFind\Search\WorldCat2\Options::class);
-        $options->expects($this->once())
-            ->method('getQueryTermsLimit')
-            ->willReturn($termLimit);
+        if ($options = $termLimit ? $this->createMock(\VuFind\Search\WorldCat2\Options::class) : null) {
+            $options->expects($this->once())
+                ->method('getQueryTermsLimit')
+                ->willReturn($termLimit);
+        }
 
         $similar = new WorldCat2Similar($service, $options);
         $similar->init('', $driver1);
