@@ -30,6 +30,7 @@
 namespace VuFind\Related;
 
 use Exception;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
@@ -63,6 +64,21 @@ class WorldCat2Similar extends Similar
      * @var int
      */
     protected int $termLimit = 30;
+
+    /**
+     * Constructor.
+     *
+     * @param \VuFindSearch\Service            $searchService Search service
+     * @param \VuFind\Search\WorldCat2\Options $options       WorldCat2 search options
+     */
+    public function __construct(
+        \VuFindSearch\Service $searchService,
+        #[Autowire(container: \VuFind\Search\Options\PluginManager::class, service: 'WorldCat2')]
+        \VuFind\Search\WorldCat2\Options $options
+    ) {
+        parent::__construct($searchService);
+        $this->termLimit = $options->getQueryTermsLimit();
+    }
 
     /**
      * Add a phrase to the query if it's not already too long.

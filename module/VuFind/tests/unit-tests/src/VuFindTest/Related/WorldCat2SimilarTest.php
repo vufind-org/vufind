@@ -84,7 +84,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
      */
     public static function getResultsProvider(): \Iterator
     {
-        yield 'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', null];
+        yield 'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', 30];
         yield 'limit of 1' => ['"fakesh2"', 1];
         yield 'limit of 2' => ['"fakesh1a fakesh1b"', 2];
         yield 'limit of 3' => ['"fakesh1a fakesh1b" "fakesh2"', 3];
@@ -131,10 +131,11 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
 
-        $similar = new WorldCat2Similar($service);
-        if ($termLimit) {
-            $similar->setTermLimit($termLimit);
-        }
+        $options = $this->createMock(\VuFind\Search\WorldCat2\Options::class);
+        $options->expects($this->once())
+            ->method('getQueryTermsLimit')
+            ->willReturn($termLimit);
+        $similar = new WorldCat2Similar($service, $options);
         $similar->init('', $driver1);
         $this->assertEquals([$driver2, $driver3], $similar->getResults());
     }
