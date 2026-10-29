@@ -152,12 +152,11 @@ class ProfileAction extends AbstractAccountAction
                 $pickup = $this->ilsConnection->getPickUpLocations($patron);
                 $defaultPickupLocation = $this->ilsConnection->getDefaultPickUpLocation($patron);
             } catch (\Exception $e) {
-                // Do nothing; if we're unable to load information about pickup
-                // locations, they are not supported and we should ignore them.
+                // Do nothing; if we're unable to load information about pickup locations, they are not supported and
+                // we should ignore them.
             }
 
-            // Set things up differently depending on whether or not the user is
-            // allowed to set a home library.
+            // Set things up differently depending on whether or not the user is allowed to set a home library.
             if ($allowHomeLibrary) {
                 $templateParams['pickup'] = $pickup;
                 $templateParams['defaultPickupLocation'] = $defaultPickupLocation;
