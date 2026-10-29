@@ -29,7 +29,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\PaginationControl;
 use Psr\Http\Message\ServerRequestInterface;
@@ -178,7 +177,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
-        $paramsObj->initFromRequest(new Parameters($searchParams));
+        $paramsObj->initFromRequest($searchParams);
         $results->performAndProcessSearch();
 
         // For a page parameter being out of the results list,
