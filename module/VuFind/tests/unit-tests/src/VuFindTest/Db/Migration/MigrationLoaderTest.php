@@ -132,9 +132,10 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
         $loader = new MigrationLoader();
         $statement1 = "select * from table where field='has;semicolon';";
         $statement2 = 'drop table foo;';
-        $sql = "$statement1\n$statement2\r$statement1     \n$statement2";
+        $sql = "$statement1\n$statement2\r$statement1     \n$statement2\n"
+            . "$statement1 -- trailing comment\n-- leading comment:\n$statement2";
         $this->assertSame(
-            [$statement1, $statement2, $statement1, $statement2],
+            [$statement1, $statement2, $statement1, $statement2, $statement1, $statement2],
             array_map(
                 fn ($line) => "$line;", // restore semicolons for easier assertion
                 $loader->splitSqlIntoStatements($sql)
