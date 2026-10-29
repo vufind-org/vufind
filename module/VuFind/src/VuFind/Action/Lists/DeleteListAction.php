@@ -40,8 +40,6 @@ use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\UserContentHelper;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use VuFind\Exception\ListPermission as ListPermissionException;
-use VuFind\Exception\LoginRequired as LoginRequiredException;
 
 /**
  * "Delete list" action.
