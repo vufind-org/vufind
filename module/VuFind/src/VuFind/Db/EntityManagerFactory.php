@@ -89,7 +89,6 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $paths = [
             __DIR__ . '/Entity',
         ];
-        $isDevMode = APPLICATION_ENV == 'development';
         if ('cli' === PHP_SAPI) {
             $cache = new CacheItemPoolDecorator(new BlackHole());
         } else {
@@ -103,6 +102,7 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
         }
 
+        $isDevMode = APPLICATION_ENV == 'development';
         $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode, cache: $cache);
         $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
         $config->setProxyDir(LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies');
