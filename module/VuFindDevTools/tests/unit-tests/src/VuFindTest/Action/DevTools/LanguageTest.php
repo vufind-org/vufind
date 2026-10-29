@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for DevTools controller.
+ * Unit tests for DevTools Language action.
  *
  * PHP version 8
  *
@@ -21,7 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Search
+ * @package  DevTools
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -29,21 +29,27 @@
 
 namespace VuFindTest\Controller;
 
+use GuzzleHttp\Psr7\Response;
 use Laminas\I18n\Translator\TextDomain;
-use VuFindDevTools\Controller\DevtoolsController as Controller;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFindDevTools\Action\DevTools\LanguageAction;
+use VuFindTest\Action\AbstractActionTestCase;
 
 use function count;
 
 /**
- * Unit tests for DevTools controller.
+ * Unit tests for DevTools Language action.
  *
  * @category VuFind
- * @package  Search
+ * @package  DevTools
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
+class LanguageTest extends AbstractActionTestCase
 {
     /**
      * Test language action.
@@ -52,12 +58,44 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
      */
     public function testLanguageAction()
     {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
-            ->expects($this->once())->method('getEnabledLocales')
+        $localeSettings = $this->createMock(LocaleSettings::class);
+        $localeSettings->expects($this->once())->method('getEnabledLocales')
             ->willReturn(['en' => 'English']);
-        $c = new Controller($container);
-        $result = $c->languageAction();
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->expects($this->once())->method('renderTemplate')
+            ->willReturnCallback(
+                /**
+                 * Mock renderer.
+                 *
+                 * @param ServerRequestInterface $request        Request
+                 * @param ResponseInterface      $response       Response object
+                 * @param ?string                $template       Template name, or null to use default for the action
+                 * @param array                  $params         Template parameters
+                 * @param array[]                $childTemplates Any child templates; an array of associative array with
+                 * keys 'template' and 'params'
+                 *
+                 * @return ResponseInterface
+                 *
+                 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+                 */
+                function (
+                    ServerRequestInterface $request,
+                    ResponseInterface $response,
+                    ?string $template = null,
+                    array $params = [],
+                    array $childTemplates = [],
+                ): ResponseInterface {
+                    $response->getBody()->write(serialize($params));
+                    return $response;
+                }
+            );
+        $action = new LanguageAction($localeSettings);
+        $this->initializeAction($action, renderer: $renderer);
+
+        $response = $action($this->getServerRequest(), new Response());
+        $body = $response->getBody();
+        $body->rewind();
+        $result = unserialize($body->getContents());
 
         // Test default language selection -- English
         $this->assertEquals('en', $result['mainCode']);
