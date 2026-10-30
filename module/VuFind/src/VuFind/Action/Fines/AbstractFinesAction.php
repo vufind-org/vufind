@@ -107,7 +107,7 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
             if (!($driver instanceof MissingRecord)) {
                 $fines[$i]['driver'] = $driver;
                 if (empty($fines[$i]['title'])) {
-                    $fines[$i]['title'] = $driver->tryMethod('getTitle');
+                    $fines[$i]['title'] = $driver->tryMethod('getShortTitle');
                 }
             }
         }
