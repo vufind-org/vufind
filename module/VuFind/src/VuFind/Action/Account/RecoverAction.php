@@ -163,15 +163,13 @@ class RecoverAction extends AbstractAccountAction
                         return $this->getHelper(RedirectHelper::class)
                             ->redirectToRoute($response, 'account-verifyrecoveryotp');
                     }
+                } elseif (!empty($this->config['Authentication']['recover_be_honest'])) {
+                    $flashMessagesHelper->addErrorMessage('recovery_user_not_found');
                 } else {
-                    if (!empty($this->config['Authentication']['recover_be_honest'])) {
-                        $flashMessagesHelper->addErrorMessage('recovery_user_not_found');
-                    } else {
-                        $flashMessagesHelper->addInfoMessage('recovery_email_sent');
-                        $this->userSessionService->setAccountRecoveryData($authData);
-                        return $this->getHelper(RedirectHelper::class)
-                            ->redirectToRoute($response, 'account-verifyrecoveryotp');
-                    }
+                    $flashMessagesHelper->addInfoMessage('recovery_email_sent');
+                    $this->userSessionService->setAccountRecoveryData($authData);
+                    return $this->getHelper(RedirectHelper::class)
+                        ->redirectToRoute($response, 'account-verifyrecoveryotp');
                 }
             } catch (AuthException $e) {
                 $flashMessagesHelper->addErrorMessage($e->getMessage());
