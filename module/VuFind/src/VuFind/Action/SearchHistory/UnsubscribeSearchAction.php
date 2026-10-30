@@ -35,6 +35,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
+use VuFind\Exception\BadRequest as BadRequestException;
 
 /**
  * "Unsubscribe from a scheduled search" action.
@@ -64,17 +65,17 @@ class UnsubscribeSearchAction extends AbstractSearchHistoryAction
         $key = $this->getQueryParam('key');
         $type = $this->getQueryParam('type', 'alert');
         if (null === $id || null === $key) {
-            throw new \Exception('Missing parameters.');
+            throw new BadRequestException('Missing parameters.');
         }
         $templateParams = [];
         if ($this->getQueryParam('confirm') === '1') {
             if ('alert' === $type) {
                 if (!($search = $this->searchService->getSearchById($id))) {
-                    throw new \Exception('Invalid parameters.');
+                    throw new BadRequestException('Invalid parameters.');
                 }
                 $secret = $this->secretCalculator->getSearchUnsubscribeSecret($search);
                 if ($key !== $secret) {
-                    throw new \Exception('Invalid parameters.');
+                    throw new BadRequestException('Invalid parameters.');
                 }
                 $search->setNotificationFrequency(0);
                 $this->searchService->persistEntity($search);
