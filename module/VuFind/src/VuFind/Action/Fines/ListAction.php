@@ -108,34 +108,23 @@ class ListAction extends AbstractFinesAction
      */
     protected function handleOnlinePayment(array $patron, array $templateParams): array
     {
-        $flashMessages = $this->getHelper(FlashMessagesHelper::class);
-
-        $paymentDetails = $this->onlinePaymentManager->getAndCheckOnlinePaymentDetails(
-            $patron,
-            $templateParams['fines'],
-            null
-        );
-
         $paymentInProgress = $this->paymentService->getPaidPaymentInProgressForPatron($patron['cat_username']);
         if (!($templateParams['registerPaymentLocalIdentifier'] ?? false)) {
+            $flashMessages = $this->getHelper(FlashMessagesHelper::class);
             if ($paymentInProgress) {
                 $flashMessages->addErrorMessage('Payment::registration_failed');
             } else {
                 // Check if payment is permitted:
-                $allowPayment = $paymentDetails['payable'] && $paymentDetails['amount'];
+                $allowPayment = $templateParams['payable'] && $templateParams['payableOnline'];
 
                 // Save current payable amount to session:
-                $this->onlinePaymentManager->storePayableAmount($patron, $paymentDetails['amount']);
+                $this->onlinePaymentManager->storePayableAmount($patron, $templateParams['payableOnline']);
 
                 if ($this->onlinePaymentManager->getAndClearPaymentSuccessFlag()) {
                     $flashMessages->addSuccessMessage('Payment::Payment Successful');
                 }
 
                 $templateParams['onlinePaymentEnabled'] = $allowPayment;
-                $templateParams['selectedIds'] = (array)($this->getPostParam('selectedIDS', []));
-                if ($reason = $paymentDetails['reason'] ?? null) {
-                    $templateParams['nonPayableReason'] = $reason;
-                }
 
                 // Check for a started payment:
                 $templateParams['startedPayment'] = $this->paymentService->getStartedPaymentForPatron(

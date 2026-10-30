@@ -145,6 +145,7 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
             if ($result instanceof ResponseInterface) {
                 return $result;
             }
+            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'fines-list');
         }
 
         return $this->renderTemplate($request, $response, $templateParams);
@@ -171,7 +172,7 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
         $flashMessages = $this->getHelper(FlashMessagesHelper::class);
 
         $paymentInProgress = $this->paymentService->getPaidPaymentInProgressForPatron($patron['cat_username']);
-        if ($templateParams['payable'] && $templateParams['payableOnline'] && !$paymentInProgress) {
+        if ($templateParams['payable'] && $templateParams['selectedAmount'] && !$paymentInProgress) {
             // Check CSRF:
             if (!$this->csrf->isValid($this->getPostParam('csrf'))) {
                 $flashMessages->addErrorMessage('Payment::error_payment_request_failed');
@@ -213,7 +214,7 @@ class PayAction extends AbstractFinesAction implements LoggerAwareInterface
                     $notifyUrl,
                     $user,
                     $patron,
-                    $templateParams['payableOnline'],
+                    $templateParams['selectedAmount'],
                     $templateParams['selectedFines'],
                     'local_payment_id'
                 );

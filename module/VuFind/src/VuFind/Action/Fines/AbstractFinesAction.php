@@ -157,9 +157,14 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
         $paymentDetails = $this->onlinePaymentManager->getAndCheckOnlinePaymentDetails(
             $patron,
             $fines,
+            null
+        );
+        $selectedPaymentDetails = $this->onlinePaymentManager->getAndCheckOnlinePaymentDetails(
+            $patron,
+            $fines,
             $selectedIds
         );
-        if ($selectedIds && !$paymentDetails['fines']) {
+        if ($selectedIds && !$selectedPaymentDetails['fines']) {
             $this->logError("Fines to pay missing from ILS driver for $sourceIls");
             return $templateParams;
         }
@@ -176,10 +181,15 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
         $templateParams['registerPayment'] = false;
         $templateParams['selectFees'] = $selectFees;
         $templateParams['selectedIds'] = $selectedIds;
-        $templateParams['selectedFines'] = $paymentDetails['fines'];
+        $templateParams['selectedFines'] = $selectedPaymentDetails['fines'];
+        $templateParams['selectedAmount'] = $selectedPaymentDetails['amount'];
+        $templateParams['selectedTotal'] = $selectedPaymentDetails['amount'] + $templateParams['serviceFee'];
         $templateParams['exactBalanceRequired'] = $paymentConfig['exactBalanceRequired'] ?? true;
         $templateParams['creditUnsupported'] = $paymentConfig['creditUnsupported'] ?? false;
         $templateParams['paymentMaxDuration'] = (int)($paymentConfig['paymentMaxDuration'] ?? 15);
+        if ($reason = $paymentDetails['reason'] ?? null) {
+            $templateParams['nonPayableReason'] = $reason;
+        }
 
         $templateParams['lastPayment'] = $paymentConfig['receipt'] ?? false
             ? $this->paymentService->getLastPaidPaymentForPatron($patron['cat_username'])
