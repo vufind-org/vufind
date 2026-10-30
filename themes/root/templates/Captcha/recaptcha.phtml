@@ -4,7 +4,7 @@
     'data-sitekey' => $this->captcha->getSiteKey(),
   ];
   $allowedOptions = ['theme', 'type', 'size', 'tabindex', 'callback', 'expired-callback'];
-  $options = array_intersect_key($options, ['theme', 'type', 'size', 'tabindex', 'callback', 'expired-callback']);
+  $options = array_intersect_key($options, $allowedOptions);
   foreach ($options as $key => $value) {
     $data['data-' . $key] = $value;
   }
