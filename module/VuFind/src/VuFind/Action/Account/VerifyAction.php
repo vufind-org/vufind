@@ -51,8 +51,6 @@ use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
 
-use function intval;
-
 /**
  * Verify account recovery hash action.
  *
