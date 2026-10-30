@@ -50,6 +50,9 @@ VuFind.register('recordHoldings', function RecordHoldings() {
     context.querySelectorAll('.checkILLRequest').forEach(
       (element) => _checkRequestIsValid(element, 'ILLRequest', 'place-ill-request')
     );
+    context.querySelectorAll('.checkDigitizationRequest').forEach(
+      (element) => _checkRequestIsValid(element, 'DigitizationRequest', 'place-digitization')
+    );
   }
 
   /**
