@@ -206,7 +206,7 @@ class NewPasswordAction extends AbstractAccountAction
      *
      * @return array
      */
-    protected function resetNewPasswordForm(?UserEntityInterface $userFromHash, array $templateParams)
+    protected function resetNewPasswordForm(?UserEntityInterface $userFromHash, array $templateParams): array
     {
         if ($userFromHash) {
             $this->authManager->updateUserVerifyHash($userFromHash);
