@@ -130,8 +130,8 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
 
         // Attempt to send the email
         try {
-            // If the user is setting up a new account, use the main email
-            // address; if they have a pending address change, use that.
+            // If the user is setting up a new account, use the main email address; if they have a pending address
+            // change, use that.
             $to = ($pending = $user->getPendingEmail()) ? $pending : $user->getEmail();
             $authId = $this->emailAuthenticator->sendAuthenticationCode(
                 $to,
