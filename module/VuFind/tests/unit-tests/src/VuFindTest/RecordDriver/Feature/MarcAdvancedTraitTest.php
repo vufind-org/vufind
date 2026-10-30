@@ -372,4 +372,30 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
             $obj->getLocationOfArchivalMaterialsNotes()
         );
     }
+
+    /**
+     * Data provider for testGetExternalCoverImageUrl.
+     *
+     * @return \Iterator
+     */
+    public static function getExternalCoverImageData(): \Iterator
+    {
+        yield 'cover present' => ['marc/marccover.xml', 'https://example.org/cover.jpg'];
+        yield 'no 856 fields' => ['marc/marctraitsempty.xml', false];
+    }
+
+    /**
+     * Test calling getExternalCoverImageUrl to get the cover URL from MARC 856.
+     *
+     * @param string      $fixture  MARC fixture
+     * @param string|bool $expected Expected cover URL, or false if none
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getExternalCoverImageData')]
+    public function testGetExternalCoverImageUrl(string $fixture, string|bool $expected): void
+    {
+        $obj = $this->getMockDriverFromFixture($fixture);
+        $this->assertSame($expected, $obj->getExternalCoverImageUrl());
+    }
 }
