@@ -87,6 +87,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         };
         $result = $factory($container, $fakeImage::class);
         $this->assertInstanceOf(CaptchaBuilder::class, $result->constructorArgs[0]);
+        $this->assertInstanceOf(\Laminas\Session\Container::class, $result->constructorArgs[1]);
         $this->assertSame($captchaConfig['image_width'] ?? 200, $result->constructorArgs[2]);
         $this->assertSame($captchaConfig['image_height'] ?? 50, $result->constructorArgs[3]);
     }
