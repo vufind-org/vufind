@@ -155,8 +155,7 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
                 ? 'verification_email_change_sent'
                 : 'verification_email_sent';
             $flashMessagesHelper->addInfoMessage($flashMessage);
-            // If this is an email change, send a notification to the old
-            // email address as well.
+            // If this is an email change, send a notification to the old email address as well.
             if ($change) {
                 $this->sendChangeNotificationEmail($user, $to);
             }
