@@ -48,7 +48,6 @@ trait AutowireableTrait
      * @var array
      */
     protected array $autowireable = [
-        'DoctrineModule\Cache\LaminasStorageCache' => false,
     ];
 
     /**
