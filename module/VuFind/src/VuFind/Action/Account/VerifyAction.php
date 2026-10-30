@@ -167,6 +167,6 @@ class VerifyAction extends AbstractAccountAction
      */
     protected function getHashAge(string $hash): int
     {
-        return intval(substr($hash, -10));
+        return (int)(substr($hash, -10));
     }
 }
