@@ -8,6 +8,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
    */
   function selectRecord(treeEl, id) {
     treeEl.querySelectorAll('.hierarchy-tree__selected').forEach(el => el.classList.remove('hierarchy-tree__selected'));
+    treeEl.querySelectorAll('.js-record-link[aria-current]').forEach(el => el.removeAttribute('aria-current'));
     const selectedEl = treeEl.querySelector('[data-record-id=' + CSS.escape(id) + ']');
     if (!selectedEl) {
       console.error('Could not find tree node for ' + id);
@@ -15,6 +16,7 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
     }
     const selectedLiEl = selectedEl.closest('li');
     selectedLiEl.classList.add('hierarchy-tree__selected');
+    selectedEl.setAttribute('aria-current', 'true');
   }
 
   /**
