@@ -1080,7 +1080,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get year of containing record.
+     * Get the start page of the item that contains this record.
      *
      * @return string
      */
@@ -1112,6 +1112,25 @@ class EDS extends DefaultRecord
                     }
                 }
             }
+        }
+        return '';
+    }
+
+    /**
+     * Get the page count.
+     *
+     * @return string
+     */
+    public function getPageCount()
+    {
+        if (
+            $pageCount = $this->extractEbscoDataFromRecordInfo(
+                'BibRecord/BibEntity/PhysicalDescription/Pagination/PageCount'
+            )[0] ?? ''
+        ) {
+            return $pageCount;
+        } elseif ($pageCount = $this->getItem('Name', 'Pages')[0]['Data'] ?? '') {
+            return $pageCount;
         }
         return '';
     }
