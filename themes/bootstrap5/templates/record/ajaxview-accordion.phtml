@@ -4,88 +4,105 @@
   $this->defaultTab = strtolower($this->defaultTab);
   $idSuffixEsc = $this->escapeHtmlAttr(md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier()));
   $parentIdEsc = 'accordion_' . $idSuffixEsc;
+  $activeTab = $this->defaultEmbeddedTab
+    ? strtolower($this->defaultEmbeddedTab)
+    : $this->defaultTab;
+
+  $sections = [];
+
+  $coreMetadata = trim($this->record($this->driver)->getCoreMetadata());
+  if (!empty($coreMetadata)) {
+    $sections['information'] = [
+      'title' => $this->translate('ajaxview_label_information'),
+      'innerContent' => '<div class="list-tab-content record panel-body">'
+        . '<input type="hidden" value="' . $this->escapeHtmlAttr($this->driver->getUniqueId()) . '" class="hiddenId" id="record_id_' . $idSuffixEsc . '">'
+        . '<input type="hidden" value="' . $this->escapeHtmlAttr($this->driver->getSourceIdentifier()) . '" class="hiddenSource">'
+        . $coreMetadata . '</div>',
+      'panelClasses' => '',
+      'headingExtra' => ' loaded',
+      'linkExtra' => '',
+      'collapseClass' => 'panel-collapse collapse',
+    ];
+  }
+
+  $toolbar = trim($this->record($this->driver)->getToolbar());
+  if (!empty($toolbar)) {
+    $sections['tools'] = [
+      'title' => $this->translate('ajaxview_label_tools'),
+      'innerContent' => '<div class="list-tab-content panel-body">' . $toolbar . '</div>',
+      'panelClasses' => '',
+      'headingExtra' => ' loaded',
+      'linkExtra' => '',
+      'collapseClass' => 'panel-collapse collapse',
+    ];
+  }
+
+  $relatedList = $this->related()->getList($this->driver);
+  if ($relatedList != null) {
+    $relatedContent = '';
+    foreach ($relatedList as $current) {
+      $relatedContent .= $this->related()->render($current);
+    }
+    $sections['related'] = [
+      'title' => $this->transEsc('Related Items'),
+      'innerContent' => '<div class="list-tab-content panel-body">' . $relatedContent . '</div>',
+      'panelClasses' => '',
+      'headingExtra' => ' loaded',
+      'linkExtra' => '',
+      'collapseClass' => 'panel-collapse collapse',
+    ];
+  }
+
+  $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding());
+  foreach ($filteredTabs as $tab => $obj) {
+    $tabLower = strtolower($tab);
+    $panelClasses = [];
+    if (!$obj->isVisible()) {
+      $panelClasses[] = 'hidden';
+    }
+    if (!$obj->supportsAjax()) {
+      $panelClasses[] = 'noajax';
+    }
+    if ($activeTab === $tabLower) {
+      $panelClasses[] = 'default';
+    }
+    $headingExtra = ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs))
+      ? ' data-background'
+      : '';
+    $sections[$tabLower] = [
+      'title' => $this->transEsc($obj->getDescription()),
+      'innerContent' => '',
+      'panelClasses' => implode(' ', $panelClasses),
+      'headingExtra' => $headingExtra,
+      'linkExtra' => ' data-href="' . $this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab)) . '#tabnav"',
+      'collapseClass' => 'list-tab-content panel-collapse collapse',
+    ];
+  }
+
+  if (!empty($this->embeddedTabs)) {
+    $ordered = [];
+    foreach ($this->embeddedTabs as $tabName) {
+      $key = strtolower($tabName);
+      if (isset($sections[$key])) {
+        $ordered[$key] = $sections[$key];
+      }
+    }
+    $sections = $ordered;
+  }
 ?>
 
 <div class="list-tabs panel-group" id="<?=$parentIdEsc?>" role="tablist">
-  <?php $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
-  <?php if (!empty($coreMetadata)): ?>
-    <div class="panel panel-default">
-      <div id="information_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-bs-toggle="collapse" data-bs-target="#information_<?=$idSuffixEsc?>-content" role="tab">
+  <?php foreach ($sections as $key => $section): ?>
+    <?php $linkExtra = $section['linkExtra']; ?>
+    <div class="panel panel-default<?= $section['panelClasses'] ? ' ' . $section['panelClasses'] : '' ?>">
+      <div id="<?=$key?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading<?=$section['headingExtra'] ?>" data-bs-toggle="collapse" data-bs-target="#<?=$key?>_<?=$idSuffixEsc?>-content" role="tab">
         <h4 class="panel-title">
-          <a class="accordion-toggle">
-            <?=$this->translate('ajaxview_label_information') ?>
-          </a>
+          <a class="accordion-toggle"<?=$linkExtra ?>><?=$section['title']?></a>
         </h4>
       </div>
-      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'information'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
-        <div class="list-tab-content record panel-body">
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
-          <?=$coreMetadata ?>
-        </div>
+      <div id="<?=$key?>_<?=$idSuffixEsc?>-content" class="<?=$section['collapseClass']?><?= $activeTab === $key ? ' show' : '' ?>" data-bs-parent="#<?=$parentIdEsc?>">
+        <?=$section['innerContent'] ?>
       </div>
-    </div>
-  <?php endif; ?>
-
-  <?php $toolbar = $this->record($this->driver)->getToolbar(); ?>
-  <?php if (!empty($toolbar)): ?>
-    <div class="panel panel-default">
-      <div id="tools_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-bs-toggle="collapse" data-bs-target="#tools_<?=$idSuffixEsc?>-content" role="tab">
-        <h4 class="panel-title">
-          <a class="accordion-toggle">
-            <?=$this->translate('ajaxview_label_tools') ?>
-          </a>
-        </h4>
-      </div>
-      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'tools'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
-        <div class="list-tab-content panel-body">
-          <?=$toolbar ?>
-        </div>
-      </div>
-    </div>
-  <?php endif; ?>
-
-  <?php $relatedList = $this->related()->getList($this->driver); ?>
-  <?php if ($relatedList != null): ?>
-    <div class="panel panel-default">
-      <div id="related_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-bs-toggle="collapse" data-bs-target="#related_<?=$idSuffixEsc?>-content" role="tab">
-        <h4 class="panel-title">
-          <a class="accordion-toggle">
-            <?=$this->transEsc('Related Items')?>
-          </a>
-        </h4>
-      </div>
-      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'related'): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>">
-        <div class="list-tab-content panel-body">
-          <?php foreach ($relatedList as $current): ?>
-            <?=$this->related()->render($current)?>
-          <?php endforeach; ?>
-        </div>
-      </div>
-    </div>
-  <?php endif; ?>
-  <?php $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding()); ?>
-  <?php foreach ($filteredTabs as $tab => $obj): ?>
-    <?php // add current tab to breadcrumbs if applicable:
-      $desc = $obj->getDescription();
-      $tab_classes = [];
-      if (!$obj->isVisible()) {
-        $tab_classes[] = 'hidden';
-      }
-      if (!$obj->supportsAjax()) {
-        $tab_classes[] = 'noajax';
-      }
-      if ($this->defaultTab === strtolower($tab)) {
-        $tab_classes[] = 'default';
-      }
-    ?>
-    <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
-      <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading" data-bs-toggle="collapse" data-bs-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?> role="tab">
-        <h4 class="panel-title">
-          <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
-        </h4>
-      </div>
-      <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($this->defaultTab === strtolower($tab)): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>"></div>
     </div>
   <?php endforeach; ?>
 </div>
