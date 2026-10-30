@@ -279,3 +279,18 @@ forms:
         type: textarea
         label: Comments
 
+  TestDate:
+    fields:
+      - name: date
+        type: date
+        label: date
+        required: true
+
+  TestDateWithLimits:
+    fields:
+      - name: date
+        type: date
+        label: date
+        required: true
+        minValue: "2026-01-01"
+        maxValue: "2026-12-31"
