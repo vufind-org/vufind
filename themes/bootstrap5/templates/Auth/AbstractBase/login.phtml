@@ -3,7 +3,7 @@
   $preAuthenticationData = $account->getPreAuthenticationData() ?? [];
 ?>
 <?php if (!$account->hasSessionInitiator()): // display default login form if no login URL provided ?>
-  <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" class="form-login">
+  <form method="post" action="<?=$this->url('account-home')?>" name="loginForm" class="form-login">
     <?=$this->auth()->getLoginFields()?>
     <?php if ($account->supportsPersistentLogin()) : ?>
       <div class="form-group">
@@ -21,10 +21,10 @@
         <input class="btn btn-link cancel-link" type="submit" name="processCancel" value="<?=$this->transEscAttr('navigate_back')?>">
       <?php else: ?>
         <?php if ($account->supportsCreation()): ?>
-          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+          <a class="btn btn-link createAccountLink" href="<?=$this->url('account-createaccount') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
         <?php endif; ?>
         <?php if ($account->supportsRecovery()): ?>
-          <a class="btn btn-link recover-account-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+          <a class="btn btn-link recover-account-link" href="<?=$this->url('account-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
         <?php endif; ?>
       <?php endif; ?>
     </div>

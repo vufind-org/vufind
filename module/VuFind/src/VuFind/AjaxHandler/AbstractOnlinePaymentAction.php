@@ -49,7 +49,6 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
     \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-    use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
      * Constructor.
@@ -63,9 +62,8 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
         SessionSettings $sessionSettings,
         protected PaymentServiceInterface $paymentService,
         protected OnlinePaymentManager $onlinePaymentManager,
-        AuditEventServiceInterface $auditEventService
+        protected AuditEventServiceInterface $auditEventService
     ) {
         parent::__construct($sessionSettings);
-        $this->auditEventService = $auditEventService;
     }
 }

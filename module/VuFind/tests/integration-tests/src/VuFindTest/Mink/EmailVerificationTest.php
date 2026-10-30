@@ -153,7 +153,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->resetEmailLog();
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log back in
@@ -173,7 +173,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#newemail .btn-primary');
 
         // Confirm that the email hasn't changed yet (not yet verified):
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->assertStringContainsString(
             'username1@ignore.com',
             $this->findCssAndGetText($page, 'table.table-striped')
@@ -211,7 +211,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Confirm that the email has now changed:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->assertStringContainsString(
             'changed@example.com',
             $this->findCssAndGetText($page, 'table.table-striped')

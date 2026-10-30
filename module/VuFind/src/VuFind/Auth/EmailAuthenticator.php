@@ -106,7 +106,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $email,
         $data,
         $urlParams,
-        $linkRoute = 'myresearch-home',
+        $linkRoute = 'account-home',
         $routeParams = [],
         $subject = 'email_login_subject',
         $template = 'Email/login-link.phtml',

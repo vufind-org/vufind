@@ -57,6 +57,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'account/cataloglogin' => Account\CatalogLoginAction::class,
+        'account/changeemail' => Account\ChangeEmailAction::class,
+        'account/changepassword' => Account\ChangePasswordAction::class,
+        'account/completelogin' => Account\CompleteLoginAction::class,
+        'account/createaccount' => Account\CreateAccountAction::class,
+        'account/deleteaccount' => Account\DeleteAccountAction::class,
+        'account/deletelogintoken' => Account\DeleteLoginTokenAction::class,
+        'account/deleteuserlogintokens' => Account\DeleteUserLoginTokensAction::class,
+        'account/emailnotverified' => Account\EmailNotVerifiedAction::class,
+        'account/newpassword' => Account\NewPasswordAction::class,
+        'account/resetpassword' => Account\ResetPasswordAction::class,
+        'account/usercontent' => Account\UserContentAction::class,
+        'account/userlogin' => Account\UserLoginAction::class,
+        'account/verifyemail' => Account\VerifyEmailAction::class,
+        'account/verifyotp' => Account\VerifyOtpAction::class,
+        'account/verifyrecoveryotp' => Account\VerifyRecoveryOtpAction::class,
+
         'ajax/json' => Ajax\JsonAction::class,
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
@@ -184,9 +201,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
         'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
 
-        'missingrecord/home' => MissingRecord\HomeAction::class,
+        'lists/allitems' => Lists\AllItemsAction::class,
+        'lists/deleteitems' => Lists\DeleteItemsAction::class,
+        'lists/deletelist' => Lists\DeleteListAction::class,
+        'lists/edititem' => Lists\EditItemAction::class,
+        'lists/editlist' => Lists\EditListAction::class,
 
-        'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
+        'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'oai/authserver' => Oai\AuthServerAction::class,
 
@@ -281,6 +302,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/save' => Record\SaveAction::class,
         'search2record/sms' => Record\SmsAction::class,
 
+        'searchhistory/savesearch' => SearchHistory\SaveSearchAction::class,
+        'searchhistory/schedulesearch' => SearchHistory\ScheduleSearchAction::class,
+        'searchhistory/unsubscribesearch' => SearchHistory\UnsubscribeSearchAction::class,
+
         // summon/advanced has a custom implementation that is autodiscovered
         'summon/home' => Search\HomeAction::class,
         'summon/search' => Search\ResultsAction::class,
@@ -365,8 +390,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Illrequests' => 'IllRequests',
         'Librarycards' => 'LibraryCards',
-        'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
         'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
@@ -374,6 +399,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Shortlink' => 'ShortLink',
         'Simulatedsso' => 'SimulatedSSO',
         'Sitemap' => 'SiteMap',
+        'Storageretrievalrequests' => 'StorageRetrievalRequests',
         'Worldcat' => 'WorldCat',
     ];
 

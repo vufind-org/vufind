@@ -158,7 +158,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
             return 'foo-serverurl';
         };
         $mockUrl = function ($route, $params, $query) {
-            $this->assertEquals('myresearch-home', $route);
+            $this->assertEquals('account-home', $route);
             $this->assertEquals([], $params);
             $this->assertEquals(['query' => ['hash' => 'foo-hash']], $query);
             return 'foo-url';
