@@ -33,7 +33,6 @@ namespace VuFind\Recommend;
 use Laminas\Feed\Reader\Reader as FeedReader;
 
 use function count;
-use function intval;
 use function is_object;
 
 /**
@@ -106,13 +105,6 @@ class EuropeanaResults implements
     protected $sitePath;
 
     /**
-     * API key.
-     *
-     * @var string
-     */
-    protected $key;
-
-    /**
      * Search string.
      *
      * @var string
@@ -131,9 +123,8 @@ class EuropeanaResults implements
      *
      * @param string $key API key
      */
-    public function __construct($key)
+    public function __construct(protected $key)
     {
-        $this->key = $key;
     }
 
     /**
@@ -152,7 +143,7 @@ class EuropeanaResults implements
         $this->requestParam = (isset($params[1]) && !empty($params[1]))
             ? $params[1] : 'searchTerms';
         $this->limit = isset($params[2]) && is_numeric($params[2])
-                        && $params[2] > 0 ? intval($params[2]) : 5;
+                        && $params[2] > 0 ? (int)($params[2]) : 5;
         $this->excludeProviders = (isset($params[3]) && !empty($params[3]))
             ? $params[3] : [];
         //make array
@@ -197,7 +188,7 @@ class EuropeanaResults implements
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
@@ -205,7 +196,7 @@ class EuropeanaResults implements
     public function init($params, $request)
     {
         // Collect the best possible search term(s):
-        $this->lookfor = $request->get('lookfor', '');
+        $this->lookfor = $request['lookfor'] ?? '';
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

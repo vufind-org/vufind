@@ -98,7 +98,7 @@ class TopFacets extends AbstractFacets
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter object representing user
      * request.
      *
      * @return void

@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Recommend;
 
-use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Recommend\AbstractSearchObject;
@@ -133,7 +132,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
         $recommend->setConfig('');
 
         $params = $this->createMock(Params::class);
-        $request = new Parameters(['lookfor' => 'test query']);
+        $request = ['lookfor' => 'test query'];
         $recommend->init($params, $request);
 
         $this->assertSame($mockResults, $recommend->getResults());
@@ -154,7 +153,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
         $capturedCallback = null;
         $runner = $this->createMock(SearchRunner::class);
         $runner->method('run')->willReturnCallback(
-            function ($request, $classId, $callback) use (&$capturedCallback): MockObject {
+            function (array $request, string $classId, $callback) use (&$capturedCallback): MockObject {
                 $capturedCallback = $callback;
                 return $this->createMock(Results::class);
             }
@@ -164,7 +163,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
         $recommend->setConfig('lookfor:5:Heading:MyFilterSection');
 
         $outerParams = $this->createMock(Params::class);
-        $request = new Parameters(['lookfor' => 'test query']);
+        $request = ['lookfor' => 'test query'];
         $recommend->init($outerParams, $request);
         $this->assertIsCallable($capturedCallback);
 
@@ -198,7 +197,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
         $recommend->setConfig('');
         $recommend->init(
             $this->createStub(Params::class),
-            new Parameters(['lookfor' => 'test query'])
+            ['lookfor' => 'test query']
         );
 
         $recommend->process($this->createMock(Results::class));

@@ -94,7 +94,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
      * @param ?\VuFind\Search\Solr\Results           $results       populated results object
      * @param ?\VuFind\Search\Solr\Results           $emptyResults  empty results object
      * @param string                                 $settings      settings
-     * @param ?\Laminas\Stdlib\Parameters            $request       request
+     * @param ?array                                 $request       request
      *
      * @return ExpandFacets
      */
@@ -103,7 +103,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         ?\VuFind\Search\Solr\Results $results = null,
         ?\VuFind\Search\Solr\Results $emptyResults = null,
         string $settings = '',
-        ?\Laminas\Stdlib\Parameters $request = null
+        ?array $request = null
     ): ExpandFacets {
         if (null === $results) {
             $results = $this->getMockResults();
@@ -115,7 +115,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            $request ?? []
         );
         $sf->process($results);
         return $sf;
