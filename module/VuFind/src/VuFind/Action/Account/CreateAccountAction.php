@@ -36,6 +36,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
+use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\EmailAuthenticator;
@@ -145,7 +146,8 @@ class CreateAccountAction extends AbstractAccountAction
         ) {
             try {
                 $this->authManager->create(Psr7ServerRequest::toLaminas($request));
-                return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'account-home');
+                // Note: we must use forwarding to avoid trouble with lightbox in MyResearchBulkAction.
+                return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, 'account/home');
             } catch (AuthEmailNotVerifiedException $e) {
                 $this->sendFirstVerificationEmail($e->getUser());
                 return $this->getHelper(RedirectHelper::class)
