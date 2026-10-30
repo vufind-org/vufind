@@ -66,7 +66,7 @@ class UserContentAction extends AbstractAccountAction
             return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
         $tabs = array_keys($this->getHelper(UserContentHelper::class)->getUserContentTabs());
-        if (!$tabs) {
+        if (!isset($tabs[0])) {
             throw new ForbiddenException('User content disabled.');
         }
         return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, $tabs[0] . '-userlist');
