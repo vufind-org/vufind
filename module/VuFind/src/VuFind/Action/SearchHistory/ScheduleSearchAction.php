@@ -84,7 +84,7 @@ class ScheduleSearchAction extends AbstractSearchHistoryAction
 
         // If the user has just logged in, the search might be a duplicate; if so, let's switch to the pre-existing
         // version instead.
-        if ($duplicateId = $search ? $this->isDuplicateOfSavedSearch($search, $user) : 0) {
+        if ($duplicateId = $search ? $this->isDuplicateOfSavedSearch($search, $user) : null) {
             $this->searchService->deleteSearch($search);
             return $this->getHelper(RedirectHelper::class)->redirectToRoute(
                 $response,
