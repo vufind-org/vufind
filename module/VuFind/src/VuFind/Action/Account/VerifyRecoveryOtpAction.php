@@ -126,7 +126,7 @@ class VerifyRecoveryOtpAction extends AbstractAccountAction
             return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'account-home');
         }
 
-        // Process form submission (N.B. the submit element name is important to distinquish from the password reset
+        // Process form submission (N.B. the submit element name is important to distinguish from the password reset
         // form we forward to):
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request, 'verify')) {
             if (!$this->csrf->isValid($this->getPostParam('csrf'))) {
