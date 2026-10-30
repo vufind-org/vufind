@@ -124,10 +124,9 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
     protected function getAccountStatus(array $fines): ?array
     {
         // Collect up to date stats for ajax account notifications:
-        if (!empty($this->config['Authentication']['enableAjax'])) {
-            return $this->getFineSummary($fines, $this->currencyFormatter);
-        }
-        return null;
+        return empty($this->config['Authentication']['enableAjax'])
+            ? null
+            : $this->getFineSummary($fines, $this->currencyFormatter);
     }
 
     /**
