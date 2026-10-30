@@ -30,7 +30,9 @@
 namespace VuFindTest\Captcha;
 
 use Gregwar\Captcha\CaptchaBuilder;
+use Laminas\Session\Container;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Session\SessionContainerRegistry;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function func_get_args;
@@ -67,6 +69,9 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             'Captcha' => $captchaConfig,
         ];
         $container->set(ConfigManagerInterface::class, $this->getMockConfigManager(compact('config')));
+        $mockRegistry = $this->createMock(SessionContainerRegistry::class);
+        $mockRegistry->method('get')->willReturn(new Container('test'));
+        $container->set(SessionContainerRegistry::class, $mockRegistry);
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {
@@ -87,7 +92,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         };
         $result = $factory($container, $fakeImage::class);
         $this->assertInstanceOf(CaptchaBuilder::class, $result->constructorArgs[0]);
-        $this->assertInstanceOf(\Laminas\Session\Container::class, $result->constructorArgs[1]);
+        $this->assertInstanceOf(Container::class, $result->constructorArgs[1]);
         $this->assertSame($captchaConfig['image_width'] ?? 200, $result->constructorArgs[2]);
         $this->assertSame($captchaConfig['image_height'] ?? 50, $result->constructorArgs[3]);
     }
