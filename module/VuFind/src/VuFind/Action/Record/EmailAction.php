@@ -43,9 +43,12 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Config\ConfigManager;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Mailer\Mailer;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
+use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 use VuFind\RecordTab\TabManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\ResultScroller;
@@ -61,8 +64,10 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EmailAction extends AbstractRecordAction
+class EmailAction extends AbstractRecordAction implements TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     /**
      * Constructor.
      *
@@ -138,7 +143,7 @@ class EmailAction extends AbstractRecordAction
                 'driver' => $driver,
                 'useCaptcha' => $this->captchaService->active('email'),
             ],
-            $this->mailer->getDefaultRecordSubject($driver)
+            $this->getDefaultRecordSubject($driver)
         );
         $this->mailer->setMaxRecipients($templateParams['maxRecipients']);
 
@@ -151,7 +156,7 @@ class EmailAction extends AbstractRecordAction
             try {
                 $cc = $this->getPostParam('ccself') && $templateParams['from'] !== $templateParams['to']
                     ? $templateParams['from'] : null;
-                $this->mailer->sendRecord(
+                $this->sendRecord(
                     $templateParams['to'],
                     $templateParams['from'],
                     $templateParams['message'],
@@ -168,5 +173,45 @@ class EmailAction extends AbstractRecordAction
 
         // Display the template:
         return $this->renderTemplate($request, $response, $templateParams, 'record/email');
+    }
+
+    /**
+     * Send an email message representing a record.
+     *
+     * @param string         $to      Recipient email address(es) (or delimited list)
+     * @param string         $from    Sender name and email address
+     * @param string         $message User notes to include in message
+     * @param AbstractRecord $driver  Record being emailed
+     * @param ?string        $subject Subject for email (optional)
+     * @param ?string        $cc      CC recipient(s) (null for none)
+     *
+     * @return void
+     */
+    protected function sendRecord(
+        string $to,
+        string $from,
+        string $message,
+        AbstractRecord $driver,
+        ?string $subject = null,
+        ?string $cc = null,
+    ): void {
+        $body = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/record.phtml',
+            params: compact('driver', 'to', 'from', 'message')
+        );
+        $subject ??= $this->getDefaultRecordSubject($driver);
+        $this->mailer->send($to, $from, $subject, $body, $cc);
+    }
+
+    /**
+     * Get the default subject line for sendRecord().
+     *
+     * @param AbstractRecord $driver Record being emailed
+     *
+     * @return string
+     */
+    public function getDefaultRecordSubject(AbstractRecord $driver): string
+    {
+        return $this->translate('Library Catalog Record') . ': ' . $driver->getBreadcrumb();
     }
 }
