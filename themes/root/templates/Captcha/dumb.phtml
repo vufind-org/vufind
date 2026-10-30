@@ -1,5 +1,5 @@
 <pre><?=$this->escapeHtml(strrev($this->captcha->getWord()))?></pre>
 <p>
-  <label for="<?=$this->captcha->getHtmlInputId()?>"><?=$this->transEsc('Please type this word backwards')?></label>
+  <label for="<?=$this->captcha->getHtmlInputId()?>"><?=$this->transEsc('dumb_captcha_prompt')?></label>
   <input name="<?=$this->captcha->getHtmlInputId()?>" id="<?=$this->captcha->getHtmlInputId()?>">
 </p>
