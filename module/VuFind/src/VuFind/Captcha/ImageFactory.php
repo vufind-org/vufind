@@ -34,10 +34,9 @@ use Gregwar\Captcha\PhraseBuilder;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Image CAPTCHA factory.
@@ -97,7 +96,7 @@ class ImageFactory implements FactoryInterface
 
         return new $requestedName(
             $captchaBuilder,
-            new Container('ImageCaptcha', $container->get(SessionManager::class)),
+            $container->get(SessionContainerRegistry::class)->get('ImageCaptcha'),
             $width,
             $height
         );
