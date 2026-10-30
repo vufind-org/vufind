@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Laminas base CAPTCHA.
+ * Abstract base class for CAPTCHAs with an input field.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,85 +24,53 @@
  * @category VuFind
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\Captcha;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-
 /**
- * Laminas base CAPTCHA.
+ * Abstract base class for CAPTCHAs with an input field.
  *
  * @category VuFind
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class LaminasBase extends AbstractBase
+abstract class AbstractInputCaptcha extends AbstractBase
 {
-    /**
-     * Laminas CAPTCHA object.
-     *
-     * @var \Laminas\Captcha\AbstractWord
-     */
-    protected $captcha;
-
     /**
      * HTML input name for generated captcha.
      *
      * @var string
      */
-    protected $captchaHtmlInternalId = 'captcha-id';
+    protected string $captchaHtmlInternalId = 'captcha-id';
 
     /**
      * HTML input name for user input.
      *
      * @var string
      */
-    protected $captchaHtmlInputId = 'captcha-input';
+    protected string $captchaHtmlInputId = 'captcha-input';
+
+    /**
+     * Session lifetime for the captcha data.
+     *
+     * @var int
+     */
+    protected int $timeout = 300;
 
     /**
      * Constructor.
-     *
-     * @param \Laminas\Captcha\AbstractWord $captcha Laminas CAPTCHA object
      */
-    public function __construct(\Laminas\Captcha\AbstractWord $captcha)
+    public function __construct()
     {
-        $this->captcha = $captcha;
         $this->captchaHtmlInputId .= '-' . $this->getId();
         $this->captchaHtmlInternalId .= '-' . $this->getId();
-    }
-
-    /**
-     * Pull the captcha fields from request params and check them for accuracy.
-     *
-     * @param array $postParams  POST params
-     * @param array $queryParams Query params
-     *
-     * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function verify(array $postParams, array $queryParams): bool
-    {
-        $validateParams = [
-            'id' => $postParams[$this->captchaHtmlInternalId] ?? null,
-            'input' => $postParams[$this->captchaHtmlInputId] ?? null,
-        ];
-        return $this->captcha->isValid($validateParams);
-    }
-
-    /**
-     * Laminas CAPTCHA object.
-     *
-     * @return \Laminas\Captcha\AbstractWord
-     */
-    public function getCaptcha(): \Laminas\Captcha\AbstractWord
-    {
-        return $this->captcha;
     }
 
     /**

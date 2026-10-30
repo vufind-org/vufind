@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Laminas "Dumb" CAPTCHA.
+ * A simple captcha that asks for a reversed string.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,8 +30,12 @@
 
 namespace VuFind\Captcha;
 
+use Laminas\Session\Container;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
+
 /**
- * Laminas "Dumb" CAPTCHA.
+ * A simple captcha that asks for a reversed string.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -38,6 +43,48 @@ namespace VuFind\Captcha;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Dumb extends LaminasBase
+class Dumb extends AbstractInputCaptcha
 {
+    /**
+     * Constructor.
+     *
+     * @param Container $sessionContainer Session container for captcha string
+     */
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'DumbCaptcha')]
+        protected Container $sessionContainer,
+    ) {
+        parent::__construct();
+        $this->sessionContainer->setExpirationHops(1, null);
+        $this->sessionContainer->setExpirationSeconds($this->timeout);
+    }
+
+    /**
+     * Get the captcha word.
+     *
+     * @return string
+     */
+    public function getWord(): string
+    {
+        $str = substr(str_shuffle(md5(microtime(true))), 0, 8);
+        $this->sessionContainer->phrase = $str;
+        return $str;
+    }
+
+    /**
+     * Pull the captcha field from request params and check it.
+     *
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function verify(array $postParams, array $queryParams): bool
+    {
+        $param = $this->getHtmlInputId();
+        $str = $postParams[$param] ?? $queryParams[$param] ?? null;
+        return $str === $this->sessionContainer->phrase;
+    }
 }

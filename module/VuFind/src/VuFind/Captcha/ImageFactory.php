@@ -29,13 +29,15 @@
 
 namespace VuFind\Captcha;
 
+use Gregwar\Captcha\CaptchaBuilder;
+use Gregwar\Captcha\PhraseBuilder;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-
-use function is_callable;
 
 /**
  * Image CAPTCHA factory.
@@ -71,45 +73,33 @@ class ImageFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheOptions = $cacheManager->getCache('public')->getOptions();
-        if (!is_callable([$cacheOptions, 'getCacheDir'])) {
-            throw new \Exception('Image CAPTCHA requires access to public cache; is cache disabled?');
-        }
-        $imageOptions = [
-            'font' => APPLICATION_PATH
-                    . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
-            'imgDir' => $cacheOptions->getCacheDir(),
-        ];
-
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray('config')['Captcha'] ?? [];
-        if (isset($config['image_length'])) {
-            $imageOptions['wordLen'] = $config['image_length'];
-        }
-        if (isset($config['image_width'])) {
-            $imageOptions['width'] = $config['image_width'];
-        }
-        if (isset($config['image_height'])) {
-            $imageOptions['height'] = $config['image_height'];
-        }
-        if (isset($config['image_fontSize'])) {
-            $imageOptions['fsize'] = $config['image_fontSize'];
-        }
-        if (isset($config['image_dotNoiseLevel'])) {
-            $imageOptions['dotNoiseLevel'] = $config['image_dotNoiseLevel'];
-        }
-        if (isset($config['image_lineNoiseLevel'])) {
-            $imageOptions['lineNoiseLevel'] = $config['image_lineNoiseLevel'];
-        }
 
-        $baseUrl = rtrim(
-            ($container->get('ViewHelperManager')->get('url'))('home') ?? '',
-            '/'
-        );
+        $phraseBuilder = new PhraseBuilder((int)($config['image_length'] ?? 8));
+        $captchaBuilder = new CaptchaBuilder(builder: $phraseBuilder);
+        $captchaBuilder->setImageType('png');
+
+        if (null !== ($distortion = $config['image_distortion'] ?? null)) {
+            $captchaBuilder->setDistortion((bool)$distortion);
+        }
+        if (null !== ($scatter = $config['image_scatter_effect'] ?? null)) {
+            $captchaBuilder->setScatterEffect((bool)$scatter);
+        }
+        if (null !== ($behind = $config['image_max_behind_lines'] ?? null)) {
+            $captchaBuilder->setMaxBehindLines((int)$behind);
+        }
+        if (null !== ($front = $config['image_max_front_lines'] ?? null)) {
+            $captchaBuilder->setMaxFrontLines((int)$front);
+        }
+        $width = (int)($config['image_width'] ?? 200);
+        $height = (int)($config['image_height'] ?? 50);
+
         return new $requestedName(
-            new \Laminas\Captcha\Image($imageOptions),
-            "$baseUrl/cache/"
+            $captchaBuilder,
+            new Container('ImageCaptcha', $container->get(SessionManager::class)),
+            $width,
+            $height
         );
     }
 }

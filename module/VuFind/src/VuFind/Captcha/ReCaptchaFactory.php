@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
+use VuFind\Http\ReCaptchaRequestMethod\GuzzlePost;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -47,6 +49,8 @@ use VuFind\I18n\Locale\LocaleSettings;
  */
 class ReCaptchaFactory implements FactoryInterface
 {
+    use SecretTrait;
+
     /**
      * Create an object.
      *
@@ -69,9 +73,41 @@ class ReCaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+
+        $legacySettingsMap = [
+            'publicKey' => 'recaptcha_siteKey',
+            'siteKey' => 'recaptcha_siteKey',
+            'privateKey' => 'recaptcha_secretKey',
+            'secretKey' => 'recaptcha_secretKey',
+            'theme' => 'recaptcha_theme',
+        ];
+
+        $recaptchaConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Captcha'];
+        foreach ($legacySettingsMap as $old => $new) {
+            if (isset($recaptchaConfig[$old])) {
+                error_log(
+                    'Deprecated ' . $old . ' setting found in config.ini - ' . 'please use ' . $new . ' instead.'
+                );
+                if (!isset($recaptchaConfig[$new])) {
+                    $recaptchaConfig[$new] = $recaptchaConfig[$old];
+                }
+            }
+        }
+
+        $siteKey = $recaptchaConfig['recaptcha_siteKey'] ?? '';
+        $secretKey = $this->getSecretFromConfig($recaptchaConfig, 'recaptcha_secretKey') ?? '';
+        $language = $container->get(LocaleSettings::class)->getUserLocale();
+        $rcOptions = ['lang' => $language];
+        if (isset($recaptchaConfig['recaptcha_theme'])) {
+            $rcOptions['theme'] = $recaptchaConfig['recaptcha_theme'];
+        }
+
         return new $requestedName(
-            $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get(LocaleSettings::class)->getUserLocale()
+            $siteKey,
+            $language,
+            $rcOptions,
+            new \ReCaptcha\ReCaptcha($secretKey, $container->get(GuzzlePost::class))
         );
     }
 }

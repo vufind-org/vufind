@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,11 +24,16 @@
  * @category VuFind
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
 namespace VuFind\Captcha;
+
+use Gregwar\Captcha\CaptchaBuilder;
+use Gregwar\Captcha\PhraseBuilder;
+use Laminas\Session\Container;
 
 /**
  * Image CAPTCHA.
@@ -35,39 +41,67 @@ namespace VuFind\Captcha;
  * @category VuFind
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Image extends LaminasBase
+class Image extends AbstractInputCaptcha
 {
     /**
-     * Base path of cache where image will be stored, e.g. /vufind/cache/.
+     * Has the captcha image been built?
      *
-     * @var string
+     * @var bool
      */
-    protected $cacheBasePath;
+    protected bool $built = false;
 
     /**
      * Constructor.
      *
-     * @param \Laminas\Captcha\AbstractWord $captcha       Laminas CAPTCHA object
-     * @param string                        $cacheBasePath e.g. /vufind/cache/
+     * @param CaptchaBuilder $captchaBuilder   Captcha builder
+     * @param Container      $sessionContainer Session container for captcha string
+     * @param int            $imageWidth       Image width
+     * @param int            $imageHeight      Image height
      */
     public function __construct(
-        \Laminas\Captcha\AbstractWord $captcha,
-        string $cacheBasePath
+        protected CaptchaBuilder $captchaBuilder,
+        protected Container $sessionContainer,
+        protected int $imageWidth,
+        protected int $imageHeight,
     ) {
-        $this->cacheBasePath = $cacheBasePath;
-        parent::__construct($captcha);
+        parent::__construct();
+        $this->sessionContainer->setExpirationHops(1, null);
+        $this->sessionContainer->setExpirationSeconds($this->timeout);
     }
 
     /**
-     * Getter for template.
+     * Return a captcha image as a Base64 encoded string.
      *
      * @return string
      */
-    public function getCacheBasePath(): string
+    public function generateImage(): string
     {
-        return $this->cacheBasePath;
+        if (!$this->built) {
+            $this->captchaBuilder->build($this->imageWidth, $this->imageHeight);
+            $this->sessionContainer->phrase = $this->captchaBuilder->getPhrase();
+            $this->built = true;
+        }
+        return $this->captchaBuilder->inline();
+    }
+
+    /**
+     * Pull the captcha field from request params and check it.
+     *
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function verify(array $postParams, array $queryParams): bool
+    {
+        $param = $this->getHtmlInputId();
+        $str = $postParams[$param] ?? $queryParams[$param] ?? null;
+        return $str && PhraseBuilder::comparePhrases($this->sessionContainer->phrase, $str);
     }
 }

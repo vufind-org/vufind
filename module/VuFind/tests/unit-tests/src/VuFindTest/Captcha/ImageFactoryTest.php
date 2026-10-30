@@ -29,6 +29,10 @@
 
 namespace VuFindTest\Captcha;
 
+use Gregwar\Captcha\CaptchaBuilder;
+use VuFind\Config\ConfigManagerInterface;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
+
 use function func_get_args;
 
 /**
@@ -45,36 +49,24 @@ use function func_get_args;
 #[\PHPUnit\Framework\Attributes\RequiresFunction('imageftbbox')]
 class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Test that the factory behaves correctly.
      *
-     * @param string $homeUrl       Home URL (returned by url helper)
-     * @param string $expectedCache Expected cache path
+     * @param array $captchaConfig Captcha config
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('factoryDataProvider')]
-    public function testFactory($homeUrl = null, $expectedCache = '/cache/'): void
+    public function testFactory(array $captchaConfig): void
     {
         // Set up mock services expected by factory:
-        $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
         $container = new \VuFindTest\Container\MockContainer($this);
-        $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
-        $storage->expects($this->once())->method('getOptions')
-            ->willReturn($options);
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheManager->expects($this->once())->method('getCache')
-            ->with('public')
-            ->willReturn($storage);
-
-        $url = $container->get(\VuFind\View\Helper\Root\Url::class);
-        $url->expects($this->once())->method('__invoke')
-            ->with('home')
-            ->willReturn($homeUrl);
-
-        $manager = $container->get('ViewHelperManager');
-        $manager->expects($this->once())->method('get')
-            ->with('url')->willReturn($url);
+        $config = [
+            'Captcha' => $captchaConfig,
+        ];
+        $container->set(ConfigManagerInterface::class, $this->getMockConfigManager(compact('config')));
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {
@@ -94,15 +86,9 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             }
         };
         $result = $factory($container, $fakeImage::class);
-        $expectedFont = APPLICATION_PATH
-        . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf';
-        $this->assertFileExists($expectedFont);
-        $expected = [
-            'font' => $expectedFont,
-            'imgDir' => $options->getCacheDir(),
-        ];
-        $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
-        $this->assertEquals($expectedCache, $result->constructorArgs[1]);
+        $this->assertInstanceOf(CaptchaBuilder::class, $result->constructorArgs[0]);
+        $this->assertSame($captchaConfig['image_width'] ?? 200, $result->constructorArgs[2]);
+        $this->assertSame($captchaConfig['image_height'] ?? 50, $result->constructorArgs[3]);
     }
 
     /**
@@ -112,9 +98,10 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public static function factoryDataProvider(): \Iterator
     {
-        yield 'Empty base path' => [];
-        yield 'Slash as base path' => ['/'];
-        yield 'Directory with trailing slash' => ['/foo/', '/foo/cache/'];
-        yield 'Directory without trailing slash' => ['/foo', '/foo/cache/'];
+        yield 'defaults' => [[]];
+        yield 'width & height' => [[
+            'image_width' => 250,
+            'image_height' => 60,
+        ]];
     }
 }
