@@ -1925,7 +1925,7 @@ class Folio extends AbstractAPI implements
         } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
             $dueStatus = 'due';
         }
-        return [
+        $formattedItem = [
             'duedate' =>
                 $this->dateConverter->convertToDisplayDate(
                     'U',
@@ -1944,6 +1944,17 @@ class Folio extends AbstractAPI implements
             'renewable' => true,
             'title' => $transaction->item->title,
         ];
+        $borrowingLocationPatterns = $this->config['Loans']['display_borrowing_location_pattern'] ?? [];
+        $itemLocationName = $transaction->item?->location?->name ?? '';
+        if ($itemLocationName) {
+            foreach ($borrowingLocationPatterns as $pattern) {
+                if (preg_match($pattern, $itemLocationName)) {
+                    $formattedItem['borrowingLocation'] = $itemLocationName;
+                }
+            }
+        }
+
+        return $formattedItem;
     }
 
     /**
