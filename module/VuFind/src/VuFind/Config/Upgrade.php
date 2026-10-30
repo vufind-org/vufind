@@ -669,6 +669,19 @@ class Upgrade implements LoggerAwareInterface
             unset($newConfig['LDAP']['port']);
         }
 
+        // If obsolete image captcha settings are present, warn the user about their removal.
+        $captcha = $newConfig['Captcha'] ?? [];
+        if (
+            isset($captcha['image_fontSize'])
+            || isset($captcha['image_dotNoiseLevel'])
+            || isset($captcha['image_lineNoiseLevel'])
+        ) {
+            $this->addWarning(
+                'The image captcha settings in the [Captcha] section of config.ini have changed. Please review and' .
+                ' adjust as required.'
+            );
+        }
+
         $this->applyOldSettings('RecordDataFormatter/DefaultRecord');
         if ($subjectLimit = $newConfig['Record']['subjectLimit'] ?? null) {
             unset($newConfig['Record']['subjectLimit']);
