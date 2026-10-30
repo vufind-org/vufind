@@ -78,7 +78,6 @@
         "laminas/laminas-mvc-i18n": "1.9.0",
         "laminas/laminas-paginator": "2.22.0",
         "laminas/laminas-psr7bridge": "1.13.0",
-        "laminas/laminas-recaptcha": "3.9.0",
         "laminas/laminas-serializer": "2.18.0",
         "laminas/laminas-servicemanager": "3.24.0",
         "laminas/laminas-session": "2.27.0",
