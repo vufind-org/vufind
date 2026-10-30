@@ -4,17 +4,14 @@
     ->add($this->translate('Ratings'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
-  $tabs = $this->accountCapabilities()->getUserContentTabs();
+
+  $accountMenu = $this->section('AccountMenu');
 ?>
 
 <?php $this->headTitle($this->translate('Ratings'));?>
 <?=$this->component('show-account-menu-button')?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <ul class="nav nav-tabs" role="tablist">
-    <?php foreach ($tabs as $tab => $title): ?>
-      <li class="nav-item" role="presentation" id="user-content-<?=$this->escapeHtmlAttr($tab)?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='ratings' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'userlist')?>"><?=$this->transEsc($title)?></a></li>
-    <?php endforeach; ?>
-  </ul>
+  <?=$accountMenu->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
   <h2><?=$this->transEsc('Your Ratings')?></h2>
   <?php if (count($this->ratings) !== 0): ?>
     <nav class="search-header hidden-print">
@@ -102,6 +99,4 @@
   <?=$this->paginationControl($this->ratings, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'usercontent'])?>
-</div>
+<?=$accountMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>

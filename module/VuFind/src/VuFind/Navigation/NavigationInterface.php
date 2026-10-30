@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Marker interface for VuFind navigation classes.
+ * Interface for VuFind navigation classes.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +32,7 @@ namespace VuFind\Navigation;
 use VuFind\Section\Plugin\SectionInterface;
 
 /**
- * Marker interface for VuFind navigation classes.
+ * Interface for VuFind navigation classes.
  *
  * @category VuFind
  * @package  Navigation
@@ -42,4 +42,25 @@ use VuFind\Section\Plugin\SectionInterface;
  */
 interface NavigationInterface extends SectionInterface
 {
+    /**
+     * Get processed and filtered menu configuration with groups and items to
+     * display.
+     *
+     * @return array
+     */
+    public function getMenu(): array;
+
+    /**
+     * Get menu tabs for the current request.
+     *
+     * @return array Tab items under 'submenuItems' key, or empty array if no tabs
+     */
+    public function getCurrentTabs(): array;
+
+    /**
+     * Get parent path for the currently active item.
+     *
+     * @return array URIs of menu items in the path
+     */
+    public function getActiveItemParentPath(): array;
 }

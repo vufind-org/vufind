@@ -2,11 +2,13 @@
 // Set page title.
 
 $this->headTitle($this->translate('VuFind Administration - Online Payment Management'));
+
+$hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar();
 ?>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
-</div>
+<?php if ($hasSidebar): ?>
+  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?php endif; ?>
 
 <div class="admin-payments">
   <h2><?=$this->transEsc('Payment::Online Payment Management')?></h2>

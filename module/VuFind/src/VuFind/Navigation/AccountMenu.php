@@ -30,6 +30,8 @@
 
 namespace VuFind\Navigation;
 
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Application;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
@@ -37,7 +39,10 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\RouteHelper;
 use VuFind\ILS\Connection;
+use VuFind\Role\PermissionManager;
+use VuFind\Section\PageRegion;
 use VuFind\Section\SectionServiceInterface;
 
 use function array_key_exists;
@@ -62,6 +67,10 @@ class AccountMenu extends AbstractMenu
      * @param SectionServiceInterface $sectionService      Section service
      * @param array                   $sectionConfig       Section configuration
      * @param array                   $config              Main configuration
+     * @param Request                 $request             Request
+     * @param Application             $application         Application
+     * @param RouteHelper             $routeHelper         Route helper
+     * @param PermissionManager       $permissionManager   Permission manager
      * @param AccountCapabilities     $accountCapabilities Account capabilities
      * @param Manager                 $authManager         Authentication manager
      * @param Connection              $ilsConnection       ILS connection
@@ -72,6 +81,10 @@ class AccountMenu extends AbstractMenu
         SectionServiceInterface $sectionService,
         array $sectionConfig,
         array $config,
+        Request $request,
+        Application $application,
+        RouteHelper $routeHelper,
+        PermissionManager $permissionManager,
         protected AccountCapabilities $accountCapabilities,
         protected Manager $authManager,
         protected Connection $ilsConnection,
@@ -106,7 +119,15 @@ class AccountMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct(
+            $sectionService,
+            $sectionConfig,
+            $config,
+            $request,
+            $application,
+            $routeHelper,
+            $permissionManager
+        );
     }
 
     /**
@@ -146,14 +167,71 @@ class AccountMenu extends AbstractMenu
     /**
      * Return context variables that can be used to render the section.
      *
-     * @return array
+     * @param ?PageRegion $pageRegion Page region in which the section is used (optional)
+     *
+     * @return ?array Context variables, or null if section should not be rendered
      */
-    public function getSectionContext(): array
+    public function getSectionContext(?PageRegion $pageRegion = null): ?array
     {
-        $context = parent::getSectionContext();
-        // set items for legacy backward compatibility, might be removed in future releases
-        $context['items'] = $this->getMenu()['Account']['MenuItems'] ?? [];
+        if (
+            null !== ($context = parent::getSectionContext($pageRegion))
+            && $pageRegion !== PageRegion::MenuTabs
+        ) {
+            // set items for legacy backward compatibility, might be removed in future releases
+            $context['items'] = $this->getMenu()['Account']['MenuItems'] ?? [];
+        }
         return $context;
+    }
+
+    /**
+     * Get menu tabs for the current request.
+     *
+     * @return array Tab items under 'submenuItems' key, or empty array if no tabs
+     *
+     * @todo Implement tabs as submenuItems in AccountMenu.yaml
+     */
+    public function getCurrentTabs(): array
+    {
+        if (!isset($this->currentTabs)) {
+            $this->currentTabs = [];
+            $tabForCurrentRouteFound = false;
+            $tabs = $this->accountCapabilities->getUserContentTabs();
+            foreach ($tabs as $tab => $title) {
+                if ("$tab-userlist" === $this->routeMatch->getMatchedRouteName()) {
+                    $tabForCurrentRouteFound = true;
+                    break;
+                }
+            }
+            if (!$tabForCurrentRouteFound) {
+                return $this->currentTabs;
+            }
+            $submenuItems = [];
+            foreach ($tabs as $tab => $title) {
+                $submenuItems[] = [
+                    'name' => $tab,
+                    'label' => $title,
+                    'route' => $tab . '-userlist',
+                    'idPrefix' => 'user-content-',
+                ];
+            }
+            $this->currentTabs['submenuItems'] = $submenuItems;
+        }
+        return $this->currentTabs;
+    }
+
+    /**
+     * Get parent path for the currently active item.
+     *
+     * @return array URIs of menu items in the path
+     *
+     * @todo Refactor after tabs implemented as submenuItems in AccountMenu.yaml
+     */
+    public function getActiveItemParentPath(): array
+    {
+        if (!isset($this->activeItemParentPath) && !empty($this->getCurrentTabs())) {
+            $this->activeItemParentPath = [$this->routeHelper->getUrlFromRoute('myresearch-usercontent')];
+        }
+        return $this->activeItemParentPath ?? [];
     }
 
     /**

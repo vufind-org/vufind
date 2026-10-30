@@ -1,0 +1,30 @@
+<?php if (!empty($this->menu)): ?>
+  <?php $label = $this->translate($this->collapsed ? 'sidebar_expand' : 'sidebar_close'); ?>
+  <aside id="global-sidebar" class="sidebar<?php if ($this->collapsed): ?> collapsed<?php endif; ?>">
+    <?php foreach ($this->menu as $groupName => $menuGroup): ?>
+      <?=$this->component('menu-group', [
+        'menuGroup' => $menuGroup,
+        'iconMethodObject' => $menuGroup['__sectionPlugin'] ?? $this->{\VuFind\View\Helper\Root\Section::SECTION_PLUGIN_KEY},
+        'requestUri' => $this->requestUri,
+        'activeItemParentPath' => $this->activeItemParentPath,
+      ])?>
+      <hr>
+    <?php endforeach; ?>
+    <div id="sidebar-end" class="menu-group">
+      <ul>
+        <?=$this->component('menu-item', [
+          'name' => 'global-sidebar-toggle',
+          'label' => $label,
+          'url' => '#',
+          'icon' => 'sidebar-collapse',
+          'linkAttributes' => [
+            'id' => 'global-sidebar-toggle',
+            'data-bs-toggle' => 'tooltip',
+            'data-bs-placement' => 'right',
+            'data-bs-title' => $this->translate($label),
+          ],
+        ])?>
+      </ul>
+    </div>
+  </aside>
+<?php endif; ?>

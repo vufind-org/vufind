@@ -1,4 +1,5 @@
-<div class="<?=$this->layoutClass('mainbody')?>">
+<?php $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar(); ?>
+<div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
   <?=$this->component('page-title', ['title' => $this->translate('System Maintenance'), 'headTitle' => $this->translate('VuFind Administration - System Maintenance')]);?>
 
   <h3>Utilities</h3>
@@ -46,6 +47,6 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
-</div>
+<?php if ($hasSidebar): ?>
+  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?php endif; ?>

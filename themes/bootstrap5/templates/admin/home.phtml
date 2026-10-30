@@ -14,8 +14,9 @@
     }
     return $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $date));
   };
+  $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar();
 ?>
-<div class="<?=$this->layoutClass('mainbody')?>">
+<div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
   <?=$this->component('page-title', ['title' => $this->translate('VuFind Administration'), 'headTitle' => $this->translate('VuFind Administration - Home')]);?>
   <?php $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
   <?php foreach ($cores as $core): ?>
@@ -60,6 +61,6 @@
   <?php endforeach; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
-</div>
+<?php if ($hasSidebar): ?>
+  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?php endif; ?>

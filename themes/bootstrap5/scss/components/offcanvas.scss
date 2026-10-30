@@ -56,16 +56,16 @@ $offcanvas-offset: 80vw !default;  // Width of open menu
     .vufind-offcanvas .vufind-offcanvas-overlay { display: block; }
 
     .vufind-offcanvas-left {
-      .sidebar { left: -$offcanvas-offset; }
+      .main .sidebar { left: -$offcanvas-offset; }
       .vufind-offcanvas-overlay { right: -100%; }
       .vufind-offcanvas-toggle { left: 0; }
     }
     .vufind-offcanvas-right {
-      .sidebar { right: -$offcanvas-offset; }
+      .main .sidebar { right: -$offcanvas-offset; }
       .vufind-offcanvas-overlay { left: -100%; }
       .vufind-offcanvas-toggle { right: 0; }
     }
-    .vufind-offcanvas .sidebar
+    .vufind-offcanvas .main .sidebar
     {
       position: fixed;
       z-index: 15;
@@ -82,12 +82,12 @@ $offcanvas-offset: 80vw !default;  // Width of open menu
     .vufind-offcanvas.active {
       overflow-y: hidden;
       &.vufind-offcanvas-left {
-        .sidebar { left: 0; }
+        .main .sidebar { left: 0; }
         .vufind-offcanvas-overlay { right: -$offcanvas-offset; }
         .vufind-offcanvas-toggle { left: $offcanvas-offset; }
       }
       &.vufind-offcanvas-right {
-        .sidebar { right: 0; }
+        .main .sidebar { right: 0; }
         .vufind-offcanvas-overlay { left: -$offcanvas-offset; }
         .vufind-offcanvas-toggle { right: $offcanvas-offset; }
       }

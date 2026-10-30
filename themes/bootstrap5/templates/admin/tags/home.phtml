@@ -1,7 +1,10 @@
-<div class="<?=$this->layoutClass('mainbody')?>">
+<?php $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar(); ?>
+<div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
   <?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Management')]);?>
 
-  <?=$this->render('admin/tags/menu.phtml')?>
+  <?php if ($adminMenu->hasMenuTabs()): ?>
+    <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
+  <?php endif; ?>
 
   <h3><?=$this->translate('Statistics')?></h3>
   <table class="table table-striped">
@@ -11,6 +14,6 @@
 
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
-</div>
+<?php if ($hasSidebar): ?>
+  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?php endif; ?>

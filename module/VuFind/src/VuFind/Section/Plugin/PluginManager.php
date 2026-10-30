@@ -32,6 +32,7 @@ namespace VuFind\Section\Plugin;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\FooterMenu;
+use VuFind\Navigation\GlobalSidebar;
 use VuFind\Navigation\HeaderBar;
 use VuFind\Navigation\SiteMap;
 use VuFind\ServiceManager\AbstractPluginFactory;
@@ -58,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'footerMenu' => FooterMenu::class,
         'headerBar' => HeaderBar::class,
         'siteMap' => SiteMap::class,
+        'globalSidebar' => GlobalSidebar::class,
         // Reserved for future plugins.
         // 'container' => Container::class,
         // 'tabs' => Tabs::class,

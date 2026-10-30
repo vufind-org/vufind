@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
+use VuFind\Section\PageRegion;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -75,6 +76,13 @@ class Section
     protected string $defaultTemplateDir = 'Section';
 
     /**
+     * Key.
+     *
+     * @var string
+     */
+    protected string $key;
+
+    /**
      * Section.
      *
      * @var SectionInterface
@@ -84,9 +92,9 @@ class Section
     /**
      * Template to use for the section.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $template;
+    protected ?string $template;
 
     /**
      * Constructor.
@@ -111,7 +119,7 @@ class Section
      *
      * @param string       $key      Section key
      * @param array|string $config   Configuration or configuration path (optional)
-     * @param ?string      $template File name of template used to render section (optional)
+     * @param ?string      $template File name of template used to render section (persistent, optional)
      *
      * @return static
      */
@@ -120,17 +128,13 @@ class Section
         array|string $config = SectionServiceInterface::DEFAULT_CONFIG_NAME,
         ?string $template = null
     ): static {
+        $this->key = $key;
         // Always call section service as the configuration might be different.
         if (is_string($config)) {
             $config = $this->sectionService->getSectionConfig($key, $config);
         }
         $this->section = $this->sectionService->getSection($key, $config);
-
-        if (null === $template) {
-            $template = $this->defaultTemplateDir . '/' . $key . '.phtml';
-        }
         $this->template = $template;
-
         return $this;
     }
 
@@ -154,24 +158,39 @@ class Section
     /**
      * Render a section.
      *
-     * @param array $context Additional context to be merged with section context (optional)
+     * @param array       $context    Additional context to be merged with section context (optional)
+     * @param ?PageRegion $pageRegion Page region in which the section is used (optional)
+     * @param ?string     $template   File name of template used to render section (call specific, optional)
      *
      * @return string
      */
-    public function render(array $context = []): string
-    {
-        $sectionContext = $this->section->getSectionContext();
+    public function render(
+        array $context = [],
+        ?PageRegion $pageRegion = null,
+        ?string $template = null
+    ): string {
+        if (null === ($sectionContext = $this->section->getSectionContext($pageRegion))) {
+            return '';
+        }
         $mergedContext = array_merge($sectionContext, $context);
         $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
-        if ($this->viewResolver->resolve($this->template)) {
-            return $this->viewRenderer->render($this->template, $mergedContext);
-        } else {
-            // Default to class-based template.
-            $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = $this->section::class;
-            return $this->renderClassTemplate($template, $className, $mergedContext);
+        $template ??= $this->template ?? $this->defaultTemplateDir . '/' . $this->key . '.phtml';
+        if ($template && $this->viewResolver->resolve($template)) {
+            return $this->viewRenderer->render($template, $mergedContext);
         }
+        $className = $this->section::class;
+        // If a page region is specified, try to use a region specific template.
+        if (null !== $pageRegion) {
+            $briefClass = $this->getBriefClass($className);
+            $template = "{$this->defaultTemplateDir}/$briefClass/$briefClass-{$pageRegion->value}.phtml";
+            if ($this->viewResolver->resolve($template)) {
+                return $this->viewRenderer->render($template, $mergedContext);
+            }
+        }
+        // Finally try regular class-based template rendering.
+        $template = $this->defaultTemplateDir . '/%s.phtml';
+        return $this->renderClassTemplate($template, $className, $mergedContext);
     }
 }

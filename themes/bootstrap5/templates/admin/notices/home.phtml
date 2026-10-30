@@ -3,9 +3,11 @@
 
   $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
     ->add($this->translate('Notices'), active: true);
+
+  $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar();
 ?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
+<div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
   <h1><?=$this->transEsc('Notices')?></h1>
   <?=$this->flashmessages()?>
   <table class="table table-striped content-list notice-list">
@@ -74,6 +76,6 @@
   <a href="<?=$this->url('admin/notices', ['action' => 'Add'])?>"><?=$this->transEsc('Add New Notice')?></a>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
-</div>
+<?php if ($hasSidebar): ?>
+  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?php endif; ?>

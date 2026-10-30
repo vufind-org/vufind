@@ -206,8 +206,6 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'checkedout'])?>
-</div>
+<?=$this->section('AccountMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
 
 <?=$this->render('account/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

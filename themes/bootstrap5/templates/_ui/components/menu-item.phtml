@@ -1,0 +1,59 @@
+<?php
+  /**
+   * Menu item component.
+   *
+   * @property string  $name                 Name of an item, used as a CSS class for the menu item's <a> tag and as a prefix for an item-specific spinner status CSS class name
+   * @property string  $label                The text shown as link, will be translated
+   * @property ?string $route                Route name used to generate link target - required unless url is set
+   * @property ?array  $routeParams          Parameters for dynamic routes (optional)
+   * @property ?string $url                  Target url, alternative to route - required unless route is set
+   * @property ?string $icon                 Icon used for the item, has to be defined in theme config (optional)
+   * @property ?string $iconMethod           Method to dynamically create the icon name; ignored when icon is explicitly set (optional)
+   * @property ?object $iconMethodObject     Object implementing the icon method - required if icon is not set and icon method is set
+   * @property ?array  $linkAttributes       Additional attributes to apply to the link (optional)
+   * @property ?bool   $status               Whether to show status label (optional, defaults to false)
+   * @property ?string $additionalHtml       HTML to be added after label text (optional)
+   * @property ?string $badge                Content to be shown as a badge (optional)
+   * @property ?string $active               Name of the active item in the menu (optional)
+   * @property ?string $requestUri           Request URI (optional)
+   * @property ?array  $activeItemParentPath Parent path for the currently active item (optional)
+   */
+
+  if (isset($this->iconMethod) && !isset($this->icon)) {
+    $this->icon = $this->iconMethodObject->{$this->iconMethod}();
+  }
+
+  $url = $this->url ?: $this->url($this->route, $this->routeParams ?? []);
+  if (isset($this->active)) {
+    $active = $this->active == $this->name;
+  } else {
+    $active = ($this->requestUri ?? null) === $url || in_array($url, $this->activeItemParentPath ?? []);
+  }
+
+  $linkAttributes = $this->htmlAttributes($this->linkAttributes ?? []);
+  $linkAttributes->merge([
+    'href' => $url,
+    'class' => [$this->name, 'nav-link', 'icon-link'],
+  ]);
+  if ($active) {
+    $linkAttributes->add('class', 'active');
+    $linkAttributes->add('aria-current', 'page');
+  }
+?>
+<li>
+  <a<?=$linkAttributes?>>
+    <?php if (isset($this->icon)): ?>
+      <?=$this->icon($this->icon, 'icon-link__icon') ?>
+    <?php endif; ?>
+    <span class="icon-link__label"><?=$this->transEsc($this->label)?></span>
+    <?php if (($this->status ?? false) && $this->auth()->getManager()->ajaxEnabled()): ?>
+      <span class="<?=strtolower($this->name)?>-status status hidden"><?=$this->icon('spinner') ?></span>
+    <?php endif; ?>
+    <?php if (isset($this->additionalHtml)): ?>
+      <?=$this->additionalHtml?>
+    <?php endif; ?>
+    <?php if (isset($this->badge)): ?>
+      <span class="badge"><?=$this->badge?></span>
+    <?php endif; ?>
+  </a>
+</li>

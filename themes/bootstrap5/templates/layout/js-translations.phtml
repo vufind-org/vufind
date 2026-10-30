@@ -93,4 +93,13 @@ if ($this->config()->ajaxCoversEnabled()) {
   );
 }
 
+if ($this->section('GlobalSidebar')->hasGlobalSidebar()) {
+  $this->jsTranslations()->addStrings(
+      [
+        'sidebar_expand' => 'sidebar_expand',
+        'sidebar_close' => 'sidebar_close',
+      ]
+  );
+}
+
 echo $this->jsTranslations()->getJSON();
