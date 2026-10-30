@@ -34,6 +34,7 @@ namespace VuFind\Session;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Service\SessionServiceInterface;
 
 /**
  * Base class for session handling.
@@ -51,6 +52,7 @@ abstract class AbstractBase implements HandlerInterface
     // manager is injected by AbstractBaseFactory explicitly for compatibility with
     // the secure delegator factory, so we don't need to auto-inject it.
     use DbServiceAwareTrait;
+    use SessionDatabaseTrait;
 
     /**
      * Session lifetime in seconds.
@@ -143,6 +145,9 @@ abstract class AbstractBase implements HandlerInterface
     {
         $this->getDbService(SearchServiceInterface::class)->destroySession($sessId);
         $this->getDbService(ExternalSessionServiceInterface::class)->destroySession($sessId);
+        foreach ($this->getSessionDatabaseServices() as $service) {
+            $this->getDbService($service)->destroySession($sessId);
+        }
         return true;
     }
 
