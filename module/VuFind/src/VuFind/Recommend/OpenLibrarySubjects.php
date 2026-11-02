@@ -149,7 +149,7 @@ class OpenLibrarySubjects implements
     public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Get and normalise $requestParam
-        $this->subject = $request[$this->requestParam];
+        $this->subject = $request[$this->requestParam] ?? null;
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
@@ -210,8 +210,8 @@ class OpenLibrarySubjects implements
     {
         $range = null;
         // Try to extract range details from request parameters or SearchObject:
-        $from = $request[$field . 'from'];
-        $to = $request[$field . 'to'];
+        $from = $request[$field . 'from'] ?? null;
+        $to = $request[$field . 'to'] ?? null;
         if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
         } elseif (is_object($params)) {
