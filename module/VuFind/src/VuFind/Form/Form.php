@@ -477,7 +477,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
             }
             switch ($el['type']) {
                 case 'text': // no default
-                    break;
+``
                 case 'textarea': // no default
                     break;
                 case 'date':
