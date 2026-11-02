@@ -190,7 +190,7 @@ forms:
         required: true
 
   TestSubjectEmailWithPlaceholders:
-    emailSubject: Subject %%text1%% %%text2%% %%checkbox%%
+    emailSubject: Subject %%text1%% %%text2%% %%checkbox%% %%select%% %%radio%%
     fields:
       - name: text1
         type: text
@@ -203,7 +203,25 @@ forms:
         options:
           - label: Option 1
             value: option-1
+          - label: Option 2
+            value: option-2
         label: checkbox
+      - name: select
+        type: select
+        options:
+          - label: Select 1
+            value: select-1
+          - label: Select 2
+            value: select-2
+      - name: radio
+        type: radio
+        options:
+          - label: Radio 1
+            value: radio-1
+          - label: Radio 2
+            value: radio-2
+          - label: Radio 3
+            value: radio-3
 
   TestSubjectEmailWithoutPlaceholders:
     emailSubject: Subject without placeholders
@@ -219,6 +237,8 @@ forms:
         options:
           - label: Option 1
             value: option-1
+          - label: Option 2
+            value: option-2
         label: checkbox
 
   TestPrefill:

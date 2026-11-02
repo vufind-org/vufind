@@ -813,7 +813,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         yield 'with placeholders' => [
             'TestSubjectEmailWithPlaceholders',
-            'Subject One Two option-1',
+            'Subject One Two option-1, option-2 select-2 radio-3',
         ];
         yield 'without placeholders' => [
             'TestSubjectEmailWithoutPlaceholders',
@@ -839,7 +839,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'text1' => 'One',
                 'text2' => 'Two',
-                'checkbox' => ['o1'],
+                'checkbox' => ['o1', 'o2'],
+                'select' => 'o2',
+                'radio' => 'o3',
             ]
         );
         $this->assertTrue($form->isValid());

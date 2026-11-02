@@ -61,7 +61,7 @@
       <?php endif ?>
     <?php endif ?>
 
-    <div class="form-group <?= $el['type'] ?> group-<?=$this->escapeHtmlAttr($el['name'])?>">
+    <div class="form-group has-validation <?= $el['type'] ?> group-<?=$this->escapeHtmlAttr($el['name'])?>">
     <?php if (!empty($elementHelpPreHtml)): ?>
       <p class="info pre"><?=$elementHelpPreHtml?></p>
     <?php endif ?>
@@ -95,99 +95,12 @@
       <?=$this->captcha()->html($this->useCaptcha) ?>
     <?php endif ?>
 
-    <?php
-      // text|textarea|date|email|url|select|radio|checkbox|hidden
-      $messages = $el['messages'] ?? null;
-      $attrs = $this->htmlAttributes($elConf['attributes']);
-      switch ($elConf['type']) {
-        case 'text':
-        case 'date':
-        case 'email':
-        case 'url':
-        case 'hidden':
-        case 'submit':
-          echo "<input$attrs>";
-          break;
-        case 'textarea':
-          echo "<textarea$attrs>" . $this->escapeHtml($elConf['value'] ?? '') . '</textarea>';
-          break;
-        case 'select':
-          echo "<select$attrs>";
-          if ($elConf['optionGroups']) {
-            foreach ($elConf['optionGroups'] as $group) {
-              echo '<optgroup label="' . $this->escapeHtmlAttr($group['label'] ?? '') . '">';
-              foreach ($group['options'] ?? [] as $option) {
-                echo '<option value="' . $this->escapeHtmlAttr($option['value'] ?? '') . '"'
-                  . (($option['selected'] ?? false) ? ' selected' : '')
-                  . '>'
-                  . $this->transEsc($option['label'] ?? '')
-                  . '</option>';
-              }
-            }
-          } else {
-            foreach ($elConf['options'] ?? [] as $option) {
-              echo '<option value="' . $this->escapeHtmlAttr($option['value'] ?? '') . '"'
-                . (($option['disabled'] ?? false) ? ' disabled' : '')
-                . (($option['selected'] ?? false) ? ' selected' : '')
-                . '>'
-                . $this->transEsc($option['label'] ?? '')
-                . '</option>';
-            }
-          }
-          echo '</select>';
-          break;
-        case 'radio':
-          $i = 1;
-          foreach ($elConf['options'] as $option) {
-            $optAttrs = $elConf['attributes'];
-            $optAttrs['type'] = 'radio';
-            $optAttrs['id'] .= '_' . $i;
-            $optAttrs['value'] = $option['value'];
-            if ($option['selected']) {
-              $optAttrs['checked'] = null;
-            }
-            $attrs = $this->htmlAttributes($optAttrs);
-            echo '<label>';
-            echo "<input$attrs>";
-            echo $this->transEsc($option['label'] ?? '');
-            echo '</label>';
-            ++$i;
-          }
-          break;
-        case 'checkbox':
-          $i = 1;
-          foreach ($elConf['options'] as $option) {
-            $optAttrs = $elConf['attributes'];
-            $optAttrs['type'] = 'checkbox';
-            $optAttrs['id'] .= '_' . $i;
-            $optAttrs['name'] .= '[]';
-            $optAttrs['value'] = $option['value'];
-            if ($option['selected']) {
-              $optAttrs['checked'] = null;
-            }
-            $attrs = $this->htmlAttributes($optAttrs);
-            echo '<label>';
-            echo "<input$attrs>";
-            echo $this->transEsc($option['label'] ?? '');
-            echo '</label>';
-            ++$i;
-          }
-          break;
-      }
-    ?>
-
-    <?php if ($messages): ?>
-      <ul>
-        <?php foreach ($messages as $message): ?>
-          <li><?=$this->escapeHtml($message)?></li>
-        <?php endforeach ?>
-      </ul>
-    <?php endif; ?>
+    <?=$this->component('form-element', $elConf)?>
 
     <?php if (!empty($elementHelpPostHtml)): ?>
       <p class="info post"><?=$elementHelpPostHtml?></p>
     <?php endif ?>
-    </div>
+  </div>
   <?php endforeach ?>
 </form>
 <?php if (!$this->inLightbox): ?></div><?php endif; ?>

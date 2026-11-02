@@ -37,6 +37,7 @@ use Exception;
 use Laminas\Uri\UriFactory;
 use Laminas\View\HelperPluginManager;
 use VuFind\Date\Converter as DateConverter;
+use VuFind\Exception\ConfigException;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -61,14 +62,11 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Default, untranslated validation messages.
+     * Validation messages.
      *
      * @var array
      */
-    protected $messages = [
-        'empty' => 'This field is required',
-        'invalid_email' => 'Email address is invalid',
-    ];
+    protected $messages = [];
 
     /**
      * Default form configuration (from config.ini > Feedback).
@@ -106,8 +104,6 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param DateConverter       $dateConverter      Date converter
      * @param array               $config             VuFind main configuration
      * @param array               $feedbackFormConfig Feedback form config
-     *
-     * @throws \Exception
      */
     public function __construct(
         #[Autowire(service: 'ViewHelperManager')]
@@ -407,31 +403,24 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 $valueLabel = null;
                 if ('select' === $type && $groups = $this->getElementOptionGroups($el)) {
                     foreach ($groups as $group) {
-                        foreach ($group['options'] as $option) {
-                            if ($requestValue === $option['value']) {
-                                $value = $option['internalValue'];
-                                $valueLabel = $option['label'];
-                                break 2;
-                            }
-                        }
-                    }
-                } else {
-                    foreach ($this->getElementOptions($el) as $option) {
-                        if ($requestValue === $option['value']) {
+                        if ($option = $group['options'][$requestValue] ?? null) {
                             $value = $option['internalValue'];
                             $valueLabel = $option['label'];
                             break;
                         }
                     }
+                } else {
+                    if ($option = $this->getElementOptions($el)[$requestValue] ?? null) {
+                        $value = $option['internalValue'];
+                        $valueLabel = $option['label'];
+                    }
                 }
             } elseif ('checkbox' === $type) {
                 $value = [];
                 $valueLabel = [];
-                foreach ($this->getElementOptions($el) as $option) {
-                    if (in_array($option['value'], $requestValue ?? [], true)) {
-                        $value[] = $option['internalValue'];
-                        $valueLabel[] = $option['label'];
-                    }
+                foreach (array_intersect_key($this->getElementOptions($el), array_flip($requestValue)) as $option) {
+                    $value[] = $option['internalValue'];
+                    $valueLabel[] = $option['label'];
                 }
             } elseif ($type === 'date' && !empty($value)) {
                 $format = $el['format'] ?? $this->config['Site']['displayDateFormat'] ?? 'Y-m-d';
@@ -445,77 +434,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
-     * Check form validity.
-     *
-     * @return bool
-     */
-    public function isValid(): bool
-    {
-        foreach ($this->getFormElementConfig() as $el) {
-            $isCheckbox = $el['type'] === 'checkbox';
-            $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
-            $required = $el['required'] ?? false;
-
-            $value = $this->fieldData[$el['name']] ?? null;
-
-            if ($isCheckbox) {
-                $validOptions = $this->getValidOptions($el);
-                // requireOne means that at least one checkbox must be checked:
-                if ($requireOne && !$value) {
-                    return false;
-                }
-                // required means that all checkboxes must be checked:
-                if ($required && (array)$value !== $validOptions) {
-                    return false;
-                }
-                // Ensure that any values are included in valid options:
-                if ($value && array_diff((array)$value, $validOptions)) {
-                    return false;
-                }
-            } elseif ($required && (null === $value || '' === $value)) {
-                return false;
-            }
-            switch ($el['type']) {
-                case 'text': // no default
-``
-                case 'textarea': // no default
-                    break;
-                case 'date':
-                    if (
-                        $value
-                        && (!is_string($value)
-                        || !$this->isValidDate($value, $el['minValue'] ?? null, $el['maxValue'] ?? null))
-                    ) {
-                        return false;
-                    }
-                    break;
-                case 'email':
-                    if ($value && (!is_string($value) || !$this->isValidEmail($value))) {
-                        return false;
-                    }
-                    break;
-                case 'url':
-                    if ($value && (!is_string($value) || !$this->isValidUri($value))) {
-                        return false;
-                    }
-                    break;
-                case 'radio':
-                case 'select':
-                    $validOptions = $this->getValidOptions($el);
-                    if (null !== $value && !in_array($value, $validOptions, true)) {
-                        return false;
-                    }
-                    break;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Get configuration for an HTML element.
-     *
-     * Note: Any labels included in attributes are translated for use with the htmlAttributes helper. Other labels are
-     * not translated here.
      *
      * @param array $el Element configuration
      *
@@ -524,68 +443,42 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function getHtmlElementConfig(array $el): array
     {
         $id = $this->getElementId($el['name']);
+        $value = $this->fieldData[$el['name']] ?? $el['value'] ?? null;
         $conf = [
-            'id' => $id,
             'type' => $el['type'],
-            'options' => [],
-        ];
-
-        $value = $this->fieldData[$el['name']] ?? $el['settings']['value'] ?? null;
-        $class = $el['settings']['class'] ?? null;
-        $attributes = [
-            'name' => $el['name'],
             'id' => $id,
-            'class' => $class ? [$class] : [],
+            'name' => $el['name'],
+            'class' => $el['settings']['class'] ?? null,
+            'placeholder' => $el['placeholder'] ?? null,
+            'required' => $el['required'] ?? false,
+            'value' => $value,
+            'message' => $this->messages[$el['name']] ?? '',
         ];
-        if ($placeholder = $el['placeholder'] ?? null) {
-            $attributes['placeholder'] = $this->translate($placeholder);
-        }
 
-        if (!in_array($el['type'], ['submit', 'radio', 'checkbox', 'select'], true)) {
-            $attributes['class'][] = 'form-control';
-        }
+        $attributes = $el['settings'] ?? [];
 
-        if (!empty($el['required'])) {
-            $attributes['required'] = null;
-        }
-        if (!empty($el['settings'])) {
-            $attributes += $el['settings'];
-        }
         // Add autocomplete only for text and email fields
-        if (!empty($el['autocomplete']) && in_array($el['type'], ['text', 'email'])) {
-            $attributes['autocomplete'] = $el['autocomplete'];
+        if (($el['autocomplete'] ?? false) && in_array($el['type'], ['text', 'email'])) {
+            $conf['autocomplete'] = true;
         }
         // Add aria-label only if not a hidden field and no aria-label specified:
         if (
             !empty($el['label']) && 'hidden' !== $el['type']
             && !isset($attributes['aria-label'])
         ) {
-            $attributes['aria-label'] = $this->translate($el['label']);
+            $attributes['aria-label'] = $el['label'];
         }
 
         switch ($el['type']) {
             case 'text':
-                $attributes['type'] = 'text';
-                $attributes['value'] = $value;
-                break;
             case 'textarea':
-                $conf['value'] = $value;
-                break;
             case 'email':
-                $attributes['type'] = 'email';
-                $attributes['value'] = $value;
-                break;
             case 'url':
-                $attributes['type'] = 'url';
-                $attributes['value'] = $value;
-                break;
             case 'hidden':
-                $attributes['type'] = 'hidden';
-                $attributes['value'] = $value;
-                break;
+                $conf['value'] = $value;
+                // no break
             case 'date':
-                $attributes['type'] = 'date';
-                $attributes['value'] = $value;
+                $conf['value'] = $value;
                 if (isset($el['minValue'])) {
                     $attributes['min'] = date('Y-m-d', strtotime($el['minValue']));
                 }
@@ -595,20 +488,17 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 break;
             case 'checkbox':
             case 'radio':
-                $attributes['class'][] = 'form-check-input';
                 $conf['options'] = $this->getElementOptions($el, $value);
                 break;
             case 'select':
-                $attributes['class'][] = 'form-select';
                 $conf['options'] = $this->getElementOptions($el, $value);
                 $conf['optionGroups'] = $this->getElementOptionGroups($el, $value);
                 break;
             case 'submit':
-                $attributes['type'] = 'submit';
-                $attributes['value'] = $this->translate($el['label']);
-                $attributes['class'][] = 'btn';
-                $attributes['class'][] = 'btn-primary';
+                $conf['value'] = $el['label'];
                 break;
+            default:
+                throw new ConfigException('Invalid form field type: ' . $el['type']);
         }
 
         $conf['attributes'] = $attributes;
@@ -624,6 +514,79 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     {
         // By default this does nothing, but is available for back-compatibility and downstream use.
         return $this;
+    }
+
+    /**
+     * Check form validity.
+     *
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        $valid = true;
+        $this->messages = [];
+        foreach ($this->getFormElementConfig() as $el) {
+            $isCheckbox = $el['type'] === 'checkbox';
+            $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
+            $required = $el['required'] ?? false;
+
+            $value = $this->fieldData[$el['name']] ?? null;
+
+            if ($isCheckbox) {
+                $validOptions = $this->getValidOptions($el);
+                // `requireOne` means that at least one checkbox must be checked.
+                // `required` means that all checkboxes must be checked.
+                // Otherwise any checked value must be a valid one.
+                if ($requireOne && !$value) {
+                    $valid = false;
+                    $this->addMessage($el['name'], 'This field is required');
+                } elseif ($required && (array)$value !== $validOptions) {
+                    $valid = false;
+                    $this->addMessage($el['name'], 'This field is required');
+                } elseif ($value && array_diff((array)$value, $validOptions)) {
+                    $valid = false;
+                    $this->addMessage($el['name'], 'field_contents_invalid');
+                }
+            } elseif ($required && (null === $value || '' === $value)) {
+                $valid = false;
+            }
+            switch ($el['type']) {
+                case 'text': // no default
+                case 'textarea': // no default
+                    break;
+                case 'date':
+                    if (
+                        $value
+                        && (!is_string($value)
+                        || !$this->isValidDate($value, $el['minValue'] ?? null, $el['maxValue'] ?? null))
+                    ) {
+                        $valid = false;
+                        $this->addMessage($el['name'], 'field_contents_invalid');
+                    }
+                    break;
+                case 'email':
+                    if ($value && (!is_string($value) || !$this->isValidEmail($value))) {
+                        $valid = false;
+                        $this->addMessage($el['name'], 'Email address is invalid');
+                    }
+                    break;
+                case 'url':
+                    if ($value && (!is_string($value) || !$this->isValidUri($value))) {
+                        $valid = false;
+                        $this->addMessage($el['name'], 'field_contents_invalid');
+                    }
+                    break;
+                case 'radio':
+                case 'select':
+                    $validOptions = $this->getValidOptions($el);
+                    if (null !== $value && !in_array($value, $validOptions, true)) {
+                        $valid = false;
+                        $this->addMessage($el['name'], 'field_contents_invalid');
+                    }
+                    break;
+            }
+        }
+        return $valid;
     }
 
     /**
@@ -693,19 +656,33 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected function getValidOptions(array $element): array
     {
         $result = [];
-        foreach ($this->getElementOptions($element) as $option) {
+        foreach ($this->getElementOptions($element) as $value => $option) {
             if (!($option['disabled'] ?? false)) {
-                $result[] = $option['value'];
+                $result[] = $value;
             }
         }
         foreach ($this->getElementOptionGroups($element) as $group) {
-            foreach ($group['options'] as $option) {
+            foreach ($group['options'] as $value => $option) {
                 if (!($option['disabled'] ?? false)) {
-                    $result[] = $option['value'];
+                    $result[] = $value;
                 }
             }
         }
         return $result;
+    }
+
+    /**
+     * Add a validation message for a field.
+     *
+     * @param string $fieldName Field name
+     * @param string $message   Message to add
+     *
+     * @return void
+     */
+    protected function addMessage(string $fieldName, string $message): void
+    {
+        // Only display a single message per field:
+        $this->messages[$fieldName] = $message;
     }
 
     /**
@@ -761,13 +738,13 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
         $senderName = [
             'name' => 'name',
             'type' => 'text',
-            'label' => $this->translate('feedback_name'),
+            'label' => 'feedback_name',
             'group' => '__sender__',
         ];
         $senderEmail = [
             'name' => 'email',
             'type' => 'email',
-            'label' => $this->translate('feedback_email'),
+            'label' => 'feedback_email',
             'group' => '__sender__',
             'autocomplete' => 'email',
         ];
@@ -952,8 +929,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
 
         if ('select' === $element['type'] && $placeholder) {
             // Add placeholder option (without value) for select element:
-            $options[] = [
-                'value' => '',
+            $options[''] = [
                 'internalValue' => '',
                 'label' => $placeholder,
                 'disabled' => true,
@@ -969,8 +945,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
             ++$idx;
             $value = "o$idx";
             $internalValue = $option['value'] ?? $option;
-            $options[] = [
-                'value' => $value,
+            $options[$value] = [
                 'internalValue' => $internalValue,
                 'label' => $option['label'] ?? $option,
                 'selected' => in_array($value, (array)$currentValue, true),
@@ -1004,8 +979,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 ++$idx;
                 $value = "o$idx";
                 $internalValue = $option['value'] ?? $option;
-                $options[] = [
-                    'value' => $value,
+                $options[$value] = [
                     'internalValue' => $internalValue,
                     'label' => $option['label'] ?? $option,
                     'selected' => in_array($value, (array)$currentValue, true),
@@ -1083,20 +1057,6 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
             'submit',
             'userAgent',
         ];
-    }
-
-    /**
-     * Get translated validation message.
-     *
-     * @param string $messageId Message identifier
-     *
-     * @return string
-     */
-    protected function getValidationMessage(string $messageId): string
-    {
-        return $this->translate(
-            $this->messages[$messageId] ?? $messageId
-        );
     }
 
     /**
