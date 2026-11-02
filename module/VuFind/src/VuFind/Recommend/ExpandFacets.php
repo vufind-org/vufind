@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Recommendation class to expand recommendation interfaces.
  *
@@ -70,6 +72,7 @@ class ExpandFacets implements RecommendInterface
      */
     public function __construct(
         protected \VuFind\Config\ConfigManagerInterface $configManager,
+        #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected \VuFind\Search\Solr\Results $emptyResults
     ) {
     }
