@@ -68,7 +68,8 @@ class ColorSchemeManager
         protected CookieManager $cookieManager,
         protected string $currentTheme,
     ) {
-        $rawSupportedColorSchemes = $config['supported_color_schemes'][$currentTheme] ?? '';
+        $rawSupportedColorSchemes = $config['supported_color_schemes'][$currentTheme]
+            ?? $config['supported_color_schemes']['*'] ?? '';
         $this->supportedColorSchemes = explode(',', $rawSupportedColorSchemes);
     }
 
