@@ -52,7 +52,7 @@ class SideFacetsDeferred extends SideFacets
     {
         // Since we didn't add facets in init, do it now so that the config is
         // available for e.g. $this->results->getParams()->getFilterList().
-        parent::init($this->results->getParams(), null);
+        parent::init($this->results->getParams(), []);
         return $this->results;
     }
 
