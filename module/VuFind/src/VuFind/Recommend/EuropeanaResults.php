@@ -193,7 +193,7 @@ class EuropeanaResults implements
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Collect the best possible search term(s):
         $this->lookfor = $request['lookfor'] ?? '';

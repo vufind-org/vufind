@@ -256,7 +256,7 @@ class SideFacets extends AbstractFacets
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         $mainFacets = $this->mainFacets;
         $checkboxFacets = $this->checkboxFacets;

@@ -146,7 +146,7 @@ class OpenLibrarySubjects implements
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Get and normalise $requestParam
         $this->subject = $request[$this->requestParam];

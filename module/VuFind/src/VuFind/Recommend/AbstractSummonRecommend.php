@@ -100,7 +100,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Save search query in case we need it later:
         $this->lookfor = $request[$this->requestParam] ?? null;

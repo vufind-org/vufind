@@ -55,7 +55,7 @@ class SummonTopics extends AbstractSummonRecommend
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         parent::init($params, $request);
         if ($params->getSearchClassId() == 'Summon') {

@@ -174,7 +174,7 @@ class RandomRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         $randomParams = 'retain' !== $this->mode
             ? $this->paramManager->get($params->getSearchClassId())

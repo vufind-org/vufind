@@ -134,7 +134,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // See if we can determine the label for the current search type; first
         // check for an override in the GET parameters, then look at the incoming

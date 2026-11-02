@@ -73,7 +73,7 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         parent::init($params, $request);
 

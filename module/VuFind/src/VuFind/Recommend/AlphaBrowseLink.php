@@ -83,7 +83,7 @@ class AlphaBrowseLink implements RecommendInterface
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
     }
 

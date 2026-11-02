@@ -155,7 +155,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Save user search query:
         $this->lookfor = $request->get('lookfor');

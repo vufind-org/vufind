@@ -103,7 +103,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         $this->lookfor = $request[$this->lookforParam];
     }
