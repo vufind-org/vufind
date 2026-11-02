@@ -1,6 +1,30 @@
 /* publication type css */
 
-.pt-icon { margin: auto; width: 70px; display: block; background-image: url('../images/EDS/PT_Sprite.png'); background-repeat: no-repeat; }
+.pt-icon { margin: auto; width: 70px; display: block; background-repeat: no-repeat; }
+@media (prefers-color-scheme: light) {
+    :root:not([data-bs-theme]) {
+        .pt-icon {
+            background-image: url('../images/EDS/PT_Sprite.png');
+        }
+    }
+}
+[data-bs-theme="light"] {
+    .pt-icon {
+        background-image: url('../images/EDS/PT_Sprite.png');
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-bs-theme]) {
+        .pt-icon {
+            background-image: url('../images/EDS/PT_Sprite_transparent_claude.png');
+        }
+    }
+}
+[data-bs-theme="dark"] {
+    .pt-icon {
+        background-image: url('../images/EDS/PT_Sprite_transparent_claude.png');
+    }
+}
 .pt-serialPeriodical { background-position: -30px -30px; height: 59px; }
 .pt-newspaperArticle { background-position: -140px -30px; height: 51px; }
 .pt-image { background-position: -245px -30px; height: 47px; }
