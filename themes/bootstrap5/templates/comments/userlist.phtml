@@ -68,24 +68,10 @@
         <table class="usercontent-table">
           <thead>
             <tr>
-              <td class="checkbox-col unlabeled-column">
-                <div class="checkbox-container result">
-                  <div class="checkbox">
-                    <label>
-                      <span class="visually-hidden"><?=$this->transEsc('Select');?></span>
-                      <input class="checkbox-select-item" type="checkbox" name="deleteSelectedcomment[]" value="<?=$this->escapeHtmlAttr(($comment['id']))?>" id="checkbox_comment_<?=$comment['id']?>">
-                    </label>
-                  </div>
-                </div>
-              </td>
-              <td class="date" data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $comment['created']->getTimestamp())?></td>
-              <td data-label="<?=$this->transEscAttr('Title')?>">
-                <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$this->escapeHtml($comment['recordTitle'])?></a>
-              </td>
-              <td class="user-comment" data-label="<?=$this->transEscAttr('Comment')?>">
-                <?php $truncateSettings = ['rows' => 5]?>
-                <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
-              </td>
+              <th></th>
+              <th><?=$this->transEsc('Created')?></th>
+              <th><?=$this->transEsc('Title')?></th>
+              <th><?=$this->transEsc('Comment')?></th>
             </tr>
           </thead>
           <tbody>
@@ -95,7 +81,7 @@
                   <div class="checkbox-container result">
                     <div class="checkbox">
                       <label>
-                        <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                        <span class="visually-hidden"><?=$this->transEsc('Select');?></span>
                         <input class="checkbox-select-item" type="checkbox" name="deleteSelectedcomment[]" value="<?=$this->escapeHtmlAttr(($comment['id']))?>" id="checkbox_comment_<?=$comment['id']?>">
                       </label>
                     </div>

@@ -1,10 +1,7 @@
 <?php
     // Set up breadcrumbs:
-
-$this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))->add(
-    $this->translate('Profile'),
-    active: true,
-);
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
+      ->add($this->translate('Profile'), active: true);
     // Template for use by the renderArray helper:
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
@@ -12,7 +9,8 @@ $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?= $this->layoutClass('mainbody') ?>">
-  <?= $this->component('page-title', [
+  <?=
+    $this->component('page-title', [
         'title' => $this->translate('Your Profile'),
         'headTitle' => $this->translate('My Profile'),
         'level' => 1,
@@ -21,19 +19,21 @@ $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-
   <?=$this->flashmessages();?>
 
   <table class="profile-table">
-    <?=$this->renderArray(
-      $arrTemplate,
-      [
-          'firstname' => $this->user->getFirstName(),
-          'lastname' => $this->user->getLastName(),
-          'email' => $this->user->getEmail(),
-      ],
-      [
-          $this->transEsc('First Name') => 'firstname',
-          $this->transEsc('Last Name') => 'lastname',
-          $this->transEsc('Email') => 'email',
-      ],
-    ); ?>
+    <?=
+      $this->renderArray(
+          $arrTemplate,
+          [
+              'firstname' => $this->user->getFirstName(),
+              'lastname' => $this->user->getLastName(),
+              'email' => $this->user->getEmail(),
+          ],
+          [
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname',
+              $this->transEsc('Email') => 'email',
+          ]
+      );
+    ?>
     <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
     <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
       <tr class="preferred-library-selection">
@@ -49,15 +49,11 @@ $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-
                 <option value=""<?='' === $selected ? ' selected="selected"' : ''?>>
                   <?=$this->transEsc('preferred_library_default')?>
                 </option>
-                <option value="<?= $this->escapeHtmlAttr(' ** ') ?>"<?= ' ** ' === $selected
-                    ? ' selected="selected"'
-                    : '' ?>>
+                <option value="<?=$this->escapeHtmlAttr(' ** ')?>"<?=' ** ' === $selected ? ' selected="selected"' : ''?>>
                   <?=$this->transEsc('Always ask me')?>
                 </option>
                 <?php foreach ($this->pickup as $lib): ?>
-                  <option value="<?= $this->escapeHtmlAttr($lib['locationID']) ?>"<?= $selected == $lib['locationID']
-                      ? ' selected="selected"'
-                      : '' ?>><?= $this->transEscWithPrefix('location_', $lib['locationDisplay']) ?></option>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
               </select>
               <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Save')?>">
