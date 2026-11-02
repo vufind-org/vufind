@@ -168,7 +168,6 @@ $config = [
     'controllers' => [
         'factories' => [
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
-            'VuFind\Controller\MyResearchController' => 'VuFind\Controller\MyResearchControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -176,25 +175,17 @@ $config = [
         'aliases' => [
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
-            'MyResearch' => 'VuFind\Controller\MyResearchController',
-            'myresearch' => 'VuFind\Controller\MyResearchController',
         ],
     ],
     'controller_plugins' => [
         'factories' => [
-            'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
-            'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
-            'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'holds' => 'VuFind\Controller\Plugin\Holds',
-            'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'permission' => 'VuFind\Controller\Plugin\Permission',
-            'storageRetrievalRequests' => 'VuFind\Controller\Plugin\StorageRetrievalRequests',
         ],
     ],
     'service_manager' => [
@@ -389,6 +380,25 @@ $config = [
         //                           config)
         //   - poweredBy             Set "Powered by" displayed in page footer
         'action_config' => [
+            // Account:
+            'vufind_account' => [
+                'actionIds' => [
+                    'account/completelogin',
+                    'account/createaccount',
+                    'account/login',
+                    'account/logout',
+                    'account/recover',
+                    'account/resetpassword',
+                    'account/userlogin',
+                    'account/verify',
+                    'account/verifyotp',
+                    'account/verifyrecoveryotp',
+                ],
+                // Default to false rather than null because we don't want a default setting to override the action's
+                // accessibility and break login, account creation or account recovery:
+                'accessPermission' => false,
+            ],
+
             // Author (multiple backends!):
             'vufind_author_search_author_facets' => [
                 'actionIds' => [
@@ -783,6 +793,42 @@ $config = [
         // Redirects from legacy actions to current ones (key is action id in all lowercase, value is route name to
         // redirect to):
         'action_redirects' => [
+            'myresearch/account' => 'account-createaccount',
+            'myresearch/changeemail' => 'account-changeemail',
+            'myresearch/changepassword' => 'account-changepassword',
+            'myresearch/checkedout' => 'checkouts-list',
+            'myresearch/completelogin' => 'account-completelogin',
+            'myresearch/delete' => 'lists-deleteitems',
+            'myresearch/deleteaccount' => 'account-deleteaccount',
+            'myresearch/deletelist' => 'lists-deletelist',
+            'myresearch/deletelogintoken' => 'account-deletelogintoken',
+            'myresearch/deleteuserlogintokens' => 'account-deleteuserlogintokens',
+            'myresearch/edit' => 'lists-edititem',
+            'myresearch/editlist' => 'lists-editlist',
+            'myresearch/emailnotverified' => 'account-emailnotverified',
+            'myresearch/favorites' => 'lists-allitems',
+            'myresearch/fines' => 'fines-list',
+            'myresearch/historicloans' => 'checkouts-history',
+            'myresearch/holds' => 'holds-list',
+            'myresearch/home' => 'account-home',
+            'myresearch/illrequests' => 'illrequests-list',
+            'myresearch/login' => 'account-login',
+            'myresearch/logout' => 'account-logout',
+            'myresearch/mylist' => 'userList',
+            'myresearch/newpassword' => 'account-newpassword',
+            'myresearch/profile' => 'account-profile',
+            'myresearch/recover' => 'account-recover',
+            'myresearch/resetpassword' => 'account-resetpassword',
+            'myresearch/savesearch' => 'searchhistory-savesearch',
+            'myresearch/schedulesearch' => 'searchhistory-schedulesearch',
+            'myresearch/storageretrievalrequests' => 'storageretrievalrequests-list',
+            'myresearch/unsubscribe' => 'searchhistory-unsubscribesearch',
+            'myresearch/usercontent' => 'account-usercontent',
+            'myresearch/userlogin' => 'account-userlogin',
+            'myresearch/verify' => 'account-verify',
+            'myresearch/verifyemail' => 'account-verifyemail',
+            'myresearch/verifyotp' => 'account-verifyotp',
+            'myresearch/verifyrecoveryotp' => 'account-verifyrecoveryotp',
             'overdrive/mycontent' => 'overdrive-content',
             'search/history' => 'searchhistory-list',
         ],
@@ -912,12 +958,41 @@ $nonTabRecordActions = [
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'Feedback' => ['feedback-form' => 'Form/[:id]'],
-    'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
+    'Lists' => [
+        'userList' => 'List/[:id]',
+        'editList' => 'EditList/[:id]',
+    ],
+    'MyResearch' => [
+        'userListLegacy' => 'MyList/[:id]',
+        'editListLegacy' => 'EditList/[:id]',
+    ],
 ];
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
+    'Account/CreateAccount',
+    'Account/ChangeEmail',
+    'Account/ChangePassword',
+    'Account/CompleteLogin',
+    'Account/DeleteAccount',
+    'Account/DeleteLoginToken',
+    'Account/DeleteUserLoginTokens',
+    'Account/EmailNotVerified',
+    'Account/Home',
+    'Account/Login',
+    'Account/Logout',
+    'Account/NewPassword',
+    'Account/Profile',
+    'Account/Recover',
+    'Account/ResetPassword',
+    'Account/UserContent',
+    'Account/UserLogin',
+    'Account/Verify',
+    'Account/VerifyEmail',
+    'Account/VerifyOtp',
+    'Account/VerifyRecoveryOtp',
+    'Ajax/OnlinePaymentNotify',
     'Alphabrowse/Home',
     'Author/FacetList',
     'Author/Home',
@@ -954,6 +1029,7 @@ $staticRoutes = [
     'Channels/Record',
     'Channels/Search',
     'Checkouts/History',
+    'Checkouts/List',
     'Checkouts/PurgeHistory',
     'Comments/DeleteComments',
     'Comments/UserList',
@@ -980,9 +1056,13 @@ $staticRoutes = [
     'Error/Unavailable',
     'Feedback/Email',
     'Feedback/Home',
+    'Fines/List',
+    'Fines/Pay',
+    'Fines/Receipt',
     'Help/Home',
     'Holds/Edit',
     'Holds/List',
+    'IllRequests/List',
     'Install/Done',
     'Install/FixBasicConfig',
     'Install/FixCache',
@@ -1005,6 +1085,10 @@ $staticRoutes = [
     'LibraryCards/ConnectCardLogin',
     'LibraryCards/DeleteCard',
     'LibraryCards/VerifyOtp',
+    'Lists/DeleteItems',
+    'Lists/DeleteList',
+    'Lists/EditItem',
+    'Lists/AllItems',
     'MyResearch/Account',
     'MyResearch/ChangeEmail',
     'MyResearch/ChangePassword',
@@ -1013,8 +1097,8 @@ $staticRoutes = [
     'MyResearch/Delete',
     'MyResearch/DeleteAccount',
     'MyResearch/DeleteList',
-    'MyResearch/DeleteUserLoginTokens',
     'MyResearch/DeleteLoginToken',
+    'MyResearch/DeleteUserLoginTokens',
     'MyResearch/Edit',
     'MyResearch/Email',
     'MyResearch/EmailNotVerified',
@@ -1033,8 +1117,8 @@ $staticRoutes = [
     'MyResearch/ScheduleSearch',
     'MyResearch/StorageRetrievalRequests',
     'MyResearch/Unsubscribe',
-    'MyResearch/UserLogin',
     'MyResearch/UserContent',
+    'MyResearch/UserLogin',
     'MyResearch/Verify',
     'MyResearch/VerifyEmail',
     'MyResearch/VerifyOtp',
@@ -1082,8 +1166,12 @@ $staticRoutes = [
     'Search2/Results',
     'Search2/Versions',
     'SearchHistory/List',
+    'SearchHistory/SaveSearch',
+    'SearchHistory/ScheduleSearch',
+    'SearchHistory/UnsubscribeSearch',
     'SimulatedSSO/Login',
     'SiteMap/Home',
+    'StorageRetrievalRequests/List',
     'Summon/Advanced',
     'Summon/FacetList',
     'Summon/Home',
