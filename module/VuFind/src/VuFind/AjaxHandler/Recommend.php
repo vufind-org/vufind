@@ -97,7 +97,7 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
         // Initialize search parameters from Ajax request parameters in case the
         // original request parameters were passed to the Ajax request.
         $paramsObj->initFromRequest($request);
-        $module->init($paramsObj, new Parameters($request));
+        $module->init($paramsObj, $request);
         $module->process($this->results);
 
         // Render recommendations:
