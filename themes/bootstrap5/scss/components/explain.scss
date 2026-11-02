@@ -64,14 +64,6 @@
     }
   }
 
-  .exact-match {
-    color: black;
-  }
-
-  .inexact-match {
-    color: #436c71;
-  }
-
   .unknown-match {
     color: red;
   }
@@ -82,5 +74,23 @@
 
   #raw-explanation {
     margin-bottom: 1rem;
+  }
+}
+@include color-mode(light, true) {
+  .exact-match {
+    color: black;
+  }
+
+  .inexact-match {
+    color: #436c71;
+  }
+}
+@include color-mode(dark, true) {
+  .exact-match {
+    color: green;
+  }
+
+  .inexact-match {
+    color: color.adjust(#436c71, $lightness: 30%);
   }
 }
