@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Net;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Net\UserIpReaderFactory;
 
 use function func_get_args;
@@ -64,7 +63,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         );
         $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockRequest->expects($this->once())->method('getServer')
-            ->willReturn(new Parameters($server));
+            ->willReturn(new \Laminas\Stdlib\Parameters($server));
         $container->set('Request', $mockRequest);
         return $container;
     }
@@ -92,7 +91,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 $args = func_get_args();
                 $this->args = $args;
                 parent::__construct(
-                    ...(empty($args) ? [new Parameters([])] : $args)
+                    ...(empty($args) ? [[]] : $args)
                 );
             }
         };
@@ -110,7 +109,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         $container = $this->getContainer();
         $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertFalse($allowForwardedIps);
         $this->assertEquals([], $ipFilter);
     }
@@ -133,7 +132,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         );
         $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4'], $ipFilter);
     }
@@ -156,7 +155,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         );
         $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4', '5.6.7.8'], $ipFilter);
     }

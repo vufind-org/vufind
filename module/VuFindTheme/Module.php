@@ -85,10 +85,6 @@ class Module
             'aliases' => [
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
-            'factories' => [
-                MixinGenerator::class => ThemeInfoInjectorFactory::class,
-                ThemeCompiler::class => ThemeInfoInjectorFactory::class,
-            ],
         ];
     }
 

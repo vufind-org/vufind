@@ -3,16 +3,6 @@
 namespace VuFindDevTools\Module\Configuration;
 
 $config = [
-    'controllers' => [
-        'factories' => [
-            'VuFindDevTools\Controller\DevtoolsController' => 'VuFind\Controller\AbstractBaseFactory',
-            \VuFindDevTools\Controller\PaymentServiceController::class => \VuFind\Controller\AbstractBaseFactory::class,
-        ],
-        'aliases' => [
-            'DevTools' => 'VuFindDevTools\Controller\DevtoolsController',
-            'PaymentService' => \VuFindDevTools\Controller\PaymentServiceController::class,
-        ],
-    ],
     'router' => [
         'routes' => [
             'devtools-deminify' => [
@@ -60,7 +50,7 @@ $config = [
                 'options' => [
                     'route'    => '/devtools/payment/init',
                     'defaults' => [
-                        'controller' => 'PaymentService',
+                        'controller' => 'DevToolsPaymentService',
                         'action'     => 'Init',
                     ],
                 ],
@@ -70,7 +60,7 @@ $config = [
                 'options' => [
                     'route'    => '/devtools/payment/handle',
                     'defaults' => [
-                        'controller' => 'PaymentService',
+                        'controller' => 'DevToolsPaymentService',
                         'action'     => 'Handle',
                     ],
                 ],
@@ -80,7 +70,7 @@ $config = [
                 'options' => [
                     'route'    => '/devtools/payment/status',
                     'defaults' => [
-                        'controller' => 'PaymentService',
+                        'controller' => 'DevToolsPaymentService',
                         'action'     => 'Status',
                     ],
                 ],
@@ -103,6 +93,21 @@ $config = [
                         'controller' => 'DevTools',
                         'action'     => 'Translate',
                     ],
+                ],
+            ],
+        ],
+    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'action' => [
+                'autodiscovery_namespaces' => [
+                    'VuFindDevTools\Action' => true,
+                ],
+                'aliases' => [
+                ],
+                'category_aliases' => [
+                    'Devtools' => 'DevTools',
+                    'Devtoolspaymentservice' => 'DevToolsPaymentService',
                 ],
             ],
         ],

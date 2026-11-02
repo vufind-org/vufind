@@ -31,7 +31,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Session\Settings as SessionSettings;
@@ -80,7 +79,7 @@ class GetResultCount extends AbstractBase
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->getOptions()->setLimitOptions([0]);
-        $paramsObj->initFromRequest(new Parameters($searchParams));
+        $paramsObj->initFromRequest($searchParams);
 
         return $this->formatResponse(['total' => $results->getResultTotal()]);
     }
