@@ -30,7 +30,6 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 
@@ -176,7 +175,7 @@ class AuthorityRecommend implements RecommendInterface
         try {
             $authResults = $this->resultsManager->get('SolrAuth');
             $authParams = $authResults->getParams();
-            $authParams->initFromRequest(new Parameters($params));
+            $authParams->initFromRequest($params);
             foreach ($this->filters as $filter) {
                 $authParams->addHiddenFilter($filter);
             }

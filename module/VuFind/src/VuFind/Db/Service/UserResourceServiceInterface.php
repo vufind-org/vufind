@@ -79,7 +79,7 @@ interface UserResourceServiceInterface extends DbServiceInterface
      * @param UserListEntityInterface|int $listOrId     Entity or ID of list to link up
      * @param string                      $notes        Notes to associate with link
      *
-     * @return UserResource|false
+     * @return UserResourceEntityInterface
      */
     public function createOrUpdateLink(
         ResourceEntityInterface|int $resourceOrId,

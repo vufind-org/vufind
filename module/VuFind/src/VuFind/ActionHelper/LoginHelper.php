@@ -137,10 +137,10 @@ class LoginHelper implements HelperInterface
         $request = $request->withParsedBody($body);
 
         if ($forward) {
-            return $this->forwardHelper->forwardTo($request, $response, 'myresearch/login');
+            return $this->forwardHelper->forwardTo($request, $response, 'account/login');
         }
 
-        return $this->redirectHelper->redirectToRoute($response, 'myresearch-home');
+        return $this->redirectHelper->redirectToRoute($response, 'account-home');
     }
 
     /**
@@ -205,7 +205,7 @@ class LoginHelper implements HelperInterface
                     // Don't reveal the result
                     $this->userSession->setLibraryCardAuthenticationData($authData);
                     $this->setFollowupUrlToReferrer($request);
-                    return $this->redirectHelper->redirectToRoute($response, 'myresearch-verifyotp');
+                    return $this->redirectHelper->redirectToRoute($response, 'account-verifyotp');
                 } else {
                     $patron = $this->ilsAuthenticator->newCatalogLogin($username, $password, $user);
 
@@ -228,7 +228,7 @@ class LoginHelper implements HelperInterface
 
         // If catalog login failed, send the user to the right page:
         if (!$patron && $forwardToCatalogLogin) {
-            return $this->forwardHelper->forwardTo($request, $response, 'myresearch/cataloglogin');
+            return $this->forwardHelper->forwardTo($request, $response, 'account/cataloglogin');
         }
 
         // Send either null or patron array back to caller:
@@ -360,19 +360,19 @@ class LoginHelper implements HelperInterface
      */
     protected function referrerIsLoginAction(string $referrer): bool
     {
-        // Check for MyResearch/Home or MyResearch/UserLogin:
-        $myResearchHomeUrlNorm = $this->urlHelper->normalizeUrlForComparison(
+        // Check for Account/Home or Account/UserLogin:
+        $accountHomeUrlNorm = $this->urlHelper->normalizeUrlForComparison(
             $this->serverUrlHelper->getUrlForPath(
-                $this->routeHelper->getUrlFromRoute('myresearch-home')
+                $this->routeHelper->getUrlFromRoute('account-home')
             )
         );
-        $myResearchUserLoginNorm = $this->urlHelper->normalizeUrlForComparison(
+        $accountUserLoginNorm = $this->urlHelper->normalizeUrlForComparison(
             $this->serverUrlHelper->getUrlForPath(
-                $this->routeHelper->getUrlFromRoute('myresearch-userlogin')
+                $this->routeHelper->getUrlFromRoute('account-userlogin')
             )
         );
         $referrerNorm = $this->urlHelper->normalizeUrlForComparison($referrer);
-        return $referrerNorm === $myResearchHomeUrlNorm
-            || str_starts_with($referrerNorm, $myResearchUserLoginNorm);
+        return $referrerNorm === $accountHomeUrlNorm
+            || str_starts_with($referrerNorm, $accountUserLoginNorm);
     }
 }

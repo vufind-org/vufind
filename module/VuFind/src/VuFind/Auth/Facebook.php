@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Facebook authentication module.
@@ -49,21 +51,15 @@ class Facebook extends AbstractBase implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Session container.
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
      * Constructor.
      *
-     * @param \Laminas\Session\Container $container Session container for persisting
+     * @param \Laminas\Session\Container $session Session container for persisting
      * state information.
      */
-    public function __construct(\Laminas\Session\Container $container)
-    {
-        $this->session = $container;
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'Facebook')]
+        protected \Laminas\Session\Container $session
+    ) {
     }
 
     /**

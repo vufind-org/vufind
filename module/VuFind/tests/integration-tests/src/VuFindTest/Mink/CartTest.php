@@ -653,7 +653,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
         $this->assertMatchesRegularExpression(
-            '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
+            '|href="[^"]*/Lists/List/[0-9]+"|',
             $result->getOuterHtml()
         );
 
