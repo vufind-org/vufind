@@ -65,10 +65,13 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         ];
         $json = new Json(false);
         $result = $this->callMethod($json, $method, [$fields]);
-        $this->assertEquals($result, [
-            1 => 3,
-            2 => 4,
-        ]);
+        $this->assertEquals(
+            [
+                1 => 3,
+                2 => 4,
+            ],
+            $result
+        );
 
         /**
          * If `validateHierarchySequences` is set to true
@@ -82,10 +85,13 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         ];
         $json = new Json(true);
         $result = $this->callMethod($json, $method, [$fields]);
-        $this->assertEquals($result, [
-            1 => 3,
-            2 => 4,
-        ]);
+        $this->assertEquals(
+            [
+                1 => 3,
+                2 => 4,
+            ],
+            $result
+        );
 
         /**
          * If `validateHierarchySequences` is set to false
@@ -99,7 +105,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         ];
         $json = new Json(false);
         $result = $this->callMethod($json, $method, [$fields]);
-        $this->assertEquals($result, []);
+        $this->assertEquals([], $result);
 
         /**
          * If `validateHierarchySequences` is set to true

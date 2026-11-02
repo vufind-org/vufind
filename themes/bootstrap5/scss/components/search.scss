@@ -570,6 +570,8 @@ header .container.navbar {
   display: flex;
   float: left;
   width: 50%;
+  padding: 1rem;
+  padding-left: 0;
 
   .grid-body {
     flex: 1;

@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Tags;
 
-use Laminas\Stdlib\Parameters;
-
 /**
  * Search Tags Parameters.
  *
@@ -62,14 +60,14 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Pull the search parameters.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(Parameters $request): void
+    public function initFromRequest(array $request): void
     {
         parent::initFromRequest($request);
-        $this->fuzzy = ('true' == $request->get('fuzzy', 'false'));
+        $this->fuzzy = ('true' == ($request['fuzzy'] ?? 'false'));
     }
 }
