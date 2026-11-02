@@ -1,8 +1,9 @@
 <?php
+
 /**
- * GeoCoords view helper
+ * GeoCoords view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\Url;
 use VuFind\Search\Base\Options;
 
+use function is_array;
+
 /**
- * GeoCoords view helper
+ * GeoCoords view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,37 +43,25 @@ use VuFind\Search\Base\Options;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GeoCoords extends \Laminas\View\Helper\AbstractHelper
+class GeoCoords
 {
     /**
-     * Is Map Search enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
-     * Default coordinates
-     *
-     * @var string
-     */
-    protected $coords;
-
-    /**
-     * Get geoField variable name
+     * Get geoField variable name.
      *
      * @var string
      */
     protected $geoField = 'long_lat';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $coords Default coordinates
+     * @param Url    $url    URL helper
      */
-    public function __construct($coords)
-    {
-        $this->coords = $coords;
+    public function __construct(
+        protected string $coords,
+        protected Url $url
+    ) {
     }
 
     /**
@@ -108,9 +101,19 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
         if (!$this->recommendationEnabled($options->getRecommendationSettings())) {
             return false;
         }
-        $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper('search-results')
-            . '?filter[]=' . urlencode($this->geoField)
-            . ':Intersects(ENVELOPE(' . urlencode($this->coords) . '))';
+        $query = http_build_query([
+            'filter' => [$this->geoField . ':Intersects(ENVELOPE(' . $this->coords . '))'],
+        ]);
+        return ($this->url)('search-results') . '?' . $query;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

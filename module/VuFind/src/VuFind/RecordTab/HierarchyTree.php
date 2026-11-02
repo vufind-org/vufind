@@ -1,10 +1,12 @@
 <?php
+
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,56 +18,58 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function count;
+use function is_object;
+
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * @category VuFind
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 class HierarchyTree extends AbstractBase
 {
     /**
-     * Tree data
+     * Tree data.
      *
      * @var array
      */
     protected $treeList = null;
 
     /**
-     * Configuration
+     * Constructor.
      *
-     * @var \Laminas\Config\Config
+     * @param array $config Configuration
      */
-    protected $config = null;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config $config Configuration
-     */
-    public function __construct(\Laminas\Config\Config $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
      * Get the VuFind configuration.
      *
-     * @return \Laminas\Config\Config
+     * @return array
      */
     protected function getConfig()
     {
@@ -94,7 +98,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get the ID of the active tree (false if none)
+     * Get the ID of the active tree (false if none).
      *
      * @return string|bool
      */
@@ -113,7 +117,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get an array of tree data
+     * Get an array of tree data.
      *
      * @return array
      */
@@ -144,43 +148,31 @@ class HierarchyTree extends AbstractBase
         if (is_object($hierarchyDriver)) {
             // No setting, or true setting -- use default setting:
             $settings = $hierarchyDriver->getTreeSettings();
-            if (!isset($settings['fullHierarchyRecordView'])
-                || $settings['fullHierarchyRecordView']
-            ) {
+            if ($settings['fullHierarchyRecordView'] ?? true) {
                 return true;
             }
         }
-
-        // Currently displaying top of tree?  Disable partial hierarchy:
-        if ($this->getActiveTree() == $recordDriver->getUniqueId()) {
-            return true;
-        }
-
-        // Only if we got this far is it appropriate to use a partial hierarchy:
-        return false;
+        // If displaying the top of the tree, we should show the full hierarchy;
+        // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
+        return $this->getActiveTree() == $recordDriver->getUniqueID();
     }
 
     /**
-     * Render a hierarchy tree
+     * Render a hierarchy tree.
      *
-     * @param string $baseUrl Base URL to use in links within tree
-     * @param string $id      Hierarchy ID (omit to use active tree)
-     * @param string $context Context for use by renderer
+     * @param ?string $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $context Context for use by renderer or null for default
+     * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree($baseUrl, $id = null, $context = 'Record')
+    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
     {
-        $id = $id ?? $this->getActiveTree();
+        $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {
-            $tree = $hierarchyDriver->render($recordDriver, $context, 'List', $id);
-            return str_replace(
-                '%%%%VUFIND-BASE-URL%%%%',
-                rtrim($baseUrl, '/'),
-                $tree
-            );
+            return $hierarchyDriver->render($recordDriver, $context ?? 'Record', 'List', $id, $options);
         }
         return '';
     }
@@ -193,7 +185,7 @@ class HierarchyTree extends AbstractBase
     public function searchActive()
     {
         $config = $this->getConfig();
-        return !isset($config->Hierarchy->search) || $config->Hierarchy->search;
+        return (bool)($config['Hierarchy']['search'] ?? false);
     }
 
     /**
@@ -204,7 +196,29 @@ class HierarchyTree extends AbstractBase
     public function getSearchLimit()
     {
         $config = $this->getConfig();
-        return $config->Hierarchy->treeSearchLimit ?? -1;
+        return $config['Hierarchy']['treeSearchLimit'] ?? -1;
+    }
+
+    /**
+     * Disable record preview when screen width is narrow.
+     *
+     * @return bool
+     */
+    public function hidePreviewInNarrowDisplays(): bool
+    {
+        $config = $this->getConfig();
+        return (bool)($config['Hierarchy']['hide_preview_in_narrow_displays'] ?? false);
+    }
+
+    /**
+     * Get the current active record. Returns record driver if there is an active
+     * record or null otherwise.
+     *
+     * @return ?\VuFind\RecordDriver\AbstractBase
+     */
+    public function getActiveRecord(): ?\VuFind\RecordDriver\AbstractBase
+    {
+        return null;
     }
 
     /**

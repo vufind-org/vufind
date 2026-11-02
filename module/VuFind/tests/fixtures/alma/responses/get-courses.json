@@ -1,0 +1,15 @@
+[
+    {
+        "expectedParams": [
+            "/courses",
+            [],
+            [],
+            "GET",
+            null,
+            null,
+            [],
+            false
+        ],
+        "resultFixture": "get-courses.xml"
+    }
+]

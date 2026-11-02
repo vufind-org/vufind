@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CheckRequestIsValid test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
 
 /**
@@ -42,16 +45,16 @@ use VuFind\ILS\Connection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
+class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CheckRequestIsValid handler for testing.
      *
-     * @param User|bool $user Return value for isLoggedIn() in auth manager
+     * @param ?UserEntityInterface $user Return value for getUserObject() in auth manager
      *
      * @return CheckRequestIsValid
      */
-    protected function getHandler($user = false)
+    protected function getHandler(?UserEntityInterface $user = null): CheckRequestIsValid
     {
         // Set up auth manager with user:
         $this->container->set(Manager::class, $this->getMockAuthManager($user));
@@ -66,12 +69,12 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testLoggedOutUser()
+    public function testLoggedOutUser(): void
     {
         $handler = $this->getHandler();
-        $this->assertEquals(
+        $this->assertSame(
             ['You must be logged in first', 401],
-            $handler->handleRequest($this->getParamsHelper(['id' => 1, 'data' => 1]))
+            $handler->handleRequest($this->getRequest(['id' => 1, 'data' => 1]))
         );
     }
 
@@ -80,35 +83,37 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testEmptyQuery()
+    public function testEmptyQuery(): void
     {
         $handler = $this->getHandler($this->getMockUser());
-        $this->assertEquals(
+        $this->assertSame(
             ['bulk_error_missing', 400],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
     /**
      * Generic support function for successful request tests.
      *
+     * @param string $ilsMethod   ILS method to mock
+     * @param string $requestType Request type for params helper
+     *
      * @return array
      */
-    protected function runSuccessfulTest($ilsMethod, $requestType = null)
+    protected function runSuccessfulTest($ilsMethod, $requestType = ''): array
     {
         $ilsAuth = $this->container
             ->createMock(ILSAuthenticator::class, ['storedCatalogLogin']);
-        $ilsAuth->expects($this->once())->method('storedCatalogLogin')
-            ->will($this->returnValue([3]));
+        $ilsAuth->expects($this->once())->method('storedCatalogLogin')->willReturn([3]);
         $ils = $this->container->createMock(Connection::class, [$ilsMethod]);
         $ils->expects($this->once())->method($ilsMethod)
-            ->with($this->equalTo(1), $this->equalTo(2), $this->equalTo([3]))
-            ->will($this->returnValue(true));
+            ->with(1, 2, [3])
+            ->willReturn(true);
         $this->container->set(Connection::class, $ils);
         $this->container->set(ILSAuthenticator::class, $ilsAuth);
         $handler = $this->getHandler($this->getMockUser());
         $params = ['id' => 1, 'data' => 2, 'requestType' => $requestType];
-        return $handler->handleRequest($this->getParamsHelper($params));
+        return $handler->handleRequest($this->getRequest($params));
     }
 
     /**
@@ -116,7 +121,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testHoldResponse()
+    public function testHoldResponse(): void
     {
         $this->assertEquals(
             [['status' => true, 'msg' => 'request_place_text']],
@@ -129,7 +134,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testILLResponse()
+    public function testILLResponse(): void
     {
         $this->assertEquals(
             [['status' => true, 'msg' => 'ill_request_place_text']],
@@ -142,11 +147,11 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testStorageResponse()
+    public function testStorageResponse(): void
     {
         $this->assertEquals(
             [
-                ['status' => true, 'msg' => 'storage_retrieval_request_place_text']
+                ['status' => true, 'msg' => 'storage_retrieval_request_place_text'],
             ],
             $this->runSuccessfulTest(
                 'checkStorageRetrievalRequestIsValid',

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Pazpar2 Search Options
+ * Pazpar2 Search Options.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -25,10 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Pazpar2;
 
+use VuFind\Config\ConfigManagerInterface;
+
+use function is_array;
+
 /**
- * Pazpar2 Search Options
+ * Pazpar2 Search Options.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -39,33 +45,32 @@ namespace VuFind\Search\Pazpar2;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         $this->searchIni = $this->facetsIni = 'Pazpar2';
 
         $this->limitOptions = [$this->defaultLimit];
 
         // Load source settings
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->IndexSources)
-            && !empty($searchSettings->IndexSources)
-        ) {
-            foreach ($searchSettings->IndexSources as $k => $v) {
+        $searchSettings = $configManager->getConfigArray($this->searchIni);
+        if (!empty($searchSettings['IndexSources'])) {
+            foreach ($searchSettings['IndexSources'] as $k => $v) {
                 $this->shards[$k] = $v;
             }
             // If we have a default from the configuration, use that...
-            if (isset($searchSettings->SourcePreferences->defaultChecked)
-                && !empty($searchSettings->SourcePreferences->defaultChecked)
+            if (
+                isset($searchSettings['SourcePreferences']['defaultChecked'])
+                && !empty($searchSettings['SourcePreferences']['defaultChecked'])
             ) {
                 $defaultChecked
-                    = is_object($searchSettings->SourcePreferences->defaultChecked)
-                    ? $searchSettings->SourcePreferences->defaultChecked->toArray()
-                    : [$searchSettings->SourcePreferences->defaultChecked];
+                    = is_array($searchSettings['SourcePreferences']['defaultChecked'])
+                    ? $searchSettings['SourcePreferences']['defaultChecked']
+                    : [$searchSettings['SourcePreferences']['defaultChecked']];
                 foreach ($defaultChecked as $current) {
                     $this->defaultSelectedShards[] = $current;
                 }
@@ -74,9 +79,9 @@ class Options extends \VuFind\Search\Base\Options
                 $this->defaultSelectedShards = array_keys($this->shards);
             }
             // Apply checkbox visibility setting if applicable:
-            if (isset($searchSettings->SourcePreferences->showCheckboxes)) {
+            if (isset($searchSettings['SourcePreferences']['showCheckboxes'])) {
                 $this->visibleShardCheckboxes
-                    = $searchSettings->SourcePreferences->showCheckboxes;
+                    = $searchSettings['SourcePreferences']['showCheckboxes'];
             }
         }
     }
@@ -86,20 +91,20 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'pazpar2-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
@@ -107,7 +112,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Not currently supported
         return false;

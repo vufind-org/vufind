@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Related records view helper
+ * Related records view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,14 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\PluginManager as RelatedManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Related records view helper
+ * Related records view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,46 +45,30 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Related extends \Laminas\View\Helper\AbstractHelper
+class Related
 {
     use ClassBasedTemplateRendererTrait;
 
     /**
-     * Config manager
+     * Constructor.
      *
-     * @var ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * Plugin manager for search options.
-     *
-     * @var OptionsManager
-     */
-    protected $optionsManager;
-
-    /**
-     * Plugin manager for related record modules.
-     *
-     * @var RelatedManager
-     */
-    protected $pluginManager;
-
-    /**
-     * Constructor
-     *
-     * @param RelatedManager $pluginManager Plugin manager for related record modules
-     * @param ConfigManager  $cm            Configuration manager
-     * @param OptionsManager $om            Search options manager
+     * @param RelatedManager         $relatedPluginManager Plugin manager for related record modules
+     * @param ConfigManagerInterface $configManager        Configuration manager
+     * @param OptionsManager         $optionsManager       Search options plugin manager
+     * @param Context                $contextHelper        Context helper
+     * @param RendererInterface      $viewRenderer         View renderer
+     * @param ResolverInterface      $viewResolver         View resolver
      */
     public function __construct(
-        RelatedManager $pluginManager,
-        ConfigManager $cm,
-        OptionsManager $om
+        protected RelatedManager $relatedPluginManager,
+        protected ConfigManagerInterface $configManager,
+        protected OptionsManager $optionsManager,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $contextHelper,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver
     ) {
-        $this->pluginManager = $pluginManager;
-        $this->configManager = $cm;
-        $this->optionsManager = $om;
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**
@@ -89,7 +78,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    protected function getConfigForSource($source)
+    protected function getConfigForSource(string $source): array
     {
         $options = $this->optionsManager->get($source);
         $configName = $options->getSearchIni();
@@ -97,8 +86,8 @@ class Related extends \Laminas\View\Helper\AbstractHelper
         if ($configName === 'searches') {
             $configName = 'config';
         }
-        $config = $this->configManager->get($configName);
-        return $config->Record->related ?? [];
+        $config = $this->configManager->getConfigArray($configName);
+        return $config['Record']['related'] ?? [];
     }
 
     /**
@@ -108,7 +97,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getList(\VuFind\RecordDriver\AbstractBase $driver)
+    public function getList(\VuFind\RecordDriver\AbstractBase $driver): array
     {
         $retVal = [];
         $config = $this->getConfigForSource($driver->getSearchBackendIdentifier());
@@ -116,8 +105,8 @@ class Related extends \Laminas\View\Helper\AbstractHelper
             $parts = explode(':', $current, 2);
             $type = $parts[0];
             $params = $parts[1] ?? null;
-            if ($this->pluginManager->has($type)) {
-                $plugin = $this->pluginManager->get($type);
+            if ($this->relatedPluginManager->has($type)) {
+                $plugin = $this->relatedPluginManager->get($type);
                 $plugin->init($params, $driver);
                 $retVal[] = $plugin;
             } else {
@@ -135,11 +124,21 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function render($related)
+    public function render(\VuFind\Related\RelatedInterface $related): string
     {
         $template = 'Related/%s.phtml';
-        $className = get_class($related);
+        $className = $related::class;
         $context = ['related' => $related];
         return $this->renderClassTemplate($template, $className, $context);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

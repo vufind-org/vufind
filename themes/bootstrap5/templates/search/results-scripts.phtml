@@ -1,0 +1,26 @@
+<?php
+// Load Javascript dependencies into header:
+$scripts = [
+  'check_item_statuses.js',
+  'check_save_statuses.js',
+];
+if ($this->displayVersions) {
+  $scripts[] = 'record_versions.js';
+  $scripts[] = 'combined-search.js';
+}
+// Load only if list view parameter is NOT full:
+if (($this->listViewOption ?? 'full') !== 'full') {
+  $scripts[] = 'record.js';
+  $scripts[] = 'record_tabs.js';
+  $scripts[] = 'embedded_record.js';
+
+  // Add any extra scripts the tabs require:
+  $scripts = array_merge($scripts, $this->recordTabs()->getExtraScripts());
+}
+if ($this->jsResults ?? false) {
+  $scripts[] = 'search.js';
+}
+
+foreach (array_unique($scripts) as $script) {
+  $this->assetManager()->appendScriptLink($script);
+}

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * FavoriteFacets Recommendations Module
+ * FavoriteFacets Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
-use VuFind\Search\Solr\HierarchicalFacetHelper;
-
 /**
- * FavoriteFacets Recommendations Module
+ * FavoriteFacets Recommendations Module.
  *
  * This class provides special facets for the Favorites area (tags/lists)
  *
@@ -43,26 +43,23 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
 class FavoriteFacets extends SideFacets
 {
     /**
-     * Tag capability setting
+     * Tag capability setting.
      *
      * @var string
      */
     protected $tagSetting;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
-     * hierarchical facets
-     * @param string                       $tagSetting   Tag capability setting
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param string                                $tagSetting    Tag capability setting
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper = null,
+        \VuFind\Config\ConfigManagerInterface $configManager,
         $tagSetting = 'enabled'
     ) {
-        parent::__construct($configLoader, $facetHelper);
+        parent::__construct($configManager);
         $this->tagSetting = $tagSetting;
     }
 

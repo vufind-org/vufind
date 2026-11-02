@@ -3,7 +3,7 @@
 /**
  * Unit tests for WriteDocumentCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -51,11 +52,9 @@ class WriteDocumentCommandTest extends TestCase
     public function testUnsupportedBackend(): void
     {
         $command = new WriteDocumentCommand('foo', new CommitDocument());
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $this->expectExceptionMessage('foo does not support writeDocument()');
         $command->execute($backend);
     }
@@ -68,14 +67,12 @@ class WriteDocumentCommandTest extends TestCase
     public function testSupportedBackend(): void
     {
         $doc = new CommitDocument();
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('Solr'));
+            ->willReturn('Solr');
         $backend->expects($this->once())->method('writeDocument')
-            ->with($this->equalTo($doc), $this->equalTo(60), $this->equalTo('update'))
-            ->will($this->returnValue(['core' => 'biblio']));
+            ->with($doc, 60, 'update')
+            ->willReturn(['core' => 'biblio']);
         $command = new WriteDocumentCommand('Solr', $doc, 60);
         $this->assertEquals(
             ['core' => 'biblio'],

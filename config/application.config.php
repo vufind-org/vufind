@@ -1,8 +1,11 @@
 <?php
+
 require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
+    'DoctrineModule',
+    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
@@ -10,25 +13,23 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Form',
     'Laminas\Router',
-    'LmcRbacMvc',
+    'Lmc\Rbac',
+    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
     'Laminas\Mvc\I18n',
-    'SlmLocale',
     'VuFindTheme',
     'VuFindSearch',
     'VuFind',
     'VuFindAdmin',
     'VuFindApi',
 ];
-if (!extension_loaded('intl')) {
-    // Disable SlmLocale module if intl extension is missing:
-    $modules = array_diff($modules, ['SlmLocale']);
-}
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
-if (APPLICATION_ENV == 'development') {
-    $modules[] = 'WhoopsErrorHandler';
+if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
+    if (!isset($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'])) {
+        $modules[] = 'WhoopsErrorHandler';
+    }
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
@@ -69,8 +70,8 @@ if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
 
-// Enable caching unless in dev mode or running tests:
-$useCache = APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
+// Enable caching unless in CLI mode, dev mode or running tests:
+$useCache = PHP_SAPI !== 'cli' && APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
 
 // Build configuration:
 return [
@@ -87,10 +88,14 @@ return [
             APPLICATION_PATH . '/module',
             APPLICATION_PATH . '/vendor',
         ],
+        'use_laminas_loader' => false,
     ],
     'service_manager' => [
         'use_defaults' => true,
         'factories'    => [
         ],
+    ],
+    'listeners' => [
+        \VuFind\Action\ActionDispatchListener::class,
     ],
 ];

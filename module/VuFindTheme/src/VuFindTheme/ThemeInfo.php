@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Class to represent currently-selected theme and related information.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Webmozart\Glob\Glob;
+
+use function is_array;
+use function strlen;
 
 /**
  * Class to represent currently-selected theme and related information.
@@ -40,37 +46,24 @@ use Laminas\Cache\Storage\StorageInterface;
  */
 class ThemeInfo
 {
-    /**
-     * Base directory for theme files
-     *
-     * @var string
-     */
-    protected $baseDir;
+    use \VuFind\Feature\MergeRecursiveTrait;
 
     /**
-     * Current selected theme
+     * Current selected theme.
      *
      * @var string
      */
     protected $currentTheme;
 
     /**
-     * A safe theme (guaranteed to exist) that can be loaded if an invalid
-     * configuration is passed in
-     *
-     * @var string
-     */
-    protected $safeTheme;
-
-    /**
-     * Theme configuration cache
+     * Theme configuration cache.
      *
      * @var array
      */
     protected $allThemeInfo = null;
 
     /**
-     * Cache for merged configs
+     * Cache for merged configs.
      *
      * @var StorageInterface
      */
@@ -80,19 +73,19 @@ class ThemeInfo
     public const RETURN_ALL_DETAILS = 'all';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $baseDir   Base directory for theme files.
-     * @param string $safeTheme Theme that should be guaranteed to exist.
+     * @param string $safeTheme A safe theme (guaranteed to exist) to be loaded if provided configuration is invalid.
      */
-    public function __construct($baseDir, $safeTheme)
+    public function __construct(protected string $baseDir, protected string $safeTheme)
     {
         $this->baseDir = $baseDir;
         $this->currentTheme = $this->safeTheme = $safeTheme;
     }
 
     /**
-     * Provide cache and activate info caching
+     * Provide cache and activate info caching.
      *
      * @param StorageInterface $cache cache object
      *
@@ -181,6 +174,7 @@ class ThemeInfo
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        $this->allThemeInfo[$theme]['themeName'] = $theme;
         // ..and if there are mixins, load those too!
         if (isset($this->allThemeInfo[$theme]['mixins'])) {
             foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
@@ -213,32 +207,17 @@ class ThemeInfo
     /**
      * Get a configuration element, merged to reflect theme inheritance.
      *
-     * @param string $key     Configuration key to retrieve (or empty string to
+     * @param string $key Configuration key to retrieve (or empty string to
      * retrieve full configuration)
-     * @param bool   $flatten Use array_replace to flatten values
      *
-     * @return array
+     * @return array|string
      */
-    public function getMergedConfig(string $key = '', bool $flatten = false): array
+    public function getMergedConfig(string $key = '')
     {
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
 
-        /**
-         * Assume a parent value 'a' and a child value 'b'
-         *
-         * Using array_merge (default) will merge them into ['b', 'a']
-         * Using array_replace ($flatten = true) will merge them into 'b'
-         *
-         * We're using an anonymous function here to swap the arguments in the
-         * flatten case. This is to make sure child values override parent values
-         * with replace but parent values are appended to the end of merged values
-         */
-        $deepFunc = !$flatten
-            ? 'array_merge_recursive'
-            : 'array_replace_recursive';
-
-        $cacheKey = ($flatten ? '1_' : '0_') . $currentTheme . '_' . $key;
+        $cacheKey = $currentTheme . '_' . $key;
 
         if ($this->cache !== null) {
             $cached = $this->cache->getItem($cacheKey);
@@ -256,18 +235,17 @@ class ThemeInfo
                 $allThemeInfo[$currentTheme]['mixins'] ?? [],
             );
 
+            // from child to parent
             foreach ($currentThemeSet as $theme) {
-                if (isset($allThemeInfo[$theme])
+                if (
+                    isset($allThemeInfo[$theme])
                     && (empty($key) || isset($allThemeInfo[$theme][$key]))
                 ) {
-                    $merged = $deepFunc(
-                        (array)(
-                            empty($key)
-                                ? $allThemeInfo[$theme]
-                                : $allThemeInfo[$theme][$key]
-                        ),
-                        $merged,
-                    );
+                    $current = empty($key)
+                        ? $allThemeInfo[$theme]
+                        : $allThemeInfo[$theme][$key];
+
+                    $merged = $this->mergeRecursive($current, $merged);
                 }
             }
 
@@ -282,7 +260,7 @@ class ThemeInfo
     }
 
     /**
-     * Search the themes for a particular file.  If it exists, return the
+     * Search the themes for a particular file. If it exists, return the
      * first matching theme name; otherwise, return null.
      *
      * @param string|array $relativePath Relative path (or array of paths) to
@@ -363,7 +341,7 @@ class ThemeInfo
             $themePath = "$basePath/$theme/";
             foreach ($allPaths as $currentPath) {
                 $path = $themePath . $currentPath;
-                foreach (glob($path) as $file) {
+                foreach (Glob::glob($path) as $file) {
                     if (filetype($file) === 'dir') {
                         continue;
                     }

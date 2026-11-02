@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Localization based number formatting
+ * Localization based number formatting.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) snowflake productions gmbh 2014.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class NumberFormat
- * allows localization based formating of numbers in view
+ * allows localization based formatting of numbers in view.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -39,24 +42,38 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LocalizedNumber extends AbstractHelper
+class LocalizedNumber
 {
     /**
-     * Default decimal point character
+     * Default decimal point character.
      *
      * @var string
      */
     protected $defaultDecimalPoint = '.';
 
     /**
-     * Default thousands separator character
+     * Default thousands separator character.
      *
      * @var string
      */
     protected $defaultThousandSep = ',';
 
     /**
-     * Localize number
+     * Constructor.
+     *
+     * @param Translate  $translate  Translate helper
+     * @param EscapeHtml $escapeHtml EscapeHtml helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+    ) {
+    }
+
+    /**
+     * Localize number.
      *
      * @param int|float $number     Number to format
      * @param int       $decimals   How many decimal places?
@@ -64,16 +81,14 @@ class LocalizedNumber extends AbstractHelper
      *
      * @return string
      */
-    public function __invoke($number, $decimals = 0, $escapeHtml = true)
+    public function __invoke($number, $decimals = 0, $escapeHtml = true): string
     {
-        $translator = $this->getView()->plugin('translate');
-
-        $decimalPoint = $translator(
+        $decimalPoint = ($this->translate)(
             'number_decimal_point',
             [],
             $this->defaultDecimalPoint
         );
-        $thousandSep = $translator(
+        $thousandSep = ($this->translate)(
             'number_thousands_separator',
             [],
             $this->defaultThousandSep
@@ -85,10 +100,8 @@ class LocalizedNumber extends AbstractHelper
             $thousandSep
         );
         if ($escapeHtml) {
-            $escaper = $this->getView()->plugin('escapeHtml');
-            $formattedNumber = $escaper($formattedNumber);
+            $formattedNumber = ($this->escapeHtml)($formattedNumber);
         }
-
         return $formattedNumber;
     }
 }

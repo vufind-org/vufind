@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Hierarchy Tree Data Formatter (abstract base)
+ * Hierarchy Tree Data Formatter (abstract base).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -25,10 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
- * Hierarchy Tree Data Formatter (abstract base)
+ * Hierarchy Tree Data Formatter (abstract base).
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -41,14 +47,14 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Top-level record from index
+     * Top-level record from index.
      *
      * @var object
      */
     protected $topNode;
 
     /**
-     * Child data map from index
+     * Child data map from index.
      *
      * @var array
      */
@@ -62,7 +68,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $sort;
 
     /**
-     * Collection mode
+     * Collection mode.
      *
      * @var string
      */
@@ -74,6 +80,23 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @var int
      */
     protected $count = 0;
+
+    /**
+     * Throw an exception if hierarchy parent and sequence data is out of sync?
+     *
+     * @var bool
+     */
+    protected $validateHierarchySequences;
+
+    /**
+     * Constructor.
+     *
+     * @param bool $validateHierarchySequences Throw an exception if hierarchy parent and sequence data is out of sync?
+     */
+    public function __construct($validateHierarchySequences = true)
+    {
+        $this->validateHierarchySequences = $validateHierarchySequences;
+    }
 
     /**
      * Set raw data.
@@ -121,11 +144,23 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function getHierarchyPositionsInParents($fields)
     {
         $retVal = [];
-        if (isset($fields->hierarchy_parent_id)
+        if (
+            isset($fields->hierarchy_parent_id)
             && isset($fields->hierarchy_sequence)
         ) {
-            foreach ($fields->hierarchy_parent_id as $key => $val) {
-                $retVal[$val] = $fields->hierarchy_sequence[$key];
+            $parentIDs = $fields->hierarchy_parent_id;
+            $sequences = $fields->hierarchy_sequence;
+
+            if (count($parentIDs) > count($sequences)) {
+                if ($this->validateHierarchySequences) {
+                    throw new \Exception('Fields hierarchy_parent_id and hierarchy_sequence have different lengths.');
+                } else {
+                    return [];
+                }
+            }
+
+            foreach ($parentIDs as $key => $val) {
+                $retVal[$val] = $sequences[$key];
             }
         }
         return $retVal;
@@ -142,11 +177,12 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function getTitlesInHierarchy($fields)
     {
         $retVal = [];
-        if (isset($fields->title_in_hierarchy)
+        if (
+            isset($fields->title_in_hierarchy)
             && is_array($fields->title_in_hierarchy)
         ) {
             $titles = $fields->title_in_hierarchy;
-            $parentIDs = $fields->hierarchy_parent_id;
+            $parentIDs = (array)($fields->hierarchy_parent_id ?? []);
             if (count($titles) === count($parentIDs)) {
                 foreach ($parentIDs as $key => $val) {
                     $retVal[$val] = $titles[$key];
@@ -170,14 +206,14 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         // Check config setting for what constitutes a collection
         switch ($this->collectionType) {
-        case 'All':
-            return isset($fields->is_hierarchy_id);
-        case 'Top':
-            return isset($fields->is_hierarchy_id)
-                && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
-        default:
-            // Default to not be a collection level record
-            return false;
+            case 'All':
+                return isset($fields->is_hierarchy_id);
+            case 'Top':
+                return isset($fields->is_hierarchy_id)
+                    && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
+            default:
+                // Default to not be a collection level record
+                return false;
         }
     }
 
@@ -192,11 +228,14 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function pickTitle($record, $parentID)
     {
-        $titles = $this->getTitlesInHierarchy($record);
+        if (null !== $parentID) {
+            $titles = $this->getTitlesInHierarchy($record);
+            if (isset($titles[$parentID])) {
+                return $titles[$parentID];
+            }
+        }
         // TODO: handle missing titles more gracefully (title not available?)
-        $title = $record->title ?? $record->id;
-        return null != $parentID && isset($titles[$parentID])
-            ? $titles[$parentID] : $title;
+        return $record->title ?? $record->id;
     }
 
     /**

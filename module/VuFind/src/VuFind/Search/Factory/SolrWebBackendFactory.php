@@ -3,7 +3,7 @@
 /**
  * Factory for the website SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 /**
@@ -40,41 +41,14 @@ namespace VuFind\Search\Factory;
 class SolrWebBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'website';
-        $this->searchYaml = 'websearchspecs.yaml';
+        $this->searchSpecsConfig = 'websearchspecs';
         $this->facetConfig = 'website';
-    }
-
-    /**
-     * Get the Solr core.
-     *
-     * @return string
-     */
-    protected function getSolrCore()
-    {
-        $config = $this->config->get($this->searchConfig);
-        return $config->Index->default_core ?? 'website';
-    }
-
-    /**
-     * Get the Solr URL.
-     *
-     * @param string $config name of configuration file (null for default)
-     *
-     * @return string
-     */
-    protected function getSolrUrl($config = null)
-    {
-        // Only override parent default if valid value present in config:
-        $configToCheck = $config ?? $this->searchConfig;
-        $webConfig = $this->config->get($configToCheck);
-        $finalConfig = isset($webConfig->Index->url) ? $configToCheck : null;
-        return parent::getSolrUrl($finalConfig);
+        $this->defaultIndexName = 'website';
     }
 
     /**
@@ -82,15 +56,20 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
      *
      * Returns a callable or null to use RecordCollectionFactory's default method.
      *
-     * @return callable|null
+     * @return ?callable
      */
     protected function getCreateRecordCallback(): ?callable
     {
-        $manager = $this->serviceLocator
-            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         return function ($data) use ($manager) {
+            // Extract highlighting details injected earlier by
+            // \VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory
+            $hl = $data['__highlight_details'] ?? [];
+            unset($data['__highlight_details']);
+
             $driver = $manager->get('SolrWeb');
             $driver->setRawData($data);
+            $driver->setHighlightDetails($hl);
             return $driver;
         };
     }

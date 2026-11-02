@@ -1,0 +1,11 @@
+<?php foreach ($data as $recordLink): ?>
+  <?=$this->transEsc($recordLink['title'])?>:
+  <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->related($recordLink['link'], $this->driver->getSourceIdentifier()))?>"><?=$this->escapeHtml($recordLink['value'])?></a><br>
+<?php endforeach; ?>
+<?php /* if we have record links, display relevant explanatory notes */
+  $related = $this->driver->getRelationshipNotes();
+  if (!empty($related)): ?>
+    <?php foreach ($related as $field): ?>
+      <?=$this->escapeHtml($field)?><br>
+    <?php endforeach; ?>
+<?php endif; ?>

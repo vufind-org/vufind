@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ContentPages Plugin Test Class
+ * ContentPages Plugin Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap\Plugin;
 
 use Laminas\Router\RouteStackInterface;
@@ -33,8 +35,10 @@ use VuFind\Sitemap\Plugin\ContentPagesFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\ThemeInfo;
 
+use function func_get_args;
+
 /**
- * ContentPages Plugin Test Class
+ * ContentPages Plugin Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,45 +48,64 @@ use VuFindTheme\ThemeInfo;
  */
 class ContentPagesTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Mock container
+     * Mock container.
      *
      * @var MockContainer
      */
     protected $container = null;
 
     /**
-     * Theme data for testing
+     * Theme data for testing.
      *
      * @var array
      */
     protected $themeInfoData = [
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/asklibrary_en.phtml',
-          'relativeFile' => 'templates/content/asklibrary_en.phtml',
+        'templates/content/**/*.phtml' => [
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/asklibrary_en.phtml',
+                'relativeFile' => 'templates/content/asklibrary_en.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/asklibrary.phtml',
+                'relativeFile' => 'templates/content/asklibrary.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/content.phtml',
+                'relativeFile' => 'templates/content/content.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/faq.phtml',
+                'relativeFile' => 'templates/content/faq.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/help/search.phtml',
+                'relativeFile' => 'templates/content/help/search.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/help/search_en.phtml',
+                'relativeFile' => 'templates/content/help/search_en.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/markdown.phtml',
+                'relativeFile' => 'templates/content/markdown.phtml',
+            ],
         ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/asklibrary.phtml',
-          'relativeFile' => 'templates/content/asklibrary.phtml',
-        ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/content.phtml',
-          'relativeFile' => 'templates/content/content.phtml',
-        ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/faq.phtml',
-          'relativeFile' => 'templates/content/faq.phtml',
-        ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/markdown.phtml',
-          'relativeFile' => 'templates/content/markdown.phtml',
+        'templates/content/**/*.md' => [
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/example.md',
+                'relativeFile' => 'templates/content/example.md',
+            ],
         ],
     ];
 
@@ -97,7 +120,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a ContentPages object from its factory
+     * Get a ContentPages object from its factory.
      *
      * @param array                $config    Configuration
      * @param ?RouteStackInterface $router    Router object
@@ -112,8 +135,8 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     ): ContentPages {
         // Set up configuration:
         $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(compact('config'))
         );
 
         // Set up other dependencies:
@@ -126,7 +149,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock router object
+     * Get mock router object.
      *
      * @return RouteStackInterface
      */
@@ -137,30 +160,28 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         // parameters, and to convert them into a format we can test:
         $callback = function () {
             [$params, $options] = func_get_args();
-            $this->assertEquals(['page'], array_keys($params));
-            $this->assertEquals(['name'], array_keys($options));
+            $this->assertSame(['page'], array_keys($params));
+            $this->assertSame(['name'], array_keys($options));
             return $options['name'] . '/' . $params['page'];
         };
-        $router->expects($this->any())->method('assemble')
-            ->will($this->returnCallback($callback));
+        $router->method('assemble')->willReturnCallback($callback);
         return $router;
     }
 
     /**
-     * Get mock ThemeInfo object
+     * Get mock ThemeInfo object.
      *
      * @return ThemeInfo
      */
     protected function getMockThemeInfo(): ThemeInfo
     {
-        $expectedTemplates = [
-            'templates/content/*.phtml',
-            'templates/content/*.md',
-        ];
         $themeInfo = $this->container->get(ThemeInfo::class);
-        $themeInfo->expects($this->once())->method('findInThemes')
-            ->with($this->equalTo($expectedTemplates))
-            ->will($this->returnValue($this->themeInfoData));
+        $themeInfo->expects($this->exactly(2))->method('findInThemes')
+            ->willReturnCallback(
+                function ($paths) {
+                    return $this->themeInfoData[reset($paths)] ?? null;
+                }
+            );
         return $themeInfo;
     }
 
@@ -174,11 +195,14 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         $plugin = $this->getContentPages([]);
         // Without language settings, asklibrary_en and asklibrary are
         // treated as separate pages:
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'content-page/asklibrary_en',
                 'content-page/asklibrary',
                 'content-page/faq',
+                'content-page/help/search',
+                'content-page/help/search_en',
+                'content-page/example',
             ],
             iterator_to_array($plugin->getUrls())
         );
@@ -194,10 +218,12 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         $plugin = $this->getContentPages(['Languages' => ['en' => 'English']]);
         // With language settings, asklibrary_en and asklibrary are
         // treated as the same page:
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'content-page/asklibrary',
                 'content-page/faq',
+                'content-page/help/search',
+                'content-page/example',
             ],
             iterator_to_array($plugin->getUrls())
         );

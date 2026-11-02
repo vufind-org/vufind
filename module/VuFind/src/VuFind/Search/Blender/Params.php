@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Blender Search Parameters
+ * Blender Search Parameters.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015-2022.
+ * Copyright (C) The National Library of Finland 2015-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -25,14 +26,23 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Blender;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 
+use function array_slice;
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+
 /**
- * Blender Search Parameters
+ * Blender Search Parameters.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -43,72 +53,44 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * Search params for backends
-     *
-     * @var \VuFind\Search\Base\Params[]
-     */
-    protected $searchParams;
-
-    /**
-     * Blender configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $blenderConfig;
-
-    /**
-     * Blender mappings
+     * Current filters not supported by a backend.
      *
      * @var array
      */
-    protected $mappings;
+    protected array $unsupportedFilters = [];
 
     /**
-     * Current filters not supported by a backend
+     * Constructor.
      *
-     * @var array
-     */
-    protected $unsupportedFilters = [];
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Search\Base\Options  $options       Options to use
-     * @param \VuFind\Config\PluginManager $configLoader  Config loader
-     * @param HierarchicalFacetHelper      $facetHelper   Hierarchical facet helper
-     * @param array                        $searchParams  Search params for backends
-     * @param \Laminas\Config\Config       $blenderConfig Blender configuration
-     * @param array                        $mappings      Blender mappings
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
+     * @param HierarchicalFacetHelper     $facetHelper   Hierarchical facet helper
+     * @param array                       $searchParams  Search params for backends
+     * @param array                       $mappings      Blender mappings
      */
     public function __construct(
         \VuFind\Search\Base\Options $options,
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         HierarchicalFacetHelper $facetHelper,
-        array $searchParams,
-        \Laminas\Config\Config $blenderConfig,
-        array $mappings
+        protected array $searchParams,
+        protected array $mappings
     ) {
-        // Assign these first; they are needed during parent's construct:
-        $this->searchParams = $searchParams;
-        $this->blenderConfig = $blenderConfig;
-        $this->mappings = $mappings;
-
         parent::__construct(
             $options,
-            $configLoader,
+            $configManager,
             $facetHelper
         );
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(array $request): void
     {
         $this->unsupportedFilters = [];
 
@@ -119,13 +101,15 @@ class Params extends \VuFind\Search\Solr\Params
             'type',
             'sort',
             'filter',
-            'hiddenFilters'
+            'hiddenFilters',
+            'daterange',
         ];
         foreach ($this->searchParams as $params) {
-            $translatedRequest = clone $request;
-            foreach (array_keys($translatedRequest->getArrayCopy()) as $key) {
-                if (in_array($key, $filteredParams)) {
-                    $translatedRequest->offsetUnset($key);
+            $translatedRequest = $request;
+            foreach (array_keys($translatedRequest) as $key) {
+                // Check for filtered param or advanced search types:
+                if (in_array($key, $filteredParams) || preg_match('/^type\d+$/', $key)) {
+                    unset($translatedRequest[$key]);
                 }
             }
             $params->initFromRequest($translatedRequest);
@@ -136,23 +120,31 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch($request)
+    protected function initSearch(array $request): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
-            $translatedRequest = clone $request;
-            // Map search type:
-            if ($type = $translatedRequest->get('type')) {
-                $translatedRequest->set(
-                    'type',
-                    $this->translateSearchType($type, $backendId)
+            $translatedRequest = $request;
+            // Map basic search type:
+            if ($type = $translatedRequest['type'] ?? null) {
+                $translatedRequest['type'] = $this->translateSearchType($type, $backendId);
+            }
+            // Map advanced search types:
+            $i = 0;
+            while ($types = $translatedRequest["type$i"] ?? null) {
+                $translatedRequest["type$i"] = array_map(
+                    function ($type) use ($backendId) {
+                        return $this->translateSearchType($type, $backendId);
+                    },
+                    (array)$types
                 );
+                ++$i;
             }
             $params->initSearch($translatedRequest);
         }
@@ -162,12 +154,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Set a basic search query:
      *
-     * @param string $lookfor The search query
-     * @param string $handler The search handler (null for default)
+     * @param string  $lookfor The search query
+     * @param ?string $handler The search handler (null for default)
      *
      * @return void
      */
-    public function setBasicSearch($lookfor, $handler = null)
+    public function setBasicSearch(string $lookfor, ?string $handler = null): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
@@ -181,25 +173,22 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Get the value for which type of sorting to use
+     * Get the value for which type of sorting to use.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSort($request)
+    protected function initSort(array $request): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
-            $translatedRequest = clone $request;
+            $translatedRequest = $request;
             // Map sort:
-            if ($sort = $translatedRequest->get('sort')) {
-                $translatedRequest->set(
-                    'sort',
-                    $this->translateSort($sort, $backendId)
-                );
+            if ($sort = $translatedRequest['sort'] ?? null) {
+                $translatedRequest['sort'] = $this->translateSort($sort, $backendId);
             }
             $params->initSort($translatedRequest);
         }
@@ -210,12 +199,12 @@ class Params extends \VuFind\Search\Solr\Params
      * Set the sorting value (note: sort will be set to default if an illegal
      * or empty value is passed in).
      *
-     * @param string $sort  New sort value (null for default)
-     * @param bool   $force Set sort value without validating it?
+     * @param ?string $sort  New sort value (null for default)
+     * @param bool    $force Set sort value without validating it?
      *
      * @return void
      */
-    public function setSort($sort, $force = false)
+    public function setSort(?string $sort, bool $force = false): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
@@ -235,7 +224,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function addFilter($newFilter)
+    public function addFilter(string $newFilter): void
     {
         parent::addFilter($newFilter);
         if ($this->isBlenderFilter($newFilter)) {
@@ -265,7 +254,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function addHiddenFilter($newFilter)
+    public function addHiddenFilter(string $newFilter): void
     {
         parent::addHiddenFilter($newFilter);
         if ($this->isBlenderFilter($newFilter)) {
@@ -294,7 +283,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function removeFilter($oldFilter)
+    public function removeFilter(string $oldFilter): void
     {
         parent::removeFilter($oldFilter);
         if ($this->isBlenderFilter($oldFilter)) {
@@ -328,12 +317,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Remove all filters from the list.
      *
-     * @param string $field Name of field to remove filters from (null to remove
+     * @param ?string $field Name of field to remove filters from (null to remove
      * all filters from all fields)
      *
      * @return void
      */
-    public function removeAllFilters($field = null)
+    public function removeAllFilters(?string $field = null): void
     {
         $this->unsupportedFilters = [];
         if (null === $field) {
@@ -353,13 +342,13 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Add a field to facet on.
      *
-     * @param string $newField Field name
-     * @param string $newAlias Optional on-screen display label
-     * @param bool   $ored     Should we treat this as an ORed facet?
+     * @param string  $newField Field name
+     * @param ?string $newAlias Optional on-screen display label
+     * @param bool    $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null, $ored = false)
+    public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
         parent::addFacet($newField, $newAlias, $ored);
         foreach ($this->searchParams as $params) {
@@ -371,8 +360,8 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Add a checkbox facet.  When the checkbox is checked, the specified filter
-     * will be applied to the search.  When the checkbox is not checked, no filter
+     * Add a checkbox facet. When the checkbox is checked, the specified filter
+     * will be applied to the search. When the checkbox is not checked, no filter
      * will be applied.
      *
      * @param string $filter  [field]:[value] pair to associate with checkbox
@@ -382,7 +371,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function addCheckboxFacet($filter, $desc, $dynamic = false)
+    public function addCheckboxFacet(string $filter, string $desc, bool $dynamic = false): void
     {
         parent::addCheckboxFacet($filter, $desc, $dynamic);
         if ($this->isBlenderFilter($filter)) {
@@ -405,7 +394,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function resetFacetConfig()
+    public function resetFacetConfig(): void
     {
         $this->proxyMethod(__FUNCTION__, func_get_args());
     }
@@ -449,7 +438,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Add default filters to the given params
+     * Add default filters to the given params.
      *
      * @param BaseParams $params    Params
      * @param string     $backendId Backend ID
@@ -458,12 +447,14 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function addDefaultFilters(BaseParams $params, string $backendId): void
     {
+        // Get the initial filter list before applying any defaults so that we can compare against it and apply multiple
+        // defaults as required:
+        $filterList = $params->getFilterList();
         foreach ($this->mappings['Facets']['Fields'] ?? [] as $fieldConfig) {
             $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
             $defaultValue = $mappings['DefaultValue'] ?? null;
             if (null !== $defaultValue) {
                 $translatedField = $mappings['Field'];
-                $filterList = $params->getFilterList();
                 $found = false;
                 foreach ($filterList as $filters) {
                     foreach ($filters as $filter) {
@@ -481,16 +472,16 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Proxy a method call to parent class and all backend params classes
+     * Proxy a method call to parent class and all backend params classes.
      *
      * @param string $method Method
      * @param array  $params Method parameters
      *
      * @return mixed
      */
-    protected function proxyMethod(string $method, array $params)
+    protected function proxyMethod(string $method, array $params): mixed
     {
-        $result = call_user_func_array(['parent', $method], $params);
+        $result = call_user_func_array(parent::class . "::$method", $params);
         foreach ($this->searchParams as $searchParams) {
             $result = call_user_func_array([$searchParams, $method], $params);
         }
@@ -498,7 +489,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a facet field name
+     * Translate a facet field name.
      *
      * @param string $field     Facet field
      * @param string $backendId Backend ID
@@ -512,7 +503,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Check if the filter is a special Blender filter
+     * Check if the filter is a special Blender filter.
      *
      * @param string $filter Filter
      *
@@ -525,7 +516,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a filter
+     * Translate a filter.
      *
      * @param string $filter    Filter
      * @param string $backendId Backend ID
@@ -602,7 +593,7 @@ class Params extends \VuFind\Search\Solr\Params
      * @return array Updated filter values
      */
     protected function addLowerLevelHierarchicalFilterValues(
-        $value,
+        mixed $value,
         array $resultValues,
         array $mappings
     ): array {
@@ -636,7 +627,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a search type
+     * Translate a search type.
      *
      * @param string $type      Search type
      * @param string $backendId Backend ID
@@ -650,7 +641,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a sort option
+     * Translate a sort option.
      *
      * @param string $sort      Sort option
      * @param string $backendId Backend ID

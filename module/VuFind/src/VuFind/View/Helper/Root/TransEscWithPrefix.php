@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Translate with prefix + escape view helper
+ * Translate with prefix + escape view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2019.
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -27,10 +28,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Translate with prefix + escape view helper
+ * Translate with prefix + escape view helper.
  *
  * Like transEsc, but applies a prefix to the translation key.
  *
@@ -41,27 +47,47 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscWithPrefix extends \Laminas\View\Helper\AbstractHelper
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class TransEscWithPrefix implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Translate and escape a location
+     * Constructor.
      *
-     * @param string        $prefix  Translation key prefix
-     * @param string|object $str     String to translate
-     * @param array         $tokens  Tokens to inject into the translated string
-     * @param string        $default Default value to use if no translation is found
-     * (null for no default).
+     * @param EscapeHtml $escapeHtml EscapeHtml view helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
+    }
+
+    /**
+     * Translate and escape a value while applying a prefix.
+     *
+     * @param string              $prefix          Translation key prefix
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function __invoke($prefix, $str, $tokens = [], $default = null)
-    {
-        $escaper = $this->getView()->plugin('escapeHtml');
-        return $escaper(
-            $this->translateWithPrefix($prefix, $str, $tokens, $default)
+    public function __invoke(
+        $prefix,
+        $str,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
+        return ($this->escapeHtml)(
+            $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter, $fallbackDomains)
         );
     }
 }

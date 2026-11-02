@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SolrAuthMarc Record Driver Test Class
+ * SolrAuthMarc Record Driver Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 /**
- * SolrAuthMarc Record Driver Test Class
+ * SolrAuthMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +51,7 @@ class SolrAuthMarcTest extends \PHPUnit\Framework\TestCase
     {
         // LCCN in 700
         $marc = $this->getFixture('marc/authlccn1.xml');
-        $config = new \Laminas\Config\Config([]);
+        $config = [];
         $record = new \VuFind\RecordDriver\SolrAuthMarc($config);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals('foo', $record->getRawLCCN());

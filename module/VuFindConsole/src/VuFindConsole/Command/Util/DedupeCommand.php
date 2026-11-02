@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Console command: deduplicate lines in a sorted file.
  *
  * Needed for the Windows version of the alphabetical browse database generator,
  * since Windows sort does not support deduplication. Assumes presorted input.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -28,8 +29,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,15 +48,12 @@ use Symfony\Component\Console\Question\Question;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/dedupe',
+    description: 'Tool for deduplicating lines in a sorted file'
+)]
 class DedupeCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/dedupe';
-
     /**
      * Configure the command.
      *
@@ -62,7 +62,6 @@ class DedupeCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Tool for deduplicating lines in a sorted file')
             ->setHelp('Deduplicates lines in a sorted file.')
             ->addArgument(
                 'input',
@@ -115,7 +114,7 @@ class DedupeCommand extends Command
      */
     protected function writeToOutputFile($handle, $text)
     {
-        fputs($handle, $text);
+        fwrite($handle, $text);
     }
 
     /**
@@ -138,7 +137,7 @@ class DedupeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $infile = $input->getArgument('input');
         if (empty($infile)) {
@@ -148,7 +147,7 @@ class DedupeCommand extends Command
         $inHandle = @fopen($infile, 'r');
         if (!$inHandle) {
             $output->writeln('Could not open input file: ' . $infile);
-            return 1;
+            return self::FAILURE;
         }
         $outfile = $input->getArgument('output');
         if (empty($outfile)) {
@@ -158,7 +157,7 @@ class DedupeCommand extends Command
         $outHandle = $this->openOutputFile($outfile);
         if (!$outHandle) {
             $output->writeln('Could not open output file: ' . $outfile);
-            return 1;
+            return self::FAILURE;
         }
 
         $last = '';
@@ -172,6 +171,6 @@ class DedupeCommand extends Command
         fclose($inHandle);
         $this->closeOutputFile($outHandle);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

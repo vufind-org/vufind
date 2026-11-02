@@ -1,8 +1,9 @@
 <?php
+
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,44 +17,162 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sravanthi Adusumilli <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\EDS;
 
+use function array_slice;
+use function count;
+
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sravanthi Adusumilli <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class EDSTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+
+    /**
+     * Default test configuration.
+     *
+     * @var array
+     */
+    protected array $defaultDriverConfig = [
+        'General' => [
+            'default_sort' => 'relevance',
+        ],
+        'ItemGlobalOrder' => [],
+    ];
+
+    /**
+     * Valid eds record title.
+     *
+     * @var array
+     */
+    protected static array $validTitle = [
+        'Name' => 'Title',
+        'Label' => 'Title',
+        'Group' => 'Ti',
+        'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'RawData' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'Elements' => [
+            ['Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.'],
+        ],
+    ];
+
+    /**
+     * Valid eds record author.
+     *
+     * @var array
+     */
+    protected static array $validAuthor = [
+        'Name' => 'Author',
+        'Label' => 'Authors',
+        'Group' => 'Au',
+        'Data' => '<span>TORNEKE, NIKLAS.</span>',
+        'RawData' =>
+            '&lt;searchLink fieldCode="AR" term="%22TORNEKE%2C+NIKLAS%2E%22"&gt;TORNEKE, NIKLAS.&lt;/searchLink&gt;',
+        'Elements' => [
+            [
+                'Data' => '<span>TORNEKE, NIKLAS.</span>',
+                'SearchLink' =>
+                    '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
+            ],
+        ],
+    ];
+
+    /**
+     * Valid eds record publisher.
+     *
+     * @var array
+     */
+    protected static array $validPublisher = [
+        'Name' => 'Publisher',
+        'Label' => 'Publisher Information',
+        'Group' => 'PubInfo',
+        'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'RawData' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'Elements' => [
+            ['Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.'],
+        ],
+    ];
+
+    /**
+     * Default test configuration Patron Empowerment Framework (PEF).
+     *
+     * @var array
+     */
+    protected $defaultDriverConfigPEF = [
+        'General' => [
+            'default_sort' => 'relevance',
+        ],
+        'ItemGlobalOrder' => [],
+        'Catalog' => [
+            'driver' => 'Folio',
+            'ilsBackends' => ['Solr', 'EDS'],
+            'EDSHasCatalog' => true,
+            'CatalogDatabaseId' => 'cat012345a',
+            'CatalogANRegex' => [
+                '/^demo\.oai\.edge\.demo\.folio\.provider\.com\.fs00000000\./',
+                '/\./',
+            ],
+            'CatalogANReplace' => [
+                '',
+                '-',
+            ],
+        ],
+    ];
+
+    /**
+     * Generate a new Eds driver to return responses set in a json fixture.
+     *
+     * Overwrites $this->driver
+     * Uses session cache
+     *
+     * @param ?string $test   Name of test fixture to load
+     * @param ?array  $config Driver configuration (null to use default)
+     *
+     * @return EDS
+     */
+    protected function getDriver(?string $test = null, ?array $config = null): EDS
+    {
+        $record = new EDS(null, $config ?? $this->defaultDriverConfig);
+        if (null !== $test) {
+            $json = $this->getJsonFixture('eds/' . $test . '.json');
+            $record->setRawData($json);
+        }
+        return $record;
+    }
+
     /**
      * Test getUniqueID for a record.
      *
      * @return void
      */
-    public function testGetUniqueID()
+    public function testGetUniqueID(): void
     {
-        $overrides = [
-            'Header' => ['DbId' => 'TDB123', 'An' => 'TAn456']
-        ];
-        $driver = $this->getDriver($overrides);
-        $this->assertEquals('TDB123,TAn456', $driver->getUniqueID());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('edsgob,edsgob.14707011', $driver->getUniqueID());
     }
 
     /**
@@ -61,19 +180,54 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetShortTitle()
+    public function testGetShortTitle(): void
     {
-        $this->assertEquals('', $this->getDriver()->getShortTitle());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('METAPHOR IN PRACTICE', $driver->getShortTitle());
     }
 
     /**
-     * Test getItemsAbstract for a record.
+     * Test getShortTitle for a record with no title.
      *
      * @return void
      */
-    public function testGetItemsAbstract()
+    public function testGetShortTitleWhenNoTitle(): void
     {
-        $this->assertEquals('', $this->getDriver()->getItemsAbstract());
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals('', $driver->getShortTitle());
+    }
+
+    /**
+     * Test getSubtitle for a record.
+     *
+     * @return void
+     */
+    public function testGetSubtitle(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.', $driver->getSubtitle());
+    }
+
+    /**
+     * Test getSubtitle for a record when there is no title field.
+     *
+     * @return void
+     */
+    public function testGetSubtitleWhenNoTitle(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals('', $driver->getSubtitle());
+    }
+
+    /**
+     * Test getAbstractNotes for a record.
+     *
+     * @return void
+     */
+    public function testGetAbstractNotes(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(['unit test abstract'], $driver->getAbstractNotes());
     }
 
     /**
@@ -81,9 +235,21 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetAccessLevel()
+    public function testGetAccessLevel(): void
     {
-        $this->assertEquals('', $this->getDriver()->getAccessLevel());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('', $driver->getAccessLevel());
+    }
+
+    /**
+     * Test isRestrictedView for a record.
+     *
+     * @return void
+     */
+    public function testIsRestrictedView(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertFalse($driver->isRestrictedView());
     }
 
     /**
@@ -91,9 +257,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsAuthors()
+    public function testGetItemsAuthors(): void
     {
-        $this->assertEquals('', $this->getDriver()->getItemsAuthors());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(
+            '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
+            $driver->getItemsAuthors()
+        );
     }
 
     /**
@@ -101,9 +271,20 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCustomLinks()
+    public function testGetCustomLinks(): void
     {
-        $this->assertEquals([], $this->getDriver()->getCustomLinks());
+        $driver = $this->getDriver('valid-eds-record');
+        $record = [
+            [
+                'Url' => 'customlink-unittest/edsgob.14707011',
+                'Name' => 'Custom Link (s8364774)',
+                'Category' => 'custom link',
+                'Text' => 'Unit test custom link',
+                'Icon' => 'https://imageserver.ebscohost.com/branding/images/FTF.gif',
+                'MouseOverText' => 'Exciting text',
+            ],
+        ];
+        $this->assertEquals($record, $driver->getCustomLinks());
     }
 
     /**
@@ -111,9 +292,20 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFTCustomLinks()
+    public function testGetFTCustomLinks(): void
     {
-        $this->assertEquals([], $this->getDriver()->getFTCustomLinks());
+        $driver = $this->getDriver('valid-eds-record');
+        $record = [
+            [
+                'Url' => 'customlink-fulltext-unittest/edsgob.14707011/&pages=1-10/',
+                'Name' => 'Full Text Finder (s8364774)',
+                'Category' => 'fullText',
+                'Text' => 'Full Text Finder',
+                'Icon' => 'https://imageserver.ebscohost.com/branding/images/FTF.gif',
+                'MouseOverText' => 'Full Text Finder',
+            ],
+        ];
+        $this->assertEquals($record, $driver->getFTCustomLinks());
     }
 
     /**
@@ -121,9 +313,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDbLabel()
+    public function testGetDbLabel(): void
     {
-        $this->assertEquals('', $this->getDriver()->getDbLabel());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('GOBI E-books', $driver->getDbLabel());
     }
 
     /**
@@ -131,9 +324,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHTMLFullText()
+    public function testGetHTMLFullText(): void
     {
-        $this->assertEquals('', $this->getDriver()->getHTMLFullText());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('This is some wonderful full text', $driver->getHTMLFullText());
     }
 
     /**
@@ -141,9 +335,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHasHTMLFullTextAvailable()
+    public function testHasHTMLFullTextAvailable(): void
     {
-        $this->assertEquals(false, $this->getDriver()->hasHTMLFullTextAvailable());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertTrue($driver->hasHTMLFullTextAvailable());
     }
 
     /**
@@ -151,9 +346,125 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItems()
+    public function testGetItems(): void
     {
-        $this->assertEquals([], $this->getDriver()->getItems());
+        $driver = $this->getDriver('valid-eds-record');
+        $items = [
+            self::$validTitle,
+            self::$validAuthor,
+            self::$validPublisher,
+        ];
+        $results = $driver->getItems();
+
+        // Verify total number of metadata elements
+        $this->assertCount(11, $results);
+        // Verify contents of the first 3 elements
+        $this->assertEquals($items, array_slice($results, 0, 3));
+    }
+
+    /**
+     * Test getItems sorting the data for a record.
+     *
+     * @return void
+     */
+    public function testGetItemsSorted(): void
+    {
+        // Change the default order the array data is in and exclude one of the items
+        // to ensure it appears at the end
+        $config = $this->defaultDriverConfig;
+        $config['ItemGlobalOrder']['1'] = 'Authors';
+        $config['ItemGlobalOrder']['2'] = 'Title';
+
+        $driver = $this->getDriver('valid-eds-record', $config);
+        $items = [
+            self::$validAuthor,
+            self::$validTitle,
+            self::$validPublisher,
+        ];
+        $results = $driver->getItems();
+
+        // Verify total number of metadata elements
+        $this->assertCount(11, $results);
+        // Verify contents of the first 3 elements
+        $this->assertEquals($items, array_slice($results, 0, 3));
+    }
+
+    /**
+     * Data provider for testGetItemsFilter.
+     *
+     * @return \Iterator
+     */
+    public static function filterProvider(): \Iterator
+    {
+        yield 'exclude' => [
+            ['exclude' => ['Label' => ['Title']]],
+            [self::$validAuthor, self::$validPublisher,],
+            10,
+        ];
+        yield 'include' => [
+            ['include' => ['Label' => ['Title']]],
+            [self::$validTitle],
+            1,
+        ];
+        yield 'exclude and include' => [
+            [
+                'include' => ['Label' => ['Title', 'Authors']],
+                'exclude' => ['Label' => ['Title']],
+            ],
+            [self::$validAuthor],
+            1,
+        ];
+    }
+
+    /**
+     * Test getItems filter.
+     *
+     * @param array $filter        Filter
+     * @param array $expectedItems Expected items
+     * @param int   $expectedCount Expected item count
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('filterProvider')]
+    public function testGetItemsFilter(array $filter, array $expectedItems, int $expectedCount): void
+    {
+        // Change the default order the array data is in and exclude one of the items
+        // to ensure it appears at the end
+        $driver = $this->getDriver('valid-eds-record');
+        $results = $driver->getItems($filter);
+
+        // Verify total number of metadata elements
+        // (Note one is removed from the fixture file since it has been filtered)
+        $this->assertCount($expectedCount, $results);
+        // Verify contents of the first 2 elements
+        $this->assertEquals($expectedItems, array_slice($results, 0, count($expectedItems)));
+    }
+
+    /**
+     * Test getItems when invalid data is returned from EDS (i.e. not in the structure
+     * VuFind expected).
+     *
+     * @return void
+     */
+    public function testGetItemsWithInvalidConfig(): void
+    {
+        $config = $this->defaultDriverConfig;
+        $config['ItemGlobalOrder']['invalid'] = null;
+
+        $driver = $this->getDriver('valid-eds-record', $config);
+
+        // items in original order are returned when the config can't be parsed
+        $items = [
+            self::$validTitle,
+            self::$validAuthor,
+            self::$validPublisher,
+        ];
+        $results = $driver->getItems();
+
+        // Verify total number of metadata elements
+        $this->assertCount(11, $results);
+        // Verify contents of the first 3 elements
+        $this->assertEquals($items, array_slice($results, 0, 3));
     }
 
     /**
@@ -161,9 +472,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPLink()
+    public function testGetPLink(): void
     {
-        $this->assertEquals('', $this->getDriver()->getPLink());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('plink-unittest/edsgob.14707011', $driver->getPLink());
     }
 
     /**
@@ -171,9 +483,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPubType()
+    public function testGetPubType(): void
     {
-        $this->assertEquals('', $this->getDriver()->getPubType());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('eBook', $driver->getPubType());
     }
 
     /**
@@ -181,9 +494,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPubTypeId()
+    public function testGetPubTypeId(): void
     {
-        $this->assertEquals('', $this->getDriver()->getPubTypeId());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('ebook', $driver->getPubTypeId());
     }
 
     /**
@@ -191,9 +505,43 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHasPdfAvailable()
+    public function testHasPdfAvailable(): void
     {
-        $this->assertEquals(false, $this->getDriver()->hasPdfAvailable());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertTrue($driver->hasPdfAvailable());
+    }
+
+    /**
+     * Test hasPdfAvailable for a record when none is.
+     *
+     * @return void
+     */
+    public function testHasPdfAvailableReturningFalse(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertFalse($driver->hasPdfAvailable());
+    }
+
+    /**
+     * Test hasEpubAvailable for a record.
+     *
+     * @return void
+     */
+    public function testHasEpubAvailable(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertTrue($driver->hasEpubAvailable());
+    }
+
+    /**
+     * Test hasLinkedFullTextAvailable for a record.
+     *
+     * @return void
+     */
+    public function testHasLinkedFullTextAvailable(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertTrue($driver->hasLinkedFullTextAvailable());
     }
 
     /**
@@ -201,29 +549,98 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPdfLink()
+    public function testGetPdfLink(): void
     {
-        $this->assertEquals(false, $this->getDriver()->getPdfLink());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('pdf ebook url test', $driver->getPdfLink());
     }
 
     /**
-     * Test getItemsSubjects for a record.
+     * Test getEbookLink for a record.
      *
      * @return void
      */
-    public function testGetItemsSubjects()
+    public function testGetEbookLinkNoData(): void
     {
-        $this->assertEquals('', $this->getDriver()->getItemsSubjects());
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertFalse($driver->getEbookLink(['ebook-pdf']));
+    }
+
+    /**
+     * Test getEpubLink for a record.
+     *
+     * @return void
+     */
+    public function testGetEpubLink(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('epub url test', $driver->getEpubLink());
+    }
+
+    /**
+     * Test getLinkedFullTextLink for a record.
+     *
+     * @return void
+     */
+    public function testGetLinkedFullTextLink(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('linked full text url test', $driver->getLinkedFullTextLink());
+    }
+
+    /**
+     * Test getAllSubjectHeadingsFlattened for a record.
+     *
+     * @return void
+     */
+    public function testGetAllSubjectHeadingsFlattened(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(
+            [
+                'PSYCHOTHERAPY',
+                'METAPHOR',
+            ],
+            $driver->getAllSubjectHeadingsFlattened()
+        );
+    }
+
+    /**
+     * Data provider for testGetThumbnail().
+     *
+     * @return \Iterator
+     */
+    public static function getThumbnailProvider(): \Iterator
+    {
+        yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
+        yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
+        yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
     }
 
     /**
      * Test getThumbnail for a record.
      *
+     * @param string $size     Size to request
+     * @param string $expected Expected result
+     *
      * @return void
      */
-    public function testGetThumbnail()
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
+    public function testGetThumbnail(string $size, string $expected): void
     {
-        $this->assertEquals(false, $this->getDriver()->getThumbnail());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals($expected, $driver->getThumbnail($size));
+    }
+
+    /**
+     * Test getThumbnail for a record that has no image data.
+     *
+     * @return void
+     */
+    public function testGetThumbnailWhenNoneReturned(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertFalse($driver->getThumbnail());
     }
 
     /**
@@ -231,9 +648,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsTitle()
+    public function testGetItemsTitle(): void
     {
-        $this->assertEquals('', $this->getDriver()->getItemsTitle());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(
+            'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+            $driver->getItemsTitle()
+        );
     }
 
     /**
@@ -241,9 +662,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTitle()
+    public function testGetTitle(): void
     {
-        $this->assertEquals('', $this->getDriver()->getTitle());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(
+            'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+            $driver->getTitle()
+        );
     }
 
     /**
@@ -251,9 +676,10 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPrimaryAuthors()
+    public function testGetPrimaryAuthors(): void
     {
-        $this->assertEquals([], $this->getDriver()->getPrimaryAuthors());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(['TORNEKE, NIKLAS.'], $driver->getPrimaryAuthors());
     }
 
     /**
@@ -261,20 +687,82 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsTitleSource()
+    public function testGetItemsTitleSource(): void
     {
-        $this->assertEquals('', $this->getDriver()->getItemsTitleSource());
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('unit test source', $driver->getItemsTitleSource());
     }
 
     /**
-     * Test linkUrls for a record.
+     * Test getCleanDOI for a record.
      *
      * @return void
      */
-    public function testLinkUrls()
+    public function testGetCleanDOI(): void
     {
-        $str = "http://fictional.com/sample/url";
-        $this->assertEquals("<a href='" . $str . "'>" . $str . "</a>", $this->getDriver()->linkUrls($str));
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals('unit test DOI', $driver->getCleanDOI());
+    }
+
+    /**
+     * Data provider for testGetCleanDOIFromUrl().
+     *
+     * @return \Iterator
+     */
+    public static function getCleanDOIFromUrlProvider(): \Iterator
+    {
+        $cleanDoi = '10.1016/j.jveb.2025.02.006';
+        yield 'plain DOI' => [$cleanDoi, $cleanDoi];
+        yield 'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'link wrapper' => [
+            '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
+            . $cleanDoi
+            . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
+            $cleanDoi,
+        ];
+    }
+
+    /**
+     * Test getCleanDOI for a record when it's in the [Items] block but
+     * is formatted as a URL.
+     *
+     * @param string $testDoi  DOI value to test with
+     * @param string $cleanDoi Expected value
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanDOIFromUrlProvider')]
+    public function testGetCleanDOIFromUrl(string $testDoi, string $cleanDoi): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+
+        $fields = $driver->getRawData();
+        $fields['Items'][10]['Data'] = $testDoi;
+        $driver->setRawData($fields);
+        $this->assertEquals($cleanDoi, $driver->getCleanDOI());
+    }
+
+    /**
+     * Test getCleanDOI for a record when DOI is in bib data.
+     *
+     * @return void
+     */
+    public function testGetCleanDOIFromBibData(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('doi-test', $driver->getCleanDOI());
+    }
+
+    /**
+     * Test getLanguages for a record.
+     *
+     * @return void
+     */
+    public function testGetLanguages(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(['English'], $driver->getLanguages());
     }
 
     /**
@@ -282,11 +770,11 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetISSNs()
+    public function testGetISSNs(): void
     {
-        $driver = $this->getDriverWithIdentifierData();
+        $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals(
-            ['1234-5678', '5678-1234'],
+            ['123456789'],
             $driver->getISSNs()
         );
     }
@@ -296,73 +784,367 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetISBNs()
+    public function testGetISBNs(): void
     {
-        $driver = $this->getDriverWithIdentifierData();
+        $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals(
-            ['0123456789X', 'fakeisbnxxx'],
+            ['9781626259027'],
             $driver->getISBNs()
         );
     }
 
     /**
-     * Get a record driver with fake identifier data.
+     * Test getContainerTitle for a record.
      *
-     * @return EDS
+     * @return void
      */
-    protected function getDriverWithIdentifierData()
+    public function testGetContainerTitleNoContainer(): void
     {
-        return $this->getDriver(
-            [
-                'RecordInfo' => [
-                    'BibRecord' => [
-                        'BibRelationships' => [
-                            'IsPartOfRelationships' => [
-                                [
-                                    'BibEntity' => [
-                                        'Identifiers' => [
-                                            [
-                                                'Type' => 'issn-electronic',
-                                                'Value' => '1234-5678'
-                                            ],
-                                            [
-                                                'Type' => 'issn-print',
-                                                'Value' => '5678-1234'
-                                            ],
-                                            [
-                                                'Type' => 'isbn-electronic',
-                                                'Value' => '0123456789X'
-                                            ],
-                                            [
-                                                'Type' => 'isbn-print',
-                                                'Value' => 'fakeisbnxxx'
-                                            ],
-                                            [
-                                                'Type' => 'meaningless-noise',
-                                                'Value' => 'should never be seen'
-                                            ],
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        );
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('', $driver->getContainerTitle());
     }
 
     /**
-     * Get a record driver with fake data.
+     * Test getContainerTitle for a record.
      *
-     * @param array $overrides Raw data for testing
-     *
-     * @return EDS
+     * @return void
      */
-    protected function getDriver($overrides = [])
+    public function testGetContainerTitle(): void
     {
-        $record = new EDS();
-        $record->setRawData($overrides);
-        return $record;
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals('A really cool collection', $driver->getContainerTitle());
+    }
+
+    /**
+     * Test getContainerIssue for a record when there is no data.
+     *
+     * @return void
+     */
+    public function testGetContainerIssueWhenEmpty(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('', $driver->getContainerIssue());
+    }
+
+    /**
+     * Test getContainerIssue for a record.
+     *
+     * @return void
+     */
+    public function testGetContainerIssue(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals('1', $driver->getContainerIssue());
+    }
+
+    /**
+     * Test getContainerVolume for a record when there is none.
+     *
+     * @return void
+     */
+    public function testGetContainerVolumeWhenEmpty(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('', $driver->getContainerVolume());
+    }
+
+    /**
+     * Test getContainerVolume for a record.
+     *
+     * @return void
+     */
+    public function testGetContainerVolume(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals('2', $driver->getContainerVolume());
+    }
+
+    /**
+     * Test getPublicationDates for a record.
+     *
+     * @return void
+     */
+    public function testGetPublicationDates(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals(['2017'], $driver->getPublicationDates());
+    }
+
+    /**
+     * Test getContainerStartPage for a record.
+     *
+     * @return void
+     */
+    public function testGetContainerStartPage(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('1', $driver->getContainerStartPage());
+    }
+
+    /**
+     * Test getContainerEndPage for a record.
+     *
+     * @return void
+     */
+    public function testGetContainerEndPage(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('10', $driver->getContainerEndPage());
+    }
+
+    /**
+     * Test getContainerEndPage for a record with page data available.
+     *
+     * @return void
+     */
+    public function testGetContainerEndPageNoData(): void
+    {
+        $driver = $this->getDriver('no-container-end-page');
+        $this->assertEquals('', $driver->getContainerEndPage());
+    }
+
+    /**
+     * Test getFormats for an ebook record.
+     *
+     * @return void
+     */
+    public function testGetFormatsEbook(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(['Book', 'Electronic'], $driver->getFormats());
+    }
+
+    /**
+     * Test getFormats for an article record.
+     *
+     * @return void
+     */
+    public function testGetFormatsArticle(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals(['report', 'Article'], $driver->getFormats());
+    }
+
+    /**
+     * Test getFormats for a dissertation record.
+     *
+     * @return void
+     */
+    public function testGetFormatsDissertation(): void
+    {
+        $driver = $this->getDriver('dissertation-record');
+        $this->assertEquals(['Thesis'], $driver->getFormats());
+    }
+
+    /**
+     * Test getFormats for a unidentified format record.
+     *
+     * @return void
+     */
+    public function testGetFormatsOtherFormat(): void
+    {
+        $driver = $this->getDriver('invalid-pubformat-record');
+        $this->assertEquals(['unit-test-format'], $driver->getFormats());
+    }
+
+    /**
+     * Test getPublishers for a record.
+     *
+     * @return void
+     */
+    public function testGetPublishers(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals(['Here'], $driver->getPublishers());
+    }
+
+    /**
+     * Test getPlacesOfPublication for a record.
+     *
+     * @return void
+     */
+    public function testGetPlacesOfPublication(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertEquals(['US'], $driver->getPlacesOfPublication());
+    }
+
+    /**
+     * Test getPublicationDetails for a record.
+     *
+     * @return void
+     */
+    public function testGetPublicationDetails(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $details = new \VuFind\RecordDriver\Response\PublicationDetails('US', 'Here', 2017);
+        $this->assertEquals([$details], $driver->getPublicationDetails());
+    }
+
+    /**
+     * Test getPublicationDetails for a record with another data format.
+     *
+     * @return void
+     */
+    public function testGetPublicationDetailsNoDate(): void
+    {
+        $driver = $this->getDriver('publication-details-no-date');
+        $details = new \VuFind\RecordDriver\Response\PublicationDetails('USA', 'Test', '');
+        $this->assertEquals([$details], $driver->getPublicationDetails());
+    }
+
+    /**
+     * Test getPublicationDetails for a record with an unmatched format.
+     *
+     * @return void
+     */
+    public function testGetPublicationDetailsUnMatchedFormat(): void
+    {
+        $driver = $this->getDriver('publication-details-unmatched-format');
+        $details = new \VuFind\RecordDriver\Response\PublicationDetails('', 'Test Information', '');
+        $this->assertEquals([$details], $driver->getPublicationDetails());
+    }
+
+    /**
+     * Test getPublicationDetails for a record from the bib record.
+     *
+     * @return void
+     */
+    public function testGetPublicationDetailsFromBib(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $details = new \VuFind\RecordDriver\Response\PublicationDetails('', '', 2017);
+        $this->assertEquals([$details], $driver->getPublicationDetails());
+    }
+
+    /**
+     * Test extractEbscoData for an undefined method.
+     *
+     * @return void
+     */
+    public function testExtractEbscoDataUndefinedMethod(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Undefined method: ');
+        $this->assertFalse($this->callMethod($driver, 'extractEbscoData', [['invalid-method:invalid-path']]));
+    }
+
+    /**
+     * Test HTML FT with tables & mathML will be parsed correctly.
+     *
+     * @return void
+     */
+    public function testHTMLParsingWithEPHTML(): void
+    {
+        $driver = $this->getDriver('eds_retrieve_ft_html');
+        // define what to expect
+        $actual = $driver->getHTMLFullText();
+        $expected = $this->getFixture('eds/eds_mathml_table.html');
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Test getUniqueIDOverrideForRequest for a "normal" record.
+     *
+     * @return void
+     */
+    public function testGetUniqueIDOverrideForRequestForNormalRecord(): void
+    {
+        $driver = $this->getDriver('valid-eds-record', $this->defaultDriverConfigPEF);
+        $this->assertEquals('edsgob,edsgob.14707011', $driver->getUniqueIDOverrideForRequest());
+    }
+
+    /**
+     * Test getUniqueIDOverrideForRequest for a catalog record.
+     *
+     * @return void
+     */
+    public function testGetUniqueIDOverrideForRequestForCatalogRecord(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment', $this->defaultDriverConfigPEF);
+        $this->assertEquals('976cbaf6-fb02-48a2-8f82-a19203769b52', $driver->getUniqueIDOverrideForRequest());
+    }
+
+    /**
+     * Test hasCatalog true.
+     *
+     * @return void
+     */
+    public function testHasCatalogTrue(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment', $this->defaultDriverConfigPEF);
+        $this->assertTrue($driver->hasCatalog());
+    }
+
+    /**
+     * Test hasCatalog false.
+     *
+     * @return void
+     */
+    public function testHasCatalogFalse(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertFalse($driver->hasCatalog());
+    }
+
+    /**
+     * Test pubTypeRtacEnabled for a catalog record (Book) [true].
+     *
+     * @return void
+     */
+    public function testPubTypeRtacEnabledForCatalogRecordTrue(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment');
+        $this->assertTrue($driver->pubTypeRtacEnabled());
+    }
+
+    /**
+     * Test pubTypeRtacEnabled for eBook record [false].
+     *
+     * @return void
+     */
+    public function testPubTypeRtacEnabledForEbookRecordFalse(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment_ebook');
+        $this->assertFalse($driver->pubTypeRtacEnabled());
+    }
+
+    /**
+     * Test relevancy score (present).
+     *
+     * @return void
+     */
+    public function testRelevancyScorePresent(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEqualsWithDelta(908.217102050781, $driver->getScore(), PHP_FLOAT_EPSILON);
+    }
+
+    /**
+     * Test relevancy score (absent).
+     *
+     * @return void
+     */
+    public function testRelevancyScoreAbsent(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertNull($driver->getScore());
+    }
+
+    /**
+     * Test getHighlightedTitle().
+     *
+     * @return void
+     */
+    public function testGetHighlightedTitle(): void
+    {
+        $driver = $this->getDriver('eds-highlighting');
+        $this->assertEquals(
+            '{{{{START_HILITE}}}}highlighted part{{{{END_HILITE}}}} of text. '
+            . 'Also {{{{START_HILITE}}}}more highlights{{{{END_HILITE}}}}',
+            $driver->getHighlightedTitle()
+        );
     }
 }

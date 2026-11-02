@@ -3,7 +3,7 @@
 /**
  * Unit tests for Pazpar2 backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Pazpar2;
 
 use InvalidArgumentException;
@@ -73,13 +74,16 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['search', 'show', 'stat']);
         $conn->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($this->loadResponse('pp2search')));
+            ->willReturn($this->loadResponse('pp2search'));
         $conn->expects($this->once())
             ->method('show')
-            ->will($this->returnValue($this->loadResponse('pp2show')));
+            ->willReturn($this->loadResponse('pp2show'));
         $conn->expects($this->exactly(2))
             ->method('stat')
-            ->willReturnOnConsecutiveCalls(simplexml_load_string($this->getStatXml(0.5)), simplexml_load_string($this->getStatXml(1.0)));
+            ->willReturnOnConsecutiveCalls(
+                simplexml_load_string($this->getStatXml(0.5)),
+                simplexml_load_string($this->getStatXml(1.0))
+            );
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -87,11 +91,15 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(20, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('content: author test title test medium book', (string)$rec->getXML()->recid);
+        $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
-        $this->assertEquals('content: author navalani k author gidwani n n title a practical guide to colon classification medium book', (string)$recs[19]->getXML()->recid);
+        $this->assertSame(
+            'content: author navalani k author gidwani n n title a practical guide to colon classification medium book',
+            (string)$recs[19]->getXML()->recid
+        );
         $this->assertEquals(54, $coll->getTotal());
     }
 
@@ -104,7 +112,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $back = new Backend($this->getConnectorMock());
         $back->setSearchProgressTarget(0.75);
-        $this->assertEquals(0.75, $this->getProperty($back, 'progressTarget'));
+        $this->assertEqualsWithDelta(0.75, $this->getProperty($back, 'progressTarget'), PHP_FLOAT_EPSILON);
     }
 
     /**

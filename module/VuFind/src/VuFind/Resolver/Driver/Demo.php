@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Demo Link Resolver Driver
+ * Demo Link Resolver Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -18,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -27,10 +28,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 /**
- * Demo Link Resolver Driver
+ * Demo Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -41,7 +43,7 @@ namespace VuFind\Resolver\Driver;
 class Demo extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $baseUrl Base URL for link resolver
      */
@@ -51,7 +53,7 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -65,7 +67,7 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses data returned by a link resolver
      * and converts it to a standardised format for display

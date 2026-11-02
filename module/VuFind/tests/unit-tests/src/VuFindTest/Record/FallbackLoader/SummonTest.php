@@ -3,9 +3,9 @@
 /**
  * Summon fallback loader test.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2021, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Summon;
+use VuFind\Record\RecordIdUpdater;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\ParamBag;
 
 /**
@@ -50,12 +54,10 @@ class SummonTest extends \PHPUnit\Framework\TestCase
      */
     public function testLoader(): void
     {
-        $record = $this->getMockBuilder(\VuFind\RecordDriver\Summon::class)
-            ->disableOriginalConstructor()->getMock();
+        $record = $this->createMock(\VuFind\RecordDriver\Summon::class);
         $record->expects($this->once())->method('setPreviousUniqueId')
-            ->with($this->equalTo('oldId'));
-        $record->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue('newId'));
+            ->with('oldId');
+        $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Summon\Response\RecordCollection(
             ['recordCount' => 1]
         );
@@ -63,31 +65,34 @@ class SummonTest extends \PHPUnit\Framework\TestCase
         $expectedParams = new ParamBag(
             ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
         );
-        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $search->expects($this->once())->method('retrieve')
+        $search = $this->createMock(\VuFindSearch\Service::class);
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->expects($this->once())->method('getResult')->willReturn($collection);
+        $checkCommand = function ($command) use ($expectedParams) {
+            return $command::class === \VuFindSearch\Command\RetrieveCommand::class
+                && $command->getTargetIdentifier() === 'Summon'
+                && $command->getArguments()[0] === 'bar'
+                && $command->getArguments()[1] == $expectedParams;
+        };
+        $search->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->willReturn($commandObj);
+
+        $updater = $this->createMock(RecordIdUpdater::class);
+        $updater->expects($this->once())->method('updateRecordId')
             ->with(
-                $this->equalTo('Summon'),
-                $this->equalTo('bar'),
-                $this->equalTo($expectedParams)
-            )->will($this->returnValue($collection));
-        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
-            ->disableOriginalConstructor()->getMock();
-        $resource->expects($this->once())->method('updateRecordId')
-            ->with(
-                $this->equalTo('oldId'),
-                $this->equalTo('newId'),
-                $this->equalTo('Summon')
+                'oldId',
+                'newId',
+                'Summon'
             );
-        $row = $this->getMockBuilder(\VuFind\Db\Row\Resource::class)
-            ->disableOriginalConstructor()->getMock();
-        $row->expects($this->once())->method('__get')
-            ->with($this->equalTo('extra_metadata'))
-            ->will($this->returnValue('{ "bookmark": "bar" }'));
-        $resource->expects($this->once())->method('findResource')
-            ->with($this->equalTo('oldId'), $this->equalTo('Summon'))
-            ->will($this->returnValue($row));
-        $loader = new Summon($resource, $search);
+        $entity = $this->createMock(ResourceEntityInterface::class);
+        $entity->expects($this->once())->method('getExtraMetadata')
+            ->willReturn('{ "bookmark": "bar" }');
+        $resourceService = $this->createMock(ResourceServiceInterface::class);
+        $resourceService->expects($this->once())->method('getResourceByRecordId')
+            ->with('oldId', 'Summon')
+            ->willReturn($entity);
+        $loader = new Summon($resourceService, $updater, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Record tab manager
+ * Record tab manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -25,13 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function in_array;
 
 /**
- * Record tab manager
+ * Record tab manager.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -46,70 +52,40 @@ class TabManager
      *
      * @var array
      */
-    protected $contextSettings = [
+    protected array $contextSettings = [
         'record' => [
             'configFile' => 'RecordTabs',
-            'legacyConfigSection' => 'recorddriver_tabs',
         ],
         'collection' => [
             'configFile' => 'CollectionTabs',
-            'legacyConfigSection' => 'recorddriver_collection_tabs',
         ],
     ];
 
     /**
-     * Tab configurations
+     * Tab configurations.
      *
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
-     * Configuration plugin manager
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * RecordTab plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
-
-    /**
-     * Overall framework configuration (used for fetching configurations "the old
-     * way" -- can eventually be deprecated).
-     *
-     * @var array
-     */
-    protected $legacyConfig;
-
-    /**
-     * Current active context (defaults to 'record')
+     * Current active context (defaults to 'record').
      *
      * @var string
      */
-    protected $context = 'record';
+    protected string $context = 'record';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param PluginManager $pm           RecordTab plugin manager
-     * @param ConfigManager $cm           Configuration plugin manager
-     * @param array         $legacyConfig Overall framework configuration (only
-     * used for legacy config loading; optional)
+     * @param RecordTabPluginManager $recordTabPluginManager RecordTab plugin manager
+     * @param ConfigManagerInterface $configManager          Configuration manager
      */
+    #[Autowire]
     public function __construct(
-        PluginManager $pm,
-        ConfigManager $cm,
-        $legacyConfig = []
+        protected RecordTabPluginManager $recordTabPluginManager,
+        protected ConfigManagerInterface $configManager,
     ) {
-        $this->pluginManager = $pm;
-        $this->configManager = $cm;
-        $this->legacyConfig = $legacyConfig;
-
         // Initialize default context.
         $this->initializeCurrentContext();
     }
@@ -122,7 +98,7 @@ class TabManager
      * @return void
      * @throws \Exception
      */
-    public function setContext($context)
+    public function setContext(string $context): void
     {
         if (!in_array($context, array_keys($this->contextSettings))) {
             throw new \Exception("Unsupported context: $context");
@@ -136,17 +112,11 @@ class TabManager
      *
      * @return void
      */
-    protected function initializeCurrentContext()
+    protected function initializeCurrentContext(): void
     {
-        if (!isset($this->config[$this->context])) {
-            $key = $this->contextSettings[$this->context]['legacyConfigSection']
-                ?? 'recorddriver_tabs';
-            $legacyConfig = $this->legacyConfig['vufind'][$key] ?? [];
-            $iniConfig = $this->configManager->get(
-                $this->contextSettings[$this->context]['configFile']
-            )->toArray();
-            $this->config[$this->context] = array_merge($legacyConfig, $iniConfig);
-        }
+        $this->config[$this->context] ??= $this->configManager->getConfigArray(
+            $this->contextSettings[$this->context]['configFile']
+        );
     }
 
     /**
@@ -156,19 +126,19 @@ class TabManager
      *
      * @param AbstractRecordDriver $driver  Record driver
      * @param string               $setting Key to load from configuration
-     * @param string               $default Default to use if no setting found
+     * @param array|string|null    $default Default to use if no setting found
      *
-     * @return mixed
+     * @return array|string|null
      */
     protected function getConfigByClass(
         AbstractRecordDriver $driver,
-        $setting,
-        $default
-    ) {
+        string $setting,
+        array|string|null $default
+    ): array|string|null {
         // Get the current record driver's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // setting.
-        $className = get_class($driver);
+        $className = $driver::class;
         do {
             if (isset($this->config[$this->context][$className][$setting])) {
                 return $this->config[$this->context][$className][$setting];
@@ -186,19 +156,19 @@ class TabManager
      *
      * @return array
      */
-    protected function getTabServiceNames(AbstractRecordDriver $driver)
+    protected function getTabServiceNames(AbstractRecordDriver $driver): array
     {
         return $this->getConfigByClass($driver, 'tabs', []);
     }
 
     /**
-     * Get an array of tabs names configured to load via AJAX in the background
+     * Get an array of tabs names configured to load via AJAX in the background.
      *
      * @param AbstractRecordDriver $driver Record driver
      *
      * @return array
      */
-    public function getBackgroundTabNames(AbstractRecordDriver $driver)
+    public function getBackgroundTabNames(AbstractRecordDriver $driver): array
     {
         return $this->getConfigByClass($driver, 'backgroundLoadedTabs', []);
     }
@@ -209,7 +179,7 @@ class TabManager
      *
      * @return array
      */
-    public function getExtraScripts()
+    public function getExtraScripts(): array
     {
         return $this->config[$this->context]['TabScripts'] ?? [];
     }
@@ -221,7 +191,7 @@ class TabManager
      * @param AbstractRecordDriver $driver   Record driver
      * @param array                $tabs     Details on available tabs (returned
      * from getTabsForRecord()).
-     * @param string               $fallback Fallback to use if no tab specified
+     * @param ?string              $fallback Fallback to use if no tab specified
      * or matched.
      *
      * @return string
@@ -229,14 +199,14 @@ class TabManager
     public function getDefaultTabForRecord(
         AbstractRecordDriver $driver,
         array $tabs,
-        $fallback = null
-    ) {
+        ?string $fallback = null
+    ): string {
         // Load default from module configuration:
         $default = $this->getConfigByClass($driver, 'defaultTab', null);
 
         // Missing/invalid record driver configuration? Fall back to provided
         // default:
-        if ((!$default || !isset($tabs[$default])) && isset($tabs[$fallback])) {
+        if ((!$default || !isset($tabs[$default])) && isset($tabs[$fallback ?? ''])) {
             $default = $fallback;
         }
 
@@ -253,18 +223,18 @@ class TabManager
      * Convenience method to load tab information, including default, in a
      * single pass. Returns an associative array with 'tabs' and 'default' keys.
      *
-     * @param AbstractRecordDriver  $driver   Record driver
-     * @param \Laminas\Http\Request $request  User request (optional)
-     * @param string                $fallback Fallback default tab to use if no
+     * @param AbstractRecordDriver   $driver   Record driver
+     * @param ?\Laminas\Http\Request $request  User request (optional)
+     * @param ?string                $fallback Fallback default tab to use if no
      * tab specified or matched.
      *
      * @return array
      */
     public function getTabDetailsForRecord(
         AbstractRecordDriver $driver,
-        $request = null,
-        $fallback = null
-    ) {
+        ?\Laminas\Http\Request $request = null,
+        ?string $fallback = null
+    ): array {
         $tabs = $this->getTabsForRecord($driver, $request);
         $default = $this->getDefaultTabForRecord($driver, $tabs, $fallback);
         return compact('tabs', 'default');
@@ -273,25 +243,26 @@ class TabManager
     /**
      * Get an array of valid tabs for the provided record driver.
      *
-     * @param AbstractRecordDriver  $driver  Record driver
-     * @param \Laminas\Http\Request $request User request (optional)
+     * @param AbstractRecordDriver   $driver  Record driver
+     * @param ?\Laminas\Http\Request $request User request (optional)
      *
      * @return array               service name => tab object
      */
     public function getTabsForRecord(
         AbstractRecordDriver $driver,
-        $request = null
-    ) {
+        ?\Laminas\Http\Request $request = null
+    ): array {
         $tabs = [];
         foreach ($this->getTabServiceNames($driver) as $tabKey => $svc) {
-            if (!$this->pluginManager->has($svc)) {
+            if (!$this->recordTabPluginManager->has($svc)) {
                 continue;
             }
-            $newTab = $this->pluginManager->get($svc);
+            $newTab = $this->recordTabPluginManager->get($svc);
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
-            if ($request instanceof \Laminas\Http\Request
+            if (
+                $request instanceof \Laminas\Http\Request
                 && method_exists($newTab, 'setRequest')
             ) {
                 $newTab->setRequest($request);

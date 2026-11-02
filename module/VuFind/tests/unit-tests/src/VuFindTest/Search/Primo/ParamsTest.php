@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo Params.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021-2022.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Primo;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Primo\Options;
 use VuFind\Search\Primo\Params;
 
@@ -43,34 +45,34 @@ use VuFind\Search\Primo\Params;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test facet value normalization
+     * Test facet value normalization.
      *
      * @return void
      */
     public function testFixPrimoFacetValue()
     {
         $params = $this->getParams();
-        $this->assertEquals(
+        $this->assertSame(
             'Foo Bar',
             $params->fixPrimoFacetValue('foo bar')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Foo Bar',
             $params->fixPrimoFacetValue('foo_bar')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Reference Entries',
             $params->fixPrimoFacetValue('reference_entrys')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Newsletter Articles',
             $params->fixPrimoFacetValue('newsletterarticle')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Archival Materials / Manuscripts',
             $params->fixPrimoFacetValue('archival_material_manuscripts')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '维普资讯 (Chongqing)',
             $params->fixPrimoFacetValue('维普资讯 (Chongqing)')
         );
@@ -96,18 +98,20 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('building:main');
         $this->assertEquals(
             [
-                'format' => [
+                [
+                    'field' => 'format',
                     'facetOp' => 'OR',
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -117,12 +121,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('building:main');
         $this->assertEquals(
             [
-                'format' => [
+                [
+                    'field' => 'format',
                     'facetOp' => 'OR',
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -133,19 +138,21 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addHiddenFilter('building:sub');
         $this->assertEquals(
             [
-                'format' => [
-                    'facetOp' => 'OR',
-                    'values' => [
-                        'foo',
-                        'bar',
-                    ]
-                ],
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
+                ],
+                [
+                    'field' => 'format',
+                    'facetOp' => 'OR',
+                    'values' => [
+                        'foo',
+                        'bar',
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -155,12 +162,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeAllFilters('~format');
         $this->assertEquals(
             [
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -170,11 +178,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('building:main');
         $this->assertEquals(
             [
-                'building' => [
+                [
+                    'field' => 'building',
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -188,20 +197,20 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Primo', $this->getParams()->getSearchClassId());
+        $this->assertSame('Primo', $this->getParams()->getSearchClassId());
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @return Params
      */
     protected function getParams(): Params
     {
-        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            new Options($configMock),
-            $configMock
+            new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

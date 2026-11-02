@@ -1,0 +1,33 @@
+{
+    "getMyProfile test 1": [
+        {
+            "expectedParams": [
+                "/users/1111",
+                [],
+                [],
+                "GET",
+                null,
+                null,
+                [],
+                false
+            ],
+            "resultFixture": "get-my-profile-1.xml"
+        }
+    ],
+    "getMyProfile test 2": [
+        {
+            "expectedParams": [
+                "/users/1111",
+                [],
+                [],
+                "GET",
+                null,
+                null,
+                [],
+                false
+            ],
+            "resultFixture": "get-my-profile-2.xml"
+        }
+    ]
+}
+

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * "Results as feed" view helper
+ * "Results as feed" view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,17 +26,23 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\ServerUrl;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
+use function is_array;
+use function is_string;
+use function strlen;
 
 /**
- * "Results as feed" view helper
+ * "Results as feed" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,16 +50,34 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
+class ResultFeed implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Override title
+     * Override title.
      *
      * @var string
      */
     protected $overrideTitle = null;
+
+    /**
+     * Constructor.
+     *
+     * @param ServerUrl    $serverUrl    ServerUrl Helper
+     * @param CurrentPath  $currentPath  CurrentPath Helper
+     * @param RecordLinker $recordLinker RecordLinker Helper
+     * @param Record       $record       Record  Helper
+     * @param array        $options      Options array (valid key = 'prioritizeRecordDriverLinks')
+     */
+    public function __construct(
+        protected ServerUrl $serverUrl,
+        protected CurrentPath $currentPath,
+        protected RecordLinker $recordLinker,
+        protected Record $record,
+        protected array $options = []
+    ) {
+    }
 
     /**
      * Set override title.
@@ -110,14 +135,14 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
-            $currentPath = ($this->getView()->plugin('currentPath'))();
+            $currentPath = ($this->currentPath)();
         }
-        $serverUrl = $this->getView()->plugin('serverurl');
-        $baseUrl = $serverUrl($currentPath);
+        $baseUrl = ($this->serverUrl)($currentPath);
         $lang = $this->getTranslatorLocale();
 
         // Create the parent feed
         $feed = new Feed();
+        $feed->setType('rss');
         if (null !== $this->overrideTitle) {
             $feed->setTitle($this->translate($this->overrideTitle));
         } else {
@@ -145,7 +170,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                     [
                         '%%start%%' => $results->getStartRecord(),
                         '%%end%%' => $results->getEndRecord(),
-                        '%%total%%' => $results->getResultTotal()
+                        '%%total%%' => $results->getResultTotal(),
                     ]
                 )
             )
@@ -214,7 +239,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      * Support method to extract a date from a record driver. Return empty string
      * if no valid match is found.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record to read from
+     * @param RecordDriver $record Record to read from
      *
      * @return string
      */
@@ -244,10 +269,84 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     }
 
     /**
+     * Get a link to the record using the record linker. Returns null if no
+     * link is available.
+     *
+     * @param RecordDriver $record Record to add to feed
+     *
+     * @return ?string
+     */
+    protected function getLinkFromRecordLinker(RecordDriver $record): ?string
+    {
+        try {
+            $url = ($this->serverUrl)($this->recordLinker->getUrl($record));
+        } catch (\Laminas\Router\Exception\RuntimeException $e) {
+            // Not every record driver has a route defined; return null if the
+            // record linker fails to give us anything usable.
+            $url = null;
+        }
+        return $url;
+    }
+
+    /**
+     * See if we can find a usable link in the record driver itself. Returns
+     * null if no link is available.
+     *
+     * @param RecordDriver $record Record to add to feed
+     *
+     * @return ?string
+     */
+    protected function getLinkFromRecordDriver(RecordDriver $record): ?string
+    {
+        // First check for a getUrl() method, which is useful for web results, among other things.
+        $url = $record->tryMethod('getUrl');
+        if (!empty($url) && is_string($url)) {
+            return $url;
+        }
+
+        // Next try picking the first usable value from getUrls() via the Record helper.
+        foreach (($this->record)($record)->getLinkDetails() as $link) {
+            if (!empty($link['url'])) {
+                return $link['url'];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get a link representing the provided record, or throw an exception if none can
+     * be found.
+     *
+     * @param RecordDriver $record Record to add to feed
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function getLinkForRecord(RecordDriver $record): string
+    {
+        // Try multiple strategies to obtain a link; we'll change the order of
+        // strategies based on the configuration.
+        $methodsToTry = ($this->options['prioritizeRecordDriverLinks'] ?? false)
+            ? ['getLinkFromRecordDriver', 'getLinkFromRecordLinker']
+            : ['getLinkFromRecordLinker', 'getLinkFromRecordDriver'];
+        foreach ($methodsToTry as $linkMethod) {
+            $url = $this->$linkMethod($record);
+            // If we found a link, return it now!
+            if ($url) {
+                return $url;
+            }
+        }
+        // If we got this far, all methods failed, so we have to throw an exception:
+        if (!$url) {
+            throw new \Exception('Cannot find URL for record.');
+        }
+    }
+
+    /**
      * Support method to turn a record driver object into an RSS entry.
      *
-     * @param Feed                              $feed   Feed to update
-     * @param \VuFind\RecordDriver\AbstractBase $record Record to add to feed
+     * @param Feed         $feed   Feed to update
+     * @param RecordDriver $record Record to add to feed
      *
      * @return void
      */
@@ -259,19 +358,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $entry->setTitle(
             empty($title) ? $this->translate('Title not available') : $title
         );
-        $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLinker = $this->getView()->plugin('recordLinker');
-        try {
-            $url = $serverUrl($recordLinker->getUrl($record));
-        } catch (\Laminas\Router\Exception\RuntimeException $e) {
-            // No route defined? See if we can get a URL out of the driver.
-            // Useful for web results, among other things.
-            $url = $record->tryMethod('getUrl');
-            if (empty($url) || !is_string($url)) {
-                throw new \Exception('Cannot find URL for record.');
-            }
-        }
-        $entry->setLink($url);
+        $entry->setLink($this->getLinkForRecord($record));
         $date = $this->getDateModified($record);
         if (!empty($date)) {
             $entry->setDateModified($date);
@@ -297,7 +384,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     /**
      * Support method to extract modified date from a record driver object.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record to pull date from.
+     * @param RecordDriver $record Record to pull date from.
      *
      * @return int|DateTime|null
      */

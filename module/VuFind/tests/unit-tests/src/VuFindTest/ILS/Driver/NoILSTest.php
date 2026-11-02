@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ILS driver test
+ * ILS driver test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\NoILS;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -41,14 +43,14 @@ use VuFind\ILS\Driver\NoILS;
 class NoILSTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock record loader
+     * Mock record loader.
      *
-     * @param \VuFind\Record\Loader
+     * @var \VuFind\Record\Loader
      */
     protected $loader;
 
     /**
-     * Driver object
+     * Driver object.
      *
      * @var NoILS
      */
@@ -65,7 +67,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                     $this->createMock(\VuFindSearch\Service::class),
-                    $this->createMock(\VuFind\RecordDriver\PluginManager::class)
+                    $this->createMock(\VuFind\RecordDriver\PluginManager::class),
                 ]
             )->getMock();
         $this->driver = new NoILS($this->loader);
@@ -121,7 +123,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'N',
                     'callnumber' => 'xyzzy',
                     'barcode' => null,
-                ]
+                ],
             ]
         );
         $this->assertTrue($this->driver->hasHoldings('foo'));
@@ -136,7 +138,6 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals([], $this->driver->getPurchaseHistory('foo'));
         $this->assertEquals(null, $this->driver->patronLogin('foo', 'bar'));
-        $this->assertEquals([], $this->driver->getNewItems(1, 20, 30));
-        $this->assertFalse($this->driver->getConfig('Holds'));
+        $this->assertEmpty($this->driver->getConfig('Holds'));
     }
 }

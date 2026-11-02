@@ -3,7 +3,7 @@
 /**
  * SOLR connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -28,12 +28,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
-
+use Laminas\Uri\Http;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -41,6 +42,12 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
+
+use function call_user_func_array;
+use function count;
+use function is_callable;
+use function sprintf;
+use function strlen;
 
 /**
  * SOLR connector.
@@ -53,7 +60,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -70,11 +77,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * HTTP client
+     * HTTP client factory.
      *
-     * @var HttpClient
+     * @var callable
      */
-    protected $client;
+    protected $clientFactory;
 
     /**
      * URL or an array of alternative URLs of the SOLR core.
@@ -91,30 +98,41 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $map;
 
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
     protected $uniqueKey;
 
     /**
-     * Constructor
+     * Url of the last request.
      *
-     * @param string|array $url       SOLR core URL or an array of alternative URLs
-     * @param HandlerMap   $map       Handler map
-     * @param HttpClient   $client    HTTP client
-     * @param string       $uniqueKey Solr field used to store unique identifier
+     * @var ?Http
+     */
+    protected $lastUrl = null;
+
+    /**
+     * Constructor.
+     *
+     * @param string|array        $url       SOLR core URL or an array of alternative
+     * URLs
+     * @param HandlerMap          $map       Handler map
+     * @param callable|HttpClient $cf        HTTP client factory or a client to clone
+     * @param string              $uniqueKey Solr field used to store unique
+     * identifier
      */
     public function __construct(
         $url,
         HandlerMap $map,
-        HttpClient $client,
+        $cf,
         $uniqueKey = 'id'
     ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        $this->client = $client;
+        $this->clientFactory = $cf instanceof HttpClient
+            ? fn () => clone $cf
+            : $cf;
     }
 
     /// Public API
@@ -150,14 +168,34 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the last request url.
+     *
+     * @return ?Http
+     */
+    public function getLastUrl()
+    {
+        return $this->lastUrl;
+    }
+
+    /**
+     * Clears the last url.
+     *
+     * @return void
+     */
+    public function resetLastUrl()
+    {
+        $this->lastUrl = null;
+    }
+
+    /**
      * Return document specified by id.
      *
-     * @param string   $id     The document to retrieve from Solr
-     * @param ParamBag $params Parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return string
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params
@@ -175,7 +213,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
      * @param string   $id     ID of given record (not currently used, but
-     * retained for backward compatibility / extensibility).
+     * retained for legacy backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string
@@ -186,7 +224,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params, true);
+
+        try {
+            return $this->query($handler, $params, true);
+        } catch (RequestErrorException $e) {
+            // If Solr was unable to fetch the record, just act like we have no similar records:
+            if (str_contains($e->getMessage(), 'Could not fetch document with id')) {
+                return '{}';
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -223,21 +270,21 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param DocumentInterface $document Document to write
      * @param string            $handler  Update handler
-     * @param ParamBag          $params   Update handler parameters
+     * @param ?ParamBag         $params   Update handler parameters
      *
      * @return string Response body
      */
     public function write(
         DocumentInterface $document,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document) {
+        $callback = function ($client) use ($document): void {
             $client->setEncType($document->getContentType());
             $body = $document->getContent();
             $client->setRawBody($body);
@@ -264,7 +311,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString) {
+            $callback = function ($client) use ($paramString): void {
                 $client->setRawBody($paramString);
                 $client->setEncType(HttpClient::ENC_URLENCODED);
                 $client->setHeaders(['Content-Length' => strlen($paramString)]);
@@ -280,7 +327,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Call a method with provided options for the HTTP client
+     * Call a method with provided options for the HTTP client.
      *
      * @param array  $options HTTP client options
      * @param string $method  Method to call
@@ -300,18 +347,24 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if (empty($options)) {
             return call_user_func_array([$this, $method], $args);
         }
-        $saveClient = $this->client;
+        $originalFactory = $this->clientFactory;
         try {
-            $this->client = clone $this->client;
-            $this->client->setOptions($options);
+            $this->clientFactory = function (string $url) use (
+                $originalFactory,
+                $options
+            ) {
+                $client = $originalFactory($url);
+                $client->setOptions($options);
+                return $client;
+            };
             return call_user_func_array([$this, $method], $args);
         } finally {
-            $this->client = $saveClient;
+            $this->clientFactory = $originalFactory;
         }
     }
 
     /**
-     * Check if an exception from a Solr request should be thrown rather than retried
+     * Check if an exception from a Solr request should be thrown rather than retried.
      *
      * @param \Exception $ex Exception
      *
@@ -319,8 +372,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function isRethrowableSolrException($ex)
     {
+        // Solr can return 404 when the instance hasn't completed startup, so allow that to be retried:
         return $ex instanceof TimeoutException
-            || $ex instanceof RequestErrorException;
+            || (($ex instanceof RequestErrorException) && $ex->getResponse()->getStatusCode() !== 404);
     }
 
     /**
@@ -334,22 +388,24 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function forceToBackendException($ex)
     {
         // Don't wrap specific backend exceptions....
-        if ($ex instanceof RemoteErrorException
+        if (
+            $ex instanceof RemoteErrorException
             || $ex instanceof RequestErrorException
             || $ex instanceof HttpErrorException
         ) {
             return $ex;
         }
-        return new BackendException('Problem connecting to Solr.', null, $ex);
+        return
+            new BackendException('Problem connecting to Solr.', $ex->getCode(), $ex);
     }
 
     /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
-     * @param string   $method    HTTP method to use
-     * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param callable $callback  Callback to configure client (null for none)
-     * @param bool     $cacheable Whether the request is cacheable
+     * @param string    $method    HTTP method to use
+     * @param string    $urlSuffix Suffix to append to all URLs tried
+     * @param ?callable $callback  Callback to configure client (null for none)
+     * @param bool      $cacheable Whether the request is cacheable
      *
      * @return string Response body
      *
@@ -369,22 +425,21 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         // Loop through all base URLs and try them in turn until one works.
         $cacheKey = null;
         foreach ((array)$this->url as $base) {
-            $this->client->resetParameters();
-            $this->client->setMethod($method);
-            $this->client->setUri($base . $urlSuffix);
+            $client = ($this->clientFactory)($base . $urlSuffix);
+            $client->setMethod($method);
             if (is_callable($callback)) {
-                $callback($this->client);
+                $callback($client);
             }
             // Always create the cache key from the first server, and only after any
             // callback has been called above.
             if ($cacheable && $this->cache && null === $cacheKey) {
-                $cacheKey = $this->getCacheKey($this->client);
+                $cacheKey = $this->getCacheKey($client);
                 if ($result = $this->getCachedData($cacheKey)) {
                     return $result;
                 }
             }
             try {
-                $result = $this->send($this->client);
+                $result = $this->send($client);
                 if ($cacheKey) {
                     $this->putCachedData($cacheKey, $result);
                 }
@@ -430,6 +485,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
         );
 
+        $this->lastUrl = $client->getUri();
+
         $time     = microtime(true);
         $response = $client->send();
         $time     = microtime(true) - $time;
@@ -444,6 +501,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         );
 
         if (!$response->isSuccess()) {
+            // Return a more detailed error message for a 400 error:
+            if ($response->getStatusCode() === 400) {
+                $json = json_decode($response->getBody(), true);
+                $msgParts = ['400', $response->getReasonPhrase()];
+                if ($msg = $json['error']['msg'] ?? '') {
+                    $msgParts[] = $msg;
+                }
+                throw new RequestErrorException(
+                    implode(' ', $msgParts),
+                    400,
+                    $response
+                );
+            }
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();

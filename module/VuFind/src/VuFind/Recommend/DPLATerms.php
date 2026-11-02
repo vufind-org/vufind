@@ -1,8 +1,9 @@
 <?php
+
 /**
- * DPLATerms Recommendations Module
+ * DPLATerms Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -25,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 
+use function is_array;
+
 /**
- * DPLATerms Recommendations Module
+ * DPLATerms Recommendations Module.
  *
  * This class uses current search terms to query the DPLA API.
  *
@@ -44,35 +48,35 @@ use Laminas\Http\Client as HttpClient;
 class DPLATerms implements RecommendInterface
 {
     /**
-     * Config
+     * Config.
      *
      * @var string
      */
     protected $apiKey;
 
     /**
-     * VuFind HTTP Client
+     * VuFind HTTP Client.
      *
      * @var HttpClient
      */
     protected $client;
 
     /**
-     * Setting of initial collapsedness
+     * Setting of initial collapsedness.
      *
      * @var bool
      */
     protected $collapsed;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Map of Solr field names to equivalent API parameters
+     * Map of Solr field names to equivalent API parameters.
      *
      * @var array
      */
@@ -87,7 +91,7 @@ class DPLATerms implements RecommendInterface
     ];
 
     /**
-     * List of fields to retrieve from the API
+     * List of fields to retrieve from the API.
      *
      * @var array
      */
@@ -99,7 +103,7 @@ class DPLATerms implements RecommendInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string     $apiKey API key
      * @param HttpClient $client VuFind HTTP client
@@ -143,7 +147,7 @@ class DPLATerms implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -195,7 +199,7 @@ class DPLATerms implements RecommendInterface
         $params = [
             'q' => $lookfor,
             'fields' => implode(',', $this->returnFields),
-            'api_key' => $this->apiKey
+            'api_key' => $this->apiKey,
         ];
         foreach ($filters as $field => $filter) {
             if (isset($this->formatMap[$field])) {
@@ -227,7 +231,7 @@ class DPLATerms implements RecommendInterface
                     'provider' => is_array($doc->dataProvider)
                         ? current($doc->dataProvider)
                         : $doc->dataProvider,
-                    'link' => 'http://dp.la/item/' . $doc->id
+                    'link' => 'http://dp.la/item/' . $doc->id,
                 ];
                 if (isset($doc->$desc)) {
                     $results[$i]['desc'] = is_array($doc->$desc)
@@ -240,7 +244,7 @@ class DPLATerms implements RecommendInterface
     }
 
     /**
-     * Return the list of facets configured to be collapsed
+     * Return the list of facets configured to be collapsed.
      *
      * @return array
      */

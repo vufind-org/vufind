@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Laminas\Feed\Renderer\Entry extension for Dublin Core
+ * Laminas\Feed\Renderer\Entry extension for Dublin Core.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\DublinCore\Renderer;
 
 use DOMDocument;
@@ -32,7 +34,7 @@ use DOMElement;
 use Laminas\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
 
 /**
- * Laminas\Feed\Renderer\Entry extension for Dublin Core
+ * Laminas\Feed\Renderer\Entry extension for Dublin Core.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -43,7 +45,7 @@ use Laminas\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
 class Entry extends ParentEntry
 {
     /**
-     * Render entry
+     * Render entry.
      *
      * @return void
      */
@@ -58,7 +60,7 @@ class Entry extends ParentEntry
     }
 
     /**
-     * Set entry format elements
+     * Set entry format elements.
      *
      * @param DOMDocument $dom  DOM document to update
      * @param DOMElement  $root Root of DOM document
@@ -81,7 +83,7 @@ class Entry extends ParentEntry
     }
 
     /**
-     * Set entry date elements
+     * Set entry date elements.
      *
      * @param DOMDocument $dom  DOM document to update
      * @param DOMElement  $root Root of DOM document

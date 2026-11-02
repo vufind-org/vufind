@@ -1,0 +1,121 @@
+{
+  "location1_id|Main Library": [
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-1",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Main Library",
+      "location_code": "MAIN",
+      "locationhref": "http://example.com/main",
+      "folio_location_is_active": true,
+      "id": "instance_id",
+      "item_id": "item_id_1",
+      "holdings_id": "holdings_id_1",
+      "number": 1,
+      "enumchron": "",
+      "barcode": "1234567890",
+      "duedate": "02.09.2025",
+      "availability": {
+      },
+      "item_notes": null,
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "loan_type_id",
+      "loan_type_name": "Circulating",
+      "link": {
+        "action": "Hold",
+        "record": "cat12345a,demo.oai.edge.demo.folio.provider.com.fs00000001.976cbaf6.fb02.48a2.8f82.a19203769b52",
+        "source": "EDS",
+        "query": "item_id=item_id_1&holdings_id=holdings_id_1&status=Checked+out&hashKey=sample_hash_key",
+        "anchor": "#tabnav"
+      },
+      "linkLightbox": true
+    },
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-2",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Main Library",
+      "location_code": "MAIN",
+      "folio_location_is_active": true,
+      "id": "instance_id",
+      "item_id": "item_id_2",
+      "holdings_id": "holdings_id_1",
+      "number": 2,
+      "enumchron": "",
+      "barcode": "1234567891",
+      "duedate": "",
+      "availability": {
+      },
+      "item_notes": null,
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "loan_type_id",
+      "loan_type_name": "Circulating",
+      "link": {
+        "action": "Hold",
+        "record": "cat12345a,demo.oai.edge.demo.folio.provider.com.fs00000001.976cbaf6.fb02.48a2.8f82.a19203769b52",
+        "source": "EDS",
+        "query": "item_id=item_id_2&holdings_id=holdings_id_1&status=Available&hashKey=sample_hash_key",
+        "anchor": "#tabnav"
+      },
+      "linkLightbox": true
+    }
+  ],
+  "location2_id|Secondary Library": [
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-3",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Secondary Library",
+      "location_code": "SECON",
+      "folio_location_is_active": true,
+      "id": "instance_id",
+      "item_id": "item_id_2",
+      "holdings_id": "holdings_id_2",
+      "number": 1,
+      "enumchron": "",
+      "barcode": "1234567892",
+      "duedate": "",
+      "availability": {
+      },
+      "item_notes": null,
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "loan_type_id",
+      "loan_type_name": "Circulating",
+      "link": {
+        "action": "Hold",
+        "record": "cat12345a,demo.oai.edge.demo.folio.provider.com.fs00000001.976cbaf6.fb02.48a2.8f82.a19203769b52",
+        "source": "EDS",
+        "query": "item_id=item_id_3&holdings_id=holdings_id_2&status=Available&hashKey=sample_hash_key",
+        "anchor": "#tabnav"
+      },
+      "linkLightbox": true
+    }
+  ]
+}

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Mixed List aspect of the Search Multi-class (Params)
+ * Mixed List aspect of the Search Multi-class (Params).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\MixedList;
 
+use function count;
+
 /**
- * Search Mixed List Parameters
+ * Search Mixed List Parameters.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -39,24 +43,24 @@ namespace VuFind\Search\MixedList;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Array of target record ids
+     * Array of target record ids.
      *
      * @var array
      */
-    protected $recordsToRequest;
+    protected array $recordsToRequest;
 
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch($request)
+    protected function initSearch(array $request): void
     {
         // Convert special 'id' parameter into a standard hidden filter:
-        $idParam = $request->get('id', []);
+        $idParam = $request['id'] ?? [];
         if (!empty($idParam)) {
             $this->addHiddenFilter('ids:' . implode("\t", $idParam));
         }
@@ -69,7 +73,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    protected function setRecordIdsFromFilter($filterValue)
+    protected function setRecordIdsFromFilter(string $filterValue): void
     {
         $this->recordsToRequest = explode("\t", $filterValue);
         $this->setLimit(count($this->recordsToRequest));
@@ -85,7 +89,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function addHiddenFilter($newFilter)
+    public function addHiddenFilter(string $newFilter): void
     {
         [$field, $value] = $this->parseFilter($newFilter);
         if ($field == 'ids') {
@@ -102,7 +106,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function deminify($minified)
+    public function deminify(\VuFind\Search\Minified $minified): void
     {
         parent::deminify($minified);
         if (isset($this->hiddenFilters['ids'][0])) {
@@ -116,7 +120,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    public function getDisplayQuery()
+    public function getDisplayQuery(): string
     {
         return $this->translate(
             'result_count',
@@ -130,7 +134,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getHiddenFilters()
+    public function getHiddenFilters(): array
     {
         $filters = parent::getHiddenFilters();
         $filters['ids'] = [implode("\t", $this->recordsToRequest)];
@@ -142,7 +146,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getRecordsToRequest()
+    public function getRecordsToRequest(): array
     {
         return $this->recordsToRequest;
     }

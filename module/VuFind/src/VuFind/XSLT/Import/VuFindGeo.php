@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT importer support methods for geographic indexing.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
+
+use function call_user_func;
+use function count;
+use function sprintf;
 
 /**
  * XSLT importer support methods for geographic indexing.
@@ -39,14 +45,14 @@ namespace VuFind\XSLT\Import;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overrideable for testing purposes)
+     * Method for logging errors (overridable for testing purposes).
      *
      * @var callable
      */
     public static $logMethod = 'error_log';
 
     /**
-     * Log an error message
+     * Log an error message.
      *
      * @param string $msg Message
      *
@@ -87,7 +93,8 @@ class VuFindGeo
      */
     protected static function validateNumericCoordinates($coords)
     {
-        if (!is_numeric($coords['westlimit'] ?? 'NaN')
+        if (
+            !is_numeric($coords['westlimit'] ?? 'NaN')
             || !is_numeric($coords['eastlimit'] ?? 'NaN')
             || !is_numeric($coords['northlimit'] ?? 'NaN')
             || !is_numeric($coords['southlimit'] ?? 'NaN')
@@ -108,7 +115,8 @@ class VuFindGeo
      */
     protected static function validateLines($coords)
     {
-        if ($coords['westlimit'] != $coords['eastlimit']
+        if (
+            $coords['westlimit'] != $coords['eastlimit']
             && $coords['northlimit'] == $coords['southlimit']
             && abs($coords['northlimit']) == 90
         ) {
@@ -127,7 +135,8 @@ class VuFindGeo
      */
     protected static function validateExtent($coords)
     {
-        if (abs($coords['northlimit']) > 90
+        if (
+            abs($coords['northlimit']) > 90
             || abs($coords['southlimit']) > 90
             || abs($coords['eastlimit']) > 180
             || abs($coords['westlimit']) > 180
@@ -195,7 +204,8 @@ class VuFindGeo
     {
         $distEW = $coords['eastlimit'] - $coords['westlimit'];
         $distNS = $coords['northlimit'] - $coords['southlimit'];
-        if (($coords['northlimit'] == -90 || $coords['southlimit'] == -90)
+        if (
+            ($coords['northlimit'] == -90 || $coords['southlimit'] == -90)
             && ($distNS > 0 && $distNS < 0.167)
         ) {
             static::logError(
@@ -205,7 +215,8 @@ class VuFindGeo
             return false;
         }
 
-        if (($coords['westlimit'] == 0 || $coords['eastlimit'] == 0)
+        if (
+            ($coords['westlimit'] == 0 || $coords['eastlimit'] == 0)
             && ($distEW > -2 && $distEW < 0)
         ) {
             static::logError(

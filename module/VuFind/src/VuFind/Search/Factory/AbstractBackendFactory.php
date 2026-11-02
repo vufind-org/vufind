@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract factory for backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
+use Laminas\Http\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Service\GetServiceTrait;
 
 /**
  * Abstract factory for backends.
@@ -43,46 +46,36 @@ use Psr\Container\ContainerInterface;
  */
 abstract class AbstractBackendFactory implements FactoryInterface
 {
-    /**
-     * Service container.
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Initialize the factory
+     * Initialize the factory.
      *
      * @param ContainerInterface $sm Service manager
      *
      * @return void
      */
-    public function setup(ContainerInterface $sm)
+    public function setup(ContainerInterface $sm): void
     {
         $this->serviceLocator = $sm;
     }
 
     /**
-     * Create HTTP Client
+     * Create HTTP Client.
      *
-     * @param int   $timeout Request timeout
-     * @param array $options Other options
+     * @param ?int    $timeout Request timeout
+     * @param array   $options Other options
+     * @param ?string $url     Request URL (needed for proper local address check when
+     * the client is being proxified)
      *
-     * @return \Laminas\Http\Client
+     * @return Client
      */
     protected function createHttpClient(
         ?int $timeout = null,
-        array $options = []
-    ): \Laminas\Http\Client {
-        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient();
+        array $options = [],
+        ?string $url = null
+    ): Client {
+        $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($url);
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
         }
@@ -91,18 +84,18 @@ abstract class AbstractBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create cache for the connector if enabled in configuration
+     * Create cache for the connector if enabled in configuration.
      *
-     * @param Config $searchConfig Search configuration
+     * @param array $searchConfig Search configuration
      *
      * @return ?StorageInterface
      */
-    protected function createConnectorCache(Config $searchConfig): ?StorageInterface
+    protected function createConnectorCache(array $searchConfig): ?StorageInterface
     {
-        if (empty($searchConfig->SearchCache->adapter)) {
+        if (empty($searchConfig['SearchCache']['adapter'])) {
             return null;
         }
-        $cacheConfig = $searchConfig->SearchCache->toArray();
+        $cacheConfig = $searchConfig['SearchCache'];
         $options = $cacheConfig['options'] ?? [];
         if (empty($options['namespace'])) {
             $options['namespace'] = 'Index';
@@ -114,8 +107,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
             'adapter' => $cacheConfig['adapter'],
             'options' => $options,
         ];
-        return $this->serviceLocator
-            ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+        return $this->getService(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($settings);
     }
 }

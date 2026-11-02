@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Record route generator
+ * Record route generator.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function count;
+use function is_object;
+
 /**
- * Record route generator
+ * Record route generator.
  *
  * @category VuFind
  * @package  Record
@@ -39,20 +46,14 @@ namespace VuFind\Record;
 class Router
 {
     /**
-     * VuFind configuration
+     * Constructor.
      *
-     * @var \Laminas\Config\Config
+     * @param array $config VuFind configuration
      */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config $config VuFind configuration
-     */
-    public function __construct(\Laminas\Config\Config $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
@@ -95,9 +96,8 @@ class Router
         // If collections are active and the record route was selected, we need
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
-        if ($this->config->Collections->collections ?? false) {
-            $routeConfig = isset($this->config->Collections->route)
-                ? $this->config->Collections->route->toArray() : [];
+        if ($this->config['Collections']['collections'] ?? false) {
+            $routeConfig = $this->config['Collections']['route'] ?? [];
             $collectionRoutes
                 = array_merge(
                     ['record' => 'collection',
@@ -138,7 +138,7 @@ class Router
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
             $source = $driver->getSourceIdentifier();
-            $id = $driver->getUniqueId();
+            $id = $driver->getUniqueID();
         } else {
             [$source, $id] = $this->extractSourceAndId($driver);
         }
@@ -155,13 +155,13 @@ class Router
         // Disable path normalization since it can unencode e.g. encoded slashes in
         // record id's
         $options = [
-            'normalize_path' => false
+            'normalize_path' => false,
         ];
 
         return [
             'params' => $params,
             'route' => $routeBase . $routeSuffix,
-            'options' => $options
+            'options' => $options,
         ];
     }
 

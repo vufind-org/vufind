@@ -1,0 +1,10 @@
+[
+  {
+    "expectedPath": "/users",
+    "expectedParams": {
+      "query": "id == \"foo\""
+    },
+    "status": 200,
+    "body": "{\n  \"users\": [\n{\"tenant\":\"config_tenant\",\"username\":\"fake@example.com\",\"id\":\"foo\",\"externalSystemId\":\"fakefake\",\"barcode\":\"fakefakefake\",\"active\":true,\"patronGroup\":\"fakegroup\",\"departments\":[],\"proxyFor\":[],\"personal\":{\"lastName\":\"User\",\"firstName\":\"Test\",\"middleName\":\"\",\"email\":\"fake@example.com\",\"phone\":\"0123456789\",\"mobilePhone\":\"1234567890\",\"addresses\":[{\"addressLine1\": \"street\", \"city\": \"city\", \"countryId\": \"country\", \"postalCode\": \"12345\"}],\"preferredContactTypeId\":\"002\"},\"expirationDate\":\"2030-05-30T00:00:00.000+00:00\",\"createdDate\":\"2023-02-06T15:05:26.941+00:00\",\"updatedDate\":\"2023-02-06T15:05:26.941+00:00\",\"metadata\":{\"createdDate\":\"2021-03-15T20:41:34.806+00:00\",\"createdByUserId\":\"not-real\",\"updatedDate\":\"2023-02-06T15:05:26.935+00:00\",\"updatedByUserId\":\"also-not-real\"},\"customFields\":{\"employeeClass\":\"Staff\",\"title\":\"Mr.\",\"employeeStatus\":\"Full Time\",\"employeeDepartment\":\"Someplace\"}}],\n  \"totalRecords\": 1,\n  \"resultInfo\": {\"totalRecords\":1,\"facets\":[],\"diagnostics\":[]}\n}"
+  }
+]

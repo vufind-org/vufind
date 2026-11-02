@@ -1,8 +1,9 @@
 <?php
+
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,14 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Net;
 
-use Laminas\Config\Config;
-use Laminas\Stdlib\Parameters;
 use VuFind\Net\UserIpReaderFactory;
 
+use function func_get_args;
+
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -42,7 +44,7 @@ use VuFind\Net\UserIpReaderFactory;
  */
 class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Get a container set up for the factory.
@@ -56,20 +58,48 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'), [], $this->once())
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(compact('config'), [], $this->once())
         );
-        $mockRequest = $this
-            ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockRequest->expects($this->once())->method('getServer')
-            ->will($this->returnValue(new Parameters($server)));
+            ->willReturn(new \Laminas\Stdlib\Parameters($server));
         $container->set('Request', $mockRequest);
         return $container;
     }
 
     /**
-     * Test the factory's defaults
+     * Extend UserIpReader to capture constructor parameters.
+     *
+     * @return \VuFind\Net\UserIpReader
+     */
+    protected function getReaderClass()
+    {
+        $readerClass = new class () extends \VuFind\Net\UserIpReader {
+            /**
+             * Property for storing constructor arguments for testing.
+             *
+             * @var array
+             */
+            public $args;
+
+            /**
+             * Constructor.
+             */
+            public function __construct()
+            {
+                $args = func_get_args();
+                $this->args = $args;
+                parent::__construct(
+                    ...(empty($args) ? [[]] : $args)
+                );
+            }
+        };
+        return $readerClass::class;
+    }
+
+    /**
+     * Test the factory's defaults.
      *
      * @return void
      */
@@ -77,15 +107,15 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $factory = new UserIpReaderFactory();
         $container = $this->getContainer();
-        $reader = $factory($container, UserIpReader::class);
+        $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertFalse($allowForwardedIps);
         $this->assertEquals([], $ipFilter);
     }
 
     /**
-     * Test non-default values, with a single filtered IP
+     * Test non-default values, with a single filtered IP.
      *
      * @return void
      */
@@ -97,18 +127,18 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 'Proxy' => [
                     'allow_forwarded_ips' => true,
                     'forwarded_ip_filter' => '1.2.3.4',
-                ]
+                ],
             ]
         );
-        $reader = $factory($container, UserIpReader::class);
+        $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4'], $ipFilter);
     }
 
     /**
-     * Test non-default values, with multiple filtered IPs
+     * Test non-default values, with multiple filtered IPs.
      *
      * @return void
      */
@@ -120,42 +150,13 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 'Proxy' => [
                     'allow_forwarded_ips' => true,
                     'forwarded_ip_filter' => ['1.2.3.4', '5.6.7.8'],
-                ]
+                ],
             ]
         );
-        $reader = $factory($container, UserIpReader::class);
+        $reader = $factory($container, $this->getReaderClass());
         [$server, $allowForwardedIps, $ipFilter] = $reader->args;
-        $this->assertEquals(['server' => true], $server->toArray());
+        $this->assertEquals(['server' => true], $server);
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4', '5.6.7.8'], $ipFilter);
-    }
-}
-
-/**
- * Test harness for capturing constructor parameters.
- *
- * @category VuFind
- * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
- */
-class UserIpReader extends \VuFind\Net\UserIpReader
-{
-    /**
-     * Property for storing constructor arguments for testing.
-     *
-     * @var array
-     */
-    public $args;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $args = func_get_args();
-        $this->args = $args;
-        parent::__construct(...$args);
     }
 }

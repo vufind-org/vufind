@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Trait with utility methods for configuring the demo driver in a test
+ * Trait with utility methods for configuring the demo driver in a test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
+use Behat\Mink\Element\Element;
+
 /**
- * Trait with utility methods for configuring the demo driver in a test
+ * Trait with utility methods for configuring the demo driver in a test.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +51,7 @@ trait DemoDriverTestTrait
      */
     protected function getFakeTransactions($bibId)
     {
-        $rawDueDate = strtotime("now +5 days");
+        $rawDueDate = strtotime('now +5 days');
         return json_encode(
             [
                 [
@@ -63,28 +66,187 @@ trait DemoDriverTestTrait
                     'source' => 'Solr',
                     'item_id' => 0,
                     'renewable' => true,
-                ]
+                ],
             ]
         );
     }
 
     /**
-     * Get Demo.ini override settings for testing ILS functions.
+     * Get historic transaction JSON for Demo.ini.
      *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Another bibliographic record ID to create fake item info
+     * for.
      *
      * @return array
      */
-    protected function getDemoIniOverrides($bibId = 'testsample1')
+    protected function getFakeHistoricTransactions($bibId, $bibId2)
     {
+        $checkoutDate = strtotime('now -30 days');
+        $returnDate = strtotime('now -5 days');
+        $dueDate = strtotime('now -2 days');
+        $checkoutDate2 = strtotime('now -34 days');
+        $returnDate2 = strtotime('now -3 days');
+        $dueDate2 = strtotime('now -1 days');
+        return json_encode(
+            [
+                [
+                    'checkoutDate' => date('Y-m-d', $checkoutDate),
+                    '_checkoutDate' => $checkoutDate,
+                    'dueDate' => date('Y-m-d', $dueDate),
+                    '_dueDate' => $dueDate,
+                    'returnDate' => date('Y-m-d', $returnDate),
+                    '_returnDate' => $returnDate,
+                    'barcode' => 1234567890,
+                    'id' => $bibId,
+                    'source' => 'Solr',
+                    'item_id' => 0,
+                    'row_id' => 31313,
+                ],
+                [
+                    'checkoutDate' => date('Y-m-d', $checkoutDate2),
+                    '_checkoutDate' => $checkoutDate2,
+                    'dueDate' => date('Y-m-d', $dueDate2),
+                    '_dueDate' => $dueDate2,
+                    'returnDate' => date('Y-m-d', $returnDate2),
+                    '_returnDate' => $returnDate2,
+                    'barcode' => 2345678901,
+                    'id' => $bibId2,
+                    'source' => 'Solr',
+                    'item_id' => 0,
+                    'row_id' => 21212,
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Get fine JSON for Demo.ini.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     *
+     * @return string
+     */
+    protected function getFakeFines(string $bibId): string
+    {
+        $checkoutDate = strtotime('now -30 days');
+        $returnDate = strtotime('now -2 days');
+        $dueDate = strtotime('now -5 days');
+        return json_encode([
+            [
+                'amount' => 123,
+                'balance' => 123,
+                'checkout' => date('Y-m-d', $checkoutDate),
+                'createdate' => date('Y-m-d', $returnDate),
+                'duedate' => date('Y-m-d', $dueDate),
+                'description' => 'Overdue fee',
+                'id' => $bibId,
+            ],
+        ]);
+    }
+
+    /**
+     * Get hold JSON for Demo.ini.
+     *
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Second bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeHolds(string $bibId, string $bibId2)
+    {
+        $createDate = strtotime('now -30 days');
+        $expireDate = strtotime('now +1 year');
+        return json_encode([
+            [
+                'reqnum' => 1,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId,
+                'available' => true,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 2,
+                'item_id' => 1,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => true,
+            ],
+            [
+                'reqnum' => 3,
+                'item_id' => 3,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => true,
+            ],
+            [
+                'reqnum' => 4,
+                'item_id' => 7,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 5,
+                'item_id' => 17,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 6,
+                'item_id' => 27,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+        ]);
+    }
+
+    /**
+     * Get Demo.ini override settings for testing ILS functions.
+     *
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Bibliographic record ID for a second transaction history
+     * row.
+     *
+     * @return array
+     */
+    protected function getDemoIniOverrides(
+        $bibId = 'testsample1',
+        $bibId2 = 'testsample2'
+    ) {
         return [
             'Records' => [
                 'transactions' => $this->getFakeTransactions($bibId),
+                'historicTransactions' => $this->getFakeHistoricTransactions($bibId, $bibId2),
+                'fines' => $this->getFakeFines($bibId),
+                'holds' => $this->getFakeHolds($bibId, $bibId2),
+                'new_items' => [$bibId, $bibId2],
+                'recently_returned' => [$bibId, $bibId2],
             ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
+                'changePassword' => 0,
                 'checkILLRequestIsValid' => 0,
                 'checkRenewBlock' => 0,
                 'checkRequestIsValid' => 0,
@@ -92,15 +254,25 @@ trait DemoDriverTestTrait
                 'getAccountBlocks' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
+                'getPasswordRecoveryData' => 0,
                 'getRequestBlocks' => 0,
                 'placeHold' => 0,
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
                 'renewMyItems' => 0,
+                'resetPassword' => 0,
                 'updateHolds' => 0,
+                'purgeTransactionHistory' => 0,
+                'registerPayment' => 0,
             ],
-            'StaticHoldings' => [$bibId => json_encode([$this->getFakeItem()])],
+            'StaticHoldings' => [
+                $bibId => json_encode([$this->getFakeItem()]),
+                $bibId2 => json_encode([$this->getFakeItem()]),
+            ],
             'Users' => ['catuser' => 'catpass'],
+            'TransactionHistory' => [
+                'enabled' => true,
+            ],
         ];
     }
 
@@ -124,7 +296,26 @@ trait DemoDriverTestTrait
             'addLink'      => true,
             'addStorageRetrievalRequestLink' => 'check',
             'addILLRequestLink' => 'check',
-            "__electronic__" => false,
+            '__electronic__' => false,
         ];
+    }
+
+    /**
+     * Fill in and submit the catalog login form with the provided credentials.
+     *
+     * @param Element $page     Page element.
+     * @param string  $username Username
+     * @param string  $password Password
+     *
+     * @return void
+     */
+    protected function submitCatalogLoginForm(
+        Element $page,
+        string $username,
+        string $password
+    ): void {
+        $this->findCssAndSetValue($page, '#profile_cat_username', $username);
+        $this->findCssAndSetValue($page, '#profile_cat_password', $password);
+        $this->clickCss($page, 'input.btn.btn-primary');
     }
 }

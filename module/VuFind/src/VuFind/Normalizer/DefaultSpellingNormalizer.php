@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Default text normalizer for spellcheck text replacement.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Normalizer
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Normalizer;
+
+use function in_array;
 
 /**
  * Default text normalizer for spellcheck text replacement.
@@ -53,13 +57,13 @@ class DefaultSpellingNormalizer
         $booleans = ['AND', 'OR', 'NOT'];
         $words = [];
         foreach (preg_split('/\s+/', $stripped) as $word) {
-            $words[] = in_array($word, $booleans) ? $word : strtolower($word);
+            $words[] = in_array($word, $booleans) ? $word : mb_strtolower($word, 'UTF-8');
         }
         return implode(' ', $words);
     }
 
     /**
-     * Remove diacritics (accents, umlauts, etc.) from a string
+     * Remove diacritics (accents, umlauts, etc.) from a string.
      *
      * @param string $string The text where we would like to remove diacritics
      *

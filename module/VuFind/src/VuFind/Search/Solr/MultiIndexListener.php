@@ -3,7 +3,7 @@
 /**
  * MultiIndex listener class file.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * MultiIndex listener class file.
@@ -46,34 +49,6 @@ use VuFindSearch\Service;
 class MultiIndexListener
 {
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
-     * Available shards, indexed by name.
-     *
-     * @var array
-     */
-    protected $shards;
-
-    /**
-     * Fields to strip, indexed by shard name.
-     *
-     * @var array
-     */
-    protected $stripfields;
-
-    /**
-     * Base search specs.
-     *
-     * @var array
-     */
-    protected $specs;
-
-    /**
      * Constructor.
      *
      * @param BackendInterface $backend     Backend
@@ -84,15 +59,11 @@ class MultiIndexListener
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        array $shards,
-        array $stripfields,
-        array $specs
+        protected BackendInterface $backend,
+        protected array $shards,
+        protected array $stripfields,
+        protected array $specs
     ) {
-        $this->specs       = $specs;
-        $this->backend     = $backend;
-        $this->shards      = $shards;
-        $this->stripfields = $stripfields;
     }
 
     /**
@@ -102,23 +73,23 @@ class MultiIndexListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
     }
 
     /**
-     * VuFindSearch.pre()
+     * VuFindSearch.pre().
      *
      * @param EventInterface $event Event
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
@@ -159,7 +130,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function getFields(array $shards)
+    protected function getFields(array $shards): array
     {
         $fields = [];
         foreach ($this->stripfields as $name => $strip) {
@@ -180,7 +151,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function getSearchSpecs(array $fields)
+    protected function getSearchSpecs(array $fields): array
     {
         $specs  = [];
         $fields = array_merge(
@@ -196,13 +167,13 @@ class MultiIndexListener
             $specs[$handler] = [];
             foreach ($spec as $component => $settings) {
                 switch ($component) {
-                case 'QueryFields':
-                    $specs[$handler][$component]
-                        = $this->stripSpecsQueryFields($settings, $fields);
-                    break;
-                default:
-                    $specs[$handler][$component] = $settings;
-                    break;
+                    case 'QueryFields':
+                        $specs[$handler][$component]
+                            = $this->stripSpecsQueryFields($settings, $fields);
+                        break;
+                    default:
+                        $specs[$handler][$component] = $settings;
+                        break;
                 }
             }
         }
@@ -217,7 +188,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function stripSpecsQueryFields(array $settings, array $fields)
+    protected function stripSpecsQueryFields(array $settings, array $fields): array
     {
         $stripped = [];
         foreach ($settings as $field => $rule) {

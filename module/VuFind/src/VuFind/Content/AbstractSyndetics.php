@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base for Syndetics content loader plug-ins.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 use DOMDocument;
@@ -41,42 +43,16 @@ use DOMDocument;
 abstract class AbstractSyndetics extends AbstractBase
 {
     /**
-     * Use SSL URLs?
+     * Constructor.
      *
-     * @var bool
+     * @param int $timeout HTTP timeout for API calls (in seconds)
      */
-    protected $useSSL;
-
-    /**
-     * Use Syndetics plus?
-     *
-     * @var bool
-     */
-    protected $usePlus;
-
-    /**
-     * HTTP timeout for API calls (in seconds)
-     *
-     * @var int
-     */
-    protected $timeout;
-
-    /**
-     * Constructor
-     *
-     * @param bool $useSSL  Use SSL URLs?
-     * @param bool $usePlus Use Syndetics Plus?
-     * @param int  $timeout HTTP timeout for API calls (in seconds)
-     */
-    public function __construct($useSSL = false, $usePlus = false, $timeout = 10)
+    public function __construct(protected int $timeout = 10)
     {
-        $this->useSSL = $useSSL;
-        $this->usePlus = $usePlus;
-        $this->timeout = $timeout;
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param string $url URL for client to use
      *
@@ -102,9 +78,7 @@ abstract class AbstractSyndetics extends AbstractBase
      */
     protected function getIsbnUrl($isbn, $id, $file = 'index.xml', $type = 'rw12,h7')
     {
-        $baseUrl = $this->useSSL
-            ? 'https://secure.syndetics.com' : 'http://syndetics.com';
-        $url = $baseUrl . '/index.aspx?isbn=' . $isbn
+        $url = 'https://www.syndetics.com/index.aspx?isbn=' . $isbn
             . '/' . $file . '&client=' . $id . '&type=' . $type;
         $this->debug('Syndetics request: ' . $url);
         return $url;

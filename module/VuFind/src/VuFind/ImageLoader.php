@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
+ * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -26,10 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind;
 
+use function array_key_exists;
+use function function_exists;
+use function is_int;
+
 /**
- * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
+ * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -38,26 +44,26 @@ namespace VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class ImageLoader implements \Laminas\Log\LoggerAwareInterface
+class ImageLoader implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Property for storing raw image data; may be null if image is unavailable
+     * Property for storing raw image data; may be null if image is unavailable.
      *
      * @var string
      */
     protected $image = null;
 
     /**
-     * Content type of data in $image property
+     * Content type of data in $image property.
      *
      * @var string
      */
     protected $contentType = null;
 
     /**
-     * Theme tools
+     * Theme tools.
      *
      * @var \VuFindTheme\ThemeInfo
      */
@@ -66,7 +72,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     /**
      * User-configured image to load from theme on error.
      *
-     * @var string
+     * @var ?string
      */
     protected $configuredFailImage = null;
 
@@ -75,23 +81,23 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
      *
      * @var string
      */
-    protected $defaultFailImage = 'images/noCover2.gif';
+    protected $defaultFailImage = 'images/hidden-image.gif';
 
     /**
      * Array containing map of allowed file extensions to mimetypes
-     * (to be extended)
+     * (to be extended).
      *
      * @var array
      */
     protected $allowedFileExtensions = [
-        "gif" => "image/gif",
-        "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
-        "png" => "image/png",
-        "tiff" => "image/tiff", "tif" => "image/tiff"
+        'gif' => 'image/gif',
+        'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'tiff' => 'image/tiff', 'tif' => 'image/tiff',
     ];
 
     /**
-     * Setter for dependency
+     * Setter for dependency.
      *
      * @param \VuFindTheme\ThemeInfo $theme VuFind theme tools
      *
@@ -103,7 +109,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Get the image data (not meant to be called until after image is populated)
+     * Get the image data (not meant to be called until after image is populated).
      *
      * @return string
      */
@@ -118,7 +124,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
 
     /**
      * Get the content type of the current image (not meant to be called until after
-     * contentType is populated)
+     * contentType is populated).
      *
      * @return string
      */
@@ -173,7 +179,8 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         $noCoverImage = $this->searchTheme($this->configuredFailImage);
 
         // If file is blank/inaccessible, log error and display default:
-        if (empty($noCoverImage) || !file_exists($noCoverImage)
+        if (
+            empty($noCoverImage) || !file_exists($noCoverImage)
             || !is_readable($noCoverImage)
         ) {
             $this->debug("Cannot access '{$this->configuredFailImage}'");
@@ -193,6 +200,30 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
 
         // Load the image data:
         $this->image = file_get_contents($noCoverImage);
+    }
+
+    /**
+     * Given a file path, return the MIME type by analyzing the file. Returns null for
+     * unidentifiable or non-image files.
+     *
+     * @param string $filename File to analyze
+     *
+     * @return ?string
+     */
+    protected function getImageMimeTypeFromFile(string $filename): ?string
+    {
+        // First try mime_content_type... but this could falsely return text/plain if the
+        // PHP mime_magic.magicfile setting is not configured correctly.
+        $contentType = mime_content_type($filename);
+        if (str_starts_with($contentType, 'image/')) {
+            return $contentType;
+        }
+
+        // Next try exif_imagetype if it is available, or default to the slower getimagesize if it is not.
+        $type = function_exists('exif_imagetype')
+            ? exif_imagetype($filename)
+            : getimagesize($filename)[2] ?? null;
+        return is_int($type) ? image_type_to_mime_type($type) : null;
     }
 
     /**

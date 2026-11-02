@@ -1,8 +1,9 @@
 <?php
+
 /**
- * OAI Server class for Authority core
+ * OAI Server class for Authority core.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAI_Server
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\OAI\Server;
 
 use VuFind\OAI\Server as Base;
 
 /**
- * OAI Server class for Authority core
+ * OAI Server class for Authority core.
  *
  * This class provides OAI server functionality.
  *
@@ -43,33 +45,29 @@ use VuFind\OAI\Server as Base;
 class Auth extends Base
 {
     /**
-     * Constructor
+     * Search object class to use.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Search manager for
-     * retrieving records
-     * @param \VuFind\Record\Loader                $loader  Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @var string
      */
-    public function __construct(
-        \VuFind\Search\Results\PluginManager $results,
-        \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables
-    ) {
-        parent::__construct($results, $loader, $tables);
-        $this->core = 'authority';
-        $this->searchClassId = 'SolrAuth';
-    }
+    protected $searchClassId = 'SolrAuth';
 
     /**
-     * Load data from the OAI section of config.ini.  (This is called by the
+     * What Solr core are we serving up?
+     *
+     * @var string
+     */
+    protected $core = 'authority';
+
+    /**
+     * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param array $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Laminas\Config\Config $config)
+    protected function initializeSettings(array $config)
     {
         // Use some of the same settings as the regular OAI server, but override
         // others:

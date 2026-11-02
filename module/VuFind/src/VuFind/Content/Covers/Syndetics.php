@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
+
+use DOMDocument;
 
 /**
  * Syndetics cover content loader.
@@ -36,23 +40,25 @@ namespace VuFind\Content\Covers;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Syndetics extends \VuFind\Content\AbstractCover
+class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingDownloaderAwareInterface
 {
+    use \VuFind\Http\CachingDownloaderAwareTrait;
+
     /**
-     * Use SSL URLs?
+     * Use Syndetics image fallback ?
      *
      * @var bool
      */
-    protected $useSSL;
+    protected $useSyndeticsCoverImageFallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param bool $useSSL Use SSL URLs?
+     * @param ?array $config Syndetics configuration
      */
-    public function __construct($useSSL = false)
+    public function __construct(?array $config = null)
     {
-        $this->useSSL = $useSSL;
+        $this->useSyndeticsCoverImageFallback = $config['use_syndetics_cover_image_fallback'] ?? false;
         $this->supportsIsbn = $this->supportsIssn = $this->supportsOclc
             = $this->supportsUpc = $this->cacheAllowed = true;
     }
@@ -69,46 +75,131 @@ class Syndetics extends \VuFind\Content\AbstractCover
      */
     public function getUrl($key, $size, $ids)
     {
-        switch ($size) {
-        case 'small':
-            $size = 'SC.GIF';
-            break;
-        case 'medium':
-            $size = 'MC.GIF';
-            break;
-        case 'large':
-            $size = 'LC.JPG';
-            break;
+        $baseUrl = $this->getBaseUrl($key, $ids);
+        if ($baseUrl == false) {
+            return false;
         }
+        if ($this->useSyndeticsCoverImageFallback) {
+            $filename = $this->getImageFilenameFromSize($size);
+            if ($filename == false) {
+                return false;
+            }
+        } else {
+            $xmldoc = $this->getMetadataXML($baseUrl);
+            if ($xmldoc == false) {
+                return false;
+            }
+            $filename = $this->getImageFilenameFromMetadata($xmldoc, $size);
+            if ($filename == false) {
+                return false;
+            }
+        }
+        return $this->getImageUrl($baseUrl, $filename);
+    }
 
-        $url = $this->useSSL
-            ? 'https://secure.syndetics.com' : 'http://syndetics.com';
-        $url .= "/index.aspx?type=xw12";
+    /**
+     * Return the base Syndetics URL for both the metadata and image URLs.
+     *
+     * @param string $key API key
+     * @param array  $ids Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object and 'issn' pointing to a string)
+     *
+     * @return string|bool Base URL, or false if no identifier can be used
+     */
+    protected function getBaseUrl($key, $ids)
+    {
+        $url = "https://www.syndetics.com/index.aspx?client={$key}";
+        $ident = '';
         if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
             $isbn = $ids['isbn']->get13();
-            $url .= "&isbn={$isbn}";
-        } else {
-            $isbn = false;
+            $ident .= "&isbn={$isbn}";
         }
         if (isset($ids['issn'])) {
-            $url .= "&issn={$ids['issn']}";
-            $issn = true;
-        } else {
-            $issn = false;
+            $ident .= "&issn={$ids['issn']}";
         }
         if (isset($ids['oclc'])) {
-            $url .= "&oclc={$ids['oclc']}";
-            $oclc = true;
-        } else {
-            $oclc = false;
+            $ident .= "&oclc={$ids['oclc']}";
         }
         if (isset($ids['upc'])) {
-            $url .= "&upc={$ids['upc']}";
-            $upc = true;
-        } else {
-            $upc = false;
+            $ident .= "&upc={$ids['upc']}";
         }
-        $url .= "/{$size}&client={$key}";
-        return ($isbn || $issn || $oclc || $upc) ? $url : false;
+        if (empty($ident)) {
+            return false;
+        }
+        return $url . $ident;
+    }
+
+    /**
+     * Calculate the image filename based on the size, without checking if it exists in the metadata.
+     *
+     * @param string $size Size of image to load (small/medium/large)
+     *
+     * @return string|bool Image filename, or false if the size is not 'small', 'medium' or 'large'
+     */
+    protected function getImageFilenameFromSize($size)
+    {
+        return match ($size) {
+            'small' => 'SC.GIF',
+            'medium' => 'MC.GIF',
+            'large' => 'LC.JPG',
+            default => false,
+        };
+    }
+
+    /**
+     * Get the Syndetics metadata as XML, using a cache.
+     *
+     * @param $baseUrl string  Base URL for the Syndetics query
+     *
+     * @return DOMDocument|bool The metadata as a DOM XML document, or false if the document cannot be parsed.
+     */
+    protected function getMetadataXML($baseUrl)
+    {
+        $url = $baseUrl . '/index.xml';
+        if (!isset($this->cachingDownloader)) {
+            throw new \Exception('CachingDownloader initialization failed.');
+        }
+        $body = $this->cachingDownloader->download($url);
+        $dom = new DOMDocument();
+        return $dom->loadXML($body) ? $dom : false;
+    }
+
+    /**
+     * Find the image filename in the XML returned from API.
+     *
+     * @param DOMDocument $xmldoc Parsed XML document
+     * @param string      $size   Size of image to load (small/medium/large)
+     *
+     * @return string|bool Image filename, or false if none matches
+     */
+    protected function getImageFilenameFromMetadata($xmldoc, $size)
+    {
+        $elementName = match ($size) {
+            'small' => 'SC',
+            'medium' => 'MC',
+            'large' => 'LC',
+            default => false,
+        };
+        if ($elementName == false) {
+            return false;
+        }
+        $nodes = $xmldoc->getElementsByTagName($elementName);
+        if ($nodes->length == 0) {
+            return false;
+        }
+        return $nodes->item(0)->nodeValue;
+    }
+
+    /**
+     * Return the full image url.
+     *
+     * @param $baseUrl  string  Base URL for the Syndetics query
+     * @param $filename string  Image filename
+     *
+     * @return string Full url of the image
+     */
+    protected function getImageUrl($baseUrl, $filename)
+    {
+        return $baseUrl . "/{$filename}";
     }
 }

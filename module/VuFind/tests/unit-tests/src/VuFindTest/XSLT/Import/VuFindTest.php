@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT helper tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFind;
+
+use function chr;
 
 /**
  * XSLT helper tests.
@@ -40,6 +44,8 @@ use VuFind\XSLT\Import\VuFind;
  */
 class VuFindTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+
     /**
      * Support method -- set up a mock container for testing the class.
      *
@@ -48,12 +54,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     protected function getMockContainer()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $tableManager = new \VuFindTest\Container\MockDbTablePluginManager($this);
-        $tableManager->set(
-            'ChangeTracker',
-            $tableManager->get(\VuFind\Db\Table\ChangeTracker::class)
-        );
-        $container->set(\VuFind\Db\Table\PluginManager::class, $tableManager);
+        $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        $container->set(\VuFind\Db\Service\PluginManager::class, $serviceManager);
         return $container;
     }
 
@@ -65,9 +67,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetChangeTracker()
     {
         VuFind::setServiceLocator($this->getMockContainer());
-        $this->assertTrue(
-            VuFind::getChangeTracker() instanceof \VuFind\Db\Table\ChangeTracker
-        );
+        $this->assertInstanceOf(\VuFind\Db\Service\ChangeTrackerServiceInterface::class, VuFind::getChangeTracker());
     }
 
     /**
@@ -78,11 +78,10 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
-        $config = new \Laminas\Config\Config([]);
-        $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
-            ->method('get')->with('config')->will($this->returnValue($config));
+        $this->addConfigRelatedServicesToContainer($container);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         VuFind::setServiceLocator($container);
-        $this->assertEquals($config, VuFind::getConfig());
+        $this->assertEquals($config, VuFind::getConfigArray());
     }
 
     /**
@@ -243,5 +242,116 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
                 )
             );
         }
+    }
+
+    /**
+     * DataProvider for name-related tests.
+     *
+     * @return array
+     */
+    public static function nameProvider(): array
+    {
+        return [
+            'single name' => ['foo', 'foo'],
+            'two-part name' => ['foo bar', 'bar, foo'],
+            'long name' => ['foo bar baz xyzzy', 'xyzzy, foo bar baz'],
+        ];
+    }
+
+    /**
+     * DataProvider for testIsInvertedName().
+     *
+     * @return \Iterator
+     */
+    public static function isInvertedNameProvider(): \Iterator
+    {
+        yield ['foo bar', false];
+        yield ['foo bar, jr.', false];
+        yield ['bar, foo', true];
+        yield ['bar, foo, jr.', true];
+    }
+
+    /**
+     * Test the isInvertedName helper.
+     *
+     * @param string $input  Input to test
+     * @param bool   $output Expected output of test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isInvertedNameProvider')]
+    public function testIsInvertedName(string $input, bool $output): void
+    {
+        $this->assertSame($output, VuFind::isInvertedName($input));
+    }
+
+    /**
+     * Test the invertName helper.
+     *
+     * @param string $input  Input to test
+     * @param string $output Expected output of test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('nameProvider')]
+    public function testInvertName(string $input, string $output): void
+    {
+        $this->assertSame($output, VuFind::invertName($input));
+    }
+
+    /**
+     * Test the invertNames helper.
+     *
+     * @return void
+     */
+    public function testInvertNames(): void
+    {
+        $input = [];
+        $output = new \DOMDocument('1.0', 'utf-8');
+        // Leverage the data provider to create an array of input elements and
+        // an expected output document to compare against real output:
+        foreach ($this->nameProvider() as $current) {
+            $input[] = new \DOMElement('name', $current[0]);
+            $output->appendChild(new \DOMElement('name', $current[1]));
+        }
+        $this->assertEquals(
+            $output->saveXML(),
+            VuFind::invertNames($input)->saveXML()
+        );
+    }
+
+    /**
+     * Data provider for testTitleSortLower().
+     *
+     * @return \Iterator
+     */
+    public static function titleSortLowerProvider(): \Iterator
+    {
+        yield 'basic lowercasing' => ['ABCDEF', 'abcdef'];
+        yield 'Latin accent stripping' => ['çèñüĂ', 'cenua'];
+        yield 'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'];
+        yield 'Japanese text' => ['日本語テキスト', '日本語テキスト'];
+        yield 'Leading bracket' => ['[foo', 'foo'];
+        yield 'Trailing bracket' => ['foo]', 'foo'];
+        yield 'Outer brackets' => ['[foo]', 'foo'];
+        yield 'Stacked outer brackets' => ['[[foo]]', 'foo'];
+        yield 'Tons of brackets' => ['[]foo][[', 'foo'];
+        yield 'Inner brackets' => ['foo[]foo', 'foo foo'];
+        yield 'Trailing whitespace' => ['foo   ', 'foo'];
+        yield 'Trailing punctuation' => ['foo /.', 'foo'];
+    }
+
+    /**
+     * Test the titleSortLower helper.
+     *
+     * @param string $input    Input to test
+     * @param string $expected Expected output of test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSortLowerProvider')]
+    public function testTitleSortLower($input, $expected): void
+    {
+        $this->assertEquals($expected, VuFind::titleSortLower($input));
     }
 }

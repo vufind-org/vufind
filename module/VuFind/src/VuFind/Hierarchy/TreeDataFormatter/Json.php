@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Hierarchy Tree Data Formatter (JSON)
+ * Hierarchy Tree Data Formatter (JSON).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
 /**
- * Hierarchy Tree Data Formatter (JSON)
+ * Hierarchy Tree Data Formatter (JSON).
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -49,7 +51,7 @@ class Json extends AbstractBase
     }
 
     /**
-     * Get Solr Children for JSON
+     * Get Solr Children for JSON.
      *
      * @param object $record   Solr record to format
      * @param string $parentID The starting point for the current recursion
@@ -62,7 +64,7 @@ class Json extends AbstractBase
         $raw = [
             'id' => $record->id,
             'type' => $this->isCollection($record) ? 'collection' : 'record',
-            'title' => $this->pickTitle($record, $parentID)
+            'title' => $this->pickTitle($record, $parentID),
         ];
 
         if (isset($this->childMap[$record->id])) {
@@ -76,7 +78,7 @@ class Json extends AbstractBase
     }
 
     /**
-     * Get Solr Children for JSON
+     * Get Solr Children for JSON.
      *
      * @param string $parentID The starting point for the current recursion
      * (equivalent to Solr field hierarchy_parent_id)

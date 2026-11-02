@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for Util/SwitchDbHashCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,13 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 /**
  * Factory for Util/SwitchDbHashCommand.
@@ -45,7 +51,7 @@ use Psr\Container\ContainerInterface;
 class SwitchDbHashCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,14 +67,21 @@ class SwitchDbHashCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $config,
-            $tableManager->get(\VuFind\Db\Table\User::class),
+            $serviceManager->get(UserServiceInterface::class),
+            $serviceManager->get(UserCardServiceInterface::class),
+            Closure::fromCallable(
+                function ($algo, $key) use ($container) {
+                    return $container->get(BlockCipher::class)->setAlgorithm($algo)->setKey($key);
+                }
+            ),
+            $container->get(\VuFind\Config\PathResolver::class),
+            null,
             ...($options ?? [])
         );
     }

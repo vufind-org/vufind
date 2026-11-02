@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Mixed List aspect of the Search Multi-class (Options)
+ * Mixed List aspect of the Search Multi-class (Options).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\MixedList;
 
 /**
- * Search Mixed List Options
+ * Search Mixed List Options.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -43,22 +45,22 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'records-home';
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         // No recommendation modules in mixed list view currently:
         return [];

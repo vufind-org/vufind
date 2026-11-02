@@ -1,11 +1,12 @@
 <?php
+
 /**
- * ILS Hold Settings Class
+ * ILS Hold Settings Class.
  *
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -29,10 +30,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
 
 /**
- * ILS Hold Settings Class
+ * ILS Hold Settings Class.
  *
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
@@ -47,25 +49,17 @@ namespace VuFind\ILS;
 class HoldSettings
 {
     /**
-     * ILS configuration
+     * Constructor.
      *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config $config Configuration representing the [Catalog]
+     * @param array $config Configuration representing the [Catalog]
      * section of config.ini
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**
-     * Get Holds Mode
+     * Get Holds Mode.
      *
      * This is responsible for returning the holds mode
      *
@@ -73,11 +67,11 @@ class HoldSettings
      */
     public function getHoldsMode()
     {
-        return $this->config->holds_mode ?? 'all';
+        return $this->config['holds_mode'] ?? 'all';
     }
 
     /**
-     * Get Title Holds Mode
+     * Get Title Holds Mode.
      *
      * This is responsible for returning the Title holds mode
      *
@@ -85,6 +79,6 @@ class HoldSettings
      */
     public function getTitleHoldsMode()
     {
-        return $this->config->title_level_holds_mode ?? 'disabled';
+        return $this->config['title_level_holds_mode'] ?? 'disabled';
     }
 }

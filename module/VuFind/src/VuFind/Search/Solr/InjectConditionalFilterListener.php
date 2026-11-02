@@ -3,7 +3,7 @@
 /**
  * Conditional Filter listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function is_array;
 
 /**
  * Conditional Filter listener.
@@ -52,26 +55,18 @@ class InjectConditionalFilterListener
      *
      * @var array
      */
-    protected $filterList;
-
-    /**
-     * Filters from configuration.
-     *
-     * @var array
-     */
-    protected $filters;
+    protected array $filterList = [];
 
     /**
      * Constructor.
      *
-     * @param array $searchConf Search configuration parameters
+     * @param BackendInterface $backend Backend
+     * @param array            $filters Filters from configuration
      *
      * @return void
      */
-    public function __construct($searchConf)
+    public function __construct(protected BackendInterface $backend, protected array $filters)
     {
-        $this->filters = $searchConf;
-        $this->filterList = [];
     }
 
     /**
@@ -81,10 +76,10 @@ class InjectConditionalFilterListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
@@ -97,7 +92,7 @@ class InjectConditionalFilterListener
      *
      * @return void
      */
-    protected function addConditionalFilter($configOption)
+    protected function addConditionalFilter(string $configOption): void
     {
         $filterArr = explode('|', $configOption);
         $filterCondition = $filterArr[0];
@@ -111,7 +106,7 @@ class InjectConditionalFilterListener
 
         // if the filter condition starts with a minus (-), it should not match
         // to get the filter applied
-        if (substr($filterCondition, 0, 1) == '-') {
+        if (str_starts_with($filterCondition, '-')) {
             if (!$authService->isGranted(substr($filterCondition, 1))) {
                 $this->filterList[] = $filter;
             }
@@ -130,14 +125,19 @@ class InjectConditionalFilterListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
+        $command = $event->getParam('command');
+        if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {
+            return $event;
+        }
+
         // Add conditional filters
         foreach ($this->filters as $fc) {
             $this->addConditionalFilter($fc);
         }
 
-        $params = $event->getParam('command')->getSearchParameters();
+        $params = $command->getSearchParameters();
         $fq = $params->get('fq');
         if (!is_array($fq)) {
             $fq = [];

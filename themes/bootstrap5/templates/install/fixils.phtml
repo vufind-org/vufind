@@ -1,0 +1,33 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install-home'))
+      ->add($this->translate('Fix ILS'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('auto_configure_title')]);?>
+
+<?php if (isset($this->demo)): ?>
+  <p>You are using one of VuFind®'s simulated Integrated Library System (ILS) drivers, which display fake information
+  in order to demonstrate the capabilities of the system.  If you want real patron and status information to display,
+  you should change your configuration to communicate with a real ILS.</p>
+
+  <form method="post" class="form-fix-ils">
+    <div class="form-group">
+      <label for="driver" class="form-label">Pick a driver:</label>
+      <select id="driver" name="driver" class="form-select">
+        <?php foreach ($this->drivers as $driver): ?>
+          <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary">
+    </div>
+  </form>
+
+  <p>If your ILS is not available in this list, you may be able to write your own driver.  See the
+  <a href="https://vufind.org/wiki/development" target="_new">Developer Manual</a>.</p>
+<?php else: ?>
+  <p>VuFind® is having trouble communicating with your Integrated Library System (ILS).  Check your configuration.
+  You may need to edit the file at <strong><?=$this->escapeHtml($this->configPath)?></strong> and fill in some
+  connection details.</p>
+<?php endif; ?>

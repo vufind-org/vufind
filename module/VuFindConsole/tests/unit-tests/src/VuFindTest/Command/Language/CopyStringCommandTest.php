@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Language/CopyString command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Language;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -46,7 +48,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Language fixture directory
+     * Language fixture directory.
      *
      * @var string
      */
@@ -95,17 +97,17 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
+            ->with($expectedPath);
         $reader = $this->getMockReader();
         $reader->expects($this->once())->method('getTextDomain')
-            ->with($this->equalTo($expectedPath), $this->equalTo(false))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->with($expectedPath, false)
+            ->willReturn(['bar' => 'baz']);
         $command = $this->getMockCommand($normalizer, $reader);
         $command->expects($this->once())->method('addLineToFile')
             ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('xyzzy'),
-                $this->equalTo($expectedString)
+                $expectedPath,
+                'xyzzy',
+                $expectedString
             );
         return $command;
     }
@@ -120,11 +122,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getSuccessfulMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'foo::bar', 'target' => 'foo::xyzzy']);
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -140,14 +142,14 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'source' => 'foo::bar',
                 'target' => 'foo::xyzzy',
-                '--replace' => 'baz/transformed'
+                '--replace' => 'baz/transformed',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -167,11 +169,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                 '--replaceDelimiter' => '|',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -186,26 +188,26 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['source' => 'doesnotexist::bar', 'target' => 'foo::xyzzy']
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Could not open directory {$this->languageFixtureDir}/doesnotexist\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param array                 $methods     Methods to mock
+     * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
+     * @param ?ExtendedIniReader     $reader      Reader for .ini files
+     * @param string                 $languageDir Base language file directory
+     * @param array                  $methods     Methods to mock
      *
      * @return CopyStringCommand
      */
     protected function getMockCommand(
-        ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null,
+        ?ExtendedIniNormalizer $normalizer = null,
+        ?ExtendedIniReader $reader = null,
         $languageDir = null,
         array $methods = ['addLineToFile']
     ) {
@@ -221,7 +223,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock normalizer object
+     * Get a mock normalizer object.
      *
      * @param array $methods Methods to mock
      *
@@ -238,7 +240,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock reader object
+     * Get a mock reader object.
      *
      * @param array $methods Methods to mock
      *

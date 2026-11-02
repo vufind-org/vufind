@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Laminas\Feed\Renderer\Feed extension for Open Search
+ * Laminas\Feed\Renderer\Feed extension for Open Search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\OpenSearch\Renderer;
 
 use DOMDocument;
@@ -32,7 +34,7 @@ use DOMElement;
 use Laminas\Feed\Writer\Extension\AbstractRenderer;
 
 /**
- * Laminas\Feed\Renderer\Feed extension for Open Search
+ * Laminas\Feed\Renderer\Feed extension for Open Search.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -52,7 +54,7 @@ class Feed extends AbstractRenderer
     protected $called = false;
 
     /**
-     * Render feed
+     * Render feed.
      *
      * @return void
      */
@@ -69,14 +71,14 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Append feed namespaces
+     * Append feed namespaces.
      *
      * @return void
      */
-    // @codingStandardsIgnoreStart
+    // phpcs:disable
     protected function _appendNamespaces()
     {
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable
         // (We have to ignore coding standards here because the method name has
         // to have an underscore for compatibility w/ parent class)
         $this->getRootElement()->setAttribute(
@@ -86,7 +88,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set total results
+     * Set total results.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -106,7 +108,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set start index
+     * Set start index.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -126,7 +128,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set items per page
+     * Set items per page.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -146,7 +148,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set the query element
+     * Set the query element.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -170,7 +172,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set links
+     * Set links.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element

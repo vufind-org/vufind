@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ILS hold settings factory
+ * ILS hold settings factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -34,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * ILS hold settings factory
+ * ILS hold settings factory.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -45,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class HoldSettingsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,14 +63,14 @@ class HoldSettingsFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
-            $configManager->get('config')->Catalog
+            $configManager->getConfigArray('config')['Catalog']
         );
     }
 }

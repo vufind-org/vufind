@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,10 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
+use function in_array;
+
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  *
@@ -43,14 +47,14 @@ namespace VuFind\Recommend;
 class TopFacets extends AbstractFacets
 {
     /**
-     * Facet configuration
+     * Facet configuration.
      *
      * @var array
      */
     protected $facets;
 
     /**
-     * Basic configurations
+     * Basic configurations.
      *
      * @var array
      */
@@ -74,13 +78,12 @@ class TopFacets extends AbstractFacets
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
-        $config = $this->configLoader->get($iniName);
-        $this->facets = isset($config->$mainSection)
-            ? $config->$mainSection->toArray() : [];
+        $config = $this->configManager->getConfigArray($iniName);
+        $this->facets = $config[$mainSection] ?? [];
 
         // Load other relevant settings:
         $this->baseSettings = [
-            'rows' => $config->Results_Settings->top_rows
+            'rows' => $config['Results_Settings']['top_rows'] ?? 2,
         ];
 
         // Load boolean configurations:

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Class MarkdownTest
+ * Class MarkdownTest.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindTest\View\Helper\Root
@@ -26,13 +26,14 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
 use VuFind\View\Helper\Root\Markdown;
 
 /**
- * MArkdown Test Class
+ * Markdown Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +53,7 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         $view = $this->getPhpRenderer();
-        $markdown = new Markdown(
+        return new Markdown(
             new GithubFlavoredMarkdownConverter(
                 [
                     'html_input' => 'strip',
@@ -60,12 +61,10 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
                 ]
             )
         );
-        $markdown->setView($view);
-        return $markdown;
     }
 
     /**
-     * Test basic markdown conversion
+     * Test basic markdown conversion.
      *
      * @return void
      */

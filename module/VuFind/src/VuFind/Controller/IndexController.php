@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Default Controller
+ * Default Controller.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\Auth\Manager as AuthManager;
+
+use function count;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -39,31 +44,25 @@ use VuFind\Auth\Manager as AuthManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
+class IndexController extends AbstractBase
 {
     /**
-     * VuFind configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Auth manager
+     * Auth manager.
      *
      * @var AuthManager
      */
     protected $authManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config      $config      VuFind configuration
-     * @param AuthManager $authManager Auth manager
+     * @param ServiceLocatorInterface $sm          Service locator
+     * @param array                   $config      VuFind configuration
+     * @param AuthManager             $authManager Auth manager
      */
-    public function __construct(Config $config, AuthManager $authManager)
+    public function __construct(ServiceLocatorInterface $sm, protected array $config, AuthManager $authManager)
     {
-        $this->config = $config;
+        parent::__construct($sm);
         $this->authManager = $authManager;
     }
 
@@ -76,16 +75,32 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
     public function homeAction()
     {
         // Load different configurations depending on whether we're logged in or not:
-        if ($this->authManager->isLoggedIn()) {
-            $controller = $this->config->Site->defaultLoggedInModule ?? 'MyResearch';
+        if ($this->authManager->getIdentity()) {
+            $controller = $this->config['Site']['defaultLoggedInModule'] ?? 'Account';
             $actionConfig = 'defaultLoggedInAction';
         } else {
-            $controller = $this->config->Site->defaultModule ?? 'Search';
+            $controller = $this->config['Site']['defaultModule'] ?? 'Search';
             $actionConfig = 'defaultAction';
         }
-        $action = $this->config->Site->$actionConfig ?? 'Home';
+        $action = $this->config['Site'][$actionConfig] ?? 'Home';
+
+        // Apply any action redirect right away:
+        $redirects = $this->getService('Config')['vufind']['action_redirects'] ?? [];
+        $key = strtolower($controller) . '/' . strtolower($action);
+        if ($routeName = $redirects[$key] ?? null) {
+            // This relies on being able to convert route name to action name, so check for that and fail quietly
+            // if the action is not available:
+            $parts = explode('-', $routeName, 2);
+            if (count($parts) === 2) {
+                $actionPluginManager = $this->getService(ActionPluginManager::class);
+                if ($actionPluginManager->has(implode('/', $parts))) {
+                    $controller = $parts[0];
+                    $action = $parts[1];
+                }
+            }
+        }
 
         // Forward to the appropriate controller and action:
-        return $this->forward()->dispatch($controller, compact('action'));
+        return $this->forwardTo($controller, $action);
     }
 }

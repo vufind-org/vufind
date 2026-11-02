@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract record fallback loader factory
+ * Abstract record fallback loader factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record\FallbackLoader;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -32,9 +34,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Record\RecordIdUpdater;
 
 /**
- * Abstract record fallback loader factory
+ * Abstract record fallback loader factory.
  *
  * @category VuFind
  * @package  Record
@@ -45,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class AbstractFallbackLoaderFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,10 +65,11 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
+            $container->get(RecordIdUpdater::class),
             $container->get(\VuFindSearch\Service::class),
             ...$options ?? []
         );

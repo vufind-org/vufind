@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics review content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Reviews;
 
 /**
@@ -39,7 +41,7 @@ namespace VuFind\Content\Reviews;
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
     /**
-     * List of syndetic review sources
+     * List of syndetic review sources.
      *
      * @var array
      */
@@ -76,7 +78,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'KIREVIEW' => ['title' => 'Kirkus Book Review',
                             'file' => 'KIREVIEW.XML'],
         'CRITICASEREVIEW' => ['title' => 'Criti Case Review',
-                            'file' => 'CRITICASEREVIEW.XML']
+                            'file' => 'CRITICASEREVIEW.XML'],
     ];
 
     /**
@@ -90,7 +92,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * for more information.
      * Configuration:  Sources are processed in order - refer to $sourceList above.
      * If your library prefers one reviewer over another change the order.
-     * If your library does not like a reviewer, remove it.  If there are more
+     * If your library does not like a reviewer, remove it. If there are more
      * syndetics reviewers add another entry.
      *
      * @param string           $key     API key (unused here)
@@ -136,42 +138,33 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     throw new \Exception('Invalid XML');
                 }
 
-                // If we have syndetics plus, we don't actually want the content
-                // we'll just stick in the relevant div
-                if ($this->usePlus) {
-                    $review[$i]['Content'] = $sourceInfo['div'];
-                } else {
-                    // Get the marc field for reviews (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld520");
-                    if (!$nodes->length) {
-                        // Skip reviews with missing text
-                        continue;
-                    }
-                    // Decode the content and strip unwanted <a> tags:
-                    $review[$i]['Content'] = preg_replace(
-                        '/<a>|<a [^>]*>|<\/a>/',
-                        '',
-                        html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
+                // Get the marc field for reviews (520)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
+                if (!$nodes->length) {
+                    // Skip reviews with missing text
+                    continue;
+                }
+                // Decode the content and strip unwanted <a> tags:
+                $review[$i]['Content'] = preg_replace(
+                    '/<a>|<a [^>]*>|<\/a>/',
+                    '',
+                    html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
+                );
+
+                // Get the marc field for copyright (997)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld997');
+                $review[$i]['Copyright'] = $nodes->length
+                    ? html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
+                    : null;
+
+                if ($review[$i]['Copyright']) {  //stop duplicate copyrights
+                    $location = strripos(
+                        $review[0]['Content'],
+                        (string)$review[0]['Copyright']
                     );
-
-                    // Get the marc field for copyright (997)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld997");
-                    if ($nodes->length) {
-                        $review[$i]['Copyright']
-                            = html_entity_decode($xmldoc2->saveXML($nodes->item(0)));
-                    } else {
-                        $review[$i]['Copyright'] = null;
-                    }
-
-                    if ($review[$i]['Copyright']) {  //stop duplicate copyrights
-                        $location = strripos(
-                            $review[0]['Content'],
-                            (string)$review[0]['Copyright']
-                        );
-                        if ($location > 0) {
-                            $review[$i]['Content']
-                                = substr($review[0]['Content'], 0, $location);
-                        }
+                    if ($location > 0) {
+                        $review[$i]['Content']
+                            = substr($review[0]['Content'], 0, $location);
                     }
                 }
 

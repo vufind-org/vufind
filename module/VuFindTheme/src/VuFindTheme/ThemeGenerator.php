@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -26,11 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
-use Laminas\Config\Config;
-use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.
@@ -45,6 +47,18 @@ use VuFind\Config\Writer as ConfigWriter;
 class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
 {
     use \VuFindConsole\ConsoleOutputTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param ThemeInfo    $info         Theme info object
+     * @param PathResolver $pathResolver Config file path resolver
+     */
+    #[Autowire]
+    public function __construct(ThemeInfo $info, protected PathResolver $pathResolver)
+    {
+        parent::__construct($info);
+    }
 
     /**
      * Generate a new theme from a template.
@@ -74,15 +88,15 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
      * Configure the specified theme as VuFind's new default theme (and one of
      * the alternatives).
      *
-     * @param Config $config Existing VuFind configuration
+     * @param array  $config Existing VuFind configuration
      * @param string $name   Theme name to add to configuration.
      *
      * @return bool
      */
-    public function configure(Config $config, $name)
+    public function configure(array $config, $name)
     {
         // Enable theme
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);
         if (!file_exists($configPath)) {
             return $this
                 ->setLastError("Expected configuration file missing: $configPath");
@@ -93,17 +107,17 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         $writer->set('Site', 'theme', $name);
         // Enable dropdown
         $settingPrefixes = [
-            'bootstrap' => 'bs3',
-            'custom' => strtolower(str_replace(' ', '', $name))
+            'bootstrap' => 'bs5',
+            'custom' => strtolower(str_replace(' ', '', $name)),
         ];
         // - Set alternate_themes
         $this->writeln("\t\t[Site] > alternate_themes");
         $altSetting = [];
-        if (isset($config->Site->alternate_themes)) {
-            $alts = explode(',', $config->Site->alternate_themes);
+        if (isset($config['Site']['alternate_themes'])) {
+            $alts = explode(',', $config['Site']['alternate_themes']);
             foreach ($alts as $a) {
                 $parts = explode(':', $a);
-                if ($parts[1] === 'bootstrap3') {
+                if ($parts[1] === 'bootstrap5') {
                     $settingPrefixes['bootstrap'] = $parts[0];
                 } elseif ($parts[1] === $name) {
                     $settingPrefixes['custom'] = $parts[0];
@@ -112,20 +126,21 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
                 }
             }
         }
-        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap3';
+        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap5';
         $altSetting[] = $settingPrefixes['custom'] . ':' . $name;
         $writer->set('Site', 'alternate_themes', implode(',', $altSetting));
         // - Set selectable_themes
         $this->writeln("\t\t[Site] > selectable_themes");
         $dropSetting = [
             $settingPrefixes['bootstrap'] . ':Bootstrap',
-            $settingPrefixes['custom'] . ':' . ucwords($name)
+            $settingPrefixes['custom'] . ':' . ucwords($name),
         ];
-        if (isset($config->Site->selectable_themes)) {
-            $themes = explode(',', $config->Site->selectable_themes);
+        if (isset($config['Site']['selectable_themes'])) {
+            $themes = explode(',', $config['Site']['selectable_themes']);
             foreach ($themes as $t) {
                 $parts = explode(':', $t);
-                if ($parts[0] !== $settingPrefixes['bootstrap']
+                if (
+                    $parts[0] !== $settingPrefixes['bootstrap']
                     && $parts[0] !== $settingPrefixes['custom']
                 ) {
                     $dropSetting[] = $t;

@@ -3,7 +3,7 @@
 /**
  * SOLR QueryBuilder interface definition.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -28,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
@@ -47,13 +48,14 @@ use VuFindSearch\Query\AbstractQuery;
 interface QueryBuilderInterface
 {
     /**
-     * Build SOLR query based on VuFind query object.
+     * Build query based on VuFind query object.
      *
-     * @param AbstractQuery $query Query object
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query);
+    public function build(AbstractQuery $query, ?ParamBag $params = null);
 
     /**
      * Control whether or not the QueryBuilder should create a spellcheck.q

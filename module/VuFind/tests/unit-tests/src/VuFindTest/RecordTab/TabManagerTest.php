@@ -1,8 +1,9 @@
 <?php
+
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,14 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
-use VuFind\Config\PluginManager as ConfigManager;
-use VuFind\RecordTab\PluginManager;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 use VuFind\RecordTab\TabManager;
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -42,15 +45,21 @@ use VuFind\RecordTab\TabManager;
  */
 class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Default configuration for mock plugin manager
+     * Default configuration for mock plugin manager.
      *
      * @var array
      */
-    protected $defaultConfig = [
+    protected array $defaultConfig = [
         'RecordTabs' => [
+            'VuFind\RecordDriver\AbstractBase' => [
+                'tabs' => [
+                    'foo' => 'bar',
+                ],
+                'defaultTab' => null,
+            ],
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
                     'xyzzy' => 'yzzyx',
@@ -59,65 +68,48 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
                 'defaultTab' => 'zip',
                 'backgroundLoadedTabs' => ['xyzzy'],
             ],
-        ]
+        ],
+        'CollectionTabs' => [
+            'VuFind\RecordDriver\AbstractBase' => [
+                'tabs' => [
+                    'coll' => 'ection',
+                ],
+                'defaultTab' => null,
+            ],
+        ],
     ];
 
     /**
      * Set up a tab manager for testing.
      *
-     * @param  PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param  ConfigManager $configManager Config manager to use (null for default)
+     * @param ?RecordTabPluginManager $recordTabPluginManager Plugin manager to use (null for default)
+     * @param ?ConfigManagerInterface $configManager          Config manager to use (null for default)
+     *
      * @return TabManager
      */
     protected function getTabManager(
-        PluginManager $pluginManager = null,
-        ConfigManager $configManager = null
-    ) {
-        $legacyConfig = [
-            'vufind' => [
-                'recorddriver_collection_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'coll' => 'ection',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-                'recorddriver_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'foo' => 'bar',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-            ],
-        ];
+        ?RecordTabPluginManager $recordTabPluginManager = null,
+        ?ConfigManagerInterface $configManager = null,
+    ): TabManager {
         return new TabManager(
-            $pluginManager ?? $this->getMockPluginManager(),
+            $recordTabPluginManager ?? $this->getMockRecordTabPluginManager(),
             $configManager
-                ?? $this->getMockConfigPluginManager($this->defaultConfig),
-            $legacyConfig
+                ?? $this->getMockConfigManager($this->defaultConfig)
         );
     }
 
     /**
      * Build a mock plugin manager.
      *
-     * @return PluginManager
+     * @return MockObject&RecordTabPluginManager
      */
-    protected function getMockPluginManager()
+    protected function getMockRecordTabPluginManager(): MockObject&RecordTabPluginManager
     {
-        $mockTab = $this->getMockBuilder(\VuFind\RecordTab\StaffViewArray::class)
-            ->disableOriginalConstructor()->onlyMethods(['isActive'])->getMock();
-        $mockTab->expects($this->any())->method('isActive')
-            ->will($this->returnValue(true));
-        $pm = $this->getMockBuilder(\VuFind\RecordTab\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $pm->expects($this->any())->method('has')
-            ->will($this->returnValue(true));
-        $pm->expects($this->any())->method('get')
-            ->will($this->returnValue($mockTab));
+        $mockTab = $this->createMock(\VuFind\RecordTab\StaffViewArray::class);
+        $mockTab->method('isActive')->willReturn(true);
+        $pm = $this->createMock(\VuFind\RecordTab\PluginManager::class);
+        $pm->method('has')->willReturn(true);
+        $pm->method('get')->willReturn($mockTab);
         return $pm;
     }
 
@@ -126,24 +118,22 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTabDetailsForRecord()
+    public function testGetTabDetailsForRecord(): void
     {
         $tabManager = $this->getTabManager();
-        $driver1 = $this->getMockBuilder(\VuFind\RecordDriver\EDS::class)
-            ->disableOriginalConstructor()->getMock();
+        $driver1 = $this->createMock(\VuFind\RecordDriver\EDS::class);
         $details1 = $tabManager->getTabDetailsForRecord($driver1);
         $this->assertEquals('zip', $details1['default']);
-        $this->assertEquals(['xyzzy', 'zip'], array_keys($details1['tabs']));
-        $driver2 = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()->getMock();
+        $this->assertSame(['xyzzy', 'zip'], array_keys($details1['tabs']));
+        $driver2 = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $details2 = $tabManager->getTabDetailsForRecord($driver2);
         $this->assertEquals('foo', $details2['default']);
-        $this->assertEquals(['foo'], array_keys($details2['tabs']));
+        $this->assertSame(['foo'], array_keys($details2['tabs']));
         // Switch to collection mode to load a different configuration:
         $tabManager->setContext('collection');
         $details2b = $tabManager->getTabDetailsForRecord($driver2);
         $this->assertEquals('coll', $details2b['default']);
-        $this->assertEquals(['coll'], array_keys($details2b['tabs']));
+        $this->assertSame(['coll'], array_keys($details2b['tabs']));
     }
 
     /**
@@ -151,14 +141,12 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBackgroundTabNames()
+    public function testGetBackgroundTabNames(): void
     {
         $tabManager = $this->getTabManager();
-        $driver1 = $this->getMockBuilder(\VuFind\RecordDriver\EDS::class)
-            ->disableOriginalConstructor()->getMock();
-        $this->assertEquals(['xyzzy'], $tabManager->getBackgroundTabNames($driver1));
-        $driver2 = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()->getMock();
-        $this->assertEquals([], $tabManager->getBackgroundTabNames($driver2));
+        $driver1 = $this->createMock(\VuFind\RecordDriver\EDS::class);
+        $this->assertSame(['xyzzy'], $tabManager->getBackgroundTabNames($driver1));
+        $driver2 = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
+        $this->assertSame([], $tabManager->getBackgroundTabNames($driver2));
     }
 }

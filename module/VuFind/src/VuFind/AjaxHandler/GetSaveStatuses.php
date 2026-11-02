@@ -1,8 +1,9 @@
 <?php
+
 /**
- * "Get Save Statuses" AJAX handler
+ * "Get Save Statuses" AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,16 +26,22 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\Mvc\Controller\Plugin\Url;
-use VuFind\Db\Row\User;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
+use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\HttpStatus;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
 
+use function is_array;
+
 /**
- * "Get Save Statuses" AJAX handler
+ * "Get Save Statuses" AJAX handler.
  *
  * Check one or more records to see if they are saved in one of the user's list.
  *
@@ -49,46 +56,35 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Logged in user (or false)
+     * Constructor.
      *
-     * @var User|bool
+     * @param SessionSettings              $ss                  Session settings
+     * @param ?UserEntityInterface         $user                Logged in user (or null)
+     * @param RouteHelper                  $routeHelper         Route helper
+     * @param UserResourceServiceInterface $userResourceService User resource database service
      */
-    protected $user;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $urlHelper;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings $ss        Session settings
-     * @param User|bool       $user      Logged in user (or false)
-     * @param Url             $urlHelper URL helper
-     */
-    public function __construct(SessionSettings $ss, $user, Url $urlHelper)
-    {
-        $this->sessionSettings = $ss;
-        $this->user = $user;
-        $this->urlHelper = $urlHelper;
+    public function __construct(
+        SessionSettings $ss,
+        protected ?UserEntityInterface $user,
+        protected RouteHelper $routeHelper,
+        protected UserResourceServiceInterface $userResourceService
+    ) {
+        parent::__construct($ss);
     }
 
     /**
-     * Format list object into array.
+     * Format UserResourceEntityInterface object into array.
      *
-     * @param array $list List data
+     * @param UserResourceEntityInterface $data UserResourceEntityInterface object
      *
      * @return array
      */
-    protected function formatListData($list)
+    protected function formatListData(UserResourceEntityInterface $data): array
     {
-        return [
-            'list_url' =>
-                $this->urlHelper->fromRoute('userList', ['id' => $list['list_id']]),
-            'list_title' => $list['list_title'],
+        $list = $data->getUserList();
+        return !$list ? [] : [
+            'list_url' => $this->routeHelper->getUrlFromRoute('userList', ['id' => $list->getId()]),
+            'list_title' => $list->getTitle(),
         ];
     }
 
@@ -112,9 +108,8 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
             if (!isset($checked[$selector])) {
                 $checked[$selector] = true;
 
-                $data = $this->user->getSavedData($id, null, $source);
-                $result[$selector] = ($data && count($data) > 0)
-                    ? array_map([$this, 'formatListData'], $data->toArray()) : [];
+                $data = $this->userResourceService->getFavoritesForRecord($id, $source, null, $this->user);
+                $result[$selector] = array_filter(array_map([$this, 'formatListData'], $data));
             }
         }
         return $result;
@@ -123,28 +118,28 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
         // loop through each ID check if it is saved to any of the user's lists
-        $ids = $params->fromPost('id', $params->fromQuery('id', []));
-        $sources = $params->fromPost('source', $params->fromQuery('source', []));
+        $ids = $this->getPostOrQueryParam($request, 'id', []);
+        $sources = $this->getPostOrQueryParam($request, 'source', []);
         if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $statuses = $this->getDataFromUser($ids, $sources);

@@ -3,7 +3,7 @@
 /**
  * SearchNormalizer unit tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\SearchNormalizer;
 
 /**
@@ -50,19 +52,16 @@ class SearchNormalizerTest extends \PHPUnit\Framework\TestCase
      */
     public function testNormalizeMinifiedSearch(): void
     {
+        $allMethods = get_class_methods(\VuFind\Search\Solr\Results::class);
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()
-            ->setMethodsExcept(['getUrlQuery', 'getUrlQueryHelperFactory'])
+            ->onlyMethods(array_diff($allMethods, ['getUrlQuery', 'getUrlQueryHelperFactory']))
             ->getMock();
-        $results->expects($this->any())
-            ->method('getParams')
-            ->will($this->returnValue($this->getSolrParams()));
+        $results->method('getParams')->willReturn($this->getSolrParams());
         $manager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
-        $manager->expects($this->any())
-            ->method('get')->with($this->equalTo('Solr'))
-            ->will($this->returnValue($results));
+        $manager->method('get')->with('Solr')->willReturn($results);
         $minified = new \minSO($results);
-        $normalizer = new SearchNormalizer($manager);
+        $normalizer = new SearchNormalizer($manager, $this->createMock(SearchServiceInterface::class));
         $normalized = $normalizer->normalizeMinifiedSearch($minified);
         $this->assertEquals($results, $normalized->getRawResults());
     }

@@ -3,7 +3,7 @@
 /**
  * Command to write a document object to Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
@@ -76,7 +77,7 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
     public function __construct(
         string $backendId,
         DocumentInterface $doc,
-        int $timeout = null,
+        ?int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
     ) {
@@ -102,7 +103,7 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
             $this->getDocument(),
             $this->getTimeout(),
             $this->getHandler(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

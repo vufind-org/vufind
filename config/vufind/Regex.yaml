@@ -1,0 +1,72 @@
+---
+# This file contains named regular expressions to be used with the VuFind\Regex\Regex matcher.
+# Each named regex can contain one or more expressions.
+# A regex will match if any of the expressions matches.
+
+# Status
+  # Regex in this section are used to match against the specific item status value
+  # Each heading in this section is a grouping of those statuses used for logic within the GetThis feature
+STATUS_AVAILABLE:
+  # Used within GetThisLoader in the following functions : showRemoteDelivery, showStaffDelivery
+  - '/^AVAILABLE/i'
+  - '/ITEM IN LIBRARY/i'
+STATUS_LIB_USE_ONLY:
+  # Used within GetThisLoader in the following functions : isLibUseOnly
+  - '/RESTRICTED/i'
+STATUS_CHECKED_OUT:
+  # Used within GetThisLoader in the following functions : isOut
+  - '/CHECKED/i'
+  - '/BILLED/i'
+  - '/ON SEARCH/i'
+  - '/LOST/i'
+  - '/HOLD/i'
+  - '/AWAITING PICKUP/i'
+  - '/AWAITING DELIVERY/i'
+  - '/IN TRANSIT/i'
+  - '/PAGES/i'
+STATUS_UNAVAILABLE:
+  # Used within GetThisLoader in the following functions : isUnavailable
+  - '/UNAVAILABLE/i'
+  - '/AGED TO LOST/i'
+  - '/CLAIMED RETURNED/i'
+  - '/DECLARED LOST/i'
+  - '/IN PROCESS/i'
+  - '/IN PROCESS (NON-REQUESTABLE)/i'
+  - '/LONG MISSING/i'
+  - '/LOST AND PAID/i'
+  - '/MISSING/i'
+  - '/ON ORDER/i'
+  - '/ORDER CLOSED/i'
+  - '/UNKNOWN/i'
+  - '/WITHDRAWN/i'
+
+# Description / Call Number
+CALLNUMBER_AV_MEDIA:
+  # Used within GetThisLoader in the following functions : isAudioVideoMedia
+  - '/DISC/i'
+  - '/VIDEO/i'
+  - '/CD/i'
+  - '/DVD/i'
+  - '/BLU-RAY/i'
+  - '/VINYL/i'
+  - '/AUDIOCASSETTE/i'
+
+# Location
+LOCATION_EXCLUSIVE:
+  # Used within GetThisLoader in the following functions : showInterLibrary
+  # It should include patterns that should be excluded from Inter Library Loan
+  # (i.e. will return false and not show the inter-library.phtml template)
+#  - CAMPUS
+LOCATION_MICROFORMS:
+  # Used within GetThisLoader in the following functions : showMicroForm
+  - '/MICROFORMS/i'
+LOCATION_ONLINE:
+  # Used within GetThisLoader in the following functions : isOnlineResource
+  - '/ONLINE RESOURCE/i'
+  - '/ELECTRONIC RESOURCES/i'
+  - '/INTERNET/i'
+
+# Format
+FORMAT_SERIAL:
+  # Used within GetThisLoader in the following functions : isSerial
+  - '/SERIAL/i'

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Laminas base CAPTCHA
+ * Laminas base CAPTCHA.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * Laminas base CAPTCHA
+ * Laminas base CAPTCHA.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -41,28 +43,28 @@ use Laminas\Mvc\Controller\Plugin\Params;
 abstract class LaminasBase extends AbstractBase
 {
     /**
-     * Laminas CAPTCHA object
+     * Laminas CAPTCHA object.
      *
      * @var \Laminas\Captcha\AbstractWord
      */
     protected $captcha;
 
     /**
-     * HTML input name for generated captcha
+     * HTML input name for generated captcha.
      *
      * @var string
      */
     protected $captchaHtmlInternalId = 'captcha-id';
 
     /**
-     * HTML input name for user input
+     * HTML input name for user input.
      *
      * @var string
      */
     protected $captchaHtmlInputId = 'captcha-input';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Captcha\AbstractWord $captcha Laminas CAPTCHA object
      */
@@ -74,23 +76,26 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function verify(Params $params): bool
+    public function verify(array $postParams, array $queryParams): bool
     {
         $validateParams = [
-            'id' => $params->fromPost($this->captchaHtmlInternalId),
-            'input' => $params->fromPost($this->captchaHtmlInputId),
+            'id' => $postParams[$this->captchaHtmlInternalId] ?? null,
+            'input' => $postParams[$this->captchaHtmlInputId] ?? null,
         ];
         return $this->captcha->isValid($validateParams);
     }
 
     /**
-     * Laminas CAPTCHA object
+     * Laminas CAPTCHA object.
      *
      * @return \Laminas\Captcha\AbstractWord
      */
@@ -100,7 +105,7 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Getter for template
+     * Getter for template.
      *
      * @return string
      */
@@ -110,7 +115,7 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Getter for template
+     * Getter for template.
      *
      * @return string
      */

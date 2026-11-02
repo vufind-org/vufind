@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: Merge MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -26,9 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Harvest;
 
 use SimpleXMLElement;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,19 +47,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'harvest/merge-marc',
+    description: 'MARC merge tool'
+)]
 class MergeMarcCommand extends Command
 {
     /**
      * XML namespace for MARC21.
      */
     public const MARC21_NAMESPACE = 'http://www.loc.gov/MARC21/slim';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'harvest/merge-marc';
 
     /**
      * Configure the command.
@@ -66,7 +66,6 @@ class MergeMarcCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('MARC merge tool')
             ->setHelp(
                 'Merges harvested MARCXML files into a single <collection>; '
                 . 'writes to stdout.'
@@ -113,7 +112,7 @@ class MergeMarcCommand extends Command
         $fileList = [];
         while (false !== ($file = readdir($handle))) {
             // Only operate on XML files:
-            if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'xml') {
                 // get file content
                 $fileList[] = $dir . '/' . $file;
             }
@@ -121,6 +120,36 @@ class MergeMarcCommand extends Command
         // Sort filenames so that we have consistent results:
         sort($fileList);
         return $fileList;
+    }
+
+    /**
+     * Load an XML file, and throw an exception if it is invalid.
+     *
+     * @param string $filePath File to load
+     *
+     * @throws \Exception
+     * @return SimpleXMLElement
+     */
+    protected function loadXmlContents(string $filePath): SimpleXMLElement
+    {
+        // Set up user error handling so we can capture XML errors
+        $prev = libxml_use_internal_errors(true);
+        $xml = @simplexml_load_file($filePath);
+        // Capture any errors before we restore previous error behavior (which will
+        // cause them to be lost).
+        $errors = libxml_get_errors();
+        libxml_use_internal_errors($prev);
+        // Build an exception if something has gone wrong
+        if ($xml === false) {
+            $msg = 'Problem loading XML file: ' . realpath($filePath);
+            foreach ($errors as $error) {
+                $msg .= "\n" . trim($error->message)
+                    . ' in ' . realpath($error->file)
+                    . ' line ' . $error->line . ' column ' . $error->column;
+            }
+            throw new \Exception($msg);
+        }
+        return $xml;
     }
 
     /**
@@ -140,8 +169,7 @@ class MergeMarcCommand extends Command
         // collection, we will search for namespaced and non-namespaced records
         // inside it. Otherwise, we'll just check the top-level tag to see if
         // it's a stand-alone record.
-        $fileContent = file_get_contents($filePath);
-        $xml = simplexml_load_string($fileContent);
+        $xml = $this->loadXmlContents($filePath);
         $childSets = (stristr($xml->getName(), 'collection') !== false)
              ? [$xml->children(self::MARC21_NAMESPACE), $xml->children()]
              : [[$xml]];
@@ -174,7 +202,7 @@ class MergeMarcCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dir = rtrim($input->getArgument('directory'), '/');
 
@@ -182,7 +210,7 @@ class MergeMarcCommand extends Command
             $fileList = $this->findXmlFiles($dir);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -194,6 +222,6 @@ class MergeMarcCommand extends Command
             $this->outputRecordsFromFile($filePath, $output);
         }
         $output->writeln('</marc:collection>');
-        return 0;
+        return self::SUCCESS;
     }
 }

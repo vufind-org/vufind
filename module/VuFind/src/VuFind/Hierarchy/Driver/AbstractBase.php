@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy interface.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Hierarchy
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
 use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager;
@@ -46,20 +48,6 @@ use VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
 abstract class AbstractBase
 {
     /**
-     * Driver configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Tree data source plugin manager
-     *
-     * @var DataManager
-     */
-    protected $dataManager;
-
-    /**
      * Are trees globally enabled?
      *
      * @var bool
@@ -67,43 +55,33 @@ abstract class AbstractBase
     protected $enabled = true;
 
     /**
-     * Tree renderer plugin manager
-     *
-     * @var RendererManager
-     */
-    protected $rendererManager;
-
-    /**
-     * Find out whether or not to show the tree
+     * Find out whether or not to show the tree.
      *
      * @return bool
      */
     abstract public function showTree();
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config          Configuration
-     * @param DataManager            $dataManager     Tree data source plugin manager
-     * @param RendererManager        $rendererManager Tree renderer plugin manager
-     * @param array                  $options         Extra options (if any)
+     * @param array           $config          Driver configuration
+     * @param DataManager     $dataManager     Tree data source plugin manager
+     * @param RendererManager $rendererManager Tree renderer plugin manager
+     * @param array           $options         Extra options (if any)
      */
     public function __construct(
-        \Laminas\Config\Config $config,
-        DataManager $dataManager,
-        RendererManager $rendererManager,
+        protected array $config,
+        protected DataManager $dataManager,
+        protected RendererManager $rendererManager,
         $options = []
     ) {
-        $this->config = $config;
-        $this->dataManager = $dataManager;
-        $this->rendererManager = $rendererManager;
         if (isset($options['enabled'])) {
             $this->enabled = (bool)$options['enabled'];
         }
     }
 
     /**
-     * Returns the Source of the Tree
+     * Returns the Source of the Tree.
      *
      * @return object The tree data source object
      */
@@ -115,7 +93,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Returns the actual object for generating trees
+     * Returns the actual object for generating trees.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -132,36 +110,36 @@ abstract class AbstractBase
      * Render the tree for a given record.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver      Record driver
-     * @param string                            $context     Context in which the
-     * tree is being created
+     * @param string                            $context     Context in which the tree is being created
      * @param string                            $mode        Type of tree required
-     * @param string                            $hierarchyID Hierarchy ID to get
-     * the tree for
+     * @param string                            $hierarchyID Hierarchy ID to get the tree for
+     * @param array                             $options     Additional options for the renderer
      *
      * @return string
      */
     public function render(
         \VuFind\RecordDriver\AbstractBase $driver,
-        $context,
-        $mode,
-        $hierarchyID
+        string $context,
+        string $mode,
+        string $hierarchyID,
+        array $options
     ) {
         if (!$this->showTree()) {
             return false;
         }
         return $this->getTreeRenderer($driver)
-            ->render($context, $mode, $hierarchyID, $driver->getUniqueID());
+            ->render($context, $mode, $hierarchyID, $driver->getUniqueID(), $options);
     }
 
     /**
-     * Returns the Tree Renderer Type
+     * Returns the Tree Renderer Type.
      *
      * @return string
      */
     abstract public function getTreeRendererType();
 
     /**
-     * Get Tree Settings
+     * Get Tree Settings.
      *
      * Returns all the configuration settings for a hierarchy tree
      *
@@ -170,9 +148,30 @@ abstract class AbstractBase
     abstract public function getTreeSettings();
 
     /**
-     * Get Tree Data Source Type
+     * Get Tree Data Source Type.
      *
      * @return string
      */
     abstract public function getTreeSourceType();
+
+    /**
+     * Check if sorting is enabled in the hierarchy Options.
+     *
+     * @return bool
+     */
+    abstract public function treeSorting();
+
+    /**
+     * Get Collection Link Type.
+     *
+     * @return string
+     */
+    abstract public function getCollectionLinkType();
+
+    /**
+     * Get tree cache time in seconds.
+     *
+     * @return int
+     */
+    abstract public function getTreeCacheTime();
 }

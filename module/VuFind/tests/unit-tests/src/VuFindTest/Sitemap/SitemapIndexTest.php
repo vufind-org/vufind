@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SitemapIndex Test Class
+ * SitemapIndex Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap;
 
 use VuFind\Sitemap\SitemapIndex;
 
 /**
- * SitemapIndex Test Class
+ * SitemapIndex Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,23 +53,23 @@ class SitemapIndexTest extends \PHPUnit\Framework\TestCase
         $sm->addUrl('http://foo');
         $sm->addUrl('http://bar');
         $expected = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex
-   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+            <?xml version="1.0" encoding="UTF-8"?>
+            <sitemapindex
+               xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+               http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <sitemap>
-    <loc>http://foo</loc>
-    <lastmod>2014-11-14</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>http://bar</loc>
-    <lastmod>2014-11-14</lastmod>
-  </sitemap>
-</sitemapindex>
-XML;
+              <sitemap>
+                <loc>http://foo</loc>
+                <lastmod>2014-11-14</lastmod>
+              </sitemap>
+              <sitemap>
+                <loc>http://bar</loc>
+                <lastmod>2014-11-14</lastmod>
+              </sitemap>
+            </sitemapindex>
+            XML;
         $this->assertEquals($expected, $sm->toString());
     }
 }

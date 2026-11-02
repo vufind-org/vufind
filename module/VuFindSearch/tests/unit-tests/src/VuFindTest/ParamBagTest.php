@@ -3,7 +3,7 @@
 /**
  * Unit tests for ParamBag.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\ParamBag;
 
 /**
@@ -44,7 +44,7 @@ use VuFindSearch\ParamBag;
 class ParamBagTest extends TestCase
 {
     /**
-     * Test "contains"
+     * Test "contains".
      *
      * @return void
      */
@@ -58,7 +58,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "hasParam"
+     * Test "hasParam".
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "remove"
+     * Test "remove".
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "merge with all"
+     * Test "merge with all".
      *
      * @return void
      */
@@ -106,10 +106,50 @@ class ParamBagTest extends TestCase
     public function testCountability()
     {
         $bag = new ParamBag();
-        $this->assertEquals(0, count($bag));
+        $this->assertCount(0, $bag);
         $bag->set('foo', 'bar');
-        $this->assertEquals(1, count($bag));
+        $this->assertCount(1, $bag);
         $bag->set('xyzzy', 'baz');
-        $this->assertEquals(2, count($bag));
+        $this->assertCount(2, $bag);
+    }
+
+    /**
+     * Test deduplication.
+     *
+     * @return void
+     */
+    public function testDeduplication()
+    {
+        $bag = new ParamBag();
+        $bag->add('foo', 'bar');
+        $bag->add('foo', 'bar');
+        $bag->add('foo', ['bar', 'bar', 'bar']);
+        $this->assertEquals(['bar'], $bag->get('foo'));
+        $bag->add('foo', ['bar', 'baz', 'bar', 'baz']);
+        $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
+        // Associative arrays are not deduplicated:
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'haz']);
+        $this->assertEquals(['bar' => ['baz', 'baz', 'haz']], $bag->get('fooz'));
+    }
+
+    /**
+     * Test disabling deduplication.
+     *
+     * @return void
+     */
+    public function testDisabledDeduplication()
+    {
+        $bag = new ParamBag();
+        $bag->add('foo', 'bar', false);
+        $bag->add('foo', 'bar', false);
+        $bag->add('foo', ['bar', 'bar', 'bar'], false);
+        $this->assertEquals(['bar', 'bar', 'bar', 'bar', 'bar'], $bag->get('foo'));
+        $bag->add('foo', ['bar', 'baz', 'bar', 'baz'], false);
+        $this->assertEquals(['bar', 'bar', 'bar', 'bar', 'bar', 'bar', 'baz', 'bar', 'baz'], $bag->get('foo'));
+        // Now deduplicate everything:
+        $bag->add('foo', 'bar');
+        $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
     }
 }

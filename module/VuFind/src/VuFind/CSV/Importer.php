@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VuFind CSV importer configuration
+ * VuFind CSV importer configuration.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CSV
@@ -25,14 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
+use function count;
+
 /**
- * VuFind CSV importer configuration
+ * VuFind CSV importer configuration.
  *
  * @category VuFind
  * @package  CSV
@@ -42,22 +46,17 @@ use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
  */
 class Importer
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
-     * Base path for loading .ini files
+     * Base path for loading .ini files.
      *
      * @var string
      */
     protected $configBaseDir;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm      Service manager
      * @param array                   $options Configuration options
@@ -94,7 +93,7 @@ class Importer
         $encoding = $config->getEncoding();
         $data = [];
         $output = '';
-        while ($line = fgetcsv($in)) {
+        while ($line = fgetcsv($in, escape: '\\')) {
             $data[] = $this->collectValuesFromLine(
                 $this->adjustEncoding($line, $encoding),
                 $config
@@ -159,7 +158,7 @@ class Importer
         if ($testMode) {
             return $json;
         }
-        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
+        $solr = $this->getService(\VuFind\Solr\Writer::class);
         $solr->save($index, new RawJSONDocument($json), 'update');
         return ''; // no output when not in test mode!
     }
@@ -176,21 +175,21 @@ class Importer
     protected function processHeader(ImporterConfig $config, $in, string $mode): void
     {
         switch (strtolower(trim($mode))) {
-        case 'fields':
-            // Load configuration from the header row:
-            $row = fgetcsv($in);
-            foreach ($row as $i => $field) {
-                $config->configureColumn($i, ['field' => $field]);
-            }
-            break;
-        case 'skip':
-            //  Just skip a row:
-            fgetcsv($in);
-            break;
-        case 'none':
-        default:
-            // Do nothing.
-            break;
+            case 'fields':
+                // Load configuration from the header row:
+                $row = fgetcsv($in, escape: '\\');
+                foreach ($row as $i => $field) {
+                    $config->configureColumn($i, ['field' => $field]);
+                }
+                break;
+            case 'skip':
+                //  Just skip a row:
+                fgetcsv($in, escape: '\\');
+                break;
+            case 'none':
+            default:
+                // Do nothing.
+                break;
         }
     }
 
@@ -206,7 +205,8 @@ class Importer
     protected function getConfiguration(string $iniFile, $in): ImporterConfig
     {
         // Load properties file:
-        $ini = ConfigLocator::getConfigPath($iniFile, $this->configBaseDir);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
+        $ini = $resolver->getConfigPath($iniFile, $this->configBaseDir);
         if (!file_exists($ini)) {
             throw new \Exception("Cannot load .ini file: {$ini}.");
         }
@@ -228,21 +228,53 @@ class Importer
         $config = new ImporterConfig($options['General'] ?? []);
         $this->processHeader($config, $in, $options['General']['header'] ?? 'none');
         foreach ($options as $section => $settings) {
-            if (strpos($section, ':') !== false) {
+            if (str_contains($section, ':')) {
                 [$type, $details] = explode(':', $section);
                 switch (strtolower(trim($type))) {
-                case 'column':
-                    $config->configureColumn($details, $settings);
-                    break;
-                case 'field':
-                    $config->configureField($details, $settings);
-                    break;
-                default:
-                    throw new \Exception('Unexpected config section: ' . $section);
+                    case 'column':
+                        $config->configureColumn($details, $settings);
+                        break;
+                    case 'field':
+                        $config->configureField($details, $settings);
+                        break;
+                    default:
+                        throw new \Exception("Unexpected config section: $section");
                 }
             }
         }
         return $config;
+    }
+
+    /**
+     * Inject dependencies into the callback, if necessary.
+     *
+     * @param string $callable Callback function
+     *
+     * @return void
+     */
+    protected function injectCallbackDependencies(string $callable): void
+    {
+        // Use a static property to keep track of which static classes
+        // have already had dependencies injected.
+        static $alreadyInjected = [];
+
+        // $callable is one of two formats: "function" or "class::method".
+        // We only want to proceed if we have a class name.
+        $parts = explode('::', $callable);
+        if (count($parts) < 2) {
+            return;
+        }
+        $class = $parts[0];
+
+        // If we haven't already injected dependencies, do it now! This makes
+        // it possible to use callbacks from the XSLT importer
+        // (e.g. \VuFind\XSLT\Import\VuFind::harvestWithParser)
+        if (!isset($alreadyInjected[$class])) {
+            if (method_exists($class, 'setServiceLocator')) {
+                $class::setServiceLocator($this->serviceLocator);
+            }
+            $alreadyInjected[$class] = true;
+        }
     }
 
     /**
@@ -261,6 +293,7 @@ class Importer
     ): array {
         preg_match('/([^(]+)(\(.*\))?/', $callback, $matches);
         $callable = $matches[1];
+        $this->injectCallbackDependencies($callable);
         $arglist = array_map(
             'trim',
             explode(
@@ -269,19 +302,20 @@ class Importer
             )
         );
         $argCallback = function ($arg) use ($value, $fieldValues) {
-            if (substr($arg, 0, 2) == '$$'
-                && substr($arg, -2) == '$$'
+            if (
+                str_starts_with($arg, '$$')
+                && str_ends_with($arg, '$$')
             ) {
                 $parts = explode(':', trim($arg, '$'), 2);
                 switch ($parts[0]) {
-                case 'csv':
-                    return $value;
-                case 'field':
-                    return $fieldValues[$parts[1] ?? ''] ?? [];
-                case 'fieldFirst':
-                    return $fieldValues[$parts[1] ?? ''][0] ?? '';
-                default:
-                    throw new \Exception('Unknown directive: ' . $parts[0]);
+                    case 'csv':
+                        return $value;
+                    case 'field':
+                        return $fieldValues[$parts[1] ?? ''] ?? [];
+                    case 'fieldFirst':
+                        return $fieldValues[$parts[1] ?? ''][0] ?? '';
+                    default:
+                        throw new \Exception('Unknown directive: ' . $parts[0]);
                 }
             }
             return $arg;

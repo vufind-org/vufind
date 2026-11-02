@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink ChoiceAuth test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -37,10 +39,10 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -55,25 +57,11 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Get config.ini override settings for testing ChoiceAuth.
      *
      * @return array
      */
-    public function getConfigIniOverrides()
+    protected function getConfigIniOverrides(): array
     {
         return [
             'Catalog' => [
@@ -89,13 +77,45 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get Demo.ini override settings for testing ILS functions.
-     *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
+     * Get config.ini override settings for testing ChoiceAuth with SSO.
      *
      * @return array
      */
-    public function getDemoIniOverrides($bibId = 'testsample1')
+    protected function getConfigIniSSOOverrides(): array
+    {
+        return [
+            'ChoiceAuth' => [
+                'choice_order' => 'ILS, SimulatedSSO',
+            ],
+        ];
+    }
+
+    /**
+     * Get config.ini override settings for testing ChoiceAuth with Email authentication.
+     *
+     * @return array
+     */
+    protected function getConfigIniEmailOverrides(): array
+    {
+        return [
+            'ChoiceAuth' => [
+                'choice_order' => 'Database, Email',
+            ],
+            'Mail' => [
+                'testOnly' => true,
+                'message_log' => $this->getEmailLogPath(),
+                'message_log_format' => $this->getEmailLogFormat(),
+                'default_from' => 'noreply@vufind.org',
+            ],
+        ];
+    }
+
+    /**
+     * Get Demo.ini override settings for testing ILS functions.
+     *
+     * @return array
+     */
+    protected function getDemoIniOverrides(): array
     {
         return [
             'Users' => ['catuser' => 'catpass'],
@@ -103,13 +123,25 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test creating a DB user....
+     * Get SimulatedSSO.ini override settings for testing ChoiceAuth with SSO.
      *
-     * @retryCallback tearDownAfterClass
+     * @return array
+     */
+    protected function getSimulatedSSOIniOverrides(): array
+    {
+        return [
+            'General' => [
+                'username' => 'ssofakeuser1',
+            ],
+        ];
+    }
+
+    /**
+     * Test creating a DB user....
      *
      * @return void
      */
-    public function testCreateDatabaseUser()
+    public function testCreateDatabaseUser(): void
     {
         $this->changeConfigs(
             [
@@ -148,7 +180,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testProfile()
+    public function testProfile(): void
     {
         $this->changeConfigs(
             [
@@ -159,7 +191,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Log in
@@ -168,11 +200,111 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that demo driver expected values are present:
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));
         }
+    }
+
+    /**
+     * Test login on record page with ILS and SSO authentication.
+     *
+     * @return void
+     */
+    public function testRecordPageWithILSAndSSO(): void
+    {
+        // Set up configs and session
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniSSOOverrides() + $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+                'SimulatedSSO' => $this->getSimulatedSSOIniOverrides(),
+            ]
+        );
+        $recordUrl = $this->getVuFindUrl() . '/Record/testsample1';
+        $session = $this->getMinkSession();
+        $session->visit($recordUrl);
+        $page = $session->getPage();
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // login with ILS
+        $this->fillInLoginForm($page, 'catuser', 'catpass', false, '.authmethod0 ');
+        $this->submitLoginForm($page, false, '.authmethod0 ');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertSame($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Click login
+        $this->clickCss($page, '#loginOptions a');
+
+        // Login with SSO
+        $this->assertSame(
+            'Institutional Login',
+            $this->findCssAndGetText($page, '.modal-body .authmethod1 .btn.btn-link')
+        );
+        $this->clickCss($page, '.modal-body .btn.btn-link');
+
+        // Check that we're still on the same page after login
+        $this->findCss($page, '.logoutOptions');
+        $this->assertSame($recordUrl, $this->getCurrentUrlWithoutSid());
+
+        // Log out
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test login with Email authentication.
+     *
+     * @return void
+     */
+    public function testEmailAuthentication(): void
+    {
+        // Set up configs, session and message logging:
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniEmailOverrides() + $this->getConfigIniOverrides(),
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Click login and request email:
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCssAndSetValue($page, '#login_Email_username', 'username1@ignore.com');
+        $this->clickCss($page, '.authmethod1 input[type="submit"]');
+        $this->assertSame(
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive. '
+            . "If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.modal .alert-info')
+        );
+
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#login_Email_password', '123');
+        $this->clickCss($page, '.form-login .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
+
+        // Enter the one-time code:
+        $code = $this->extractLoginCodeFromEmail('username1@ignore.com');
+        $this->findCssAndSetValue($page, '#login_Email_password', $code);
+        $this->clickCss($page, '.form-login .btn-primary');
+
+        // Log out (we can't log out unless we successfully logged in):
+        $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Clean up the email log:
+        $this->resetEmailLog();
     }
 
     /**
@@ -182,6 +314,6 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser']);
+        static::removeUsers(['username1', 'catuser', 'ssofakeuser1']);
     }
 }

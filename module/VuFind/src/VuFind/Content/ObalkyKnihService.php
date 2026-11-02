@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Service class for ObalkyKnih
+ * Service class for ObalkyKnih.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -26,10 +26,15 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function count;
+
 /**
- * Service class for ObalkyKnih
+ * Service class for ObalkyKnih.
  *
  * @category VuFind
  * @package  Content
@@ -37,29 +42,30 @@ namespace VuFind\Content;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+class ObalkyKnihService implements
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Available base URLs
+     * Available base URLs.
      *
      * @var array
      */
     protected $baseUrls = [];
 
     /**
-     * Http referrer
+     * Http referrer.
      *
      * @var string
      */
     protected $referrer;
 
     /**
-     * Sigla - library identifier
+     * Sigla - library identifier.
      *
      * @var string
      */
@@ -67,55 +73,65 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
 
     /**
      * Array with endpoints, possible endpoints(array keys) are: books, cover, toc,
-     * authority, citation, recommend, alive
+     * authority, citation, recommend, alive.
      *
      * @var array
      */
     protected $endpoints;
 
     /**
-     * Whether to check servers availability before API calls
+     * Whether to check servers availability before API calls.
      *
      * @var bool
      */
     protected $checkServersAvailability = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config Configuration for service
+     * @param array                                    $config       Configuration for service
+     * @param ?\Laminas\Cache\Storage\StorageInterface $cacheStorage Cache storage
      */
-    public function __construct(\Laminas\Config\Config $config)
-    {
-        if (!isset($config->base_url) || count($config->base_url) < 1
-            || !isset($config->books_endpoint)
+    public function __construct(
+        #[Autowire(config: 'obalkyknih', path: 'ObalkyKnih', default: [])]
+        array $config,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        ?\Laminas\Cache\Storage\StorageInterface $cacheStorage = null
+    ) {
+        if (
+            !isset($config['base_url']) || count($config['base_url']) < 1
+            || !isset($config['books_endpoint'])
         ) {
             throw new \Exception(
-                "Configuration for ObalkyKnih.cz service is not valid"
+                'Configuration for ObalkyKnih.cz service is not valid'
             );
         }
-        $this->baseUrls = $config->base_url;
+        $this->baseUrls = $config['base_url'];
         $this->cacheLifetime = 1800;
-        $this->referrer = $config->referrer ?? null;
-        $this->sigla = $config->sigla ?? null;
-        foreach ($config->toArray() as $configItem => $configValue) {
+        $this->referrer = $config['referrer'] ?? null;
+        $this->sigla = $config['sigla'] ?? null;
+        foreach ($config as $configItem => $configValue) {
             $parts = explode('_', $configItem);
             if ($parts[1] ?? '' === 'endpoint') {
                 $this->endpoints[$parts[0]] = $configValue;
             }
         }
         $this->checkServersAvailability
-            = $config->checkServersAvailability ?? false;
+            = $config['checkServersAvailability'] ?? false;
+
+        if ($cacheStorage) {
+            $this->setCacheStorage($cacheStorage);
+        }
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
-     * @param string $url URL for client to use
+     * @param ?string $url URL for client to use
      *
      * @return \Laminas\Http\Client
      */
-    protected function getHttpClient(string $url = null)
+    protected function getHttpClient(?string $url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -129,7 +145,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Creates cache key based on ids
+     * Creates cache key based on ids.
      *
      * @param array $ids Record identifiers
      *
@@ -137,7 +153,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function createCacheKey(array $ids)
     {
-        $key = $ids['recordid'];
+        $key = $ids['recordid'] ?? '';
         $key = !empty($key) ? $key
             : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
         $key = !empty($key) ? $key : sha1(json_encode($ids));
@@ -145,7 +161,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Get data from cache, or from service
+     * Get data from cache, or from service.
      *
      * @param array $ids Record identifiers
      *
@@ -163,7 +179,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Get data from service
+     * Get data from service.
      *
      * @param array $ids Record identifiers
      *
@@ -174,38 +190,21 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function getFromService(array $ids): ?\stdClass
     {
-        $param = "multi";
-        $query = [];
-        $isbn = isset($ids['isbn']) ? $ids['isbn']->get13() : null;
-        $isbn = $isbn ?? $ids['upc'] ?? $ids['issn'] ?? null;
-        $oclc = $ids['oclc'] ?? null;
-        $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
-        $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
-        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid'] ?? '');
-        $uuid = null;
-        if (isset($ids['uuid'])) {
-            $uuid = (substr($ids['uuid'], 0, 5) === 'uuid:')
-                ? $ids['uuid']
-                : ('uuid:' . $ids['uuid']);
-        }
-        foreach (['isbn', 'oclc', 'ismn', 'nbn', 'uuid'] as $identifier) {
-            if (isset($$identifier)) {
-                $query[$identifier] = $$identifier;
-            }
-        }
+        $param = 'multi';
+        $query = $this->getServiceQuery($ids);
 
         $url = $this->getBaseUrl();
         if ($url === '') {
             $this->logWarning('All ObalkyKnih servers are down.');
             return null;
         }
-        $url .= $this->endpoints['books'] . "?";
+        $url .= $this->endpoints['books'] . '?';
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
             return null;
         }
         if ($response->isSuccess()) {
@@ -216,7 +215,44 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Create identifier of local record
+     * Get query params for service.
+     *
+     * @param array $ids Record identifiers
+     *
+     * @return array
+     */
+    protected function getServiceQuery(array $ids): array
+    {
+        $query = [];
+        $isbn = null;
+        if (!empty($ids['isbns'])) {
+            $isbn = array_map(
+                function ($isbn) {
+                    return $isbn->get13();
+                },
+                $ids['isbns']
+            );
+        } elseif (!empty($ids['isbn'])) {
+            $isbn = $ids['isbn']->get13();
+        }
+        $isbn ??= $ids['upc'] ?? $ids['issn'] ?? null;
+        $oclc = $ids['oclc'] ?? null;
+        $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
+        $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
+        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid'] ?? '');
+        $uuid = null;
+        if (isset($ids['uuid'])) {
+            $uuid = str_starts_with($ids['uuid'], 'uuid:')
+                ? $ids['uuid']
+                : ('uuid:' . $ids['uuid']);
+        }
+        $query = array_filter(compact('isbn', 'oclc', 'ismn', 'nbn', 'uuid'), fn ($v) => null !== $v);
+
+        return $query;
+    }
+
+    /**
+     * Create identifier of local record.
      *
      * @param string $recordid Record identifier
      *
@@ -224,7 +260,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function createLocalIdentifier(string $recordid): ?string
     {
-        if (strpos($recordid, '.') !== false) {
+        if (str_contains($recordid, '.')) {
             [, $recordid] = explode('.', $recordid, 2);
         }
         return (empty($this->sigla) || empty($recordid)) ? null :
@@ -232,7 +268,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Get currently available base URL
+     * Get currently available base URL.
      *
      * @return string
      */
@@ -243,7 +279,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Check base URLs and return the first available
+     * Check base URLs and return the first available.
      *
      * @return string
      */

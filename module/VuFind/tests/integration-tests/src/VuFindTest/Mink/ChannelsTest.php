@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Mink cart test class.
+ * Mink channels test class.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,94 +26,556 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Exception;
+use Generator;
+use PHPUnit\Framework\ExpectationFailedException;
+use VuFindTest\Feature\DemoDriverTestTrait;
+
+use function count;
 
 /**
- * Mink cart test class.
+ * Mink channels test class.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use DemoDriverTestTrait;
+
     /**
-     * Get a reference to a standard search results page.
+     * Selector for finding a complete channel.
+     *
+     * @var string
+     */
+    protected string $channelSelector = 'div.channel';
+
+    /**
+     * Selector for finding all visible items in a channel.
+     *
+     * @var string
+     */
+    protected string $visibleItemsSelector = 'li.channel-item:not(.hidden-batch-item)';
+
+    /**
+     * Get a reference to a standard channels home page.
      *
      * @return Element
      */
-    protected function getChannelsPage()
+    protected function getChannelsHomePage(): Element
     {
         $session = $this->getMinkSession();
-        $path = '/Channels/Search?lookfor=building%3A%22weird_ids.mrc%22';
+        $session->visit($this->getVuFindUrl() . '/Channels/Home');
+        return $session->getPage();
+    }
+
+    /**
+     * Get a reference to a standard record-based results page.
+     *
+     * @param string $id Record to look up
+     *
+     * @return Element
+     */
+    protected function getChannelsRecordPage(string $id = 'testsample1'): Element
+    {
+        $session = $this->getMinkSession();
+        $path = '/Channels/Record?id=' . urlencode($id);
         $session->visit($this->getVuFindUrl() . $path);
         return $session->getPage();
     }
 
     /**
-     * Make sure the page works, channels exists, search
+     * Get a reference to a standard search results page.
+     *
+     * @param string $q Search to perform on Channels page
+     *
+     * @return Element
      */
-    public function testBasic()
+    protected function getChannelsSearchPage(string $q = 'building:"weird_ids.mrc"'): Element
     {
-        $page = $this->getChannelsPage();
+        $session = $this->getMinkSession();
+        $path = '/Channels/Search?lookfor=' . urlencode($q);
+        $session->visit($this->getVuFindUrl() . $path);
+        return $session->getPage();
+    }
+
+    /**
+     * Data provider for testBasicRecord.
+     *
+     * @return Generator
+     */
+    public static function basicRecordProvider(): Generator
+    {
+        yield 'default config' => [6, []];
+        yield 'custom similaritems provider config' => [
+            5,
+            ['channels' => ['provider.similaritems' => ['itemsPerRow' => 5]]],
+        ];
+    }
+
+    /**
+     * Make sure the record page works, channels exists, search.
+     *
+     * @param int   $expectedSimilarItems Expected count of visible items in first similar items channel
+     * @param array $extraConfigs         Extra configurations to apply during the test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basicRecordProvider')]
+    public function testBasicRecord(int $expectedSimilarItems, array $extraConfigs = []): void
+    {
+        if ($extraConfigs) {
+            $this->changeConfigs($extraConfigs);
+        }
+        $id = 'testsample1';
+        $page = $this->getChannelsRecordPage($id);
         // Channels are here
-        $this->findCss($page, 'div.channel-wrapper');
+        $this->findCss($page, $this->channelSelector);
         // Check number of channels
-        $channels = $page->findAll('css', 'div.channel-wrapper');
-        $this->assertEquals(6, count($channels));
+        $channels = $page->findAll('css', $this->channelSelector);
+        $this->assertCount(4, $channels);
+        // Make sure appropriate similar records are displayed:
+        $this->assertSame(
+            'Similar Items: Journal of rational emotive therapy :',
+            $this->findCssAndGetText($channels[0], 'h2.channel-title')
+        );
+        $this->assertCount($expectedSimilarItems, $channels[0]->findAll('css', $this->visibleItemsSelector));
+        // Similar record drop-down menu contains appropriate view record link:
+        $link = $this->findCss($page, '.channel-options a');
+        $this->assertEquals('View Record', $link->getText());
+        $this->assertStringEndsWith("/$id", $link->getAttribute('href'));
+    }
+
+    /**
+     * Make sure the search page works, channels exists, search.
+     *
+     * @return void
+     */
+    public function testBasicSearch(): void
+    {
+        $page = $this->getChannelsSearchPage();
+        // Channels are here
+        $this->findCss($page, $this->channelSelector);
+        // Check number of channels
+        $channels = $page->findAll('css', $this->channelSelector);
+        $this->assertCount(6, $channels);
         // Make sure search input matches url
-        $this->assertEquals(
+        $this->assertSame(
             'building:"weird_ids.mrc"',
-            $this->findCss($page, '[action*="Channels/Search"] .form-control')->getValue()
+            $this->findCssAndGetValue($page, '[action*="Channels/Search"] .form-control')
         );
     }
 
     /**
-     * Add channels button
+     * Add channels button.
+     *
+     * @return void
      */
-    public function testAddChannels()
+    public function testAddChannels(): void
     {
-        $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, 'div.channel-wrapper');
+        $page = $this->getChannelsSearchPage();
+        $channel = $this->findCss($page, $this->channelSelector);
         // Initial counts
-        $this->assertEquals(6, count($page->findAll('css', 'div.channel-wrapper')));
-        $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
+        $this->assertCount(6, $page->findAll('css', $this->channelSelector));
+        $this->assertCount(8, $channel->findAll('css', '.channel-add-link'));
         // Click first add button
-        $this->clickCss($channel, '.add-btn');
+        $this->clickCss($channel, '.channel-add-more-btn');
         // Post count
-        $this->waitStatement('$("div.channel-wrapper").length === 8');
-        $this->waitStatement('$(".channel-add-menu:first .dropdown-menu li").length === 6');
+        $this->waitStatement('$("div.channel").length === 8');
+        $this->waitStatement('$(".channel-add-menu:first .channel-add-link").length === 6');
+        $this->assertCount(8, $page->findAll('css', $this->channelSelector));
+        $this->assertCount(6, $channel->findAll('css', '.channel-add-link'));
+        // Click last add button (and assert that it's the one we expect it to be)
+        $lastChannel = $this->findCss($page, 'div.channel', index: 7);
+        $this->assertEquals('Similar Items: Movie Quotes Thru The Ages', $lastChannel->find('css', 'h2')->getText());
+        $this->clickCss($lastChannel, '.channel-add-more-btn');
+        // Post count
+        $this->waitStatement('$("div.channel").length === 10');
+        $this->assertCount(10, $page->findAll('css', $this->channelSelector));
     }
 
     /**
-     * Switch to search
+     * Switch to search.
+     *
+     * @return void
      */
-    public function testSwitchToSearch()
+    public function testSwitchToSearch(): void
     {
-        $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, 'div.channel-wrapper');
-        // Click dropdown to display links
-        $this->clickCss($channel, '.dropdown');
+        $page = $this->getChannelsSearchPage();
+        $channel = $this->findCss($page, $this->channelSelector);
+        // Click options dropdown to display links
+        $this->clickCss($channel, '.channel-options');
         // Click link to go to search results
-        $this->clickCss($channel, '.channel_search');
+        $this->clickCss($channel, '.channel-options .fa-search');
         // Make sure the search translated
-        $this->assertEquals(
+        $this->assertSame(
             'building:"weird_ids.mrc"',
-            $this->findCss($page, '#searchForm_lookfor')->getValue()
+            $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
         // Check facet
-        $this->assertEquals(
+        $this->assertSame(
             'Suggested Topics:',
-            $this->findCss($page, '.filters .filters-title')->getText()
+            $this->findCssAndGetText($page, '.filters .filters-title')
         );
-        $this->assertEquals(
-            'Adult children of aging parents',
-            $this->findCss($page, '.filters .filter-value')->getText()
+        $this->assertSame(
+            'Remove Filter Adult children of aging parents',
+            $this->findCssAndGetText($page, '.filters .filter-value')
         );
+    }
+
+    /**
+     * Data provider for testPopovers.
+     *
+     * @return \Iterator
+     */
+    public static function popoversProvider(): \Iterator
+    {
+        yield 'different records (weird IDs)' => [
+            'building:"weird_ids.mrc"',
+            'hashes#coming@ya',
+            'Octothorpes: Why not?',
+            'dollar$ign/slashcombo',
+            'Of Money and Slashes',
+            null,
+        ];
+        yield 'same record in two channels' => [
+            'id:017791359-1',
+            '017791359-1',
+            'Fake Record 1 with multiple relators/',
+            '017791359-1',
+            'Fake Record 1 with multiple relators/',
+            1,
+        ];
+    }
+
+    /**
+     * Assert that the popover contents contain the expected title and description; return the
+     * contents string.
+     *
+     * @param Element $page          Page element
+     * @param string  $expectedTitle Expected title for popover
+     *
+     * @return string
+     * @throws Exception
+     * @throws ExpectationFailedException
+     */
+    protected function assertPopoverTitleAndDescription(Element $page, string $expectedTitle): string
+    {
+        // Ensure that any "Loading..." popover is not being displayed:
+        $this->waitForPageLoad($page);
+        $popoverContents = $this->findCssAndGetText($page, '.channels-quick-look');
+        // The popover should contain an appropriate title and metadata:
+        $this->assertStringContainsString($expectedTitle, $popoverContents);
+        $this->assertStringContainsString('Description', $popoverContents);
+        // Click outside of channels to move the focus away:
+        $this->clickCss($page, 'li.active');
+        return $popoverContents;
+    }
+
+    /**
+     * Test popover behavior by clicking back and forth between two records.
+     *
+     * @param string $query               Search query
+     * @param string $record1             ID of first record
+     * @param string $title1              Title of first record
+     * @param string $record2             ID of second record
+     * @param string $title2              Title of second record
+     * @param ?int   $record2ChannelIndex Index of channel containing second record (needed when $record1 === $record2)
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('popoversProvider')]
+    public function testQuickLookPopovers(
+        string $query,
+        string $record1,
+        string $title1,
+        string $record2,
+        string $title2,
+        ?int $record2ChannelIndex
+    ): void {
+        $page = $this->getChannelsSearchPage($query);
+        // Click a record to open the popover:
+        $this->clickCss($page, '.channel-item[data-record-id="' . $record1 . '"] .channel-quick-look-btn');
+        // The popover should contain an appropriate title and metadata:
+        $popoverContents = $this->assertPopoverTitleAndDescription($page, $title1);
+        // Click a different record (or the second instance of the same record, if that's what we're testing):
+        $title2Target = $record2ChannelIndex === null
+            ? $page : $this->findCss($page, '.channel', index: $record2ChannelIndex);
+        $this->clickCss($title2Target, '.channel-item[data-record-id="' . $record2 . '"] .channel-quick-look-btn');
+        $this->assertPopoverTitleAndDescription($page, $title2);
+        // Now click back to the original record; the popover should contain the same contents.
+        $this->clickCss($page, '.channel-item[data-record-id="' . $record1 . '"] .channel-quick-look-btn');
+        $popoverContents3 = $this->findCssAndGetText($page, '.channels-quick-look');
+        $this->assertSame($popoverContents, $popoverContents3);
+        // Finally, click through to the record page.
+        $link = $this->findCss($page, '.ql-view-record-btn');
+        $this->assertEquals('View Record', $link->getText());
+        $link->click();
+        $this->waitForPageLoad($page);
+        $this->assertSame($title1, $this->findCssAndGetText($page, 'h1'));
+    }
+
+    /**
+     * Data provider for testDeprecatedChannel().
+     *
+     * @return \Generator<string, array>
+     */
+    public static function deprecatedChannelProvider(): \Iterator
+    {
+        yield 'New ILS Items' => ['newilsitems'];
+    }
+
+    /**
+     * Test deprecated channels.
+     *
+     * @param string $channel Name of channel to test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('deprecatedChannelProvider')]
+    public function testDeprecatedChannel(string $channel): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => [$channel],
+                    ],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        // We don't expect deprecated options to yield any data at all:
+        $this->unFindCss($page, 'h2.channel-title');
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item'));
+    }
+
+    /**
+     * Data provider for testILSChannel().
+     *
+     * @return \Iterator
+     */
+    public static function ilsChannelProvider(): \Iterator
+    {
+        yield 'Recently Returned' => ['recentlyreturned', 'Recently Returned'];
+        yield 'Trending ILS Items' => ['trendingilsitems', 'Trending Items'];
+    }
+
+    /**
+     * Test ILS-powered channels.
+     *
+     * @param string $channel       Name of channel to test
+     * @param string $expectedTitle Expected channel title
+     * @param string $bibId1        First test record to include in channel
+     * @param string $bibId2        Second test record to include in channel
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ilsChannelProvider')]
+    public function testILSChannel(
+        string $channel,
+        string $expectedTitle,
+        string $bibId1 = 'testsample1',
+        string $bibId2 = 'testsample2'
+    ): void {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => [$channel],
+                    ],
+                ],
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                ],
+                'Demo' => $this->getDemoIniOverrides($bibId1, $bibId2),
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        $this->assertSame($expectedTitle, $this->findCssAndGetText($page, 'h2.channel-title'));
+        $this->assertCount(2, $page->findAll('css', 'li.channel-item'));
+        $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId1 . '"]'));
+        $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId2 . '"]'));
+    }
+
+    /**
+     * Test Solr-powered new items channel.
+     *
+     * @return void
+     */
+    public function testNewItemsChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['newsearchitems'],
+                    ],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        $this->assertSame('New Items', $this->findCssAndGetText($page, 'h2.channel-title'));
+        // In case test data changes, we won't make specific assertions about specific records,
+        // but we can assume that we'll get at least two pages worth of them!
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
+
+    /**
+     * Test Random channel.
+     *
+     * @return void
+     */
+    public function testRandomChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['random'],
+                    ],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        $this->assertSame('Random items from your results', $this->findCssAndGetText($page, 'h2.channel-title'));
+        // Since selected records are random, we can't make specific assertions about specific records,
+        // but we can assume that we'll get at least four pages worth of them!
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(24, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
+
+    /**
+     * Data provider for testDeepPaginationOfFacetsChannel().
+     *
+     * @return Generator
+     */
+    public static function deepPaginationProvider(): Generator
+    {
+        yield 'defaults' => [6, 48];
+        // TODO: re-enable after determining why this consistently fails in Jenkins (timing issue?):
+        //yield 'big pages' => [27, 48];
+        yield 'remainder' => [5, 25];
+        yield 'small pages' => [2, 16];
+    }
+
+    /**
+     * Test deep pagination of Facets channel.
+     *
+     * @param int $itemsPerRow  Items per row setting to test
+     * @param int $maxBatchSize Max batch size setting to test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('deepPaginationProvider')]
+    public function testDeepPaginationOfFacetsChannel(int $itemsPerRow = 6, int $maxBatchSize = 48): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['facets:provider.facets.home'],
+                    ],
+                    'provider.facets.home' => [
+                        'maxFieldsToSuggest' => 2,
+                        'maxValuesToSuggestPerField' => 2,
+                        'itemsPerRow' => $itemsPerRow,
+                        'maxBatchSize' => $maxBatchSize,
+                    ],
+                ],
+                'searches' => [
+                    // Filter to specific records to ensure predictable results:
+                    'RawHiddenFilters' => ['building:geo.mrc'],
+                ],
+            ],
+        );
+        $expectedTotalResults = 54;
+        $page = $this->getChannelsHomePage();
+        $channel = $this->findCss($page, 'div.channel', index: 3);
+        $channelId = $channel->getAttribute('id');
+        $this->assertSame('Format: Book', $this->findCssAndGetText($channel, 'h2.channel-title'));
+        // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
+        $allItems = $channel->findAll('css', $this->visibleItemsSelector);
+        $this->assertCount($itemsPerRow, $allItems);
+        $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
+        $buttonSelector = '.channel-load-more-btn';
+        for ($i = 0; $i < $rowsToLoad; $i++) {
+            $button = $this->findCss($channel, $buttonSelector);
+            $button->click();
+            $this->waitForPageLoad($page);
+            // Confirm that the button's labels remain appropriate after clicks:
+            $selector = "document.querySelector('#$channelId .channel-load-more-btn')";
+            $lastRow = $i == $rowsToLoad - 1;
+            $secondarySelector = $lastRow
+                ? "$selector.classList.contains('disabled')"
+                : "!$selector.textContent.startsWith('Loading')";
+            $this->waitStatement("$selector && $secondarySelector");
+            // Make sure the button click actually registered and loaded more items:
+            $previousCount = count($allItems);
+            $allItems = $channel->findAll('css', $this->visibleItemsSelector);
+            $this->assertGreaterThan($previousCount, count($allItems));
+
+            // When all results are loaded, "load more" button will be disabled:
+            if ($lastRow) {
+                $this->assertStringContainsString('disabled', (string)$button->getAttribute('class'));
+            } else {
+                $this->assertEquals('Load more items', $button->getText(), "Unexpected button label on iteration $i");
+                $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
+            }
+        }
+        // Make sure that we not only have the expected number of items but also that they all have different
+        // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
+        $allIds = array_unique(array_map(fn ($item) => $item->getAttribute('data-record-id'), $allItems));
+        $this->assertCount($expectedTotalResults, $allItems);
+        $this->assertCount($expectedTotalResults, $allIds);
+    }
+
+    /**
+     * Test loading channels in the Similar Items tab.
+     *
+     * @return void
+     */
+    public function testSimilarItemsTab(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Record/geo20001');
+        $page = $session->getPage();
+        // No channel entries before opening tab:
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Switch to tab:
+        $this->clickCss($page, '.channels-tab-button');
+        $this->waitForPageLoad($page);
+        // There should be one row of results:
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Add more results and confirm they loaded:
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Authentication view helper
+ * AlphaBrowse view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\Url;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Authentication view helper
+ * AlphaBrowse view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,27 +41,24 @@ use Laminas\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
+class AlphaBrowse
 {
     /**
-     * URL helper
+     * Constructor.
      *
-     * @var Url
+     * @param Url   $url     URL helper
+     * @param array $options Additional configuration options
      */
-    protected $url;
-
-    /**
-     * Constructor
-     *
-     * @param Url $helper URL helper
-     */
-    public function __construct(Url $helper)
-    {
-        $this->url = $helper;
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(config: 'config', path: 'AlphaBrowse', default: [])]
+        protected array $options = []
+    ) {
     }
 
     /**
-     * Get link to browse results (or null if no valid URL available)
+     * Get link to browse results (or null if no valid URL available).
      *
      * @param string $source AlphaBrowse index currently being used
      * @param array  $item   Item to link to
@@ -73,8 +73,12 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
 
         $query = [
             'type' => ucwords($source) . 'Browse',
-            'lookfor' => $this->escapeForSolr($item['heading']),
+            // this is needed for appropriate title browsing as searching by sort_key causes issues
+            'lookfor' => $this->escapeForSolr($source == 'title' ? $item['heading'] : $item['sort_key']),
         ];
+        if ($this->options['bypass_default_filters'] ?? true) {
+            $query['dfApplied'] = 1;
+        }
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
@@ -91,5 +95,15 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     protected function escapeForSolr($str)
     {
         return '"' . addcslashes($str, '"') . '"';
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

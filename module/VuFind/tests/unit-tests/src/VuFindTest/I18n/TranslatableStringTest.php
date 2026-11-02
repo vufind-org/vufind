@@ -1,11 +1,12 @@
 <?php
+
 /**
- * TranslatableString Test Class
+ * TranslatableString Test Class.
  *
  * Note that most tests using TranslatableString are in
  * VuFindTest\View\Helper\Root\TranslateTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -28,12 +29,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\I18n\Translator\Loader;
 
 use VuFind\I18n\TranslatableString;
 
 /**
- * TranslatableString Test Class
+ * TranslatableString Test Class.
  *
  * Note that most tests using TranslatableString are in
  * VuFindTest\View\Helper\Root\TranslateTest
@@ -54,13 +56,13 @@ class TranslatableStringTest extends \PHPUnit\Framework\TestCase
     public function testWithoutTranslate()
     {
         $s = new TranslatableString('foo', 'bar');
-        $this->assertEquals('foo', (string)$s);
+        $this->assertSame('foo', (string)$s);
         $this->assertEquals('bar', $s->getDisplayString());
         $this->assertTrue($s->isTranslatable());
 
         $s = new TranslatableString('foo', new TranslatableString('bar', 'baz'));
-        $this->assertEquals('foo', (string)$s);
-        $this->assertEquals('bar', (string)$s->getDisplayString());
+        $this->assertSame('foo', (string)$s);
+        $this->assertSame('bar', (string)$s->getDisplayString());
         $this->assertEquals('baz', $s->getDisplayString()->getDisplayString());
         $this->assertTrue($s->isTranslatable());
 

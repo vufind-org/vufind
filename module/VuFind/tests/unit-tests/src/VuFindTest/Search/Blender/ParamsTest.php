@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,18 +26,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Config\Config;
-use Laminas\Stdlib\Parameters;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * @category VuFind
  * @package  Tests
@@ -46,8 +48,10 @@ use VuFindSearch\Query\Query;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
-     * Blender config
+     * Blender config.
      *
      * @var array
      */
@@ -55,7 +59,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         'Backends' => [
             'Solr' => 'Local',
             'Primo' => 'CDI',
-            'EDS' => 'EBSCO'
+            'EDS' => 'EBSCO',
         ],
         'Blending' => [
             'initialResults' => [
@@ -64,13 +68,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'Primo',
                 'EDS',
                 'Primo',
-                'EDS'
-            ]
+                'EDS',
+            ],
         ],
     ];
 
     /**
-     * Mappings
+     * Mappings.
      *
      * @var array
      */
@@ -88,8 +92,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Values' => [
                                 'main' => '0/Main/',
                                 'sub' => '1/Sub/Fiction/',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                 ],
                 'format' => [
@@ -125,8 +129,21 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'EDS' => [
                             'Field' => 'LIMIT|FT',
                             'Values' => [
-                                'y' => '1'
+                                'y' => '1',
                             ],
+                        ],
+                    ],
+                ],
+                'publish_date' => [
+                    'Mappings' => [
+                        'Solr' => [
+                            'Field' => 'publishDate',
+                        ],
+                        'Primo' => [
+                            'Field' => 'creationdate',
+                        ],
+                        'EDS' => [
+                            'Field' => 'PublicationDate',
                         ],
                     ],
                 ],
@@ -138,14 +155,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'Mappings' => [
                         'Solr' => 'AllFields',
                         'Primo' => 'AllFields',
-                        'EDS' => 'AllFields'
+                        'EDS' => 'AllFields',
                     ],
                 ],
                 'Title' => [
                     'Mappings' => [
                         'Solr' => 'Title',
                         'Primo' => 'Title',
-                        'EDS' => 'TI'
+                        'EDS' => 'TI',
                     ],
                 ],
             ],
@@ -171,7 +188,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS API configuration
+     * EDS API configuration.
      *
      * @var array
      */
@@ -180,38 +197,51 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'AvailableSorts' => [
                 [
                     'Id' => 'date',
-                    'Label' => 'Date Newest'
-                ]
+                    'Label' => 'Date Newest',
+                ],
             ],
         ],
     ];
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var array
      */
     protected $edsConfig = [
         'Sorting' => [
             'relevance' => 'relevance',
-            'date' => 'year'
-        ]
+            'date' => 'year',
+        ],
     ];
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var array
      */
     protected $primoConfig = [
         'Sorting' => [
             'relevance' => 'relevance',
-            'scdate' => 'year'
-        ]
+            'scdate' => 'year',
+        ],
     ];
 
     /**
-     * Mock config manager
+     * Blender configuration.
+     *
+     * @var array
+     */
+    protected $blenderConfig = [
+        'SpecialFacets' => [
+            'dateRange' => [
+                'publish_date',
+            ],
+        ],
+    ];
+
+    /**
+     * Mock config manager.
      *
      * @var object
      */
@@ -224,7 +254,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+        $this->assertSame('Blender', $this->getParams()->getSearchClassId());
     }
 
     /**
@@ -236,7 +266,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         // None by default:
         $params = $this->getParams();
-        $this->assertEquals([], $params->getCheckboxFacets());
+        $this->assertSame([], $params->getCheckboxFacets());
 
         // Adding one works:
         $params->addCheckboxFacet('format:bar', 'checkbox_label');
@@ -247,8 +277,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'format:bar',
                     'selected' => false,
                     'alwaysVisible' => false,
-                    'dynamic' => false
-                ]
+                    'dynamic' => false,
+                ],
             ],
             $params->getCheckboxFacets()
         );
@@ -262,8 +292,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'format:bar',
                     'selected' => true,
                     'alwaysVisible' => false,
-                    'dynamic' => false
-                ]
+                    'dynamic' => false,
+                ],
             ],
             $params->getCheckboxFacets()
         );
@@ -273,7 +303,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:"EDS"'
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -289,14 +319,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'AND',
-                    'values' => ['barPrimo']
+                    'values' => ['barPrimo'],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -321,23 +353,25 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'fulltext_boolean:"1"',
                 '{!tag=formatSolr_filter}formatSolr:(formatSolr:"bar"'
-                    . ' OR formatSolr:"baz")'
+                    . ' OR formatSolr:"baz")',
             ],
             $solrParams->get('fq')
         );
         $this->assertEquals(
             [
-                'pcAvailability' => [
-                    'facetOp' => 'AND',
-                    'values' => ['false']
-                ],
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'OR',
                     'values' => [
                         'barPrimo',
-                        'bazPrimo'
-                    ]
-                ]
+                        'bazPrimo',
+                    ],
+                ],
+                [
+                    'field' => 'pcAvailability',
+                    'facetOp' => 'AND',
+                    'values' => ['false'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -355,9 +389,10 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['false']
+                    'values' => ['false'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -375,9 +410,10 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
+                    'values' => ['true'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -396,10 +432,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['false']
-                ]
+                    'values' => ['false'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -424,17 +461,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $primoParams = $params->getBackendParameters()->get('params_Primo')[0];
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'OR',
                     'values' => [
                         'double1',
-                        'double2'
-                    ]
+                        'double2',
+                    ],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -448,17 +487,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'NOT',
                     'values' => [
                         'double1',
-                        'double2'
-                    ]
+                        'double2',
+                    ],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -471,10 +512,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -492,9 +534,10 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($solrParams->get('fq'));
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
+                    'values' => ['true'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -511,6 +554,39 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'fulltext:"1"',
             ],
             $backendParams->get('fq')
+        );
+
+        // Test a daterange filter:
+        $params = $this->getParams();
+        $params->addFilter('publish_date:[2020 TO 2022]');
+        $backendParams = $params->getBackendParameters();
+        $this->assertEquals(
+            ['publish_date:[2020 TO 2022]'],
+            $backendParams->get('fq')
+        );
+
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertEquals(['publishDate:[2020 TO 2022]'], $solrParams->get('fq'));
+        $this->assertEquals(
+            [
+                [
+                    'field' => 'creationdate',
+                    'facetOp' => 'AND',
+                    'values' => ['[2020 TO 2022]'],
+                ],
+                [
+                    'field' => 'pcAvailability',
+                    'facetOp' => 'AND',
+                    'values' => ['true'],
+                ],
+            ],
+            $primoParams->get('filterList')
+        );
+        $this->assertEquals(
+            ['PublicationDate:[2020 TO 2022]'],
+            $edsParams->get('filters')
         );
     }
 
@@ -529,7 +605,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:"EDS"'
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -545,14 +621,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             [
-                'formatPrimo' => [
+                [
+                    'field' => 'formatPrimo',
                     'facetOp' => 'AND',
-                    'values' => ['barPrimo']
+                    'values' => ['barPrimo'],
                 ],
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -589,7 +667,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 '{!tag=blender_backend_filter}blender_backend:('
-                . 'blender_backend:"Primo" OR blender_backend:"EDS")'
+                . 'blender_backend:"Primo" OR blender_backend:"EDS")',
             ],
             $backendParams->get('fq')
         );
@@ -614,7 +692,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'blender_backend:Primo',
                     'selected' => false,
                     'alwaysVisible' => false,
-                    'dynamic' => false
+                    'dynamic' => false,
                 ],
             ],
             $params->getCheckboxFacets()
@@ -627,10 +705,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertEquals(
             [
-                'pcAvailability' => [
+                [
+                    'field' => 'pcAvailability',
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -650,7 +729,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:"EDS"'
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -658,7 +737,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         // Test ignoring all values:
         $mappings = $this->mappings;
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
-            'Ignore' => true
+            'Ignore' => true,
         ];
         $params = $this->getParams(null, $mappings);
         $params->addHiddenFilter('format:bar');
@@ -678,8 +757,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $mappings = $this->mappings;
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
             'Ignore' => [
-                'bar'
-            ]
+                'bar',
+            ],
         ];
         $params = $this->getParams(null, $mappings);
         $params->addHiddenFilter('format:bar');
@@ -721,22 +800,22 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Make sure that a checkbox facet with correct value gets the label for the
         // checkbox:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Check that reset works:
         $params->resetFacetConfig();
-        $this->assertEquals([], $params->getFacetConfig());
+        $this->assertSame([], $params->getFacetConfig());
     }
 
     /**
@@ -754,7 +833,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'building:"0/Main/"',
-                '-blender_backend:"Primo"'
+                '-blender_backend:"Primo"',
             ],
             $backendParams->get('fq')
         );
@@ -798,10 +877,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     null,
                 ],
                 'view' => [
-                    'list',
+                    'brief',
                 ],
                 'filters' => [
-                    'building:main',
+                    'building:OR:main',
+                ],
+                'searchMode' => [
+                    'all',
                 ],
             ],
             $edsParams->getArrayCopy()
@@ -816,13 +898,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'building:"0/Sub/"',
-                '-blender_backend:"Primo"'
+                '-blender_backend:"Primo"',
             ],
             $backendParams->get('fq')
         );
 
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertEquals(['building:sub'], $edsParams->get('filters'));
+        $this->assertEquals(['building:OR:sub'], $edsParams->get('filters'));
     }
 
     /**
@@ -903,7 +985,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'hiddenFilters' => ['foo:"baz"'],
         ];
         $params = $this->getParams();
-        $params->initFromRequest(new Parameters($query));
+        $params->initFromRequest($query);
         $backendParams = $params->getBackendParameters();
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -930,7 +1012,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Test empty request:
         $params = $this->getParams();
-        $params->initFromRequest(new Parameters([]));
+        $params->initFromRequest([]);
         $backendParams = $params->getBackendParameters();
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -955,19 +1037,18 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testInvalidBackend(): void
     {
-        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         $baseParams = new \VuFind\Search\EmptySet\Params(
-            new \VuFind\Search\EmptySet\Options($configMgr),
-            $configMgr
+            new \VuFind\Search\EmptySet\Options($mockConfigManager),
+            $mockConfigManager
         );
         $params = new Params(
-            new Options($configMgr),
-            $configMgr,
+            new Options($mockConfigManager),
+            $mockConfigManager,
             new HierarchicalFacetHelper(),
             [
                 'Base' => $baseParams,
             ],
-            new Config($this->config),
             $this->mappings
         );
 
@@ -978,61 +1059,37 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock config manager
-     *
-     * @return object
-     */
-    protected function getConfigManager()
-    {
-        $configs = [
-            'EDS' => new Config($this->edsConfig),
-            'Primo' => new Config($this->primoConfig)
-        ];
-
-        $callback = function (string $configName) use ($configs) {
-            return $configs[$configName] ?? null;
-        };
-
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-        $configManager
-            ->expects($this->any())
-            ->method('get')
-            ->will($this->returnCallback($callback));
-
-        return $configManager;
-    }
-
-    /**
-     * Get params classes for an array of backends
+     * Get params classes for an array of backends.
      *
      * @return array
      */
     protected function getParamsClassesArray(): array
     {
-        $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
-        $configMgr = $this->getConfigManager();
+        $mockConfigManager = $this->getMockConfigManager([
+            'EDS' => $this->edsConfig,
+            'Primo' => $this->primoConfig,
+            'Blender' => $this->blenderConfig,
+        ]);
 
         $result = [];
         $result[] = new \VuFind\Search\Solr\Params(
-            new \VuFind\Search\Solr\Options($solrConfigMgr),
-            $solrConfigMgr
+            new \VuFind\Search\Solr\Options($mockConfigManager),
+            $mockConfigManager
         );
         $result[] = new \VuFind\Search\Primo\Params(
-            new \VuFind\Search\Primo\Options($configMgr),
-            $configMgr
+            new \VuFind\Search\Primo\Options($mockConfigManager),
+            $mockConfigManager
         );
         $result[] = new \VuFind\Search\EDS\Params(
-            new \VuFind\Search\EDS\Options($configMgr, $this->edsApiConfig),
-            $configMgr
+            new \VuFind\Search\EDS\Options($mockConfigManager, $this->edsApiConfig),
+            $mockConfigManager
         );
 
         return $result;
     }
 
     /**
-     * Get Params class
+     * Get Params class.
      *
      * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
@@ -1041,13 +1098,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getParams($config = null, $mappings = null): Params
     {
-        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            new Options($configMgr),
-            $configMgr,
+            new Options($mockConfigManager),
+            $mockConfigManager,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
-            new Config($config ?? $this->config),
             $mappings ?? $this->mappings
         );
     }

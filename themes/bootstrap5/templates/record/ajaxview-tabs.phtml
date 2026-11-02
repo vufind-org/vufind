@@ -1,0 +1,59 @@
+<?=$this->matomo(['context' => 'tabs'])?>
+<?=$this->googleanalytics()?>
+<?php
+  $this->defaultTab = strtolower($this->defaultTab);
+  $idSuffix = '-' . md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier());
+  $idSuffixEsc = $this->escapeHtmlAttr($idSuffix);
+
+  $tabs = [];
+  $coreMetadata = trim($this->record($this->driver)->getCoreMetadata());
+  if (!empty($coreMetadata)) {
+    $content = '<input type="hidden" value="' . $this->escapeHtmlAttr($this->driver->getUniqueId()) . '" class="hiddenId" id="record_id_' . $idSuffixEsc . '">'
+      . '<input type="hidden" value="' . $this->escapeHtmlAttr($this->driver->getSourceIdentifier()) . '" class="hiddenSource">'
+      . $coreMetadata;
+    $tabs['information'] = [
+      'description' => 'ajaxview_label_information',
+      'content' => $content,
+      'paneAttributes' => [
+        'class' => 'record',
+        'data-init' => 'true',
+      ],
+    ];
+  }
+  $toolbar = trim($this->record($this->driver)->getToolbar());
+  if (!empty($toolbar)) {
+    $tabs['tools'] = [
+      'description' => 'ajaxview_label_tools',
+      'content' => $toolbar,
+      'paneAttributes' => [
+        'data-init' => 'true',
+      ],
+    ];
+  }
+  $list = $this->related()->getList($this->driver);
+  if (!empty($list)) {
+    $content = '';
+    foreach ($list as $current) {
+      $content .= $this->related()->render($current);
+    }
+    $tabs['related'] = [
+      'description' => 'Related Items',
+      'content' => $content,
+      'paneAttributes' => [
+        'data-init' => 'true',
+      ],
+    ];
+  }
+  $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding());
+  $tabs = array_merge($tabs, $this->recordTabs()->getTabs($this->driver, $filteredTabs, $this->defaultTab));
+?>
+<?=$this->component(
+    'tabs',
+    [
+      'tabs' => $tabs,
+      'activeTab' => $this->defaultTab,
+      'idSuffix' => $idSuffix,
+      'tabNavClasses' => ['list-tabs'],
+      'tabPaneClasses' => ['list-tab-content'],
+    ]
+)?>

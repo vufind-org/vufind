@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Get information from the EDS backend
+ * Get information from the EDS backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS\Command;
 
 use VuFindSearch\Backend\EDS\Backend;
@@ -33,7 +34,7 @@ use VuFindSearch\Command\CallMethodCommand;
 use VuFindSearch\ParamBag;
 
 /**
- * Get information from the EDS backend
+ * Get information from the EDS backend.
  *
  * @category VuFind
  * @package  Search
@@ -48,10 +49,12 @@ class GetInfoCommand extends CallMethodCommand
      *
      * @param string    $backendId Search backend identifier
      * @param ?ParamBag $params    Search backend parameters
+     * @param bool      $bustCache If request cache should be busted
      */
     public function __construct(
         string $backendId = 'EDS',
-        ParamBag $params = null
+        ?ParamBag $params = null,
+        protected bool $bustCache = false
     ) {
         parent::__construct(
             $backendId,
@@ -68,6 +71,6 @@ class GetInfoCommand extends CallMethodCommand
      */
     public function getArguments(): array
     {
-        return [];
+        return ['bustCache' => $this->bustCache];
     }
 }

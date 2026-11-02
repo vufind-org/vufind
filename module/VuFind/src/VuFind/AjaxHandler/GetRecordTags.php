@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AJAX handler to get all tags for a record as HTML.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\Tags;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Tags\TagsService;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * AJAX handler to get all tags for a record as HTML.
@@ -44,55 +46,37 @@ use VuFind\Db\Table\Tags;
 class GetRecordTags extends AbstractBase
 {
     /**
-     * Tags database table
+     * Constructor.
      *
-     * @var Tags
+     * @param TagsService               $tagsService Tags service
+     * @param ?UserEntityInterface      $user        Logged in user (or null)
+     * @param TemplateRendererInterface $renderer    Template renderer
      */
-    protected $table;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Constructor
-     *
-     * @param Tags              $table    Tags table
-     * @param User|bool         $user     Logged in user (or false)
-     * @param RendererInterface $renderer View renderer
-     */
-    public function __construct(Tags $table, $user, RendererInterface $renderer)
-    {
-        $this->table = $table;
-        $this->user = $user;
-        $this->renderer = $renderer;
+    public function __construct(
+        protected TagsService $tagsService,
+        protected ?UserEntityInterface $user,
+        protected TemplateRendererInterface $renderer,
+    ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
-        $is_me_id = !$this->user ? null : $this->user->id;
+        $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $tags = $this->table->getForResource(
-            $params->fromQuery('id'),
-            $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
+        $id = $this->getQueryParam($request, 'id');
+        $source = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
+        $tags = $this->tagsService->getRecordTags(
+            $id,
+            $source,
             0,
             null,
             null,
@@ -104,14 +88,14 @@ class GetRecordTags extends AbstractBase
         $tagList = [];
         foreach ($tags as $tag) {
             $tagList[] = [
-                'tag'   => $tag->tag,
-                'cnt'   => $tag->cnt,
-                'is_me' => !empty($tag->is_me)
+                'tag'   => $tag['tag'],
+                'cnt'   => $tag['cnt'],
+                'is_me' => !empty($tag['is_me']),
             ];
         }
 
-        $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user];
-        $html = $this->renderer->render('record/taglist', $viewParams);
+        $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user, 'driver' => "$source|$id"];
+        $html = $this->renderer->renderTemplateAsString($request, 'record/taglist', $viewParams);
         return $this->formatResponse(compact('html'));
     }
 }

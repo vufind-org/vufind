@@ -3,7 +3,7 @@
 /**
  * A single/simple query.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Query;
 
 /**
@@ -47,14 +48,14 @@ class Query extends AbstractQuery
     protected $queryHandler;
 
     /**
-     * Query string
+     * Query string.
      *
      * @var string
      */
     protected $queryString;
 
     /**
-     * Operator to apply to query string (null if not applicable)
+     * Operator to apply to query string (null if not applicable).
      *
      * @var string
      */
@@ -75,7 +76,7 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Return search string (optionally applying a normalization callback)
+     * Return search string (optionally applying a normalization callback).
      *
      * @param callable $normalizer Function to normalize text strings (null for
      * no normalization)

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Model for missing records -- used for saved favorites that have been deleted
  * from the index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Model for missing records -- used for saved favorites that have been deleted
@@ -41,12 +45,10 @@ namespace VuFind\RecordDriver;
 class Missing extends DefaultRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
+     * @param ?array $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig Record-specific configuration file (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
@@ -68,13 +70,11 @@ class Missing extends DefaultRecord
         }
 
         // If available, load title from database:
-        $id = $this->getUniqueId();
-        if ($id) {
-            $table = $this->getDbTable('Resource');
-            $resource = $table
-                ->findResource($id, $this->getSourceIdentifier(), false);
-            if (!empty($resource) && !empty($resource->title)) {
-                return $resource->title;
+        if ($id = $this->getUniqueID()) {
+            $resourceService = $this->getDbService(ResourceServiceInterface::class);
+            $resource = $resourceService->getResourceByRecordId($id, $this->getSourceIdentifier());
+            if ($title = $resource?->getDisplayTitle() ?? $resource?->getTitle()) {
+                return $title;
             }
         }
 

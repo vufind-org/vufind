@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Template for code module for storing local overrides.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Module
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindLocalTemplate;
 
 use Laminas\ModuleManager\ModuleManager;
@@ -42,7 +44,7 @@ use Laminas\Mvc\MvcEvent;
 class Module
 {
     /**
-     * Get module configuration
+     * Get module configuration.
      *
      * @return array
      */
@@ -52,23 +54,7 @@ class Module
     }
 
     /**
-     * Get autoloader configuration
-     *
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Initialize the module
+     * Initialize the module.
      *
      * @param ModuleManager $m Module manager
      *
@@ -81,7 +67,7 @@ class Module
     }
 
     /**
-     * Bootstrap the module
+     * Bootstrap the module.
      *
      * @param MvcEvent $e Event
      *

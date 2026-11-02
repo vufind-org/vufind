@@ -1,8 +1,9 @@
 <?php
+
 /**
- * EBSCO EDS API Connector
+ * EBSCO EDS API Connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -27,13 +28,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 use Laminas\Http\Client as HttpClient;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
- * EBSCO EDS API Connector
+ * EBSCO EDS API Connector.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -49,14 +51,14 @@ class Connector extends Base implements LoggerAwareInterface
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * The HTTP Request object to execute EDS API transactions
+     * The HTTP Request object to execute EDS API transactions.
      *
      * @var HttpClient
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the EDS API Client
      *
@@ -83,7 +85,7 @@ class Connector extends Base implements LoggerAwareInterface
      * @param string $queryString   Query string to append to URL
      * @param array  $headers       HTTP headers to send
      * @param string $messageBody   Message body to for HTTP Request
-     * @param string $messageFormat Format of request $messageBody and respones
+     * @param string $messageFormat Format of request $messageBody and responses
      * @param bool   $cacheable     Whether the request is cacheable
      *
      * @throws ApiException
@@ -95,10 +97,10 @@ class Connector extends Base implements LoggerAwareInterface
         $queryString,
         $headers,
         $messageBody = null,
-        $messageFormat = "application/json; charset=utf-8",
+        $messageFormat = 'application/json; charset=utf-8',
         $cacheable = true
     ) {
-        $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
+        $this->debug("{$method}: {$baseUrl}?{$queryString}");
 
         $this->client->resetParameters();
 
@@ -133,21 +135,5 @@ class Connector extends Base implements LoggerAwareInterface
             $this->putCachedData($cacheKey, $resultBody);
         }
         return $resultBody;
-    }
-
-    /**
-     * Print a message if debug is enabled.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     */
-    protected function debugPrint($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug("$msg\n");
-        } else {
-            parent::debugPrint($msg);
-        }
     }
 }

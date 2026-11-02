@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Content Security Policy view helper
+ * Content Security Policy view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -16,61 +17,70 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Response;
+use VuFind\Security\NonceGenerator;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Content Security Policy view helper
+ * Content Security Policy view helper.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class Csp extends \Laminas\View\Helper\AbstractHelper
+class Csp
 {
     /**
-     * Response object
+     * CSP nonce.
      *
-     * @var Response
+     * @var string
      */
-    protected $response;
+    protected string $nonce;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Response $response HTTP Response, if any
+     * @param ?Response      $response  HTTP Response, if any
+     * @param NonceGenerator $generator Nonce generator
      */
-    public function __construct(?Response $response)
-    {
-        $this->response = $response;
+    public function __construct(
+        #[Autowire(service: 'Response')]
+        protected ?Response $response,
+        NonceGenerator $generator
+    ) {
+        $this->nonce = $generator->getNonce();
     }
 
     /**
-     * Disable Content Security Policy by removing the headers
+     * Disable Content Security Policy by removing the headers.
      *
      * @return void
      */
-    public function disablePolicy()
+    public function disablePolicy(): void
     {
         if (null === $this->response) {
             return;
         }
         $headers = $this->response->getHeaders();
-        foreach (['Content-Security-Policy', 'Content-Security-Policy-Report-Only']
-            as $field
-        ) {
+        $fieldsToCheck = [
+            'Content-Security-Policy',
+            'Content-Security-Policy-Report-Only',
+        ];
+        foreach ($fieldsToCheck as $field) {
             if ($cspHeaders = $headers->get($field)) {
                 // Make sure the result is iterable (an array cast doesn't work here
                 // as a single header may be castable as an array):
@@ -81,5 +91,27 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
                 }
             }
         }
+    }
+
+    /**
+     * Return the current nonce.
+     *
+     * Result is a base64 encoded string that does not need escaping.
+     *
+     * @return string
+     */
+    public function getNonce(): string
+    {
+        return $this->nonce;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

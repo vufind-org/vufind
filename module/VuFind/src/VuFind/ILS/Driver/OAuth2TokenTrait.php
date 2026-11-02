@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
- * Trait OAuth2TokenTraitTest
+ * Trait OAuth2TokenTraitTest.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2021.
  *
@@ -18,8 +17,8 @@ declare(strict_types=1);
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFind\ILS
@@ -28,13 +27,16 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Auth\AuthToken;
 use VuFind\Exception\AuthToken as AuthTokenException;
 
 /**
- * Trait OAuth2TokenTraitTest
+ * Trait OAuth2TokenTraitTest.
  *
  * @category VuFind
  * @package  VuFind\ILS
@@ -49,7 +51,7 @@ trait OAuth2TokenTrait
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Get new authorization token from API using given credentials
+     * Get new authorization token from API using given credentials.
      *
      * @param string $tokenEndpoint URL of token endpoint
      * @param string $clientId      Client id
@@ -96,7 +98,7 @@ trait OAuth2TokenTrait
         }
 
         if ($response->getStatusCode() != 200) {
-            $errorMessage = 'Error while getting OAuth2 access token (status code '
+            $errorMessage = "Error while getting OAuth2 access token from '$tokenEndpoint' (status code "
                 . $response->getStatusCode() . '): ' . $response->getBody();
             $this->logError($errorMessage);
             throw new AuthTokenException(
@@ -105,11 +107,12 @@ trait OAuth2TokenTrait
         }
         $tokenData = json_decode($response->getBody(), true);
 
-        if (empty($tokenData['token_type'])
+        if (
+            empty($tokenData['token_type'])
             || empty($tokenData['access_token'])
         ) {
             $this->logError(
-                'Did not receive OAuth2 token, response: '
+                "Did not receive OAuth2 token from '$tokenEndpoint', response: "
                 . $response->getBody()
             );
             throw new AuthTokenException(

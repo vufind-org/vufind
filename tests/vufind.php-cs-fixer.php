@@ -3,41 +3,41 @@
 $finder = new PhpCsFixer\Finder();
 $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../module')
-    ->in(__DIR__ . '/../public');
+    ->in(__DIR__ . '/../public')
+    ->in(__DIR__ . '/../tests');
 
 $rules = [
+    '@PHP8x2Migration' => true,
+    '@PHPUnit10x0Migration:risky' => true,
+    '@PSR12' => true,
     'align_multiline_comment' => true,
-    'array_syntax' => ['syntax' => 'short'],
+    'attribute_empty_parentheses' => ['use_parentheses' => false],
     'binary_operator_spaces' => [
         'default' => 'single_space',
         'operators' => ['=' => null, '=>' => null],
     ],
-    'blank_line_after_namespace' => true,
-    'braces' => true,
     'cast_spaces' => ['space' => 'none'],
     'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
+    'class_reference_name_casing' => true,
     'concat_space' => ['spacing' => 'one'],
-    'constant_case' => ['case' => 'lower'],
-    'elseif' => true,
-    'encoding' => true,
     'ereg_to_preg' => true,
-    'full_opening_tag' => true,
-    'function_declaration' => true,
-    'function_typehint_space' => true,
-    'indentation_type' => true,
+    'get_class_to_class_keyword' => true,
+    'global_namespace_import' => [
+        'import_functions' => true,
+        'import_classes' => null,
+    ],
     'is_null' => true,
-    'line_ending' => true,
     'linebreak_after_opening_tag' => true,
-    'list_syntax' => ['syntax' => 'short'],
     'lowercase_cast' => true,
-    'lowercase_keywords' => true,
     'magic_constant_casing' => true,
-    'method_argument_space' => true,
+    'modernize_strpos' => true,
     'native_function_casing' => true,
+    'native_function_invocation' => [
+        'strict' => true,
+        'scope' => 'namespaced',
+    ],
+    'no_alias_functions' => true,
     'no_blank_lines_after_class_opening' => true,
-    'no_blank_lines_after_phpdoc' => true,
-    'no_blank_lines_before_namespace' => true,
-    'no_closing_tag' => true,
     'no_empty_comment' => true,
     'no_empty_phpdoc' => true,
     'no_empty_statement' => true,
@@ -45,38 +45,30 @@ $rules = [
     'no_leading_import_slash' => true,
     'no_leading_namespace_whitespace' => true,
     'no_mixed_echo_print' => true,
+    'no_php4_constructor' => true,
     'no_singleline_whitespace_before_semicolons' => true,
-    'no_spaces_after_function_name' => true,
     'no_spaces_around_offset' => true,
-    'no_spaces_inside_parenthesis' => true,
-    'no_trailing_whitespace' => true,
-    'no_trailing_whitespace_in_comment' => true,
+    'no_unneeded_braces' => true,
     'no_unneeded_control_parentheses' => true,
-    'no_unneeded_curly_braces' => true,
+    'no_unneeded_final_method' => true,
+    'no_unreachable_default_argument_value' => true,
     'no_unused_imports' => true,
     'no_useless_return' => true,
-    'no_whitespace_before_comma_in_array' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
-    'ordered_imports' => true,
+    'ordered_imports' => [
+        'imports_order' => ['class', 'function', 'const'],
+        'sort_algorithm' => 'alpha',
+    ],
     'phpdoc_no_access' => true,
-    'php_unit_dedicate_assert_internal_type' => true,
-    'php_unit_expectation' => true,
+    'phpdoc_summary' => true,
     'php_unit_method_casing' => true,
-    'php_unit_mock' => true,
-    'php_unit_no_expectation_annotation' => true,
     'pow_to_exponentiation' => true,
-    'single_blank_line_at_eof' => true,
-    'single_class_element_per_statement' => true,
-    'single_import_per_statement' => true,
     'single_line_after_imports' => true,
-    'short_scalar_cast' => true,
+    'single_quote' => true,
     'standardize_not_equals' => true,
-    'switch_case_semicolon_to_colon' => true,
-    'switch_case_space' => true,
     'ternary_operator_spaces' => true,
-    'ternary_to_null_coalescing' => true,
-    'visibility_required' => true,
+    'type_declaration_spaces' => true,
 ];
 
 $cacheDir = __DIR__ . '/../.php_cs_cache';
@@ -88,4 +80,5 @@ $config = new PhpCsFixer\Config();
 return $config->setCacheFile($cacheDir . '/.code.cache')
     ->setRiskyAllowed(true)
     ->setRules($rules)
-    ->setFinder($finder);
+    ->setFinder($finder)
+    ->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect());

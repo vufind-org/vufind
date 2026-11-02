@@ -3,7 +3,7 @@
 /**
  * Unit tests for Summon Backend class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,16 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Summon;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\Query;
 
 /**
@@ -50,6 +48,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Setup method.
@@ -73,7 +72,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->returnValue($this->loadResponse('single-record')));
+            ->willReturn($this->loadResponse('single-record'));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -81,6 +80,7 @@ class BackendTest extends TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-gale_primary_3281657081', $rec->ID[0]);
     }
@@ -95,10 +95,12 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $expected1 = new SummonQuery(null, ['idsToFetch' => range(1, 50), 'pageNumber' => 1, 'pageSize' => 50]);
         $expected2 = new SummonQuery(null, ['idsToFetch' => range(51, 60), 'pageNumber' => 1, 'pageSize' => 50]);
-        $conn->expects($this->exactly(2))
-            ->method('query')
-            ->withConsecutive([$expected1], [$expected2])
-            ->willReturnOnConsecutiveCalls($this->loadResponse('retrieve1'), $this->loadResponse('retrieve2'));
+        $this->expectConsecutiveCalls(
+            $conn,
+            'query',
+            [[$expected1], [$expected2]],
+            [$this->loadResponse('retrieve1'), $this->loadResponse('retrieve2')]
+        );
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -106,6 +108,7 @@ class BackendTest extends TestCase
         $this->assertCount(60, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-gale_primary_3281657083', $rec->ID[0]);
         $recs = $coll->getRecords();
@@ -127,7 +130,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->throwException(new SummonException()));
+            ->willThrowException(new SummonException());
         $back = new Backend($conn, $fact);
         $back->retrieve('id');
     }
@@ -142,7 +145,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -150,6 +153,7 @@ class BackendTest extends TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-proquest_dll_23240310011', $rec->ID[0]);
         $recs = $coll->getRecords();
@@ -162,8 +166,8 @@ class BackendTest extends TestCase
         $this->assertEquals('Language', $facets[0]['displayName']);
         $this->assertEquals(0, $coll->getOffset());
         $this->assertEquals([], $coll->getSpellcheck());
-        $this->assertEquals(false, $coll->getBestBets());
-        $this->assertEquals(false, $coll->getDatabaseRecommendations());
+        $this->assertEquals([], $coll->getBestBets());
+        $this->assertEquals([], $coll->getDatabaseRecommendations());
     }
 
     /**
@@ -179,7 +183,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new SummonException()));
+            ->willThrowException(new SummonException());
         $back = new Backend($conn, $fact);
         $back->search(new Query(), 1, 1);
     }
@@ -196,8 +200,8 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->with($this->equalTo($expectedParams))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->with($expectedParams)
+            ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz', 'boo'), 0, 10, $myParams);
     }
@@ -256,7 +260,7 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        return $this->getMockBuilder(\SerialsSolutions\Summon\Laminas::class)
+        return $this->getMockBuilder(\VuFindSearch\Backend\Summon\GuzzleConnector::class)
             ->onlyMethods($mock)
             ->setConstructorArgs(['id', 'key'])
             ->getMock();

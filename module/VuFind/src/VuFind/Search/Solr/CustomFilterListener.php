@@ -6,7 +6,7 @@
  * This can translate a simple filter into a complex set of filters, and it can
  * "invert" filters by applying Solr filters only when a VuFind filter is absent.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -29,12 +29,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
-
 use VuFindSearch\Service;
 
 /**
@@ -49,51 +49,26 @@ use VuFindSearch\Service;
 class CustomFilterListener
 {
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
-     * Normal filters
-     *
-     * @var array
-     */
-    protected $normalFilters;
-
-    /**
-     * Inverted filters
-     *
-     * @var array
-     */
-    protected $invertedFilters;
-
-    /**
-     * Name of parameter used to store filters
+     * Name of parameter used to store filters.
      *
      * @var string
      */
-    protected $filterParam = 'fq';
+    protected string $filterParam = 'fq';
 
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend  Backend
-     * @param array            $normal   Normal custom filters (placeholder => full
-     * filter)
-     * @param array            $inverted Inverted custom filters (applied unless set)
+     * @param BackendInterface $backend         Backend
+     * @param array            $normalFilters   Normal custom filters (placeholder => full filter)
+     * @param array            $invertedFilters Inverted custom filters (applied unless set)
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        array $normal,
-        array $inverted
+        protected BackendInterface $backend,
+        protected array $normalFilters,
+        protected array $invertedFilters
     ) {
-        $this->backend = $backend;
-        $this->normalFilters = $normal;
-        $this->invertedFilters = $inverted;
     }
 
     /**
@@ -103,10 +78,10 @@ class CustomFilterListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
@@ -119,10 +94,11 @@ class CustomFilterListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
-        if ($command->getContext() === 'search'
+        if (
+            $command->getContext() === 'search'
             && $command->getTargetIdentifier() === $this->backend->getIdentifier()
             && ($params = $command->getSearchParameters())
         ) {

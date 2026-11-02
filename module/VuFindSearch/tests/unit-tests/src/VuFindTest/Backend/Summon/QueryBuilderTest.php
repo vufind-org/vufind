@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Unit tests for Summon query builder
+ * Unit tests for Summon query builder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Summon;
 
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Summon\QueryBuilder;
 
 /**
- * Unit tests for Summon query builder
+ * Unit tests for Summon query builder.
  *
  * @category VuFind
  * @package  Search
@@ -53,12 +54,13 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
             ['basic', 'Author:(john smith)'],
-            ['advanced', '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))']
+            [
+                'advanced',
+                '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))',
+            ],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {

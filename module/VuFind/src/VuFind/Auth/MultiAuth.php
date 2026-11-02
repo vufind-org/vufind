@@ -1,8 +1,9 @@
 <?php
+
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -25,20 +26,25 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
+use function call_user_func;
+use function strlen;
+
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
- * This module enables chaining of multiple authentication plugins.  Authentication
+ * This module enables chaining of multiple authentication plugins. Authentication
  * plugins are executed in order, and the first successful authentication is
- * returned with the rest ignored.  The last error message is used to be returned
+ * returned with the rest ignored. The last error message is used to be returned
  * to the calling function.
  *
  * The plugin works by being defined as the authentication handler for the system
- * and then defining its own order for plugins.  For example, you could edit
+ * and then defining its own order for plugins. For example, you could edit
  * config.ini like this:
  *
  * [Authentication]
@@ -65,42 +71,42 @@ use VuFind\Exception\Auth as AuthException;
 class MultiAuth extends AbstractBase
 {
     /**
-     * Filter configuration for credentials
+     * Filter configuration for credentials.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Authentication methods to try
+     * Authentication methods to try.
      *
      * @var array
      */
     protected $methods = [];
 
     /**
-     * Username input
+     * Username input.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password input
+     * Password input.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Plugin manager for obtaining other authentication objects.
      *
      * @var PluginManager
      */
     protected $manager;
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -109,10 +115,10 @@ class MultiAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (empty($this->config->MultiAuth->method_order)) {
+        if (empty($this->config['MultiAuth']['method_order'])) {
             throw new AuthException(
-                "One or more MultiAuth parameters are missing. " .
-                "Check your config.ini!"
+                'One or more MultiAuth parameters are missing. ' .
+                'Check your config.ini!'
             );
         }
     }
@@ -120,38 +126,36 @@ class MultiAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @throws AuthException
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
-        if (isset($config->MultiAuth->method_order)) {
+        if (isset($config['MultiAuth']['method_order'])) {
             $this->methods = array_map(
                 'trim',
-                explode(',', $config->MultiAuth->method_order)
+                explode(',', $config['MultiAuth']['method_order'])
             );
         }
-        if (isset($config->MultiAuth->filters)
-            && strlen($config->MultiAuth->filters)
-        ) {
+        if (strlen($config['MultiAuth']['filters'] ?? '')) {
             $this->filters = array_map(
                 'trim',
-                explode(',', $config->MultiAuth->filters)
+                explode(',', $config['MultiAuth']['filters'])
             );
         }
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -200,7 +204,7 @@ class MultiAuth extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function authUser($request)
     {

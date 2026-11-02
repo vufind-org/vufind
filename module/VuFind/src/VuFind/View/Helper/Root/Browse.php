@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Browse controller view helper
+ * Browse controller view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
- * Browse controller view helper
+ * Browse controller view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,7 +38,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Browse extends AbstractHelper
+class Browse
 {
     /**
      * Get the Solr field associated with a particular browse action.
@@ -51,26 +51,36 @@ class Browse extends AbstractHelper
     public function getSolrField($action, $backup = null)
     {
         $action = strtolower($action);
-        $backup = strtolower($backup);
+        $backup = strtolower($backup ?? '');
         switch ($action) {
-        case 'dewey':
-            return 'dewey-hundreds';
-        case 'lcc':
-            return 'callnumber-first';
-        case 'author':
-            return 'author_facet';
-        case 'topic':
-            return 'topic_facet';
-        case 'genre':
-            return 'genre_facet';
-        case 'region':
-            return 'geographic_facet';
-        case 'era':
-            return 'era_facet';
+            case 'dewey':
+                return 'dewey-hundreds';
+            case 'lcc':
+                return 'callnumber-first';
+            case 'author':
+                return 'author_facet';
+            case 'topic':
+                return 'topic_facet';
+            case 'genre':
+                return 'genre_facet';
+            case 'region':
+                return 'geographic_facet';
+            case 'era':
+                return 'era_facet';
         }
-        if ($backup == null) {
+        if (empty($backup)) {
             return $action;
         }
         return $this->getSolrField($backup);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

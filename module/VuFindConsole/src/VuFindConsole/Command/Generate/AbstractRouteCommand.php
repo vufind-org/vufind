@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for route generator commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Generate;
 
 use VuFind\Route\RouteGenerator;
@@ -42,14 +44,14 @@ use VuFindConsole\Generator\GeneratorTools;
 abstract class AbstractRouteCommand extends AbstractCommand
 {
     /**
-     * Route generator
+     * Route generator.
      *
      * @var RouteGenerator
      */
     protected $routeGenerator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorTools $tools    Generator tools
      * @param RouteGenerator $routeGen Route generator

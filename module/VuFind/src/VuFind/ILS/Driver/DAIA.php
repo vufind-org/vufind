@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *
  * Based on the proof-of-concept-driver by Till Kinstler, GBV.
  * Relaunch of the daia driver developed by Oliver Goldschmidt.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Jochen Lienhard 2014.
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -30,12 +31,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
-use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -49,7 +56,8 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class DAIA extends AbstractBase implements
-    HttpServiceAwareInterface, LoggerAwareInterface
+    HttpServiceAwareInterface,
+    LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -58,56 +66,56 @@ class DAIA extends AbstractBase implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base URL for DAIA Service
+     * Base URL for DAIA Service.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Timeout in seconds to be used for DAIA http requests
+     * Timeout in seconds to be used for DAIA http requests.
      *
      * @var string
      */
     protected $daiaTimeout = null;
 
     /**
-     * Flag to switch on/off caching for DAIA items
+     * Flag to switch on/off caching for DAIA items.
      *
      * @var bool
      */
     protected $daiaCacheEnabled = false;
 
     /**
-     * DAIA query identifier prefix
+     * DAIA query identifier prefix.
      *
      * @var string
      */
     protected $daiaIdPrefix;
 
     /**
-     * DAIA response format
+     * DAIA response format.
      *
      * @var string
      */
     protected $daiaResponseFormat;
 
     /**
-     * Flag to enable multiple DAIA-queries
+     * Flag to enable multiple DAIA-queries.
      *
      * @var bool
      */
     protected $multiQuery = false;
 
     /**
-     * Acceptable ContentTypes delivered by DAIA server in HTTP header
+     * Acceptable ContentTypes delivered by DAIA server in HTTP header.
      *
      * @var array
      */
     protected $contentTypesResponse;
 
     /**
-     * ContentTypes to use in DAIA HTTP requests in HTTP header
+     * ContentTypes to use in DAIA HTTP requests in HTTP header.
      *
      * @var array
      */
@@ -117,14 +125,14 @@ class DAIA extends AbstractBase implements
     ];
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $converter Date converter
      */
@@ -187,7 +195,8 @@ class DAIA extends AbstractBase implements
         } else {
             $this->debug('Caching not enabled, disabling it by default.');
         }
-        if (isset($this->config['General'])
+        if (
+            isset($this->config['General'])
             && isset($this->config['General']['cacheLifetime'])
         ) {
             $this->cacheLifetime = $this->config['General']['cacheLifetime'];
@@ -224,13 +233,13 @@ class DAIA extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -251,7 +260,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -264,7 +273,8 @@ class DAIA extends AbstractBase implements
     public function getStatus($id)
     {
         // check ids for existing availability data in cache and skip these ids
-        if ($this->daiaCacheEnabled
+        if (
+            $this->daiaCacheEnabled
             && $item = $this->getCachedData($this->generateURI($id))
         ) {
             if ($item != null) {
@@ -295,7 +305,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -318,7 +328,8 @@ class DAIA extends AbstractBase implements
 
         // check cache for given ids and skip these ids if availability data is found
         foreach ($ids as $key => $id) {
-            if ($this->daiaCacheEnabled
+            if (
+                $this->daiaCacheEnabled
                 && $item = $this->getCachedData($this->generateURI($id))
             ) {
                 if ($item != null) {
@@ -381,13 +392,13 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
@@ -396,13 +407,13 @@ class DAIA extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -411,6 +422,8 @@ class DAIA extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -418,7 +431,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Support method to handle date uniformly
+     * Support method to handle date uniformly.
      *
      * @param string $date String representing a date
      *
@@ -436,7 +449,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Support method to handle datetime uniformly
+     * Support method to handle datetime uniformly.
      *
      * @param string $datetime String representing a datetime
      *
@@ -521,7 +534,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Generate a DAIA URI necessary for the query
+     * Generate a DAIA URI necessary for the query.
      *
      * @param string $id Id of the record whose DAIA document should be queried
      *
@@ -535,7 +548,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Combine several ids to DAIA Query API conform URIs
+     * Combine several ids to DAIA Query API conform URIs.
      *
      * @param array $ids Array of ids which shall be converted into URIs and
      *                  combined for querying multiple DAIA documents.
@@ -579,7 +592,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Extract a DAIA document identified by an id
+     * Extract a DAIA document identified by an id.
      *
      * This method loops through all the existing DAIA document-elements in
      * the given DAIA response and returns the first document whose id matches
@@ -616,7 +629,8 @@ class DAIA extends AbstractBase implements
                 // now loop through the found DAIA documents
                 foreach ($docs['document'] as $doc) {
                     // DAIA documents should use URIs as value for id
-                    if (isset($doc['id'])
+                    if (
+                        isset($doc['id'])
                         && $doc['id'] == $this->generateURI($id)
                     ) {
                         // we've found the document element with the matching URI
@@ -656,12 +670,13 @@ class DAIA extends AbstractBase implements
 
         // prepare DOMDocument as json_encode does not support save attributes if
         // elements have values (see http://stackoverflow.com/a/20506281/2115462)
-        $prepare = function ($domNode) use (&$prepare) {
+        $prepare = function ($domNode) use (&$prepare): void {
             foreach ($domNode->childNodes as $node) {
                 if ($node->hasChildNodes()) {
                     $prepare($node);
                 } else {
-                    if (($domNode->hasAttributes() && strlen($domNode->nodeValue))
+                    if (
+                        ($domNode->hasAttributes() && strlen($domNode->nodeValue))
                         || (in_array(
                             $domNode->nodeName,
                             ['storage', 'limitation', 'department', 'institution']
@@ -704,13 +719,14 @@ class DAIA extends AbstractBase implements
         $restructure = function ($array) use (&$restructure) {
             $elements = [
                 'document', 'item', 'available', 'unavailable', 'limitation',
-                'message'
+                'message',
             ];
             foreach ($array as $key => $value) {
                 if (is_array($value)) {
                     $value = $restructure($value);
                 }
-                if (in_array($key, $elements, true)
+                if (
+                    in_array($key, $elements, true)
                     && !isset($array[$key][0])
                 ) {
                     unset($array[$key]);
@@ -814,13 +830,15 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
                 }
                 // attribute service can be set once or not
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array(
                         $available['service'],
                         ['loan', 'presentation', 'openaccess']
@@ -829,7 +847,8 @@ class DAIA extends AbstractBase implements
                     // set item available if service is loan, presentation or
                     // openaccess
                     $availability = true;
-                    if ($available['service'] == 'loan'
+                    if (
+                        $available['service'] == 'loan'
                         && isset($available['href'])
                     ) {
                         // save the link to the ils if we have a href for loan
@@ -859,19 +878,22 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
                 }
                 // attribute service can be set once or not
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array(
                         $unavailable['service'],
                         ['loan', 'presentation', 'openaccess']
                     )
                 ) {
-                    if ($unavailable['service'] == 'loan'
+                    if (
+                        $unavailable['service'] == 'loan'
                         && isset($unavailable['href'])
                     ) {
                         //save the link to the ils if we have a href for loan service
@@ -958,6 +980,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getCustomData($item)
     {
@@ -970,6 +994,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getStatusString($item)
     {
@@ -979,7 +1005,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Helper function to determine if item is recallable.
-     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * DAIA does not genuinely allow distinguishing between holdable and recallable
      * items. This could be achieved by usage of limitations but this would not be
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore this returns whether an item
@@ -998,7 +1024,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
@@ -1008,7 +1035,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
@@ -1042,7 +1070,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
@@ -1055,7 +1084,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
@@ -1072,7 +1102,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Helper function to determine the holdtype available for current item.
-     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * DAIA does not genuinely allow distinguishing between holdable and recallable
      * items. This could be achieved by usage of limitations but this would not be
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore getHoldType always returns recall.
@@ -1088,7 +1118,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated value of the provided limitation element
+     * Returns the evaluated value of the provided limitation element.
      *
      * @param array $limitations Array with DAIA limitation data
      *
@@ -1108,7 +1138,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.department.content (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1124,7 +1154,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.department.id (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1138,7 +1168,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.department.href (e.g. to be used in VuFind
-     * getStatus/getHolding array for linking the location)
+     * getStatus/getHolding array for linking the location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1151,7 +1181,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.storage.content (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1167,7 +1197,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.storage.id (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1181,7 +1211,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.storage.href (e.g. to be used in VuFind
-     * getStatus/getHolding array for linking the location)
+     * getStatus/getHolding array for linking the location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1194,7 +1224,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated values of the provided limitations element
+     * Returns the evaluated values of the provided limitations element.
      *
      * @param array $limitations Array with DAIA limitation data
      *
@@ -1213,7 +1243,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated values of the provided limitations element
+     * Returns the evaluated values of the provided limitations element.
      *
      * @param array $limitations Array with DAIA limitation data
      *
@@ -1232,12 +1262,14 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "number" in VuFind getStatus/getHolding array
+     * Returns the value for "number" in VuFind getStatus/getHolding array.
      *
      * @param array $item    Array with DAIA item data
      * @param int   $counter Integer counting items as alternative return value
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemNumber($item, $counter)
     {
@@ -1245,11 +1277,13 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "location" in VuFind getStatus/getHolding array
+     * Returns the value for "location" in VuFind getStatus/getHolding array.
      *
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemBarcode($item)
     {
@@ -1257,11 +1291,13 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "reserve" in VuFind getStatus/getHolding array
+     * Returns the value for "reserve" in VuFind getStatus/getHolding array.
      *
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemReserveStatus($item)
     {
@@ -1269,7 +1305,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "callnumber" in VuFind getStatus/getHolding array
+     * Returns the value for "callnumber" in VuFind getStatus/getHolding array.
      *
      * @param array $item Array with DAIA item data
      *
@@ -1284,7 +1320,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the available services of the given set of available and unavailable
-     * services
+     * services.
      *
      * @param array $services Array with DAIA services available/unavailable
      *
@@ -1295,7 +1331,8 @@ class DAIA extends AbstractBase implements
         $availableServices = [];
         if (isset($services['available'])) {
             foreach ($services['available'] as $service) {
-                if (!isset($services['unavailable'])
+                if (
+                    !isset($services['unavailable'])
                     || !in_array($service, $services['unavailable'])
                 ) {
                     $availableServices[] = $service;
@@ -1306,7 +1343,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Logs content of message elements in DAIA response for debugging
+     * Logs content of message elements in DAIA response for debugging.
      *
      * @param array  $messages Array with message elements to be logged
      * @param string $context  Description of current message context

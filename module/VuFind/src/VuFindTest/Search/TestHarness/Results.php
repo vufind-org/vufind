@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test results search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Search\TestHarness;
 
 use VuFind\Record\Loader;
@@ -45,28 +47,28 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
-     * Fake expected total
+     * Fake expected total.
      *
      * @var int
      */
-    protected $fakeExpectedTotal;
+    protected int $fakeExpectedTotal;
 
     /**
-     * Cache for fake drivers
+     * Cache for fake drivers.
      *
      * @var array
      */
-    protected $driverCache = [];
+    protected array $driverCache = [];
 
     /**
-     * Fake facet response
+     * Fake facet response.
      *
      * @var array
      */
-    protected $facets;
+    protected array $facets;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
@@ -80,36 +82,36 @@ class Results extends \VuFind\Search\Base\Results
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
-        $total = 100,
-        $facets = []
+        int $total = 100,
+        array $facets = []
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->fakeExpectedTotal = $total;
-        $this->searchId = 'fake';   // fill a fake value here so we don't hit the DB
+        $this->searchId = -123;   // fill a fake value here so we don't hit the DB
         $this->facets = $facets;
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         return $this->facets;
     }
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
-     * on the parameters passed to the object.  This method is responsible for
+     * on the parameters passed to the object. This method is responsible for
      * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $this->resultTotal = $this->fakeExpectedTotal;
         $this->results = [];
@@ -127,13 +129,13 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param string $id ID to use
      *
      * @return RecordDriver
      */
-    public function getMockRecordDriver($id)
+    public function getMockRecordDriver(string $id): RecordDriver
     {
         if (!isset($this->driverCache[$id])) {
             $this->driverCache[$id] = new RecordDriver();

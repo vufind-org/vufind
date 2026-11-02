@@ -1,0 +1,302 @@
+<?php
+
+/**
+ * SimilarItems Test Class.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2022.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+
+namespace VuFindTest\ChannelProvider;
+
+use VuFind\ChannelProvider\SimilarItems;
+use VuFind\Http\RouteHelper;
+use VuFindSearch\ParamBag;
+use VuFindTest\RecordDriver\TestHarness;
+
+/**
+ * SimilarItems Test Class.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+class SimilarItemsTest extends \PHPUnit\Framework\TestCase
+{
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
+    /**
+     * Test deriving channel information from a record driver object.
+     *
+     * @return void
+     */
+    public function testGetFromRecord(): void
+    {
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 24]);
+        $recordDriver = $this->getDriver();
+        $this->assertSame($expectedResult, $similar->getFromRecord($recordDriver));
+    }
+
+    /**
+     * Test deriving channel information from a record driver object when we
+     * have a token that do not match record driver.
+     *
+     * @return void
+     */
+    public function testGetFromRecordWhenChannelTokenIsSet(): void
+    {
+        $similar = $this->getSimilarItems()['similar'];
+        $recordDriver = $this->getDriver();
+        $this->assertSame([], $similar->getFromRecord($recordDriver, 'foo_Token'));
+    }
+
+    /**
+     * Test deriving channel information from a search results object.
+     *
+     * @return void
+     */
+    public function testGetFromSearch(): void
+    {
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $recordDriver = $this->getDriver();
+        $results->expects($this->once())->method('getResults')
+            ->willReturn([$recordDriver]);
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 24]);
+        $this->assertSame($expectedResult, $similar->getFromSearch($results));
+    }
+
+    /**
+     * Test deriving channel information from a search results object when
+     * maxRecordsToExamine is lessthan channels.
+     *
+     * @return void
+     */
+    public function testGetFromSearchWhenMaxRecordsIsLessthanChannels(): void
+    {
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $recordDriver = $this->getDriver();
+        $results->expects($this->once())->method('getResults')
+            ->willReturn([$recordDriver]);
+        $similar = $this->getSimilarItems(['maxRecordsToExamine' => 0])['similar'];
+        $expectedResult = [[
+            'title' => 'Similar Items: foo_Breadcrumb',
+            'providerId' => 'foo_ProviderId',
+            'links' => [],
+            'token' => 'foo_Id',
+        ]];
+        $similar->setProviderId('foo_ProviderId');
+        $this->assertSame($expectedResult, $similar->getFromSearch($results));
+    }
+
+    /**
+     * Test deriving channel information from a search results object with
+     * a specific single channel to load.
+     *
+     * @return void
+     */
+    public function testGetFromSearchWhenChannelsIsEmpty(): void
+    {
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $recordDriver = $this->getDriver();
+        $results->expects($this->once())->method('getResults')
+            ->willReturn([$recordDriver]);
+        [$similar, $expectedResult]  = $this->configureTestTargetAndExpectations(
+            ['maxRecordsToExamine' => 0, 'rows' => 24],
+            true
+        );
+        $this->assertSame(
+            $expectedResult,
+            $similar->getFromSearch($results, 'channel_token')
+        );
+    }
+
+    /**
+     * Support method to mock objects.
+     *
+     * @param array $options                Set options for the provider
+     * @param bool  $fetchFromSearchService Flag indicating test case to fetch from
+     * search service when the search results do not include object we are looking
+     * for
+     *
+     * @return array
+     */
+    public function configureTestTargetAndExpectations(
+        $options = [],
+        $fetchFromSearchService = false
+    ) {
+        $options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20], $options);
+        $mockObjects = $this->getSimilarItems($options);
+        $similar = $mockObjects['similar'];
+        $search = $mockObjects['search'];
+        $routeHelper = $mockObjects['routeHelper'];
+        $router = $mockObjects['router'];
+        $similar->setProviderId('foo_ProviderId');
+        $params = new ParamBag(['rows' => $options['rows']]);
+        $retrieveParams = new ParamBag();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $collection = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
+        $recordDriver = $this->getDriver();
+        $router->expects($this->once())->method('getTabRouteDetails')
+            ->with($recordDriver)
+            ->willReturn('foo_Route');
+
+        $arguments = ['foo_Id', $params];
+        $retrieve =  ['channel_token', $retrieveParams];
+
+        if ($fetchFromSearchService) {
+            $class = \VuFindSearch\Command\RetrieveCommand::class;
+            $collection->expects($this->once())->method('first')
+                ->willReturn($recordDriver);
+
+            $commandObj->expects($this->exactly(2))->method('getResult')
+                ->willReturnOnConsecutiveCalls(
+                    $collection,
+                    [$recordDriver]
+                );
+
+            $this->expectConsecutiveCalls(
+                $search,
+                'invoke',
+                [
+                    [$this->callback($this->getCommandChecker($retrieve, $class))],
+                    [$this->callback($this->getCommandChecker($arguments))],
+                ],
+                $commandObj
+            );
+        } else {
+            $commandObj->expects($this->once())->method('getResult')
+                ->willReturn([$recordDriver]);
+
+            $search->expects($this->once())->method('invoke')
+                ->with($this->callback($this->getCommandChecker($arguments)))
+                ->willReturn($commandObj);
+        }
+
+        $expectedResult = [[
+            'title' => 'Similar Items: foo_Breadcrumb',
+            'providerId' => 'foo_ProviderId',
+            'links' => [
+                [
+                    'label' => 'View Record',
+                    'icon' => 'format-default',
+                    'url' => 'url_test',
+                ],
+                [
+                    'label' => 'channel_expand',
+                    'icon' => 'ui-add',
+                    'url' => 'channels-record?id=foo_Id&source=Solr',
+                ],
+            ],
+            'limit' => 24,
+            'contents' => [[
+                'title' => 'foo_Title',
+                'source' => 'Solr',
+                'thumbnail' => false,
+                'routeDetails' => 'foo_Route',
+                'id' => 'foo_Id'],
+            ],
+
+        ]];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
+        $router->expects($this->once())->method('getRouteDetails')
+            ->with($recordDriver)
+            ->willReturn($routeDetails);
+        $this->expectConsecutiveCalls(
+            $routeHelper,
+            'getUrlFromRoute',
+            [
+                [$routeDetails['route'], $routeDetails['params']],
+                ['channels-record', [], ['id' => 'foo_Id', 'source' => 'Solr']],
+            ],
+            [
+                'url_test',
+                'channels-record?id=foo_Id&source=Solr',
+            ]
+        );
+        return [
+            $similar,
+            $expectedResult,
+        ];
+    }
+
+    /**
+     * Get SimilarItems mock object.
+     *
+     * @param array $options options for the provider
+     *
+     * @return array
+     */
+    protected function getSimilarItems($options = [])
+    {
+        $search = $this->createMock(\VuFindSearch\Service::class);
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $router = $this->createMock(\VuFind\Record\Router::class);
+        $similar = new SimilarItems($search, $routeHelper, $options);
+        $similar->setRecordRouter($router);
+
+        return compact('search', 'routeHelper', 'router', 'similar');
+    }
+
+    /**
+     * Support method to test callbacks.
+     *
+     * @param array  $args   Command arguments
+     * @param string $class  Command class
+     * @param string $target Target identifier
+     *
+     * @return callable
+     */
+    protected function getCommandChecker(
+        $args = [],
+        $class = \VuFindSearch\Command\SimilarCommand::class,
+        $target = 'Solr'
+    ) {
+        return function ($command) use ($class, $args, $target) {
+            $this->assertSame($command::class, $class);
+            $this->assertEquals($args, $command->getArguments());
+            $this->assertSame($target, $command->getTargetIdentifier());
+            return true;
+        };
+    }
+
+    /**
+     * Get a fake record driver.
+     *
+     * @return TestHarness
+     */
+    protected function getDriver()
+    {
+        $driver = new TestHarness();
+        $data = [
+            'Title' => 'foo_Title',
+            'Thumbnail' => 'foo_Thumbnail',
+            'UniqueID' => 'foo_Id',
+            'Breadcrumb' => 'foo_Breadcrumb',
+            'SourceIdentifier' => 'Solr',
+        ];
+        $driver->setRawData($data);
+        return $driver;
+    }
+}

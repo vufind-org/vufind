@@ -1,0 +1,80 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('bulk_save_cart')]);?>
+
+<?=$this->flashmessages()?>
+
+<?php if (count($this->records) > 0): ?>
+  <form class="form-cart-save" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
+    <?=$this->context($this)->renderInContext('cart/form-record-hidden-inputs.phtml', []); ?>
+    <div class="form-group">
+      <label class="form-label"><?=$this->transEsc('Title')?>:</label>
+      <?php if (count($this->records) > 1): ?>
+        <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
+          <?=count($this->records) . ' ' . $this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse show">
+          <ul>
+            <?php foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php else: ?>
+        <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
+      <?php endif; ?>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+      <select id="save_list" name="list" class="form-select">
+        <?php if (count($this->lists) > 0): ?>
+          <?php foreach ($this->lists as $list): ?>
+            <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+              <?=$this->escapeHtml($list->getTitle())?><?php if ($list->isPublic()):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+            </option>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <option value=""><?=$this->transEsc('default_list_title') ?></option>
+        <?php endif; ?>
+      </select>
+      <button type="submit" id="make-list" name="newList" class="btn btn-link"><?=$this->transEsc('or create a new list'); ?></button>
+    </div>
+
+    <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
+      <div class="form-group">
+        <label class="form-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+        <input id="add_mytags" type="text" name="mytags" value="" class="form-control">
+        <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
+      </div>
+    <?php endif; ?>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Save') ?>">
+    </div>
+  </form>
+<?php endif; ?>
+
+<?php
+  $script = <<<JS
+      $('button.btn.hidden').removeClass('hidden');
+      $('#itemhide').removeClass('show');
+
+      const form = document.querySelector(".form-cart-save");
+      form.addEventListener("keypress", function cartSaveEnter(event) {
+        // Make Enter key submit save form unless a button is the target (prevents unexpected/undesired
+        // "create list" default behavior):
+        if (event.key === "Enter" && event.target.nodeName !== 'BUTTON') {
+          form.querySelector('.btn[value="Save"]').click();
+          event.preventDefault();
+          return false;
+        }
+      });
+      JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

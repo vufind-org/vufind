@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait to add facet limiting settings to a Params object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Params;
 
-use Laminas\Config\Config;
+use function in_array;
 
 /**
  * Trait to add facet limiting settings to a Params object.
@@ -41,85 +43,87 @@ use Laminas\Config\Config;
 trait FacetLimitTrait
 {
     /**
-     * Default facet result limit
+     * Default facet result limit.
      *
      * @var int
      */
-    protected $facetLimit = 30;
+    protected int $facetLimit = 30;
 
     /**
-     * Per-field facet result limit
+     * Per-field facet result limit.
      *
      * @var array
      */
-    protected $facetLimitByField = [];
+    protected array $facetLimitByField = [];
 
     /**
      * Hierarchical facet limit when facets are requested.
      *
-     * @var int|null
+     * -1 = unlimited
+     *
+     * @var int
      */
-    protected $hierarchicalFacetLimit = null;
+    protected int $hierarchicalFacetLimit = -1;
 
     /**
-     * Initialize facet limit from a Config object.
+     * Initialize facet limit from a Config array.
      *
-     * @param Config $config Configuration
+     * @param ?array $config Configuration
      *
      * @return void
      */
-    protected function initFacetLimitsFromConfig(Config $config = null)
+    protected function initFacetLimitsFromConfig(?array $config = null): void
     {
-        if (is_numeric($config->facet_limit ?? null)) {
-            $this->setFacetLimit($config->facet_limit);
+        if (is_numeric($config['facet_limit'] ?? null)) {
+            $this->setFacetLimit($config['facet_limit']);
         }
-        foreach ($config->facet_limit_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_limit_by_field'] ?? [] as $k => $v) {
             $this->facetLimitByField[$k] = $v;
         }
     }
 
     /**
-     * Set Facet Limit
+     * Set Facet Limit.
      *
      * @param int $l the new limit value
      *
      * @return void
      */
-    public function setFacetLimit($l)
+    public function setFacetLimit(int $l): void
     {
         $this->facetLimit = $l;
     }
 
     /**
-     * Set Facet Limit by Field
+     * Set Facet Limit by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
      * @return void
      */
-    public function setFacetLimitByField(array $new)
+    public function setFacetLimitByField(array $new): void
     {
         $this->facetLimitByField = $new;
     }
 
     /**
-     * Get current limit for hierarchical facets
+     * Get current limit for hierarchical facets.
      *
      * @return int
      */
-    public function getHierarchicalFacetLimit()
+    public function getHierarchicalFacetLimit(): int
     {
         return $this->hierarchicalFacetLimit;
     }
 
     /**
-     * Set limit for hierarchical facets
+     * Set limit for hierarchical facets.
      *
      * @param int $limit New limit
      *
      * @return void
      */
-    public function setHierarchicalFacetLimit($limit)
+    public function setHierarchicalFacetLimit(int $limit): void
     {
         $this->hierarchicalFacetLimit = $limit;
     }
@@ -131,14 +135,12 @@ trait FacetLimitTrait
      *
      * @return int
      */
-    protected function getFacetLimitForField($field)
+    protected function getFacetLimitForField(string $field): int
     {
         $limit = $this->facetLimitByField[$field] ?? $this->facetLimit;
 
         // Check for a different limit for hierarchical facets:
-        if (null !== $this->hierarchicalFacetLimit
-            && $limit !== $this->hierarchicalFacetLimit
-        ) {
+        if ($limit !== $this->hierarchicalFacetLimit) {
             $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
             if (in_array($field, $hierarchicalFacets)) {
                 $limit = $this->hierarchicalFacetLimit;

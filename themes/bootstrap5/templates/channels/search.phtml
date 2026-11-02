@@ -1,0 +1,13 @@
+<?php
+    $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->results->getParams()->getDisplayQuery();
+
+    // Set up page title:
+    $this->headTitle($this->translate('Channels') . (empty($lookfor) ? '' : " - {$lookfor}"));
+
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Channels'), $this->url('channels-home'))->add($lookfor, active: true);
+
+    // Set up query parameters for channel list:
+    $this->queryParams = ltrim($this->results->getUrlQuery()->getParams(false), '?');
+?>
+<?=$this->render('channels/channelList.phtml')?>

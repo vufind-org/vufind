@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SwitchType Recommendations Module
+ * SwitchType Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,10 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
- * SwitchType Recommendations Module
+ * SwitchType Recommendations Module.
  *
  * This class recommends switching to a different search type.
  *
@@ -43,14 +45,14 @@ namespace VuFind\Recommend;
 class SwitchType implements RecommendInterface
 {
     /**
-     * Search handler to try
+     * Search handler to try.
      *
      * @var string
      */
     protected $newHandler;
 
     /**
-     * On-screen description of handler
+     * On-screen description of handler.
      *
      * @var string
      */
@@ -64,7 +66,7 @@ class SwitchType implements RecommendInterface
     protected $active;
 
     /**
-     * Results object
+     * Results object.
      *
      * @var \VuFind\Search\Base\Results
      */
@@ -102,7 +104,7 @@ class SwitchType implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -116,7 +118,7 @@ class SwitchType implements RecommendInterface
         $this->results = $results;
 
         // If the handler is null, we can't figure out a single handler, so this
-        // is probably an advanced search.  In that case, we shouldn't try to change
+        // is probably an advanced search. In that case, we shouldn't try to change
         // anything!  We should only show recommendations if we know what handler is
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.
@@ -136,7 +138,7 @@ class SwitchType implements RecommendInterface
     /**
      * Get the new search handler, or false if it does not apply.
      *
-     * @return string
+     * @return string|false
      */
     public function getNewHandler()
     {

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Search results plugin manager
+ * Search results plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Results;
 
 /**
- * Search results plugin manager
+ * Search results plugin manager.
  *
  * @category VuFind
  * @package  Search
@@ -45,16 +47,20 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'blender' => \VuFind\Search\Blender\Results::class,
+        'blender2' => \VuFind\Search\Blender2\Results::class,
         'browzine' => \VuFind\Search\BrowZine\Results::class,
         'combined' => \VuFind\Search\Combined\Results::class,
         'eds' => \VuFind\Search\EDS\Results::class,
         'eit' => \VuFind\Search\EIT\Results::class,
+        'epf' => \VuFind\Search\EPF\Results::class,
         'emptyset' => \VuFind\Search\EmptySet\Results::class,
         'favorites' => \VuFind\Search\Favorites\Results::class,
         'libguides' => \VuFind\Search\LibGuides\Results::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Results::class,
         'mixedlist' => \VuFind\Search\MixedList\Results::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Results::class,
         'primo' => \VuFind\Search\Primo\Results::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Results::class,
         'search2' => \VuFind\Search\Search2\Results::class,
         'search2collection' => \VuFind\Search\Search2Collection\Results::class,
         'solr' => \VuFind\Search\Solr\Results::class,
@@ -67,46 +73,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summon' => \VuFind\Search\Summon\Results::class,
         'tags' => \VuFind\Search\Tags\Results::class,
         'worldcat' => \VuFind\Search\WorldCat\Results::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Results::class,
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        \VuFind\Search\Blender\Results::class
-            => \VuFind\Search\Solr\ResultsFactory::class,
-        \VuFind\Search\BrowZine\Results::class => ResultsFactory::class,
-        \VuFind\Search\Combined\Results::class => ResultsFactory::class,
-        \VuFind\Search\EDS\Results::class => ResultsFactory::class,
-        \VuFind\Search\EIT\Results::class => ResultsFactory::class,
-        \VuFind\Search\EmptySet\Results::class => ResultsFactory::class,
-        \VuFind\Search\Favorites\Results::class =>
-            \VuFind\Search\Favorites\ResultsFactory::class,
-        \VuFind\Search\LibGuides\Results::class => ResultsFactory::class,
-        \VuFind\Search\MixedList\Results::class => ResultsFactory::class,
-        \VuFind\Search\Pazpar2\Results::class => ResultsFactory::class,
-        \VuFind\Search\Primo\Results::class => ResultsFactory::class,
-        \VuFind\Search\Search2\Results::class =>
-            \VuFind\Search\Search2\ResultsFactory::class,
-        \VuFind\Search\Search2Collection\Results::class => ResultsFactory::class,
-        \VuFind\Search\Solr\Results::class =>
-            \VuFind\Search\Solr\ResultsFactory::class,
-        \VuFind\Search\SolrAuth\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrAuthor\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrAuthorFacets\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrCollection\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrReserves\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrWeb\Results::class => ResultsFactory::class,
-        \VuFind\Search\Summon\Results::class => ResultsFactory::class,
-        \VuFind\Search\Tags\Results::class =>
-            \VuFind\Search\Tags\ResultsFactory::class,
-        \VuFind\Search\WorldCat\Results::class => ResultsFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

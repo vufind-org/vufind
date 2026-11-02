@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Hierarchy Tree Renderer
+ * Hierarchy Tree Renderer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_Renderer
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use function is_object;
+
 /**
- * Hierarchy Tree Renderer
+ * Hierarchy Tree Renderer.
  *
  * This is a base helper class for producing hierarchy Trees.
  *
@@ -41,21 +45,21 @@ namespace VuFind\Hierarchy\TreeRenderer;
 abstract class AbstractBase
 {
     /**
-     * Hierarchical record to work on
+     * Hierarchical record to work on.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $recordDriver = null;
 
     /**
-     * Source of hierarchy data
+     * Source of hierarchy data.
      *
      * @var \VuFind\Hierarchy\TreeDataSource\AbstractBase
      */
     protected $dataSource = null;
 
     /**
-     * Set the record driver to operate on
+     * Set the record driver to operate on.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -68,9 +72,9 @@ abstract class AbstractBase
     }
 
     /**
-     * Get the current record driver
+     * Get the current record driver.
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return \VuFind\RecordDriver\DefaultRecord
      * @throws \Exception
      */
     protected function getRecordDriver()
@@ -82,7 +86,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Get the current hierarchy data source
+     * Get the current hierarchy data source.
      *
      * @return \VuFind\Hierarchy\TreeDataSource\AbstractBase
      * @throws \Exception
@@ -111,34 +115,34 @@ abstract class AbstractBase
      *
      * @param string $hierarchyID Optional filter: specific hierarchy ID to retrieve
      *
-     * @return mixed An array of hierarchy IDS if an archive tree exists,
+     * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
     abstract public function getTreeList($hierarchyID = false);
 
     /**
-     * Render the Hierarchy Tree
+     * Render the Hierarchy Tree.
      *
-     * @param string $context     The context from which the call has been made
-     * @param string $mode        The mode in which the tree should be generated
-     * @param string $hierarchyID The hierarchy ID of the tree to fetch (optional)
-     * @param string $recordID    The current record ID (optional)
+     * @param string  $context     The context from which the call has been made
+     * @param string  $mode        The mode in which the tree should be generated
+     * @param string  $hierarchyID The hierarchy ID of the tree to fetch (optional)
+     * @param ?string $selectedID  The current record ID (optional)
      *
      * @return mixed The desired hierarchy tree output (or false on error)
      */
     abstract public function render(
-        $context,
-        $mode,
-        $hierarchyID,
-        $recordID = false
+        string $context,
+        string $mode,
+        string $hierarchyID,
+        ?string $selectedID = null
     );
 
     /**
-     * Get Hierarchy Name
+     * Get Hierarchy Name.
      *
      * @param string $hierarchyID        The hierarchy ID to find the title for
-     * @param string $inHierarchies      An array of hierarchy IDs
-     * @param string $inHierarchiesTitle An array of hierarchy Titles
+     * @param array  $inHierarchies      An array of hierarchy IDs
+     * @param array  $inHierarchiesTitle An array of hierarchy Titles
      *
      * @return string A hierarchy title
      */

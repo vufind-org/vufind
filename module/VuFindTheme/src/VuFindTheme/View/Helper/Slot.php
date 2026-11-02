@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Slot view helper
+ * Slot view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 /**
- * Slot view helper
+ * Slot view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,10 +38,10 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Slot extends \Laminas\View\Helper\AbstractHelper
+class Slot
 {
     /**
-     * End saving methods
+     * End saving methods.
      *
      * @const string
      */
@@ -48,28 +50,28 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     public const APPEND = 'APPEND';
 
     /**
-     * Storage for strings to be concatinated to the front of a block
+     * Storage for strings to be concatenated to the front of a block.
      *
      * @var array of arrays
      */
     protected $blockPrepends = [];
 
     /**
-     * Storage for strings saved to slots
+     * Storage for strings saved to slots.
      *
      * @var array
      */
     protected $blocks = [];
 
     /**
-     * Storage for strings to be concatinated to the end of a block
+     * Storage for strings to be concatenated to the end of a block.
      *
      * @var array of arrays
      */
     protected $blockAppends = [];
 
     /**
-     * Call stack to handle nested slots
+     * Call stack to handle nested slots.
      *
      * @var array
      */
@@ -105,7 +107,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     /**
      * Checks for content to provide isset functionality.
      *
-     * @return boolean
+     * @return bool
      */
     public function isset()
     {
@@ -117,10 +119,10 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Helper function to return blocks with prepends and appends.
-     * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening
+     * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening.
      *
      * Non-string data can be stored in a slot but prepend and append
-     * will cause it to be concatinated into a string.
+     * will cause it to be concatenated into a string.
      *
      * @param string $name Name of target block for action
      *
@@ -228,7 +230,6 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     public function end($method = self::SET)
     {
         $method = strtoupper($method);
-        $ret = null;
         if ($method == self::SET) {
             $ret = $this->set(ob_get_contents());
         } elseif ($method == self::PREPEND) {

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr Writer service
+ * Solr Writer service.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Demian Katz 2013.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Solr
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Solr;
 
-use VuFind\Db\Table\ChangeTracker;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
@@ -36,8 +38,10 @@ use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
 
+use function func_get_args;
+
 /**
- * Solr Writer service
+ * Solr Writer service.
  *
  * @category VuFind
  * @package  Solr
@@ -48,29 +52,15 @@ use VuFindSearch\Service;
 class Writer
 {
     /**
-     * Search service
+     * Constructor.
      *
-     * @var Service
+     * @param Service                       $searchService Search service
+     * @param ChangeTrackerServiceInterface $changeTracker Change tracker database service
      */
-    protected $searchService;
-
-    /**
-     * Change tracker database table gateway
-     *
-     * @var ChangeTracker
-     */
-    protected $changeTracker;
-
-    /**
-     * Constructor
-     *
-     * @param Service       $service Search service
-     * @param ChangeTracker $tracker Change tracker database table gateway
-     */
-    public function __construct(Service $service, ChangeTracker $tracker)
-    {
-        $this->searchService = $service;
-        $this->changeTracker = $tracker;
+    public function __construct(
+        protected Service $searchService,
+        protected ChangeTrackerServiceInterface $changeTracker
+    ) {
     }
 
     /**
@@ -118,7 +108,7 @@ class Writer
     }
 
     /**
-     * Delete an array of IDs from the specified search backend
+     * Delete an array of IDs from the specified search backend.
      *
      * @param string $backend Backend ID
      * @param array  $idList  Record IDs to delete
@@ -157,7 +147,7 @@ class Writer
      * @param string            $backend Backend ID
      * @param DocumentInterface $doc     Document(s) to save
      * @param string            $handler Update handler
-     * @param ParamBag          $params  Update handler parameters
+     * @param ?ParamBag         $params  Update handler parameters
      *
      * @return void
      */
@@ -165,7 +155,7 @@ class Writer
         $backend,
         DocumentInterface $doc,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $this->write($backend, $doc, null, $handler, $params);
     }

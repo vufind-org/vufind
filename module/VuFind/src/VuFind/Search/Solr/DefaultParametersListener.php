@@ -3,7 +3,7 @@
 /**
  * Solr default parameters listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Service;
 
 /**
  * Solr default parameters listener.
@@ -47,42 +48,26 @@ use VuFindSearch\Backend\Solr\Backend;
 class DefaultParametersListener
 {
     /**
-     * Backend.
-     *
-     * @var Backend
-     */
-    protected $backend;
-
-    /**
-     * Default parameteres
+     * Mapping from search methods to contexts.
      *
      * @var array
      */
-    protected $defaultParams;
-
-    /**
-     * Mapping from search methods to contexts
-     *
-     * @var array
-     */
-    protected $contextMap = [
+    protected array $contextMap = [
         'getIds' => 'search',
         'random' => 'retrieve',
-        'retrieveBatch' => 'retrieve'
+        'retrieveBatch' => 'retrieve',
     ];
 
     /**
      * Constructor.
      *
-     * @param Backend $backend Search backend
-     * @param array   $params  Default parameters
+     * @param Backend $backend       Search backend
+     * @param array   $defaultParams Default parameters
      *
      * @return void
      */
-    public function __construct(Backend $backend, array $params)
+    public function __construct(protected Backend $backend, protected array $defaultParams)
     {
-        $this->backend = $backend;
-        $this->defaultParams = $params;
     }
 
     /**
@@ -94,27 +79,34 @@ class DefaultParametersListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+    ): void {
+        $manager->attach(
+            Service::class,
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
-     * Add default parameters
+     * Add default parameters.
      *
      * @param EventInterface $event Event
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $context = $event->getParam('context');
+        $command = $event->getParam('command');
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            $context = $command->getContext();
+            if (empty($context)) {
+                $context = null;
+            }
             $context = $this->contextMap[$context] ?? $context;
             $defaultParams = $this->defaultParams[$context]
                 ?? $this->defaultParams['*']
                 ?? '';
-            if ($defaultParams && $params = $event->getParam('params')) {
+            if ($defaultParams && $params = $command->getSearchParameters()) {
                 foreach (explode('&', $defaultParams) as $keyVal) {
                     $parts = explode('=', $keyVal, 2);
                     if (!isset($parts[1])) {

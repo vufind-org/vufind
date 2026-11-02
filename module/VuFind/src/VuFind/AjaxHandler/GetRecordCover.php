@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GetRecordCover AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,14 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\PhpRenderer;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
+
+use function in_array;
 
 /**
  * GetRecordCover AJAX handler.
@@ -48,74 +52,40 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     use CacheTrait;
 
     /**
-     * Record loader
-     *
-     * @var RecordLoader
-     */
-    protected $recordLoader;
-
-    /**
-     * Cover router
-     *
-     * @var CoverRouter
-     */
-    protected $coverRouter;
-
-    /**
-     * PHP renderer
-     *
-     * @var PhpRenderer
-     */
-    protected $renderer;
-
-    /**
-     * If true we will render a fallback html template in case no image could be
-     * loaded
-     *
-     * @var bool
-     */
-    protected $useCoverFallbacksOnFail = false;
-
-    /**
      * GetRecordCover constructor.
      *
-     * @param SessionSettings $ss                      Session settings
-     * @param RecordLoader    $recordLoader            Record loader
-     * @param CoverRouter     $coverRouter             Cover router
-     * @param PhpRenderer     $renderer                PHP renderer (only
-     * required if $userCoverFallbacksOnFail is set to true)
-     * @param bool            $useCoverFallbacksOnFail If true we will render a
+     * @param SessionSettings            $ss                      Session settings
+     * @param RecordLoader               $recordLoader            Record loader
+     * @param CoverRouter                $coverRouter             Cover router
+     * @param ?TemplateRendererInterface $renderer                Template renderer (required if
+     * $userCoverFallbacksOnFail is set to true)
+     * @param bool                       $useCoverFallbacksOnFail If true we will render a
      * fallback html template in case no image could be loaded
      */
     public function __construct(
         SessionSettings $ss,
-        RecordLoader $recordLoader,
-        CoverRouter $coverRouter,
-        ?PhpRenderer $renderer = null,
-        $useCoverFallbacksOnFail = false
+        protected RecordLoader $recordLoader,
+        protected CoverRouter $coverRouter,
+        protected ?TemplateRendererInterface $renderer,
+        protected $useCoverFallbacksOnFail = false
     ) {
-        $this->sessionSettings = $ss;
-        $this->recordLoader = $recordLoader;
-        $this->coverRouter = $coverRouter;
-        $this->renderer = $renderer;
-        $this->useCoverFallbacksOnFail = $useCoverFallbacksOnFail;
+        parent::__construct($ss);
     }
 
     /**
-     * Handle request
+     * Handle a request.
      *
-     * @param Params $params Request parameters
+     * @param ServerRequestInterface $request Request
      *
-     * @return array
-     * @throws \Exception
+     * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();
 
-        $recordId = $params->fromQuery('recordId');
-        $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
-        $size = $params->fromQuery('size', 'small');
+        $recordId = $this->getQueryParam($request, 'recordId');
+        $recordSource = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
+        $size = $this->getQueryParam($request, 'size', 'small');
         if (!in_array($size, ['small', 'medium', 'large'])) {
             $size = 'small';
         }
@@ -132,10 +102,11 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             ? $this->formatResponse(array_merge($metadata, compact('size')))
             : $this->formatResponse(
                 [
-                    'html' => $this->renderer->render(
+                    'html' => $this->renderer->renderTemplateAsString(
+                        $request,
                         'record/coverReplacement',
                         ['driver' => $record]
-                    )
+                    ),
                 ]
             );
     }

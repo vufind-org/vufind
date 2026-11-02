@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Authentication Manager factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -45,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class ManagerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,47 +63,39 @@ class ManagerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        // Set up configuration:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        try {
-            // Check if the catalog wants to hide the login link, and override
-            // the configuration if necessary.
-            $catalog = $container->get(\VuFind\ILS\Connection::class);
-            if ($catalog->loginIsHidden()) {
-                $config = new \Laminas\Config\Config($config->toArray(), true);
-                $config->Authentication->hideLogin = true;
-                $config->setReadOnly();
-            }
-        } catch (\Exception $e) {
-            // Ignore exceptions; if the catalog is broken, throwing an exception
-            // here may interfere with UI rendering. If we ignore it now, it will
-            // still get handled appropriately later in processing.
-            error_log($e->getMessage());
-        }
-
-        // Load remaining dependencies:
-        $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('user');
+        // Load dependencies:
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        $userService = $dbServiceManager->get(\VuFind\Db\Service\UserServiceInterface::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
         $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
+        $loginTokenManager = $container->get(\VuFind\Auth\LoginTokenManager::class);
+        $ils = $container->get(\VuFind\ILS\Connection::class);
+        $viewRenderer = $container->get('ViewRenderer');
+        $auditEventService = $dbServiceManager->get(\VuFind\Db\Service\AuditEventServiceInterface::class);
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
             $config,
-            $userTable,
+            $userService,   // for UserServiceInterface
+            $userService,   // for UserSessionPersistenceInterface
             $sessionManager,
             $pm,
             $cookies,
-            $csrf
+            $csrf,
+            $loginTokenManager,
+            $ils,
+            $viewRenderer,
+            $auditEventService
         );
+        $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
         $manager->checkForExpiredCredentials();
         return $manager;
     }

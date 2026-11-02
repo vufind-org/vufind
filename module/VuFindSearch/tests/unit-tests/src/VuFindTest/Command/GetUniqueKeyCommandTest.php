@@ -3,7 +3,7 @@
 /**
  * Unit tests for GetUniqueKeyCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -51,11 +52,9 @@ class GetUniqueKeyCommandTest extends TestCase
     {
         $command = new GetUniqueKeyCommand('foo', []);
         $this->expectExceptionMessage('Unsupported backend');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $command->execute($backend);
     }
 
@@ -69,11 +68,9 @@ class GetUniqueKeyCommandTest extends TestCase
         $command = new GetUniqueKeyCommand('foo', []);
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $command->execute($backend);
     }
 
@@ -84,18 +81,14 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->disableOriginalConstructor()->getMock();
+        $connector = $this->createMock(\VuFindSearch\Backend\Solr\Connector::class);
         $connector->expects($this->once())->method('getUniqueKey')
-            ->will($this->returnValue('foo'));
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+            ->willReturn('foo');
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
+            ->willReturn($connector);
         $command = new GetUniqueKeyCommand('bar', []);
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Central class for connecting to Pazpar2 resources used by VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -25,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
+
+use function sprintf;
 
 /**
  * Central class for connecting to resources used by VuFind.
@@ -42,33 +45,33 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base url for searches
+     * Base url for searches.
      *
      * @var string
      */
     protected $base;
 
     /**
-     * The HTTP_Request object used for REST transactions
+     * The HTTP_Request object used for REST transactions.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * Session ID
+     * Session ID.
      *
      * @var string
      */
     protected $session = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $base     Base URL for Pazpar2
      * @param Client $client   An HTTP client object
@@ -91,7 +94,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
     /**
      * Initializes a session. Returns session ID to be used in subsequent requests.
-     * Adds session to the base
+     * Adds session to the base.
      *
      * @return session id
      */
@@ -107,16 +110,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Requests and receives information from pazpar
+     * Requests and receives information from pazpar.
      *
-     * @param string   $command the command to be executed
-     * @param ParamBag $data    optional extra data
+     * @param string    $command the command to be executed
+     * @param ?ParamBag $data    optional extra data
      *
      * @return SimpleXMLElement Response
      */
-    protected function query($command, ParamBag $data = null)
+    protected function query($command, ?ParamBag $data = null)
     {
-        // If we don't have a session as long as we're not being explict
+        // If we don't have a session as long as we're not being explicit
         if (!$this->session && $command !== 'init') {
             $this->init();
         }
@@ -135,7 +138,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $xml = simplexml_load_string($xmlStr);
 
         // If our session has expired, start a new session
-        if ($command !== 'init'
+        if (
+            $command !== 'init'
             && $xml->session == $this->session && isset($this->session)
         ) {
             $this->init();
@@ -185,7 +189,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Keeps a session alive. An idle session will time out after one minute.
      * The ping command can be used to keep the session alive absent other activity.
      * It is suggested that any browser client have a simple alarm handler
-     * which sends a ping every 50 seconds or so once a session has been initialized
+     * which sends a ping every 50 seconds or so once a session has been initialized.
      *
      * @return void
      */
@@ -221,17 +225,17 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * TODO: Make the array more useful to get the correct format?
      *
-     * @param ParamBag $options array of options as described above
+     * @param ?ParamBag $options array of options as described above
      *
      * @return associative array of XML data
      */
-    public function search(ParamBag $options = null)
+    public function search(?ParamBag $options = null)
     {
         return $this->query('search', $options);
     }
 
     /**
-     * Return session id
+     * Return session id.
      *
      * @return session id
      */
@@ -242,7 +246,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
     /**
      * Applies settings to this session
-     * Each setting parameter has the form name[target]=value
+     * Each setting parameter has the form name[target]=value.
      *
      * TODO: Make the array more useful to get the correct format?
      *
@@ -260,7 +264,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Proper alias of results
+     * Proper alias of results.
      *
      * Options (default):
      *  - start : int (0)
@@ -268,11 +272,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *  - block : 1 = wait until enough records are found (0)
      *  - sort  : column:1 [increasing] or 0 [decreasing] (none)
      *
-     * @param ParamBag $options array of options as described above
+     * @param ?ParamBag $options array of options as described above
      *
      * @return array Associative array of XML data
      */
-    public function show(ParamBag $options = null)
+    public function show(?ParamBag $options = null)
     {
         return $this->query('show', $options);
     }
@@ -294,11 +298,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *  - name : comma-separated list of termlist names (all termlists)
      *  - num  : maximum number of entries to return (15)
      *
-     * @param ParamBag $options array of options as described above
+     * @param ?ParamBag $options array of options as described above
      *
      * @return array Associative array of XML data
      */
-    public function termlist(ParamBag $options = null)
+    public function termlist(?ParamBag $options = null)
     {
         return $this->query('termlist', $options);
     }

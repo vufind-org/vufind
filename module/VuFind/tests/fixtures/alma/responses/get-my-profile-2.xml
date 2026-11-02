@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<user>
+    <last_name>Smith</last_name>
+    <user_group desc="group label">test</user_group>
+    <contact_info>
+        <phones>
+            <phone>
+                <phone_number>                           </phone_number>
+            </phone>
+        </phones>
+    </contact_info>
+</user>

@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Summon record fallback loader
+ * Summon record fallback loader.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,13 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
+use function strlen;
+
 /**
- * Summon record fallback loader
+ * Summon record fallback loader.
  *
  * @category VuFind
  * @package  Record
@@ -42,7 +47,7 @@ use VuFindSearch\ParamBag;
 class Summon extends AbstractFallbackLoader
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */
@@ -57,14 +62,19 @@ class Summon extends AbstractFallbackLoader
      */
     protected function fetchSingleRecord($id)
     {
-        $resource = $this->table->findResource($id, 'Summon');
-        if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
+        $resource = $this->resourceService->getResourceByRecordId($id, 'Summon');
+        if ($resource && ($extra = json_decode($resource->getExtraMetadata(), true))) {
             $bookmark = $extra['bookmark'] ?? '';
             if (strlen($bookmark) > 0) {
                 $params = new ParamBag(
                     ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
                 );
-                return $this->searchService->retrieve('Summon', $bookmark, $params);
+                $command = new RetrieveCommand(
+                    'Summon',
+                    $bookmark,
+                    $params
+                );
+                return $this->searchService->invoke($command)->getResult();
             }
         }
         return new \VuFindSearch\Backend\Summon\Response\RecordCollection([]);

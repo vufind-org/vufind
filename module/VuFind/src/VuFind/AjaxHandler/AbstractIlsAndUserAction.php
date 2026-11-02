@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for handlers depending on the ILS and a logged-in user.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
@@ -42,49 +44,24 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractIlsAndUserAction extends AbstractBase
-    implements TranslatorAwareInterface
+abstract class AbstractIlsAndUserAction extends AbstractBase implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * ILS connection
+     * Constructor.
      *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
-     * ILS authenticator
-     *
-     * @var ILSAuthenticator
-     */
-    protected $ilsAuthenticator;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings  $ss               Session settings
-     * @param Connection       $ils              ILS connection
-     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
-     * @param User|bool        $user             Logged in user (or false)
+     * @param SessionSettings      $ss               Session settings
+     * @param Connection           $ils              ILS connection
+     * @param ILSAuthenticator     $ilsAuthenticator ILS authenticator
+     * @param ?UserEntityInterface $user             Logged in user (or null)
      */
     public function __construct(
         SessionSettings $ss,
-        Connection $ils,
-        ILSAuthenticator $ilsAuthenticator,
-        $user
+        protected Connection $ils,
+        protected ILSAuthenticator $ilsAuthenticator,
+        protected ?UserEntityInterface $user
     ) {
-        $this->sessionSettings = $ss;
-        $this->ils = $ils;
-        $this->ilsAuthenticator = $ilsAuthenticator;
-        $this->user = $user;
+        parent::__construct($ss);
     }
 }

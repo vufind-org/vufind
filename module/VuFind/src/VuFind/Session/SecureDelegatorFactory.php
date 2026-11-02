@@ -1,11 +1,12 @@
 <?php
+
 /**
- * Secure session delegator factory
+ * Secure session delegator factory.
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
  *
- * PHP version 7
+ * PHP version 8
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -27,14 +28,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
+
+use function call_user_func;
 
 /**
- * Secure session delegator factory
+ * Secure session delegator factory.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -61,7 +65,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ): HandlerInterface {
         /**
          * The wrapped session handler.
@@ -69,13 +73,13 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
          * @var HandlerInterface $handler
          */
         $handler = call_user_func($callback);
-        $config = $container->get(\VuFind\Config\PluginManager::class);
-        $secure = $config->get('config')->Session->secure ?? false;
+        $secure = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Session']['secure'] ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;
     }
 
     /**
-     * Creates the delegating session handler
+     * Creates the delegating session handler.
      *
      * @param ContainerInterface $container Service Container
      * @param HandlerInterface   $handler   Wrapped session handler
@@ -87,28 +91,6 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         HandlerInterface $handler
     ): HandlerInterface {
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
-        $config = $container->get(\ProxyManager\Configuration::class);
-        $factory = new LazyLoadingValueHolderFactory($config);
-        $delegator = new SecureDelegator($cookieManager, $handler);
-        /**
-         * The handler proxy.
-         *
-         * @var HandlerInterface $handler
-         */
-        $handler = $factory->createProxy(
-            HandlerInterface::class,
-            function (
-                &$target,
-                $proxy,
-                $method,
-                array $params,
-                &$init
-            ) use ($delegator) {
-                $init = null;
-                $target = $delegator;
-                return true;
-            }
-        );
-        return $handler;
+        return new SecureDelegator($cookieManager, $handler, $container->get(BlockCipher::class));
     }
 }

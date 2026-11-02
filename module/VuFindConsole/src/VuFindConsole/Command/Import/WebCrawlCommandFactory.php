@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for web crawl command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Import;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -45,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class WebCrawlCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,13 +63,13 @@ class WebCrawlCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
             new \VuFind\XSLT\Importer($container),
             $container->get(\VuFind\Solr\Writer::class),
-            $configLoader->get('webcrawl'),
+            $configManager->getConfigArray('webcrawl'),
             ...($options ?? [])
         );
     }

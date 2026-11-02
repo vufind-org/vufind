@@ -1,0 +1,90 @@
+/*global VuFind */
+/*exported setUpHoldRequestForm, setupHoldEditForm */
+
+/**
+ * Set up the hold request form by dynamically populating the pickup location
+ * dropdown based on the selected request group.
+ * @param {string} recordId The ID of the record for the hold request.
+ */
+function setUpHoldRequestForm(recordId) {
+  var $select = $('#pickUpLocation');
+  var $icon = $('#pickUpLocationLabel .loading-icon');
+  var $emptyOption = $("#pickUpLocation option[value='']");
+  var $noResults = $('<span/>').text(
+    document.querySelector('#requestGroupId option[selected]').dataset.noLocationsLabel
+  );
+  $select.parent().append($noResults);
+  $noResults.hide();
+
+  $('#requestGroupId').on("change", function requestGroupChange() {
+    var $self = $(this);
+    $select.find("option[value!='']").remove();
+    if ($self.val() === '') {
+      $select.attr('disabled', 'disabled');
+      return;
+    }
+    $icon.removeClass('hidden');
+    var params = {
+      method: 'getRequestGroupPickupLocations',
+      id: recordId,
+      requestGroupId: $self.val()
+    };
+    $.ajax({
+      data: params,
+      dataType: 'json',
+      cache: false,
+      url: VuFind.path + '/AJAX/JSON'
+    })
+      .done(function holdPickupLocationsDone(response) {
+        var defaultValue = $select.data('default');
+        if (response.data.locations && response.data.locations.length > 0) {
+          $noResults.hide();
+          $.each(response.data.locations, function holdPickupLocationEach() {
+            var option = $('<option/>').attr('value', this.locationID).text(this.locationDisplay);
+            // Make sure to compare locationID and defaultValue as Strings since locationID may be an integer
+            if (String(this.locationID) === String(defaultValue) ||
+              (defaultValue === '' && this.isDefault && $emptyOption.length === 0) ||
+              (response.data.locations.length === 1)) {
+              option.attr('selected', 'selected');
+            }
+            $select.append(option);
+          });
+          if (response.data.locations.length === 1) {
+            $emptyOption.attr('hidden', 'hidden');
+            $emptyOption.removeAttr('selected');
+          }
+          else {
+            $emptyOption.text($self.find(':selected').data('select-location-text'));
+            $emptyOption.removeAttr('hidden');
+          }
+          $select.show();
+        } else {
+          $select.hide();
+          $noResults.text($self.find(':selected').data('no-locations-label'));
+          $noResults.show();
+        }
+        $('#pickUpLocationLabel .pick-up-location-label-text').text($self.find(':selected').data('locations-label'));
+        $icon.addClass('hidden');
+        $select.removeAttr('disabled');
+      })
+      .fail(function holdPickupLocationsFail(/*response*/) {
+        $icon.addClass('hidden');
+        $select.removeAttr('disabled');
+      });
+  }).trigger('change');
+}
+
+/**
+ * Sets up the hold edit form by enabling or disabling the 'frozen_through'
+ * date input based on the 'frozen' checkbox's state.
+ */
+function setupHoldEditForm() {
+  $('#frozen').on('change', function updateFrozen() {
+    var $frozenThrough = $('#frozen_through');
+    if ($(this).val() === '1') {
+      $frozenThrough.removeAttr('disabled');
+    } else {
+      $frozenThrough.val('').attr('disabled', 'disabled');
+    }
+  }).trigger('change');
+}

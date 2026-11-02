@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Syndetics TOC content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\TOC;
+
+use function sprintf;
 
 /**
  * Syndetics TOC content loader.
@@ -47,8 +51,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'TOC' => [
             'title' => 'TOC',
             'file' => 'TOC.XML',
-            'div' => '<div id="syn_toc"></div>'
-        ]
+            'div' => '<div id="syn_toc"></div>',
+        ],
     ];
 
     /**
@@ -87,7 +91,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
             throw new \Exception('Invalid XML');
         }
 
-        $i = 0;
         foreach ($this->sourceList as $source => $sourceInfo) {
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
@@ -104,37 +107,30 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     throw new \Exception('Invalid XML');
                 }
 
-                // If we have syndetics plus, we don't actually want the content
-                // we'll just stick in the relevant div
-                if ($this->usePlus) {
-                    $toc = $sourceInfo['div'];
-                } else {
-                    // Get the marc field for toc (970)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld970");
+                // Get the marc field for toc (970)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
 
-                    foreach ($nodes as $node) {
-                        $li = '';
+                foreach ($nodes as $node) {
+                    $li = '';
 
-                        // Chapter labels.
-                        $nodeList = $node->getElementsByTagName('l');
-                        if ($nodeList->length > 0) {
-                            $li .= sprintf("%s. ", $nodeList->item(0)->nodeValue);
-                        }
-
-                        // Chapter title.
-                        $nodeList = $node->getElementsByTagName('t');
-                        if ($nodeList->length > 0) {
-                            $li .= $nodeList->item(0)->nodeValue;
-                        }
-
-                        $toc[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/',
-                            '',
-                            html_entity_decode($li)
-                        );
+                    // Chapter labels.
+                    $nodeList = $node->getElementsByTagName('l');
+                    if ($nodeList->length > 0) {
+                        $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
                     }
+
+                    // Chapter title.
+                    $nodeList = $node->getElementsByTagName('t');
+                    if ($nodeList->length > 0) {
+                        $li .= $nodeList->item(0)->nodeValue;
+                    }
+
+                    $toc[] = preg_replace(
+                        '/<a>|<a [^>]*>|<\/a>/',
+                        '',
+                        html_entity_decode($li)
+                    );
                 }
-                $i++;
             }
         }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generate/ExtendService command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -75,18 +77,18 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
             ->with(
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar')
+                'Foo',
+                'Bar'
             );
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
                 'config_path' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -101,21 +103,21 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         );
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
-            ->will($this->throwException(new \Exception('Foo!')));
+            ->willThrowException(new \Exception('Foo!'));
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
                 'config_path' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("Foo!\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock generator tools object
+     * Get a mock generator tools object.
      *
      * @param array $methods Methods to mock
      *

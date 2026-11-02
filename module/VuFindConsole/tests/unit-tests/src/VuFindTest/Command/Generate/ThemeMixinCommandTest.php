@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generate/ThemeMixin command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -52,18 +54,18 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo('custom'))
-            ->will($this->returnValue(true));
+            ->with('custom')
+            ->willReturn(true);
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "\tNo theme mixin name provided, using \"custom\"\n"
             . "\tFinished. Add to your theme.config.php 'mixins' setting "
             . "to activate.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -76,16 +78,16 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo('foo'))
-            ->will($this->returnValue(false));
+            ->with('foo')
+            ->willReturn(false);
         $generator->expects($this->once())
             ->method('getLastError')
-            ->will($this->returnValue('fake error'));
+            ->willReturn('fake error');
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);
-        $this->assertEquals("fake error\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("fake error\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -95,8 +97,6 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockGenerator()
     {
-        return $this->getMockBuilder(MixinGenerator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(MixinGenerator::class);
     }
 }

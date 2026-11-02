@@ -3,7 +3,7 @@
 /**
  * Unit tests for GetQueryBuilderCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -52,11 +53,9 @@ class GetQueryBuilderCommandTest extends TestCase
         $command = new GetQueryBuilderCommand('foo');
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $command->execute($backend);
     }
 
@@ -67,16 +66,12 @@ class GetQueryBuilderCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $builder = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $builder = $this->createMock(\VuFindSearch\Backend\Solr\QueryBuilder::class);
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $backend->expects($this->once())->method('getQueryBuilder')
-            ->will($this->returnValue($builder));
+            ->willReturn($builder);
         $command = new GetQueryBuilderCommand('bar');
         $this->assertEquals($builder, $command->execute($backend)->getResult());
     }

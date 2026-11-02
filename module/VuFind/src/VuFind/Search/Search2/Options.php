@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Search Options for second Solr index
+ * Search Options for second Solr index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Search2
@@ -26,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Search2;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Search Options for second Solr index
+ * Search Options for second Solr index.
  *
  * @category VuFind
  * @package  Search_Search2
@@ -40,35 +43,36 @@ namespace VuFind\Search\Search2;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->mainIni = $this->searchIni = $this->facetsIni = 'Search2';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'search2-facetlist';
     }
 
     /**
-     * Return the route name for the versions search action or false if disabled.
+     * Return the route name for the versions search action. Returns null to cover
+     * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getVersionsAction()
+    public function getVersionsAction(): ?string
     {
-        return $this->displayRecordVersions ? 'search2-versions' : false;
+        return $this->displayRecordVersions ? 'search2-versions' : null;
     }
 
     /**
@@ -76,18 +80,18 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search2-results';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'search2-advanced';
     }

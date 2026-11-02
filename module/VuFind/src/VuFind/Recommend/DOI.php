@@ -1,8 +1,9 @@
 <?php
+
 /**
- * DOI Recommendations Module
+ * DOI Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,10 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
- * DOI Recommendations Module
+ * DOI Recommendations Module.
  *
  * This class directs the user to a DOI resolver when appropriate.
  *
@@ -43,14 +45,14 @@ namespace VuFind\Recommend;
 class DOI implements RecommendInterface
 {
     /**
-     * DOI found in search query (or null for none)
+     * DOI found in search query (or null for none).
      *
      * @var string
      */
     protected $match = null;
 
     /**
-     * URL prefix for resolving DOIs
+     * URL prefix for resolving DOIs.
      *
      * @var string
      */
@@ -110,7 +112,7 @@ class DOI implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -127,7 +129,7 @@ class DOI implements RecommendInterface
     }
 
     /**
-     * Get the matched DOI (or null if no match found)
+     * Get the matched DOI (or null if no match found).
      *
      * @return string
      */
@@ -137,7 +139,7 @@ class DOI implements RecommendInterface
     }
 
     /**
-     * Get the URL to resolve the matched DOI (or null if no match found)
+     * Get the URL to resolve the matched DOI (or null if no match found).
      *
      * @return string
      */

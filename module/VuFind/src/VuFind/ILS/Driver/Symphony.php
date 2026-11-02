@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Symphony Web Services (symws) ILS Driver
+ * Symphony Web Services (symws) ILS Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -26,9 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use SoapClient;
 use SoapFault;
 use SoapHeader;
@@ -36,8 +38,12 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
- * Symphony Web Services (symws) ILS Driver
+ * Symphony Web Services (symws) ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -51,40 +57,40 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Cache for policy information
+     * Cache for policy information.
      *
      * @var object
      */
     protected $policyCache = false;
 
     /**
-     * Policy information
+     * Policy information.
      *
      * @var array
      */
     protected $policies;
 
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Loader       $loader       Record loader
-     * @param CacheManager $cacheManager Cache manager (optional)
+     * @param Loader        $loader       Record loader
+     * @param ?CacheManager $cacheManager Cache manager (optional)
      */
-    public function __construct(Loader $loader, CacheManager $cacheManager = null)
+    public function __construct(Loader $loader, ?CacheManager $cacheManager = null)
     {
         $this->recordLoader = $loader;
         $this->cacheManager = $cacheManager;
@@ -144,11 +150,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             'showStaffNotes' => true,
             'showFeeType' => 'ALL_FEES',
             'usernameField' => 'userID',
-            'userProfileGroupField' => 'USER_PROFILE_ID'
+            'userProfileGroupField' => 'USER_PROFILE_ID',
         ];
 
         // Initialize cache manager.
-        if (isset($this->config['PolicyCache']['type'])
+        if (
+            isset($this->config['PolicyCache']['type'])
             && $this->cacheManager
         ) {
             $this->policyCache = $this->cacheManager
@@ -308,7 +315,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         if (isset($options['login'])) {
             $login    = $options['login'];
             $password = $options['password'] ?? null;
-        } elseif (isset($options['WebServices']['login'])
+        } elseif (
+            isset($options['WebServices']['login'])
             && !in_array(
                 $operation,
                 ['isRestrictedAccess', 'license', 'loginUser', 'version']
@@ -358,7 +366,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * SymWS. In such a case it will produce a potentially more helpful error
      * message than the original error would have.
      *
-     * @throws Exception if the SymWS version is too old
+     * @throws \Exception if the SymWS version is too old
      * @return void
      */
     protected function checkSymwsVersion()
@@ -370,7 +378,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     // ILSException didn't seem to produce an error message
                     // when checkSymwsVersion() was called from the catch
                     // block in makeRequest().
-                    throw new \Exception("SymWS version too old");
+                    throw new \Exception('SymWS version too old');
                 }
                 break;
             }
@@ -378,7 +386,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses from 999 Holdings Marc Tag
+     * Get Statuses from 999 Holdings Marc Tag.
      *
      * Protected support method for parsing status info from the marc record
      *
@@ -397,7 +405,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             'current location'       => 'marc|k',
             'home location'          => 'marc|l',
             'item type'              => 'marc|t',
-            'circulate flag'         => 'marc|r'
+            'circulate flag'         => 'marc|r',
         ];
 
         $entryNumber = $this->config['999Holdings']['entry_number'];
@@ -435,7 +443,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'barcode' => $result['barcode number'],
                     'item_id' => $result['barcode number'],
                     'library' => $library,
-                    'material' => $material
+                    'material' => $material,
                 ];
             }
         }
@@ -443,7 +451,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Look up title info
+     * Look up title info.
      *
      * Protected support method for parsing the call info into items.
      *
@@ -519,7 +527,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Call Info
+     * Parse Call Info.
      *
      * Protected support method for parsing the call info into items.
      *
@@ -637,7 +645,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     $notes[] = $itemInfo->publicNote;
                 }
 
-                if (isset($itemInfo->staffNote)
+                if (
+                    isset($itemInfo->staffNote)
                     && $this->config['Behaviors']['showStaffNotes']
                 ) {
                     $notes[] = $itemInfo->staffNote;
@@ -698,7 +707,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'transit_destination_library' =>
                         $transitDestinationLibrary,
                     'transit_reason' => $transitReason,
-                    'transit_date' => $transitDate
+                    'transit_date' => $transitDate,
                 ];
             }
         }
@@ -706,7 +715,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Bound With Link Info
+     * Parse Bound With Link Info.
      *
      * Protected support method for parsing bound with link information.
      *
@@ -727,7 +736,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         foreach ($boundwithLinkInfos as $boundwithLinkInfo) {
             // Ignore BoundwithLinkInfos which do not refer to parents
             // or which refer to the record we're already looking at.
-            if (!$boundwithLinkInfo->linkedAsParent
+            if (
+                !$boundwithLinkInfo->linkedAsParent
                 || $boundwithLinkInfo->linkedTitle->titleID == $ckey
             ) {
                 continue;
@@ -766,7 +776,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Title Order Info
+     * Parse Title Order Info.
      *
      * Protected support method for parsing order info.
      *
@@ -787,7 +797,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             /* Allow returned holdings information to be
              * limited to a specified list of library names. */
-            if (isset($this->config['holdings']['include_libraries'])
+            if (
+                isset($this->config['holdings']['include_libraries'])
                 && !in_array(
                     $library_id,
                     $this->config['holdings']['include_libraries']
@@ -798,7 +809,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             /* Allow libraries to be excluded by name
              * from returned holdings information. */
-            if (isset($this->config['holdings']['exclude_libraries'])
+            if (
+                isset($this->config['holdings']['exclude_libraries'])
                 && in_array(
                     $library_id,
                     $this->config['holdings']['exclude_libraries']
@@ -887,7 +899,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Live Statuses
+     * Get Live Statuses.
      *
      * Protected support method for retrieving a list of item statuses from symws.
      *
@@ -993,7 +1005,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -1011,7 +1023,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -1031,13 +1043,13 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws ILSException
@@ -1047,13 +1059,13 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1069,7 +1081,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1077,17 +1089,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param string $password The patron password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
     {
         $usernameField = $this->config['Behaviors']['usernameField'];
-
-        $patron = [
-            'cat_username' => $username,
-            'cat_password' => $password,
-        ];
 
         try {
             $resp = $this->makeRequest(
@@ -1095,7 +1102,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 'lookupMyAccountInfo',
                 [
                     'includePatronInfo' => 'true',
-                    'includePatronAddressInfo' => 'true'
+                    'includePatronAddressInfo' => 'true',
                 ],
                 [
                     'login' => $username,
@@ -1112,13 +1119,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
         }
 
-        $patron['id']      = $resp->patronInfo->$usernameField;
-        $patron['library'] = $resp->patronInfo->patronLibraryID;
-
         $regEx = '/([^,]*),\s([^\s]*)/';
+        $firstName = '';
+        $lastName = '';
         if (preg_match($regEx, $resp->patronInfo->displayName, $matches)) {
-            $patron['firstname'] = $matches[2];
-            $patron['lastname']  = $matches[1];
+            $firstName = $matches[2];
+            $lastName  = $matches[1];
         }
 
         // There may be an email address in any of three numbered addresses,
@@ -1129,6 +1135,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
             array_unshift($addrinfo_check_order, $primary_addr_n);
         }
+        $email = '';
         foreach ($addrinfo_check_order as $n) {
             $AddressNInfo = "Address{$n}Info";
             if (isset($resp->patronAddressInfo->$AddressNInfo)) {
@@ -1136,10 +1143,11 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     ? $resp->patronAddressInfo->$AddressNInfo
                     : [$resp->patronAddressInfo->$AddressNInfo];
                 foreach ($addrinfos as $addrinfo) {
-                    if ($addrinfo->addressPolicyID == 'EMAIL'
+                    if (
+                        $addrinfo->addressPolicyID == 'EMAIL'
                         && !empty($addrinfo->addressValue)
                     ) {
-                        $patron['email'] = $addrinfo->addressValue;
+                        $email = $addrinfo->addressValue;
                         break;
                     }
                 }
@@ -1147,12 +1155,22 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         }
 
         // @TODO: major, college
-
-        return $patron;
+        return $this->createPatronArray(
+            id: $resp->patronInfo->$usernameField,
+            firstname: $firstName,
+            lastname: $lastName,
+            email: $email,
+            cat_username: $username,
+            cat_password: $password,
+            nonDefaultFields: [
+                // Legacy support, see createProfileArray:home_library
+                'library' => $resp->patronInfo->patronLibraryID,
+            ]
+        );
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1171,7 +1189,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 'includePatronInfo' => 'true',
                 'includePatronAddressInfo' => 'true',
                 'includePatronStatusInfo' => 'true',
-                'includeUserGroupInfo'     => 'true'
+                'includeUserGroupInfo'     => 'true',
             ];
 
             $result = $this->makeRequest(
@@ -1180,13 +1198,13 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $options,
                 [
                     'login' => $patron['cat_username'],
-                    'password' => $patron['cat_password']
+                    'password' => $patron['cat_password'],
                 ]
             );
 
             $primaryAddress = $result->patronAddressInfo->primaryAddress;
 
-            $primaryAddressInfo = "Address" . $primaryAddress . "Info";
+            $primaryAddressInfo = 'Address' . $primaryAddress . 'Info';
 
             $addressInfo = $result->patronAddressInfo->$primaryAddressInfo;
             $address1    = $addressInfo[0]->addressValue;
@@ -1203,7 +1221,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     $options,
                     [
                         'login' => $patron['cat_username'],
-                        'password' => $patron['cat_password']
+                        'password' => $patron['cat_password'],
                     ]
                 )->userProfileID;
             } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') == 0) {
@@ -1214,26 +1232,25 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            [$lastname, $firstname]
-                = explode(', ', $result->patronInfo->displayName);
-
-            $profile = [
-                'lastname' => $lastname,
-                'firstname' => $firstname,
-                'address1' => $address1,
-                'address2' => $address2,
-                'zip' => $zip,
-                'phone' => $phone,
-                'group' => $group
-            ];
+            [$lastname, $firstname] = $this->getLastAndFirstName($result->patronInfo->displayName);
+            return $this->createProfileArray(
+                firstname: $firstname,
+                lastname: $lastname,
+                address1: $address1,
+                address2: $address2,
+                zip: $zip,
+                phone: $phone,
+                group: $group,
+                home_library: (string)($result->patronInfo->patronLibraryID ?: $patron['library']),
+            );
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
-        return $profile;
+        return [];
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1255,7 +1272,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $options,
                 [
                     'login' => $patron['cat_username'],
-                    'password' => $patron['cat_password']
+                    'password' => $patron['cat_password'],
                 ]
             );
 
@@ -1283,7 +1300,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         'renewable' => $renewable,
                         //'message' => null,
                         'title' => $transaction->title,
-                        'item_id' => $transaction->itemID
+                        'item_id' => $transaction->itemID,
                     ];
                 }
             }
@@ -1294,7 +1311,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1315,7 +1332,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $options,
                 [
                     'login' => $patron['cat_username'],
-                    'password' => $patron['cat_password']
+                    'password' => $patron['cat_password'],
                 ]
             );
 
@@ -1339,7 +1356,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'item_id' => $hold->itemID,
                     //'volume' => null,
                     //'publication_year' => null,
-                    'title' => $hold->title
+                    'title' => $hold->title,
                 ];
             }
         } catch (SoapFault $e) {
@@ -1351,7 +1368,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1373,7 +1390,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $options,
                 [
                     'login' => $patron['cat_username'],
-                    'password' => $patron['cat_password']
+                    'password' => $patron['cat_password'],
                 ]
             );
 
@@ -1389,7 +1406,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         'balance' => $fee->amountOutstanding->_ * 100,
                         'createdate' => $fee->dateBilled ?? null,
                         'duedate' => $fee->feeItemInfo->dueDate ?? null,
-                        'id' => $fee->feeItemInfo->titleKey ?? null
+                        'id' => $fee->feeItemInfo->titleKey ?? null,
                     ];
                 }
             }
@@ -1401,7 +1418,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Cancel Hold Form
+     * Get Cancel Hold Form.
      *
      * Supplies the form details required to cancel a hold
      *
@@ -1418,7 +1435,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold on a particular item
      *
@@ -1444,20 +1461,20 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     $options,
                     [
                         'login' => $patron['cat_username'],
-                        'password' => $patron['cat_password']
+                        'password' => $patron['cat_password'],
                     ]
                 );
 
                 $count++;
                 $items[$holdKey] = [
                     'success' => true,
-                    'status' => 'hold_cancel_success'
+                    'status' => 'hold_cancel_success',
                 ];
             } catch (\Exception $e) {
                 $items[$holdKey] = [
                     'success' => false,
                     'status' => 'hold_cancel_fail',
-                    'sysMessage' => $e->getMessage()
+                    'sysMessage' => $e->getMessage(),
                 ];
             }
         }
@@ -1476,23 +1493,15 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
-     * In order to renew an item, Symphony requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -1505,9 +1514,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -1539,7 +1548,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'new_date' => date('j-M-y', strtotime($renewal->dueDate)),
                     'new_time' => date('g:i a', strtotime($renewal->dueDate)),
                     'item_id' => $renewal->itemID,
-                    'sysMessage' => $renewal->message
+                    'sysMessage' => $renewal->message,
                 ];
             } catch (\Exception $e) {
                 $details[$barcode] = [
@@ -1547,7 +1556,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     'new_date' => false,
                     'new_time' => false,
                     'sysMessage' =>
-                        'We could not renew this item: ' . $e->getMessage()
+                        'We could not renew this item: ' . $e->getMessage(),
                 ];
             }
         }
@@ -1557,7 +1566,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item
      *
@@ -1598,27 +1607,27 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $options,
                 [
                     'login' => $patron['cat_username'],
-                    'password' => $patron['cat_password']
+                    'password' => $patron['cat_password'],
                 ]
             );
 
             $result = [
                 'success' => true,
-                'sysMessage' => 'Your hold has been placed.'
+                'sysMessage' => 'Your hold has been placed.',
             ];
             return $result;
         } catch (SoapFault $e) {
             $result = [
                 'success' => false,
                 'sysMessage' =>
-                    'We could not place the hold: ' . $e->getMessage()
+                    'We could not place the hold: ' . $e->getMessage(),
             ];
             return $result;
         }
     }
 
     /**
-     * Get Policy List
+     * Get Policy List.
      *
      * Protected support method for getting a list of policies.
      *
@@ -1629,11 +1638,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     protected function getPolicyList($policyType)
     {
         try {
-            $cacheKey = 'symphony' . hash('sha256', "${policyType}");
+            $cacheKey = 'symphony' . hash('sha256', "{$policyType}");
 
             if (isset($this->policies[$policyType])) {
                 return $this->policies[$policyType];
-            } elseif ($this->policyCache
+            } elseif (
+                $this->policyCache
                 && ($policyList = $this->policyCache->getItem($cacheKey))
             ) {
                 $this->policies[$policyType] = $policyList;
@@ -1664,7 +1674,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1672,10 +1682,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1691,7 +1701,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         foreach ($this->getPolicyList('LIBR') as $key => $library) {
             $libraries[] = [
                 'locationID' => $key,
-                'locationDisplay' => $library
+                'locationDisplay' => $library,
             ];
         }
 
@@ -1699,7 +1709,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in Symphony.ini
      *
@@ -1707,7 +1717,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.

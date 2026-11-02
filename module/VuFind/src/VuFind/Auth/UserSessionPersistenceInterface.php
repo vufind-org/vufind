@@ -1,0 +1,154 @@
+<?php
+
+/**
+ * Interface for persisting user data in the session.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2024.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Auth
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ */
+
+namespace VuFind\Auth;
+
+use Exception;
+use VuFind\Db\Entity\UserEntityInterface;
+
+/**
+ * Interface for persisting user data in the session.
+ *
+ * @category VuFind
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ */
+interface UserSessionPersistenceInterface
+{
+    /**
+     * Update session container to store data representing a user (used by privacy mode).
+     *
+     * @param UserEntityInterface $user User to store in session.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function addUserDataToSession(UserEntityInterface $user): void;
+
+    /**
+     * Update session container to store user ID (used outside of privacy mode).
+     *
+     * @param int $id User ID
+     *
+     * @return void
+     */
+    public function addUserIdToSession(int $id): void;
+
+    /**
+     * Clear the user data from the session.
+     *
+     * @return void
+     */
+    public function clearUserFromSession(): void;
+
+    /**
+     * Build a user entity using data from a session container. Return null if user
+     * data cannot be found.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserFromSession(): ?UserEntityInterface;
+
+    /**
+     * Is there user data currently stored in the session container?
+     *
+     * @return bool
+     */
+    public function hasUserSessionData(): bool;
+
+    /**
+     * Store pre-authentication data in session.
+     *
+     * @param ?array $data Pre-authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setPreAuthenticationData(?array $data): void;
+
+    /**
+     * Get pre-authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getPreAuthenticationData(): ?array;
+
+    /**
+     * Store library card authentication data in session.
+     *
+     * @param ?array $data Library card authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setLibraryCardAuthenticationData(?array $data): void;
+
+    /**
+     * Get library card authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getLibraryCardAuthenticationData(): ?array;
+
+    /**
+     * Store account recovery data in session.
+     *
+     * @param ?array $data Account recovery data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setAccountRecoveryData(?array $data): void;
+
+    /**
+     * Get account recovery data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getAccountRecoveryData(): ?array;
+
+    /**
+     * Store email verification data in session.
+     *
+     * @param ?array $data Email verification data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setEmailVerificationData(?array $data): void;
+
+    /**
+     * Get email verification data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getEmailVerificationData(): ?array;
+}

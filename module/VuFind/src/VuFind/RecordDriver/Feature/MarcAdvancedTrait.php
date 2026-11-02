@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  * Copyright (C) The National Library of Finland 2020.
@@ -18,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -28,10 +29,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\XSLT\Processor as XSLTProcessor;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
@@ -47,7 +53,7 @@ use VuFind\XSLT\Processor as XSLTProcessor;
 trait MarcAdvancedTrait
 {
     /**
-     * Fields that may contain subject headings, and their descriptions
+     * Fields that may contain subject headings, and their descriptions.
      *
      * @var array
      */
@@ -61,7 +67,7 @@ trait MarcAdvancedTrait
         '651' => 'geographic',
         '653' => '',
         '655' => 'genre/form',
-        '656' => 'occupation'
+        '656' => 'occupation',
     ];
 
     /**
@@ -79,7 +85,7 @@ trait MarcAdvancedTrait
         '3' => 'nal',
         '4' => 'unknown',
         '5' => 'cash',
-        '6' => 'rvm'
+        '6' => 'rvm',
     ];
 
     /**
@@ -100,7 +106,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -114,58 +120,129 @@ trait MarcAdvancedTrait
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        // This is all the collected data:
-        $retval = [];
-
-        // Try each MARC field one at a time:
-        foreach ($this->subjectFields as $field => $fieldType) {
-            // Do we have any results for the current field?  If not, try the next.
-            $results = $this->getMarcReader()->getFields($field);
-            if (!$results) {
-                continue;
-            }
-
-            // If we got here, we found results -- let's loop through them.
-            foreach ($results as $result) {
-                // Start an array for holding the chunks of the current heading:
-                $current = [];
-
-                // Get all the chunks and collect them together:
-                foreach ($result['subfields'] as $subfield) {
-                    // Numeric subfields are for control purposes and should not
-                    // be displayed:
-                    if (!is_numeric($subfield['code'])) {
-                        $current[] = $subfield['data'];
-                    }
-                }
-                // If we found at least one chunk, add a heading to our result:
-                if (!empty($current)) {
-                    if ($extended) {
-                        $sourceIndicator = $result['i2'];
-                        $source = '';
-                        if (isset($this->subjectSources[$sourceIndicator])) {
-                            $source = $this->subjectSources[$sourceIndicator] ?? '';
-                        } else {
-                            $source = $this->getSubfield($result, '2');
-                        }
-                        $retval[] = [
-                            'heading' => $current,
-                            'type' => $fieldType,
-                            'source' => $source,
-                            'id' => $this->getSubfield($result, '0')
-                        ];
-                    } else {
-                        $retval[] = $current;
-                    }
-                }
-            }
+        if (($this->mainConfig['Record']['marcSubjectHeadingsSort'] ?? '') === 'numerical') {
+            $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
+        } else {
+            // Default | value === 'record'
+            $returnValues = $this->getAllSubjectHeadingsRecordOrder($extended);
         }
 
         // Remove duplicates and then send back everything we collected:
         return array_map(
             'unserialize',
-            array_unique(array_map('serialize', $retval))
+            array_unique(array_map('serialize', $returnValues))
         );
+    }
+
+    /**
+     * Get all subject headings associated with this record. Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific. Sorted in the same way it is saved for the record.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     *  keys:
+     *  - heading: the actual subject heading chunks
+     *  - type: heading type
+     *  - source: source vocabulary
+     *
+     * @return array
+     */
+    protected function getAllSubjectHeadingsRecordOrder(bool $extended = false): array
+    {
+        $returnValues = [];
+        $allFields = $this->getMarcReader()->getAllFields();
+        $subjectFieldsKeys = array_keys($this->subjectFields);
+        // Go through all the fields and handle them if they are part of what we want
+        foreach ($allFields as $field) {
+            if (isset($field['tag']) && in_array($field['tag'], $subjectFieldsKeys)) {
+                $fieldType = $this->subjectFields[$field['tag']];
+                if ($nextLine = $this->processSubjectHeadings($field, $extended, $fieldType)) {
+                    $returnValues[] = $nextLine;
+                }
+            }
+        }
+        return $returnValues;
+    }
+
+    /**
+     * Get all subject headings associated with this record. Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific. Sorted numerically on marc fields.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     *  keys:
+     *  - heading: the actual subject heading chunks
+     *  - type: heading type
+     *  - source: source vocabulary
+     *
+     * @return array
+     */
+    protected function getAllSubjectHeadingsNumericalOrder(bool $extended = false): array
+    {
+        $returnValues = [];
+        // Try each MARC field one at a time:
+        foreach ($this->subjectFields as $field => $fieldType) {
+            // Do we have any results for the current field?  If not, try the next.
+            $fields = $this->getMarcReader()->getFields($field);
+            if (!$fields) {
+                continue;
+            }
+
+            // If we got here, we found results -- let's loop through them.
+            foreach ($fields as $f) {
+                if ($nextLine = $this->processSubjectHeadings($f, $extended, $fieldType)) {
+                    $returnValues[] = $nextLine;
+                }
+            }
+        }
+        return $returnValues;
+    }
+
+    /**
+     * Get subject headings of a given record field.
+     * The heading is returned as a chunk, increasing from least specific to most specific.
+     *
+     * @param array  $field     field to handle
+     * @param bool   $extended  Whether to return a keyed array with the following keys:
+     *                          - heading: the actual subject heading chunks - type:
+     *                          heading type - source: source vocabulary
+     * @param string $fieldType Type of the field
+     *
+     * @return ?array
+     */
+    protected function processSubjectHeadings(
+        array $field,
+        bool $extended,
+        string $fieldType
+    ): ?array {
+        // Start an array for holding the chunks of the current heading:
+        $current = [];
+
+        // Get all the chunks and collect them together:
+        foreach ($field['subfields'] as $subfield) {
+            // Numeric subfields are for control purposes and should not
+            // be displayed:
+            if (!is_numeric($subfield['code'])) {
+                $current[] = $subfield['data'];
+            }
+        }
+        // If we found at least one chunk, add a heading to our result:
+        if (!empty($current)) {
+            if ($extended) {
+                $sourceIndicator = $field['i2'];
+                $source = $this->subjectSources[$sourceIndicator]
+                    ?? $this->getSubfield($field, '2');
+                return [
+                    'heading' => $current,
+                    'type' => $fieldType,
+                    'source' => $source,
+                    'id' => $this->getSubfield($field, '0'),
+                ];
+            } else {
+                return $current;
+            }
+        }
+        return null;
     }
 
     /**
@@ -189,22 +266,22 @@ trait MarcAdvancedTrait
         $biblioLevel = strtoupper($leader[7]);
 
         switch ($biblioLevel) {
-        case 'M': // Monograph
-            return "Monograph";
-        case 'S': // Serial
-            return "Serial";
-        case 'A': // Monograph Part
-            return "MonographPart";
-        case 'B': // Serial Part
-            return "SerialPart";
-        case 'C': // Collection
-            return "Collection";
-        case 'D': // Collection Part
-            return "CollectionPart";
-        case 'I': // Integrating Resource
-            return "IntegratingResource";
-        default:
-            return "Unknown";
+            case 'M': // Monograph
+                return 'Monograph';
+            case 'S': // Serial
+                return 'Serial';
+            case 'A': // Monograph Part
+                return 'MonographPart';
+            case 'B': // Serial Part
+                return 'SerialPart';
+            case 'C': // Collection
+                return 'Collection';
+            case 'D': // Collection Part
+                return 'CollectionPart';
+            case 'I': // Integrating Resource
+                return 'IntegratingResource';
+            default:
+                return 'Unknown';
         }
     }
 
@@ -330,8 +407,8 @@ trait MarcAdvancedTrait
     public function getNewerTitles()
     {
         // If the MARC links are being used, return blank array
-        $fieldsNames = isset($this->mainConfig->Record->marc_links)
-            ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
+        $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
+            ? array_map('trim', explode(',', $this->mainConfig['Record']['marc_links']))
             : [];
         return in_array('785', $fieldsNames) ? [] : parent::getNewerTitles();
     }
@@ -374,8 +451,8 @@ trait MarcAdvancedTrait
     public function getPreviousTitles()
     {
         // If the MARC links are being used, return blank array
-        $fieldsNames = isset($this->mainConfig->Record->marc_links)
-            ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
+        $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
+            ? array_map('trim', explode(',', $this->mainConfig['Record']['marc_links']))
             : [];
         return in_array('780', $fieldsNames) ? [] : parent::getPreviousTitles();
     }
@@ -411,7 +488,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -419,8 +496,6 @@ trait MarcAdvancedTrait
      */
     public function getSeries()
     {
-        $matches = [];
-
         // First check the 440, 800 and 830 fields for series information:
         $primaryFields = [
             '440' => ['a', 'p'],
@@ -484,16 +559,6 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get an array of summary strings for the record.
-     *
-     * @return array
-     */
-    public function getSummary()
-    {
-        return $this->getFieldArray('520');
-    }
-
-    /**
      * Get an array of technical details on the item represented by the record.
      *
      * @return array
@@ -542,10 +607,11 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields(
-            '505',
-            ['a', 'g', 'r', 't', 'u']
-        )
+        if (
+            $fields = $this->getMarcReader()->getFields(
+                '505',
+                ['a', 'g', 'r', 't', 'u']
+            )
         ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
@@ -566,7 +632,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get hierarchical place names (MARC field 752)
+     * Get hierarchical place names (MARC field 752).
      *
      * Returns an array of formatted hierarchical place names, consisting of all
      * alpha-subfields, concatenated for display
@@ -611,7 +677,7 @@ trait MarcAdvancedTrait
         // Which fields/subfields should we check for URLs?
         $fieldsToCheck = [
             '856' => ['y', 'z', '3'],   // Standard URL
-            '555' => ['a']              // Cumulative index/finding aids
+            '555' => ['a'],              // Cumulative index/finding aids
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
@@ -647,17 +713,17 @@ trait MarcAdvancedTrait
      *               'link'  => link_URI
      *        ),
      *        ...
-     * )
+     * ).
      *
      * @return null|array
      */
     public function getAllRecordLinks()
     {
         // Load configurations:
-        $fieldsNames = isset($this->mainConfig->Record->marc_links)
-            ? explode(',', $this->mainConfig->Record->marc_links) : [];
+        $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
+            ? explode(',', $this->mainConfig['Record']['marc_links']) : [];
         $useVisibilityIndicator
-            = $this->mainConfig->Record->marc_links_use_visibility_indicator ?? true;
+            = $this->mainConfig['Record']['marc_links_use_visibility_indicator'] ?? true;
 
         $retVal = [];
         foreach ($fieldsNames as $value) {
@@ -711,23 +777,23 @@ trait MarcAdvancedTrait
         // Assign notes based on the relationship type
         $value = $field['tag'];
         switch ($value) {
-        case '780':
-            if (in_array($relationshipIndicator, range('0', '7'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
-        case '785':
-            if (in_array($relationshipIndicator, range('0', '8'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
+            case '780':
+                if (in_array($relationshipIndicator, range('0', '7'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
+            case '785':
+                if (in_array($relationshipIndicator, range('0', '8'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
         }
 
         return 'note_' . $value;
     }
 
     /**
-     * Returns the array element for the 'getAllRecordLinks' method
+     * Returns the array element for the 'getAllRecordLinks' method.
      *
      * @param array $field Field to examine
      *
@@ -741,7 +807,7 @@ trait MarcAdvancedTrait
             return false;
         }
 
-        $linkTypeSetting = $this->mainConfig->Record->marc_links_link_types
+        $linkTypeSetting = $this->mainConfig['Record']['marc_links_link_types']
             ?? 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $this->getSubfields($field, 'w');
@@ -752,46 +818,48 @@ trait MarcAdvancedTrait
         // If no reference found, check the next link type instead
         foreach ($linkTypes as $linkType) {
             switch (trim($linkType)) {
-            case 'oclc':
-                foreach ($linkFields as $current) {
-                    if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {
-                        $link = ['type' => 'oclc', 'value' => $oclc];
+                case 'oclc':
+                    foreach ($linkFields as $current) {
+                        $oclc = $this->getIdFromLinkingField($current, 'OCoLC');
+                        if ($oclc) {
+                            $link = ['type' => 'oclc', 'value' => $oclc];
+                        }
                     }
-                }
-                break;
-            case 'dlc':
-                foreach ($linkFields as $current) {
-                    if ($dlc = $this->getIdFromLinkingField($current, 'DLC', true)) {
-                        $link = ['type' => 'dlc', 'value' => $dlc];
+                    break;
+                case 'dlc':
+                    foreach ($linkFields as $current) {
+                        $dlc = $this->getIdFromLinkingField($current, 'DLC', true);
+                        if ($dlc) {
+                            $link = ['type' => 'dlc', 'value' => $dlc];
+                        }
                     }
-                }
-                break;
-            case 'id':
-                foreach ($linkFields as $current) {
-                    if ($bibLink = $this->getIdFromLinkingField($current)) {
-                        $link = ['type' => 'bib', 'value' => $bibLink];
+                    break;
+                case 'id':
+                    foreach ($linkFields as $current) {
+                        if ($bibLink = $this->getIdFromLinkingField($current)) {
+                            $link = ['type' => 'bib', 'value' => $bibLink];
+                        }
                     }
-                }
-                break;
-            case 'isbn':
-                if ($isbn = $this->getSubfield($field, 'z')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $isbn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'issn':
-                if ($issn = $this->getSubfield($field, 'x')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $issn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'title':
-                $link = ['type' => 'title', 'value' => $title];
-                break;
+                    break;
+                case 'isbn':
+                    if ($isbn = $this->getSubfield($field, 'z')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $isbn,
+                            'exclude' => $this->getUniqueID(),
+                        ];
+                    }
+                    break;
+                case 'issn':
+                    if ($issn = $this->getSubfield($field, 'x')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $issn,
+                            'exclude' => $this->getUniqueID(),
+                        ];
+                    }
+                    break;
+                case 'title':
+                    $link = ['type' => 'title', 'value' => $title];
+                    break;
             }
             // Exit loop if we have a link
             if (isset($link)) {
@@ -802,12 +870,12 @@ trait MarcAdvancedTrait
         return !isset($link) ? false : [
             'title' => $this->getRecordLinkNote($field),
             'value' => $title,
-            'link'  => $link
+            'link'  => $link,
         ];
     }
 
     /**
-     * Returns an id extracted from the identifier subfield passed in
+     * Returns an id extracted from the identifier subfield passed in.
      *
      * @param string $idField MARC subfield containing id information
      * @param string $prefix  Prefix to search for in id field
@@ -833,7 +901,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Support method for getFormattedMarcDetails() -- extract a single result
+     * Support method for getFormattedMarcDetails() -- extract a single result.
      *
      * @param array $currentField Result from MarcReader::getFields
      * @param array $details      Parsed instructions from getFormattedMarcDetails()
@@ -846,7 +914,7 @@ trait MarcAdvancedTrait
         if ($details['mode'] === 'msg') {
             // Map 'true' and 'false' to boolean equivalents:
             $msgMap = ['true' => true, 'false' => false];
-            return $msgMap[$details['params']] ?? $details['params'];
+            return $msgMap[$details['params'] ?? ''] ?? $details['params'];
         }
 
         // Standard case -- "marc" mode (extract subfield data):
@@ -884,7 +952,7 @@ trait MarcAdvancedTrait
             $instructions[$key] = [
                 'mode' => $instructionParts[0],
                 'params' => $instructionParts[1] ?? null,
-                'field' => $instructionParts[2] ?? $defaultField
+                'field' => $instructionParts[2] ?? $defaultField,
             ];
         }
 
@@ -904,7 +972,7 @@ trait MarcAdvancedTrait
         foreach ($instructions as $key => $details) {
             foreach ($fields[$details['field']] as $i => $currentField) {
                 if (!isset($matches[$i])) {
-                    $matches[$i] = ['id' => $this->getUniqueId()];
+                    $matches[$i] = ['id' => $this->getUniqueID()];
                 }
                 $matches[$i][$key] = $this->extractSingleMarcDetail(
                     $currentField,
@@ -932,23 +1000,18 @@ trait MarcAdvancedTrait
     {
         // Special case for MARC:
         if ($format == 'marc21') {
-            $sanitizeXmlRegEx
-                = '[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+';
-            $xml = simplexml_load_string(
-                trim(
-                    preg_replace(
-                        "/$sanitizeXmlRegEx/u",
-                        ' ',
-                        $this->getMarcReader()->toFormat('MARCXML')
-                    )
-                )
-            );
+            try {
+                $xml = $this->getMarcReader()->toFormat('MARCXML');
+            } catch (\Exception) {
+                return false;
+            }
+            $xml = simplexml_load_string($xml);
             if (!$xml || !isset($xml->record)) {
                 return false;
             }
 
             // Set up proper namespacing and extract just the <record> tag:
-            $xml->record->addAttribute('xmlns', "http://www.loc.gov/MARC21/slim");
+            $xml->record->addAttribute('xmlns', 'http://www.loc.gov/MARC21/slim');
             // There's a quirk in SimpleXML that strips the first namespace
             // declaration, hence the double xmlns: prefix:
             $xml->record->addAttribute(
@@ -976,9 +1039,14 @@ trait MarcAdvancedTrait
      */
     public function getRDFXML()
     {
+        try {
+            $xml = $this->getMarcReader()->toFormat('MARCXML');
+        } catch (\Exception $e) {
+            return '';
+        }
         return XSLTProcessor::process(
             'record-rdf-mods.xsl',
-            trim($this->getMarcReader()->toFormat('MARCXML'))
+            trim($xml)
         );
     }
 
@@ -993,7 +1061,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first ISMN found for this record, or false if no one fonund
+     * Return first ISMN found for this record, or false if no one found.
      *
      * @return mixed
      */
@@ -1001,7 +1069,8 @@ trait MarcAdvancedTrait
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field['i1'] == 2
+            if (
+                $field['i1'] == 2
                 && $subfield = $this->getSubfield($field, 'a')
             ) {
                 return $subfield;
@@ -1011,7 +1080,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first national bibliography number found, or false if not found
+     * Return first national bibliography number found, or false if not found.
      *
      * @return mixed
      */
@@ -1080,5 +1149,161 @@ trait MarcAdvancedTrait
     {
         return $this->getMarcReader()
             ->getLinkedFieldsSubfields('880', '245', ['n', 'p']);
+    }
+
+    /**
+     * Get an array of textual holdings for the holdings on a record.
+     *
+     * @return array
+     */
+    public function getTextualHoldings()
+    {
+        return $this->getFieldArray('866');
+    }
+
+    /**
+     * Check if an array of indicator filters match the provided marc data.
+     *
+     * @param array $marc_data MARC data for a specific field
+     * @param array $indFilter Array with up to 2 keys ('1', and '2') with an array as their value
+     * containing what to match on in the marc indicator.
+     * ex: ['1' => ['0','1']] would filter ind1 with 0 or 1
+     *
+     * @return bool
+     */
+    protected function checkIndicatorFilter($marc_data, $indFilter): bool
+    {
+        foreach (range(1, 2) as $indNum) {
+            if (isset($indFilter[$indNum])) {
+                if (!in_array(trim(($marc_data['i' . $indNum] ?? '')), (array)$indFilter[$indNum])) {
+                    return false;
+                }
+            }
+        }
+        // If we got this far, no non-matching filters were encountered.
+        return true;
+    }
+
+    /**
+     * Check if the indicator filters match the provided marc data.
+     *
+     * @param array $marc_data MARC data for a specific field
+     * @param array $indData   Indicator filters as described in getMarcFieldWithInd()
+     *
+     * @return bool
+     */
+    protected function checkIndicatorFilters($marc_data, $indData): bool
+    {
+        foreach ($indData as $indFilter) {
+            if ($this->checkIndicatorFilter($marc_data, $indFilter)) {
+                return true;
+            }
+        }
+        // If we got this far, either $indData is empty (no filters defined -- return true)
+        // or it is non-empty (no filters matched -- return false)
+        return empty($indData);
+    }
+
+    /**
+     * Takes a Marc field that notes are stored in (ex: 950) and a list of
+     * sub fields (ex: ['a','b']) optionally as well as what indicator
+     * numbers and values to filter for and concatenates the subfields
+     * together and returns the fields back as an array
+     * (ex: ['subA subB subC', 'field2SubA field2SubB']).
+     *
+     * @param string $field    Marc field to search within
+     * @param ?array $subfield Sub-fields to return or empty for all
+     * @param array  $indData  Array of filter arrays, each in the format indicator number =>
+     * array of allowed indicator values. If any one of the filter arrays fully matches the indicator
+     * values in the field, data will be returned. If no filter arrays are defined, data will always
+     * be returned regardless of indicators.
+     * ex: [['1' => ['1', '2']], ['2' => ['']]] would filter fields ind1 = 1 or 2 or ind2 = blank
+     * ex: [['1' => ['1'], '2' => ['7']]] would filter fields with ind1 = 1 and ind2 = 7
+     * ex: [] would apply no filtering based on indicators
+     *
+     * @return array The values within the subfields under the field
+     */
+    public function getMarcFieldWithInd(
+        string $field,
+        ?array $subfield = null,
+        array $indData = []
+    ) {
+        $vals = [];
+        $marc = $this->getMarcReader();
+        $marc_fields = $marc->getFields($field, $subfield);
+        foreach ($marc_fields as $marc_data) {
+            $field_vals = [];
+            if ($this->checkIndicatorFilters($marc_data, $indData)) {
+                $subfields = $marc_data['subfields'];
+                foreach ($subfields as $subfield) {
+                    $field_vals[] = $subfield['data'];
+                }
+            }
+            $newVal = implode(' ', $field_vals);
+            if (!empty($field_vals) && !in_array($newVal, $vals)) {
+                $vals[] = $newVal;
+            }
+        }
+        return $vals;
+    }
+
+    /**
+     * Get the location of other archival materials notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getLocationOfArchivalMaterialsNotes()
+    {
+        return $this->getMarcFieldWithInd('544', range('a', 'z'), [[1 => ['', '0']]]);
+    }
+
+    /**
+     * Get an array of summary strings for the record with only the 'a' subfield.
+     *
+     * @return array
+     */
+    public function getSummary()
+    {
+        return $this->getMarcFieldWithInd('520', ['a'], [[1 => ['', '0', '2', '8']]]);
+    }
+
+    /**
+     * Get the summary note.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getSummaryNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['', '0', '2', '8']]]);
+    }
+
+    /**
+     * Get the abstract notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getAbstractNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['3']]]);
+    }
+
+    /**
+     * Get the review notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getReviewNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['1']]]);
+    }
+
+    /**
+     * Get the content advice notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getContentAdviceNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['4']]]);
     }
 }

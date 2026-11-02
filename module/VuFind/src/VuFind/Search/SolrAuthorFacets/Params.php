@@ -1,8 +1,9 @@
 <?php
+
 /**
- * AuthorFacets aspect of the Search Multi-class (Params)
+ * AuthorFacets aspect of the Search Multi-class (Params).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrAuthorFacets;
 
 /**
- * AuthorFacets Search Parameters
+ * AuthorFacets Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -39,14 +41,14 @@ namespace VuFind\Search\SolrAuthorFacets;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * Set parameters based on a search object
+     * Set parameters based on a search object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(array $request): void
     {
         parent::initFromRequest($request);
 
@@ -67,16 +69,16 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Support method for _initSearch() -- handle basic settings.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch($request)
+    protected function initBasicSearch(array $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (null === ($lookfor = $request->get('lookfor'))) {
+        if (null === ($lookfor = $request['lookfor'] ?? null)) {
             return false;
         }
 
@@ -86,14 +88,14 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Initialize view
+     * Initialize view.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initView($request)
+    protected function initView(array $request): void
     {
         $this->view = 'authorfacets';
     }

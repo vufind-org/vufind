@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Class PageLocatorTest
+ * Class PageLocatorTest.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,13 +26,14 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Content;
 
 use VuFind\Content\PageLocator;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Content Page Locator Test Class
+ * Content Page Locator Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -130,7 +131,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
         $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
         $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
         foreach ($testCases as $case) {
-            $this->assertEquals($case['result'], $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName']));
+            $this->assertEquals(
+                $case['result'],
+                $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName'])
+            );
         }
     }
 }

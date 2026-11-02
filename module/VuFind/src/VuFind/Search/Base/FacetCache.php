@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract Base FacetCache.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
+
+use function in_array;
 
 /**
  * Solr FacetCache Factory.
@@ -40,39 +46,24 @@ use VuFind\Cache\Manager as CacheManager;
  */
 abstract class FacetCache
 {
-    /**
-     * Cache manager
-     *
-     * @var CacheManager
-     */
-    protected $cacheManager;
+    use \VuFind\Log\VarDumperTrait;
 
     /**
-     * Currently selected language
+     * Constructor.
      *
-     * @var string
+     * @param Results                  $results                 Search results object
+     * @param CacheManager             $cacheManager            Cache manager
+     * @param string                   $language                Active UI language
+     * @param ?HierarchicalFacetHelper $hierarchicalFacetHelper Hierarchical facet helper
+     * @param ?ConfigManagerInterface  $configManager           Config manager
      */
-    protected $language;
-
-    /**
-     * Search results object.
-     *
-     * @var Results
-     */
-    protected $results;
-
-    /**
-     * Constructor
-     *
-     * @param Results      $r        Search results object
-     * @param CacheManager $cm       Cache manager
-     * @param string       $language Active UI language
-     */
-    public function __construct(Results $r, CacheManager $cm, $language = 'en')
-    {
-        $this->results = $r;
-        $this->cacheManager = $cm;
-        $this->language = $language;
+    public function __construct(
+        protected Results $results,
+        protected CacheManager $cacheManager,
+        protected string $language = 'en',
+        protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null,
+        protected ?ConfigManagerInterface $configManager = null
+    ) {
     }
 
     /**
@@ -80,14 +71,14 @@ abstract class FacetCache
      *
      * @return string
      */
-    abstract protected function getCacheNamespace();
+    abstract protected function getCacheNamespace(): string;
 
     /**
      * Get the cache key for the provided method.
      *
      * @return string
      */
-    protected function getCacheKey()
+    protected function getCacheKey(): string
     {
         $params = $this->results->getParams();
         $facetConfig = $params->getFacetConfig();
@@ -97,7 +88,7 @@ abstract class FacetCache
             // Factor operator settings into cache key:
             array_map([$params, 'getFacetOperator'], array_keys($facetConfig)),
         ];
-        return $this->language . md5(print_r($settings, true));
+        return $this->language . md5($this->varDump($settings));
     }
 
     /**
@@ -107,7 +98,7 @@ abstract class FacetCache
      *
      * @return array
      */
-    protected function getFacetResults($initMethod)
+    protected function getFacetResults(string $initMethod): array
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->cacheManager->getCache('object', $this->getCacheNamespace());
@@ -141,13 +132,33 @@ abstract class FacetCache
      *
      * @return array
      */
-    public function getList($context = 'Advanced')
+    public function getList(string $context = 'Advanced'): array
     {
-        if (!in_array($context, ['Advanced', 'HomePage'])) {
+        if (!in_array($context, ['Advanced', 'HomePage', 'NewItems'])) {
             throw new \Exception('Invalid context: ' . $context);
         }
         // For now, all contexts are handled the same way.
-        return $this->getFacetResults('init' . $context . 'Facets');
+        $facetList = $this->getFacetResults('init' . $context . 'Facets');
+
+        // Temporary context-specific sort fix for Advanced and HomePage:
+        if (in_array($context, ['Advanced', 'HomePage']) && $this->hierarchicalFacetHelper && $this->configManager) {
+            $options = $this->results->getOptions();
+            $facetConfig = $this->configManager->getConfigArray($options->getFacetsIni());
+            $sortOptions = array_merge(
+                $options->getHierarchicalFacetSortSettings(),
+                $facetConfig[$context . '_Settings']['hierarchicalFacetSortOptions'] ?? []
+            );
+            $defaultSort = 'HomePage' === $context ? 'all' : 'top';
+            foreach ($options->getHierarchicalFacets() as $facet) {
+                if (!empty($facetList[$facet]['list'])) {
+                    $this->hierarchicalFacetHelper->sortFacetList(
+                        $facetList[$facet]['list'],
+                        $sortOptions[$facet] ?? $sortOptions['*'] ?? $defaultSort,
+                    );
+                }
+            }
+        }
+        return $facetList;
     }
 
     /**
@@ -155,7 +166,7 @@ abstract class FacetCache
      *
      * @return Results
      */
-    public function getResults()
+    public function getResults(): Results
     {
         return $this->results;
     }

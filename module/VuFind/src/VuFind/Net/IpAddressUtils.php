@@ -1,8 +1,9 @@
 <?php
+
 /**
  * IP address utility functions.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Net
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Net;
+
+use function array_slice;
+use function count;
+use function defined;
 
 /**
  * IP address utility functions.
@@ -39,7 +45,7 @@ namespace VuFind\Net;
 class IpAddressUtils
 {
     /**
-     * Normalize an IP address or a beginning of it to an IPv6 address
+     * Normalize an IP address or a beginning of it to an IPv6 address.
      *
      * @param string $ip  IP Address
      * @param bool   $end Whether to make a partial address  an "end of range"
@@ -52,7 +58,7 @@ class IpAddressUtils
     {
         // The check for AF_INET6 allows fallback to IPv4 only if necessary.
         // Hopefully that's not necessary.
-        if (strpos($ip, ':') === false || !defined('AF_INET6')) {
+        if (!str_contains($ip, ':') || !defined('AF_INET6')) {
             // IPv4 address
 
             // Append parts until complete
@@ -71,11 +77,12 @@ class IpAddressUtils
             // IPv6 address
 
             // Expand :: with '0:' as many times as necessary for a complete address
-            $count = substr_count($ip, ':');
+            $ipEndsWithDoubleColon = str_ends_with($ip, '::');
+            $count = substr_count($ip, ':') - ($ipEndsWithDoubleColon ? 1 : 0);
             if ($count < 8) {
                 $ip = str_replace(
                     '::',
-                    ':' . str_repeat('0:', 8 - $count),
+                    str_repeat(':0', 8 - $count) . ($ipEndsWithDoubleColon ? '' : ':'),
                     $ip
                 );
             }
@@ -118,5 +125,35 @@ class IpAddressUtils
             }
         }
         return false;
+    }
+
+    /**
+     * Truncate an IP address to the given number of IPv4 octets
+     * or IPv6 hextets, depending what kind of IP address it is.
+     *
+     * @param string $ip          IP address to truncate
+     * @param int    $ipv4Octets  Number of octets to return if it is IPv4
+     * @param int    $ipv6Hextets Number of hextets to return if it is IPv6
+     *
+     * @return string The possibly truncated IP address
+     */
+    public function truncate($ip, $ipv4Octets = null, $ipv6Hextets = null)
+    {
+        if (!str_contains($ip, ':') || !defined('AF_INET6')) {
+            // IPv4 address
+            if ($ipv4Octets) {
+                $ipComponents = explode('.', $ip);
+                $ipComponents = array_slice($ipComponents, 0, $ipv4Octets);
+                $ip = implode('.', $ipComponents);
+            }
+        } else {
+            // IPv6 address
+            if ($ipv6Hextets) {
+                $ipComponents = explode(':', $ip);
+                $ipComponents = array_slice($ipComponents, 0, $ipv6Hextets);
+                $ip = implode(':', $ipComponents);
+            }
+        }
+        return $ip;
     }
 }

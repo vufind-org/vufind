@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -39,21 +41,53 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractPluginFactory implements AbstractFactoryInterface
+class AbstractPluginFactory implements AbstractFactoryInterface
 {
     /**
-     * Default namespace for building class names
+     * Default namespace for building class names (null to use class names as-is).
      *
-     * @var string
+     * @var ?string
      */
-    protected $defaultNamespace;
+    protected $defaultNamespace = null;
 
     /**
-     * Optional suffix to append to class names
+     * Optional suffix to append to class names (ignored when defaultNamespace is null).
      *
      * @var string
      */
     protected $classSuffix = '';
+
+    /**
+     * Lookup table of factories for classes.
+     *
+     * @var array
+     */
+    protected $factoryForClass = [];
+
+    /**
+     * Default factory to use when autodetection fails (null for none).
+     *
+     * @var ?string
+     */
+    protected ?string $defaultFactory = null;
+
+    /**
+     * Factory detector.
+     *
+     * @var FactoryDetector
+     */
+    protected ?FactoryDetector $factoryDetector = null;
+
+    /**
+     * Get factory detector.
+     *
+     * @return FactoryDetector
+     */
+    protected function getFactoryDetector(): FactoryDetector
+    {
+        $this->factoryDetector ??= new FactoryDetector();
+        return $this->factoryDetector;
+    }
 
     /**
      * Get the name of a class for a given plugin name.
@@ -64,18 +98,32 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      */
     protected function getClassName($requestedName)
     {
-        // If we have a FQCN that refers to an existing class, return it as-is:
-        if (strpos($requestedName, '\\') !== false && class_exists($requestedName)) {
+        // If class name generation is disabled or we have a FQCN that refers to an existing class, return it as-is:
+        if (null === $this->defaultNamespace || (str_contains($requestedName, '\\') && class_exists($requestedName))) {
             return $requestedName;
         }
         // First try the raw service name, then try a normalized version:
-        $finalName = $this->defaultNamespace . '\\' . $requestedName
-            . $this->classSuffix;
+        $finalName = $this->defaultNamespace . '\\' . $requestedName . $this->classSuffix;
         if (!class_exists($finalName)) {
-            $finalName = $this->defaultNamespace . '\\'
-                . ucwords(strtolower($requestedName)) . $this->classSuffix;
+            $finalName = $this->defaultNamespace . '\\' . ucwords(strtolower($requestedName)) . $this->classSuffix;
         }
         return $finalName;
+    }
+
+    /**
+     * Given a class name, find the best matching factory. Return null if none can be found.
+     *
+     * @param string $class Class name
+     *
+     * @return ?string
+     */
+    protected function getFactoryForClass(string $class): ?string
+    {
+        if (!isset($this->factoryForClass[$class])) {
+            $this->factoryForClass[$class] = $this->getFactoryDetector()->detectFactoryForClass($class)
+                ?? $this->defaultFactory;
+        }
+        return $this->factoryForClass[$class];
     }
 
     /**
@@ -90,7 +138,8 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        return class_exists($this->getClassName($requestedName));
+        $className = $this->getClassName($requestedName);
+        return class_exists($className) && null !== $this->getFactoryForClass($className);
     }
 
     /**
@@ -101,15 +150,18 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      * @param array              $options       Options (unused)
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);
-        return new $class();
+        $factoryName = $this->getFactoryForClass($class);
+        if (!$factoryName) {
+            throw new \Exception("Cannot determine factory for $class");
+        }
+        $factory = new $factoryName();
+        return $factory($container, $class, $options);
     }
 }

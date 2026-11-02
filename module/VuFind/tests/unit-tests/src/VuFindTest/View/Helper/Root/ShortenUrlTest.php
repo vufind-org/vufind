@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ShortenUrl view helper Test Class
+ * ShortenUrl view helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,15 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\UrlShortener\Database;
-use VuFind\UrlShortener\UrlShortenerInterface;
 use VuFind\View\Helper\Root\ShortenUrl;
-use VuFind\View\Helper\Root\ShortenUrlFactory;
 
 /**
- * ShortenUrl view helper Test Class
+ * ShortenUrl view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,10 +53,8 @@ class ShortenUrlTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $service = $container->createMock(Database::class, ['shorten']);
         $service->expects($this->once())->method('shorten')
-            ->with($this->equalTo('foo'))->will($this->returnValue('bar'));
-        $container->set(UrlShortenerInterface::class, $service);
-        $factory = new ShortenUrlFactory();
-        $helper = $factory($container, ShortenUrl::class);
-        $this->assertEquals('bar', $helper('foo'));
+            ->with('foo')->willReturn('bar');
+        $helper = new ShortenUrl($service);
+        $this->assertSame('bar', $helper('foo'));
     }
 }

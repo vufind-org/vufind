@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Database authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\Database;
@@ -46,7 +48,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
-     * Object to test
+     * Object to test.
      *
      * @var Database
      */
@@ -75,7 +77,17 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
             return;
         }
         $this->auth = new Database();
-        $this->auth->setDbTableManager($this->getLiveTableManager());
+        $this->auth->setDbServiceManager($this->getLiveDbServiceManager());
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
     }
 
     /**
@@ -116,7 +128,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
         $post = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
             'password' => 'testpass', 'password2' => 'testpass',
-            'firstname' => 'Test', 'lastname' => 'User'
+            'firstname' => 'Test', 'lastname' => 'User',
         ];
         return $this->getRequest($post);
     }
@@ -132,7 +144,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         return $this->getRequest($post);
     }
@@ -292,8 +304,8 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testLogin()
     {
         $user = $this->auth->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('user@test.com', $user->email);
+        $this->assertEquals('testuser', $user->getUsername());
+        $this->assertEquals('user@test.com', $user->getEmail());
     }
 
     /**

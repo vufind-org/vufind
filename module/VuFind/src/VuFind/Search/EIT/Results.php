@@ -1,10 +1,11 @@
 <?php
+
 /**
- * EBSCO Search Results
+ * EBSCO Search Results.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_EBSCO
@@ -26,12 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EIT;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * EBSCO Search Parameters
  * Partially copied from WorldCat Search Parameters; partially copied from other
- * pieces of VuFind code
+ * pieces of VuFind code.
  *
  * @category VuFind
  * @package  Search_EBSCO
@@ -45,9 +49,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'EIT';
+    protected ?string $backendId = 'EIT';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -55,28 +59,35 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
+        $command = new SearchCommand(
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
+            $params
+        );
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, $offset, $limit, $params);
+            ->invoke($command)->getResult();
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // No facets in EIT:
         return [];

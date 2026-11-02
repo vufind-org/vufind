@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Configuration loader for Multiple IdPs
+ * Configuration loader for Multiple IdPs.
  *
- * PHP version 7
+ * PHP version 8
  *
  * @category VuFind
  * @package  Authentication
@@ -10,12 +11,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth\Shibboleth;
 
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Configuration loader for Multiple IdPs
+ * Configuration loader for Multiple IdPs.
  *
  * @category VuFind
  * @package  Authentication
@@ -23,37 +25,22 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
-    \Laminas\Log\LoggerAwareInterface
+class MultiIdPConfigurationLoader implements
+    ConfigurationLoaderInterface,
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Configured IdPs with entityId and overridden attribute mapping
+     * Constructor.
      *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Configured IdPs with entityId and overridden attribute mapping
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $shibConfig;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config $config     Configuration
-     * @param \Laminas\Config\Config $shibConfig Shibboleth configuration for IdPs
+     * @param array $config     Configuration
+     * @param array $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(
-        \Laminas\Config\Config $config,
-        \Laminas\Config\Config $shibConfig
+        protected array $config,
+        protected array $shibConfig
     ) {
-        $this->config = $config;
-        $this->shibConfig = $shibConfig;
     }
 
     /**
@@ -66,12 +53,12 @@ class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
      */
     public function getConfiguration($entityId)
     {
-        $config = $this->config->Shibboleth->toArray();
+        $config = $this->config['Shibboleth'] ?? [];
         $idpConfig = null;
         $prefix = null;
         foreach ($this->shibConfig as $name => $configuration) {
             if ($entityId == trim($configuration['entityId'])) {
-                $idpConfig = $configuration->toArray();
+                $idpConfig = $configuration;
                 $prefix = $name;
                 break;
             }

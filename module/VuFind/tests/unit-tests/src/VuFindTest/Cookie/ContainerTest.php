@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Cookie Container Test Class
+ * Cookie Container Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Cookie;
 
 use VuFind\Cookie\Container;
 
 /**
- * Cookie Container Test Class
+ * Cookie Container Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +43,7 @@ use VuFind\Cookie\Container;
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Cookie container
+     * Cookie container.
      *
      * @var Container
      */
@@ -70,7 +72,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getters and setters
+     * Test getters and setters.
      *
      * @return void
      */
@@ -78,21 +80,21 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     {
         // Test get/set of single value:
         $this->container->value = 'tmp';
-        $this->assertEquals('tmp', $this->container->value);
+        $this->assertSame('tmp', $this->container->value);
 
         // Test get/set of array:
         $this->container->testArray = [1, 2];
-        $this->assertEquals(2, count($this->container->testArray));
+        $this->assertCount(2, $this->container->testArray);
 
         // Test getAllValues:
         $all = $this->container->getAllValues();
-        $this->assertEquals(2, count($all));
-        $this->assertTrue(in_array('value', array_keys($all)));
-        $this->assertTrue(in_array('testArray', array_keys($all)));
+        $this->assertCount(2, $all);
+        $this->assertContains('value', array_keys($all));
+        $this->assertContains('testArray', array_keys($all));
     }
 
     /**
-     * Test isset/unset
+     * Test isset/unset.
      *
      * @return void
      */

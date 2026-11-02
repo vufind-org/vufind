@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Proxy URL view helper
+ * Proxy URL view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
+use Exception;
+use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
+
 /**
- * Proxy URL view helper
+ * Proxy URL view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,23 +41,24 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ProxyUrl extends \Laminas\View\Helper\AbstractHelper
+class ProxyUrl implements
+    \Psr\Log\LoggerAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
+    use \VuFind\Cache\CacheTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param ?array        $config VuFind configuration
+     * @param ?CacheAdapter $cache  Cache for web service responses
      */
-    public function __construct($config = null)
+    public function __construct(protected ?array $config = null, ?CacheAdapter $cache = null)
     {
-        $this->config = $config;
+        $this->setCacheStorage($cache);
+        $this->cacheLifetime = (int)($config['EZproxy']['prefixLinksWebServiceCacheLifetime'] ?? 600);
     }
 
     /**
@@ -64,10 +70,64 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($url)
     {
-        $usePrefix = !isset($this->config->EZproxy->prefixLinks)
-            || $this->config->EZproxy->prefixLinks;
-        return ($usePrefix && isset($this->config->EZproxy->host))
-            ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)
+        $useWebService = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? false;
+        $usePrefix = $useWebService
+            ? $this->checkUrl($url) ?? $this->checkConfig()
+            : $this->checkConfig();
+
+        return ($usePrefix && isset($this->config['EZproxy']['host']))
+            ? $this->config['EZproxy']['host'] . '/login?qurl=' . urlencode($url)
             : $url;
+    }
+
+    /**
+     * Return the configured prefixLinks setting.
+     *
+     * @return bool The configured setting, or the default
+     */
+    protected function checkConfig()
+    {
+        return $this->config['EZproxy']['prefixLinks'] ?? true;
+    }
+
+    /**
+     * Check whether the given URL requires the proxy prefix.  Cache the response.
+     *
+     * @param string $url The raw URL to check
+     *
+     * @return mixed Whether the URL should be prefixed, or null if it can't be determined
+     */
+    protected function checkUrl($url)
+    {
+        $domain = parse_url($url, PHP_URL_SCHEME)
+         . '://'
+         . parse_url($url, PHP_URL_HOST);
+        $cacheKey = "proxyUrl-domainToUsePrefix-$domain";
+        $usePrefix = $this->getCachedData($cacheKey);
+        if (null === $usePrefix) {
+            $usePrefix = $this->queryWebService($domain);
+            $this->putCachedData($cacheKey, $usePrefix);
+        }
+        return $usePrefix;
+    }
+
+    /**
+     * Query the web service on whether to prefix URLs to a given domain.
+     *
+     * @param string $domain The domain
+     *
+     * @return mixed Whether the URL should be prefixed, or null if it can't be determined
+     */
+    protected function queryWebService($domain)
+    {
+        $prefixLinksWebServiceUrl = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? '';
+        try {
+            $response = $this->httpService->get($prefixLinksWebServiceUrl, ['url' => $domain]);
+            $responseData = trim($response->getContent());
+        } catch (Exception $ex) {
+            $this->logError('Exception during EZproxy web service request: ' . $ex->getMessage());
+            return null;
+        }
+        return '1' === $responseData;
     }
 }

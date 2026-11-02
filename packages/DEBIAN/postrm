@@ -1,0 +1,18 @@
+#!/bin/sh -e
+
+# Load debconf library
+. /usr/share/debconf/confmodule
+
+case "$1" in
+    remove|purge)
+
+        # Clean up debconf's database
+        db_purge
+    ;;
+
+    *)
+        exit 0
+    ;;
+esac
+
+exit 0

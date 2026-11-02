@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SFX Link Resolver Driver
+ * SFX Link Resolver Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -28,10 +29,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 /**
- * SFX Link Resolver Driver
+ * SFX Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -42,14 +44,14 @@ namespace VuFind\Resolver\Driver;
 class Sfx extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
@@ -61,7 +63,7 @@ class Sfx extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -80,7 +82,7 @@ class Sfx extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display
@@ -93,12 +95,12 @@ class Sfx extends AbstractBase
     {
         $records = []; // array to return
         try {
-            $xml = new \SimpleXmlElement($xmlstr);
+            $xml = new \SimpleXMLElement($xmlstr);
         } catch (\Exception $e) {
             return $records;
         }
 
-        $root = $xml->xpath("//ctx_obj_targets");
+        $root = $xml->xpath('//ctx_obj_targets');
         $xml = $root[0];
         foreach ($xml->children() as $target) {
             $record = [];

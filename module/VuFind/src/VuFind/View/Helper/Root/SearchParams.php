@@ -1,8 +1,9 @@
 <?php
+
 /**
- * "Retrieve search params" view helper
+ * "Retrieve search params" view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Params\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * "Retrieve search params" view helper
+ * "Retrieve search params" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,27 +41,21 @@ use VuFind\Search\Params\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchParams extends \Laminas\View\Helper\AbstractHelper
+class SearchParams
 {
     /**
-     * Search manager
-     *
-     * @var PluginManager
-     */
-    protected $manager;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager $manager Search manager
      */
-    public function __construct(PluginManager $manager)
-    {
-        $this->manager = $manager;
+    #[Autowire]
+    public function __construct(
+        protected PluginManager $manager
+    ) {
     }
 
     /**
-     * Wrapper to the options plugin manager
+     * Wrapper to the options plugin manager.
      *
      * @param string $type The search type of the object to retrieve
      *

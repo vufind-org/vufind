@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Orb cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 /**
@@ -36,34 +38,33 @@ namespace VuFind\Content\Covers;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:content_provider_components
  */
-class Orb extends \VuFind\Content\AbstractCover
-    implements \VuFindHttp\HttpServiceAwareInterface
+class Orb extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingDownloaderAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
-     * Base URL for Orb API
+     * Base URL for Orb API.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * API user for Orb
+     * API user for Orb.
      *
      * @var string
      */
     protected $apiUser;
 
     /**
-     * API key for Orb
+     * API key for Orb.
      *
      * @var string
      */
     protected $apiKey;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url     Base URL for Orb
      * @param string $apiUser API key for Orb
@@ -75,21 +76,7 @@ class Orb extends \VuFind\Content\AbstractCover
         $this->apiUser = $apiUser;
         $this->apiKey = $apiKey;
         $this->supportsIsbn = $this->cacheAllowed = true;
-    }
-
-    /**
-     * Get an HTTP client
-     *
-     * @param string $url URL for client to use
-     *
-     * @return \Laminas\Http\Client
-     */
-    protected function getHttpClient($url = null)
-    {
-        if (null === $this->httpService) {
-            throw new \Exception('HTTP service missing.');
-        }
-        return $this->httpService->createClient($url);
+        $this->cacheOptionsSection = 'OrbCover';
     }
 
     /**
@@ -113,17 +100,18 @@ class Orb extends \VuFind\Content\AbstractCover
 
         $url = 'https://' . $this->apiUser . ':' . $this->apiKey . '@' .
                $this->url . '/products?eans=' . $ean . '&sort=ean_asc';
-        $result = $this->getHttpClient($url)->send();
+
+        if (!isset($this->cachingDownloader)) {
+            throw new \Exception('CachingDownloader initialization failed.');
+        }
+        $json = $this->cachingDownloader->downloadJson($url);
         $imageVersion = $size == 'small' ? 'thumbnail' : 'original';
-        if ($result->isSuccess()) {
-            $data = $result->getBody();
-            $json = json_decode($data, true);
-            foreach ($json['data'] as $title) {
-                if ($title['ean13'] == $ean
-                    && isset($title['images']['front'][$imageVersion]['src'])
-                ) {
-                    return $title['images']['front'][$imageVersion]['src'];
-                }
+        foreach ($json->data as $title) {
+            if (
+                $title->ean13 == $ean
+                && isset($title->images->front->$imageVersion->src)
+            ) {
+                return $title->images->front->$imageVersion->src;
             }
         }
         return false;

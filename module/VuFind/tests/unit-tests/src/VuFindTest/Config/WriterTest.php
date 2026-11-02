@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Config Writer Test Class
+ * Config Writer Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
 use VuFind\Config\Writer;
 
 /**
- * Config Writer Test Class
+ * Config Writer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,9 +52,10 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testReadFile()
     {
-        $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
+        $fixture = 'configs/defaultgenerator/config.ini';
+        $test = new Writer($this->getFixtureDir() . $fixture);
         $this->assertEquals(
-            $this->getFixture('configs/1.1/sms.ini'),
+            $this->getFixture($fixture),
             $test->getContent()
         );
     }
@@ -73,12 +76,12 @@ class WriterTest extends \PHPUnit\Framework\TestCase
                     'settings' => [
                         'key1' => [
                             'before' => "; key head\n",
-                            'inline' => '; key inline'
-                        ]
-                    ]
-                ]
+                            'inline' => '; key inline',
+                        ],
+                    ],
+                ],
             ],
-            'after' => "; the end\n"
+            'after' => "; the end\n",
         ];
         $target = "; section head\n[Test]\t; inline\n; key head\n"
             . "key1             = \"val1\"\t; key inline\n"
@@ -136,7 +139,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     public function testAssocArray()
     {
         $cfg = [
-            'Test' => ['test' => ['key1' => 'val1', 'key2' => 'val2']]
+            'Test' => ['test' => ['key1' => 'val1', 'key2' => 'val2']],
         ];
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest['key1']     = \"val1\"\n"
@@ -205,7 +208,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $cfg = "[test]\nkey1=val1 ; comment\n";
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key1', 'val2');
-        $this->assertEquals(
+        $this->assertSame(
             "[test]\nkey1 = \"val2\" ; comment",
             trim($test->getContent())
         );
@@ -249,6 +252,43 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test->clear('a', 'b[]');   // clear array
         $test->clear('b', 'c');     // clear single value
         $test->clear('z', 'z');     // clear value that does not exist
-        $this->assertEquals("[a]\n[b]", trim($test->getContent()));
+        $this->assertSame("[a]\n[b]", trim($test->getContent()));
+    }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction(): void
+    {
+        $comments = Writer::extractComments($this->getFixtureDir() . 'configs/comments/config.ini');
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $comments
+        );
     }
 }

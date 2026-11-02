@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Recommendation module plugin manager
+ * Recommendation module plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Recommendation module plugin manager
+ * Recommendation module plugin manager.
  *
  * @category VuFind
  * @package  Recommendations
@@ -53,18 +53,30 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'catalogresults' => CatalogResults::class,
         'channels' => Channels::class,
         'collectionsidefacets' => CollectionSideFacets::class,
+        'consortialvufind' => ConsortialVuFind::class,
+        'consortialvufinddeferred' => ConsortialVuFindDeferred::class,
+        'databases' => Databases::class,
         'doi' => DOI::class,
         'dplaterms' => DPLATerms::class,
         'edsresults' => EDSResults::class,
         'edsresultsdeferred' => EDSResultsDeferred::class,
+        'epfresults' => EPFResults::class,
+        'epfresultsdeferred' => EPFResultsDeferred::class,
         'europeanaresults' => EuropeanaResults::class,
         'europeanaresultsdeferred' => EuropeanaResultsDeferred::class,
         'expandfacets' => ExpandFacets::class,
         'externalsearch' => ExternalSearch::class,
         'facetcloud' => FacetCloud::class,
         'favoritefacets' => FavoriteFacets::class,
+        'libguidesprofile' => LibGuidesProfile::class,
+        'libguidesresults' => LibGuidesResults::class,
+        'libguidesresultsdeferred' => LibGuidesResultsDeferred::class,
+        'libguidesazresults' => LibGuidesAZResults::class,
+        'libguidesazresultsdeferred' => LibGuidesAZResultsDeferred::class,
         'libraryh3lp' => Libraryh3lp::class,
         'mapselection' => MapSelection::class,
+        'proquestfsgresults' => ProQuestFSGResults::class,
+        'proquestfsgresultsdeferred' => ProQuestFSGResultsDeferred::class,
         'sidefacets' => SideFacets::class,
         'sidefacetsdeferred' => SideFacetsDeferred::class,
         'openlibrarysubjects' => OpenLibrarySubjects::class,
@@ -87,62 +99,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'topfacets' => TopFacets::class,
         'visualfacets' => VisualFacets::class,
         'webresults' => WebResults::class,
-        'worldcatidentities' => WorldCatIdentities::class,
+        'worldcatidentities' => Deprecated::class,
         'worldcatterms' => Deprecated::class,
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AlphaBrowseLink::class => InvokableFactory::class,
-        AuthorFacets::class => InjectResultsManagerFactory::class,
-        AuthorInfo::class => AuthorInfoFactory::class,
-        AuthorityRecommend::class => InjectResultsManagerFactory::class,
-        CatalogResults::class => InjectSearchRunnerFactory::class,
-        Channels::class => InvokableFactory::class,
-        CollectionSideFacets::class => CollectionSideFacetsFactory::class,
-        Deprecated::class => InvokableFactory::class,
-        DOI::class => InvokableFactory::class,
-        DPLATerms::class => DPLATermsFactory::class,
-        EDSResults::class => InjectSearchRunnerFactory::class,
-        EDSResultsDeferred::class => InvokableFactory::class,
-        EuropeanaResults::class => EuropeanaResultsFactory::class,
-        EuropeanaResultsDeferred::class => InvokableFactory::class,
-        ExpandFacets::class => ExpandFacetsFactory::class,
-        ExternalSearch::class => InvokableFactory::class,
-        FacetCloud::class => ExpandFacetsFactory::class,
-        FavoriteFacets::class => FavoriteFacetsFactory::class,
-        Libraryh3lp::class => InvokableFactory::class,
-        MapSelection::class => MapSelectionFactory::class,
-        OpenLibrarySubjects::class => InvokableFactory::class,
-        OpenLibrarySubjectsDeferred::class => InvokableFactory::class,
-        PubDateVisAjax::class => InvokableFactory::class,
-        RandomRecommend::class => RandomRecommendFactory::class,
-        RecommendLinks::class => InjectConfigManagerFactory::class,
-        RemoveFilters::class => InvokableFactory::class,
-        SideFacets::class => SideFacetsFactory::class,
-        SideFacetsDeferred::class => SideFacetsFactory::class,
-        SpellingSuggestions::class => InvokableFactory::class,
-        SummonBestBets::class => InjectResultsManagerFactory::class,
-        SummonBestBetsDeferred::class => InvokableFactory::class,
-        SummonDatabases::class => InjectResultsManagerFactory::class,
-        SummonDatabasesDeferred::class => InvokableFactory::class,
-        SummonResults::class => InjectSearchRunnerFactory::class,
-        SummonResultsDeferred::class => InvokableFactory::class,
-        SummonTopics::class => InjectResultsManagerFactory::class,
-        SwitchQuery::class => SwitchQueryFactory::class,
-        SwitchType::class => InvokableFactory::class,
-        TopFacets::class => InjectConfigManagerFactory::class,
-        VisualFacets::class => InjectConfigManagerFactory::class,
-        WebResults::class => InjectSearchRunnerFactory::class,
-        WorldCatIdentities::class => WorldCatIdentitiesFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

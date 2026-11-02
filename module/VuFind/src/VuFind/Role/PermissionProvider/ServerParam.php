@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ServerParam permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -27,9 +28,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function count;
+use function in_array;
 
 /**
  * ServerParam permission provider for VuFind.
@@ -42,47 +48,42 @@ use Laminas\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ServerParam implements PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+class ServerParam implements
+    PermissionProviderInterface,
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Request object
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Aliases for server param names (default: none)
+     * Aliases for server param names (default: none).
      *
      * @var array
      */
     protected $aliases = [];
 
     /**
-     * Delimiter for multi-valued server params (default: none)
+     * Delimiter for multi-valued server params (default: none).
      *
      * @var string
      */
     protected $serverParamDelimiter = '';
 
     /**
-     * Escape character for delimiter in server param strings (default: none)
+     * Escape character for delimiter in server param strings (default: none).
      *
      * @var string
      */
     protected $serverParamEscape = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request $request Request object
      */
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        protected Request $request
+    ) {
     }
 
     /**
@@ -99,10 +100,10 @@ class ServerParam implements PermissionProviderInterface,
         foreach ((array)$options as $option) {
             $this->debug("getPermissions: option '{$option}'");
             if (!$this->checkServerParam($option)) {
-                $this->debug("getPermissions: result = false");
+                $this->debug('getPermissions: result = false');
                 return [];
             }
-            $this->debug("getPermissions: result = true");
+            $this->debug('getPermissions: result = true');
         }
         return ['guest', 'loggedin'];
     }
@@ -175,7 +176,7 @@ class ServerParam implements PermissionProviderInterface,
     }
 
     /**
-     * Split string on delimiter unless dequalified with escape
+     * Split string on delimiter unless dequalified with escape.
      *
      * @param string $string    String to split
      * @param string $delimiter Delimiter character
@@ -189,11 +190,7 @@ class ServerParam implements PermissionProviderInterface,
             return [$string];
         }
 
-        if ($delimiter === ' ') {
-            $pattern = ' +';
-        } else {
-            $pattern = preg_quote($delimiter, '/');
-        }
+        $pattern = $delimiter === ' ' ? ' +' : preg_quote($delimiter, '/');
 
         if ($escape === '') {
             $pattern = '(?<!' . preg_quote($escape, '/') . ')' . $pattern;

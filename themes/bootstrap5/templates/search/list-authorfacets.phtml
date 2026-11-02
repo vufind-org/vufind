@@ -1,0 +1,13 @@
+<table class="table table-striped">
+  <tbody>
+    <tr>
+      <th><?=$this->transEsc('Author')?></th><th><?=$this->transEsc('sort_author_relevance')?></th>
+    </tr>
+    <?php foreach ($this->results->getResults() as $record): ?>
+    <tr>
+      <td><a href="<?=$this->url('author-home')?>?author=<?=urlencode($record['value'])?>"><?=$this->escapeHtml($record['value'])?></a></td>
+      <td><?=$this->escapeHtml($record['count'])?></td>
+    </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>

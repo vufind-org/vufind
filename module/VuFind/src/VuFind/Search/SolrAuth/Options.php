@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr Authority aspect of the Search Multi-class (Options)
+ * Solr Authority aspect of the Search Multi-class (Options).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuth
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\SolrAuth;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Solr Authority Search Options
+ * Solr Authority Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuth
@@ -39,24 +43,24 @@ namespace VuFind\Search\SolrAuth;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->facetsIni = $this->searchIni = 'authority';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         $this->spellcheck = false;
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'authority-facetlist';
     }
@@ -66,20 +70,20 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'authority-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         // Not currently supported:
-        return false;
+        return null;
     }
 }

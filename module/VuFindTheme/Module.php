@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
@@ -42,23 +44,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 class Module
 {
     /**
-     * Get autoloader configuration
-     *
-     * @return void
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Return generic configuration
+     * Return generic configuration.
      *
      * @return array
      */
@@ -72,7 +58,7 @@ class Module
                 // theme system to all loaded modules. If you need to apply theming
                 // to a controller whose namespace does not directly correspond to a
                 // loaded module, you will need to add it as a prefix in
-                // extra_theme_prefixes (e.g. 'MyNamespace/').  Conversely, if you
+                // extra_theme_prefixes (e.g. 'MyNamespace/'). Conversely, if you
                 // are loading a Laminas module that includes templates and does not
                 // follow VuFind's theme conventions, you should add that module name
                 // as a prefix in excluded_theme_prefixes to allow the default
@@ -85,7 +71,7 @@ class Module
                 // module.config.php configuration.
                 'excluded_theme_prefixes' => ['Laminas'],
                 'extra_theme_prefixes' => [],
-            ]
+            ],
         ];
     }
 
@@ -101,14 +87,7 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                InjectTemplateListener::class =>
-                    InjectTemplateListenerFactory::class,
-                MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
-                ResourceContainer::class => InvokableFactory::class,
-                ThemeCompiler::class => ThemeInfoInjectorFactory::class,
-                ThemeGenerator::class => ThemeInfoInjectorFactory::class,
-                ThemeInfo::class => ThemeInfoFactory::class,
             ],
         ];
     }
@@ -121,35 +100,17 @@ class Module
     public function getViewHelperConfig()
     {
         return [
+            'abstract_factories' => [
+                \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+            ],
             'factories' => [
-                View\Helper\FootScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
-                View\Helper\HeadLink::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\HeadScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\ParentTemplate::class =>
-                    View\Helper\ParentTemplateFactory::class,
-                View\Helper\InlineScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\Slot::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\TemplatePath::class =>
-                    View\Helper\TemplatePathFactory::class,
-                View\Helper\SetupThemeResources::class =>
-                    View\Helper\SetupThemeResourcesFactory::class,
+                View\Helper\AssetManager::class => View\Helper\AssetManagerFactory::class,
             ],
             'aliases' => [
-                'footScript' => View\Helper\FootScript::class,
+                'assetManager' => View\Helper\AssetManager::class,
                 // Legacy alias for compatibility with pre-8.0 templates:
                 'headThemeResources' => View\Helper\SetupThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
-                \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
-                \Laminas\View\Helper\HeadScript::class =>
-                    View\Helper\HeadScript::class,
-                \Laminas\View\Helper\InlineScript::class =>
-                    View\Helper\InlineScript::class,
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,

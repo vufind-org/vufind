@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Configuration loader for single IdP
+ * Configuration loader for single IdP.
  *
- * PHP version 7
+ * PHP version 8
  *
  * @category VuFind
  * @package  Authentication
@@ -10,10 +11,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth\Shibboleth;
 
 /**
- * Configuration loader for single IdP
+ * Configuration loader for single IdP.
  *
  * @category VuFind
  * @package  Authentication
@@ -24,20 +26,12 @@ namespace VuFind\Auth\Shibboleth;
 class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
 {
     /**
-     * Configured IdPs with entityId and overridden attribute mapping
+     * Constructor.
      *
-     * @var \Laminas\Config\Config
+     * @param array $config Configuration
      */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config $config Configuration
-     */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**
@@ -50,6 +44,6 @@ class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
      */
     public function getConfiguration($entityId)
     {
-        return $this->config->Shibboleth->toArray();
+        return $this->config['Shibboleth'] ?? [];
     }
 }

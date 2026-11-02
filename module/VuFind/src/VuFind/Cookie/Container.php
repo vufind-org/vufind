@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Class for treating a set of cookies as an object (inspired by
  * \Laminas\Session\Container).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cookie
@@ -26,7 +27,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Cookie;
+
+use function strlen;
 
 /**
  * Class for treating a set of cookies as an object (inspired by
@@ -55,12 +59,12 @@ class Container
     protected $manager;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string        $groupName Prefix to use for cookie values.
-     * @param CookieManager $manager   Cookie manager.
+     * @param string         $groupName Prefix to use for cookie values.
+     * @param ?CookieManager $manager   Cookie manager.
      */
-    public function __construct($groupName, CookieManager $manager = null)
+    public function __construct($groupName, ?CookieManager $manager = null)
     {
         $this->groupName = $groupName;
         $this->manager = $manager ?? new CookieManager($_COOKIE);
@@ -75,7 +79,7 @@ class Container
     {
         $retVal = [];
         foreach ($this->manager->getCookies() as $key => $value) {
-            if (substr($key, 0, strlen($this->groupName)) == $this->groupName) {
+            if (str_starts_with($key, $this->groupName)) {
                 $retVal[substr($key, strlen($this->groupName))] = $value;
             }
         }

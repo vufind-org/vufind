@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ResourceContainer Test Class
+ * ResourceContainer Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use VuFindTheme\ResourceContainer;
 
 /**
- * ResourceContainer Test Class
+ * ResourceContainer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,35 +43,96 @@ use VuFindTheme\ResourceContainer;
 class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test CSS add/remove.
+     * Test CSS add/remove using strings.
      *
      * @return void
      */
-    public function testCss()
+    public function testCssStringSupport(): void
     {
         $container = new ResourceContainer();
         $container->addCss(['a', 'b', 'c']);
         $container->addCss('c');
         $container->addCss('d');
-        $container->addLessCss('e.less');
         $container->addCss('e');
-        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getCss()));
+        $expectedResult = [
+            ['file' => 'a'],
+            ['file' => 'b'],
+            ['file' => 'c'],
+            ['file' => 'd'],
+            ['file' => 'e'],
+        ];
+        $this->assertEquals($expectedResult, $container->getCss());
     }
 
     /**
-     * Test LESS add/remove.
+     * Test CSS add/remove with a mix of strings/arrays (and using advanced features).
      *
      * @return void
      */
-    public function testLess()
+    public function testCssMixedSupport(): void
     {
         $container = new ResourceContainer();
-        $container->addCss(['c', 'd.css']);
-        $container->addLessCss(['active' => true, 'a', 'b', 'c']);
-        $container->addLessCss('c');
-        $container->addLessCss('d');
-        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getLessCss()));
-        $this->assertEquals(['c'], $container->getCss());
+        $container->addCss('a');
+        $container->addCss(['file' => 'p2', 'priority' => 220]);
+        $container->addCss(['b', 'c', 'd']);
+        $container->addCss('http://foo/bar:(min-width: 768px)');
+        $container->addCss(['file' => 'd1', 'load_after' => 'd']);
+        $container->addCss(['file' => 'p1', 'priority' => 110]);
+        $container->addCss(['file' => 'd2', 'load_after' => 'd1']);
+        $container->addCss([]);
+
+        $expectedResult = [
+            ['file' => 'p1', 'priority' => 110],
+            ['file' => 'p2', 'priority' => 220],
+            ['file' => 'a'],
+            ['file' => 'b'],
+            ['file' => 'c'],
+            ['file' => 'd'],
+            ['file' => 'd1', 'load_after' => 'd'],
+            ['file' => 'd2', 'load_after' => 'd1'],
+            [
+                'file' => 'http://foo/bar',
+                'media' => '(min-width: 768px)',
+            ],
+        ];
+        $this->assertEquals($expectedResult, $container->getCss());
+    }
+
+    /**
+     * Test disabling CSS.
+     *
+     * @return void
+     */
+    public function testCssDisabling(): void
+    {
+        $container = new ResourceContainer();
+        $container->addCss(['a', 'b', 'c']);
+        $container->addCss(['file' => 'b', 'disabled' => true]);
+        $this->assertSame(
+            [
+                ['file' => 'a'],
+                ['file' => 'c'],
+            ],
+            array_values($container->getCss())
+        );
+    }
+
+    /**
+     * Test Exception for priority + load_after in same CSS entry.
+     *
+     * @return void
+     */
+    public function testCsssException(): void
+    {
+        $cssEntry = ['file' => 'test', 'priority' => 100, 'load_after' => 'a'];
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            'Using "priority" as well as "load_after" in the same entry '
+                . 'is not supported: "' . $cssEntry['file'] . '"'
+        );
+
+        $container = new ResourceContainer();
+        $container->addCss($cssEntry);
     }
 
     /**
@@ -77,7 +140,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJs()
+    public function testJs(): void
     {
         $container = new ResourceContainer();
         $container->addJs('a');
@@ -85,7 +148,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addJs(['b', 'c']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
         $container->addJs(['file' => 'df', 'position' => 'footer']);
-        $container->addJs('http://foo/bar:lt IE 7');
+        $container->addJs('http://foo/bar');
         $container->addJs(['file' => 'd1', 'load_after' => 'd']);
         $container->addJs(['file' => 'p1', 'priority' => 110]);
         $container->addJs(['file' => 'd2', 'load_after' => 'd1']);
@@ -104,7 +167,6 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'position' => 'header',
-                'attributes' => ['conditional' => 'lt IE 7']
             ],
         ];
         $this->assertEquals($expectedResult, $container->getJs());
@@ -121,10 +183,9 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'position' => 'header',
-                'attributes' => ['conditional' => 'lt IE 7']
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             $expectedHeaderResult,
             array_values($container->getJs('header'))
         );
@@ -132,7 +193,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $expectedFooterResult = [
             ['file' => 'df', 'position' => 'footer'],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             $expectedFooterResult,
             array_values($container->getJs('footer'))
         );
@@ -143,12 +204,12 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJsDisabling()
+    public function testJsDisabling(): void
     {
         $container = new ResourceContainer();
         $container->addJs(['a', 'b', 'c']);
         $container->addJs(['file' => 'b', 'disabled' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 ['file' => 'a', 'position' => 'header'],
                 ['file' => 'c', 'position' => 'header'],
@@ -162,7 +223,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJsException()
+    public function testJsException(): void
     {
         $jsEntry = ['file' => 'test', 'priority' => 100, 'load_after' => 'a'];
         $this->expectException(\Exception::class);
@@ -180,7 +241,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEncoding()
+    public function testEncoding(): void
     {
         $container = new ResourceContainer();
         $container->setEncoding('fake');
@@ -192,7 +253,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFavicon()
+    public function testFavicon(): void
     {
         $container = new ResourceContainer();
         $container->setFavicon('fake');
@@ -204,7 +265,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGenerator()
+    public function testGenerator(): void
     {
         $container = new ResourceContainer();
         $container->setGenerator('fake');
@@ -216,12 +277,12 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfigParsing()
+    public function testConfigParsing(): void
     {
         $container = new ResourceContainer();
         $tests = [
             'foo:bar:baz' => ['foo', 'bar', 'baz'],
-            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy'],
         ];
         foreach ($tests as $test => $expected) {
             $this->assertEquals(

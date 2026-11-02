@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,16 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use Exception;
-use Laminas\Config\Config;
 use Laminas\Http\Response;
 use VuFind\RecordDriver\SolrMarcRemote;
 use VuFindHttp\HttpServiceInterface;
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -80,7 +81,7 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver();
         $driver->setHttpService($this->getMockHttpService());
         $driver->setRawData(['id' => 1]);
-        $this->assertEquals(4, count($driver->getTOC()));
+        $this->assertCount(4, $driver->getTOC());
     }
 
     /**
@@ -91,13 +92,13 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
     protected function getDriver(): SolrMarcRemote
     {
         $url = 'http://foo/%s';
-        $config = new Config(['Record' => ['remote_marc_url' => $url]]);
+        $config = ['Record' => ['remote_marc_url' => $url]];
         $driver = new SolrMarcRemote($config);
         return $driver;
     }
 
     /**
-     * Get a mock HttpService for testing
+     * Get a mock HttpService for testing.
      *
      * @return HttpServiceInterface
      */
@@ -108,10 +109,10 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
             "HTTP/1.1 200 OK\n\n"
             . $marc
         );
-        $service = $this->getMockBuilder(HttpServiceInterface::class)->getMock();
+        $service = $this->createMock(HttpServiceInterface::class);
         $service->expects($this->once())->method('get')
-            ->with($this->equalTo('http://foo/1'))
-            ->will($this->returnValue($response));
+            ->with('http://foo/1')
+            ->willReturn($response);
         return $service;
     }
 }

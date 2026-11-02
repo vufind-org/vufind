@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Linkify a string so that the links become clickable HTML
+ * Linkify a string so that the links become clickable HTML.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,13 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 /**
- * Linkify a string so that the links become clickable HTML
+ * Linkify a string so that the links become clickable HTML.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,34 +42,30 @@ use VStelmakh\UrlHighlight\UrlHighlight;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Linkify extends AbstractHelper
+class Linkify
 {
     /**
-     * Url highlighter
+     * Constructor.
      *
-     * @var UrlHighlight
+     * @param UrlHighlight $urlHighlight            Url highlighter
+     * @param UrlHighlight $urlHighlightExceptEmail Url highlighter that ignores email addresses
      */
-    protected $urlHighlight;
-
-    /**
-     * Constructor
-     *
-     * @param UrlHighlight $urlHighlight Url highlighter
-     */
-    public function __construct(UrlHighlight $urlHighlight)
+    public function __construct(protected UrlHighlight $urlHighlight, protected UrlHighlight $urlHighlightExceptEmail)
     {
-        $this->urlHighlight = $urlHighlight;
     }
 
     /**
-     * Replace urls and emails by html tags
+     * Replace urls and emails by html tags.
      *
-     * @param string $string String to linkify (must be HTML-escaped)
+     * @param string $string       String to linkify (must be HTML-escaped)
+     * @param bool   $includeEmail If email addresses should also be linkified
      *
      * @return string
      */
-    public function __invoke(string $string): string
+    public function __invoke(string $string, bool $includeEmail = true): string
     {
-        return $this->urlHighlight->highlightUrls($string);
+        return $includeEmail
+            ? $this->urlHighlight->highlightUrls($string)
+            : $this->urlHighlightExceptEmail->highlightUrls($string);
     }
 }

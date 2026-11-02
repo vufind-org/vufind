@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Class to determine which account capabilities are available, based on
  * configuration and other factors.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -26,10 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
+
+use function in_array;
 
 /**
  * Class to determine which account capabilities are available, based on
@@ -44,29 +47,31 @@ use VuFind\Auth\Manager as AuthManager;
 class AccountCapabilities
 {
     /**
-     * Auth manager
+     * Function to fetch auth manager.
      *
-     * @var AuthManager
+     * @var callable
      */
-    protected $auth;
+    protected $authCallback;
 
     /**
-     * VuFind configuration
+     * Constructor.
      *
-     * @var Config
+     * @param array    $config  Top-level configuration
+     * @param callable $getAuth Function to fetch auth manager
      */
-    protected $config;
-
-    /**
-     * Constructor
-     *
-     * @param Config      $config VuFind configuration
-     * @param AuthManager $auth   Auth manager
-     */
-    public function __construct(Config $config, AuthManager $auth)
+    public function __construct(protected array $config, callable $getAuth)
     {
-        $this->auth = $auth;
-        $this->config = $config;
+        $this->authCallback = $getAuth;
+    }
+
+    /**
+     * Get authentication manager.
+     *
+     * @return AuthManager
+     */
+    protected function getAuth(): AuthManager
+    {
+        return ($this->authCallback)();
     }
 
     /**
@@ -79,9 +84,51 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config->Social->comments)
-            && $this->config->Social->comments === 'disabled'
+        return ($this->config['Social']['comments'] ?? 'enabled') === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get rating setting.
+     *
+     * @return string
+     */
+    public function getRatingSetting(): string
+    {
+        return empty($this->config['Social']['rating'])
+            || $this->config['Social']['rating'] === 'disabled'
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get page size for comments, ratings and tags in user account.
+     *
+     * @return int
+     */
+    public function getUserContentPageSize(): int
+    {
+        return $this->config['Social']['user_content_page_size'] ?? 50;
+    }
+
+    /**
+     * Get enabled tabs for user content as an array with controller names
+     * as keys and tab titles as values.
+     *
+     * @return array
+     */
+    public function getUserContentTabs(): array
+    {
+        $tabs = [];
+        if ('enabled' === $this->getCommentSetting()) {
+            $tabs['comments'] = 'Comments';
+        }
+        if ('enabled' === $this->getRatingSetting()) {
+            $tabs['ratings'] = 'Ratings';
+        }
+        if ('enabled' === $this->getTagSetting()) {
+            $tabs['tag'] = 'Tags';
+        }
+        return $tabs;
     }
 
     /**
@@ -94,8 +141,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        $setting = isset($this->config->Social->lists)
-            ? trim(strtolower($this->config->Social->lists)) : 'enabled';
+        $setting = trim(strtolower($this->config['Social']['lists'] ?? 'enabled'));
         if (!$setting) {
             $setting = 'disabled';
         }
@@ -116,8 +162,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config->Site->allowSavedSearches)
-            && !$this->config->Site->allowSavedSearches
+        return !($this->config['Site']['allowSavedSearches'] ?? true)
             ? 'disabled' : 'enabled';
     }
 
@@ -131,8 +176,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return isset($this->config->Social->tags)
-            && $this->config->Social->tags === 'disabled'
+        return ($this->config['Social']['tags'] ?? 'enabled') === 'disabled'
             ? 'disabled' : 'enabled';
     }
 
@@ -146,7 +190,7 @@ class AccountCapabilities
         if (!$this->isAccountAvailable()) {
             return 'disabled';
         }
-        return $this->config->Social->listTags ?? 'disabled';
+        return $this->config['Social']['listTags'] ?? 'disabled';
     }
 
     /**
@@ -156,7 +200,7 @@ class AccountCapabilities
      */
     public function isScheduledSearchEnabled(): bool
     {
-        return $this->config->Account->schedule_searches ?? false;
+        return $this->config['Account']['schedule_searches'] ?? false;
     }
 
     /**
@@ -166,9 +210,31 @@ class AccountCapabilities
      */
     public function getSmsSetting()
     {
-        return isset($this->config->Mail->sms)
-            && $this->config->Mail->sms === 'disabled'
+        return ($this->config['Mail']['sms'] ?? 'enabled') === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get email action setting ('enabled', 'require_login' or 'disabled').
+     *
+     * @return string
+     */
+    public function getEmailActionSetting(): string
+    {
+        return $this->config['Mail']['email_action'] ??
+            (($this->config['Mail']['require_login'] ?? true) ? 'require_login' : 'enabled');
+    }
+
+    /**
+     * Check if emailing of records and searches is available.
+     *
+     * @return bool
+     */
+    public function isEmailActionAvailable(): bool
+    {
+        $emailActionSettings = $this->getEmailActionSetting();
+        return $emailActionSettings === 'enabled'
+            || $emailActionSettings === 'require_login' && $this->getAuth()->loginEnabled();
     }
 
     /**
@@ -179,6 +245,27 @@ class AccountCapabilities
     protected function isAccountAvailable()
     {
         // We can't use account features if login is broken or privacy is on:
-        return $this->auth->loginEnabled() && !$this->auth->inPrivacyMode();
+        $auth = $this->getAuth();
+        return $auth->loginEnabled() && !$auth->inPrivacyMode();
+    }
+
+    /**
+     * Check if record ratings can be removed.
+     *
+     * @return bool
+     */
+    public function isRatingRemovalAllowed(): bool
+    {
+        return (bool)($this->config['Social']['remove_rating'] ?? true);
+    }
+
+    /**
+     * Are library cards enabled and supported?
+     *
+     * @return bool
+     */
+    public function libraryCardsEnabled(): bool
+    {
+        return ($this->config['Catalog']['library_cards'] ?? false) && !$this->getAuth()->inPrivacyMode();
     }
 }

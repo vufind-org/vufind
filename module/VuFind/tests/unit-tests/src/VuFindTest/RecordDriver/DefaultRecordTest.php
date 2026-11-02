@@ -1,8 +1,9 @@
 <?php
+
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,14 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
-use Laminas\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -92,13 +93,24 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getSchemaOrgFormatsArray for a record.
+     *
+     * @return void
+     */
+    public function testGetSchemaOrgFormatsArray()
+    {
+        $formats = ['Book'];
+        $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormatsArray());
+    }
+
+    /**
      * Test getSchemaOrgFormats for a record.
      *
      * @return void
      */
     public function testGetSchemaOrgFormats()
     {
-        $formats = "Book";
+        $formats = 'Book';
         $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormats());
     }
 
@@ -109,7 +121,10 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSortTitle()
     {
-        $this->assertEquals("congiura dei principi napoletani 1701 :(prima e seconda stesura)", $this->getDriver()->getSortTitle());
+        $this->assertEquals(
+            'congiura dei principi napoletani 1701 :(prima e seconda stesura)',
+            $this->getDriver()->getSortTitle()
+        );
     }
 
     /**
@@ -119,7 +134,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetContainerReference()
     {
-        $this->assertEquals("", $this->getDriver()->getContainerReference());
+        $this->assertEquals('', $this->getDriver()->getContainerReference());
     }
 
     /**
@@ -136,8 +151,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'title' => 'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
           'recordid' => 'testbug2',
           'source' => '',
-          'isbn' => '8820737493',
-          'oclc' => '30585539'];
+          'oclc' => '30585539',
+          'isbns' => ['8820737493', '8072815563', '9798644293513'],
+        ];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());
     }
 
@@ -148,7 +164,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetURLs()
     {
-        $testURL = [['url' => "http://fictional.com/sample/url"]];
+        $testURL = [['url' => 'http://fictional.com/sample/url']];
         $this->assertEquals($testURL, $this->getDriver()->getURLs());
     }
 
@@ -199,7 +215,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSecondaryAuthors()
     {
-        $author2 = ["Pandolfi, Claudia."];
+        $author2 = ['Pandolfi, Claudia.'];
         $this->assertEquals($author2, $this->getDriver()->getSecondaryAuthors());
     }
 
@@ -210,7 +226,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPublicationDetails()
     {
-        $pubDetails = [new PublicationDetails("", "Centro di Studi Vichiani,", "1992")];
+        $pubDetails = [new PublicationDetails('', 'Centro di Studi Vichiani,', '1992')];
         $this->assertEquals($pubDetails, $this->getDriver()->getPublicationDetails());
     }
 
@@ -231,7 +247,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPrimaryAuthor()
     {
-        $this->assertEquals("Vico, Giambattista, 1668-1744.", $this->getDriver()->getPrimaryAuthor());
+        $this->assertEquals('Vico, Giambattista, 1668-1744.', $this->getDriver()->getPrimaryAuthor());
     }
 
     /**
@@ -251,7 +267,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPhysicalDescriptions()
     {
-        $physical = ["296 p. : ill. ; 24 cm."];
+        $physical = ['296 p. : ill. ; 24 cm.'];
         $this->assertEquals($physical, $this->getDriver()->getPhysicalDescriptions());
     }
 
@@ -262,15 +278,66 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetCoinsOpenUrl()
     {
-        $coinsOpenUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A"
-            . "UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co"
-            . "ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da"
-            . "te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl"
-            . "e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F"
-            . "&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi"
-            . "ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction"
-            . "al+edition.&rft.isbn=8820737493";
+        $coinsOpenUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A'
+            . 'UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co'
+            . 'ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da'
+            . 'te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl'
+            . 'e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F'
+            . '&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi'
+            . 'ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction'
+            . 'al+edition.&rft.isbn=8820737493';
         $this->assertEquals($coinsOpenUrl, $this->getDriver()->getCoinsOpenUrl());
+    }
+
+    /**
+     * Test getOpenUrl for a record.
+     *
+     * @return void
+     */
+    public function testGetOpenUrl()
+    {
+        $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A'
+            . 'UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co'
+            . 'ngiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.da'
+            . 'te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl'
+            . 'e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F'
+            . '&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi'
+            . 'ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.place=Morano+%3A'
+            . '&rft.edition=Fictional+edition.&rft.isbn=8820737493&rft_id=info%3Adoi%2Fxxx'
+            . '&rft_id=pmid%3Ayyy';
+
+        // Parameters returned by getBookOpenUrlParams with rft_id added
+        $openUrlParams = [
+            'url_ver' => 'Z39.88-2004',
+            'ctx_ver' => 'Z39.88-2004',
+            'ctx_enc' => 'info:ofi/enc:UTF-8',
+            'rfr_id' => 'info:sid/vufind.svn.sourceforge.net:generator',
+            'rft.title' => 'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
+            'rft.date' => '1992',
+            'rft_val_fmt' => 'info:ofi/fmt:kev:mtx:book',
+            'rft.genre' => 'book',
+            'rft.btitle' => 'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
+            'rft.series' => 'Vico, Giambattista, 1668-1744. Works. 1982 ;',
+            'rft.au' => 'Vico, Giambattista, 1668-1744.',
+            'rft.pub' => 'Centro di Studi Vichiani,',
+            'rft.place' => 'Morano :',
+            'rft.edition' => 'Fictional edition.',
+            'rft.isbn' => '8820737493',
+            'rft_id' => [
+                'info:doi/xxx',
+                'pmid:yyy',
+            ],
+        ];
+
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
+        $fields = $fixture['response']['docs'][0];
+        $mock = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
+            ->onlyMethods(['getBookOpenUrlParams'])
+            ->getMock();
+        $mock->setRawData($fields);
+        $mock->method('getBookOpenUrlParams')->willReturn($openUrlParams);
+
+        $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
 
     /**
@@ -290,7 +357,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetLCCN()
     {
-        $this->assertEquals("", $this->getDriver()->getLCCN());
+        $this->assertEquals('', $this->getDriver()->getLCCN());
     }
 
     /**
@@ -300,7 +367,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetInstitutions()
     {
-        $institution = ["MyInstitution"];
+        $institution = ['MyInstitution'];
         $this->assertEquals($institution, $this->getDriver()->getInstitutions());
     }
 
@@ -311,7 +378,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetLastIndexed()
     {
-        $this->assertEquals("", $this->getDriver()->getLastIndexed());
+        $this->assertEquals('', $this->getDriver()->getLastIndexed());
     }
 
     /**
@@ -321,7 +388,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPrimaryAuthorsWithHighlighting()
     {
-        $primAuthHighlight = ["Vico, Giambattista, 1668-1744."];
+        $primAuthHighlight = ['Vico, Giambattista, 1668-1744.'];
         $this->assertEquals($primAuthHighlight, $this->getDriver()->getPrimaryAuthorsWithHighlighting());
     }
 
@@ -373,7 +440,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetCallNumber()
     {
-        $this->assertEquals("", $this->getDriver()->getCallNumber());
+        $this->assertEquals('', $this->getDriver()->getCallNumber());
     }
 
     /**
@@ -383,7 +450,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBreadcrumb()
     {
-        $breadcrumb = "La congiura dei Principi Napoletani 1701 :";
+        $breadcrumb = 'La congiura dei Principi Napoletani 1701 :';
         $this->assertEquals($breadcrumb, $this->getDriver()->getBreadcrumb());
     }
 
@@ -416,7 +483,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         ];
         foreach ($tests as $current) {
             [$input, $output] = $current;
-            $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+            $cfg = ['Record' => ['citation_formats' => $input]];
             $this->assertEquals(
                 $output,
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
@@ -425,14 +492,102 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetCleanISBNs.
+     *
+     * @return \Iterator
+     */
+    public static function getCleanISBNsProvider(): \Iterator
+    {
+        yield [
+            ['8820737493', '8072815563'],
+            'only10',
+            true,
+        ];
+        yield [
+            ['8820737493', '8072815563', 'invalid-isbn'],
+            'only10',
+            false,
+        ];
+        yield [
+            ['8820737493', '8072815563', '9798644293513'],
+            'prefer10',
+            true,
+        ];
+        yield [
+            ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
+            'prefer10',
+            false,
+        ];
+        yield [
+            ['9798644293513', '9788820737498', '9788072815562'],
+            'normalize13',
+            true,
+        ];
+        yield [
+            ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
+            'normalize13',
+            false,
+        ];
+    }
+
+    /**
+     * Test getCleanISBNs for a record.
+     *
+     * @param array  $result        Expected result
+     * @param string $mode          Retrieval mode
+     * @param bool   $filterInvalid Should we filter invalid ISBNs?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanISBNsProvider')]
+    public function testGetCleanISBNs($result, $mode, $filterInvalid)
+    {
+        $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));
+    }
+
+    /**
+     * Test whether author deduplication works correctly.
+     *
+     * @return void
+     */
+    public function testGetDeduplicatedAuthors()
+    {
+        $authorName = 'Tester, Marc';
+
+        $overrides = [
+            'author' => $authorName,
+            'author_role' => 'aut',
+            'author2' => [$authorName],
+            'author2_role' => ['trl'],
+            'author_corporate' => [],
+            'author_corporate_role' => [],
+        ];
+
+        $expectedResult = [
+            'primary' => [
+                $authorName => [
+                    'role' => ['aut', 'trl'],
+                ],
+            ],
+            'secondary' => [],
+            'corporate' => [],
+        ];
+
+        $driver = $this->getDriver($overrides);
+        $deduplicatedAuthors = $driver->getDeduplicatedAuthors();
+
+        $this->assertEquals($deduplicatedAuthors, $expectedResult);
+    }
+
+    /**
      * Get a record driver with fake data.
      *
      * @param array  $overrides  Fixture fields to override.
-     * @param Config $mainConfig Main configuration (optional).
+     * @param ?array $mainConfig Main configuration (optional).
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], Config $mainConfig = null)
+    protected function getDriver($overrides = [], ?array $mainConfig = null)
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

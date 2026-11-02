@@ -1,0 +1,72 @@
+<?php
+  // Set a default page title; this will usually be overridden when a tab is
+  // loaded, but it may be useful if there are no tabs, or when tabs are loaded
+  // via AJAX:
+  $this->headTitle($this->driver->getBreadcrumb());
+
+  // Set up standard record scripts:
+  $this->assetManager()->appendScriptLink('record.js');
+  $this->assetManager()->appendScriptLink('record_tabs.js');
+  $this->assetManager()->appendScriptLink('check_save_statuses.js');
+
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+    $this->assetManager()->appendScriptLink($script);
+  }
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF', options: ['excludeSearchId' => true]), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Add canonical header link for SEO:
+  $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
+  $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('search_results_breadcrumb'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
+  $this->globals()['title'] = $this->driver->getShortTitle();
+?>
+
+<?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+  <?=$this->render('record/prev-next.phtml'); ?>
+<?php endif; ?>
+
+<?=$this->record($this->driver)->getToolbar()?>
+
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <?php $sidebarList = $this->related()->getList($this->driver); ?>
+  <div class="<?=$this->layoutClass('mainbody', !empty($sidebarList))?><?=empty($sidebarList) ? ' solo' : '' ?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getCoreMetadata()?>
+
+    <?php if (count($this->tabs) > 0): ?>
+      <a id="tabnav"></a>
+      <div class="record-tabs">
+        <?=$this->component(
+          'tabs',
+          [
+            'tabs' => $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
+            'activeTab' => $this->activeTab,
+          ]
+        )?>
+      </div>
+    <?php endif; ?>
+
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
+  </div>
+
+  <?php if ($sidebarList): ?>
+    <div class="<?=$this->layoutClass('sidebar')?>" role="region" aria-label="<?=$this->translate('Related Items')?>">
+      <?php foreach ($sidebarList as $current): ?>
+        <?=$this->related()->render($current)?>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+</div>

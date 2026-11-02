@@ -1,0 +1,59 @@
+$pager-bg:                             $pagination-bg !default;
+$pager-border:                         $pagination-border-color !default;
+$pager-border-radius:                  15px !default;
+$pager-hover-bg:                       $pagination-hover-bg !default;
+$pager-active-bg:                      $pagination-active-bg !default;
+$pager-active-color:                   $pagination-active-color !default;
+$pager-disabled-color:                 $pagination-disabled-color !default;
+$pager-disabled-cursor:                not-allowed !default;
+
+.pager {
+  padding-left: 0;
+  margin: $line-height-base * 1rem 0;
+  text-align: center;
+  list-style: none;
+  @include clearfix;
+  li {
+    display: inline;
+    > a {
+      display: inline-block;
+      padding: 5px 14px;
+      background-color: $pager-bg;
+      border: 1px solid $pager-border;
+      border-radius: $pager-border-radius;
+    }
+
+    > a:hover,
+    > a:focus {
+      text-decoration: none;
+      background-color: $pager-hover-bg;
+    }
+  }
+  .page-item:first-child .page-link, .page-item:last-child .page-link {
+    border-radius: $pager-border-radius;
+  }
+
+  .next {
+    > a {
+      float: right;
+    }
+  }
+
+  .previous {
+    > a,
+    > span {
+      float: left;
+    }
+  }
+
+  .disabled {
+    > a,
+    > a:hover,
+    > a:focus,
+    > span {
+      color: $pager-disabled-color;
+      cursor: $pager-disabled-cursor;
+      background-color: $pager-bg;
+    }
+  }
+}

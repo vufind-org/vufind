@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT importer support methods for work key generation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
 use Normalizer;
+
+use function in_array;
 
 /**
  * XSLT importer support methods for work key generation.
@@ -109,7 +113,8 @@ class VuFindWorkKeys
                 $excludeRegEx,
                 $transliterator
             );
-            if (empty($normalizedTitle)                          // skip empties
+            if (
+                empty($normalizedTitle)                          // skip empties
                 || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;
@@ -174,6 +179,6 @@ class VuFindWorkKeys
         if (!empty($excludeRegEx)) {
             $normalized = preg_replace($excludeRegEx, '', $normalized);
         }
-        return substr(strtolower($normalized), 0, 255);
+        return mb_substr(mb_strtolower($normalized, 'UTF-8'), 0, 255, 'UTF-8');
     }
 }

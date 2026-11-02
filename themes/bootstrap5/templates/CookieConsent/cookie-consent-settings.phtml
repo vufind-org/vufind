@@ -1,0 +1,102 @@
+<?php
+  $siteRoot = rtrim($this->url('home'), '/');
+?>
+<div class="cookie-consent__description">
+  <?=$this->translate('CookieConsent::category_description_html', ['%%siteRoot%%' => $this->escapeHtml($siteRoot), '%%siteRootAttr%%' => $this->escapeHtmlAttr($siteRoot)])?>
+</div>
+
+<div class="cookie-consent__categories">
+  <?php foreach ($this->cookieConsent()->getCategoryConfig() as $categoryId => $categoryConfig): ?>
+    <?php $safeCategoryId = 'category_collapse_' . preg_replace('/[^a-zA-Z0-9]/', '', $categoryId); ?>
+    <div class="cookie-consent__category">
+      <?php
+        $checkboxAttrs = $this->htmlAttributes([
+          'name' => $safeCategoryId . '_cb',
+          'type' => 'checkbox',
+          'class' => 'js-category-checkbox',
+          'data-category' => $categoryId,
+        ]);
+        if (
+          ($categoryConfig['Essential'] ?? false)
+          || ($categoryConfig['DefaultEnabled'] ?? false)
+          || $this->cookieConsent()->isCategoryAccepted($categoryId)
+        ) {
+          $checkboxAttrs->add('checked', 'checked');
+        }
+        if ($categoryConfig['Essential'] ?? false) {
+          $checkboxAttrs->add('disabled', 'checked');
+          $checkboxAttrs->add('data-essential', 'true');
+        }
+      ?>
+      <label class="cookie-consent__category-checkbox">
+        <input<?=$checkboxAttrs ?>>
+        <?=$this->transEsc($categoryConfig['Title'] ?? '')?>
+      </label>
+      <div class="cookie-consent__category-description">
+        <?=$this->translate($categoryConfig['Description'] ?? '') // Description may contain HTML, e.g. links ?>
+      </div>
+      <div class="cookie-consent__category-details">
+        <?php // Note: Using a p here improves screen reader compatibility e.g. with VoiceOver + Safari ?>
+        <p>
+          <button class="btn btn-link icon-link cookie-consent__category-details-toggle collapsed"
+            type="button" data-bs-toggle="collapse" data-bs-target="#<?=$safeCategoryId?>" aria-expanded="false"
+            aria-controls="<?=$safeCategoryId?>"
+          >
+            <?=$this->icon('collapse-open', 'icon-link__icon collapse-icon-open') ?>
+            <?=$this->icon('collapse-close', 'icon-link__icon collapse-icon-close') ?>
+            <span class="icon-link__label">
+              <?=$this->transEsc('CookieConsent::toggle_category_details')?>
+              <span class="visually-hidden"><?=$this->transEsc($categoryConfig['Title'] ?? '')?></span>
+            </span>
+          </button>
+        </p>
+        <div class="collapse" id="<?=$safeCategoryId?>">
+          <table class="table table-responsive table-striped">
+            <thead>
+              <tr>
+                <th scope="col"><?=$this->transEsc('CookieConsent::Name')?></th>
+                <th scope="col"><?=$this->transEsc('CookieConsent::Domain')?></th>
+                <th scope="col"><?=$this->transEsc('CookieConsent::Description')?></th>
+                <th scope="col"><?=$this->transEsc('CookieConsent::Expiration')?></th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($categoryConfig['Cookies'] ?? [] as $cookie): ?>
+                <tr>
+                  <td data-label="<?=$this->transEsc('CookieConsent::Name')?>">
+                    <?php
+                      $name = $cookie['Name'];
+                      if ($cookie['ThirdParty'] ?? false) {
+                        $name .= ' (' . $this->translate('CookieConsent::third_party_html') . ')';
+                      }
+                    ?>
+                    <?=$this->escapeHtml($name)?>
+                  </td>
+                  <td data-label="<?=$this->transEsc('CookieConsent::Domain')?>">
+                    <?=$this->transEsc($cookie['Domain'] ?? '')?>
+                  </td>
+                  <td data-label="<?=$this->transEsc('CookieConsent::Description')?>">
+                    <?=$this->translate($cookie['Description'] ?? '') // Description may contain HTML, e.g. links ?>
+                  </td>
+                  <td data-label="<?=$this->transEsc('CookieConsent::Expiration')?>">
+                    <?php if (null !== ($expiration = $cookie['Expiration'] ?? null)): ?>
+                      <?php if ($expirationUnit = $cookie['ExpirationUnit'] ?? null): ?>
+                        <?=$this->transEsc(
+                          'CookieConsent::expiration_unit_' . $expirationUnit,
+                          ['%%expiration%%' => $expiration],
+                          $expiration . ' ' . $expirationUnit
+                        )?>
+                      <?php else: ?>
+                        <?=$this->transEsc('CookieConsent::expiration_' . $expiration, default: $expiration) ?>
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+</div>

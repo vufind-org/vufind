@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Results;
 
-use Psr\Container\ContainerInterface;
-
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * @category VuFind
  * @package  Search
@@ -41,41 +41,12 @@ use Psr\Container\ContainerInterface;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
         $this->defaultNamespace = 'VuFind\Search';
+        $this->defaultFactory = ResultsFactory::class;
         $this->classSuffix = '\Results';
-    }
-
-    /**
-     * Create a service for the specified name.
-     *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     * @param array              $extras        Extra options
-     *
-     * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        array $extras = null
-    ) {
-        $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
-        $params = $container->get(\VuFind\Search\Params\PluginManager::class)
-            ->get($paramsService);
-        $searchService = $container->get(\VuFindSearch\Service::class);
-        $recordLoader = $container->get(\VuFind\Record\Loader::class);
-        $class = $this->getClassName($requestedName);
-        return new $class(
-            $params,
-            $searchService,
-            $recordLoader,
-            ...($extras ?: [])
-        );
     }
 }

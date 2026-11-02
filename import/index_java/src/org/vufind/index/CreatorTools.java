@@ -14,20 +14,19 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.VariableField;
 import org.solrmarc.index.SolrIndexer;
 import org.apache.log4j.Logger;
-import org.vufind.index.FieldSpecTools;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +45,7 @@ public class CreatorTools
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = RelatorContainer.instance().getSynonymLookup();
     private Set<String> knownRelators = RelatorContainer.instance().getKnownRelators();
+    private Set<String> relatorPrefixesToStrip = RelatorContainer.instance().getRelatorPrefixesToStrip();
     private Set<Pattern> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
     private Set<String> punctuationPairs = PunctuationContainer.instance().getPunctuationPairs();
     private Set<String> untrimmedAbbreviations = PunctuationContainer.instance().getUntrimmedAbbreviations();
@@ -141,7 +141,7 @@ public class CreatorTools
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
-            List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+            List<String> permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
             relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {
@@ -216,26 +216,21 @@ public class CreatorTools
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
-        List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null){
-            DataField authorField;
-            while (fieldsIter.hasNext()){
-                authorField = (DataField) fieldsIter.next();
-                // add all author types to the result set; if we have multiple relators, repeat the authors
-                for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
-                    for (String subfields : parsedTagList.get(authorField.getTag())) {
-                        String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
-                        // TODO: we may eventually be able to use this line instead,
-                        // but right now it's not handling separation between the
-                        // subfields correctly, so it's commented out until that is
-                        // fixed.
-                        //String current = authorField.getSubfieldsAsString(subfields);
-                        if (null != current) {
-                            result.add(fixTrailingPunctuation(current));
-                            if (firstOnly) {
-                                return result;
-                            }
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField authorField = (DataField) variableField;
+            // add all author types to the result set; if we have multiple relators, repeat the authors
+            for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
+                for (String subfields : parsedTagList.get(authorField.getTag())) {
+                    String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                    // TODO: we may eventually be able to use this line instead,
+                    // but right now it's not handling separation between the
+                    // subfields correctly, so it's commented out until that is
+                    // fixed.
+                    //String current = authorField.getSubfieldsAsString(subfields);
+                    if (null != current) {
+                        result.add(fixTrailingPunctuation(current));
+                        if (firstOnly) {
+                            return result;
                         }
                     }
                 }
@@ -425,23 +420,18 @@ public class CreatorTools
      * @param firstOnly            Return first result only?
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly
     ) {
-        List result = new LinkedList();
+        List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
-        List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
-        Iterator fieldsIter = fields.iterator();
-        if (fields != null){
-            DataField authorField;
-            while (fieldsIter.hasNext()){
-                authorField = (DataField) fieldsIter.next();
-                //add all author types to the result set
-                result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
-            }
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField authorField = (DataField) variableField;
+            //add all author types to the result set
+            result.addAll(getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators));
         }
         return result;
     }
@@ -463,7 +453,7 @@ public class CreatorTools
      * in the MARC or "false" to index mapped versions.
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators, String indexRawRelators
     ) {
@@ -489,7 +479,7 @@ public class CreatorTools
      * should be indexed even if they are not listed in author-classification.ini.
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators
     ) {
@@ -513,7 +503,7 @@ public class CreatorTools
      * defines which relator terms are acceptable (or a colon-delimited list)
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig
     ) {
         // default firstOnly to false!
@@ -601,8 +591,14 @@ public class CreatorTools
      */
     protected String normalizeRelatorString(String string)
     {
+        string = string.trim();
+        for (String prefix : relatorPrefixesToStrip) {
+            if (string.startsWith(prefix)) {
+                string = string.substring(prefix.length());
+                break;
+            }
+        }
         return string
-            .trim()
             .toLowerCase()
             .replaceAll("\\p{Punct}+", "");    //POSIX character class Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for ScheduledSearch/Notify command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\ScheduledSearch;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -32,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Factory for ScheduledSearch/Notify command.
@@ -45,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class NotifyCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,31 +65,30 @@ class NotifyCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
-        $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
-        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
 
         // We need to initialize the theme so that the view renderer works:
-        $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
+        $theme = new \VuFindTheme\Initializer($mainConfig['Site'], $container);
         $theme->init();
 
         // Now build the object:
-        return new $requestedName(
-            $container->get(\VuFind\Crypt\HMAC::class),
+        $command = new $requestedName(
+            $container->get(\VuFind\Crypt\SecretCalculator::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $scheduleOptions,
             $mainConfig,
             $container->get(\VuFind\Mailer\Mailer::class),
-            $tableManager->get(\VuFind\Db\Table\Search::class),
-            $tableManager->get(\VuFind\Db\Table\User::class),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             ...($options ?? [])
         );
+        $command->setPathResolver($container->get(PathResolver::class));
+        return $command;
     }
 }

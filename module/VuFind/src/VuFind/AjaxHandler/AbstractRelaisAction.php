@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract Relais Ajax Action
+ * Abstract Relais Ajax Action.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,15 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use VuFind\Connection\Relais;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * Abstract Relais Ajax Action
+ * Abstract Relais Ajax Action.
  *
  * @category VuFind
  * @package  AJAX
@@ -41,39 +43,22 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractRelaisAction extends AbstractBase
-    implements TranslatorAwareInterface
+abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Relais connector
+     * Constructor.
      *
-     * @var Relais
-     */
-    protected $relais;
-
-    /**
-     * Logged-in user (or null if none)
-     *
-     * @var User
-     */
-    protected $user;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings $ss     Session settings
-     * @param Relais          $relais Relais connector
-     * @param User            $user   Logged in user (or null if none)
+     * @param SessionSettings      $ss     Session settings
+     * @param Relais               $relais Relais connector
+     * @param ?UserEntityInterface $user   Logged in user (or null if none)
      */
     public function __construct(
         SessionSettings $ss,
-        Relais $relais,
-        User $user = null
+        protected Relais $relais,
+        protected ?UserEntityInterface $user
     ) {
-        $this->sessionSettings = $ss;
-        $this->relais = $relais;
-        $this->user = $user;
+        parent::__construct($ss);
     }
 }

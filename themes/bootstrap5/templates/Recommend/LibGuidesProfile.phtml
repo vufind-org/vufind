@@ -1,0 +1,20 @@
+<?php $account = $this->recommend->getResults(); ?>
+<?php if (!empty($account) && !empty($account->profile->url) && !empty($account->first_name)): ?>
+  <div class="libguides-profile">
+    <h2><?=$this->transEsc('libguides_profile_suggestion_heading')?></h2>
+    <a href="<?=$this->escapeHtmlAttr($account->profile->url)?>" target="_blank">
+      <?php if (!empty($account->profile->image->url)): ?>
+        <img class="libguides-profile-img" src="<?=$this->escapeHtmlAttr($account->profile->image->url)?>">
+      <?php endif; ?>
+      <div class="libguides-profile-name"><?=$this->escapeHtml($account->first_name) . ' ' . $this->escapeHtml($account->last_name ?? '')?></div>
+    </a>
+    <?php if (!empty($account->title)): ?>
+      <div class="libguides-profile-title"><?=$this->escapeHtml($account->title)?></div>
+    <?php endif; ?>
+    <?php if (!empty($account->email)): ?>
+      <div class="libguides-profile-email">
+        <a href="mailto:<?=$this->escapeHtmlAttr($account->email)?>"><?=$this->escapeHtml($account->email)?></a>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>

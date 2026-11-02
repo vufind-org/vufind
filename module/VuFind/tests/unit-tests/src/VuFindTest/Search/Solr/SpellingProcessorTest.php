@@ -3,7 +3,7 @@
 /**
  * Unit tests for spelling processor.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,9 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
-use Laminas\Config\Config;
 use VuFind\Search\Solr\SpellingProcessor;
 
 /**
@@ -55,7 +55,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
     {
         $sp = new SpellingProcessor();
         $this->assertEquals(true, $sp->shouldSkipNumericSpelling());
-        $this->assertEquals(3, $sp->getSpellingLimit());
+        $this->assertSame(3, $sp->getSpellingLimit());
     }
 
     /**
@@ -65,10 +65,10 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      */
     public function testNonDefaultConfigs()
     {
-        $config = new Config(['limit' => 5, 'skip_numeric' => false]);
+        $config = ['limit' => 5, 'skip_numeric' => false];
         $sp = new SpellingProcessor($config);
         $this->assertEquals(false, $sp->shouldSkipNumericSpelling());
-        $this->assertEquals(5, $sp->getSpellingLimit());
+        $this->assertSame(5, $sp->getSpellingLimit());
     }
 
     /**
@@ -94,11 +94,11 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuggestionProcessingWithNonDefaultLimit()
     {
-        $config = new Config(['limit' => 5]);
+        $config = ['limit' => 5];
         $sp = new SpellingProcessor($config);
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'grumble' => [
                     'freq' => 2,
@@ -136,7 +136,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'grumble' => [
                     'freq' => 2,
@@ -199,7 +199,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Grumble' => [
                     'freq' => 2,
@@ -261,9 +261,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $query = $this->unserializeFixture('query1');
         $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $config = new Config(['expand' => false, 'phrase' => true]);
+        $config = ['expand' => false, 'phrase' => true];
         $sp = new SpellingProcessor($config);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'grumble' => [
                     'freq' => 2,
@@ -363,8 +363,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                             'freq' => 5735,
                             'new_term' => 'make',
                             'expand_term' => '(lake OR make)',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'geneve' => [
                     'freq' => 662,
@@ -373,9 +373,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                             'freq' => 1170,
                             'new_term' => 'geneva',
                             'expand_term' => '(geneve OR geneva)',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]
         );
     }
@@ -388,26 +388,26 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
     public function testSpellingTokenization()
     {
         $sp = new SpellingProcessor();
-        $this->assertEquals(['single'], $sp->tokenize('single'));
-        $this->assertEquals(['two', 'terms'], $sp->tokenize('two terms'));
-        $this->assertEquals(['two', 'terms'], $sp->tokenize('two    terms'));
-        $this->assertEquals(['apples', 'oranges'], $sp->tokenize('apples OR oranges'));
-        $this->assertEquals(['"word"'], $sp->tokenize('"word"'));
-        $this->assertEquals(['"word"', 'second'], $sp->tokenize('"word" second'));
-        $this->assertEquals([], $sp->tokenize(''));
-        $this->assertEquals(['0', 'is', 'zero'], $sp->tokenize('0 is zero'));
-        $this->assertEquals(["'twas", 'successful'], $sp->tokenize("'twas successful"));
-        $this->assertEquals(['word'], $sp->tokenize('(word)'));
-        $this->assertEquals(['word', 'second'], $sp->tokenize('(word) second'));
-        $this->assertEquals(['apples', 'oranges', 'pears'], $sp->tokenize('(apples OR oranges) AND pears'));
-        $this->assertEquals(['two', 'terms'], $sp->tokenize("two\tterms"));
-        $this->assertEquals(
+        $this->assertSame(['single'], $sp->tokenize('single'));
+        $this->assertSame(['two', 'terms'], $sp->tokenize('two terms'));
+        $this->assertSame(['two', 'terms'], $sp->tokenize('two    terms'));
+        $this->assertSame(['apples', 'oranges'], $sp->tokenize('apples OR oranges'));
+        $this->assertSame(['"word"'], $sp->tokenize('"word"'));
+        $this->assertSame(['"word"', 'second'], $sp->tokenize('"word" second'));
+        $this->assertSame([], $sp->tokenize(''));
+        $this->assertSame(['0', 'is', 'zero'], $sp->tokenize('0 is zero'));
+        $this->assertSame(["'twas", 'successful'], $sp->tokenize("'twas successful"));
+        $this->assertSame(['word'], $sp->tokenize('(word)'));
+        $this->assertSame(['word', 'second'], $sp->tokenize('(word) second'));
+        $this->assertSame(['apples', 'oranges', 'pears'], $sp->tokenize('(apples OR oranges) AND pears'));
+        $this->assertSame(['two', 'terms'], $sp->tokenize("two\tterms"));
+        $this->assertSame(
             ['"two words"', 'single', '"three word phrase"', 'single'],
             $sp->tokenize('((("two words" OR single) NOT "three word phrase") AND single)')
         );
-        $this->assertEquals(['"unfinished phrase'], $sp->tokenize('"unfinished phrase'));
-        $this->assertEquals(['"'], $sp->tokenize('"'));
-        $this->assertEquals(['""'], $sp->tokenize('""'));
+        $this->assertSame(['"unfinished phrase'], $sp->tokenize('"unfinished phrase'));
+        $this->assertSame(['"'], $sp->tokenize('"'));
+        $this->assertSame(['""'], $sp->tokenize('""'));
     }
 
     /**
@@ -425,18 +425,18 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                     'suggestions' => [
                         '12345678' => [
                             'freq' => 1,
-                            'new_term' => '12345678'
-                        ]
-                    ]
+                            'new_term' => '12345678',
+                        ],
+                    ],
                 ],
                 'sqid' => [
                     'freq' => 0,
                     'suggestions' => [
                         'squid' => [
                             'freq' => 34,
-                            'new_term' => 'squid'
-                        ]
-                    ]
+                            'new_term' => 'squid',
+                        ],
+                    ],
                 ],
             ],
             ['limit' => 1, 'skip_numeric' => false, 'expand' => false]
@@ -458,9 +458,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                     'suggestions' => [
                         'squid' => [
                             'freq' => 34,
-                            'new_term' => 'squid'
-                        ]
-                    ]
+                            'new_term' => 'squid',
+                        ],
+                    ],
                 ],
             ],
             ['limit' => 1, 'skip_numeric' => true, 'expand' => false]
@@ -477,7 +477,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
 
-        $sp = new SpellingProcessor(new Config([]));
+        $sp = new SpellingProcessor();
         $spelling = $this->unserializeFixture('spell5');
         $query = $this->unserializeFixture('query5');
         $sp->getSuggestions($spelling, $query);
@@ -498,7 +498,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $query = $this->unserializeFixture('query' . $testNum);
         $params = $this->getSolrParams();
         $this->setProperty($params, 'query', $query);
-        $sp = new SpellingProcessor(new Config($config));
+        $sp = new SpellingProcessor($config);
         $suggestions = $sp->getSuggestions($spelling, $query);
         $this->assertEquals(
             $expected,
@@ -531,7 +531,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
-                    'grimsley' => 24
+                    'grimsley' => 24,
                 ],
             ],
         ];
@@ -558,14 +558,16 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
-                    'grimsley' => 24
+                    'grimsley' => 24,
                 ],
             ],
         ];
     }
 
     /**
-     * Get a fixture object
+     * Get a fixture object.
+     *
+     * @param string $file Name of fixture file
      *
      * @return mixed
      */

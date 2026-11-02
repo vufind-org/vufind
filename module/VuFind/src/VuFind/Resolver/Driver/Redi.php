@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ReDi Link Resolver Driver
+ * ReDi Link Resolver Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2015
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -27,13 +28,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
-use Laminas\Dom\DOMXPath;
+use DOMXPath;
+
+use function chr;
+use function count;
 
 /**
- * ReDi Link Resolver Driver
+ * ReDi Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -45,21 +50,21 @@ use Laminas\Dom\DOMXPath;
 class Redi extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * Parsed resolver links
+     * Parsed resolver links.
      *
      * @var array
      */
     protected $links;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
@@ -71,7 +76,7 @@ class Redi extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -87,7 +92,7 @@ class Redi extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display
@@ -136,7 +141,7 @@ class Redi extends AbstractBase
         if ($doiTerm->length == $doiDefinition->length) {
             for ($i = 0; $i < $doiTerm->length; $i++) {
                 $href = $xpath
-                    ->query(".//@href", $doiDefinition->item($i))
+                    ->query('.//@href', $doiDefinition->item($i))
                     ->item(0)->textContent;
                 $retval[] = [
                     'title' => $doiTerm->item($i)->textContent
@@ -154,7 +159,7 @@ class Redi extends AbstractBase
 
     /**
      * Parse Redi additional information elements and return the one identified by
-     * the infoToken provided (e.g. "*")
+     * the infoToken provided (e.g. "*").
      *
      * @param DOMDocument $xml       Loaded xml document
      * @param string      $infoToken InfoToken to search for
@@ -204,11 +209,11 @@ class Redi extends AbstractBase
             for ($i = 0; $i < $ezbResultsNodesText->length; $i++) {
                 $accessClass = 'unknown';
                 $accessClassExpressions = [
-                    "denied"    => "//div[@class='t_ezb_result']["
+                    'denied'    => "//div[@class='t_ezb_result']["
                         . ($i + 1) . "]/p/span[@class='t_ezb_red']",
-                    "limited" => "//div[@class='t_ezb_result']["
+                    'limited' => "//div[@class='t_ezb_result']["
                         . ($i + 1) . "]/p/span[@class='t_ezb_yellow']",
-                    "open"  => "//div[@class='t_ezb_result']["
+                    'open'  => "//div[@class='t_ezb_result']["
                         . ($i + 1) . "]/p/span[@class='t_ezb_green']",
                 ]; // $i+1 because XPath-element-counting starts with 1
                 foreach ($accessClassExpressions as $key => $value) {
@@ -220,7 +225,7 @@ class Redi extends AbstractBase
                 $itemInfo = '';
 
                 $expression = "//div[@class='t_ezb_result']["
-                    . ($i + 1) . "]/p/sup";
+                    . ($i + 1) . ']/p/sup';
                 if ($xpath->evaluate("count({$expression})") == 1) {
                     $itemInfo = $this->parseRediInfo(
                         $xml,
@@ -231,7 +236,7 @@ class Redi extends AbstractBase
                 $retval[] = [
                     'title' => $ezbResultsNodesText->item($i)->textContent,
                     'href' => $ezbResultsNodesURL->item($i)
-                        ->attributes->getNamedItem("href")->textContent,
+                        ->attributes->getNamedItem('href')->textContent,
                     'access'       => $accessClass,
                     'coverage'     => $itemInfo,
                     'service_type' => 'getFullTxt',
@@ -263,7 +268,7 @@ class Redi extends AbstractBase
     }
 
     /**
-     * Helper function to remove hardcoded link-string "»" in Redi response
+     * Helper function to remove hardcoded link-string "»" in Redi response.
      *
      * @param string $string String to be manipulated
      *

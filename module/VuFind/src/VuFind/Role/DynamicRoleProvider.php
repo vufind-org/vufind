@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind dynamic role provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -25,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role;
 
-use LmcRbacMvc\Role\RoleProviderInterface;
-use Rbac\Role\Role;
+use Laminas\Permissions\Rbac\Role;
+use Laminas\Permissions\Rbac\RoleInterface;
+use Lmc\Rbac\Role\RoleProviderInterface;
 
 /**
  * VuFind dynamic role provider.
@@ -49,42 +52,26 @@ class DynamicRoleProvider implements RoleProviderInterface
     protected $roles = false;
 
     /**
-     * Permission provider manager
-     *
-     * @var PermissionProviderPluginManager
-     */
-    protected $manager;
-
-    /**
-     * Configuration for determining permissions.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionProvider\PluginManager $manager Permission provider manager
      * @param array                            $config  Configuration for determining
      * permissions
      */
     public function __construct(
-        PermissionProvider\PluginManager $manager,
-        array $config
+        protected PermissionProvider\PluginManager $manager,
+        protected array $config
     ) {
-        $this->manager = $manager;
-        $this->config = $config;
     }
 
     /**
-     * Get the roles from the provider
+     * Get the roles from the provider.
      *
      * @param string[] $roleNames Role(s) to look up.
      *
-     * @return \Rbac\Role\RoleInterface[]
+     * @return RoleInterface[]
      */
-    public function getRoles(array $roleNames)
+    public function getRoles(iterable $roleNames): iterable
     {
         return array_map([$this, 'getRole'], $roleNames);
     }
@@ -173,10 +160,11 @@ class DynamicRoleProvider implements RoleProviderInterface
             $mode = 'ALL';
         }
 
-        // Extract permission setting:
+        // Extract permission setting and ignore assertion setting (it's processed in PermissionManagerFactory):
         $permissions = isset($settings['permission'])
             ? (array)$settings['permission'] : [];
         unset($settings['permission']);
+        unset($settings['assertion']);
 
         // Process everything:
         $roles = null;

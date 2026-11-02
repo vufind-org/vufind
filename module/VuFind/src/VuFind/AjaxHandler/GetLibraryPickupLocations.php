@@ -1,8 +1,9 @@
 <?php
+
 /**
- * "Get Library Pickup Locations" AJAX handler
+ * "Get Library Pickup Locations" AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
- * "Get Library Pickup Locations" AJAX handler
+ * "Get Library Pickup Locations" AJAX handler.
  *
  * Get pick up locations for a library
  *
@@ -45,26 +48,26 @@ class GetLibraryPickupLocations extends AbstractIlsAndUserAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $id = $params->fromQuery('id');
-        $pickupLib = $params->fromQuery('pickupLib');
+        $id = $this->getQueryParam($request, 'id');
+        $pickupLib = $this->getQueryParam($request, 'pickupLib');
         if (null === $id || null === $pickupLib) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -89,7 +92,7 @@ class GetLibraryPickupLocations extends AbstractIlsAndUserAction
 
         return $this->formatResponse(
             $this->translate('An error has occurred'),
-            self::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Configuration-Based Hierarchy Driver
+ * Configuration-Based Hierarchy Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Hierarchy_Drivers
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
 /**
- * Configuration-Based Hierarchy Driver
+ * Configuration-Based Hierarchy Driver.
  *
  * @category VuFind
  * @package  Hierarchy_Drivers
@@ -39,14 +41,14 @@ namespace VuFind\Hierarchy\Driver;
 class ConfigurationBased extends AbstractBase
 {
     /**
-     * Default tree renderer
+     * Default tree renderer.
      *
      * @var string
      */
-    protected $defaultTreeRenderer = 'JSTree';
+    protected $defaultTreeRenderer = 'HTMLTree';
 
     /**
-     * Show Tree
+     * Show Tree.
      *
      * Returns the configuration setting for displaying a hierarchy tree
      *
@@ -54,12 +56,12 @@ class ConfigurationBased extends AbstractBase
      */
     public function showTree()
     {
-        $treeConfigDriver = $this->config->HierarchyTree->show ?? false;
+        $treeConfigDriver = $this->config['HierarchyTree']['show'] ?? false;
         return $this->enabled && $treeConfigDriver;
     }
 
     /**
-     * Get Tree Renderer Type
+     * Get Tree Renderer Type.
      *
      * Returns the configuration setting for generating a hierarchy tree
      *
@@ -67,22 +69,21 @@ class ConfigurationBased extends AbstractBase
      */
     public function getTreeRendererType()
     {
-        return $this->config->HierarchyTree->treeRenderer
-            ?? $this->defaultTreeRenderer;
+        return $this->config['HierarchyTree']['treeRenderer'] ?? $this->defaultTreeRenderer;
     }
 
     /**
-     * Get Tree Data Source Type
+     * Get Tree Data Source Type.
      *
      * @return string
      */
     public function getTreeSourceType()
     {
-        return $this->config->HierarchyTree->treeSource ?? 'Solr';
+        return $this->config['HierarchyTree']['treeSource'] ?? 'Solr';
     }
 
     /**
-     * Get Tree Cache Time
+     * Get Tree Cache Time.
      *
      * Returns the configuration setting for hierarchy tree caching time when
      * using solr to build the tree
@@ -91,11 +92,11 @@ class ConfigurationBased extends AbstractBase
      */
     public function getTreeCacheTime()
     {
-        return $this->config->HierarchyTree->solrCacheTime ?? 43200;
+        return $this->config['HierarchyTree']['solrCacheTime'] ?? 43200;
     }
 
     /**
-     * Check if sorting is enabled in the hierarchy Options
+     * Check if sorting is enabled in the hierarchy Options.
      *
      * Returns the configuration setting for hierarchy tree sorting
      *
@@ -103,11 +104,11 @@ class ConfigurationBased extends AbstractBase
      */
     public function treeSorting()
     {
-        return $this->config->HierarchyTree->sorting ?? false;
+        return $this->config['HierarchyTree']['sorting'] ?? false;
     }
 
     /**
-     * Get Tree Settings
+     * Get Tree Settings.
      *
      * Returns all the configuration settings for a hierarchy tree
      *
@@ -115,18 +116,35 @@ class ConfigurationBased extends AbstractBase
      */
     public function getTreeSettings()
     {
-        return isset($this->config->HierarchyTree)
-            ? $this->config->HierarchyTree->toArray() : [];
+        return $this->config['HierarchyTree'] ?? [];
     }
 
     /**
-     * Get Collection Link Type from the config file
+     * Get Collection Link Type from the config file.
      *
      * @return string
      */
     public function getCollectionLinkType()
     {
-        return isset($this->config->Collections->link_type)
-            ? ucwords(strtolower($this->config->Collections->link_type)) : 'All';
+        return isset($this->config['Collections']['link_type'])
+            ? ucwords(strtolower($this->config['Collections']['link_type'])) : 'All';
+    }
+
+    /**
+     * Get the Solr field name used for grouping together collection contents.
+     *
+     * @param bool $hasSearch Is the user performing a search?
+     *
+     * @return string
+     */
+    public function getCollectionField(bool $hasSearch): string
+    {
+        if ($hasSearch && null !== ($field = $this->config['Collections']['search_container_id_field'] ?? null)) {
+            return $field;
+        }
+        return match ($this->getCollectionLinkType()) {
+            'All' => 'hierarchy_parent_id',
+            'Top' => 'hierarchy_top_id',
+        };
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS Authenticator factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -25,13 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
 
 /**
  * ILS Authenticator factory.
@@ -45,7 +51,7 @@ use Psr\Container\ContainerInterface;
 class ILSAuthenticatorFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,28 +67,30 @@ class ILSAuthenticatorFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        // Construct the ILS authenticator as a lazy loading value holder so that
-        // the object is not instantiated until it is called. This helps break a
-        // potential circular dependency with the MultiBackend driver as well as
-        // saving on initialization costs in cases where the authenticator is not
-        // actually utilized.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
-            // Generate wrapped object:
-            $auth = $container->get(\VuFind\Auth\Manager::class);
-            $catalog = $container->get(\VuFind\ILS\Connection::class);
-            $emailAuth = $container->get(\VuFind\Auth\EmailAuthenticator::class);
-            $wrapped = new $requestedName($auth, $catalog, $emailAuth);
-
-            // Indicate that initialization is complete to avoid reinitialization:
-            $proxy->setProxyInitializer(null);
-        };
-        $cfg = $container->get(\ProxyManager\Configuration::class);
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
-        return $factory->createProxy($requestedName, $callback);
+        $service = new $requestedName(
+            // Use a callback to retrieve authentication manager to break a circular reference:
+            Closure::fromCallable(
+                function () use ($container) {
+                    return $container->get(\VuFind\Auth\Manager::class);
+                }
+            ),
+            // Use a callback to build BlockCipher objects:
+            Closure::fromCallable(
+                function (string $algo) use ($container) {
+                    return $container->get(BlockCipher::class)->setAlgorithm($algo);
+                }
+            ),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\EmailAuthenticator::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
+        );
+        $dbServiceManager = $container->get(DatabaseServiceManager::class);
+        $service->setAuditEventService($dbServiceManager->get(AuditEventServiceInterface::class));
+        return $service;
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AJAX handler to get list of comments for a record as HTML.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,11 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * AJAX handler to get list of comments for a record as HTML.
@@ -43,46 +45,32 @@ use VuFind\Record\Loader;
 class GetRecordCommentsAsHTML extends AbstractBase
 {
     /**
-     * Record loader
+     * Constructor.
      *
-     * @var Loader
+     * @param Loader                    $loader   Record loader
+     * @param TemplateRendererInterface $renderer Template renderer
      */
-    protected $loader;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Constructor
-     *
-     * @param Loader            $loader   Record loader
-     * @param RendererInterface $renderer View renderer
-     */
-    public function __construct(Loader $loader, RendererInterface $renderer)
-    {
-        $this->loader = $loader;
-        $this->renderer = $renderer;
+    public function __construct(
+        protected Loader $loader,
+        protected TemplateRendererInterface $renderer
+    ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $driver = $this->loader->load(
-            $params->fromQuery('id'),
-            $params->fromQuery('source', DEFAULT_SEARCH_BACKEND)
+            $this->getQueryParam($request, 'id'),
+            $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND)
         );
-        $html = $this->renderer
-            ->render('record/comments-list.phtml', compact('driver'));
+        $html = $this->renderer->renderTemplateAsString($request, 'record/comments-list.phtml', compact('driver'));
         return $this->formatResponse(compact('html'));
     }
 }

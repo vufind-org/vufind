@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Console command: delete from Solr
+ * Console command: delete from Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,16 +26,22 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Marc\MarcCollectionFile;
 
+use function count;
+use function strlen;
+
 /**
- * Console command: delete from Solr
+ * Console command: delete from Solr.
  *
  * @category VuFind
  * @package  Console
@@ -42,15 +49,12 @@ use VuFind\Marc\MarcCollectionFile;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/deletes',
+    description: 'Tool for deleting Solr records'
+)]
 class DeletesCommand extends AbstractSolrCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/deletes';
-
     /**
      * Configure the command.
      *
@@ -59,7 +63,6 @@ class DeletesCommand extends AbstractSolrCommand
     protected function configure()
     {
         $this
-            ->setDescription('Tool for deleting Solr records')
             ->setHelp('Deletes a set of records from the Solr index.')
             ->addArgument(
                 'filename',
@@ -69,9 +72,9 @@ class DeletesCommand extends AbstractSolrCommand
                 'format',
                 InputArgument::OPTIONAL,
                 "the format of the file -- it may be one of the following:\n"
-                . "flat - flat text format "
+                . 'flat - flat text format '
                 . "(deletes all IDs in newline-delimited file)\n"
-                . "marc - MARC record in binary or MARCXML format (deletes all "
+                . 'marc - MARC record in binary or MARCXML format (deletes all '
                 . "record IDs from 001 fields)\n"
                 . "marcxml - DEPRECATED; use marc instead\n",
                 'marc'
@@ -80,6 +83,12 @@ class DeletesCommand extends AbstractSolrCommand
                 InputArgument::OPTIONAL,
                 'Name of Solr core/backend to update',
                 'Solr'
+            )->addOption(
+                'id-prefix',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Prefix to prepend to all IDs',
+                ''
             );
     }
 
@@ -102,7 +111,7 @@ class DeletesCommand extends AbstractSolrCommand
     }
 
     /**
-     * Load IDs from a MARC file
+     * Load IDs from a MARC file.
      *
      * @param string          $filename MARC file
      * @param OutputInterface $output   Output object
@@ -115,7 +124,7 @@ class DeletesCommand extends AbstractSolrCommand
     ): array {
         $ids = [];
         // MARC file mode:
-        $messageCallback = function (string $msg, int $level) use ($output) {
+        $messageCallback = function (string $msg, int $level) use ($output): void {
             if ($output->isVerbose() || $level !== E_NOTICE) {
                 $output->writeln(
                     '<comment>' . OutputFormatter::escape($msg) . '</comment>'
@@ -149,16 +158,17 @@ class DeletesCommand extends AbstractSolrCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $filename = $input->getArgument('filename');
         $mode = $input->getArgument('format');
         $index = $input->getArgument('index');
+        $prefix = $input->getOption('id-prefix');
 
         // File doesn't exist?
         if (!file_exists($filename)) {
             $output->writeln("Cannot find file: {$filename}");
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -178,6 +188,12 @@ class DeletesCommand extends AbstractSolrCommand
                 . implode(', ', $ids),
                 OutputInterface::VERBOSITY_VERBOSE
             );
+            if (!empty($prefix)) {
+                $callback = function ($id) use ($prefix) {
+                    return $prefix . $id;
+                };
+                $ids = array_map($callback, $ids);
+            }
             $this->solr->deleteRecords($index, $ids);
             $output->writeln(
                 'Delete operation completed.',
@@ -187,6 +203,6 @@ class DeletesCommand extends AbstractSolrCommand
             $output->writeln('Nothing to delete.');
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

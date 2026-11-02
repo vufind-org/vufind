@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VuFind Plugin Manager
+ * VuFind Plugin Manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\AbstractPluginManager as Base;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 
 /**
- * VuFind Plugin Manager
+ * VuFind Plugin Manager.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -46,7 +48,7 @@ abstract class AbstractPluginManager extends Base
     use LowerCaseServiceNameTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -65,7 +67,7 @@ abstract class AbstractPluginManager extends Base
     }
 
     /**
-     * Validate the plugin
+     * Validate the plugin.
      *
      * Checks that the filter loaded is either a valid callback or an instance
      * of FilterInterface.
@@ -80,7 +82,7 @@ abstract class AbstractPluginManager extends Base
         $expectedInterface = $this->getExpectedInterface();
         if (!$plugin instanceof $expectedInterface) {
             throw new InvalidServiceException(
-                'Plugin ' . get_class($plugin) . ' does not belong to '
+                'Plugin ' . $plugin::class . ' does not belong to '
                 . $expectedInterface
             );
         }

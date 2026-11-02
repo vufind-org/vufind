@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating SMS objects.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  SMS
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating SMS objects.
  *
  * @category VuFind
  * @package  SMS
@@ -44,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class Factory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service manager
      * @param string             $name      Requested service name (unused)
@@ -57,30 +59,33 @@ class Factory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $name,
-        array $options = null
+        ?array $options = null
     ) {
         // Load configurations:
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $mainConfig = $configManager->get('config');
-        $smsConfig = $configManager->get('sms');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $mainConfig = $configManager->getConfigArray('config');
+        $smsConfig = $configManager->getConfigArray('sms');
 
         // Determine SMS type:
-        $type = $smsConfig->General->smsType ?? 'Mailer';
+        $type = $smsConfig['General']['smsType'] ?? 'Mailer';
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {
-        case 'clickatell':
-            $client = $container->get(\VuFindHttp\HttpService::class)
-                ->createClient();
-            return new Clickatell($smsConfig, ['client' => $client]);
-        case 'mailer':
-            $options = ['mailer' => $container->get(\VuFind\Mailer\Mailer::class)];
-            if (isset($mainConfig->Site->email)) {
-                $options['defaultFrom'] = $mainConfig->Site->email;
-            }
-            return new Mailer($smsConfig, $options);
-        default:
-            throw new \Exception('Unrecognized SMS type: ' . $type);
+            case 'clickatell':
+                $client = $container->get(\VuFindHttp\HttpService::class)
+                    ->createClient();
+                return new Clickatell($smsConfig, ['client' => $client]);
+            case 'mailer':
+                $options = [
+                    'mailer' => $container->get(\VuFind\Mailer\Mailer::class),
+                    'defaultFrom' => $smsConfig['General']['default_from']
+                        ?? $mainConfig['Mail']['default_from']
+                        ?? $mainConfig['Site']['email']
+                        ?? null,
+                ];
+                return new Mailer($smsConfig, $options);
+            default:
+                throw new \Exception('Unrecognized SMS type: ' . $type);
         }
     }
 }

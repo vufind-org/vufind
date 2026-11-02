@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Recommendation module view helper
+ * Recommendation module view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Recommend\RecommendInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Recommendation module view helper
+ * Recommendation module view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,9 +43,25 @@ use VuFind\Recommend\RecommendInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recommend extends \Laminas\View\Helper\AbstractHelper
+class Recommend
 {
     use ClassBasedTemplateRendererTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $viewRenderer View renderer
+     * @param ResolverInterface $viewResolver View resolver
+     * @param Context           $context      Context helper
+     */
+    public function __construct(
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $context,
+    ) {
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
+    }
 
     /**
      * Render the output of a recommendation module.
@@ -57,11 +78,11 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
         $index = null
     ) {
         $template = 'Recommend/%s.phtml';
-        $className = get_class($recommend);
+        $className = $recommend::class;
         $context = [
             'recommend' => $recommend,
             'location' => $location,
-            'configIndex' => $index
+            'configIndex' => $index,
         ];
         return $this->renderClassTemplate($template, $className, $context);
     }

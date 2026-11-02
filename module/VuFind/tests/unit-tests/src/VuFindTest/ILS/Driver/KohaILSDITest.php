@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
- * Class KohaILSDITest
+ * Class KohaILSDITest.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -18,8 +17,8 @@ declare(strict_types=1);
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindTest\ILS\Driver
@@ -27,12 +26,15 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\KohaILSDI;
 
 /**
- * Class KohaILSDITest
+ * Class KohaILSDITest.
  *
  * @category VuFind
  * @package  VuFindTest\ILS\Driver
@@ -53,14 +55,14 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test toKohaDate method
+     * Test toKohaDate method.
      *
+     * @return void
      * @throws \ReflectionException
      */
     public function testToKohaDate(): void
     {
         $method = new \ReflectionMethod('\VuFind\ILS\Driver\KohaILSDI', 'toKohaDate');
-        $method->setAccessible(true);
         $this->assertEquals('1982-10-22', $method->invokeArgs($this->driver, ['10-22-1982']));
         $this->assertEquals(null, $method->invokeArgs($this->driver, ['']));
         $this->assertEquals(null, $method->invokeArgs($this->driver, [null]));

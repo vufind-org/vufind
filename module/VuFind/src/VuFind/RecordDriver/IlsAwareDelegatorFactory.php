@@ -1,10 +1,11 @@
 <?php
+
 /**
- * ILS aware delegator factory
+ * ILS aware delegator factory.
  *
  * Copyright (C) Villanova University 2018.
  *
- * PHP version 7
+ * PHP version 8
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -25,13 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerInterface;
 
+use function call_user_func;
+use function is_array;
+
 /**
- * ILS aware delegator factory
+ * ILS aware delegator factory.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -57,7 +62,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ) {
         $driver = call_user_func($callback);
 
@@ -87,9 +92,8 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
         // Get a list of ILS-compatible backends.
         static $ilsBackends = null;
         if (!is_array($ilsBackends)) {
-            $config = $container->get(\VuFind\Config\PluginManager::class)
-                ->get('config');
-            $settings = isset($config->Catalog) ? $config->Catalog->toArray() : [];
+            $settings = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+                ->getConfigArray('config')['Catalog'] ?? [];
 
             // If the setting is missing, default to the default backend; if it
             // is present but empty, don't put an empty string in the final array!

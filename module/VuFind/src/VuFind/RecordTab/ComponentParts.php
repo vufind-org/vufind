@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Component parts display tab
+ * Component parts display tab.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2019, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Command\SearchCommand;
+
 /**
- * Component parts display tab
+ * Component parts display tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -39,34 +44,27 @@ namespace VuFind\RecordTab;
 class ComponentParts extends AbstractBase
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Maximum results to display
+     * Maximum results to display.
      *
      * @var int
      */
     protected $maxResults = 100;
 
     /**
-     * Search service
+     * Constructor.
      *
-     * @var \VuFindSearch\Service
+     * @param \VuFindSearch\Service $searchService Search service
      */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindSearch\Service $search Search service
-     */
-    public function __construct(\VuFindSearch\Service $search)
+    #[Autowire]
+    public function __construct(protected \VuFindSearch\Service $searchService)
     {
-        $this->searchService = $search;
     }
 
     /**
@@ -103,12 +101,12 @@ class ComponentParts extends AbstractBase
     /**
      * Get the contents for display.
      *
-     * @return array
+     * @return RecordCollectionInterface
      */
     public function getResults()
     {
         $record = $this->getRecordDriver();
-        $safeId = addcslashes($record->getUniqueId(), '"');
+        $safeId = addcslashes($record->getUniqueID(), '"');
         $query = new \VuFindSearch\Query\Query(
             'hierarchy_parent_id:"' . $safeId . '"'
         );
@@ -120,7 +118,7 @@ class ComponentParts extends AbstractBase
                 'sort' => 'hierarchy_sequence ASC,title ASC',
             ]
         );
-        return $this->searchService->search(
+        $command = new SearchCommand(
             $record->getSourceIdentifier(),
             $query,
             0,
@@ -129,5 +127,6 @@ class ComponentParts extends AbstractBase
             $this->maxResults + 1,
             $params
         );
+        return $this->searchService->invoke($command)->getResult();
     }
 }

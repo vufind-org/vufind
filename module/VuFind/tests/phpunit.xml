@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./bootstrap.php" backupGlobals="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage includeUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">../src/VuFind</directory>
-      <directory suffix=".php">../../VuFindAdmin/src</directory>
-      <directory suffix=".php">../../VuFindApi/src</directory>
-      <directory suffix=".php">../../VuFindConsole/src</directory>
-      <directory suffix=".php">../../VuFindDevTools/src</directory>
-      <directory suffix=".php">../../VuFindSearch/src</directory>
-      <directory suffix=".php">../../VuFindTheme/src</directory>
-    </include>
-  </coverage>
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  bootstrap="./bootstrap.php"
+  backupGlobals="false"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+  displayDetailsOnTestsThatTriggerWarnings="true"
+  displayDetailsOnTestsThatTriggerDeprecations="true"
+  displayDetailsOnPhpunitDeprecations="true"
+  failOnWarning="true"
+  cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="AllUnitTests">
       <directory>../../*/tests/unit-tests/src</directory>
@@ -19,4 +17,9 @@
       <directory>../../*/tests/integration-tests/src</directory>
     </testsuite>
   </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">../../*/src</directory>
+    </include>
+  </source>
 </phpunit>

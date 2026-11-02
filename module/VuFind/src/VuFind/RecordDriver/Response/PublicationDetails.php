@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class encapsulating publication details.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Response;
 
 /**
@@ -39,28 +41,28 @@ namespace VuFind\RecordDriver\Response;
 class PublicationDetails
 {
     /**
-     * Place of publication
+     * Place of publication.
      *
      * @var string
      */
     protected $place;
 
     /**
-     * Name of publisher
+     * Name of publisher.
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Date of publication
+     * Date of publication.
      *
      * @var string
      */
     protected $date;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $place Place of publication
      * @param string $name  Name of publisher
@@ -74,7 +76,7 @@ class PublicationDetails
     }
 
     /**
-     * Get place of publication
+     * Get place of publication.
      *
      * @return string
      */
@@ -84,7 +86,7 @@ class PublicationDetails
     }
 
     /**
-     * Get name of publisher
+     * Get name of publisher.
      *
      * @return string
      */
@@ -94,7 +96,7 @@ class PublicationDetails
     }
 
     /**
-     * Get date of publication
+     * Get date of publication.
      *
      * @return string
      */
@@ -104,7 +106,7 @@ class PublicationDetails
     }
 
     /**
-     * Represent object as a string
+     * Represent object as a string.
      *
      * @return string
      */

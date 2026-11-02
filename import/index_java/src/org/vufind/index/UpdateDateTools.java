@@ -14,16 +14,14 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Iterator;
-import java.util.Set;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import org.marc4j.marc.Record;
@@ -95,21 +93,13 @@ public class UpdateDateTools
      */
     public LocalDateTime getLatestTransaction(Record record) {
         // First try the 005 -- this is most likely to have a precise transaction date:
-        Set<String> dates = SolrIndexer.instance().getFieldList(record, "005");
-        if (dates != null) {
-            Iterator<String> dateIter = dates.iterator();
-            if (dateIter.hasNext()) {
-                return normalize005Date(dateIter.next());
-            }
+        for (String current005 : SolrIndexer.instance().getFieldList(record, "005")) {
+            return normalize005Date(current005);
         }
 
         // No luck with 005?  Try 008 next -- less precise, but better than nothing:
-        dates = SolrIndexer.instance().getFieldList(record, "008");
-        if (dates != null) {
-            Iterator<String> dateIter = dates.iterator();
-            if (dateIter.hasNext()) {
-                return normalize008Date(dateIter.next());
-            }
+        for (String current008 : SolrIndexer.instance().getFieldList(record, "008")) {
+            return normalize008Date(current008);
         }
 
         // If we got this far, we couldn't find a valid value; return an arbitrary date:

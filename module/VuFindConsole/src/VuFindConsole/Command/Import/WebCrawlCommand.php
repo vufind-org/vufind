@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Console command: web crawler
+ * Console command: web crawler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,18 +26,24 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Import;
 
-use Laminas\Config\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
+use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
+
+use function is_string;
+use function ord;
+use function strlen;
 
 /**
- * Console command: web crawler
+ * Console command: web crawler.
  *
  * @category VuFind
  * @package  Console
@@ -44,54 +51,34 @@ use VuFind\XSLT\Importer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'import/webcrawl',
+    description: 'Web crawler'
+)]
 class WebCrawlCommand extends Command
 {
     /**
-     * The name of the command
+     * Should we bypass cache expiration?
      *
-     * @var string
+     * @var bool
      */
-    protected static $defaultName = 'import/webcrawl';
+    protected bool $bypassCacheExpiration = false;
 
     /**
-     * XSLT importer
-     *
-     * @var Importer
-     */
-    protected $importer;
-
-    /**
-     * Solr writer
-     *
-     * @var Writer
-     */
-    protected $solr;
-
-    /**
-     * Configuration from webcrawl.ini
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param Importer    $importer XSLT importer
      * @param Writer      $solr     Solr writer
-     * @param Config      $config   Configuration from webcrawl.ini
+     * @param array       $config   Configuration from webcrawl.ini
      * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
     public function __construct(
-        Importer $importer,
-        Writer $solr,
-        Config $config,
+        protected Importer $importer,
+        protected Writer $solr,
+        protected array $config,
         $name = null
     ) {
-        $this->importer = $importer;
-        $this->solr = $solr;
-        $this->config = $config;
         parent::__construct($name);
     }
 
@@ -103,13 +90,18 @@ class WebCrawlCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Web crawler')
             ->setHelp('Crawls websites to populate VuFind\'s web index.')
             ->addOption(
                 'test-only',
                 null,
                 InputOption::VALUE_NONE,
                 'activates test mode, which displays output without updating Solr'
+            )->addOption(
+                'use-expired-cache',
+                null,
+                InputOption::VALUE_NONE,
+                'use cached data, even if expired; useful when the index needs to be quickly rebuilt, '
+                . 'e.g. after a Solr upgrade'
             )->addOption(
                 'index',
                 null,
@@ -124,12 +116,20 @@ class WebCrawlCommand extends Command
      *
      * @param string $url URL to download
      *
-     * @return string     Filename of downloaded content
+     * @return string     Filename of downloaded (and decompressed if needed) content
      */
     protected function downloadFile($url)
     {
         $file = tempnam('/tmp', 'sitemap');
-        file_put_contents($file, file_get_contents($url));
+        $content = file_get_contents($url);
+        // Check if content is gzipped (magic bytes: 0x1f 0x8b).
+        if (strlen($content) >= 2 && ord($content[0]) === 0x1f && ord($content[1]) === 0x8b) {
+            $content = gzdecode($content);
+            if ($content === false) {
+                throw new \Exception("Failed to decompress gzipped sitemap from $url");
+            }
+        }
+        file_put_contents($file, $content);
         return $file;
     }
 
@@ -143,6 +143,133 @@ class WebCrawlCommand extends Command
     protected function removeTempFile($file)
     {
         unlink($file);
+    }
+
+    /**
+     * Given a URL, get the transform cache path (or null if the cache
+     * is disabled).
+     *
+     * @param string $url URL to cache
+     *
+     * @return ?string
+     */
+    protected function getTransformCachePath(string $url): ?string
+    {
+        if ($dir = $this->config['Cache']['transform_cache_dir'] ?? null) {
+            return $dir . '/' . md5($url);
+        }
+        return null;
+    }
+
+    /**
+     * Update the last_indexed dates in a cached XML document to the current
+     * time so reindexing cached documents works correctly.
+     *
+     * @param string $xml XML to update
+     *
+     * @return string
+     */
+    protected function updateLastIndexed(string $xml): string
+    {
+        $newDate = date('Y-m-d\TH:i:s\Z');
+        return preg_replace(
+            '|<field name="last_indexed">([^<]+)</field>|',
+            '<field name="last_indexed">' . $newDate . '</field>',
+            $xml
+        );
+    }
+
+    /**
+     * Fetch transform cache data for the specified URL; return null if the cache is disabled,
+     * the data is expired, or something goes wrong.
+     *
+     * @param OutputInterface $output  Output object
+     * @param string          $url     URL of sitemap to read.
+     * @param string          $lastMod Last modification date of URL.
+     * @param bool            $verbose Are we in verbose mode?
+     *
+     * @return ?string
+     */
+    protected function readFromTransformCache(
+        OutputInterface $output,
+        string $url,
+        string $lastMod,
+        bool $verbose
+    ): ?string {
+        // If cache is write-only, don't retrieve data!
+        if ($this->config['Cache']['transform_cache_write_only'] ?? false) {
+            return null;
+        }
+        // If we can't find the data in the cache, we can't proceed.
+        if (!($path = $this->getTransformCachePath($url)) || !file_exists($path)) {
+            return null;
+        }
+        if (strtotime($lastMod) > filemtime($path) && !$this->bypassCacheExpiration) {
+            if ($verbose) {
+                $output->writeln("Cached data for $url ($path) has expired.");
+            }
+            return null;
+        }
+        $rawXml = file_get_contents($path);
+        if (!is_string($rawXml)) {
+            $output->writeln("WARNING: Problem reading cached data for $url ($path)");
+            return null;
+        }
+        if ($verbose) {
+            $output->writeln("Found $url in cache: $path");
+        }
+        return $rawXml;
+    }
+
+    /**
+     * Check the cache and configuration to see if the provided URL can
+     * be loaded from cache, and load it to Solr if possible.
+     *
+     * @param OutputInterface $output   Output object
+     * @param string          $url      URL of sitemap to read.
+     * @param string          $lastMod  Last modification date of URL.
+     * @param bool            $verbose  Are we in verbose mode?
+     * @param string          $index    Solr index to update
+     * @param bool            $testMode Are we in test mode?
+     *
+     * @return bool           True if loaded from cache, false if not.
+     */
+    protected function indexFromTransformCache(
+        OutputInterface $output,
+        string $url,
+        string $lastMod,
+        bool $verbose = false,
+        string $index = 'SolrWeb',
+        bool $testMode = false
+    ): bool {
+        $rawXml = $this->readFromTransformCache($output, $url, $lastMod, $verbose);
+        if ($rawXml === null) {
+            return false;
+        }
+        $xml = $this->updateLastIndexed($rawXml);
+        if ($testMode) {
+            $output->writeln($xml);
+        } else {
+            $this->solr->save($index, new RawXMLDocument($xml));
+        }
+        return true;
+    }
+
+    /**
+     * Update the transform cache (if activated). Returns true if the cache was updated,
+     * false otherwise.
+     *
+     * @param string $url    URL to use for cache key
+     * @param string $result Result of transforming the URL
+     *
+     * @return bool
+     */
+    protected function updateTransformCache(string $url, string $result): bool
+    {
+        if ($transformCachePath = $this->getTransformCachePath($url)) {
+            return false !== file_put_contents($transformCachePath, $result);
+        }
+        return false;
     }
 
     /**
@@ -164,6 +291,21 @@ class WebCrawlCommand extends Command
         $index = 'SolrWeb',
         $testMode = false
     ) {
+        // Date to use as a default "last modification" date in scenarios where we
+        // don't care about cache invalidation.
+        $pastDate = '1980-01-01';
+
+        // If we're not concerned about cache expiration, we can potentially
+        // short-circuit the process with the cache up front. Otherwise, we'll
+        // need to wait until we can get last modification dates to know whether
+        // it's safe to rely on cached data.
+        if (
+            $this->bypassCacheExpiration
+            && $this->indexFromTransformCache($output, $url, $pastDate, $verbose, $index, $testMode)
+        ) {
+            return true;
+        }
+
         if ($verbose) {
             $output->writeln("Harvesting $url...");
         }
@@ -177,15 +319,30 @@ class WebCrawlCommand extends Command
             $results = $xml->sitemap ?? [];
             foreach ($results as $current) {
                 if (isset($current->loc)) {
-                    $success = $this->harvestSitemap(
-                        $output,
-                        (string)$current->loc,
-                        $verbose,
-                        $index,
-                        $testMode
-                    );
-                    if (!$success) {
-                        $retVal = false;
+                    // If there's a last modification date (or we're forcing a
+                    // reindex from the cache) and we can retrieve data from the
+                    // cache, we can bypass the harvest.
+                    if (
+                        (!isset($current->lastmod) && !$this->bypassCacheExpiration)
+                        || !$this->indexFromTransformCache(
+                            $output,
+                            (string)$current->loc,
+                            (string)($current->lastmod ?? $pastDate),
+                            $verbose,
+                            $index,
+                            $testMode
+                        )
+                    ) {
+                        $success = $this->harvestSitemap(
+                            $output,
+                            (string)$current->loc,
+                            $verbose,
+                            $index,
+                            $testMode
+                        );
+                        if (!$success) {
+                            $retVal = false;
+                        }
                     }
                 }
             }
@@ -198,12 +355,15 @@ class WebCrawlCommand extends Command
                         $index,
                         $testMode
                     );
+                    if ($result && $this->updateTransformCache($url, $result) && $verbose) {
+                        $output->writeln('Wrote results to transform cache.');
+                    }
                     if ($testMode) {
                         $output->writeln($result);
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln(get_class($e) . ': ' . $e->getMessage());
+                        $output->writeln((string)$e);
                     }
                     $retVal = false;
                 }
@@ -221,24 +381,25 @@ class WebCrawlCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Get command line parameters:
-        $testMode = $input->getOption('test-only') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
+        $this->bypassCacheExpiration = (bool)$input->getOption('use-expired-cache');
         $index = $input->getOption('index');
 
         // Get the time we started indexing -- we'll delete records older than this
-        // date after everything is finished.  Note that we subtract a few seconds
+        // date after everything is finished. Note that we subtract a few seconds
         // for safety.
         $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
 
         // Are we in verbose mode?
-        $verbose = ($this->config->General->verbose ?? false)
+        $verbose = ($this->config['General']['verbose'] ?? false)
             || ($input->hasOption('verbose') && $input->getOption('verbose'));
 
         // Loop through sitemap URLs in the config file.
         $error = false;
-        foreach ($this->config->Sitemaps->url as $current) {
+        foreach ($this->config['Sitemaps']['url'] as $current) {
             $error = $error || !$this->harvestSitemap(
                 $output,
                 $current,
@@ -248,7 +409,7 @@ class WebCrawlCommand extends Command
             );
         }
         if ($error) {
-            $output->writeln("Error encountered during harvest.");
+            $output->writeln('Error encountered during harvest.');
         }
 
         // Skip Solr operations if we're in test mode.
@@ -268,6 +429,6 @@ class WebCrawlCommand extends Command
             }
             $this->solr->optimize($index);
         }
-        return $error ? 1 : 0;
+        return $error ? self::FAILURE : self::SUCCESS;
     }
 }

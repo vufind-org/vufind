@@ -1,8 +1,9 @@
 <?php
+
 /**
  * View helper for formatting dates and times.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,10 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function call_user_func_array;
+
 /**
- * View helper for formatting dates and times
+ * View helper for formatting dates and times.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,27 +42,23 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DateTime extends \Laminas\View\Helper\AbstractHelper
+class DateTime
 {
     /**
-     * Date converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $converter;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $converter Date converter
+     * @param Translate              $translate Translate view helper
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
-        $this->converter = $converter;
+    public function __construct(
+        protected \VuFind\Date\Converter $converter,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate
+    ) {
     }
 
     /**
-     * Extract a year from a human-readable date.  Return false if no year can
+     * Extract a year from a human-readable date. Return false if no year can
      * be found.
      *
      * @param string $date Date to reformat
@@ -81,14 +83,13 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
     public function getDisplayDateFormat()
     {
         $dueDateHelpString
-            = $this->converter->convertToDisplayDate("m-d-y", "11-22-3333");
-        $search = ["1", "2", "3"];
+            = $this->converter->convertToDisplayDate('m-d-y', '11-22-3333');
+        $search = ['1', '2', '3'];
         $replace = [
-            $this->view->translate("date_month_placeholder"),
-            $this->view->translate("date_day_placeholder"),
-            $this->view->translate("date_year_placeholder")
+            ($this->translate)('date_month_placeholder'),
+            ($this->translate)('date_day_placeholder'),
+            ($this->translate)('date_year_placeholder'),
         ];
-
         return str_replace($search, $replace, $dueDateHelpString);
     }
 
@@ -103,5 +104,15 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
     public function __call($methodName, $params)
     {
         return call_user_func_array([$this->converter, $methodName], $params);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

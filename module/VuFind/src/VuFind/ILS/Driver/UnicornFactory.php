@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
- * Class UnicornFactory
+ * Class UnicornFactory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -18,8 +17,8 @@ declare(strict_types=1);
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -35,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class UnicornFactory
+ * Class UnicornFactory.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -46,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class UnicornFactory extends DriverWithDateConverterFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -62,7 +64,7 @@ class UnicornFactory extends DriverWithDateConverterFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         $driver = parent::__invoke($container, $requestedName);
         $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));

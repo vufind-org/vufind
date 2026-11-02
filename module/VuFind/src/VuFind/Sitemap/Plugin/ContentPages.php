@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Content pages generator plugin
+ * Content pages generator plugin.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -25,14 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
-use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
 use VuFindTheme\ThemeInfo;
+use Webmozart\Glob\Glob;
+
+use function in_array;
+use function strlen;
 
 /**
- * Content pages generator plugin
+ * Content pages generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -43,45 +48,34 @@ use VuFindTheme\ThemeInfo;
 class ContentPages extends AbstractGeneratorPlugin
 {
     /**
-     * Theme informations
-     *
-     * @var ThemeInfo
-     */
-    protected $themeInfo;
-
-    /**
-     * Router
-     *
-     * @var RouteStackInterface
-     */
-    protected $router;
-
-    /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Main VuFind configuration (config.ini)
+     * Patterns of files to be included.
      *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Patterns of files to be included
+     * @see https://github.com/webmozarts/glob
      *
      * @var array
      */
     protected $includedFiles = [
-        'templates/content/*.phtml',
-        'templates/content/*.md',
+        [
+            'path' => 'templates/content/',
+            'pattern' => '**/*.phtml',
+        ],
+        [
+            'path' => 'templates/content/',
+            'pattern' => '**/*.md',
+        ],
     ];
 
     /**
-     * Files to be ignored when searching for content pages
+     * Patterns of files to be ignored when searching for content pages.
+     *
+     * @see https://github.com/webmozarts/glob
      *
      * @var array
      */
@@ -91,20 +85,17 @@ class ContentPages extends AbstractGeneratorPlugin
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo           $themeInfo Theme info
      * @param RouteStackInterface $router    Router
-     * @param Config              $config    Main VuFind configuration
+     * @param array               $config    Main VuFind configuration (config.ini)
      */
     public function __construct(
-        ThemeInfo $themeInfo,
-        RouteStackInterface $router,
-        Config $config
+        protected ThemeInfo $themeInfo,
+        protected RouteStackInterface $router,
+        protected array $config
     ) {
-        $this->themeInfo = $themeInfo;
-        $this->router = $router;
-        $this->config = $config;
     }
 
     /**
@@ -139,28 +130,33 @@ class ContentPages extends AbstractGeneratorPlugin
      */
     public function getUrls(): \Generator
     {
-        $files = $this->themeInfo->findInThemes($this->includedFiles);
         $nonLanguageFiles = [];
-        $languages = isset($this->config->Languages)
-            ? array_keys($this->config->Languages->toArray())
-            : [];
-        // Check each file for language suffix and combine the files into a
-        // non-language specific array
-        foreach ($files as $fileInfo) {
-            if (in_array($fileInfo['relativeFile'], $this->excludedFiles)
-            ) {
-                continue;
-            }
-            $baseName = pathinfo($fileInfo['relativeFile'], PATHINFO_FILENAME);
-            // Check the filename for a known language suffix
-            $p = strrpos($baseName, '_');
-            if ($p > 0) {
-                $fileLanguage = substr($baseName, $p + 1);
-                if (in_array($fileLanguage, $languages)) {
-                    $baseName = substr($baseName, 0, $p);
+        $languages = array_keys($this->config['Languages'] ?? []);
+        foreach ($this->includedFiles as $fileSpec) {
+            $files = $this->themeInfo->findInThemes([$fileSpec['path'] . $fileSpec['pattern']]);
+            // Check each file for language suffix and combine the files into a
+            // non-language specific array
+            $pathLen = strlen($fileSpec['path']);
+            foreach ($files as $fileInfo) {
+                if ($this->isExcluded($fileInfo['relativeFile'])) {
+                    continue;
                 }
+                // Get file name relative to the original path
+                $pathInfo = pathinfo($fileInfo['relativeFile']);
+                if ($pagePath = substr($pathInfo['dirname'], $pathLen)) {
+                    $pagePath .= '/';
+                }
+                $pageName = $pagePath . $pathInfo['filename'];
+                // Check the filename for a known language suffix
+                $p = strrpos($pageName, '_');
+                if ($p > 0) {
+                    $fileLanguage = substr($pageName, $p + 1);
+                    if (in_array($fileLanguage, $languages)) {
+                        $pageName = substr($pageName, 0, $p);
+                    }
+                }
+                $nonLanguageFiles[$pageName] = true;
             }
-            $nonLanguageFiles[$baseName] = true;
         }
 
         foreach (array_keys($nonLanguageFiles) as $fileName) {
@@ -171,5 +167,22 @@ class ContentPages extends AbstractGeneratorPlugin
             $this->verboseMsg("Adding content page $url");
             yield $url;
         }
+    }
+
+    /**
+     * Check if the given file should be excluded from sitemap.
+     *
+     * @param string $filename Filename
+     *
+     * @return bool
+     */
+    protected function isExcluded(string $filename): bool
+    {
+        foreach ($this->excludedFiles as $pattern) {
+            if (Glob::match($filename, $pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

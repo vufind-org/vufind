@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ILS driver test
+ * ILS driver test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\Symphony;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +43,7 @@ use VuFind\ILS\Driver\Symphony;
 class SymphonyTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Driver object
+     * Driver object.
      *
      * @var Symphony
      */
@@ -54,8 +56,7 @@ class SymphonyTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()->getMock();
+        $loader = $this->createMock(\VuFind\Record\Loader::class);
 
         $this->driver = new Symphony($loader);
     }
@@ -77,6 +78,6 @@ class SymphonyTest extends \PHPUnit\Framework\TestCase
         );
         $this->driver->init();
         $pickup = @$this->driver->getPickUpLocations();
-        $this->assertTrue(empty($pickup));
+        $this->assertEmpty($pickup);
     }
 }

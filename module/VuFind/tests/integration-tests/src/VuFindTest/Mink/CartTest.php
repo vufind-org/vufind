@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink cart test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
+
+use function count;
+use function is_object;
 
 /**
  * Mink cart test class.
@@ -39,7 +45,6 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class CartTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -59,9 +64,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get a reference to a standard search results page.
      *
-     * @return Element
+     * @return DocumentElement
      */
-    protected function getSearchResultsPage()
+    protected function getSearchResultsPage(): DocumentElement
     {
         $session = $this->getMinkSession();
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
@@ -76,9 +81,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $id Record ID to load.
      *
-     * @return Element
+     * @return DocumentElement
      */
-    protected function getRecordPage($id)
+    protected function getRecordPage(string $id): DocumentElement
     {
         $session = $this->getMinkSession();
         $path = '/Record/' . urlencode($id);
@@ -100,12 +105,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function tryAddingNothingToCart(
         Element $page,
         string $updateCartId
-    ) {
+    ): void {
         // This test is a bit timing-sensitive, so introduce a retry loop before
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     'No items were selected. '
@@ -130,12 +135,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function tryAddingDuplicatesToCart(
         Element $page,
         string $updateCartId
-    ) {
+    ): void {
         // This test is a bit timing-sensitive, so introduce a retry loop before
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     '0 item(s) added to your Book Bag 2 item(s) are either '
@@ -161,8 +166,8 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function addCurrentPageToCart(
         Element $page,
         string $updateCartId,
-        $selectAllId = '#addFormCheckboxSelectAll'
-    ) {
+        string $selectAllId = '#addFormCheckboxSelectAll'
+    ): void {
         $selectAll = $this->findCss($page, $selectAllId);
         $selectAll->check();
         // Make sure all items are checked:
@@ -181,7 +186,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function addCurrentPageToCartUsingButtons(Element $page)
+    protected function addCurrentPageToCartUsingButtons(Element $page): void
     {
         foreach ($page->findAll('css', '.cart-add') as $button) {
             $button->click();
@@ -195,7 +200,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function openCartLightbox(Element $page)
+    protected function openCartLightbox(Element $page): void
     {
         $this->clickCss($page, '#cartItems');
     }
@@ -205,12 +210,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * into the cart, then opening the lightbox so that additional actions may
      * be attempted.
      *
-     * @param array  $extraConfigs Extra config settings
-     * @param string $selectAllId  ID of select all checkbox
+     * @param array $extraConfigs Extra config settings
+     * @param bool  $inLightbox   Should we open the cart in a lightbox, or as a separate page?
      *
-     * @return Element
+     * @return DocumentElement
      */
-    protected function setUpGenericCartTest($extraConfigs = [])
+    protected function setUpGenericCartTest($extraConfigs = [], $inLightbox = true): DocumentElement
     {
         // Activate the cart:
         $extraConfigs['config']['Site'] = ['showBookBag' => true];
@@ -219,10 +224,14 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->getSearchResultsPage();
         $this->waitStatement('$(".cart-add:not(:hidden)").length === 2');
         $this->addCurrentPageToCartUsingButtons($page);
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '#cartItems strong'));
 
         // Open the cart and empty it:
-        $this->openCartLightbox($page);
+        if ($inLightbox) {
+            $this->openCartLightbox($page);
+        } else {
+            $this->getMinkSession()->visit($this->getVuFindUrl() . '/Cart/Home');
+        }
         $this->waitForPageLoad($page);
 
         return $page;
@@ -231,13 +240,14 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert that the open cart lightbox is empty.
      *
-     * @param Element $page Page element
+     * @param Element $page       Page element
+     * @param bool    $inLightbox Should we assume the cart is in a lightbox?
      *
      * @return void
      */
-    protected function checkEmptyCart(Element $page)
+    protected function checkEmptyCart(Element $page, bool $inLightbox = true): void
     {
-        $info = $this->findCss($page, '.modal-body .form-inline .alert-info');
+        $info = $this->findCss($page, ($inLightbox ? '.modal-body ' : '') . '.form-inline .alert-info');
         $this->assertEquals('Your Book Bag is empty.', $info->getText());
     }
 
@@ -245,13 +255,14 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * Assert that the "no items were selected" message is visible in the cart
      * lightbox.
      *
-     * @param Element $page Page element
+     * @param Element $page       Page element
+     * @param bool    $inLightbox Should we assume the cart is in a lightbox when checking for messages?
      *
      * @return void
      */
-    protected function checkForNonSelectedMessage(Element $page)
+    protected function checkForNonSelectedMessage(Element $page, bool $inLightbox = true): void
     {
-        $warning = $this->findCss($page, '.modal-body .alert');
+        $warning = $this->findCss($page, $inLightbox ? '.modal-body .alert' : '.alert');
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
@@ -266,10 +277,10 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForLoginMessage(Element $page)
+    protected function checkForLoginMessage(Element $page): void
     {
         $warning = $page->find('css', '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()
@@ -279,14 +290,24 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Select all of the items currently in the cart lightbox.
      *
-     * @param Element $page Page element
+     * @param Element $page       Page element
+     * @param bool    $inLightbox Should we assume the cart is in a lightbox?
      *
      * @return void
      */
-    protected function selectAllItemsInCart(Element $page)
+    protected function selectAllItemsInCart(Element $page, bool $inLightbox = true): void
     {
-        $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
+        $cartSelectAll = $this->findCss(
+            $page,
+            $inLightbox ? '.modal-dialog .checkbox-select-all' : '.checkbox-select-all'
+        );
         $cartSelectAll->check();
+        // Confirm that all the boxes are checked:
+        $items = $page->findAll('css', '.checkbox-select-item');
+        $this->assertGreaterThan(0, count($items));
+        foreach ($items as $item) {
+            $this->assertTrue($item->isChecked(), 'Select all did not check every checkbox');
+        }
     }
 
     /**
@@ -294,7 +315,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAddingNothing()
+    public function testAddingNothing(): void
     {
         // Activate the cart:
         $this->changeConfigs(
@@ -302,9 +323,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -320,7 +341,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAddingDuplicates()
+    public function testAddingDuplicates(): void
     {
         // Activate the cart:
         $this->changeConfigs(
@@ -328,9 +349,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -338,9 +359,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now select the same things twice:
         $this->addCurrentPageToCart($page, '#updateCart');
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '#cartItems strong'));
         $this->tryAddingDuplicatesToCart($page, '#updateCart');
-        $this->assertEquals('2', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('2', $this->findCssAndGetText($page, '#cartItems strong'));
     }
 
     /**
@@ -348,7 +369,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testOverfillingCart()
+    public function testOverfillingCart(): void
     {
         // Activate the cart:
         $this->changeConfigs(
@@ -357,9 +378,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                     'Site' => [
                         'showBookBag' => true,
                         'bookBagMaxSize' => 1,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -367,7 +388,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now select the same things twice:
         $this->addCurrentPageToCart($page, '#updateCart');
-        $this->assertEquals('1', $this->findCss($page, '#cartItems strong')->getText());
+        $this->assertEquals('1', $this->findCssAndGetText($page, '#cartItems strong'));
     }
 
     /**
@@ -375,7 +396,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testOverfillingCartFromRecordPage()
+    public function testOverfillingCartFromRecordPage(): void
     {
         // Activate the cart:
         $this->changeConfigs(
@@ -409,7 +430,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAddingMultipleRecordsFromRecordPage()
+    public function testAddingMultipleRecordsFromRecordPage(): void
     {
         // Activate the cart:
         $this->changeConfigs(
@@ -422,36 +443,52 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, '.cart-add');
             $this->assertEquals(
                 'Book Bag: ' . $x . ' items',
-                $this->findCss($page, '#cartItems')->getText()
+                $this->findCssAndGetText($page, '#cartItems')
             );
         }
+    }
+
+    /**
+     * Data provider to return in lightbox / not in lightbox states.
+     *
+     * @return \Iterator
+     */
+    public static function inLightboxProvider(): \Iterator
+    {
+        yield 'in lightbox' => [true];
+        yield 'not in lightbox' => [false];
     }
 
     /**
      * Test that we can put items in the cart and then remove them with the
      * delete control.
      *
+     * @param bool $inLightbox Should we test in the lightbox or on a stand-alone cart page?
+     *
      * @return void
      */
-    public function testFillAndDeleteFromCart()
+    #[\PHPUnit\Framework\Attributes\DataProvider('inLightboxProvider')]
+    public function testFillAndDeleteFromCart(bool $inLightbox): void
     {
-        $page = $this->setUpGenericCartTest();
+        $page = $this->setUpGenericCartTest(inLightbox: $inLightbox);
         $delete = $this->findCss($page, '#cart-delete-label');
 
         // First try deleting without selecting anything:
         $delete->click();
         $this->clickCss($page, '#cart-confirm-delete');
-        $this->checkForNonSelectedMessage($page);
+        $this->checkForNonSelectedMessage($page, $inLightbox);
 
         // Now actually select the records to delete:
-        $this->selectAllItemsInCart($page);
+        $this->selectAllItemsInCart($page, $inLightbox);
         $delete->click();
         $deleteConfirm = $this->findCss($page, '#cart-confirm-delete');
         $deleteConfirm->click();
-        $this->checkEmptyCart($page);
+        $this->checkEmptyCart($page, $inLightbox);
 
-        // Close the lightbox:
-        $this->closeLightbox($page);
+        // Close the lightbox if necessary:
+        if ($inLightbox) {
+            $this->closeLightbox($page);
+        }
 
         // Confirm that the cart has truly been emptied:
         $this->waitStatement('$("#cartItems strong").text() === "0"');
@@ -463,7 +500,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFillAndEmptyCart()
+    public function testFillAndEmptyCart(): void
     {
         $page = $this->setUpGenericCartTest();
 
@@ -486,7 +523,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFillCartUsingBottomControls()
+    public function testFillCartUsingBottomControls(): void
     {
         // Activate the cart:
         $this->changeConfigs(
@@ -494,9 +531,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
         $page = $this->getSearchResultsPage();
@@ -505,10 +542,10 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             '#bottom_updateCart',
             '#bottom_addFormCheckboxSelectAll'
         );
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             '2',
             function () use ($page) {
-                return $this->findCss($page, '#cartItems strong')->getText();
+                return $this->findCssAndGetText($page, '#cartItems strong');
             }
         );
     }
@@ -519,7 +556,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFillAndEmptyCartWithoutLightbox()
+    public function testFillAndEmptyCartWithoutLightbox(): void
     {
         // Turn on limit by path setting; there used to be a bug where cookie
         // paths were set inconsistently between JS and server-side code. This
@@ -543,11 +580,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the email control works.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
-    public function testCartEmail()
+    public function testCartEmail(): void
     {
         $page = $this->setUpGenericCartTest(
             ['config' => ['Mail' => ['testOnly' => 1]]]
@@ -578,20 +613,19 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal .alert-success')
         );
     }
 
     /**
      * Test that the save control works.
      *
-     * @depends testCartEmail
-     *
      * @return void
      */
-    public function testCartSave()
+    #[\PHPUnit\Framework\Attributes\Depends('testCartEmail')]
+    public function testCartSave(): void
     {
         $page = $this->setUpGenericCartTest();
         $button = $this->findCss($page, '.cart-controls button[name=saveCart]');
@@ -611,16 +645,15 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
 
         // Save the favorites.
-        $this->clickCss($page, '.modal-body input[name=submit]');
-        $result = $this->findCss($page, '.modal-body .alert-success');
-        $this->assertEquals(
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
-            $result->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
         $this->assertMatchesRegularExpression(
-            '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
+            '|href="[^"]*/Lists/List/[0-9]+"|',
             $result->getOuterHtml()
         );
 
@@ -633,7 +666,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCartExport()
+    public function testCartExport(): void
     {
         $page = $this->setUpGenericCartTest();
         $button = $this->findCss($page, '.cart-controls button[name=export]');
@@ -651,7 +684,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
         $this->assertEquals('Download File', $result->getText());
@@ -662,7 +695,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCartExportToThirdParty()
+    public function testCartExportToThirdParty(): void
     {
         // Use a local fake URL as the export URL (we only check that the redirect
         // goes to the correct address so it doesn't matter that the target page
@@ -696,11 +729,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Do the export:
         $session = $this->getMinkSession();
+        $windowName = $session->getWindowName();
         $windowNames = $session->getWindowNames();
         $windowCount = count($session->getWindowNames());
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $windowCount + 1,
             function () use ($session) {
                 return count($session->getWindowNames());
@@ -709,10 +743,30 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $newWindows = array_diff($session->getWindowNames(), $windowNames);
         $this->assertCount(1, $newWindows);
         $session->switchToWindow(reset($newWindows));
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             $exportUrl,
             [$session, 'getCurrentUrl']
         );
+        // Switch back to main window to ensure correct session reset:
+        $session->switchToWindow($windowName);
+    }
+
+    /**
+     * Get the search history data.
+     *
+     * @return array
+     */
+    protected function getSearchHistory(): array
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $matches = $page->findAll('css', '#recent-searches td:nth-child(2) a');
+        $callback = function ($match) {
+            return $match->getText();
+        };
+        return array_map($callback, $matches);
     }
 
     /**
@@ -720,7 +774,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCartPrint()
+    public function testCartPrint(): void
     {
         $page = $this->setUpGenericCartTest();
 
@@ -731,21 +785,46 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Now do it for real -- we should get redirected.
         $this->selectAllItemsInCart($page);
         $this->clickCss($page, '.cart-controls button[name=print]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             [$this, 'getCurrentQueryString']
         );
+
+        // Printing should not have added anything to the search history beyond
+        // the initial search that set everything up.
+        $this->assertSame(
+            ['id:(testsample1 OR testsample2)'],
+            $this->getSearchHistory()
+        );
     }
 
-    protected function assertVisible($combo, $elements, $name, $exp)
+    /**
+     * Assert visibility.
+     *
+     * @param array  $combo    Current Site configuration
+     * @param bool[] $elements Array of element visibility states indexed by name
+     * @param string $name     Name of element to check
+     * @param string $exp      Expected visibility
+     *
+     * @return void
+     */
+    protected function assertVisible(array $combo, array $elements, string $name, string $exp): void
     {
         $message = $elements[$name]
             ? $name . " should be hidden.\n" . print_r($combo, true)
             : $name . " should be visible.\n" . print_r($combo, true);
-        $this->assertEquals($elements[$name], $exp, $message);
+        $this->assertEquals($exp, $elements[$name], $message);
     }
 
-    protected function runConfigCombo($page, $combo)
+    /**
+     * Run tests on a specified configuration.
+     *
+     * @param Element $page  Page element
+     * @param array   $combo Site configuration to test
+     *
+     * @return array
+     */
+    protected function runConfigCombo(Element $page, array $combo): array
     {
         $this->changeConfigs(['config' => ['Site' => $combo]]);
         $this->getMinkSession()->reload();
@@ -760,16 +839,36 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Expected
         $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
         $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions']);
-        $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
-        $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
-        $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'bulkUpdateCart',
+            $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch'])
+        );
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'resultCartBtns',
+            $combo['showBookBag'] && $combo['bookbagTogglesInSearch']
+        );
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'resultCheckbox',
+            $elements['bulkEmail'] || $elements['bulkUpdateCart']
+        );
         return $elements;
     }
 
-    public function testToolbarVisibilityConfigCombinations()
+    /**
+     * Test toolbar visibility configuration combinations.
+     *
+     * @return void
+     */
+    public function testToolbarVisibilityConfigCombinations(): void
     {
         $page = $this->getSearchResultsPage();
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,
@@ -777,7 +876,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => false,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => false,
@@ -785,7 +884,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => true,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => false,
@@ -793,7 +892,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => false,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,
@@ -801,7 +900,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => true,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,
@@ -809,7 +908,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => false,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => false,
@@ -817,7 +916,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'bookbagTogglesInSearch' => true,
             ]
         );
-        $elements = $this->runConfigCombo(
+        $this->runConfigCombo(
             $page,
             [
                 'showBookBag' => true,

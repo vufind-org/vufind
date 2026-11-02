@@ -1,8 +1,9 @@
 <?php
+
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * @category VuFind
  * @package  AJAX
@@ -47,21 +51,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'checkRequestIsValid' => CheckRequestIsValid::class,
         'commentRecord' => CommentRecord::class,
         'deleteRecordComment' => DeleteRecordComment::class,
-        'doiLookup' => DoiLookup::class,
+        'identifierLinksLookup' => IdentifierLinksLookup::class,
         'getACSuggestions' => GetACSuggestions::class,
-        'getFacetData' => GetFacetData::class,
+        'getCookieConsent' => GetCookieConsent::class,
         'getIlsStatus' => GetIlsStatus::class,
         'getItemStatuses' => GetItemStatuses::class,
         'getLibraryPickupLocations' => GetLibraryPickupLocations::class,
         'getRecordCommentsAsHTML' => GetRecordCommentsAsHTML::class,
         'getRecordCover' => GetRecordCover::class,
         'getRecordDetails' => GetRecordDetails::class,
+        'getRecordRating' => GetRecordRating::class,
         'getRecordTags' => GetRecordTags::class,
         'getRecordVersions' => GetRecordVersions::class,
         'getRequestGroupPickupLocations' => GetRequestGroupPickupLocations::class,
         'getResolverLinks' => GetResolverLinks::class,
         'getResultCount' => GetResultCount::class,
         'getSaveStatuses' => GetSaveStatuses::class,
+        'getSearchResults' => GetSearchResults::class,
         'getSideFacets' => GetSideFacets::class,
         'getUserFines' => GetUserFines::class,
         'getUserHolds' => GetUserHolds::class,
@@ -70,6 +76,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getUserTransactions' => GetUserTransactions::class,
         'getVisData' => GetVisData::class,
         'keepAlive' => KeepAlive::class,
+        'onlinePaymentNotify' => OnlinePaymentNotify::class,
+        'onlinePaymentRegister' => OnlinePaymentRegister::class,
         'recommend' => Recommend::class,
         'relaisAvailability' => RelaisAvailability::class,
         'relaisInfo' => RelaisInfo::class,
@@ -79,46 +87,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        CheckRequestIsValid::class => AbstractIlsAndUserActionFactory::class,
-        CommentRecord::class => CommentRecordFactory::class,
-        DeleteRecordComment::class => DeleteRecordCommentFactory::class,
-        DoiLookup::class => DoiLookupFactory::class,
-        GetACSuggestions::class => GetACSuggestionsFactory::class,
-        GetFacetData::class => GetFacetDataFactory::class,
-        GetIlsStatus::class => GetIlsStatusFactory::class,
-        GetItemStatuses::class => GetItemStatusesFactory::class,
-        GetLibraryPickupLocations::class => AbstractIlsAndUserActionFactory::class,
-        GetRecordCommentsAsHTML::class => GetRecordCommentsAsHTMLFactory::class,
-        GetRecordCover::class => GetRecordCoverFactory::class,
-        GetRecordDetails::class => GetRecordDetailsFactory::class,
-        GetRecordTags::class => GetRecordTagsFactory::class,
-        GetRecordVersions::class => GetRecordVersionsFactory::class,
-        GetRequestGroupPickupLocations::class =>
-            AbstractIlsAndUserActionFactory::class,
-        GetResolverLinks::class => GetResolverLinksFactory::class,
-        GetResultCount::class => GetResultCountFactory::class,
-        GetSaveStatuses::class => GetSaveStatusesFactory::class,
-        GetSideFacets::class => GetSideFacetsFactory::class,
-        GetUserFines::class => GetUserFinesFactory::class,
-        GetUserHolds::class => AbstractIlsAndUserActionFactory::class,
-        GetUserILLRequests::class => AbstractIlsAndUserActionFactory::class,
-        GetUserStorageRetrievalRequests::class =>
-            AbstractIlsAndUserActionFactory::class,
-        GetUserTransactions::class => AbstractIlsAndUserActionFactory::class,
-        GetVisData::class => GetVisDataFactory::class,
-        KeepAlive::class => KeepAliveFactory::class,
-        Recommend::class => RecommendFactory::class,
-        RelaisAvailability::class => AbstractRelaisActionFactory::class,
-        RelaisInfo::class =>  AbstractRelaisActionFactory::class,
-        RelaisOrder::class => AbstractRelaisActionFactory::class,
-        SystemStatus::class => SystemStatusFactory::class,
-        TagRecord::class => TagRecordFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Versions tab
+ * Versions tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019-2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -25,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -39,38 +42,19 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class Versions extends \VuFind\RecordTab\AbstractBase
-    implements TranslatorAwareInterface
+class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
     /**
-     * Main configuration
+     * Constructor.
      *
-     * @var \Laminas\Config\Config
+     * @param \VuFind\Search\Options\PluginManager $searchOptionsManager Search options plugin manager
      */
-    protected $config;
-
-    /**
-     * Search options plugin manager
-     *
-     * @var \VuFind\Search\Options\PluginManager
-     */
-    protected $searchOptionsManager;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config               $config Configuration
-     * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
-     * manager
-     */
+    #[Autowire]
     public function __construct(
-        \Laminas\Config\Config $config,
-        \VuFind\Search\Options\PluginManager $som
+        protected \VuFind\Search\Options\PluginManager $searchOptionsManager
     ) {
-        $this->config = $config;
-        $this->searchOptionsManager = $som;
     }
 
     /**
@@ -95,5 +79,16 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     {
         $count = $this->getRecordDriver()->tryMethod('getOtherVersionCount');
         return $this->translate('other_versions_title', ['%%count%%' => $count]);
+    }
+
+    /**
+     * Can this tab be embedded in search results (via tab/accordion)?
+     *
+     * @return bool
+     */
+    public function supportsSearchResultEmbedding(): bool
+    {
+        // This tab causes problems when embedded in search results due to nested results in results.
+        return false;
     }
 }

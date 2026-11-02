@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Alphabrowse channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2016, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -25,15 +26,20 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
-use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
+
+use function count;
+use function is_object;
 
 /**
  * Alphabrowse channel provider.
@@ -44,17 +50,10 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $channelSize;
+    use BatchTrait;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -64,71 +63,45 @@ class AlphaBrowse extends AbstractChannelProvider
     protected $maxRecordsToExamine;
 
     /**
-     * Search service
-     *
-     * @var \VuFindSearch\Service
-     */
-    protected $searchService;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * Record router
-     *
-     * @var RecordRouter
-     */
-    protected $recordRouter;
-
-    /**
-     * Browse index to search
+     * Browse index to search.
      *
      * @var string
      */
     protected $browseIndex;
 
     /**
-     * Solr field to use for search seed
+     * Solr field to use for search seed.
      *
      * @var string
      */
     protected $solrField;
 
     /**
-     * How many rows to show before the selected value
+     * How many rows to show before the selected value.
      *
      * @var int
      */
     protected $rowsBefore;
 
     /**
-     * The search backend to query
+     * The search backend to query.
      *
      * @var string
      */
     protected $source;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFindSearch\Service $search  Search service
-     * @param Url                   $url     URL helper
-     * @param RecordRouter          $router  Record router
-     * @param array                 $options Settings (optional)
+     * @param \VuFindSearch\Service $searchService Search service
+     * @param RouteHelper           $routeHelper   Route helper
+     * @param array                 $options       Settings (optional)
      */
     public function __construct(
-        \VuFindSearch\Service $search,
-        Url $url,
-        RecordRouter $router,
+        protected \VuFindSearch\Service $searchService,
+        protected RouteHelper $routeHelper,
         array $options = []
     ) {
-        $this->searchService = $search;
-        $this->url = $url;
-        $this->recordRouter = $router;
         $this->setOptions($options);
     }
 
@@ -141,31 +114,36 @@ class AlphaBrowse extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
         $this->browseIndex = $options['browseIndex'] ?? 'lcc';
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
-     * to load (if omitted, all channels will be loaded)
+     * @param ?string      $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded) -- not used in this provider
+     * @param string       $context      Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null)
-    {
+    public function getFromRecord(
+        RecordDriver $driver,
+        ?string $channelToken = null,
+        string $context = 'default'
+    ): array {
         // If we have a token and it doesn't match the record driver, we can't
         // fetch any results!
         if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
             return [];
         }
-        $channel = $this->buildChannelFromRecord($driver);
+        $channel = $this->buildChannelFromRecord($driver, context: $context);
         return (count($channel['contents']) > 0) ? [$channel] : [];
     }
 
@@ -173,12 +151,12 @@ class AlphaBrowse extends AbstractChannelProvider
      * Return channel information derived from a search results object.
      *
      * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param ?string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromSearch(Results $results, $channelToken = null)
+    public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         $driver = null;
         $channels = [];
@@ -198,10 +176,11 @@ class AlphaBrowse extends AbstractChannelProvider
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
         if (empty($channels) && is_object($driver) && $channelToken !== null) {
-            $driver = $this->searchService->retrieve(
+            $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
                 $channelToken
-            )->first();
+            );
+            $driver = $this->searchService->invoke($command)->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
             }
@@ -230,17 +209,18 @@ class AlphaBrowse extends AbstractChannelProvider
                     'title' => $item['extras']['title'][0][0],
                     'source' => $this->source,
                     'thumbnail' => false, // TODO: better thumbnails!
-                    'id' => $id
+                    'id' => $id,
                 ];
             }
         }
         // If we have a cover router and a non-empty ID list, look up thumbnails:
         if ($this->coverRouter && !empty($ids)) {
-            $records = $this->searchService->retrieveBatch($this->source, $ids);
+            $command = new RetrieveBatchCommand($this->source, $ids);
+            $records = $this->searchService->invoke($command)->getResult();
             $thumbs = [];
             // First map record drivers to an ID => thumb array...
             foreach ($records as $record) {
-                $thumbs[$record->getUniqueId()] = $this->coverRouter
+                $thumbs[$record->getUniqueID()] = $this->coverRouter
                     ->getUrl($record, 'medium');
             }
             // Now apply the thumbnails to the existing result set...
@@ -260,20 +240,24 @@ class AlphaBrowse extends AbstractChannelProvider
      * @param RecordDriver $driver    Record driver
      * @param bool         $tokenOnly Create full channel (false) or return a
      * token for future loading (true)?
+     * @param string       $context   Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      */
     protected function buildChannelFromRecord(
         RecordDriver $driver,
-        $tokenOnly = false
-    ) {
+        bool $tokenOnly = false,
+        string $context = 'default'
+    ): array {
         $retVal = [
             'title' => $this->translate(
                 'nearby_items',
                 ['%%title%%' => $driver->getBreadcrumb()]
             ),
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
+            'limit' => $this->batchSize,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -290,32 +274,42 @@ class AlphaBrowse extends AbstractChannelProvider
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
                 0,
-                $this->channelSize,
+                $this->batchSize,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
             $details = $this->searchService->invoke($command)->getResult();
             $retVal['contents'] = $this->summarizeBrowseDetails($details);
             $route = $this->recordRouter->getRouteDetails($driver);
-            $retVal['links'][] = [
-                'label' => 'View Record',
-                'icon' => 'fa-file-text-o',
-                'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
-            ];
+            // If we're in a tab, we're already on the record page, so no need for this link:
+            if ($context !== 'tab') {
+                $retVal['links'][] = [
+                    'label' => 'View Record',
+                    'icon' => 'format-default',
+                    'url' => $this->routeHelper->getUrlFromRoute($route['route'], $route['params']),
+                ];
+            }
             $retVal['links'][] = [
                 'label' => 'channel_expand',
-                'icon' => 'fa-search-plus',
-                'url' => $this->url->fromRoute('channels-record')
-                    . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                'icon' => 'ui-add',
+                'url' => $this->routeHelper->getUrlFromRoute(
+                    'channels-record',
+                    queryParams: [
+                        'id' => $driver->getUniqueID(),
+                        'source' => $driver->getSourceIdentifier(),
+                    ]
+                ),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
-                'icon' => 'fa-list',
-                'url' => $this->url->fromRoute('alphabrowse-home')
-                    . '?source=' . urlencode($this->browseIndex)
-                    . '&from=' . $from[0]
+                'icon' => 'list',
+                'url' => $this->routeHelper->getUrlFromRoute(
+                    'alphabrowse-home',
+                    queryParams: [
+                        'source' => $this->browseIndex,
+                        'from' => $from[0],
+                    ]
+                ),
             ];
         }
         return $retVal;

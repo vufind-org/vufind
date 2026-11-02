@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JsTranslations view helper Test Class
+ * JsTranslations view helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\JsTranslations;
@@ -34,7 +36,7 @@ use VuFindTest\Feature\TranslatorTrait;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * ShortenUrl view helper Test Class
+ * JsTranslations view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,10 +57,10 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
     public function testHelper()
     {
         $view = $this->getPhpRenderer($this->getViewHelpers());
-        $transEsc = new TransEsc();
-        $transEsc->setView($view);
-        $helper = new JsTranslations($view->plugin('translate'), $transEsc);
-        $helper->setView($view);
+        $translate = $view->plugin('translate');
+        $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
+        $transEsc = new TransEsc($translate, $escapeHtml);
+        $helper = new JsTranslations($translate, $transEsc);
 
         // Normal addStrings:
         $helper->addStrings(['1key' => 'key1']);
@@ -83,16 +85,20 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
 
         // Stateless:
         $this->assertJsonStringEqualsJsonString(
-            json_encode([
-                '1key' => 'Translation 1&lt;p&gt;',
-                '2key' => '&lt;span&gt;translation&lt;/span&gt;',
-                '2key_html' => '<span>translation</span>'
-            ]),
-            $helper->getJSONFromArray([
-                '1key' => 'key1',
-                '2key' => 'key_html',
-                '2key_html' => 'key_html',
-            ])
+            json_encode(
+                [
+                    '1key' => 'Translation 1&lt;p&gt;',
+                    '2key' => '&lt;span&gt;translation&lt;/span&gt;',
+                    '2key_html' => '<span>translation</span>',
+                ]
+            ),
+            $helper->getJSONFromArray(
+                [
+                    '1key' => 'key1',
+                    '2key' => 'key_html',
+                    '2key_html' => 'key_html',
+                ]
+            )
         );
 
         // Verify that state hasn't changed:
@@ -111,8 +117,8 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
                 'default' => [
                     'key1' => 'Translation 1<p>',
                     'key_html' => '<span>translation</span>',
-                    'key2' => 'Translation 2'
-                ]
+                    'key2' => 'Translation 2',
+                ],
             ]
         );
         $translate = new Translate();

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -27,7 +28,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
+
+use function strlen;
 
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already
@@ -53,7 +57,7 @@ trait MarcBasicTrait
             $this->getFieldArray('773', ['z'])
         );
         foreach ($isbn as $key => $num) {
-            $isbn[$key] = str_replace("-", "", $num);
+            $isbn[$key] = str_replace('-', '', $num);
         }
         $isbn = array_unique($isbn);
         return $isbn;
@@ -103,7 +107,7 @@ trait MarcBasicTrait
     }
 
     /**
-     * Get the call numbers associated with the record (empty string if none).
+     * Get the call numbers associated with the record (empty array if none).
      *
      * @return array
      */
@@ -226,7 +230,7 @@ trait MarcBasicTrait
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array

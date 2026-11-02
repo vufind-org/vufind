@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Password Access authentication class
+ * Password Access authentication class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -26,13 +27,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
+use function in_array;
+
 /**
- * Password Access authentication class
+ * Password Access authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -44,42 +48,29 @@ use VuFind\Exception\Auth as AuthException;
 class PasswordAccess extends AbstractBase
 {
     /**
-     * Get configuration (load automatically if not previously set).  Throw an
-     * exception if the configuration is invalid.
-     *
-     * @throws AuthException
-     * @return \Laminas\Config\Config
-     */
-    public function getConfig()
-    {
-        // Validate configuration if not already validated:
-        if (!$this->configValidated) {
-            $this->validateConfig();
-            $this->configValidated = true;
-        }
-
-        return $this->config;
-    }
-
-    /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
-        $config = $this->getConfig()->toArray();
-        $req_password = trim($request->getPost()->get('password'));
-
-        if (!in_array($req_password, $config['PasswordAccess']['access_user'])) {
+        $config = $this->getConfig();
+        $requestPassword = trim($request->getPost()->get('password', ''));
+        foreach ($config['PasswordAccess']['access_user_hashed'] ?? [] as $username => $passwordHash) {
+            if (password_verify($requestPassword, $passwordHash)) {
+                return $this->getOrCreateUserByUsername($username);
+            }
+        }
+        $accessConfig = $config['PasswordAccess']['access_user'] ?? [];
+        if (!in_array($requestPassword, $accessConfig)) {
             throw new AuthException('authentication_error_invalid');
         }
 
-        $userMap = array_flip($config['PasswordAccess']['access_user']);
-        return $this->getUserTable()->getByUsername($userMap[$req_password]);
+        $userMap = array_flip($accessConfig);
+        return $this->getOrCreateUserByUsername($userMap[$requestPassword]);
     }
 }

@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Context manager (useful for using render() instead of partial() for better
  * performance -- this allows us to set and roll back variables in the global
  * scope instead of relying on the overhead of building a whole new scope).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -18,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -27,10 +28,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Context manager (useful for using render() instead of partial() for better
@@ -43,8 +45,19 @@ use Laminas\View\Renderer\RendererInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Context extends AbstractHelper
+class Context
 {
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $view View renderer
+     */
+    #[Autowire]
+    public function __construct(
+        protected RendererInterface $view
+    ) {
+    }
+
     /**
      * Set an array of variables in the view; return the previous values of those
      * variables so they can be restored.
@@ -55,12 +68,10 @@ class Context extends AbstractHelper
      */
     public function apply($vars)
     {
-        $view = $this->getView();
-
         $oldVars = [];
         foreach ($vars as $k => $v) {
-            $oldVars[$k] = $view->$k ?? null;
-            $view->$k = $v;
+            $oldVars[$k] = $this->view->$k ?? null;
+            $this->view->$k = $v;
         }
         return $oldVars;
     }
@@ -74,20 +85,18 @@ class Context extends AbstractHelper
      */
     public function restore($vars)
     {
-        $view = $this->getView();
-
         foreach ($vars as $k => $v) {
             if (null === $v) {
-                unset($view->$k);
+                unset($this->view->$k);
             } else {
-                $view->$k = $v;
+                $this->view->$k = $v;
             }
         }
     }
 
     /**
      * Render a template using a temporary context; restore the view to its
-     * original state when done.  This offers the template full access to the
+     * original state when done. This offers the template full access to the
      * global scope, modified by $context, then puts the global scope back
      * the way it was.
      *
@@ -99,22 +108,22 @@ class Context extends AbstractHelper
     public function renderInContext($template, $context)
     {
         $oldContext = $this->apply($context);
-        $html = $this->getView()->render($template);
+        $html = $this->view->render($template);
         $this->restore($oldContext);
         return $html;
     }
 
     /**
-     * Grab the helper object so we can call methods on it.
+     * Return this helper instance.
      *
-     * @param Renderer $view View object to modify.
+     * @param RendererInterface $view View Renderer
      *
      * @return Context
      */
-    public function __invoke(RendererInterface $view = null)
+    public function __invoke(?RendererInterface $view = null)
     {
         if (null !== $view) {
-            $this->setView($view);
+            $this->view = $view;
         }
         return $this;
     }

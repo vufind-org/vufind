@@ -1,0 +1,98 @@
+[
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/addresstypes",
+        "expectedParams": {
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "addressTypes": [
+                {
+                    "addressType": "Campus",
+                    "desc": "Patron's on-campus address",
+                    "id": "e4b2d831-2c9e-4a67-b841-5dfa031e8c92",
+                    "metadata": {
+                        "createdDate": "2020-08-15T20:06:10.710+00:00",
+                        "createdByUserId": "5a2f8d39-fb12-4217-ac3d-6e49b8120c4f",
+                        "updatedDate": "2020-08-15T20:06:10.710+00:00",
+                        "updatedByUserId": "5a2f8d39-fb12-4217-ac3d-6e49b8120c4f"
+                    }
+                },
+                {
+                    "addressType": "Other",
+                    "desc": "Other unspecified address type",
+                    "id": "8c21a4f0-4596-411a-bd88-9730f5dc211a",
+                    "metadata": {
+                        "createdDate": "2020-08-15T20:06:10.749+00:00",
+                        "createdByUserId": "5a2f8d39-fb12-4217-ac3d-6e49b8120c4f",
+                        "updatedDate": "2020-08-15T20:06:10.749+00:00",
+                        "updatedByUserId": "5a2f8d39-fb12-4217-ac3d-6e49b8120c4f"
+                    }
+                },
+                {
+                    "addressType": "Order",
+                    "desc": "Order Address",
+                    "id": "2f7cda95-09bd-4911-ad74-32b04f67d403",
+                    "metadata": {
+                        "createdDate": "2020-08-15T19:55:22.249+00:00",
+                        "updatedDate": "2023-04-08T12:06:18.640+00:00",
+                        "updatedByUserId": "b186eddf-7cf3-40fa-bf27-1869e5d4a13a"
+                    }
+                },
+                {
+                    "addressType": "Work",
+                    "desc": "Work Address",
+                    "id": "a90fdf78-c135-43ee-8fb6-e17542918df2",
+                    "metadata": {
+                        "createdDate": "2020-08-15T19:55:22.292+00:00",
+                        "updatedDate": "2023-04-08T12:06:18.645+00:00",
+                        "updatedByUserId": "b186eddf-7cf3-40fa-bf27-1869e5d4a13a"
+                    }
+                },
+                {
+                    "addressType": "Returns",
+                    "desc": "Returns Address",
+                    "id": "3d5ba422-0d17-48f8-b391-9c6ea2309f14",
+                    "metadata": {
+                        "createdDate": "2020-08-15T19:55:22.315+00:00",
+                        "updatedDate": "2023-04-08T12:06:18.646+00:00",
+                        "updatedByUserId": "b186eddf-7cf3-40fa-bf27-1869e5d4a13a"
+                    }
+                },
+                {
+                    "addressType": "Payment",
+                    "desc": "Payment Address",
+                    "id": "716dcb65-f49c-4573-9da5-e35dfc6b301c",
+                    "metadata": {
+                        "createdDate": "2020-08-15T19:55:22.330+00:00",
+                        "updatedDate": "2023-04-08T12:06:18.645+00:00",
+                        "updatedByUserId": "b186eddf-7cf3-40fa-bf27-1869e5d4a13a"
+                    }
+                },
+                {
+                    "addressType": "Home",
+                    "desc": "Home Address",
+                    "id": "f5de8b20-1492-498c-be82-cd2831bb2d60",
+                    "metadata": {
+                        "createdDate": "2020-08-15T19:55:22.265+00:00",
+                        "updatedDate": "2023-04-08T12:06:18.647+00:00",
+                        "updatedByUserId": "b186eddf-7cf3-40fa-bf27-1869e5d4a13a"
+                    }
+                },
+                {
+                    "addressType": "Claim",
+                    "desc": "Claim Address",
+                    "id": "140ba4de-6ae1-482f-bf7c-e08a6b18a287",
+                    "metadata": {
+                        "createdDate": "2020-08-15T19:55:22.222+00:00",
+                        "updatedDate": "2023-04-08T12:06:18.649+00:00",
+                        "updatedByUserId": "b186eddf-7cf3-40fa-bf27-1869e5d4a13a"
+                    }
+                }
+            ]
+        },
+        "bodyType": "json",
+        "status": 200
+    }
+]

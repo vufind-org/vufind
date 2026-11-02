@@ -1,8 +1,9 @@
 <?php
+
 /**
- * PermissionProvider ServerParam Test Class
+ * PermissionProvider ServerParam Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,12 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role\PermissionProvider;
 
 use VuFind\Role\PermissionProvider\ServerParam;
 
 /**
- * PermissionProvider ServerParam Test Class
+ * PermissionProvider ServerParam Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +45,7 @@ use VuFind\Role\PermissionProvider\ServerParam;
 class ServerParamTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test single option with matching string
+     * Test single option with matching string.
      *
      * @return void
      */
@@ -57,7 +59,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option array with matching string
+     * Test option array with matching string.
      *
      * @return void
      */
@@ -71,7 +73,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test multiple options with matching headers
+     * Test multiple options with matching headers.
      *
      * @return void
      */
@@ -85,7 +87,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test multiple options with no matching header
+     * Test multiple options with no matching header.
      *
      * @return void
      */
@@ -99,7 +101,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with multiple values and matching header
+     * Test option with multiple values and matching header.
      *
      * @return void
      */
@@ -113,7 +115,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with multiple values and no matching header
+     * Test option with multiple values and no matching header.
      *
      * @return void
      */
@@ -127,7 +129,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with regex modifier and matching header
+     * Test option with regex modifier and matching header.
      *
      * @return void
      */
@@ -141,7 +143,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with regex modifier and no matching header
+     * Test option with regex modifier and no matching header.
      *
      * @return void
      */
@@ -155,7 +157,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not modifier and matching header
+     * Test option with not modifier and matching header.
      *
      * @return void
      */
@@ -169,7 +171,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not modifier and no matching header
+     * Test option with not modifier and no matching header.
      *
      * @return void
      */
@@ -183,7 +185,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not regex modifier and matching header
+     * Test option with not regex modifier and matching header.
      *
      * @return void
      */
@@ -197,7 +199,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test option with not regex modifier and no matching header
+     * Test option with not regex modifier and no matching header.
      *
      * @return void
      */
@@ -211,7 +213,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Setup request and header objects, run getPermissions and check the result
+     * Setup request and header objects, run getPermissions and check the result.
      *
      * @param array $headers        Request headers
      * @param mixed $options        options as from configuration

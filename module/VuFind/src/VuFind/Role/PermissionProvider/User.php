@@ -1,8 +1,9 @@
 <?php
+
 /**
  * User permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -25,13 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function count;
 
 /**
  * LDAP permission provider for VuFind.
- * based on permission provider Username.php
+ * based on permission provider Username.php.
  *
  * @category VuFind
  * @package  Authorization
@@ -39,26 +44,20 @@ use LmcRbacMvc\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class User implements PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+class User implements
+    PermissionProviderInterface,
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authorization object
+     * Constructor.
      *
-     * @var AuthorizationService
+     * @param AuthorizationService $auth Authorization service
      */
-    protected $auth;
-
-    /**
-     * Constructor
-     *
-     * @param AuthorizationService $authorization Authorization service
-     */
-    public function __construct(AuthorizationService $authorization)
+    #[Autowire]
+    public function __construct(protected AuthorizationService $auth)
     {
-        $this->auth = $authorization;
     }
 
     /**
@@ -76,6 +75,9 @@ class User implements PermissionProviderInterface,
         if (!($user = $this->auth->getIdentity())) {
             return [];
         }
+        if (!($user instanceof \VuFind\Db\Entity\UserEntityInterface)) {
+            throw new \Exception('Unexpected user object provided!');
+        }
 
         // which user attribute has to match which pattern to get permissions?
         foreach ((array)$options as $option) {
@@ -90,9 +92,13 @@ class User implements PermissionProviderInterface,
                 if (! preg_match('/^\/.*\/$/', $pattern)) {
                     $pattern = '/' . $pattern . '/';
                 }
-
-                if (preg_match($pattern, $user[$attribute])) {
-                    return ['loggedin'];
+                $methodMap = ['cat_id' => 'getCatId', 'cat_username' => 'getCatUsername'];
+                $method = $methodMap[$attribute] ?? 'get' . ucfirst($attribute);
+                if (method_exists($user, $method)) {
+                    $userValue = $user->$method();
+                    if (preg_match($pattern, $userValue)) {
+                        return ['loggedin'];
+                    }
                 }
             }
         }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\View\Helper\AssetManager;
+
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,107 +41,63 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
+class GoogleAnalytics
 {
     /**
-     * API key (false if disabled)
-     *
-     * @var string|bool
-     */
-    protected $key;
-
-    /**
-     * Are we using Universal Analytics?
-     *
-     * @var bool
-     */
-    protected $universal;
-
-    /**
-     * Options to pass to the ga() create command.
+     * Options to pass to the gtag() config command.
      *
      * @var string
      */
-    protected $createOptions;
+    protected string $createOptions;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string|bool $key     API key (false if disabled)
-     * @param bool|array  $options Configuration options (supported options:
-     * 'universal' and 'create_options_js'). If a boolean is provided instead of
-     * an array, that value is used as the 'universal' setting and no other options
-     * are set (for backward compatibility).
+     * @param ?string      $key          API key (null if disabled)
+     * @param AssetManager $assetManager AssetManager Helper
+     * @param array        $options      Configuration options (supported option: 'create_options_js').
      */
-    public function __construct($key, $options = [])
-    {
-        // The second constructor parameter used to be a boolean representing
-        // the "universal" setting, so convert to an array for back-compatibility:
-        if (!is_array($options)) {
-            $options = ['universal' => (bool)$options];
-        }
-        $this->key = $key;
-        $this->universal = $options['universal'] ?? false;
-        $this->createOptions = $options['create_options_js'] ?? "'auto'";
+    public function __construct(
+        protected ?string $key,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager,
+        array $options = []
+    ) {
+        $this->createOptions = $options['create_options_js'] ?? '{}';
     }
 
     /**
      * Returns GA Javascript code.
      *
-     * @param string $customUrl override URL to send to Google Analytics
-     *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getRawJavascript($customUrl = false)
+    protected function getRawJavascript()
     {
-        // Simple case: Universal
-        if ($this->universal) {
-            return '(function(i,s,o,g,r,a,m){'
-                . "i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){"
-                . '(i[r].q=i[r].q||[]).push(arguments)},'
-                . 'i[r].l=1*new Date();a=s.createElement(o),'
-                . 'm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;'
-                . 'm.parentNode.insertBefore(a,m)'
-                . "})(window,document,'script',"
-                . "'//www.google-analytics.com/analytics.js','ga');"
-                . "ga('create', '{$this->key}', {$this->createOptions});"
-                . "ga('send', 'pageview');";
-        }
-
-        // Alternate (legacy) case:
-        $code = 'var key = "' . $this->key . '";' . "\n"
-            . "var _gaq = _gaq || [];\n"
-            . "_gaq.push(['_setAccount', key]);\n";
-        if ($customUrl) {
-            $code .= "_gaq.push(['_trackPageview', '" . $customUrl . "']);\n";
-        } else {
-            $code .= "_gaq.push(['_trackPageview']);\n";
-        }
-        $code .= "(function() {\n"
-            . "var ga = document.createElement('script'); "
-            . "ga.type = 'text/javascript'; ga.async = true;\n"
-            . "ga.src = ('https:' == document.location.protocol ? "
-            . "'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n"
-            . "var s = document.getElementsByTagName('script')[0]; "
-            . "s.parentNode.insertBefore(ga, s);\n"
-            . "})();";
-        return $code;
+        return <<<JS
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{$this->key}', {$this->createOptions});
+            JS;
     }
 
     /**
      * Returns GA code (if active) or empty string if not.
      *
-     * @param string $customUrl override URL to send to Google Analytics
-     *
      * @return string
      */
-    public function __invoke($customUrl = false)
+    public function __invoke()
     {
         if (!$this->key) {
             return '';
         }
-        $code = $this->getRawJavascript($customUrl);
-        $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+
+        $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
+        $code = $this->getRawJavascript();
+        return
+            $this->assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
+            . $this->assetManager->outputInlineScriptString($code);
     }
 }

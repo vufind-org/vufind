@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VuFind Search History Helper
+ * VuFind Search History Helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,12 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
-use Laminas\Config\Config;
+use Exception;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
- * VuFind Search History Helper
+ * VuFind Search History Helper.
  *
  * @category VuFind
  * @package  Search
@@ -43,51 +46,19 @@ use Laminas\Config\Config;
 class History
 {
     /**
-     * Search table
+     * History constructor.
      *
-     * @var \VuFind\Db\Table\Search
-     */
-    protected $searchTable;
-
-    /**
-     * Current session ID
-     *
-     * @var string
-     */
-    protected $sessionId;
-
-    /**
-     * Results manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * History constructor
-     *
-     * @param \VuFind\Db\Table\Search              $searchTable    Search table
+     * @param SearchServiceInterface               $searchService  Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param \Laminas\Config\Config               $config         Configuration
+     * @param ?array                               $config         Configuration
      */
     public function __construct(
-        $searchTable,
-        $sessionId,
-        $resultsManager,
-        \Laminas\Config\Config $config = null
+        protected SearchServiceInterface $searchService,
+        protected string $sessionId,
+        protected \VuFind\Search\Results\PluginManager $resultsManager,
+        protected ?array $config = null
     ) {
-        $this->searchTable = $searchTable;
-        $this->sessionId = $sessionId;
-        $this->resultsManager = $resultsManager;
-        $this->config = $config;
     }
 
     /**
@@ -99,7 +70,7 @@ class History
      */
     public function purgeSearchHistory($userId = null)
     {
-        $this->searchTable->destroySession($this->sessionId, $userId);
+        $this->searchService->destroySession($this->sessionId, $userId);
     }
 
     /**
@@ -112,19 +83,22 @@ class History
     public function getSearchHistory($userId = null)
     {
         // Retrieve search history
-        $searchHistory = $this->searchTable->getSearches($this->sessionId, $userId);
+        $searchHistory = $this->searchService->getSearches($this->sessionId, $userId);
 
         // Loop through and sort the history
         $saved = $schedule = $unsaved = [];
         foreach ($searchHistory as $current) {
-            $search = $current->getSearchObject()->deminify($this->resultsManager);
-            if ($current->saved == 1) {
+            $search = $current->getSearchObject()?->deminify($this->resultsManager);
+            if (!$search) {
+                throw new Exception("Problem getting search object from search {$current->getId()}.");
+            }
+            if ($current->getSaved()) {
                 $saved[] = $search;
             } else {
                 $unsaved[] = $search;
             }
             if ($search->getOptions()->supportsScheduledSearch()) {
-                $schedule[$search->getSearchId()] = $current->notification_frequency;
+                $schedule[$current->getId()] = $current->getNotificationFrequency();
             }
         }
 
@@ -139,18 +113,16 @@ class History
     public function getScheduleOptions()
     {
         // If scheduled searches are disabled, return no options:
-        if (!($this->config->Account->schedule_searches ?? false)) {
+        if (!($this->config['Account']['schedule_searches'] ?? false)) {
             return [];
         }
         // If custom frequencies are not provided, return defaults:
-        if (!isset($this->config->Account->scheduled_search_frequencies)) {
+        if (!isset($this->config['Account']['scheduled_search_frequencies'])) {
             return [
-                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'
+                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly',
             ];
         }
         // If we have a setting, make sure it is properly formatted as an array:
-        return $this->config->Account->scheduled_search_frequencies instanceof Config
-            ? $this->config->Account->scheduled_search_frequencies->toArray()
-            : (array)$this->config->Account->scheduled_search_frequencies;
+        return (array)$this->config['Account']['scheduled_search_frequencies'];
     }
 }

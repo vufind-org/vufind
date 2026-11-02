@@ -1,0 +1,16 @@
+[
+    {
+        "comment": "login attempt",
+        "expectedMethod": "POST",
+        "expectedPath": "/authn/login-with-expiry",
+        "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"foo\",\"password\":\"bar\"}"
+    },
+    {
+        "comment": "profile retrieval",
+        "expectedPath": "/users",
+        "expectedParams": {
+            "query": "username == foo"
+        },
+        "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\", \"addresses\": [] } } ] }"
+    }
+]

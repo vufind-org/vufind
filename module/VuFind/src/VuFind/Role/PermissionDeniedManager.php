@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Permission Manager
+ * Permission Manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,43 +17,42 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\Role;
 
+use VuFind\Exception\ConfigException;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function count;
+
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
 class PermissionDeniedManager
 {
     /**
-     * List config
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Default behavior for denied permissions at the controller level.
+     * Default behavior for denied permissions at the action level.
      *
      * @var string|bool
      */
-    protected $defaultDeniedControllerBehavior = 'promptLogin';
+    protected $defaultDeniedActionBehavior = 'promptLogin';
 
     /**
      * Default behavior for denied permissions at the template level.
@@ -63,39 +63,53 @@ class PermissionDeniedManager
     protected $defaultDeniedTemplateBehavior = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array $config configuration
+     * @param array $config Configuration
      */
-    public function __construct($config)
-    {
-        $this->config = $config;
-        // if the config contains a defaultDeniedControllerBehavior setting, apply it
+    public function __construct(
+        #[Autowire(config: 'permissionBehavior')]
+        protected array $config
+    ) {
+        // Throw an exception if the config contains legacy settings:
         if (isset($config['global']['defaultDeniedControllerBehavior'])) {
-            $this->defaultDeniedControllerBehavior
-                = $config['global']['defaultDeniedControllerBehavior'];
+            throw new ConfigException(
+                'permissionBehavior configuration must not contain the legacy defaultDeniedControllerBehavior setting'
+            );
+        }
+        foreach ($config as $section => $settings) {
+            if (isset($settings['deniedControllerBehavior'])) {
+                throw new ConfigException(
+                    'permissionBehavior configuration must not contain the legacy deniedControllerBehavior setting'
+                    . " (found in [$section])"
+                );
+            }
+        }
+
+        // if the config contains a defaultDeniedActionBehavior setting, apply it:
+        if (null !== ($defaultDeniedActionBehavior = $config['global']['defaultDeniedActionBehavior'] ?? null)) {
+            $this->defaultDeniedActionBehavior = $defaultDeniedActionBehavior;
         }
         // if the config contains a defaultDeniedTemplateBehavior setting, apply it
-        if (isset($config['global']['defaultDeniedTemplateBehavior'])) {
-            $this->defaultDeniedTemplateBehavior
-                = $config['global']['defaultDeniedTemplateBehavior'];
+        if (null !== ($defaultDeniedTemplateBehavior = $config['global']['defaultDeniedTemplateBehavior'] ?? null)) {
+            $this->defaultDeniedTemplateBehavior = $defaultDeniedTemplateBehavior;
         }
     }
 
     /**
-     * Set the default behavior for a denied controller permission
+     * Set the default behavior for a denied action permission.
      *
-     * @param string|bool $value Default behavior for a denied controller permission
+     * @param string|bool $value Default behavior for a denied action permission
      *
      * @return void
      */
-    public function setDefaultDeniedControllerBehavior($value)
+    public function setDefaultDeniedActionBehavior($value)
     {
-        $this->defaultDeniedControllerBehavior = $value;
+        $this->defaultDeniedActionBehavior = $value;
     }
 
     /**
-     * Set the default behavior for a denied template permission
+     * Set the default behavior for a denied template permission.
      *
      * @param string|bool $value Default behavior for a denied template permission
      *
@@ -107,24 +121,23 @@ class PermissionDeniedManager
     }
 
     /**
-     * Get behavior to apply when a controller denies a permission.
+     * Get behavior to apply when an action denies a permission.
      *
      * @param string $permission      Permission that has been denied
      * @param string $defaultBehavior Default behavior to use if none configured
      * (null to use default configured in this class, false to take no action).
      *
-     * @return array|bool Associative array of behavior for the given
-     * permission (containing the keys 'action', 'value', 'params' and
-     * 'exceptionMessage' for exceptions) or false if no action needed.
+     * @return array|bool Associative array of behavior for the given permission (containing the keys 'action', 'value',
+     * 'params' and 'exceptionMessage' for exceptions) or false if no action needed.
      */
-    public function getDeniedControllerBehavior($permission, $defaultBehavior = null)
+    public function getDeniedActionBehavior($permission, $defaultBehavior = null)
     {
         if ($defaultBehavior === null) {
-            $defaultBehavior = $this->defaultDeniedControllerBehavior;
+            $defaultBehavior = $this->defaultDeniedActionBehavior;
         }
         return $this->getDeniedBehavior(
             $permission,
-            'deniedControllerBehavior',
+            'deniedActionBehavior',
             $defaultBehavior
         );
     }
@@ -151,11 +164,11 @@ class PermissionDeniedManager
     }
 
     /**
-     * Get permission denied logic
+     * Get permission denied logic.
      *
      * @param string $permission      Permission that has been denied
-     * @param string $mode            Mode of the operation. Should be either
-     * deniedControllerBehavior or deniedTemplateBehavior
+     * @param string $mode            Mode of the operation. Should be either deniedActionBehavior or
+     * deniedTemplateBehavior.
      * @param string $defaultBehavior Default action to use if none configured
      *
      * @return array|bool

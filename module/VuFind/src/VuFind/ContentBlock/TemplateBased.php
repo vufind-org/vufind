@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Class TemplateBased
+ * Class TemplateBased.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -26,10 +26,15 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ContentBlock;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function is_callable;
+
 /**
- * Class TemplateBased
+ * Class TemplateBased.
  *
  * @category VuFind
  * @package  VuFind\ContentBlock
@@ -40,27 +45,20 @@ namespace VuFind\ContentBlock;
 class TemplateBased implements ContentBlockInterface
 {
     /**
-     * Name of template for rendering
+     * Name of template for rendering.
      *
      * @var string
      */
     protected $templateName;
 
     /**
-     * Page content
-     *
-     * @var \VuFind\Content\PageLocator
-     */
-    protected $pageLocator;
-
-    /**
      * TemplateBased constructor.
      *
      * @param \VuFind\Content\PageLocator $pageLocator Content page locator service
      */
-    public function __construct(\VuFind\Content\PageLocator $pageLocator)
+    #[Autowire]
+    public function __construct(protected \VuFind\Content\PageLocator $pageLocator)
     {
-        $this->pageLocator = $pageLocator;
     }
 
     /**
@@ -106,7 +104,7 @@ class TemplateBased implements ContentBlockInterface
     }
 
     /**
-     * Return context array for markdown
+     * Return context array for markdown.
      *
      * @param string $relativePath Relative path to template
      * @param string $path         Full path of template file
@@ -124,7 +122,7 @@ class TemplateBased implements ContentBlockInterface
     }
 
     /**
-     * Return context array of phtml
+     * Return context array of phtml.
      *
      * @param string $relativePath Relative path to template
      * @param string $path         Full path of template file

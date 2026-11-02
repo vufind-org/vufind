@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Pazpar2 backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,16 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function intval;
 
 /**
  * Pazpar2 backend.
@@ -81,14 +82,14 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param Connector                        $connector Pazpar2 connector
-     * @param RecordCollectionFactoryInterface $factory   Record collection factory
+     * @param Connector                         $connector Pazpar2 connector
+     * @param ?RecordCollectionFactoryInterface $factory   Record collection factory (null for default)
      *
      * @return void
      */
     public function __construct(
         Connector $connector,
-        RecordCollectionFactoryInterface $factory = null
+        ?RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -126,7 +127,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -134,7 +135,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
@@ -152,7 +153,8 @@ class Backend extends AbstractBackend
          */
         $queryStart = time();
         $progress = $this->getSearchProgress();
-        while ($progress < $this->progressTarget
+        while (
+            $progress < $this->progressTarget
             && (time() - $queryStart) < $this->maxQueryTime
         ) {
             sleep(1);
@@ -177,12 +179,12 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $response   = $this->connector->record($id);
         $collection = $this->createRecordCollection([$response], 1);

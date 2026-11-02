@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Holdings (ILS) tab
+ * Holdings (ILS) tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -25,12 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
+use Closure;
+use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 
+use function call_user_func;
+use function strlen;
+
 /**
- * Holdings (ILS) tab
+ * Holdings (ILS) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,44 +48,38 @@ use VuFind\ILS\Connection;
 class HoldingsILS extends AbstractBase
 {
     /**
-     * ILS connection (or null if not applicable)
-     *
-     * @param Connection
-     */
-    protected $catalog;
-
-    /**
      * Name of template to use for rendering holdings.
      *
-     * @param string
+     * @var string
      */
     protected $template;
 
     /**
-     * Whether the holdings tab should be hidden when empty or not.
+     * GetThis if enabled in the config.
      *
-     * @var bool
+     * @var ?GetThisLoader
      */
-    protected $hideWhenEmpty;
+    protected $getThisLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\ILS\Connection|bool $catalog       ILS connection to use to
-     * check for holdings before displaying the tab; may be set to null if no check
-     * is needed.
-     * @param string                      $template      Holdings template to use
-     * @param bool                        $hideWhenEmpty Whether the
-     * holdings tab should be hidden when empty or not
+     * @param ?Connection $catalog                      ILS connection to use to check for holdings before
+     *                                                  displaying the tab; may be set to null if no check
+     *                                                  is needed.
+     * @param ?string     $template                     Holdings template to use
+     * @param bool        $hideWhenEmpty                Whether the holdings tab should be hidden when
+     *                                                  empty or not
+     * @param ?Closure    $getThisLoaderFactoryCallback Closure to get the getThisLoader if enabled in the
+     *                                                  config And prevent loading it if not necessary
      */
     public function __construct(
-        Connection $catalog = null,
-        $template = null,
-        $hideWhenEmpty = false
+        protected ?Connection $catalog = null,
+        ?string $template = null,
+        protected bool $hideWhenEmpty = false,
+        protected ?Closure $getThisLoaderFactoryCallback = null
     ) {
-        $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
-        $this->hideWhenEmpty = $hideWhenEmpty;
     }
 
     /**
@@ -89,6 +90,18 @@ class HoldingsILS extends AbstractBase
     public function getDescription()
     {
         return 'Holdings';
+    }
+
+    /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        // Check if the driver has a supportsHoldingsTab method and use it,
+        // defaulting to true (visible) if the method doesn't exist
+        return $this->driver->tryMethod('supportsHoldingsTab', [], true);
     }
 
     /**
@@ -122,7 +135,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    public function getUniqueCallNumbers($items, $fullDetails=false)
+    public function getUniqueCallNumbers($items, $fullDetails = false)
     {
         if (!$fullDetails) {
             return $this->getSimpleUniqueCallNumbers($items);
@@ -182,13 +195,13 @@ class HoldingsILS extends AbstractBase
      * @param int $page           Currently selected page of the items paginator
      * @param int $itemLimit      Max. no of items per page
      *
-     * @return \Laminas\Paginator\Paginator
+     * @return ?\Laminas\Paginator\Paginator (or null, if paginator is not needed/unsupported)
      */
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
-        if (!$itemLimit || $totalItemCount < $itemLimit) {
-            return;
+        if (!$itemLimit || $totalItemCount <= $itemLimit) {
+            return null;
         }
 
         // Create the paginator
@@ -202,5 +215,19 @@ class HoldingsILS extends AbstractBase
             ->setPageRange(10);
 
         return $paginator;
+    }
+
+    /**
+     * Getter for GetThisLoader.
+     *
+     * @return ?GetThisLoader
+     */
+    public function getGetThisLoader(): ?GetThisLoader
+    {
+        if (!isset($this->getThisLoader)) {
+            $this->getThisLoader = isset($this->getThisLoaderFactoryCallback)
+                ? call_user_func($this->getThisLoaderFactoryCallback) : null;
+        }
+        return $this->getThisLoader;
     }
 }

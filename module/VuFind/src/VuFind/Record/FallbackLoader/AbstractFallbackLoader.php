@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract base class for fallback loaders
+ * Abstract base class for fallback loaders.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,15 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record\FallbackLoader;
 
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Record\RecordIdUpdater;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordDriver\Feature\PreviousUniqueIdInterface;
 use VuFindSearch\Service;
 
 /**
- * Abstract base class for fallback loaders
+ * Abstract base class for fallback loaders.
  *
  * @category VuFind
  * @package  Record
@@ -44,36 +47,24 @@ use VuFindSearch\Service;
 abstract class AbstractFallbackLoader implements FallbackLoaderInterface
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */
     protected $source = DEFAULT_SEARCH_BACKEND;
 
     /**
-     * Resource table
+     * Constructor.
      *
-     * @var Resource
+     * @param ResourceServiceInterface $resourceService Resource database service
+     * @param RecordIdUpdater          $recordIdUpdater Record ID updater service
+     * @param Service                  $searchService   Search service
      */
-    protected $table;
-
-    /**
-     * Search service
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param Resource $table         Resource database table object
-     * @param Service  $searchService Search service
-     */
-    public function __construct(Resource $table, Service $searchService)
-    {
-        $this->table = $table;
-        $this->searchService = $searchService;
+    public function __construct(
+        protected ResourceServiceInterface $resourceService,
+        protected RecordIdUpdater $recordIdUpdater,
+        protected Service $searchService
+    ) {
     }
 
     /**
@@ -120,7 +111,6 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
         $record->setPreviousUniqueId($previousId);
 
         // Update the database to replace the obsolete identifier...
-        $this->table
-            ->updateRecordId($previousId, $record->getUniqueId(), $this->source);
+        $this->recordIdUpdater->updateRecordId($previousId, $record->getUniqueID(), $this->source);
     }
 }

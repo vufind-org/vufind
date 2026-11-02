@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Permission Manager
+ * Permission Manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,43 +17,47 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\Role;
 
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+
+use function in_array;
+use function is_array;
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
 class PermissionManager
 {
     use AuthorizationServiceAwareTrait;
 
     /**
-     * List config
+     * List config.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config configuration
      */
@@ -62,13 +67,14 @@ class PermissionManager
     }
 
     /**
-     * Determine if the user is authorized in a certain context or not
+     * Determine if the user is authorized in a certain context or not.
      *
-     * @param string $context Context for the permission behavior
+     * @param string $permission Permission
+     * @param mixed  $context    Context for the permission behavior (optional)
      *
      * @return bool
      */
-    public function isAuthorized($context)
+    public function isAuthorized($permission, $context = null)
     {
         $authService = $this->getAuthorizationService();
 
@@ -76,32 +82,42 @@ class PermissionManager
         if (!$authService) {
             return false;
         }
-
-        if ($authService->isGranted($context)) {
-            return true;
-        }
-
-        return false;
+        return $authService->isGranted($permission, $context);
     }
 
     /**
-     * Check if a permission rule exists for a given context
+     * Get a list of all configured permissions.
      *
-     * @param string $context Context for the permission behavior
+     * @return string[]
+     */
+    public function getAllConfiguredPermissions(): array
+    {
+        $permissions = [];
+        foreach ($this->config as $value) {
+            $permissions = array_merge($permissions, (array)($value['permission'] ?? []));
+        }
+        return array_values(array_unique($permissions));
+    }
+
+    /**
+     * Check if a permission rule exists.
+     *
+     * @param string $permission Permission
      *
      * @return bool
      */
-    public function permissionRuleExists($context)
+    public function permissionRuleExists($permission)
     {
         foreach ($this->config as $value) {
             if (!isset($value['permission'])) {
                 continue;
             }
-            if ($value['permission'] == $context) {
+            if ($value['permission'] == $permission) {
                 return true;
             }
-            if (is_array($value['permission'])
-                && in_array($context, $value['permission'])
+            if (
+                is_array($value['permission'])
+                && in_array($permission, $value['permission'])
             ) {
                 return true;
             }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Cart Class
+ * Cart Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cart
@@ -25,12 +26,20 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
 
 /**
- * Cart Class
+ * Cart Class.
  *
  * The data model object representing a user's book cart.
  *
@@ -49,68 +58,30 @@ class Cart
      */
     protected $items;
 
-    /**
-     * Maximum number of items allowed in cart.
-     *
-     * @var int
-     */
-    protected $maxSize;
-
-    /**
-     * Is the cart currently activated?
-     *
-     * @var bool
-     */
-    protected $active;
-
-    /**
-     * Is cart configured to toggles in search results?
-     *
-     * @var bool
-     */
-    protected $showTogglesInSearch;
-
-    /**
-     * Record loader
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
-     * Cookie manager
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
-
     public const CART_COOKIE = 'vufind_cart';
     public const CART_COOKIE_SOURCES = 'vufind_cart_src';
     public const CART_COOKIE_DELIM = "\t";
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Record\Loader $loader          Object for loading records
-     * @param CookieManager         $cookieManager   Cookie manager
-     * @param int                   $maxSize         Maximum size of cart contents
-     * @param bool                  $active          Is cart enabled?
-     * @param bool                  $togglesInSearch Is cart configured to toggles
+     * @param \VuFind\Record\Loader $recordLoader        Object for loading records
+     * @param CookieManager         $cookieManager       Cookie manager
+     * @param int                   $maxSize             Maximum size of cart contents
+     * @param bool                  $active              Is cart enabled?
+     * @param bool                  $showTogglesInSearch Is cart configured to show toggles
      * in search results?
      */
     public function __construct(
-        \VuFind\Record\Loader $loader,
-        \VuFind\Cookie\CookieManager $cookieManager,
-        $maxSize = 100,
-        $active = true,
-        $togglesInSearch = true
+        protected \VuFind\Record\Loader $recordLoader,
+        protected \VuFind\Cookie\CookieManager $cookieManager,
+        #[Autowire(config: 'config', path: 'Site/bookBagMaxSize', default: 100)]
+        protected int $maxSize = 100,
+        #[Autowire(config: 'config', path: 'Site/showBookBag', default: false)]
+        protected bool $active = true,
+        #[Autowire(config: 'config', path: 'Site/bookbagTogglesInSearch', default: true)]
+        protected bool $showTogglesInSearch = true
     ) {
-        $this->recordLoader = $loader;
-        $this->cookieManager = $cookieManager;
-        $this->maxSize = $maxSize;
-        $this->active = $active;
-        $this->showTogglesInSearch = $togglesInSearch;
-
         // Initialize contents
         $this->init($this->cookieManager->getCookies());
     }
@@ -267,7 +238,7 @@ class Cart
             $items = explode(self::CART_COOKIE_DELIM, $cookie);
 
             if (!isset($cookies[self::CART_COOKIE_SOURCES])) {
-                // Backward compatibility with VuFind 1.x -- if no source cookie, all
+                // Backward compatibility with VuFind 1.x legacy code -- if no source cookie, all
                 // items come from the default source:
                 for ($i = 0; $i < count($items); $i++) {
                     $items[$i] = DEFAULT_SEARCH_BACKEND . '|' . $items[$i];
@@ -319,36 +290,6 @@ class Cart
         $this->cookieManager->set(self::CART_COOKIE, $cookie, 0, false);
         $srcCookie = implode(self::CART_COOKIE_DELIM, $sources);
         $this->cookieManager->set(self::CART_COOKIE_SOURCES, $srcCookie, 0, false);
-    }
-
-    /**
-     * Get cookie domain context (null if unset).
-     *
-     * @return string
-     */
-    public function getCookieDomain()
-    {
-        return $this->cookieManager->getDomain();
-    }
-
-    /**
-     * Get cookie path ('/' if unset).
-     *
-     * @return string
-     */
-    public function getCookiePath()
-    {
-        return $this->cookieManager->getPath();
-    }
-
-    /**
-     * Get cookie SameSite attribute.
-     *
-     * @return string
-     */
-    public function getCookieSameSite()
-    {
-        return $this->cookieManager->getSameSite();
     }
 
     /**

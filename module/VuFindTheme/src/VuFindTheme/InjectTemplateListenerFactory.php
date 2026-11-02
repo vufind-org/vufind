@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Factory for InjectTemplateListener
+ * Factory for InjectTemplateListener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) 2019 Leipzig University Library
  *
@@ -15,9 +16,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -34,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for InjectTemplateListener
+ * Factory for InjectTemplateListener.
  *
  * @category VuFind
  * @package  Theme
@@ -45,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class InjectTemplateListenerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,10 +63,10 @@ class InjectTemplateListenerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get('config');
         $prefixes = $config['vufind']['extra_theme_prefixes'] ?? [];
@@ -82,7 +84,7 @@ class InjectTemplateListenerFactory implements FactoryInterface
             array_merge($prefixes, $modules),
             function ($prefix) use ($exclude) {
                 foreach ($exclude as $current) {
-                    if (strpos($prefix, $current) === 0) {
+                    if (str_starts_with($prefix, $current)) {
                         return false;
                     }
                 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Provide URL formatted as HTML and prefixed with proxy if applicable
+ * Provide URL formatted as HTML and prefixed with proxy if applicable.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  UrlHighlight
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\UrlHighlight;
 
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
@@ -32,7 +34,7 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
- * Provide URL formatted as HTML and prefixed with proxy if applicable
+ * Provide URL formatted as HTML and prefixed with proxy if applicable.
  *
  * @category VuFind
  * @package  UrlHighlight
@@ -45,14 +47,14 @@ class VuFindHighlighter extends HtmlHighlighter
     public const DEFAULT_SCHEME = 'http';
 
     /**
-     * Proxy url helper
+     * Proxy url helper.
      *
      * @var ProxyUrl
      */
     protected $proxyUrl;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ProxyUrl $proxyUrl Proxy url helper
      */
@@ -63,7 +65,7 @@ class VuFindHighlighter extends HtmlHighlighter
     }
 
     /**
-     * Return url with proxy
+     * Return url with proxy.
      *
      * @param UrlMatch $match url highlight match
      *

@@ -1,0 +1,20 @@
+<div class="footer-container">
+  <?php foreach ($this->menu ?? [] as $name => $group): ?>
+    <div class="footer-column">
+      <?php $this->slot($name)->start(); ?>
+        <h2><?=$this->transEsc($group['label'])?></h2>
+        <ul>
+          <?php foreach ($group['MenuItems'] as $item): ?>
+            <?php
+              $attributes = $this->htmlAttributes($item['attributes'] ?? []);
+              $attributes['href'] = isset($item['route'])
+                ? $this->url($item['route'], $item['routeParams'] ?? [])
+                : $item['url'];
+            ?>
+            <li><a <?=$attributes?>><?=$this->transEsc($item['label'])?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      <?=$this->slot($name)->end(); ?>
+    </div>
+  <?php endforeach; ?>
+</div>

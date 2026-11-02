@@ -14,12 +14,13 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -40,34 +41,65 @@ import org.solrmarc.index.SolrIndexer;
 public class CallNumberTools
 {
     /**
-     * Extract the call number label from a record
+     * Extract the call number labels from a record
      * @param record MARC record
-     * @return Call number label
+     * @return Call number labels
      */
-    public String getCallNumberLabel(final Record record) {
-
-        return getCallNumberLabel(record, "090a:050a");
+    public List<String> getCallNumberLabels(final Record record) {
+        return getCallNumberLabels(record, "050a:082a:083a:090a");
     }
 
     /**
-     * Extract the call number label from a record
+     * Extract the call number labels from a record.
+     * fieldSpec might include 952e for FOLIO, in which case we do not know the type of call number
+     * (also sometimes call numbers are in the wrong MARC field for their type).
+     * If LCC: classLetters, classLetters + classDigits, classLetters + classDigits + classDecimal
+     * If Dewey: classDigits, classDigits + classDecimal
+     * Otherwise: everything up until the dot (or everything if there is no dot)
      * @param record MARC record
      * @param fieldSpec taglist for call number fields
-     * @return Call number label
+     * @return Call number labels
      */
-    public String getCallNumberLabel(final Record record, String fieldSpec) {
-
-        String val = SolrIndexer.instance().getFirstFieldVal(record, fieldSpec);
-
-        if (val != null) {
-            int dotPos = val.indexOf(".");
-            if (dotPos > 0) {
-                val = val.substring(0, dotPos);
+    public List<String> getCallNumberLabels(final Record record, String fieldSpec) {
+        Set<String> values = SolrIndexer.instance().getFieldList(record, fieldSpec);
+        HashSet<String> result = new LinkedHashSet<String>();
+        for (String cn: values) {
+            String cnUp = cn.toUpperCase().trim();
+            LCCallNumber lcc = new LCCallNumber(cnUp);
+            DeweyCallNumber dewey = new DeweyCallNumber(cnUp);
+            boolean other = cnUp.contains(":") || (cnUp.length() > 10 && !cnUp.contains("."));
+            boolean isLcc = lcc.isValid() && !other;
+            boolean isDewey = dewey.isValid() && !other;
+            if (isLcc) {
+                result.add(lcc.getClassLetters());
+                result.add(lcc.getClassLetters() + lcc.getClassDigits());
+                if (lcc.getClassDecimal() != null) {
+                    result.add(lcc.getClassLetters() + lcc.getClassDigits() + lcc.getClassDecimal());
+                }
+            } else if (isDewey) {
+                result.add(dewey.getClassDigits());
+                String classDecimal = dewey.getClassDecimal();
+                if (classDecimal != null) {
+                    for (int i=1; i<5; i++) {
+                        if (classDecimal.length() > i) {
+                            result.add(dewey.getClassDigits() + classDecimal.substring(0, i+1));
+                        }
+                    }
+                }
+            } else {
+                // NOTE: we could add other classifications like SuDoc here (and add related MARC fields to fieldSpec)
+                int dotPos = cnUp.indexOf(".");
+                if (dotPos < 0) {
+                    result.add(cnUp);
+                    continue;
+                }
+                if (dotPos == 0) {
+                    continue;
+                }
+                result.add(cnUp.substring(0, dotPos).trim());
             }
-            return val.toUpperCase();
-        } else {
-            return val;
         }
+        return new ArrayList<String>(result);
     }
 
     /**
@@ -325,7 +357,7 @@ public class CallNumberTools
                 float currentVal = Float.parseFloat(callNum.getClassification());
 
                 // Round the call number value to the specified precision:
-                Float finalVal = new Float(Math.floor(currentVal / precision) * precision);
+                Float finalVal = Double.valueOf(Math.floor(currentVal / precision) * precision).floatValue();
 
                 // Convert the rounded value back to a string (with leading zeros) and save it:
                 // TODO: Provide different conversion to remove CallNumUtils dependency
@@ -353,12 +385,7 @@ public class CallNumberTools
         Set<String> result = new LinkedHashSet<String>();
 
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // Add valid strings to the set, normalizing them to be all uppercase
             // and free from whitespace.
             DeweyCallNumber callNum = new DeweyCallNumber(current);
@@ -385,12 +412,7 @@ public class CallNumberTools
      */
     public String getDeweySortable(Record record, String fieldSpec) {
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // If this is a valid Dewey number, return the sortable shelf key:
             DeweyCallNumber callNum = new DeweyCallNumber(current);
             if (callNum.isValid()) {
@@ -467,12 +489,7 @@ public class CallNumberTools
         List<String> result = new LinkedList<String>();
 
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // gather all sort keys, even if number is not valid
             DeweyCallNumber callNum = new DeweyCallNumber(current);
             result.add(callNum.getShelfKey());

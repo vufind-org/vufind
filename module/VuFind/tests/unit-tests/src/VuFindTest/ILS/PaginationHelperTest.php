@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Pagination helper test
+ * Pagination helper test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS;
 
 use VuFind\ILS\PaginationHelper;
 
 /**
- * Pagination helper test
+ * Pagination helper test.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +43,7 @@ use VuFind\ILS\PaginationHelper;
 class PaginationHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test options supporting pagination
+     * Test options supporting pagination.
      *
      * @return void
      */
@@ -54,9 +56,9 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
             'sort' => [
                 '-due_date' => 'sort_due_date_desc',
                 '+due_date' => 'sort_due_date_asc',
-                '+title' => 'sort_title'
+                '+title' => 'sort_title',
             ],
-            'default_sort' => '+due_date'
+            'default_sort' => '+due_date',
         ];
 
         // Typical first page
@@ -72,18 +74,18 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
                 '-due_date' => [
                     'desc' => 'sort_due_date_desc',
                     'url' => '?sort=' . urlencode('-due_date'),
-                    'selected' => false
+                    'selected' => false,
                 ],
                 '+due_date' => [
                     'desc' => 'sort_due_date_asc',
                     'url' => '?sort=' . urlencode('+due_date'),
-                    'selected' => true
+                    'selected' => true,
                 ],
                 '+title' => [
                     'desc' => 'sort_title',
                     'url' => '?sort=' . urlencode('+title'),
-                    'selected' => false
-                ]
+                    'selected' => false,
+                ],
             ],
             $result['sortList']
         );
@@ -101,18 +103,18 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
                 '-due_date' => [
                     'desc' => 'sort_due_date_desc',
                     'url' => '?sort=' . urlencode('-due_date'),
-                    'selected' => false
+                    'selected' => false,
                 ],
                 '+due_date' => [
                     'desc' => 'sort_due_date_asc',
                     'url' => '?sort=' . urlencode('+due_date'),
-                    'selected' => false
+                    'selected' => false,
                 ],
                 '+title' => [
                     'desc' => 'sort_title',
                     'url' => '?sort=' . urlencode('+title'),
-                    'selected' => true
-                ]
+                    'selected' => true,
+                ],
             ],
             $result['sortList']
         );
@@ -130,25 +132,25 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
                 '-due_date' => [
                     'desc' => 'sort_due_date_desc',
                     'url' => '?sort=' . urlencode('-due_date'),
-                    'selected' => false
+                    'selected' => false,
                 ],
                 '+due_date' => [
                     'desc' => 'sort_due_date_asc',
                     'url' => '?sort=' . urlencode('+due_date'),
-                    'selected' => true
+                    'selected' => true,
                 ],
                 '+title' => [
                     'desc' => 'sort_title',
                     'url' => '?sort=' . urlencode('+title'),
-                    'selected' => false
-                ]
+                    'selected' => false,
+                ],
             ],
             $result['sortList']
         );
     }
 
     /**
-     * Test options not supporting pagination
+     * Test options not supporting pagination.
      *
      * @return void
      */

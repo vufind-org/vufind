@@ -1,0 +1,13 @@
+{"identifier":{"oclcNumber":"foo"},"contributor": {"creators":[
+    {"firstName": {"text": "First"}, "secondName": {"text": "Last"}, "isPrimary": true, "type": "person", "creatorNotes": ["Title, author"], "relators": [{"term": "Author"}]},
+    {"firstName": {"text": "1st"}, "secondName": {"text": "Lst"}, "type": "person", "creatorNotes": ["1900-1960, aut aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st2"}, "secondName": {"text": "Lst2"}, "type": "person", "creatorNotes": ["1900-1960 author aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st3"}, "secondName": {"text": "Lst3"}, "type": "person", "creatorNotes": ["1900- author aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st4"}, "secondName": {"text": "Lst4"}, "type": "person", "creatorNotes": ["1900- Verfasser Herausgeber aut edt"], "relators": [{"term": "Verfasser", "alternateTerm": "Verfasser"}, {"term": "Herausgeber", "alternateTerm": "Herausgeber"}]},
+    {"firstName": {"text": "1st5"}, "secondName": {"text": "Lst5"}, "type": "person", "creatorNotes": ["ca. 1900-1970 author aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st6"}, "secondName": {"text": "Lst6"}, "type": "person", "creatorNotes": ["1900- author. aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st7"}, "secondName": {"text": "Lst7"}, "type": "person", "creatorNotes": ["(1900-...). aut author."], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st8"}, "secondName": {"text": "Lst8"}, "type": "person", "creatorNotes": ["1900- author. http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st9"}, "secondName": {"text": "Lst9"}, "type": "person", "creatorNotes": ["(First M.), author. http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st10"}, "secondName": {"text": "Lst10"}, "type": "person", "creatorNotes": ["author. aut http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]}
+]}}

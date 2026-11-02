@@ -1,4 +1,5 @@
 <?php
+
 namespace VuFindLocalTemplate\Module\Configuration;
 
 $config = [

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic controller factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -32,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\ConfigException;
 
 /**
  * Generic controller factory.
@@ -54,14 +57,20 @@ class AbstractBaseFactory implements FactoryInterface
      */
     protected function applyPermissions($container, $controller)
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('permissionBehavior');
-        $permissions = $config->global->controllerAccess ?? [];
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissionBehavior');
+        $permissions = $config['global']['controllerAccess'] ?? [];
 
-        if (!empty($permissions)) {
+        // Check that actions also have the same setting:
+        if (($permissions['*'] ?? null) !== ($config['global']['actionAccess']['*'] ?? null)) {
+            throw new ConfigException(
+                "actionAccess['*'] and controllerAccess['*'] must match in permissionBehavior configuration"
+            );
+        }
+
+        if (!empty($permissions) && $controller instanceof Feature\AccessPermissionInterface) {
             // Iterate through parent classes until we find the most specific
             // class access permission defined (if any):
-            $class = get_class($controller);
+            $class = $controller::class;
             do {
                 if (isset($permissions[$class])) {
                     $controller->setAccessPermission($permissions[$class]);
@@ -74,7 +83,8 @@ class AbstractBaseFactory implements FactoryInterface
             // or a string), that means it has no internally configured default, and
             // setAccessPermission was not called above; thus, we should apply the
             // default value:
-            if (isset($permissions['*'])
+            if (
+                isset($permissions['*'])
                 && $controller->getAccessPermission() === null
             ) {
                 $controller->setAccessPermission($permissions['*']);
@@ -85,7 +95,7 @@ class AbstractBaseFactory implements FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -101,7 +111,7 @@ class AbstractBaseFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return $this->applyPermissions(
             $container,

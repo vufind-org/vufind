@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Class for text messaging via Clickatell's HTTP API
+ * Class for text messaging via Clickatell's HTTP API.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  SMS
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
-use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\SMS as SMSException;
+
+use function function_exists;
 
 /**
- * Class for text messaging via Clickatell's HTTP API
+ * Class for text messaging via Clickatell's HTTP API.
  *
  * @category VuFind
  * @package  SMS
@@ -41,20 +45,19 @@ use VuFind\Exception\Mail as MailException;
 class Clickatell extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
-    protected $client;
+    protected \Laminas\Http\Client $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options (client may be an
-     * HTTP client object)
+     * @param array $config  SMS configuration
+     * @param array $options Additional options (client may be an HTTP client object)
      */
-    public function __construct(\Laminas\Config\Config $config, $options = [])
+    public function __construct(array $config, array $options = [])
     {
         parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();
@@ -63,43 +66,42 @@ class Clickatell extends AbstractBase
     /**
      * Send a text message to the specified provider.
      *
-     * @param string $provider The provider ID to send to
-     * @param string $to       The phone number at the provider
-     * @param string $from     The email address to use as sender
-     * @param string $message  The message to send
+     * @param string  $provider The provider ID to send to
+     * @param string  $to       The phone number at the provider
+     * @param ?string $from     The email address to use as sender (null for default)
+     * @param string  $message  The message to send
      *
      * @throws \VuFind\Exception\Mail
      * @return void
      */
-    public function text($provider, $to, $from, $message)
+    public function text(string $provider, string $to, ?string $from, string $message): void
     {
         $url = $this->getApiUrl($to, $message);
         try {
             $result = $this->client->setMethod('GET')->setUri($url)->send();
         } catch (\Exception $e) {
-            throw new MailException($e->getMessage());
+            throw new SMSException($e->getMessage(), SMSException::ERROR_UNKNOWN);
         }
         $response = $result->isSuccess() ? trim($result->getBody()) : '';
         if (empty($response)) {
-            throw new MailException('Problem sending text.');
+            throw new SMSException('Problem sending text.', SMSException::ERROR_UNKNOWN);
         }
-        if ('ID:' !== substr($response, 0, 3)) {
-            throw new MailException($response);
+        if (!str_starts_with($response, 'ID:')) {
+            throw new SMSException($response, SMSException::ERROR_UNKNOWN);
         }
-        return true;
     }
 
     /**
-     * Get a list of carriers supported by the module.  Returned as an array of
+     * Get a list of carriers supported by the module. Returned as an array of
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *
      * @return array
      */
-    public function getCarriers()
+    public function getCarriers(): array
     {
         return [
-            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
         ];
     }
 
@@ -108,9 +110,9 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiUsername()
+    protected function getApiUsername(): string
     {
-        return $this->smsConfig->Clickatell->user ?? null;
+        return $this->smsConfig['Clickatell']['user'] ?? '';
     }
 
     /**
@@ -118,9 +120,9 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiPassword()
+    protected function getApiPassword(): string
     {
-        return $this->smsConfig->Clickatell->password ?? null;
+        return $this->smsConfig['Clickatell']['password'] ?? '';
     }
 
     /**
@@ -128,9 +130,9 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiId()
+    protected function getApiId(): string
     {
-        return $this->smsConfig->Clickatell->api_id ?? null;
+        return $this->smsConfig['Clickatell']['api_id'] ?? '';
     }
 
     /**
@@ -141,19 +143,19 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function getApiUrl($to, $message)
+    protected function getApiUrl(string $to, string $message): string
     {
         // Get base URL:
-        $url = isset($this->smsConfig->Clickatell->url)
-            ? trim($this->smsConfig->Clickatell->url, '?')
-            : "https://api.clickatell.com/http/sendmsg";
+        $url = isset($this->smsConfig['Clickatell']['url'])
+            ? trim($this->smsConfig['Clickatell']['url'], '?')
+            : 'https://api.clickatell.com/http/sendmsg';
 
         // Add parameters to URL:
-        $url .= "?api_id=" . urlencode($this->getApiId());
-        $url .= "&user=" . urlencode($this->getApiUsername());
-        $url .= "&password=" . urlencode($this->getApiPassword());
-        $url .= "&to=" . urlencode($this->filterPhoneNumber($to));
-        $url .= "&text=" . urlencode($this->formatMessage($message));
+        $url .= '?api_id=' . urlencode($this->getApiId());
+        $url .= '&user=' . urlencode($this->getApiUsername());
+        $url .= '&password=' . urlencode($this->getApiPassword());
+        $url .= '&to=' . urlencode($this->filterPhoneNumber($to));
+        $url .= '&text=' . urlencode($this->formatMessage($message));
 
         return $url;
     }
@@ -165,13 +167,14 @@ class Clickatell extends AbstractBase
      *
      * @return string
      */
-    protected function formatMessage($message)
+    protected function formatMessage(string $message): string
     {
         // Clickatell expects UCS-2 encoding:
         if (!function_exists('iconv')) {
-            // @codeCoverageIgnoreStart
-            throw new MailException('Clickatell requires iconv PHP extension.');
-            // @codeCoverageIgnoreEnd
+            throw new SMSException(
+                'Clickatell requires iconv PHP extension.',
+                SMSException::ERROR_UNKNOWN
+            );
         }
         // Normalize UTF-8 if intl extension is installed:
         if (class_exists('Normalizer')) {

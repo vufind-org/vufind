@@ -1,8 +1,9 @@
 <?php
+
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,13 +27,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use VuFind\Connection\OpenLibrary;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function intval;
+use function is_object;
+
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * This class provides recommendations by doing a search of the catalog; useful
  * for displaying catalog recommendations in other modules (i.e. Summon, Web, etc.)
@@ -44,55 +49,56 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class OpenLibrarySubjects implements RecommendInterface,
+class OpenLibrarySubjects implements
+    RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Parameter to use for search terms
+     * Parameter to use for search terms.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Search limit
+     * Search limit.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Field to use for date filtering
+     * Field to use for date filtering.
      *
      * @var string
      */
     protected $pubFilter;
 
     /**
-     * Date filter to apply
+     * Date filter to apply.
      *
      * @var string
      */
     protected $publishedIn = '';
 
     /**
-     * Subject to search for
+     * Subject to search for.
      *
      * @var string
      */
     protected $subject;
 
     /**
-     * Subject types to use
+     * Subject types to use.
      *
      * @var array
      */
     protected $subjectTypes;
 
     /**
-     * Result of search (false if none)
+     * Result of search (false if none).
      *
      * @var array|bool
      */
@@ -118,11 +124,7 @@ class OpenLibrarySubjects implements RecommendInterface,
             $this->pubFilter = false;
         }
 
-        if (isset($params[3])) {
-            $this->subjectTypes = explode(',', $params[3]);
-        } else {
-            $this->subjectTypes = ["topic"];
-        }
+        $this->subjectTypes = isset($params[3]) ? explode(',', $params[3]) : ['topic'];
 
         // A 4th parameter is not specified in searches.ini, if it exists
         //     it has been passed in by an AJAX call and carries the
@@ -161,7 +163,7 @@ class OpenLibrarySubjects implements RecommendInterface,
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -173,7 +175,6 @@ class OpenLibrarySubjects implements RecommendInterface,
     {
         // Only proceed if we have a request parameter value
         if (!empty($this->subject)) {
-            $result = [];
             $ol = new OpenLibrary($this->httpService->createClient());
             $result = $ol->getSubjects(
                 $this->subject,
@@ -188,7 +189,7 @@ class OpenLibrarySubjects implements RecommendInterface,
 
             if (!empty($result)) {
                 $this->result = [
-                    'worksArray' => $result, 'subject' => $this->subject
+                    'worksArray' => $result, 'subject' => $this->subject,
                 ];
             }
         }
@@ -196,7 +197,7 @@ class OpenLibrarySubjects implements RecommendInterface,
 
     /**
      * Support function to get publication date range. Return string in the form
-     * "YYYY-YYYY"
+     * "YYYY-YYYY".
      *
      * @param string                     $field   Name of filter field to check for
      * date limits

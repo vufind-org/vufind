@@ -1,0 +1,19 @@
+[
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "comment": "login attempt",
+        "expectedMethod": "POST",
+        "expectedPath": "/authn/login",
+        "expectedParams": "{\"tenant\":\"legacy_tenant\",\"username\":\"foo\",\"password\":\"bar\"}"
+    },
+    {
+        "comment": "profile retrieval",
+        "expectedPath": "/users",
+        "expectedParams": {
+            "query": "username == foo"
+        },
+        "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\", \"addresses\": [] } } ] }"
+    }
+]

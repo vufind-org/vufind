@@ -1,0 +1,19 @@
+<?php $summonTopics = $this->recommend->getResults(); ?>
+<?php if (!empty($summonTopics)): $summonTopics = current($summonTopics); ?>
+<div class="authorbox">
+  <p><b><?=$this->transEsc('Suggested Topics')?></b></p>
+  <?php if (isset($summonTopics['title'])): ?>
+    <p>
+      <a href="<?=$this->url('summon-search')?>?lookfor=%22<?=urlencode($summonTopics['title'])?>%22"><?=$this->escapeHtml($summonTopics['title'])?></a><br>
+      <?php if (isset($summonTopics['snippet'])): ?><?=$this->escapeHtml($summonTopics['snippet'])?><?php endif; ?>
+      <?php if (isset($summonTopics['sourceLink'])): ?><a href="<?=$this->escapeHtmlAttr($summonTopics['sourceLink'])?>"><?=$this->transEsc('more_ellipsis')?></a><?php endif; ?>
+    </p>
+  <?php endif; ?>
+  <?php if (isset($summonTopics['relatedTopics']) && !empty($summonTopics['relatedTopics'])): ?>
+    <p>
+      <b><?=$this->transEsc('wcterms_exact')?>:</b>
+      <?php foreach ($summonTopics['relatedTopics'] as $i => $topic): ?><?php if ($i > 0): ?>, <?php endif; ?><a href="<?=$this->url('summon-search')?>?lookfor=%22<?=urlencode($topic['title'])?>%22"><?=$this->escapeHtml($topic['title'])?></a><?php endforeach; ?>
+    </p>
+  <?php endif; ?>
+</div>
+<?php endif; ?>

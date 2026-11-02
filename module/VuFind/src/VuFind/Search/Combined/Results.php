@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Combined results search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Combined;
 
 /**
@@ -39,14 +41,14 @@ namespace VuFind\Search\Combined;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Not relevant:
         return [];
@@ -54,12 +56,12 @@ class Results extends \VuFind\Search\Base\Results
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
-     * on the parameters passed to the object.  This method is responsible for
+     * on the parameters passed to the object. This method is responsible for
      * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         // No actual processing goes on here, but we still need the class to
         // generate recommendation module output.

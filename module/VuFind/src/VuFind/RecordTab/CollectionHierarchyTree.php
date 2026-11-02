@@ -1,8 +1,9 @@
 <?php
+
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -39,52 +43,45 @@ namespace VuFind\RecordTab;
 class CollectionHierarchyTree extends HierarchyTree
 {
     /**
-     * Record loader
+     * Constructor.
      *
-     * @var \VuFind\Record\Loader
-     */
-    protected $loader;
-
-    /**
-     * Constructor
-     *
-     * @param \Laminas\Config\Config $config Configuration
-     * @param \VuFind\Record\Loader  $loader Record loader
+     * @param array                 $config Configuration
+     * @param \VuFind\Record\Loader $loader Record loader
      */
     public function __construct(
-        \Laminas\Config\Config $config,
-        \VuFind\Record\Loader $loader
+        #[Autowire(config: 'config')]
+        array $config,
+        protected \VuFind\Record\Loader $loader
     ) {
         parent::__construct($config);
-        $this->loader = $loader;
     }
 
     /**
-     * Render a hierarchy tree
+     * Render a hierarchy tree.
      *
-     * @param string $baseUrl Base URL to use in links within tree
-     * @param string $id      Hierarchy ID (omit to use active tree)
-     * @param string $context Context for use by renderer
+     * @param ?string $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $context Context for use by renderer or null for default
+     * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree($baseUrl, $id = null, $context = 'Collection')
+    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
     {
         // Same as parent -- we just have a different default context:
-        return parent::renderTree($baseUrl, $id, $context);
+        return parent::renderTree($id, $context ?? 'Collection', $options);
     }
 
     /**
-     * Get the current active record.  Returns record driver if found, false
-     * if no record requested, null if ID invalid.
+     * Get the current active record. Returns record driver if there is an active
+     * record or null otherwise.
      *
-     * @return mixed
+     * @return ?\VuFind\RecordDriver\AbstractBase
      */
-    public function getActiveRecord()
+    public function getActiveRecord(): ?\VuFind\RecordDriver\AbstractBase
     {
-        $id = $this->getRequest()->getQuery('recordID', false);
-        if ($id === false) {
-            return $id;
+        $id = $this->getRequest()->getQuery('recordID');
+        if (null === $id) {
+            return $this->driver;
         }
         try {
             return $this->loader->load($id);

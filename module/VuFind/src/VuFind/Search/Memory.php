@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VuFind Search Memory
+ * VuFind Search Memory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,12 +26,21 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
+use Laminas\Http\Request;
 use Laminas\Session\Container;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function array_key_exists;
+use function intval;
+use function strlen;
 
 /**
- * Wrapper class to handle search memory
+ * Wrapper class to handle search memory.
  *
  * @category VuFind
  * @package  Search
@@ -41,27 +51,35 @@ use Laminas\Session\Container;
 class Memory
 {
     /**
-     * Is memory currently active? (i.e. will we save new URLs?)
+     * Is memory currently active? (i.e. will we save new URLs?).
      *
      * @var bool
      */
     protected $active = true;
 
     /**
-     * Session container
+     * Cached searches.
      *
-     * @var Container
+     * @var array
      */
-    protected $session;
+    protected $searchCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Container $session Session container for storing URLs (optional)
+     * @param Container              $session        Session container for storing URLs
+     * @param string                 $sessionId      Current session ID
+     * @param Request                $request        Request
+     * @param SearchServiceInterface $searchService  Search service
+     * @param ResultsManager         $resultsManager Results plugin manager
      */
-    public function __construct(Container $session)
-    {
-        $this->session = $session;
+    public function __construct(
+        protected Container $session,
+        protected string $sessionId,
+        protected Request $request,
+        protected SearchServiceInterface $searchService,
+        protected ResultsManager $resultsManager
+    ) {
     }
 
     /**
@@ -83,6 +101,7 @@ class Memory
     public function forgetSearch()
     {
         unset($this->session->last);
+        unset($this->session->lastId);
     }
 
     /**
@@ -136,10 +155,11 @@ class Memory
      * Store the last accessed search URL in the session for future reference.
      *
      * @param string $url URL to remember
+     * @param int    $id  Search ID to remember
      *
      * @return void
      */
-    public function rememberSearch($url)
+    public function rememberSearch($url, $id = null)
     {
         // Do nothing if disabled.
         if (!$this->active) {
@@ -149,6 +169,9 @@ class Memory
         // Only remember URL if string is non-empty... otherwise clear the memory.
         if (strlen(trim($url)) > 0) {
             $this->session->last = $url;
+            if ($id) {
+                $this->session->lastId = $id;
+            }
         } else {
             $this->forgetSearch();
         }
@@ -170,7 +193,7 @@ class Memory
     }
 
     /**
-     * Retrieve last accessed search URL, if available.  Returns null if no URL
+     * Retrieve last accessed search URL, if available. Returns null if no URL
      * is available.
      *
      * @return string|null
@@ -178,5 +201,73 @@ class Memory
     public function retrieveSearch()
     {
         return $this->session->last ?? null;
+    }
+
+    /**
+     * Get current search id.
+     *
+     * @return ?int
+     */
+    public function getCurrentSearchId(): ?int
+    {
+        $sid = $this->request->getQuery('sid')
+            ?? $this->request->getPost('sid');
+        return intval($sid) ?: null;
+    }
+
+    /**
+     * Get current search.
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getCurrentSearch(): ?\VuFind\Search\Base\Results
+    {
+        if (!($id = $this->getCurrentSearchId())) {
+            return null;
+        }
+        return $this->getSearchById($id);
+    }
+
+    /**
+     * Get latest search id from current request or session.
+     *
+     * @return ?int
+     */
+    public function getLastSearchId(): ?int
+    {
+        $id = $this->getCurrentSearchId() ?? $this->session->lastId;
+        return $id ? (int)$id : null;
+    }
+
+    /**
+     * Get latest search from current request or session.
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getLastSearch(): ?\VuFind\Search\Base\Results
+    {
+        if (!($id = $this->getLastSearchId())) {
+            return null;
+        }
+        return $this->getSearchById($id);
+    }
+
+    /**
+     * Get a search by id.
+     *
+     * @param int                  $id   Search ID
+     * @param ?UserEntityInterface $user Currently logged-in user to also check saved searches
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getSearchById(int $id, ?UserEntityInterface $user = null): ?\VuFind\Search\Base\Results
+    {
+        $userId = $user?->getId();
+        $cacheKey = $userId ? "{$id}_$userId" : $id;
+        if (!array_key_exists($cacheKey, $this->searchCache)) {
+            $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, $user);
+            $this->searchCache[$cacheKey] = $search?->getSearchObject()?->deminify($this->resultsManager);
+        }
+        return $this->searchCache[$cacheKey];
     }
 }

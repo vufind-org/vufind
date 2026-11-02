@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ILS driver plugin manager
+ * ILS driver plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * ILS driver plugin manager
+ * ILS driver plugin manager.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'aleph' => Aleph::class,
         'alma' => Alma::class,
         'amicus' => Amicus::class,
+        'composeddriver' => ComposedDriver::class,
         'daia' => DAIA::class,
         'demo' => Demo::class,
         'evergreen' => Evergreen::class,
@@ -66,7 +67,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'paia' => PAIA::class,
         'polaris' => Polaris::class,
         'sample' => Sample::class,
-        'sierra' => Sierra::class,
         'sierrarest' => SierraRest::class,
         'symphony' => Symphony::class,
         'unicorn' => Unicorn::class,
@@ -82,38 +82,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Aleph::class => AlephFactory::class,
-        Alma::class => AlmaFactory::class,
-        Amicus::class => InvokableFactory::class,
+        Alma::class => DriverWithDateConverterFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
-        Demo::class => DemoFactory::class,
         Evergreen::class => DriverWithDateConverterFactory::class,
-        Folio::class => FolioFactory::class,
-        GeniePlus::class => GeniePlusFactory::class,
         Horizon::class => DriverWithDateConverterFactory::class,
         HorizonXMLAPI::class => DriverWithDateConverterFactory::class,
-        Innovative::class => InvokableFactory::class,
         Koha::class => DriverWithDateConverterFactory::class,
         KohaILSDI::class => DriverWithDateConverterFactory::class,
-        KohaRest::class => KohaRestFactory::class,
-        MultiBackend::class => MultiBackendFactory::class,
-        NewGenLib::class => InvokableFactory::class,
-        NoILS::class => NoILSFactory::class,
-        PAIA::class => PAIAFactory::class,
-        Polaris::class => InvokableFactory::class,
-        Sample::class => InvokableFactory::class,
-        Sierra::class => InvokableFactory::class,
-        SierraRest::class => SierraRestFactory::class,
-        Symphony::class => SymphonyFactory::class,
-        Unicorn::class => UnicornFactory::class,
-        Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
-        VoyagerRestful::class => VoyagerRestfulFactory::class,
-        XCNCIP2::class => DriverWithDateConverterFactory::class,
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

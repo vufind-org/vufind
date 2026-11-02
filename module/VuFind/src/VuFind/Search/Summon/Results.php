@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Summon Search Results
+ * Summon Search Results.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Summon;
 
+use VuFindSearch\Command\SearchCommand;
+
+use function in_array;
+use function is_array;
+
 /**
- * Summon Search Parameters
+ * Summon Search Parameters.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -41,37 +48,37 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Facet details:
      *
+     * @var ?array
+     */
+    protected ?array $responseFacets = null;
+
+    /**
+     * Best bets.
+     *
      * @var array
      */
-    protected $responseFacets = null;
+    protected array $bestBets = [];
 
     /**
-     * Best bets
+     * Database recommendations.
      *
-     * @var array|bool
+     * @var array
      */
-    protected $bestBets = false;
+    protected array $databaseRecommendations = [];
 
     /**
-     * Database recommendations
+     * Topic recommendations.
      *
-     * @var array|bool
+     * @var array
      */
-    protected $databaseRecommendations = false;
-
-    /**
-     * Topic recommendations
-     *
-     * @var array|bool
-     */
-    protected $topicRecommendations = false;
+    protected array $topicRecommendations = [];
 
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'Summon';
+    protected ?string $backendId = 'Summon';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -79,20 +86,21 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
             $params
         );
-
+        $collection = $this->getSearchService()
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
@@ -117,7 +125,7 @@ class Results extends \VuFind\Search\Base\Results
                 $this->responseFacets[] = [
                     'fieldName' => $dateFacet,
                     'displayName' => $dateFacet,
-                    'counts' => []
+                    'counts' => [],
                 ];
             }
         }
@@ -127,14 +135,14 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Make sure we have processed the search before proceeding:
         if (null === $this->responseFacets) {
@@ -146,7 +154,7 @@ class Results extends \VuFind\Search\Base\Results
             ? $this->getParams()->getFacetConfig()
             : $this->stripFilterParameters($filter);
 
-        // We want to sort the facets to match the order in the .ini file.  Let's
+        // We want to sort the facets to match the order in the .ini file. Let's
         // create a lookup array to determine order:
         $order = array_flip(array_keys($filter));
 
@@ -192,7 +200,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array           Processed filter list
      */
-    protected function stripFilterParameters($rawFilter)
+    protected function stripFilterParameters(array $rawFilter): array
     {
         $filter = [];
         foreach ($rawFilter as $key => $value) {
@@ -210,7 +218,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array         Formatted data
      */
-    protected function formatFacetData($current)
+    protected function formatFacetData(array $current): array
     {
         // We'll need this in the loop below:
         $filterList = $this->getParams()->getRawFilters();
@@ -237,7 +245,7 @@ class Results extends \VuFind\Search\Base\Results
             }
 
             // We need to check two things to determine if the current
-            // value is an applied filter.  First, is the current field
+            // value is an applied filter. First, is the current field
             // present in the filter list?  Second, is the current value
             // an active filter for the current field?
             $orField = '~' . $field;
@@ -269,19 +277,20 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Process spelling suggestions from the results object
+     * Process spelling suggestions from the results object.
      *
      * @param array $spelling Suggestions from Summon
      *
      * @return void
      */
-    protected function processSpelling($spelling)
+    protected function processSpelling(array $spelling): void
     {
         $this->suggestions = [];
         foreach ($spelling as $current) {
+            $current = $current['suggestion'];
             if (!isset($this->suggestions[$current['originalQuery']])) {
                 $this->suggestions[$current['originalQuery']] = [
-                    'suggestions' => []
+                    'suggestions' => [],
                 ];
             }
             $this->suggestions[$current['originalQuery']]['suggestions'][]
@@ -295,7 +304,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array Spelling suggestion data arrays
      */
-    public function getSpellingSuggestions()
+    public function getSpellingSuggestions(): array
     {
         $retVal = [];
         foreach ($this->getRawSuggestions() as $term => $details) {
@@ -312,9 +321,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get best bets from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
-    public function getBestBets()
+    public function getBestBets(): array
     {
         return $this->bestBets;
     }
@@ -322,9 +331,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get database recommendations from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
-    public function getDatabaseRecommendations()
+    public function getDatabaseRecommendations(): array
     {
         return $this->databaseRecommendations;
     }
@@ -332,34 +341,34 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get topic recommendations from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
-    public function getTopicRecommendations()
+    public function getTopicRecommendations(): array
     {
         return $this->topicRecommendations;
     }
 
     /**
-     * Get complete facet counts for several index fields
+     * Get complete facet counts for several index fields.
      *
-     * @param array  $facetfields  name of the Solr fields to return facets for
-     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * @param array   $facetfields  name of the Solr fields to return facets for
+     * @param bool    $removeFilter Clear existing filters from selected fields (true)
      * or retain them (false)?
-     * @param int    $limit        A limit for the number of facets returned, this
+     * @param int     $limit        A limit for the number of facets returned, this
      * may be useful for very large amounts of facets that can break the JSON parse
      * method because of PHP out of memory exceptions (default = -1, no limit).
-     * @param string $facetSort    A facet sort value to use (null to retain current)
-     * @param int    $page         1 based. Offsets results by limit.
+     * @param ?string $facetSort    A facet sort value to use (null to retain current)
+     * @param ?int    $page         1 based. Offsets results by limit.
      *
      * @return array an array with the facet values for each index field
      */
     public function getPartialFieldFacets(
-        $facetfields,
-        $removeFilter = true,
-        $limit = -1,
-        $facetSort = null,
-        $page = null
-    ) {
+        array $facetfields,
+        bool $removeFilter = true,
+        int $limit = -1,
+        ?string $facetSort = null,
+        ?int $page = null
+    ): array {
         $params = $this->getParams();
         $query  = $params->getQuery();
         // No limit not implemented with Summon: cause page loop
@@ -383,14 +392,15 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
         $params = $params->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             0,
             0,
             $params
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $facets = $collection->getFacets();
         $ret = [];
         foreach ($facets as $data) {
@@ -402,7 +412,7 @@ class Results extends \VuFind\Search\Base\Results
                         'label' => $data['displayName'],
                         'list' => $list,
                     ],
-                    'more' => null
+                    'more' => null,
                 ];
             }
         }

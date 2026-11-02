@@ -1,10 +1,11 @@
 <?php
+
 /**
- * BrowZine aspect of the Search Multi-class (Results)
+ * BrowZine aspect of the Search Multi-class (Results).
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2017, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_BrowZine
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\BrowZine;
 
+use VuFindSearch\Command\SearchCommand;
+
 /**
- * BrowZine Search Results
+ * BrowZine Search Results.
  *
  * @category VuFind
  * @package  Search_BrowZine
@@ -41,19 +45,19 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'BrowZine';
+    protected ?string $backendId = 'BrowZine';
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Not supported
         return [];
@@ -61,23 +65,24 @@ class Results extends \VuFind\Search\Base\Results
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
-     * on the parameters passed to the object.  This method is responsible for
+     * on the parameters passed to the object. This method is responsible for
      * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $this->resultTotal = $collection->getTotal();
 
         // Construct record drivers for all the items in the response:

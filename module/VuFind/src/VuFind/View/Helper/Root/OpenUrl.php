@@ -1,8 +1,9 @@
 <?php
+
 /**
- * OpenUrl view helper
+ * OpenUrl view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Resolver\Driver\PluginManager;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 /**
- * OpenUrl view helper
+ * OpenUrl view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,72 +44,40 @@ use VuFind\Resolver\Driver\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class OpenUrl extends \Laminas\View\Helper\AbstractHelper
+class OpenUrl
 {
     /**
-     * Context helper
-     *
-     * @var \VuFind\View\Helper\Root\Context
-     */
-    protected $context;
-
-    /**
-     * VuFind OpenURL configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * OpenURL rules
-     *
-     * @var array
-     */
-    protected $openUrlRules;
-
-    /**
-     * Resolver plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $resolverPluginManager;
-
-    /**
-     * Current RecordDriver
+     * Current RecordDriver.
      *
      * @var \VuFind\RecordDriver
      */
     protected $recordDriver;
 
     /**
-     * OpenURL context ('results', 'record' or 'holdings')
+     * OpenURL context ('results', 'record' or 'holdings').
      *
      * @var string
      */
     protected $area;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Context                $context       Context helper
-     * @param array                  $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager          $pluginManager Resolver plugin manager
-     * @param \Laminas\Config\Config $config        VuFind OpenURL config
+     * @param Context       $context       Context helper
+     * @param array         $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager $pluginManager Resolver plugin manager
+     * @param ?array        $config        VuFind OpenURL config
      */
     public function __construct(
-        Context $context,
-        $openUrlRules,
-        PluginManager $pluginManager,
-        $config = null
+        protected Context $context,
+        protected array $openUrlRules,
+        protected PluginManager $pluginManager,
+        protected ?array $config = null
     ) {
-        $this->context = $context;
-        $this->openUrlRules = $openUrlRules;
-        $this->resolverPluginManager = $pluginManager;
-        $this->config = $config;
     }
 
     /**
-     * Set up context for helper
+     * Set up context for helper.
      *
      * @param \VuFind\RecordDriver $driver The current record driver
      * @param string               $area   OpenURL context ('results', 'record'
@@ -127,7 +101,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    protected function addImageBasedParams($imagebased, & $params)
+    protected function addImageBasedParams($imagebased, &$params)
     {
         $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
         $params['openUrlImageBasedSrc'] = null;
@@ -137,7 +111,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         }
 
         if ($imagebased) {
-            if (!isset($this->config->dynamic_graphic)) {
+            if (!isset($this->config['dynamic_graphic'])) {
                 // if imagebased linking is forced by the template, but it is not
                 // configured properly, throw an exception
                 throw new \Exception(
@@ -154,11 +128,11 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 
             // Concatenate image based OpenUrl base and OpenUrl
             // to a usable image reference
-            $base = $this->config->dynamic_graphic;
+            $base = $this->config['dynamic_graphic'];
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
-                . ((false === strpos($base, '?')) ? '?' : '&')
+                . ((!str_contains($base, '?')) ? '?' : '&')
                 . $imageOpenUrl;
         }
 
@@ -166,7 +140,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to render the OpenURL template
+     * Public method to render the OpenURL template.
      *
      * @param bool $imagebased Indicates if an image based link
      * should be displayed or not (null for system default)
@@ -175,20 +149,21 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
      */
     public function renderTemplate($imagebased = null)
     {
-        if (null !== $this->config && isset($this->config->url)) {
+        if (isset($this->config['url'])) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            [$base] = explode('?', $this->config->url);
+            [$base] = explode('?', $this->config['url']);
         } else {
             $base = false;
         }
 
-        $embed = (isset($this->config->embed) && !empty($this->config->embed));
+        $embed = (!empty($this->config['embed']));
 
-        $embedAutoLoad = $this->config->embed_auto_load ?? false;
+        $embedAutoLoad = $this->config['embed_auto_load'] ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
-        if (!($embedAutoLoad === "1" || $embedAutoLoad === "0")
+        if (
+            $embedAutoLoad !== '1' && $embedAutoLoad !== '0'
             && !empty($this->area)
         ) {
             // embedAutoLoad is neither true nor false, so check if it contains an
@@ -206,68 +181,73 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         }
 
         // instantiate the resolver plugin to get a proper resolver link
-        $resolver = $this->config->resolver ?? 'other';
+        $resolver = $this->config['resolver'] ?? 'other';
         $openurl = $this->recordDriver->getOpenUrl();
-        if ($this->resolverPluginManager->has($resolver)) {
+        if ($this->pluginManager->has($resolver)) {
             $resolverObj = new \VuFind\Resolver\Connection(
-                $this->resolverPluginManager->get($resolver)
+                $this->pluginManager->get($resolver)
             );
             $resolverUrl = $resolverObj->getResolverUrl($openurl);
+            $moreOptionsUrl = $resolverObj->supportsMoreOptionsLink()
+                ? $resolverObj->getResolverUrlForMoreOptions($openurl)
+                : null;
         } else {
             $resolverUrl = empty($base) ? '' : $base . '?' . $openurl;
+            $moreOptionsUrl = null;
         }
 
         // Build parameters needed to display the control:
         $params = [
             'resolverUrl' => $resolverUrl,
+            'moreOptionsUrl' => $moreOptionsUrl,
             'openUrl' => $openurl,
             'openUrlBase' => empty($base) ? false : $base,
-            'openUrlWindow' => empty($this->config->window_settings)
-                ? false : $this->config->window_settings,
-            'openUrlGraphic' => empty($this->config->graphic)
-                ? false : $this->config->graphic,
-            'openUrlGraphicWidth' => empty($this->config->graphic_width)
-                ? false : $this->config->graphic_width,
-            'openUrlGraphicHeight' => empty($this->config->graphic_height)
-                ? false : $this->config->graphic_height,
+            'openUrlWindow' => empty($this->config['window_settings'])
+                ? false : $this->config['window_settings'],
+            'openUrlGraphic' => empty($this->config['graphic'])
+                ? false : $this->config['graphic'],
+            'openUrlGraphicWidth' => empty($this->config['graphic_width'])
+                ? false : $this->config['graphic_width'],
+            'openUrlGraphicHeight' => empty($this->config['graphic_height'])
+                ? false : $this->config['graphic_height'],
             'openUrlEmbed' => $embed,
-            'openUrlEmbedAutoLoad' => $embedAutoLoad
+            'openUrlEmbedAutoLoad' => $embedAutoLoad,
         ];
         $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
-        return ($this->context)($this->getView())
-            ->renderInContext('Helpers/openurl.phtml', $params);
+        return $this->context->renderInContext('Helpers/openurl.phtml', $params);
     }
 
     /**
-     * Public method to check ImageBased Linking mode
+     * Public method to check ImageBased Linking mode.
      *
      * @return string|bool false if image based linking is not active,
      * config image_based_linking_mode otherwise (default = 'both')
      */
     public function getImageBasedLinkingMode()
     {
-        if ($this->imageBasedLinkingIsActive()
-            && isset($this->config->image_based_linking_mode)
+        if (
+            $this->imageBasedLinkingIsActive()
+            && isset($this->config['image_based_linking_mode'])
         ) {
-            return $this->config->image_based_linking_mode;
+            return $this->config['image_based_linking_mode'];
         }
         return $this->imageBasedLinkingIsActive() ? 'both' : false;
     }
 
     /**
-     * Public method to check if ImageBased Linking is enabled
+     * Public method to check if ImageBased Linking is enabled.
      *
      * @return bool
      */
     public function imageBasedLinkingIsActive()
     {
-        return isset($this->config->dynamic_graphic);
+        return isset($this->config['dynamic_graphic']);
     }
 
     /**
-     * Public method to check whether OpenURLs are active for current record
+     * Public method to check whether OpenURLs are active for current record.
      *
      * @return bool
      */
@@ -276,13 +256,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check last if any rules apply
-        if (!$this->recordDriver->getOpenUrl()
-            || !$this->checkContext()
-            || !$this->checkIfRulesApply()
-        ) {
-            return false;
-        }
-        return true;
+        return $this->recordDriver->getOpenUrl() && $this->checkContext() && $this->checkIfRulesApply();
     }
 
     /**
@@ -294,14 +268,14 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     protected function checkContext()
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
-        if (!isset($this->config->url)) {
+        if (empty($this->config['url'])) {
             return false;
         }
 
         // If a setting exists, return that:
         $key = 'show_in_' . $this->area;
-        if (isset($this->config->$key)) {
-            return $this->config->$key;
+        if (isset($this->config[$key])) {
+            return $this->config[$key];
         }
 
         // If we got this far, use the defaults -- true for results, false for
@@ -318,11 +292,12 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     {
         // special case if no rules are defined at all assume that any record is
         // valid for openUrls
-        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+        if (!$this->openUrlRules) {
             return true;
         }
         foreach ($this->openUrlRules as $rules) {
-            if (!$this->checkExcludedRecordsRules($rules)
+            if (
+                !$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)
             ) {
                 return true;
@@ -333,7 +308,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Check if "exclude" rules from the OpenUrlRules.json file apply to
-     * the current record
+     * the current record.
      *
      * @param array $resolverDriverRules Array of rules for a specific resolverDriver
      *
@@ -351,7 +326,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Check if "include" rules from the OpenUrlRules.json file apply to
-     * the current record
+     * the current record.
      *
      * @param array $resolverDriverRules Array of rules for a specific resolverDriver
      *
@@ -407,14 +382,16 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
                     // and still have something left behind, then the match fails
                     // as long as SOME non-empty value was provided.
                     $requiredValues = array_diff($value, ['*']);
-                    if (!count(array_diff($requiredValues, $recordValue))
+                    if (
+                        !count(array_diff($requiredValues, $recordValue))
                         && $this->hasNonEmptyValue($recordValue)
                     ) {
                         $ruleMatchCounter++;
                     }
                 } else {
                     $valueCount = count($value);
-                    if ($valueCount == count($recordValue)
+                    if (
+                        $valueCount == count($recordValue)
                         && $valueCount == count(
                             array_intersect($value, $recordValue)
                         )
@@ -431,7 +408,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Checks if rules from the OpenUrlRules.json file apply to the current
-     * record
+     * record.
      *
      * @param array $ruleset Array of rules to be checked
      *
@@ -442,7 +419,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // check each rule - first rule-match
         foreach ($ruleset as $rule) {
             // skip this rule if it's not relevant for the current RecordDriver
-            if (isset($rule['recorddriver'])
+            if (
+                isset($rule['recorddriver'])
                 && !($this->recordDriver instanceof $rule['recorddriver'])
             ) {
                 continue;

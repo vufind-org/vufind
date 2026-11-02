@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
- * Class ObalkyKnih
+ * Class ObalkyKnih.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -18,8 +17,8 @@ declare(strict_types=1);
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -27,12 +26,15 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\Content\Covers;
 
 use VuFind\Content\ObalkyKnihService;
 
 /**
- * Class ObalkyKnih
+ * Class ObalkyKnih.
  *
  * @category VuFind
  * @package  Content
@@ -43,14 +45,14 @@ use VuFind\Content\ObalkyKnihService;
 class ObalkyKnih extends \VuFind\Content\AbstractCover
 {
     /**
-     * Obalky knih service
+     * Obalky knih service.
      *
      * @var ObalkyKnihService
      */
     protected $service;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ObalkyKnihService $service Service for getting metadata from
      * obalkyknih.cz
@@ -91,18 +93,18 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
             return false;
         }
         switch ($size) {
-        case 'small':
-            $imageUrl = $data->cover_icon_url ?? false;
-            break;
-        case 'medium':
-            $imageUrl = $data->cover_medium_url ?? false;
-            break;
-        case 'large':
-            $imageUrl = $data->cover_preview510_url ?? false;
-            break;
-        default:
-            $imageUrl = $data->cover_medium_url ?? false;
-            break;
+            case 'small':
+                $imageUrl = $data->cover_icon_url ?? false;
+                break;
+            case 'medium':
+                $imageUrl = $data->cover_medium_url ?? false;
+                break;
+            case 'large':
+                $imageUrl = $data->cover_preview510_url ?? false;
+                break;
+            default:
+                $imageUrl = $data->cover_medium_url ?? false;
+                break;
         }
         return $imageUrl;
     }
@@ -126,7 +128,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
             return [
                 'url' => $url,
                 'backlink_url' => $data->backlink_url ?? '',
-                'backlink_text' => 'ObálkyKnih.cz'
+                'backlink_text' => 'ObálkyKnih.cz',
             ];
         }
         return [];

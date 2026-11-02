@@ -1,0 +1,17 @@
+<?php
+  $expandFacetSet = $this->recommend->getExpandedSet();
+  // Get empty search object to use as basis for parameter generation below:
+  $blankResults = $this->recommend->getEmptyResults();
+?>
+<?php if ($expandFacetSet): ?>
+  <div class="sidegroup">
+ <?php foreach ($expandFacetSet as $title => $cluster): ?>
+    <h2><?=$this->transEsc($cluster['label']) ?></h2>
+    <div class="list-group">
+      <?php foreach ($cluster['list'] as $thisFacet): ?>
+        <a class="list-group-item" href="<?=$this->url('search-results') . $blankResults->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a>
+      <?php endforeach; ?>
+    </div>
+ <?php endforeach; ?>
+  </div>
+<?php endif; ?>

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Interface for ILS Drivers
+ * Interface for ILS Drivers.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -25,17 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 /**
- * Catalog Specific Driver Class
+ * Catalog Specific Driver Class.
  *
  * This interface class is the definition of the required methods for
  * interacting with the local catalog.
  *
  * The parameters are of no major concern as you can define the purpose of the
  * parameters for each method for whatever purpose your driver needs.
- * The most important element here is what the method will return.  All methods
+ * The most important element here is what the method will return. All methods
  * may throw exceptions in case of errors.
  *
  * @category VuFind
@@ -69,7 +71,7 @@ interface DriverInterface
     public function init();
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -83,7 +85,7 @@ interface DriverInterface
     public function getStatus($id);
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -96,7 +98,7 @@ interface DriverInterface
     public function getStatuses($ids);
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -110,10 +112,10 @@ interface DriverInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null, array $options = []);
+    public function getHolding($id, ?array $patron = null, array $options = []);
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Search memory factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -33,6 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\Container;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Search memory factory.
@@ -46,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class MemoryFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -62,15 +65,22 @@ class MemoryFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new Container(
             'Search',
-            $container->get(\Laminas\Session\SessionManager::class)
+            $sessionManager
         );
-        return new $requestedName($session);
+        return new $requestedName(
+            $session,
+            $sessionManager->getId(),
+            $container->get('Request'),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class)
+        );
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Default model for records
+ * Default model for records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -25,13 +26,21 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
+use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
+use function count;
+use function in_array;
+use function is_array;
+use function sprintf;
+use function strlen;
+
 /**
- * Default model for records
+ * Default model for records.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -51,14 +60,11 @@ class DefaultRecord extends AbstractBase
     protected $highlight = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
         $mainConfig = null,
@@ -66,8 +72,7 @@ class DefaultRecord extends AbstractBase
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
-        $this->highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
+        $this->highlight = $searchSettings['General']['highlighting'] ?? false;
 
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -84,7 +89,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -118,6 +123,23 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get the subject headings as a flat array of strings.
+     *
+     * @return array Subject headings
+     */
+    public function getAllSubjectHeadingsFlattened()
+    {
+        $headings = [];
+        $subjects = $this->getAllSubjectHeadings();
+        if (is_array($subjects)) {
+            foreach ($subjects as $subj) {
+                $headings[] = implode(' -- ', $subj);
+            }
+        }
+        return $headings;
+    }
+
+    /**
      * Get all record links related to the current record. Each link is returned as
      * array.
      * NB: to use this method you must override it.
@@ -131,7 +153,7 @@ class DefaultRecord extends AbstractBase
      *        ),
      *        ...
      * )
-     * </code>
+     * </code>.
      *
      * @return null|array
      */
@@ -141,15 +163,14 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get Author Information with Associated Data Fields
+     * Get Author Information with Associated Data Fields.
      *
      * @param string $index      The author index [primary, corporate, or secondary]
-     * used to construct a method name for retrieving author data (e.g.
-     * getPrimaryAuthors).
+     * used to construct a method name for retrieving author data (e.g. getPrimaryAuthors).
      * @param array  $dataFields An array of fields to used to construct method
-     * names for retrieving author-related data (e.g., if you pass 'role' the
-     * data method will be similar to getPrimaryAuthorsRoles). This value will also
-     * be used as a key associated with each author in the resulting data array.
+     * names for retrieving author-related data (e.g., if you pass 'role' the data method will
+     * be similar to getPrimaryAuthorsRoles). This value will also be used as a key associated
+     * with each author in the resulting data array.
      *
      * @return array
      */
@@ -236,7 +257,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCallNumbers()
     {
-        return (array)($this->fields['callnumber-raw'] ?? []);
+        return array_unique((array)($this->fields['callnumber-raw'] ?? []));
     }
 
     /**
@@ -280,6 +301,51 @@ class DefaultRecord extends AbstractBase
             }
         }
         return $isbn13;
+    }
+
+    /**
+     * Return all ISBNs found in the record.
+     *
+     * @param string $mode          Mode for returning ISBNs:
+     *  - 'only10' returns only ISBN-10s
+     *  - 'prefer10' returns ISBN-10s if available, otherwise ISBN-13s (default)
+     *  - 'normalize13' returns ISBN-13s, normalizing ISBN-10s to ISBN-13s
+     * @param bool   $filterInvalid Whether to filter out invalid ISBNs
+     *
+     * @return array
+     */
+    public function getCleanISBNs(
+        string $mode = 'prefer10',
+        bool $filterInvalid = true
+    ): array {
+        $isbns = $this->getISBNs();
+        $all = $tens = $thirteens = $invalid = [];
+        foreach ($isbns as $isbn) {
+            // Strip off any unwanted notes:
+            if ($pos = strpos($isbn, ' ')) {
+                $isbn = substr($isbn, 0, $pos);
+            }
+            $isbnObj = new ISBN($isbn);
+            if ($isbnObj->isValid()) {
+                if ($isbn10 = $isbnObj->get10()) {
+                    $normalized
+                        = $mode === 'normalize13' ? $isbnObj->get13() : $isbn10;
+                    $tens[] = $normalized;
+                    $all[] = $normalized;
+                } elseif ($isbn13 = $isbnObj->get13()) {
+                    $thirteens[] = $isbn13;
+                    $all[] = $isbn13;
+                }
+            } elseif (!$filterInvalid) {
+                $invalid[] = $isbn;
+                $all[] = $isbn;
+            }
+        }
+        if ($mode === 'only10') {
+            return array_merge($tens, $invalid);
+        }
+        return $mode === 'prefer10'
+            ? array_merge($tens, $thirteens, $invalid) : $all;
     }
 
     /**
@@ -365,7 +431,7 @@ class DefaultRecord extends AbstractBase
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array
@@ -392,12 +458,12 @@ class DefaultRecord extends AbstractBase
         }
 
         // deduplicate
-        $dedup = function (&$array1, &$array2) {
+        $dedup = function (&$array1, &$array2): void {
             if (!empty($array1) && !empty($array2)) {
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
                     if (isset($array2[$author])) {
-                        $array1[$author] = array_merge(
+                        $array1[$author] = array_merge_recursive(
                             $array1[$author],
                             $array2[$author]
                         );
@@ -411,7 +477,7 @@ class DefaultRecord extends AbstractBase
         $dedup($authors['secondary'], $authors['corporate']);
         $dedup($authors['primary'], $authors['secondary']);
 
-        $dedup_data = function (&$array) {
+        $dedup_data = function (&$array): void {
             foreach ($array as $author => $data) {
                 foreach ($data as $field => $values) {
                     if (is_array($values)) {
@@ -482,14 +548,14 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get primary author information with highlights applied (if applicable)
+     * Get primary author information with highlights applied (if applicable).
      *
      * @return array
      */
     public function getPrimaryAuthorsWithHighlighting()
     {
         $highlights = [];
-        // Create a map of de-highlighted valeus => highlighted values.
+        // Create a map of de-highlighted values => highlighted values.
         foreach ($this->getRawAuthorHighlights() as $current) {
             $dehighlighted = str_replace(
                 ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
@@ -618,7 +684,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get a LCCN, normalised according to info:lccn
+     * Get a LCCN, normalised according to info:lccn.
      *
      * @return string
      */
@@ -630,14 +696,14 @@ class DefaultRecord extends AbstractBase
         // If there is a forward slash (/) in the string, remove it, and remove all
         // characters to the right of the forward slash.
         if (strpos($raw, '/') > 0) {
-            $tmpArray = explode("/", $raw);
+            $tmpArray = explode('/', $raw);
             $raw = $tmpArray[0];
         }
         /* If there is a hyphen in the string:
             a. Remove it.
             b. Inspect the substring following (to the right of) the (removed)
                hyphen. Then (and assuming that steps 1 and 2 have been carried out):
-                    i.  All these characters should be digits, and there should be
+                    i. All these characters should be digits, and there should be
                     six or less.
                     ii. If the length of the substring is less than 6, left-fill the
                     substring with zeros until  the length is six.
@@ -645,8 +711,8 @@ class DefaultRecord extends AbstractBase
         if (strpos($raw, '-') > 0) {
             // haven't checked for i. above. If they aren't all digits, there is
             // nothing that can be done, so might as well leave it.
-            $tmpArray = explode("-", $raw);
-            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, "0", STR_PAD_LEFT);
+            $tmpArray = explode('-', $raw);
+            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, '0', STR_PAD_LEFT);
         }
         return $raw;
     }
@@ -681,17 +747,30 @@ class DefaultRecord extends AbstractBase
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (in_array('Book', $formats)) {
+        if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
         } elseif (in_array('Article', $formats)) {
             return 'Article';
         } elseif (in_array('Journal', $formats)) {
             return 'Journal';
+        } elseif (strlen($this->getCleanISSN()) > 0) {
+            // If the record has an ISSN and we have not already
+            // decided it is an Article, we'll treat it as a Book
+            // if it has an ISBN and is therefore likely part of a
+            // monographic series. Otherwise, we'll treat it as a
+            // Journal.
+            // Anecdotally, some link resolvers do not return correct
+            // results when given both ISBN and ISSN for a member of a
+            // monographic series.
+            return strlen($this->getCleanISBN()) > 0 ? 'Book' : 'Journal';
         } elseif (isset($formats[0])) {
             return $formats[0];
-        } elseif (strlen($this->getCleanISSN()) > 0) {
-            return 'Journal';
         } elseif (strlen($this->getCleanISBN()) > 0) {
+            // Last ditch. Note that this is last by intention; if the
+            // record has a format set and also has an ISBN, we don't
+            // necessarily want to send the ISBN, as it may be a game
+            // or a DVD that wouldn't typically be found in OpenURL
+            // knowledgebases.
             return 'Book';
         }
         return 'UnknownFormat';
@@ -707,15 +786,11 @@ class DefaultRecord extends AbstractBase
         // Get the COinS ID -- it should be in the OpenURL section of config.ini,
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
-        if (isset($this->mainConfig->OpenURL->rfr_id)
-            && !empty($this->mainConfig->OpenURL->rfr_id)
-        ) {
-            return $this->mainConfig->OpenURL->rfr_id;
+        if (!empty($this->mainConfig['OpenURL']['rfr_id'])) {
+            return $this->mainConfig['OpenURL']['rfr_id'];
         }
-        if (isset($this->mainConfig->COinS->identifier)
-            && !empty($this->mainConfig->COinS->identifier)
-        ) {
-            return $this->mainConfig->COinS->identifier;
+        if (!empty($this->mainConfig['COinS']['identifier'])) {
+            return $this->mainConfig['COinS']['identifier'];
         }
         return 'vufind.svn.sourceforge.net';
     }
@@ -731,14 +806,22 @@ class DefaultRecord extends AbstractBase
         $pubDate = $this->getPublicationDates();
         $pubDate = empty($pubDate) ? '' : $pubDate[0];
 
+        // Add DOI to rft_id (if available)
+        $rftId = [];
+        $doi = (string)$this->getCleanDOI();
+        if ($doi !== '') {
+            $rftId[] = 'info:doi/' . $doi;
+        }
+
         // Start an array of OpenURL parameters:
         return [
             'url_ver' => 'Z39.88-2004',
             'ctx_ver' => 'Z39.88-2004',
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
+            'rft_id' => $rftId,
             'rft.title' => $this->getTitle(),
-            'rft.date' => $pubDate
+            'rft.date' => $pubDate,
         ];
     }
 
@@ -763,6 +846,10 @@ class DefaultRecord extends AbstractBase
         $publishers = $this->getPublishers();
         if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
+        }
+        $placesOfPublication = $this->getPlacesOfPublication();
+        if (count($placesOfPublication) > 0) {
+            $params['rft.place'] = $placesOfPublication[0];
         }
         $params['rft.edition'] = $this->getEdition();
         $params['rft.isbn'] = (string)$this->getCleanISBN();
@@ -851,7 +938,7 @@ class DefaultRecord extends AbstractBase
         // If we're working with the SFX or Alma resolver, we should add a
         // special parameter to ensure that electronic holdings links
         // are shown even though no specific date or issue is specified:
-        $resolver = strtolower($this->mainConfig->OpenURL->resolver ?? '');
+        $resolver = strtolower($this->mainConfig['OpenURL']['resolver'] ?? '');
         if ('sfx' === $resolver) {
             $params['sfx.ignore_date_threshold'] = 1;
         } elseif ('alma' === $resolver) {
@@ -879,14 +966,20 @@ class DefaultRecord extends AbstractBase
         // Set up parameters based on the format of the record:
         $format = $this->getOpenUrlFormat();
         $method = "get{$format}OpenUrlParams";
-        if (method_exists($this, $method)) {
-            $params = $this->$method();
-        } else {
-            $params = $this->getUnknownFormatOpenUrlParams($format);
-        }
+        $params = method_exists($this, $method)
+            ? $this->$method()
+            : $this->getUnknownFormatOpenUrlParams($format);
 
         // Assemble the URL:
-        return http_build_query($params);
+        $query = [];
+        foreach ($params as $key => $value) {
+            // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+            // properties):
+            foreach (is_array($value) ? $value : [$value] as $sub) {
+                $query[] = urlencode($key) . '=' . urlencode($sub);
+            }
+        }
+        return implode('&', $query);
     }
 
     /**
@@ -1112,7 +1205,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -1133,7 +1226,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getShortTitle()
     {
-        return $this->fields['title_short'] ?? '';
+        // title_short is a single-valued field in the default schema, but tolerating
+        // multi-values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = (array)($this->fields['title_short'] ?? []);
+        return $titles[0] ?? '';
     }
 
     /**
@@ -1154,7 +1250,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getSubtitle()
     {
-        return $this->fields['title_sub'] ?? '';
+        // title_sub is a single-valued field in the default schema, but tolerating
+        // multi-values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = (array)($this->fields['title_sub'] ?? []);
+        return $titles[0] ?? '';
     }
 
     /**
@@ -1176,9 +1275,9 @@ class DefaultRecord extends AbstractBase
     public function getSummary()
     {
         // We need to return an array, so if we have a description, turn it into an
-        // array (it should be a flat string according to the default schema, but we
-        // might as well support the array case just to be on the safe side:
-        return (array)($this->fields['description'] ?? []);
+        // array (it is a flat string in the default Solr schema, but we also
+        // support multivalued fields for other backends):
+        return $this->getFieldAsArray('description');
     }
 
     /**
@@ -1209,15 +1308,16 @@ class DefaultRecord extends AbstractBase
             return $this->fields['thumbnail'];
         }
         $arr = [
-            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
+            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'UTF-8'),
             'callnumber' => $this->getCallNumber(),
             'size'       => $size,
-            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8'),
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'UTF-8'),
             'recordid'   => $this->getUniqueID(),
             'source'   => $this->getSourceIdentifier(),
         ];
-        if ($isbn = $this->getCleanISBN()) {
-            $arr['isbn'] = $isbn;
+        $isbns = $this->getCleanISBNs();
+        if (!empty($isbns)) {
+            $arr['isbns'] = $isbns;
         }
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;
@@ -1258,7 +1358,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getTitle()
     {
-        return $this->fields['title'] ?? '';
+        // title is a single-valued field in the default schema, but tolerating multi-
+        // values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = (array)($this->fields['title'] ?? []);
+        return $titles[0] ?? '';
     }
 
     /**
@@ -1269,7 +1372,7 @@ class DefaultRecord extends AbstractBase
     public function getTitleSection()
     {
         // Not currently stored in the default index schema
-        return null;
+        return '';
     }
 
     /**
@@ -1281,7 +1384,7 @@ class DefaultRecord extends AbstractBase
     public function getTitleStatement()
     {
         // Not currently stored in the default index schema
-        return null;
+        return '';
     }
 
     /**
@@ -1295,7 +1398,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get hierarchical place names
+     * Get hierarchical place names.
      *
      * @return array
      */
@@ -1395,7 +1498,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the value of whether or not this is a collection level record
+     * Get the value of whether or not this is a collection level record.
      *
      * NOTE: \VuFind\Hierarchy\TreeDataFormatter\AbstractBase::isCollection()
      * duplicates some of this logic.
@@ -1425,7 +1528,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the Hierarchy Type (false if none)
+     * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
      */
@@ -1513,7 +1616,7 @@ class DefaultRecord extends AbstractBase
 
     /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *
@@ -1610,29 +1713,38 @@ class DefaultRecord extends AbstractBase
     public function getSchemaOrgFormatsArray()
     {
         $types = [];
+
         foreach ($this->getFormats() as $format) {
             switch ($format) {
-            case 'Book':
-            case 'eBook':
-                $types['Book'] = 1;
-                break;
-            case 'Video':
-            case 'VHS':
-                $types['Movie'] = 1;
-                break;
-            case 'Photo':
-                $types['Photograph'] = 1;
-                break;
-            case 'Map':
-                $types['Map'] = 1;
-                break;
-            case 'Audio':
-                $types['MusicAlbum'] = 1;
-                break;
-            default:
-                $types['CreativeWork'] = 1;
+                case 'Book':
+                case 'eBook':
+                    $types['Book'] = 1;
+                    break;
+                case 'Video':
+                case 'VHS':
+                    $types['Movie'] = 1;
+                    break;
+                case 'Photo':
+                    $types['Photograph'] = 1;
+                    break;
+                case 'Map':
+                    $types['Map'] = 1;
+                    break;
+                case 'Audio':
+                    $types['MusicAlbum'] = 1;
+                    break;
+                default:
+                    $types['CreativeWork'] = 1;
             }
         }
+
+        // Check for functionality from IlsAwareTrait. If this record comes from a real ILS, we need
+        // to add a type of "Product" to support the system's use of https://schema.org/Offer to
+        // represent availability.
+        if ($this->tryMethod('hasILS') && isset($this->ils) && $this->ils->getOfflineMode() !== 'ils-none') {
+            $types['Product'] = 1;
+        }
+
         return array_keys($types);
     }
 
@@ -1642,6 +1754,8 @@ class DefaultRecord extends AbstractBase
      * itself if nothing else matches.
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\View\Helper\Root\SchemaOrg::getRecordTypes()
      */
     public function getSchemaOrgFormats()
     {
@@ -1649,7 +1763,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get information on records deduplicated with this one
+     * Get information on records deduplicated with this one.
      *
      * @return array Array keyed by source id containing record id
      */
@@ -1659,7 +1773,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the number of child records belonging to this record
+     * Get the number of child records belonging to this record.
      *
      * @return int Number of records
      */
@@ -1691,7 +1805,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the map display (lat/lon) coordinates
+     * Get the map display (lat/lon) coordinates.
      *
      * @return array
      */
@@ -1701,12 +1815,41 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the map display (lat/lon) labels
+     * Get the map display (lat/lon) labels.
      *
      * @return array
      */
     public function getCoordinateLabels()
     {
         return (array)($this->fields['long_lat_label'] ?? []);
+    }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
+    }
+
+    /**
+     * Get a field as an array.
+     *
+     * @param string $field Field
+     *
+     * @return array
+     */
+    protected function getFieldAsArray(string $field): array
+    {
+        // Make sure to return only non-empty values:
+        $value = $this->fields[$field] ?? '';
+        if ('' === $value) {
+            return [];
+        }
+        // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+        // properties):
+        return is_array($value) ? $value : [$value];
     }
 }

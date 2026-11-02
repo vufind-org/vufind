@@ -3,7 +3,7 @@
 /**
  * Central class for connecting to EIT resources used by VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -26,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
+
 namespace VuFindSearch\Backend\EIT;
 
 use Laminas\Http\Client;
-use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
+
+use function is_array;
 
 /**
  * Central class for connecting to EIT resources used by VuFind.
@@ -43,47 +44,47 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base url for searches
+     * Base url for searches.
      *
      * @var string
      */
     protected $base;
 
     /**
-     * The HTTP_Request object used for REST transactions
+     * The HTTP_Request object used for REST transactions.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * EBSCO EIT Profile used for authentication
+     * EBSCO EIT Profile used for authentication.
      *
      * @var string
      */
     protected $prof;
 
     /**
-     * Password associated with the EBSCO EIT Profile
+     * Password associated with the EBSCO EIT Profile.
      *
      * @var string
      */
     protected $pwd;
 
     /**
-     * Array of 3-character EBSCO database abbreviations to include in search
+     * Array of 3-character EBSCO database abbreviations to include in search.
      *
      * @var array
      */
     protected $dbs = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $base   Base URL
      * @param Client $client HTTP client
@@ -125,7 +126,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 
@@ -134,7 +135,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param \Laminas\Http\Response $result The response to check.
      *
-     * @throws BackendException
+     * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
     public function checkForHttpError($result)
@@ -145,16 +146,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Make an API call
+     * Make an API call.
      *
      * @param string $method GET or POST
-     * @param array  $params Parameters to send
+     * @param ?array $params Parameters to send
      *
      * @return \SimpleXMLElement
      */
     protected function call($method = 'GET', $params = null)
     {
-        $queryString = null;
+        $queryString = '';
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {
@@ -174,35 +175,34 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $dbs = explode(',', $this->dbs);
         $dblist = '';
         foreach ($dbs as $db) {
-            $dblist .= "&db=" . $db;
+            $dblist .= '&db=' . $db;
         }
 
-        $this->debug(
-            'Connect: ' . print_r($this->base . '?' . $queryString . $dblist, true)
-        );
+        $url = $this->base . '?' . $queryString . $dblist;
+        $this->debug('Connect: ' . $url);
 
         // Send Request
         $this->client->resetParameters();
-        $this->client->setUri($this->base . '?' . $queryString . $dblist);
+        $this->client->setUri($url);
         $result = $this->client->setMethod($method)->send();
         $body = $result->getBody();
         $xml = simplexml_load_string($body);
-        $this->debug(print_r($xml, true));
+        $this->debug($this->varDump($xml));
         return $body;
     }
 
     /**
      * Retrieve a specific record.
      *
-     * @param string   $id     Record ID to retrieve
-     * @param ParamBag $params Parameters
+     * @param string    $id     Record ID to retrieve
+     * @param ?ParamBag $params Parameters
      *
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id, ParamBag $params = null)
+    public function getRecord($id, ?ParamBag $params = null)
     {
-        $query = "AN " . $id;
+        $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();
         $params->set('prof', $this->prof);
         $params->set('pwd', $this->pwd);
@@ -217,7 +217,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => 0,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 }

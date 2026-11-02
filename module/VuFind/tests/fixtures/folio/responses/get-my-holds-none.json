@@ -1,0 +1,13 @@
+[
+  {
+    "comment": "User with 0 holds, will return an empty requests array",
+    "expectedPath": "/request-storage/requests",
+    "expectedParams": {
+      "query": "((requesterId == \"foo\" or proxyUserId == \"foo\") and status == Open*)",
+      "offset": 0,
+      "limit": 1000
+    },
+    "status": 200,
+    "body": "{\"requests\": [],\"totalRecords\": 0}"
+  }
+]

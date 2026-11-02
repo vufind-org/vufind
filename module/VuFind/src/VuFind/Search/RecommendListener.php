@@ -3,7 +3,7 @@
 /**
  * Recommend listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use Laminas\EventManager\EventInterface;
@@ -98,19 +99,19 @@ class RecommendListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search\SearchRunner',
+            \VuFind\Search\SearchRunner::class,
             SearchRunner::EVENT_CONFIGURED,
             [$this, 'onSearchConfigured']
         );
         $manager->attach(
-            'VuFind\Search\SearchRunner',
+            \VuFind\Search\SearchRunner::class,
             SearchRunner::EVENT_COMPLETE,
             [$this, 'onSearchComplete']
         );
     }
 
     /**
-     * Set configuration
+     * Set configuration.
      *
      * @param array $config Configuration array
      *

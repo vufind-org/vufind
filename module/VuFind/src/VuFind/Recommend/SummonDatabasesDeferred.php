@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SummonDatabasesDeferred Recommendations Module
+ * SummonDatabasesDeferred Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,10 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
- * SummonDatabasesDeferred Recommendations Module
+ * SummonDatabasesDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the SummonDatabases
  * module.
@@ -43,10 +45,12 @@ namespace VuFind\Recommend;
 class SummonDatabasesDeferred extends AbstractSummonRecommendDeferred
 {
     /**
-     * Constructor
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
      */
-    public function __construct()
+    protected function getAjaxModule()
     {
-        $this->module = 'SummonDatabases';
+        return 'SummonDatabases';
     }
 }

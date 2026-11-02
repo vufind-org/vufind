@@ -1,8 +1,9 @@
 <?php
+
 /**
- * AuthorInfo Recommendations Module
+ * AuthorInfo Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -25,15 +26,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Exception;
+use Laminas\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
 
+use function count;
+
 /**
- * AuthorInfo Recommendations Module
+ * AuthorInfo Recommendations Module.
  *
  * This class gathers information from the Wikipedia API and publishes the results
  * to a module at the top of an author's results page
@@ -52,28 +57,28 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Wikipedia client
+     * Wikipedia client.
      *
      * @var Wikipedia
      */
     protected $wikipedia;
 
     /**
-     * Saved search results
+     * Saved search results.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
@@ -95,7 +100,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $sources;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      * @param \Laminas\Http\Client                 $client  HTTP client
@@ -123,7 +128,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function setConfig($settings)
     {
         $parts = explode(':', $settings);
-        if (isset($parts[0]) && !empty($parts[0])
+        if (
+            isset($parts[0]) && !empty($parts[0])
             && strtolower(trim($parts[0])) !== 'false'
         ) {
             $this->useViaf = true;
@@ -131,7 +137,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Set a translator
+     * Set a translator.
      *
      * @param TranslatorInterface $translator Translator
      *
@@ -164,7 +170,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -178,7 +184,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Returns info from Wikipedia to the view
+     * Returns info from Wikipedia to the view.
      *
      * @reference _parseWikipedia : Home.php (VuFind 1)
      * @refauthor Rushikesh Katikar <rushikesh.katikar@gmail.com>
@@ -194,8 +200,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function getAuthorInfo()
     {
         // Don't load Wikipedia content if Wikipedia is disabled:
-        return stristr($this->sources, 'wikipedia')
-            ? $this->wikipedia->get($this->getAuthor()) : null;
+        try {
+            return stristr($this->sources, 'wikipedia') ? $this->wikipedia->get($this->getAuthor()) : null;
+        } catch (Exception $e) {
+            error_log("Unexpected error while loading author info: {$e->getMessage()}");
+            return null;
+        }
     }
 
     /**
@@ -215,7 +225,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $last = $nameParts[0];
         // - move all names up an index, move last name to last
         // - Last, First M. -> First M. Last
-        for ($i = 1;$i < count($nameParts);$i++) {
+        for ($i = 1; $i < count($nameParts); $i++) {
             $nameParts[$i - 1] = $nameParts[$i];
         }
         $nameParts[count($nameParts) - 1] = $last;
@@ -224,7 +234,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Translate an LCCN to a Wikipedia name through the VIAF web service.  Returns
+     * Translate an LCCN to a Wikipedia name through the VIAF web service. Returns
      * false if no value can be found.
      *
      * @param string $lccn LCCN
@@ -273,7 +283,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Takes the search term and extracts a normal name from it
+     * Takes the search term and extracts a normal name from it.
      *
      * @return string
      */

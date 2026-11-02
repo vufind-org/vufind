@@ -3,7 +3,7 @@
 /**
  * Listener to convert one field to another in filters (for legacy purposes).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,11 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Service;
+
+use function is_array;
 
 /**
  * Listener to convert one field to another in filters (for legacy purposes).
@@ -44,22 +47,14 @@ use VuFindSearch\Service;
 class FilterFieldConversionListener
 {
     /**
-     * Map of old field => new field.
-     *
-     * @var array
-     */
-    protected $map;
-
-    /**
      * Constructor.
      *
      * @param array $map Map of old field => new field.
      *
      * @return void
      */
-    public function __construct(array $map)
+    public function __construct(protected array $map)
     {
-        $this->map = $map;
     }
 
     /**
@@ -69,10 +64,10 @@ class FilterFieldConversionListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
@@ -85,7 +80,7 @@ class FilterFieldConversionListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $params = $event->getParam('command')->getSearchParameters();
         $fq = $params->get('fq');

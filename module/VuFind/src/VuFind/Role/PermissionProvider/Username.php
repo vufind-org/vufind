@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Username permission provider for VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -25,9 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function in_array;
 
 /**
  * Username permission provider for VuFind.
@@ -41,20 +47,13 @@ use LmcRbacMvc\Service\AuthorizationService;
 class Username implements PermissionProviderInterface
 {
     /**
-     * Authorization object
+     * Constructor.
      *
-     * @var AuthorizationService
+     * @param AuthorizationService $auth Authorization service
      */
-    protected $auth;
-
-    /**
-     * Constructor
-     *
-     * @param AuthorizationService $authorization Authorization service
-     */
-    public function __construct(AuthorizationService $authorization)
+    #[Autowire]
+    public function __construct(protected AuthorizationService $auth)
     {
-        $this->auth = $authorization;
     }
 
     /**
@@ -70,7 +69,7 @@ class Username implements PermissionProviderInterface
         // If no user is logged in, or the user doesn't match the passed-in
         // filter, we can't grant the permission to any roles.
         $user = $this->auth->getIdentity();
-        if (!$user || !in_array($user->username, (array)$options)) {
+        if (!$user || !($user instanceof UserEntityInterface) || !in_array($user->getUsername(), (array)$options)) {
             return [];
         }
 

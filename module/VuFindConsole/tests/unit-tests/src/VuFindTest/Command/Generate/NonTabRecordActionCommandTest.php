@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generate/NonTabRecordAction command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -88,24 +90,24 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Foo',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
         );
         $tools->expects($this->once())->method('getModuleConfigPath')
-            ->with($this->equalTo('xyzzy'))
-            ->will($this->returnValue($configFixturePath));
+            ->with('xyzzy')
+            ->willReturn($configFixturePath);
         $tools->expects($this->once())->method('backUpFile')
-            ->with($this->equalTo($configFixturePath));
+            ->with($configFixturePath);
         $tools->expects($this->once())->method('writeModuleConfig')
             ->with(
-                $this->equalTo($configFixturePath),
-                $this->equalTo($expectedConfig)
+                $configFixturePath,
+                $expectedConfig
             );
         $config = [
             'router' => [
@@ -121,11 +123,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Home',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $command = new NonTabRecordActionCommand($tools, $config);
         $commandTester = new CommandTester($command);
@@ -135,11 +137,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'xyzzy',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock generator tools object
+     * Get a mock generator tools object.
      *
      * @param array $methods Methods to mock
      *

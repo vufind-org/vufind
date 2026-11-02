@@ -1,8 +1,9 @@
 <?php
+
 /**
- * DOI recommendation module Test Class
+ * DOI recommendation module Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\DOI;
 
 /**
- * DOI recommendation module Test Class
+ * DOI recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -124,7 +126,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param \VuFind\Search\Solr\Results $results  results object
      * @param string                      $settings settings
@@ -154,10 +156,8 @@ class DOITest extends \PHPUnit\Framework\TestCase
     protected function getMockResults($query = '', $type = 'basic')
     {
         $params = $this->getMockParams($query, $type);
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -171,12 +171,9 @@ class DOITest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockParams($query = '', $type = 'basic')
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getDisplayQuery')
-            ->will($this->returnValue($query));
-        $params->expects($this->any())->method('getSearchType')
-            ->will($this->returnValue($type));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getDisplayQuery')->willReturn($query);
+        $params->method('getSearchType')->willReturn($type);
         return $params;
     }
 }

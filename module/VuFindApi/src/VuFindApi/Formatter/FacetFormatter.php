@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Facet formatter for API responses
+ * Facet formatter for API responses.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Formatter;
 
 use VuFind\Search\Base\Results;
 
+use function in_array;
+
 /**
- * Facet formatter for API responses
+ * Facet formatter for API responses.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -41,7 +45,7 @@ use VuFind\Search\Base\Results;
 class FacetFormatter extends BaseFormatter
 {
     /**
-     * Build an array of facet filters from the request params
+     * Build an array of facet filters from the request params.
      *
      * @param array $request Request params
      *
@@ -54,10 +58,10 @@ class FacetFormatter extends BaseFormatter
             foreach ($request['facetFilter'] as $filter) {
                 [$facetField, $regex] = explode(':', $filter, 2);
                 $regex = trim($regex);
-                if (substr($regex, 0, 1) == '"') {
+                if (str_starts_with($regex, '"')) {
                     $regex = substr($regex, 1);
                 }
-                if (substr($regex, -1, 1) == '"') {
+                if (str_ends_with($regex, '"')) {
                     $regex = substr($regex, 0, -1);
                 }
                 $facetFilters[$facetField][] = $regex;
@@ -72,14 +76,14 @@ class FacetFormatter extends BaseFormatter
      * @param array $facet   Facet
      * @param array $filters Facet filters
      *
-     * @return boolean
+     * @return bool
      */
     protected function matchFacetItem($facet, $filters)
     {
         $discard = true;
         array_walk_recursive(
             $facet,
-            function ($item, $key) use (&$discard, $filters) {
+            function ($item, $key) use (&$discard, $filters): void {
                 if ($discard && $key == 'value') {
                     foreach ($filters as $filter) {
                         $pattern = '/' . addcslashes($filter, '/') . '/';
@@ -95,7 +99,7 @@ class FacetFormatter extends BaseFormatter
     }
 
     /**
-     * Recursive function to create a facet value list for a single facet
+     * Recursive function to create a facet value list for a single facet.
      *
      * @param array $list    Facet items
      * @param array $filters Facet filters
@@ -107,7 +111,7 @@ class FacetFormatter extends BaseFormatter
         $result = [];
         $fields = [
             'value', 'displayText', 'count',
-            'children', 'href', 'isApplied'
+            'children', 'href', 'isApplied',
         ];
         foreach ($list as $value) {
             $resultValue = [];
@@ -140,7 +144,7 @@ class FacetFormatter extends BaseFormatter
     }
 
     /**
-     * Create the result facet list
+     * Create the result facet list.
      *
      * @param array   $request               Request parameters
      * @param Results $results               Search results
@@ -150,7 +154,7 @@ class FacetFormatter extends BaseFormatter
      */
     public function format($request, Results $results, $hierarchicalFacetData)
     {
-        if ($results->getResultTotal() == 0 || empty($request['facet'])) {
+        if ($results->getResultTotal() <= 0 || empty($request['facet'])) {
             return [];
         }
 

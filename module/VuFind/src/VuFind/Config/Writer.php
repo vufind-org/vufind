@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VF Configuration Writer
+ * VF Configuration Writer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
+use function dirname;
+use function is_array;
+use function is_int;
+use function strlen;
+
 /**
- * Class to update VuFind configuration settings
+ * Class to update VuFind configuration settings.
  *
  * @category VuFind
  * @package  Config
@@ -39,21 +46,21 @@ namespace VuFind\Config;
 class Writer
 {
     /**
-     * Configuration file to write
+     * Configuration file to write.
      *
      * @var string
      */
     protected $filename;
 
     /**
-     * Content of file
+     * Content of file.
      *
      * @var string
      */
     protected $content;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string            $filename Configuration file to write
      * @param string|array|null $content  Content to load into file (set to null to
@@ -80,7 +87,7 @@ class Writer
     }
 
     /**
-     * Change/add a setting
+     * Change/add a setting.
      *
      * @param string $section Section to change/add
      * @param string $setting Setting within section to change/add
@@ -95,8 +102,8 @@ class Writer
 
         // Reset some flags and prepare to rewrite the content:
         $settingSet = false;
-        $currentSection = "";
-        $this->content = "";
+        $currentSection = '';
+        $this->content = '';
 
         // Process one line at a time...
         foreach ($lines as $line) {
@@ -109,25 +116,27 @@ class Writer
             if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
                 // If we just left the target section and didn't find the
                 // desired setting, we should write it to the end.
-                if ($currentSection == $section && !$settingSet
+                if (
+                    $currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
-                    $line = $this->buildContentLine($setting, $value, 0)
+                    $this->content = rtrim($this->content);
+                    $line = "\n" . $this->buildContentLine($setting, $value, 0)
                         . "\n\n" . $line;
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
-            } elseif (strstr($content, '=')) {
+            } elseif ($currentSection == $section && strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
                 $key = trim($contentParts[0]);
                 // If the key we are trying to set is already present as an array,
                 // we need to clear out the multiple existing values before writing
                 // in a new one:
-                if ($key == $setting . '[]') {
+                if (str_starts_with($key, $setting . '[')) {
                     continue;
                 }
                 // Standard case for match on section + key:
-                if ($currentSection == $section && $key == $setting) {
+                if ($key == $setting) {
                     $settingSet = true;
                     if ($value === null) {
                         continue;
@@ -143,6 +152,8 @@ class Writer
             // Save the current line:
             $this->content .= $line . "\n";
         }
+
+        $this->content = substr($this->content, 0, -1); // remove trailing \n
 
         // Did we loop through everything without finding a place to put the setting?
         if (!$settingSet && $value !== null) {
@@ -178,7 +189,7 @@ class Writer
     }
 
     /**
-     * Save the modified file to disk.  Return true on success, false on error.
+     * Save the modified file to disk. Return true on success, false on error.
      *
      * @return bool
      */
@@ -202,7 +213,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format a value
+     * Support method for buildContent -- format a value.
      *
      * @param mixed $e Value to format
      *
@@ -214,7 +225,7 @@ class Writer
             return 'true';
         } elseif ($e === false) {
             return 'false';
-        } elseif ($e == "") {
+        } elseif ($e == '') {
             return '';
         } else {
             return '"' . str_replace('"', '\"', $e) . '"';
@@ -222,7 +233,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format a line
+     * Support method for buildContent -- format a line.
      *
      * @param string $key   Configuration key
      * @param mixed  $value Configuration value
@@ -250,7 +261,7 @@ class Writer
                 // omit them from the key names; any other index should be
                 // explicitly set:
                 $currentIndex = ($i === $autoIndex) ? '' : $i;
-                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . " = "
+                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . ' = '
                     . $this->buildContentValue($current) . "\n";
                 $autoIndex++;
             }
@@ -258,11 +269,11 @@ class Writer
         }
 
         // Standard case: value is not an array:
-        return $key . $tabStr . " = " . $this->buildContentValue($value);
+        return $key . $tabStr . ' = ' . $this->buildContentValue($value);
     }
 
     /**
-     * Support method for buildContent -- format an array into lines
+     * Support method for buildContent -- format an array into lines.
      *
      * @param string $key   Configuration key
      * @param array  $value Configuration value
@@ -289,7 +300,7 @@ class Writer
 
     /**
      * Write an ini file, adapted from
-     * http://php.net/manual/function.parse-ini-file.php
+     * http://php.net/manual/function.parse-ini-file.php.
      *
      * @param array $assoc_arr Array to output
      * @param array $comments  Comments to inject
@@ -298,12 +309,12 @@ class Writer
      */
     protected function buildContent($assoc_arr, $comments)
     {
-        $content = "";
+        $content = '';
         foreach ($assoc_arr as $key => $elem) {
             if (isset($comments['sections'][$key]['before'])) {
                 $content .= $comments['sections'][$key]['before'];
             }
-            $content .= "[" . $key . "]";
+            $content .= '[' . $key . ']';
             if (!empty($comments['sections'][$key]['inline'])) {
                 $content .= "\t" . $comments['sections'][$key]['inline'];
             }
@@ -331,5 +342,101 @@ class Writer
             $content .= $comments['after'];
         }
         return $content;
+    }
+
+    /**
+     * Read the specified file and return an associative array of this format
+     * containing all comments extracted from the file:
+     *
+     * [
+     *   'sections' => array
+     *     'section_name_1' => array
+     *       'before' => string ("Comments found at the beginning of this section")
+     *       'inline' => string ("Comments found at the end of the section's line")
+     *       'settings' => array
+     *         'setting_name_1' => array
+     *           'before' => string ("Comments found before this setting")
+     *           'inline' => string ("Comments found at the end of setting's line")
+     *           ...
+     *         'setting_name_n' => array (same keys as setting_name_1)
+     *        ...
+     *      'section_name_n' => array (same keys as section_name_1)
+     *   'after' => string ("Comments found at the very end of the file")
+     * ]
+     *
+     * @param string $filename Name of ini file to read.
+     *
+     * @return array           Associative array as described above.
+     */
+    public static function extractComments($filename)
+    {
+        $lines = file($filename);
+
+        // Initialize our return value:
+        $retVal = ['sections' => []];
+
+        // Initialize variables for tracking status during parsing:
+        $section = $comments = '';
+
+        foreach ($lines as $line) {
+            // To avoid redundant processing, create a trimmed version of the current
+            // line:
+            $trimmed = trim($line);
+
+            // Is the current line a comment?  If so, add to the current comments
+            // string. Note that we treat blank lines as comments.
+            if ('' === $trimmed || str_starts_with($trimmed, ';')) {
+                $comments .= $line;
+            } elseif (
+                str_starts_with($trimmed, '[')
+                && ($closeBracket = strpos($trimmed, ']')) > 1
+            ) {
+                // Is the current line the start of a section? If so, create the
+                // appropriate section of the return value:
+                $section = substr($trimmed, 1, $closeBracket - 1);
+                if ('' !== $section) {
+                    // Grab comments at the end of the line, if any:
+                    $inline = str_contains($trimmed, ';')
+                        ? trim(substr($trimmed, strpos($trimmed, ';')))
+                        : '';
+                    $retVal['sections'][$section] = [
+                        'before' => $comments,
+                        'inline' => $inline,
+                        'settings' => []];
+                    $comments = '';
+                }
+            } elseif (($equals = strpos($trimmed, '=')) !== false) {
+                // Is the current line a setting?  If so, add to the return value:
+                $set = trim(substr($trimmed, 0, $equals));
+                $set = trim(str_replace('[]', '', $set));
+                if ('' !== $section && '' !== $set) {
+                    // Grab comments at the end of the line, if any:
+                    $inline = str_contains($trimmed, ';')
+                        ? trim(substr($trimmed, strpos($trimmed, ';')))
+                        : '';
+                    // Currently, this data structure doesn't support arrays very
+                    // well, since it can't distinguish which line of the array
+                    // corresponds with which comments. For now, we just append all
+                    // the preceding and inline comments together for arrays.  Since
+                    // we rarely use arrays in the config.ini file, this isn't a big
+                    // concern, but we should improve it if we ever need to.
+                    if (!isset($retVal['sections'][$section]['settings'][$set])) {
+                        $retVal['sections'][$section]['settings'][$set]
+                            = ['before' => $comments, 'inline' => $inline];
+                    } else {
+                        $retVal['sections'][$section]['settings'][$set]['before']
+                            .= $comments;
+                        $retVal['sections'][$section]['settings'][$set]['inline']
+                            .= "\n" . $inline;
+                    }
+                    $comments = '';
+                }
+            }
+        }
+
+        // Store any leftover comments following the last setting:
+        $retVal['after'] = $comments;
+
+        return $retVal;
     }
 }

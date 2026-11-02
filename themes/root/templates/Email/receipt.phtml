@@ -1,0 +1,11 @@
+<?php // This is a text-only email template; do not include HTML! Note that the line feeds are important for nice text layout. ?>
+<?=$this->translate('Payment::email_hello', ['%%firstname%%' => $this->user->getFirstname()]) ?>
+
+
+<?=str_replace('\n', "\n", $this->translate('Payment::email_receipt_message')) ?>
+
+
+<?=str_replace('\n', "\n", $this->translate('Payment::email_receipt_footer')) ?>
+
+
+<?=$this->sourceName?> <?=$this->contactInfo?>

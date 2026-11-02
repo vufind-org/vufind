@@ -1,8 +1,9 @@
 <?php
+
 /**
- * File-based session handler
+ * File-based session handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use function function_exists;
+use function strlen;
 
 /**
- * File-based session handler
+ * File-based session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -41,25 +44,25 @@ use Laminas\Config\Config;
 class File extends AbstractBase
 {
     /**
-     * Path to session file
+     * Path to session file.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?array $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?array $config = null)
     {
         parent::__construct($config);
 
         // Set defaults if nothing set in config file.
-        if (isset($config->file_save_path)) {
-            $this->path = $config->file_save_path;
+        if (isset($config['file_save_path'])) {
+            $this->path = $config['file_save_path'];
         } else {
             $tempdir = function_exists('sys_get_temp_dir')
                 ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
@@ -67,10 +70,11 @@ class File extends AbstractBase
         }
 
         // Die if the session directory does not exist and cannot be created.
-        if ((!file_exists($this->path) || !is_dir($this->path))
+        if (
+            (!file_exists($this->path) || !is_dir($this->path))
             && !mkdir($this->path)
         ) {
-            throw new \Exception("Cannot access session save path: " . $this->path);
+            throw new \Exception('Cannot access session save path: ' . $this->path);
         }
     }
 
@@ -125,17 +129,18 @@ class File extends AbstractBase
      *
      * @param int $maxlifetime Maximum session lifetime.
      *
-     * @return bool
+     * @return int|false
      */
-    #[\ReturnTypeWillChange]
-    public function gc($maxlifetime)
+    public function gc($maxlifetime): int|false
     {
-        foreach (glob($this->path . "/sess_*") as $filename) {
+        $count = 0;
+        foreach (glob($this->path . '/sess_*') as $filename) {
             if (filemtime($filename) + $maxlifetime < time()) {
                 unlink($filename);
+                $count++;
             }
         }
-        return true;
+        return $count;
     }
 
     /**
@@ -149,7 +154,7 @@ class File extends AbstractBase
     protected function saveSession($sessId, $data): bool
     {
         $sessFile = $this->path . '/sess_' . $sessId;
-        if ($handle = fopen($sessFile, "w")) {
+        if ($handle = fopen($sessFile, 'w')) {
             $return = false;
             // Lock the file for exclusive access to avoid issues with multiple
             // processes writing session simultaneously:

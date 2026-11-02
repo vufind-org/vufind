@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,10 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
+use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\Holds;
+use VuFind\ILS\Logic\TitleHolds;
+
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,17 +59,28 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBug1()
+    public function testBug1(): void
     {
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
-        $config = new \Laminas\Config\Config($configArr);
-        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record = new \VuFind\RecordDriver\SolrMarc($configArr);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
-            ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
-            ['title' => 'B', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
-            ['title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000394898']],
+            [
+                'title' => 'A',
+                'value' => 'Bollettino della Unione matematica italiana',
+                'link' => ['type' => 'bib', 'value' => '000343528'],
+            ],
+            [
+                'title' => 'B',
+                'value' => 'Bollettino della Unione matematica',
+                'link' => ['type' => 'bib', 'value' => '000343529'],
+            ],
+            [
+                'title' => 'note_785_8',
+                'value' => 'Bollettino della Unione matematica italiana',
+                'link' => ['type' => 'bib', 'value' => '000394898'],
+            ],
         ];
         $this->assertEquals($expected, $record->getAllRecordLinks());
     }
@@ -74,21 +91,21 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBug2()
+    public function testBug2(): void
     {
         $record = new \VuFind\RecordDriver\SolrMarc();
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
-            $record->getPrimaryAuthor(),
-            'Vico, Giambattista, 1668-1744.'
+            'Vico, Giambattista, 1668-1744.',
+            $record->getPrimaryAuthor()
         );
         $secondary = $record->getSecondaryAuthors();
-        $this->assertEquals(count($secondary), 1);
-        $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
+        $this->assertCount(1, $secondary);
+        $this->assertContains('Pandolfi, Claudia.', $secondary);
         $series = $record->getSeries();
-        $this->assertEquals(count($series), 1);
+        $this->assertCount(1, $series);
         $this->assertEquals(
             'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             $series[0]['name']
@@ -101,9 +118,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSubjectHeadings()
+    public function testSubjectHeadings(): void
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = [];
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -117,7 +134,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'heading' => ['Matematica', 'Periodici.'],
                     'type' => '',
                     'source' => '',
-                    'id' => ''
+                    'id' => '',
                 ],
             ],
             $record->getAllSubjectHeadings(true)
@@ -125,14 +142,91 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test regular and extended subject heading support for different possible config options.
+     *
+     * @param ?string $marcSubjectHeadingsSortConfig The config value for
+     * $this->mainConfig->Record->marcSubjectHeadingsSort
+     * @param array   $expectedResults               Array of the expected values returned from
+     * $record->getAllSubjectHeadings()
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('marcSubjectHeadingsSortOptionsProvider')]
+    public function testSubjectHeadingsOrder(?string $marcSubjectHeadingsSortConfig, array $expectedResults): void
+    {
+        $configArray = [
+            'Record' => [
+                'marcSubjectHeadingsSort' => $marcSubjectHeadingsSortConfig,
+            ],
+        ];
+        $marc = $this->getFixture('marc/subjectheadingsorder.xml');
+        $record = new \VuFind\RecordDriver\SolrMarc($configArray);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals($expectedResults, $record->getAllSubjectHeadings());
+    }
+
+    /**
+     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder).
+     *
+     * @return \Iterator
+     */
+    public static function marcSubjectHeadingsSortOptionsProvider(): \Iterator
+    {
+        // Record order is the default; save it to a variable so we
+        // can test both explicit and default configuration behaviors
+        // using the same values.
+        $recordOrderResults = [
+            [
+                'Guerrero (Mexico : State)',
+                'Social life and customs',
+                'Pictorial works.',
+            ],
+            [
+                'Street photography',
+                'Mexico',
+                'Guerrero (State)',
+            ],
+            [
+                'Photobooks.',
+            ],
+        ];
+        yield 'field config' => [
+            'numerical',
+            [
+                [
+                    'Street photography',
+                    'Mexico',
+                    'Guerrero (State)',
+                ],
+                [
+                    'Guerrero (Mexico : State)',
+                    'Social life and customs',
+                    'Pictorial works.',
+                ],
+                [
+                    'Photobooks.',
+                ],
+            ],
+        ];
+        yield 'record config' => [
+            'record',
+            $recordOrderResults,
+        ];
+        yield 'default config' => [
+            null,
+            $recordOrderResults,
+        ];
+    }
+
+    /**
      * Test table of contents support.
      *
      * @return void
      */
-    public function testTOC()
+    public function testTOC(): void
     {
         $marc = $this->getFixture('marc/toc1.xml');
-        $config = new \Laminas\Config\Config([]);
+        $config = [];
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals(
@@ -143,17 +237,23 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 'Plenary Papers',
                 'Teaching missiology in and for world Christianity content and method / Peter C. Phan',
                 'The bodies we teach by: (en) gendering mission for global Christianities / Mai-Ahn Le',
-                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress / Philip Wingeier-Rayo',
+                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the '
+                . '1916 Panama Congress / Philip Wingeier-Rayo',
                 'Conference Papers',
-                'Theological metaphors of teaching mission in an age of world Christianity in the North American context / David Thang Moe',
+                'Theological metaphors of teaching mission in an age of world Christianity in the North American '
+                . 'context / David Thang Moe',
                 'Mission shifts from Pope Benedict XVI to Pope Francis / William P. Gregory',
                 'The elephant in the room: towards a paradigm shift in missiological education / Sarita D. Gallagher',
-                'Historic models of teaching Christian mission: case studies informing an age of world Christianity / Robert L. Gallagher',
+                'Historic models of teaching Christian mission: case studies informing an age of world Christianity '
+                . '/ Robert L. Gallagher',
                 'How the West was won: world Christianity as historic reality / Matt Friedman',
-                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s Christian universities / Janice Horsager Rasmussen',
-                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
+                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s '
+                . 'Christian universities / Janice Horsager Rasmussen',
+                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian'
+                . ' Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
                 'Mary McLeod Bethune: Christ did not designate any particular color to go / Mary Cloutier',
-                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom / Angel Santiago-Vendrell',
+                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the '
+                . 'classroom / Angel Santiago-Vendrell',
                 'Conference Proceedings',
                 'First Fruits report for the APM',
                 'Minutes of 2016 meeting',
@@ -177,13 +277,56 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetSchemaOrgFormatsArray().
+     *
+     * @return \Iterator
+     */
+    public static function getSchemaOrgFormatsArrayProvider(): \Iterator
+    {
+        yield 'with ILS' => [true, ['CreativeWork', 'Product']];
+        yield 'without ILS' => [false, ['CreativeWork']];
+    }
+
+    /**
+     * Test getSchemaOrgFormatsArray().
+     *
+     * @param bool  $useIls          Should we attach an ILS to the record driver?
+     * @param array $expectedFormats The expected method output
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSchemaOrgFormatsArrayProvider')]
+    public function testGetSchemaOrgFormatsArray(bool $useIls, array $expectedFormats): void
+    {
+        // Set up record driver:
+        $config = [];
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+
+        // Load data:
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+
+        // Set up and activate ILS if requested:
+        if ($useIls) {
+            $record->attachILS(
+                $this->createMock(Connection::class),
+                $this->createMock(Holds::class),
+                $this->createMock(TitleHolds::class)
+            );
+            $record->setIlsBackends(['Solr']);
+        }
+
+        $this->assertEquals($expectedFormats, $record->getSchemaOrgFormatsArray());
+    }
+
+    /**
      * Test getFormattedMarcDetails() method.
      *
      * @return void
      */
-    public function testGetFormattedMarcDetails()
+    public function testGetFormattedMarcDetails(): void
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = [];
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -209,7 +352,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'default' => 'Bollettino della Unione matematica italiana.',
                     'emptySubfield' => '',
                     'pub' => 'Bologna : Zanichelli, 1922-1975.',
-                ]
+                ],
             ],
             $record->getFormattedMarcDetails('245', $input)
         );
@@ -220,27 +363,23 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMarcReaderTrait()
+    public function testMarcReaderTrait(): void
     {
         $xml = $this->getFixture('marc/marctraits.xml');
         $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
             ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
+        $obj->method('getMarcReader')->willReturn($record);
 
         $reflection = new \ReflectionObject($obj);
 
         $getFieldArray = $reflection->getMethod('getFieldArray');
-        $getFieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
         );
 
         $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
-        $getSubfieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getSubfieldArray

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * DeletesCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -50,9 +52,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockWriter()
     {
-        return $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFind\Solr\Writer::class);
     }
 
     /**
@@ -85,8 +85,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['filename' => '/does/not/exist']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Cannot find file: /does/not/exist\n",
             $commandTester->getDisplay()
         );
@@ -101,7 +101,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo(['rec1', 'rec2', 'rec3']));
+            ->with('Solr', ['rec1', 'rec2', 'rec3']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
@@ -111,8 +111,32 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 'format' => 'flat',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+    }
+
+    /**
+     * Test success with a flat file, ID prefix and default index.
+     *
+     * @return void
+     */
+    public function testSuccessWithFlatFileIdPrefixAndDefaultIndex()
+    {
+        $writer = $this->getMockWriter();
+        $writer->expects($this->once())->method('deleteRecords')
+            ->with('Solr', ['x.rec1', 'x.rec2', 'x.rec3']);
+        $command = new DeletesCommand($writer);
+        $commandTester = new CommandTester($command);
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
+        $commandTester->execute(
+            [
+                'filename' => $fixture,
+                'format' => 'flat',
+                '--id-prefix' => 'x.',
+            ]
+        );
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -124,7 +148,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('foo'), $this->equalTo(['testbug2']));
+            ->with('foo', ['testbug2']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = __DIR__ . '/../../../../../../../../tests/data/testbug2.mrc';
@@ -134,7 +158,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 'index' => 'foo',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

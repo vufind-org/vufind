@@ -1,8 +1,9 @@
 <?php
+
 /**
  * AJAX handler to tag/untag a record.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,13 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Db\Row\User;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
+
+use function strlen;
 
 /**
  * AJAX handler to tag/untag a record.
@@ -47,65 +52,50 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader
+     * Constructor.
      *
-     * @var Loader
+     * @param Loader               $loader      Record loader
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
      */
-    protected $loader;
-
-    /**
-     * Tag parser
-     *
-     * @var Tags
-     */
-    protected $tagParser;
-
-    /**
-     * Logged in user (or false)
-     *
-     * @var User|bool
-     */
-    protected $user;
-
-    /**
-     * Constructor
-     *
-     * @param Loader    $loader Record loader
-     * @param Tags      $parser Tag parser
-     * @param User|bool $user   Logged in user (or false)
-     */
-    public function __construct(Loader $loader, Tags $parser, $user)
-    {
-        $this->loader = $loader;
-        $this->tagParser = $parser;
-        $this->user = $user;
+    public function __construct(
+        protected Loader $loader,
+        protected TagsService $tagsService,
+        protected ?UserEntityInterface $user
+    ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
-        $id = $params->fromPost('id');
-        $source = $params->fromPost('source', DEFAULT_SEARCH_BACKEND);
-        $tag = $params->fromPost('tag', '');
+        $id = $this->getPostParam($request, 'id');
+        $source = $this->getPostParam($request, 'source', DEFAULT_SEARCH_BACKEND);
+        $tag = $this->getPostParam($request, 'tag', '');
 
         if (strlen($tag) > 0) { // don't add empty tags
             $driver = $this->loader->load($id, $source);
-            ('false' === $params->fromPost('remove', 'false'))
-                ? $driver->addTags($this->user, $this->tagParser->parse($tag))
-                : $driver->deleteTags($this->user, $this->tagParser->parse($tag));
+            $serviceMethod = ('false' === $this->getPostParam($request, 'remove', 'false'))
+                ? 'linkTagsToRecord'
+                : 'unlinkTagsFromRecord';
+            $this->tagsService->$serviceMethod(
+                $driver,
+                $this->user,
+                $this->tagsService->parse($tag)
+            );
         }
 
         return $this->formatResponse('');

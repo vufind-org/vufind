@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract cover layer
+ * Abstract cover layer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
+use function strlen;
+
 /**
- * Abstract cover layer
+ * Abstract cover layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -63,12 +67,12 @@ abstract class AbstractLayer implements LayerInterface
     ];
 
     /**
-     * Check and allocates color
+     * Check and allocates color.
      *
      * @param resource $im    Image resource being updated
      * @param string   $color Legal color name from HTML4
      *
-     * @return allocated color
+     * @return int|false allocated color
      */
     protected function getColor($im, $color)
     {
@@ -78,7 +82,7 @@ abstract class AbstractLayer implements LayerInterface
             return imagecolorallocate($im, ...$this->colorMap[$key]);
         }
         // Case two: hex color
-        if (substr($color, 0, 1) == '#' && strlen($color) == 7) {
+        if (str_starts_with($color, '#') && strlen($color) == 7) {
             $r = hexdec(substr($color, 1, 2));
             $g = hexdec(substr($color, 3, 2));
             $b = hexdec(substr($color, 5, 2));
@@ -89,7 +93,7 @@ abstract class AbstractLayer implements LayerInterface
     }
 
     /**
-     * Using HSB allows us to control the contrast while allowing randomness
+     * Using HSB allows us to control the contrast while allowing randomness.
      *
      * @param resource $im Active image resource
      * @param int      $h  Hue (0-255)
@@ -111,18 +115,18 @@ abstract class AbstractLayer implements LayerInterface
         $q = (int)($v * (1.0 - $s * $f));
         $t = (int)($v * (1.0 - $s * (1.0 - $f)));
         switch ($i) {
-        case 0:
-            return imagecolorallocate($im, $v, $t, $p);
-        case 1:
-            return imagecolorallocate($im, $q, $v, $p);
-        case 2:
-            return imagecolorallocate($im, $p, $v, $t);
-        case 3:
-            return imagecolorallocate($im, $p, $q, $v);
-        case 4:
-            return imagecolorallocate($im, $t, $p, $v);
-        default:
-            return imagecolorallocate($im, $v, $p, $q);
+            case 0:
+                return imagecolorallocate($im, $v, $t, $p);
+            case 1:
+                return imagecolorallocate($im, $q, $v, $p);
+            case 2:
+                return imagecolorallocate($im, $p, $v, $t);
+            case 3:
+                return imagecolorallocate($im, $p, $q, $v);
+            case 4:
+                return imagecolorallocate($im, $t, $p, $v);
+            default:
+                return imagecolorallocate($im, $v, $p, $q);
         }
     }
 }

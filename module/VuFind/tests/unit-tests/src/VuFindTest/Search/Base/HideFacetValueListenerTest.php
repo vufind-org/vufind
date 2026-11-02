@@ -3,7 +3,7 @@
 /**
  * Unit tests for Hide Facet Value Listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Base;
 
 use Laminas\EventManager\Event;
@@ -47,7 +48,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\MockSearchCommandTrait;
 
     /**
-     * Get a mock backend
+     * Get a mock backend.
      *
      * @param string $id ID of fake backend.
      *
@@ -55,11 +56,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockBackend(string $id = 'Solr'): Backend
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->will(
-            $this->returnValue($id)
-        );
+        $backend = $this->createMock(Backend::class);
+        $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }
 
@@ -75,7 +73,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
                 'Book' => 124,
                 'Unknown' => 16,
                 'Fake' => 3,
-            ]
+            ],
         ];
     }
 
@@ -87,24 +85,21 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     protected function getMockResult(): RecordCollection
     {
         $facets = $this->getFacets();
-        $result = $this->getMockBuilder(RecordCollection::class)
-            ->disableOriginalConstructor()->getMock();
-        $result->expects($this->any())->method('getFacets')
-            ->will($this->returnCallback(
+        $result = $this->createMock(RecordCollection::class);
+        $result->method('getFacets')
+            ->willReturnCallback(
                 function () use (&$facets) {
                     return $facets;
                 }
-            ));
-        $result->expects($this->any())->method('setFacets')
-            ->will($this->returnCallback(
-                function ($new) use (&$facets) {
+            );
+        $result->method('setFacets')
+            ->willReturnCallback(
+                function (array $new) use (&$facets): void {
                     $facets = $new;
                 }
-            ));
-        $result->expects($this->any())->method('getQueryFacets')
-            ->will($this->returnValue([]));
-        $result->expects($this->any())->method('getPivotFacets')
-            ->will($this->returnValue([]));
+            );
+        $result->method('getQueryFacets')->willReturn([]);
+        $result->method('getPivotFacets')->willReturn([]);
         return $result;
     }
 
@@ -139,9 +134,9 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
-            $this->equalTo('post'),
-            $this->equalTo([$listener, 'onSearchPost'])
+            \VuFindSearch\Service::class,
+            'post',
+            [$listener, 'onSearchPost']
         );
         $listener->attach($mock);
     }

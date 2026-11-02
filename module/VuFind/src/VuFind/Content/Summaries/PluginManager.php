@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Summaries content loader plugin manager
+ * Summaries content loader plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Content\Summaries;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
- * Summaries content loader plugin manager
+ * Summaries content loader plugin manager.
  *
  * @category VuFind
  * @package  Content
@@ -46,19 +50,25 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'demo' => Demo::class,
         'syndetics' => Syndetics::class,
-        'syndeticsplus' => SyndeticsPlus::class,
+        'syndeticsplus' => 'syndetics',
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
-        Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
-        SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

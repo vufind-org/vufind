@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink test class for alphabetic browse.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -35,25 +37,113 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
+    /**
+     * Data provider for testTitleSearchNormalization.
+     *
+     * @return \Iterator
+     */
+    public static function titleSearchNormalizationProvider(): \Iterator
+    {
+        yield 'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'];
+        yield 'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'];
+        yield 'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'];
+        yield 'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'];
+        yield 'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'];
+    }
+
+    /**
+     * Test that appropriate normalization is applied to title searches.
+     *
+     * @param string $query              Alphabrowse query to perform
+     * @param string $expectedFirstTitle Expected first title in result list
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSearchNormalizationProvider')]
+    public function testTitleSearchNormalization($query, $expectedFirstTitle): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'title');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', $query);
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $expectedFirstTitle,
+            $this->findCssAndGetText($page, 'table.alphabrowse td.title')
+        );
+    }
+
+    /**
+     * Test that we can jump to a record with an ID containing slashes.
+     *
+     * @return void
+     */
+    public function testJumpToRecordWithIdContainingSlashes(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'author');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', 'will b. broke');
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'td.author a');
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString('Record/dollar$ign%2Fslashcombo', $session->getCurrentUrl());
+    }
+
+    /**
+     * This test relies on the records in browse-test.xml -- it is designed to catch regressions of a past bug where
+     * browsing to a title could link to an incorrect record if the chosen title was a sub-part of an alphabetically-
+     * earlier title.
+     *
+     * @return void
+     */
+    public function testJumpToCorrectRecordDespitePartialMatch(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $title = 'Record that the browse test should lead to.';
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'title');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', $title);
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'td.title a');
+        $this->waitForPageLoad($page);
+        $this->assertSame($title, $this->findCssAndGetText($page, 'h1'));
+    }
+
     /**
      * Test that extra attributes are escaped correctly.
      *
      * @return void
      */
-    public function testExtraAttributeEscaping()
+    public function testExtraAttributeEscaping(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=lcc&from=PS3552.R878+T47+2011');
         $page = $session->getPage();
-        $extras = $this->findCss($page, 'table.alphabrowse td.lcc ~ td');
-        $text = $extras->getText();
-        $this->assertTrue(
-            strpos($text, '<HTML> The Basics') !== false,
-            "Could not find '<HTML> The Basics' in '$text'"
-        );
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.lcc ~ td');
+        $this->assertStringContainsString('<HTML> The Basics', $text);
+    }
+
+    /**
+     * Test that topic separators are applied correctly.
+     *
+     * @return void
+     */
+    public function testTopicSeparators(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=topic&from=peat+bogs');
+        $page = $session->getPage();
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.topic b');
+        $this->assertStringContainsString('Peat bogs > Ireland', $text);
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Shibboleth logout notification test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Table\ExternalSession;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
 
 /**
  * Shibboleth logout notification test class.
@@ -39,27 +41,32 @@ use VuFind\Db\Table\ExternalSession;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
-final class ShibbolethLogoutNotificationTest
-    extends \VuFindTest\Integration\MinkTestCase
+final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\HttpRequestTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
-     * Standard setup method.
+     * Test missing permission for Shibboleth logout notification.
      *
      * @return void
      */
-    public function setUp(): void
+    public function testMissingPermission(): void
     {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        // Try the GET method:
+        $result = $this->httpGet($this->getVuFindUrl() . '/soap/shiblogout');
+        $this->assertSame(403, $result->getStatusCode());
+
+        // Try the POST method:
+        $result = $this->httpPost(
+            $this->getVuFindUrl() . '/soap/shiblogout',
+            $this->getFixture('shibboleth/logout_notification.xml'),
+            'application/xml'
+        );
+        $this->assertSame(403, $result->getStatusCode());
     }
 
     /**
@@ -67,7 +74,7 @@ final class ShibbolethLogoutNotificationTest
      *
      * @return void
      */
-    public function testLogoutNotification()
+    public function testLogoutNotification(): void
     {
         $this->changeConfigs(
             [
@@ -79,33 +86,31 @@ final class ShibbolethLogoutNotificationTest
                             '127.0.0.1',
                             '::1',
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
         // Do a search and make sure it's in history:
         $page = $this->performSearch('building:weird_ids.mrc');
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $this->findCss($page, 'table#recent-searches');
 
         // Add a session id mapping to external_session table:
         $sessionId = $session->getCookie('VUFIND_SESSION');
-        $table = $this->getTable(ExternalSession::class);
-        $table->addSessionMapping($sessionId, 'EXTERNAL_SESSION_ID');
+        $service = $this->getLiveDbServiceManager()->get(ExternalSessionServiceInterface::class);
+        $service->addSessionMapping($sessionId, 'EXTERNAL_SESSION_ID');
 
         // Call the notification endpoint:
-        $http = new \VuFindHttp\HttpService();
-        $result = $http->post(
+        $result = $this->httpPost(
             $this->getVuFindUrl() . '/soap/shiblogout',
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
         );
-        $this->assertTrue($result->isSuccess());
-        $this->assertEquals(200, $result->getStatusCode());
+        $this->assertSame(200, $result->getStatusCode());
 
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $this->unFindCss($page, 'table#recent-searches');
     }
 }

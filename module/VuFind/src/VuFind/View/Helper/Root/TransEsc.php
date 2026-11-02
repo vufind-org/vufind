@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Translate + escape view helper
+ * Translate + escape view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Translate + escape view helper
+ * Translate + escape view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,22 +41,45 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEsc extends AbstractHelper
+class TransEsc
 {
     /**
-     * Translate and escape a string
+     * Constructor.
      *
-     * @param string $str     String to escape and translate
-     * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
+     * @param Translate  $translate  Translate view helper
+     * @param EscapeHtml $escapeHtml EscapeHtml view helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
+    }
+
+    /**
+     * Translate and escape a string.
+     *
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
-    {
-        $escaper = $this->getView()->plugin('escapeHtml');
-        $translator = $this->getView()->plugin('translate');
-        return $escaper($translator($str, $tokens, $default));
+    public function __invoke(
+        $str,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
+        $translated = ($this->translate)($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
+        return ($this->escapeHtml)($translated);
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * TemplatePath view helper Test Class
+ * TemplatePath view helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\TemplatePath;
 
 /**
- * TemplatePath view helper Test Class
+ * TemplatePath view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,14 +45,14 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @return void
      */
@@ -68,17 +70,13 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
-            ->disableOriginalConstructor()->getMock();
+        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
 
         $return = new \SplStack();
         $return->push("{$this->fixturePath}/asdf/templates/");
         $return->rewind();
 
-        $stackMock->expects($this->any())
-            ->method('getPaths')
-            ->will($this->returnValue($return));
+        $stackMock->method('getPaths')->willReturn($return);
 
         // Make helper
         return new TemplatePath($stackMock);
@@ -99,28 +97,28 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */
     public function testThemeDoesntExist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('emplate not found in missing: file.phtml');
+        $this->expectExceptionMessage('Template not found in missing: file.phtml');
 
         $helper = $this->getHelper();
         $helper('file.phtml', 'missing');
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */
     public function testFileDoesntExist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('emplate not found in parent: missing.phtml');
+        $this->expectExceptionMessage('Template not found in parent: missing.phtml');
 
         $helper = $this->getHelper();
         $helper('missing.phtml', 'parent');

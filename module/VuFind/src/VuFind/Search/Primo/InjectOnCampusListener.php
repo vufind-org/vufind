@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OnCampus listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Primo;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use VuFindSearch\Service;
 
 /**
@@ -48,42 +49,21 @@ class InjectOnCampusListener
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Primo Permission Handler.
+     * Is user on campus or not? (null will trigger a lookup to determine status).
      *
-     * @var PrimoPermissionHandler
+     * @var ?bool
      */
-    protected $permissionHandler;
-
-    /**
-     * Is user on campus or not?
-     *
-     * @var bool
-     */
-    protected $isOnCampus;
+    protected ?bool $isOnCampus = null;
 
     /**
      * Constructor.
      *
-     * @param PrimoPermissionHandler $pph Primo Permission Handler
+     * @param ?PrimoPermissionHandler $permissionHandler Primo Permission Handler
      *
      * @return void
      */
-    public function __construct($pph = null)
+    public function __construct(protected ?PrimoPermissionHandler $permissionHandler = null)
     {
-        $this->setPermissionHandler($pph);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param PrimoPermissionHandler $pph Primo Permission Handler
-     *
-     * @return void
-     */
-    public function setPermissionHandler($pph)
-    {
-        $this->permissionHandler = $pph;
-        $this->isOnCampus = null; // clear cache
     }
 
     /**
@@ -93,21 +73,21 @@ class InjectOnCampusListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
     }
 
     /**
-     * Determines, which value is needed for the onCampus parameter
+     * Determines, which value is needed for the onCampus parameter.
      *
      * @return bool
      */
-    protected function getOnCampus()
+    protected function getOnCampus(): bool
     {
         if (null === $this->isOnCampus) {
             $this->isOnCampus = $this->permissionHandler
@@ -123,7 +103,7 @@ class InjectOnCampusListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $params = $event->getParam('command')->getSearchParameters();
         $params->set('onCampus', $this->getOnCampus());

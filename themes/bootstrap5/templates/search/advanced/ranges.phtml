@@ -1,0 +1,36 @@
+<?php if (isset($this->ranges) && !empty($this->ranges)): ?>
+  <?php $params = $this->searchParams($this->searchClassId); ?>
+  <?php foreach ($this->ranges as $current): ?>
+    <?php
+      $escField = $this->escapeHtmlAttr($current['field']);
+      $isDateRange = $current['type'] == 'date';
+      $inputType = $isDateRange ? 'number' : 'text';
+      $extraInputAttribs = $isDateRange ? 'min="-9999" max="9999"' : '';
+    ?>
+    <fieldset class="range" id="<?=$escField?>-range-container">
+      <legend><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
+      <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>">
+      <div class="date-fields">
+        <div class="date-from">
+          <label for="<?=$escField?>from" id="<?=$escField?>from-label"><?=$this->transEsc('date_from')?>:</label>
+          <input type="<?=$inputType?>" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0]) ? $this->escapeHtmlAttr($current['values'][0]) : ''?>" class="form-control" <?=$extraInputAttribs?>>
+        </div>
+        <div class="date-to">
+          <label for="<?=$escField?>to" id="<?=$escField?>to-label"><?=$this->transEsc('date_to')?>:</label>
+          <input type="<?=$inputType?>" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1]) ? $this->escapeHtmlAttr($current['values'][1]) : ''?>" class="form-control" <?=$extraInputAttribs?>>
+        </div>
+      </div>
+      <?php if ($isDateRange): ?>
+        <?php $options = $params->getOptions(); ?>
+        <?=$this->component('date-range-slider', [
+          'values' => $current['values'] ?? [],
+          'sliderId' => $escField . $this->escapeHtmlAttr($current['type']) . 'Slider',
+          'inputMinId' => $escField . 'from',
+          'inputMaxId' => $escField . 'to',
+          'rangeMin' => $options->getDateRangeSliderMinValue($current['field']),
+          'rangeMax' => $options->getDateRangeSliderMaxValue($current['field']),
+        ])?>
+      <?php endif; ?>
+    </fieldset>
+  <?php endforeach; ?>
+<?php endif; ?>

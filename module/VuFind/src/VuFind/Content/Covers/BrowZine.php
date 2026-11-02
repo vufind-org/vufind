@@ -1,8 +1,9 @@
 <?php
+
 /**
  * BrowZine cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 use VuFindSearch\Service;
+
+use function in_array;
 
 /**
  * BrowZine cover content loader.
@@ -42,20 +46,13 @@ use VuFindSearch\Service;
 class BrowZine extends \VuFind\Content\AbstractCover
 {
     /**
-     * Search service
+     * Constructor.
      *
-     * @var Service
+     * @param Service  $searchService Search service
+     * @param string[] $ignoreList    Cover image URLs to ignore (we don't want to display third-party generic images)
      */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param Service $searchService Search service
-     */
-    public function __construct(Service $searchService)
+    public function __construct(protected Service $searchService, protected array $ignoreList)
     {
-        $this->searchService = $searchService;
         $this->supportsIssn = true;
     }
 
@@ -80,6 +77,7 @@ class BrowZine extends \VuFind\Content\AbstractCover
 
         $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
         $result = $this->searchService->invoke($command)->getResult();
-        return $result['data'][0]['coverImageUrl'] ?? false;
+        $url = $result['data'][0]['coverImageUrl'] ?? false;
+        return ($url && in_array($url, $this->ignoreList)) ? false : $url;
     }
 }

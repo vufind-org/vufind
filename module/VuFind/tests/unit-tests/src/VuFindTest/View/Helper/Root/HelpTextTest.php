@@ -1,8 +1,9 @@
 <?php
+
 /**
- * HelpText View Helper Test Class
+ * HelpText View Helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\HelpText;
 
 /**
- * HelpText View Helper Test Class
+ * HelpText View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -58,20 +60,19 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
         string $topic = 'foo',
         array $context = []
     ): Content {
-        $helper = $this->getMockBuilder(Content::class)
-            ->disableOriginalConstructor()->getMock();
-        $callback = function ($unused1, $unused2, $unused3, & $pageDetails) use ($mockPageDetails, $mockReturnValue) {
+        $helper = $this->createMock(Content::class);
+        $callback = function ($unused1, $unused2, $unused3, &$pageDetails) use ($mockPageDetails, $mockReturnValue) {
             $pageDetails = $mockPageDetails;
             return $mockReturnValue;
         };
         $helper->expects($this->once())->method('renderTranslated')
             ->with(
-                $this->equalTo($topic),
-                $this->equalTo('HelpTranslations'),
-                $this->equalTo($context),
-                $this->equalTo(null),
-                $this->equalTo('%pathPrefix%/%language%/%pageName%')
-            )->will($this->returnCallback($callback));
+                $topic,
+                'HelpTranslations',
+                $context,
+                null,
+                '%pathPrefix%/%language%/%pageName%'
+            )->willReturnCallback($callback);
         return $helper;
     }
 

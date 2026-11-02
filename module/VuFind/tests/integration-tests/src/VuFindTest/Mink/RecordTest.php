@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink test class for basic record functionality.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -35,7 +37,6 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 class RecordTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -47,7 +48,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function tryRecordTabsOnId($id, $encodeId = true)
+    protected function tryRecordTabsOnId(string $id, bool $encodeId = true): void
     {
         $url = $this->getVuFindUrl(
             '/Record/' . ($encodeId ? rawurlencode($id) : $id)
@@ -55,15 +56,16 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '.record-tabs .details a');
+        $this->waitForPageLoad($page);
+        $staffViewTab = $this->findCss($page, '.record-tabs #tab-button-details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
-        $this->assertEqualsWithTimeout(
-            $url . '#details',
+        $this->assertSameWithTimeout(
+            $url . '/Details',
             [$session, 'getCurrentUrl']
         );
-        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
+        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
+        $this->assertSame('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
     /**
@@ -75,25 +77,27 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function tryLoadingTabHashAndReturningToDefault($id, $encodeId = true)
+    protected function tryLoadingTabHashAndReturningToDefault(string $id, bool $encodeId = true): void
     {
         // special test for going back to default tab from non-default URL
-        $url = $this->getVuFindUrl(
-            '/Record/' . ($encodeId ? rawurlencode($id) : $id) . '/Holdings#details'
-        );
+        $baseUrl  = $this->getVuFindUrl('/Record/' . ($encodeId ? rawurlencode($id) : $id));
+        $url = $baseUrl . '/Holdings#details';
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
-        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
-        $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
-        $this->assertEquals('Holdings', $staffViewTab->getText());
-        $staffViewTab->click();
-        $holdingsTabHeader = $this->findCss($page, '.record-tabs .holdings-tab h3');
-        $this->assertEquals('3rd Floor Main Library', $holdingsTabHeader->getText());
-        [$baseUrl] = explode('#', $url);
-        $this->assertEquals($baseUrl, $session->getCurrentUrl());
+        $this->assertEquals($baseUrl . '/Details', $session->getCurrentUrl());
+        $this->assertStringStartsWith(
+            'LEADER',
+            $this->findCssAndGetText($page, '.record-tabs .details-tab table.staff-view--marc')
+        );
+        $holdingsTab = $this->findCss($page, '.record-tabs #tab-button-holdings');
+        $this->assertEquals('Holdings', $holdingsTab->getText());
+        $holdingsTab->click();
+        $this->assertSame(
+            '3rd Floor Main Library',
+            $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
+        );
+        $this->assertEquals($baseUrl . '/Holdings', $session->getCurrentUrl());
     }
 
     /**
@@ -101,7 +105,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRecordTabsOnNormalId()
+    public function testRecordTabsOnNormalId(): void
     {
         $this->tryRecordTabsOnId('testsample1');
         $this->tryLoadingTabHashAndReturningToDefault('testsample2');
@@ -112,7 +116,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRecordTabsOnSpacedId()
+    public function testRecordTabsOnSpacedId(): void
     {
         $this->tryRecordTabsOnId('dot.dash-underscore__3.space suffix');
         $this->tryLoadingTabHashAndReturningToDefault(
@@ -125,7 +129,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRecordTabsOnPlusId()
+    public function testRecordTabsOnPlusId(): void
     {
         // Skip encoding on this one, because Laminas doesn't URL encode
         // plus signs in route segments!
@@ -137,16 +141,45 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that tabs work correctly with loadInitialTabWithAjax turned on.
+     * Data provider for testPermalink().
+     *
+     * @return \Iterator
+     */
+    public static function permalinkProvider(): \Iterator
+    {
+        yield 'default' => [null];
+        yield 'enabled' => [true];
+        yield 'disabled' => [false];
+    }
+
+    /**
+     * Test permalink display.
+     *
+     * @param ?bool  $enabled Are permalinks enabled? (Null = use default config)
+     * @param string $id      Record ID to test with
      *
      * @return void
      */
-    public function testLoadInitialTabWithAjax()
+    #[\PHPUnit\Framework\Attributes\DataProvider('permalinkProvider')]
+    public function testPermalink(?bool $enabled, $id = 'testbug1'): void
     {
-        $this->changeConfigs(
-            ['config' => ['Site' => ['loadInitialTabWithAjax' => 1]]]
-        );
-        $this->tryRecordTabsOnId('testsample1');
-        $this->tryLoadingTabHashAndReturningToDefault('testsample2');
+        // Change configuration, unless we're using the default value:
+        if (null !== $enabled) {
+            $this->changeConfigs(
+                ['config' => ['Record' => ['permanent_link' => $enabled]]]
+            );
+        }
+        $url = $this->getVuFindUrl('/Record/' . rawurlencode($id));
+        $session = $this->getMinkSession();
+        $session->visit($url);
+        $page = $session->getPage();
+        // We expect to find a permanent link in default and true modes; not in false mode.
+        $selector = '.permalink-record';
+        if ($enabled === false) {
+            $this->unFindCss($page, $selector);
+        } else {
+            $link = $this->findCss($page, $selector);
+            $this->assertStringContainsString($link->getAttribute('href'), $url . '/Permalink');
+        }
     }
 }

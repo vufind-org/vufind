@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Fetch terms from the backend (currently only supported by Solr)
+ * Fetch terms from the backend (currently only supported by Solr).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 
 /**
- * Fetch terms from the backend (currently only supported by Solr)
+ * Fetch terms from the backend (currently only supported by Solr).
  *
  * @category VuFind
  * @package  Search
@@ -45,39 +46,39 @@ class TermsCommand extends CallMethodCommand
     /**
      * Index field.
      *
-     * @var string
+     * @var ?string
      */
-    protected $field;
+    protected ?string $field;
 
     /**
      * Starting term.
      *
-     * @var string
+     * @var ?string
      */
-    protected $start;
+    protected ?string $start;
 
     /**
      * Maximum number of terms.
      *
-     * @var int
+     * @var ?int
      */
-    protected $limit;
+    protected ?int $limit;
 
     /**
      * Constructor.
      *
      * @param string    $backendId Search backend identifier
-     * @param string    $field     Index field
-     * @param string    $start     Starting term (blank for beginning of list)
-     * @param int       $limit     Maximum number of terms
+     * @param ?string   $field     Index field
+     * @param ?string   $start     Starting term (blank for beginning of list)
+     * @param ?int      $limit     Maximum number of terms
      * @param ?ParamBag $params    Search backend parameters
      */
     public function __construct(
         string $backendId,
-        string $field,
-        string $start,
-        int $limit,
-        ParamBag $params = null
+        ?string $field,
+        ?string $start,
+        ?int $limit,
+        ?ParamBag $params = null
     ) {
         $this->field = $field;
         $this->start = $start;
@@ -101,16 +102,16 @@ class TermsCommand extends CallMethodCommand
             $this->getField(),
             $this->getStart(),
             $this->getLimit(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 
     /**
      * Return index field.
      *
-     * @return string
+     * @return ?string
      */
-    public function getField(): string
+    public function getField(): ?string
     {
         return $this->field;
     }
@@ -118,9 +119,9 @@ class TermsCommand extends CallMethodCommand
     /**
      * Return starting term.
      *
-     * @return string
+     * @return ?string
      */
-    public function getStart(): string
+    public function getStart(): ?string
     {
         return $this->start;
     }
@@ -128,9 +129,9 @@ class TermsCommand extends CallMethodCommand
     /**
      * Return maximum number of terms.
      *
-     * @return int
+     * @return ?int
      */
-    public function getLimit(): int
+    public function getLimit(): ?int
     {
         return $this->limit;
     }

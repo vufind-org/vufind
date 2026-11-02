@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Content View Helper Test Class
+ * Content View Helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,14 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\ContentBlock\TemplateBased;
 use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\Context;
+use VuFind\View\Helper\Root\Markdown;
+use VuFindTest\Feature\ViewTrait;
 
 /**
- * Content View Helper Test Class
+ * Content View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -42,6 +47,8 @@ use VuFind\View\Helper\Root\Context;
  */
 class ContentTest extends \PHPUnit\Framework\TestCase
 {
+    use ViewTrait;
+
     /**
      * Perform a test of the helper.
      *
@@ -60,26 +67,31 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         array $context = ['bar' => 'baz'],
         ?string $pattern = null
     ): void {
-        $mockTemplateBased = $this->getMockBuilder(TemplateBased::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockTemplateBased = $this->createMock(TemplateBased::class);
         $contentBlockContext = ['context' => 'fakeContext'];
         $mockTemplateBased->expects($this->once())->method('getContext')
             ->with(
-                $this->equalTo($expectedPathPrefix),
-                $this->equalTo($pageName),
-                $this->equalTo($pattern)
-            )->will($this->returnValue($contentBlockContext));
-        $mockContext = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()->getMock();
+                $expectedPathPrefix,
+                $pageName,
+                $pattern
+            )->willReturn($contentBlockContext);
+        $mockContext = $this->createMock(Context::class);
         $mockContext->expects($this->once())->method('renderInContext')
             ->with(
-                $this->equalTo('ContentBlock/TemplateBased.phtml'),
-                $this->equalTo($context + $contentBlockContext)
-            )->will($this->returnValue('rendered-content'));
-        $content = new Content($mockTemplateBased, $mockContext);
+                'ContentBlock/TemplateBased.phtml',
+                $context + $contentBlockContext
+            )->willReturn('rendered-content');
+        $mockMarkdownHelper = $this->createMock(Markdown::class);
+        $content = new Content(
+            $mockTemplateBased,
+            $mockContext,
+            new EscapeHtml(),
+            $this->createCleanHtmlHelper(),
+            $mockMarkdownHelper
+        );
         // Confirm that expected content was rendered:
         $pageDetails = [];
-        $this->assertEquals(
+        $this->assertSame(
             'rendered-content',
             $content->renderTranslated(
                 $pageName,
@@ -90,7 +102,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
             )
         );
         // Confirm pass-by-reference array was updated:
-        $this->assertEquals($contentBlockContext, $pageDetails);
+        $this->assertSame($contentBlockContext, $pageDetails);
     }
 
     /**

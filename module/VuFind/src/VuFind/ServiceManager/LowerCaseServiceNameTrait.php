@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Trait for plugin managers that allows service names to be normalized to lowercase
  * (for backward compatibility with ServiceManager v2).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ServiceManager;
 
 /**
@@ -41,14 +43,14 @@ namespace VuFind\ServiceManager;
 trait LowerCaseServiceNameTrait
 {
     /**
-     * Retrieve a plugin
+     * Retrieve a plugin.
      *
      * @param string     $name    Name of plugin
      * @param null|array $options Options to use when creating the instance.
      *
      * @return mixed
      */
-    public function get($name, array $options = null)
+    public function get($name, ?array $options = null)
     {
         return parent::get($this->getNormalizedServiceName($name), $options);
     }
@@ -77,7 +79,8 @@ trait LowerCaseServiceNameTrait
      */
     protected function getNormalizedServiceName($name)
     {
-        if ($name != ($lower = strtolower($name))
+        if (
+            $name != ($lower = strtolower($name))
             && (isset($this->services[$lower]) || isset($this->factories[$lower])
             || isset($this->aliases[$lower]))
         ) {

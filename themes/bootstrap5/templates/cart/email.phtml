@@ -1,0 +1,46 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('email_selected_favorites'));
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+    ->add($this->translate('email_selected_favorites'), active: true);
+?>
+<h2><?=$this->transEsc('bulk_email_cart') ?></h2>
+<?=$this->flashmessages()?>
+<?php if (count($this->records) > 0): ?>
+  <form class="form-cart-email" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
+    <?php foreach ($this->records as $current): ?>
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
+    <?php endforeach; ?>
+    <div class="form-group">
+      <label class="form-label"><?=$this->transEsc('Title')?>:</label>
+      <?php if (count($this->records) > 1): ?>
+        <button type="button" class="btn btn-default hidden" data-bs-toggle="collapse" data-bs-target="#itemhide">
+          <?=count($this->records) . ' ' . $this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse show">
+          <ul>
+            <?php foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php else: ?>
+        <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
+      <?php endif; ?>
+    </div>
+    <?=$this->render('Helpers/email-form-fields.phtml')?>
+  </form>
+<?php endif; ?>
+<?php
+  $script = <<<JS
+      $('button.btn.hidden').removeClass('hidden');
+      $('#itemhide').removeClass('show');
+      JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

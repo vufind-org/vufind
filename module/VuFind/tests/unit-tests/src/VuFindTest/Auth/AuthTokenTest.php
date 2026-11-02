@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
- * Class AuthTokenTest
+ * Class AuthTokenTest.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2021.
  *
@@ -18,8 +17,8 @@ declare(strict_types=1);
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -27,12 +26,15 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\AuthToken;
 
 /**
- * Class AuthTokenTest
+ * Class AuthTokenTest.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -42,14 +44,24 @@ use VuFind\Auth\AuthToken;
  */
 class AuthTokenTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test getting a header value.
+     *
+     * @return void
+     */
     public function testGetHeaderValue()
     {
         $token = new AuthToken('token', 10);
-        $this->assertEquals('Bearer token', $token->getHeaderValue());
+        $this->assertSame('Bearer token', $token->getHeaderValue());
         $token = new AuthToken('token', 10, 'Basic');
-        $this->assertEquals('Basic token', $token->getHeaderValue());
+        $this->assertSame('Basic token', $token->getHeaderValue());
     }
 
+    /**
+     * Test isExpired() method.
+     *
+     * @return void
+     */
     public function testIsExpired()
     {
         $token = new AuthToken('token', 1);
@@ -58,10 +70,15 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($token->isExpired());
     }
 
+    /**
+     * Test getExpiresIn() method.
+     *
+     * @return void
+     */
     public function testGetExpiresIn()
     {
         $token = new AuthToken('token', 11);
-        $this->assertEquals(11, $token->getExpiresIn());
+        $this->assertSame(11, $token->getExpiresIn());
         $token = new AuthToken('token', null);
         $this->assertNull($token->getExpiresIn());
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: Generate non-tab record action route.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,24 +44,21 @@ use VuFindConsole\Generator\GeneratorTools;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/nontabrecordaction',
+    description: 'Non-tab record action route generator'
+)]
 class NonTabRecordActionCommand extends AbstractCommand
 {
     /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/nontabrecordaction';
-
-    /**
-     * Main framework configuration
+     * Main framework configuration.
      *
      * @var array
      */
     protected $mainConfig;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorTools $tools      Generator tools
      * @param array          $mainConfig Main framework configuration
@@ -82,7 +82,6 @@ class NonTabRecordActionCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setDescription('Non-tab record action route generator')
             ->setHelp('Adds routes for a non-tab record action.')
             ->addArgument(
                 'action',
@@ -103,7 +102,7 @@ class NonTabRecordActionCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $action = $input->getArgument('action');
         $module = $input->getArgument('target_module');
@@ -117,8 +116,9 @@ class NonTabRecordActionCommand extends AbstractCommand
         // Append the routes
         $config = include $configPath;
         foreach ($this->mainConfig['router']['routes'] as $key => $val) {
-            if (isset($val['options']['route'])
-                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
+            if (
+                isset($val['options']['route'])
+                && str_ends_with($val['options']['route'], '[:id[/[:tab]]]')
             ) {
                 $newRoute = $key . '-' . strtolower($action);
                 if (isset($this->mainConfig['router']['routes'][$newRoute])) {
@@ -137,6 +137,6 @@ class NonTabRecordActionCommand extends AbstractCommand
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);
-        return 0;
+        return self::SUCCESS;
     }
 }

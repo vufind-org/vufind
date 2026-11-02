@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait to add facet prefix and matches settings to a Params object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,9 +27,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\Search\Params;
 
-use Laminas\Config\Config;
+namespace VuFind\Search\Params;
 
 /**
  * Trait to add facet limiting settings to a Params object.
@@ -42,56 +42,56 @@ use Laminas\Config\Config;
 trait FacetRestrictionsTrait
 {
     /**
-     * Per-field facet prefix
+     * Per-field facet prefix.
      *
      * @var array
      */
-    protected $facetPrefixByField = [];
+    protected array $facetPrefixByField = [];
 
     /**
-     * Per-field facet matches
+     * Per-field facet matches.
      *
      * @var array
      */
-    protected $facetMatchesByField = [];
+    protected array $facetMatchesByField = [];
 
     /**
      * Initialize facet prefix and matches from a Config object.
      *
-     * @param Config $config Configuration
+     * @param ?array $config Configuration
      *
      * @return void
      */
-    protected function initFacetRestrictionsFromConfig(Config $config = null)
+    protected function initFacetRestrictionsFromConfig(?array $config = null): void
     {
-        foreach ($config->facet_prefix_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_prefix_by_field'] ?? [] as $k => $v) {
             $this->facetPrefixByField[$k] = $v;
         }
-        foreach ($config->facet_matches_by_field ?? [] as $k => $v) {
+        foreach ($config['facet_matches_by_field'] ?? [] as $k => $v) {
             $this->facetMatchesByField[$k] = $v;
         }
     }
 
     /**
-     * Set Facet Prefix by Field
+     * Set Facet Prefix by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
      * @return void
      */
-    public function setFacetPrefixByField(array $new)
+    public function setFacetPrefixByField(array $new): void
     {
         $this->facetPrefixByField = $new;
     }
 
     /**
-     * Set Facet Matches by Field
+     * Set Facet Matches by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
      * @return void
      */
-    public function setFacetMatchesByField(array $new)
+    public function setFacetMatchesByField(array $new): void
     {
         $this->facetMatchesByField = $new;
     }
@@ -103,7 +103,7 @@ trait FacetRestrictionsTrait
      *
      * @return string
      */
-    protected function getFacetPrefixForField($field)
+    protected function getFacetPrefixForField(string $field): string
     {
         $prefix = $this->facetPrefixByField[$field] ?? '';
         return $prefix;
@@ -116,7 +116,7 @@ trait FacetRestrictionsTrait
      *
      * @return string
      */
-    protected function getFacetMatchesForField($field)
+    protected function getFacetMatchesForField(string $field): string
     {
         $matches = $this->facetMatchesByField[$field] ?? '';
         return $matches;

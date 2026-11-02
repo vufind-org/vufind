@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ParentTemplate view helper Test Class
+ * ParentTemplate view helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\ParentTemplate;
 
 /**
- * ParentTemplate view helper Test Class
+ * ParentTemplate view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,14 +45,14 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @return void
      */
@@ -63,14 +65,14 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a populated resource container for testing.
      *
+     * @param array $stack Path stack
+     *
      * @return ParentTemplate
      */
     protected function getHelper($stack)
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
-            ->disableOriginalConstructor()->getMock();
+        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
 
         $return = new \SplStack();
         foreach ($stack as $layer) {
@@ -78,9 +80,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         }
         $return->rewind();
 
-        $stackMock->expects($this->any())
-            ->method('getPaths')
-            ->will($this->returnValue($return));
+        $stackMock->method('getPaths')->willReturn($return);
 
         // Make helper
         return new ParentTemplate($stackMock);
@@ -101,7 +101,24 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deeper parent return
+     * Test stack rewinding bug (VUFIND-1604).
+     *
+     * @return void
+     */
+    public function testRepeatCalls()
+    {
+        $helper = $this->getHelper(['parent', 'child']);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->assertEquals(
+                "{$this->fixturePath}/parent/templates/foo/bar/child.phtml",
+                $helper('foo/bar/child.phtml')
+            );
+        }
+    }
+
+    /**
+     * Test deeper parent return.
      *
      * @return void
      */
@@ -115,7 +132,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test thrown error
+     * Test thrown error.
      *
      * @return void
      */

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * "Load help text" view helper
+ * "Load help text" view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * "Load help text" view helper
+ * "Load help text" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,30 +40,24 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HelpText extends \Laminas\View\Helper\AbstractHelper
+class HelpText
 {
     /**
-     * The content view helper
-     *
-     * @var Content
-     */
-    protected $contentHelper;
-
-    /**
-     * Warning messages
+     * Warning messages.
      *
      * @var array
      */
     protected $warnings = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Content $content The content view helper
+     * @param Content $contentHelper The content view helper
      */
-    public function __construct(Content $content)
-    {
-        $this->contentHelper = $content;
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Content $contentHelper
+    ) {
     }
 
     /**
@@ -99,7 +97,8 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
 
         if (!$html) {
             $this->warnings[] = 'help_page_missing';
-        } elseif (isset($pageDetails['pageLocatorDetails']['matchType'])
+        } elseif (
+            isset($pageDetails['pageLocatorDetails']['matchType'])
             && $pageDetails['pageLocatorDetails']['matchType'] != 'language'
         ) {
             $this->warnings[] = 'Sorry, but the help you requested is '
@@ -107,5 +106,15 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
         }
 
         return $html;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

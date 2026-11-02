@@ -19,6 +19,10 @@
 # SOLR_PORT
 #   Network port for Solr. Defaults to 8983.
 #
+# SOLR_SECURITY_MANAGER_ENABLED
+#   Whether or not to enable the Java security manager (incompatible with
+#   AlphaBrowse handler). Defaults to false.
+#
 # JAVA_HOME
 #   Home of Java installation (not directly used by this script, but passed along to
 #   the standard Solr control script).
@@ -77,6 +81,11 @@ then
   SOLR_PORT="8983"
 fi
 
+if [ -z "$SOLR_SECURITY_MANAGER_ENABLED" ]
+then
+  export SOLR_SECURITY_MANAGER_ENABLED="false"
+fi
+
 if [ -z "$SOLR_ADDITIONAL_START_OPTIONS" ]
 then
   SOLR_ADDITIONAL_START_OPTIONS=""
@@ -88,4 +97,4 @@ then
 fi
 
 export SOLR_LOGS_DIR=$SOLR_LOGS_DIR
-"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} -p "$SOLR_PORT" -s "$SOLR_HOME" -m "$SOLR_HEAP" -a "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR $SOLR_ADDITIONAL_JVM_OPTIONS"
+"$SOLR_BIN/solr" "$1" ${SOLR_ADDITIONAL_START_OPTIONS} --port "$SOLR_PORT" --solr-home "$SOLR_HOME" -m "$SOLR_HEAP" --user-managed --jvm-opts "-Ddisable.configEdit=true -Dsolr.log=$SOLR_LOGS_DIR -Dsolr.config.lib.enabled=true $SOLR_ADDITIONAL_JVM_OPTIONS"

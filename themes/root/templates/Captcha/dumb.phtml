@@ -1,0 +1,7 @@
+<?php
+  $laminasCaptcha = $this->captcha->getCaptcha();
+  $id = $laminasCaptcha->generate();
+?>
+<pre><?=$this->escapeHtml(strrev($laminasCaptcha->getWord()))?></pre>
+<p><label for="<?=$this->captcha->getHtmlInputId()?>"><?=$this->transEsc($laminasCaptcha->getLabel())?></label> <input name="<?=$this->captcha->getHtmlInputId()?>" id="<?=$this->captcha->getHtmlInputId()?>"></p>
+<input type="hidden" name="<?=$this->captcha->getHtmlInternalId()?>" value="<?=$this->escapeHtmlAttr($id)?>">

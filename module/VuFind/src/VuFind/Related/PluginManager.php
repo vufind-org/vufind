@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Related record plugin manager
+ * Related record plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
+
 namespace VuFind\Related;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Related record plugin manager
+ * Related record plugin manager.
  *
  * @category VuFind
  * @package  Related_Records
@@ -49,26 +49,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'channels' => Channels::class,
         'bookplate' => Bookplate::class,
         'editions' => Deprecated::class,
+        'morebyauthorsolr' => MoreByAuthorSolr::class,
         'similar' => Similar::class,
         'worldcateditions' => Deprecated::class,
-        'worldcatsimilar' => WorldCatSimilar::class,
+        'worldcat2similar' => WorldCat2Similar::class,
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Channels::class => InvokableFactory::class,
-        Bookplate::class => BookplateFactory::class,
-        Deprecated::class => InvokableFactory::class,
-        Similar::class => SimilarFactory::class,
-        WorldCatSimilar::class => SimilarFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

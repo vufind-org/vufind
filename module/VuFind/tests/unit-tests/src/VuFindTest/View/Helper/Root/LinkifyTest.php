@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Linkify Test Class
+ * Linkify Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,14 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\View\Helper\Root\Linkify;
 
 /**
- * Linkify Test Class
+ * Linkify Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,44 +46,31 @@ use VuFind\View\Helper\Root\Linkify;
 class LinkifyTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock URL highlighter
-     *
-     * @var UrlHighlight&MockObject
-     */
-    protected $urlHighlight;
-
-    /**
-     * Linkify helper being tested
-     *
-     * @var Linkify
-     */
-    protected $linkify;
-
-    /**
-     * Setup method
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $this->urlHighlight = $this->createMock(UrlHighlight::class);
-        $this->linkify = new Linkify($this->urlHighlight);
-    }
-
-    /**
      * Test that Linkify proxies the UrlHighlight object as expected.
      *
      * @return void
      */
     public function testLinkify(): void
     {
-        $this->urlHighlight
+        $urlHighlight = $this->createMock(UrlHighlight::class);
+        $urlHighlightExceptEmail = $this->createMock(UrlHighlight::class);
+        $linkify = new Linkify($urlHighlight, $urlHighlightExceptEmail);
+        $urlHighlight
             ->expects($this->once())
             ->method('highlightUrls')
-            ->with($this->equalTo('input text'))
+            ->with('input text')
             ->willReturn('Text with highlighted urls');
 
-        $actual = ($this->linkify)('input text');
+        $urlHighlightExceptEmail
+            ->expects($this->once())
+            ->method('highlightUrls')
+            ->with('input text')
+            ->willReturn('Text with highlighted urls except emails');
+
+        $actual = ($linkify)('input text');
         $this->assertSame('Text with highlighted urls', $actual);
+
+        $actual = ($linkify)('input text', false);
+        $this->assertSame('Text with highlighted urls except emails', $actual);
     }
 }

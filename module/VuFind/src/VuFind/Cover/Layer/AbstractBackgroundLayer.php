@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract cover background layer
+ * Abstract cover background layer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
+use function ord;
+use function strlen;
+
 /**
- * Abstract cover background layer
+ * Abstract cover background layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -39,7 +44,7 @@ namespace VuFind\Cover\Layer;
 abstract class AbstractBackgroundLayer extends AbstractLayer
 {
     /**
-     * Generates a dynamic cover image from elements of the book
+     * Generates a dynamic cover image from elements of the book.
      *
      * @param string $title      Title of the book
      * @param string $callnumber Callnumber of the book
@@ -48,20 +53,15 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
      */
     protected function createSeed($title, $callnumber)
     {
-        // Turn callnumber into number
-        if (null == $callnumber) {
-            $callnumber = $title;
+        // Pick text for seeding the algorithm:
+        $textSeed = $callnumber ?: $title ?: '';
+        $cv = 0;
+        // Add up the values of the characters in the seed string:
+        for ($i = 0; $i < strlen($textSeed); $i++) {
+            $cv += ord($textSeed[$i]);
         }
-        if (null !== $callnumber) {
-            $cv = 0;
-            for ($i = 0;$i < strlen($callnumber);$i++) {
-                $cv += ord($callnumber[$i]);
-            }
-            return $cv;
-        } else {
-            // If no callnumber, random
-            return ceil(rand(2 ** 4, 2 ** 32));
-        }
+        // If we failed to generate a non-zero seed, use a random one instead.
+        return $cv > 0 ? $cv : ceil(rand(2 ** 4, 2 ** 32));
     }
 
     /**

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Channels content block.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -25,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\ContentBlock;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\ChannelProvider\ChannelLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Channels content block.
@@ -42,36 +45,23 @@ use VuFind\ChannelProvider\ChannelLoader;
 class Channels implements ContentBlockInterface
 {
     /**
-     * Request object
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Channel loader
-     *
-     * @var ChannelLoader
-     */
-    protected $loader;
-
-    /**
-     * Data source (null to use default found in channels.ini)
+     * Data source (null to use default found in channels.ini).
      *
      * @var string
      */
     protected $source = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request       $request Request object
      * @param ChannelLoader $loader  Channel loader
      */
-    public function __construct(Request $request, ChannelLoader $loader)
-    {
-        $this->request = $request;
-        $this->loader = $loader;
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        protected Request $request,
+        protected ChannelLoader $loader
+    ) {
     }
 
     /**

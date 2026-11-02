@@ -1,0 +1,20 @@
+[
+  {
+    "expectedPath": "/proxiesfor",
+    "expectedParams": {
+      "query": "(userId==\"fakeid\")",
+      "offset": 0,
+      "limit": 1000
+    },
+    "status": 200,
+    "body":"{\n  \"proxiesFor\" : [ {\n    \"userId\" : \"fakeid\",\n    \"proxyUserId\" : \"foo\",\n    \"id\" : \"zzz\",\n    \"requestForSponsor\" : \"Yes\",\n    \"notificationsTo\" : \"Sponsor\",\n    \"accrueTo\" : \"Sponsor\",\n    \"status\" : \"Active\",\n    \"metadata\" : {\n      \"createdDate\" : \"2023-01-30T16:38:48.058+00:00\",\n      \"createdByUserId\" : \"zzz\",\n      \"updatedDate\" : \"2023-02-08T20:44:02.653+00:00\",\n      \"updatedByUserId\" : \"yyy\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}"
+  },
+  {
+    "expectedPath": "/users",
+    "expectedParams": {
+      "query": "id == \"foo\""
+    },
+    "status": 200,
+    "body": "{\n  \"users\": [\n{\"tenant\":\"config_tenant\",\"username\":\"fake@example.com\",\"id\":\"foo\",\"externalSystemId\":\"fake\",\"barcode\":\"fakefakefake\",\"active\":true,\"patronGroup\":\"fakegroup\",\"departments\":[],\"proxyFor\":[],\"personal\":{\"lastName\":\"Lastname\",\"firstName\":\"Proxity\",\"middleName\":\"P.\",\"email\":\"fake@example.com\",\"phone\":\"0123456789\",\"addresses\":[],\"preferredContactTypeId\":\"002\"},\"expirationDate\":\"2030-05-30T00:00:00.000+00:00\",\"createdDate\":\"2023-02-08T20:44:02.690+00:00\",\"updatedDate\":\"2023-02-08T20:44:02.690+00:00\",\"metadata\":{\"createdDate\":\"2021-12-14T19:23:51.863+00:00\",\"createdByUserId\":\"zzz\",\"updatedDate\":\"2023-02-08T20:44:02.681+00:00\",\"updatedByUserId\":\"yyy\"},\"customFields\":{\"employeeClass\":\"Staff\",\"title\":\"Mr.\",\"employeeStatus\":\"Full Time\",\"employeeDepartment\":\"Somewhere\",\"studentGraduationStatus\":\"AW\"}}],\n  \"totalRecords\": 1,\n  \"resultInfo\": {\"totalRecords\":1,\"facets\":[],\"diagnostics\":[]}\n}"
+  }
+]

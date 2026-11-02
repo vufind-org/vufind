@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Interface for SMS classes.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  SMS
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
 /**
@@ -39,31 +41,31 @@ namespace VuFind\SMS;
 interface SMSInterface
 {
     /**
-     * Get validation type for phone numbers
+     * Get validation type for phone numbers.
      *
      * @return string
      */
-    public function getValidationType();
+    public function getValidationType(): string;
 
     /**
-     * Get a list of carriers supported by the module.  Returned as an array of
+     * Get a list of carriers supported by the module. Returned as an array of
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *
      * @return array
      */
-    public function getCarriers();
+    public function getCarriers(): array;
 
     /**
      * Send a text message to the specified provider.
      *
-     * @param string $provider The provider ID to send to
-     * @param string $to       The phone number at the provider
-     * @param string $from     The email address to use as sender
-     * @param string $message  The message to send
+     * @param string  $provider The provider ID to send to
+     * @param string  $to       The phone number at the provider
+     * @param ?string $from     The email address to use as sender (null for default)
+     * @param string  $message  The message to send
      *
      * @throws \VuFind\Exception\Mail
      * @return void
      */
-    public function text($provider, $to, $from, $message);
+    public function text(string $provider, string $to, ?string $from, string $message): void;
 }

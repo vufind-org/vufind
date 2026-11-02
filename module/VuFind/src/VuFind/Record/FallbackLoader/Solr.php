@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr record fallback loader
+ * Solr record fallback loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record\FallbackLoader;
 
-use VuFind\Db\Table\Resource;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Record\RecordIdUpdater;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Service;
 
 /**
- * Solr record fallback loader
+ * Solr record fallback loader.
  *
  * @category VuFind
  * @package  Record
@@ -42,34 +46,28 @@ use VuFindSearch\Service;
 class Solr extends AbstractFallbackLoader
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */
     protected $source = 'Solr';
 
     /**
-     * Solr field containing legacy IDs.
+     * Constructor.
      *
-     * @param string
-     */
-    protected $legacyIdField;
-
-    /**
-     * Constructor
-     *
-     * @param Resource $table         Resource database table object
-     * @param Service  $searchService Search service
-     * @param ?string  $legacyIdField Solr field containing legacy IDs (null to
+     * @param ResourceServiceInterface $resourceService Resource database service
+     * @param RecordIdUpdater          $recordIdUpdater Record ID updater service
+     * @param Service                  $searchService   Search service
+     * @param ?string                  $legacyIdField   Solr field containing legacy IDs (null to
      * disable lookups)
      */
     public function __construct(
-        Resource $table,
+        ResourceServiceInterface $resourceService,
+        RecordIdUpdater $recordIdUpdater,
         Service $searchService,
-        ?string $legacyIdField = 'previous_id_str_mv'
+        protected ?string $legacyIdField = 'previous_id_str_mv'
     ) {
-        parent::__construct($table, $searchService);
-        $this->legacyIdField = $legacyIdField;
+        parent::__construct($resourceService, $recordIdUpdater, $searchService);
     }
 
     /**
@@ -90,6 +88,7 @@ class Solr extends AbstractFallbackLoader
         $query = new \VuFindSearch\Query\Query(
             $this->legacyIdField . ':"' . addcslashes($id, '"') . '"'
         );
-        return $this->searchService->search('Solr', $query);
+        $command = new SearchCommand('Solr', $query);
+        return $this->searchService->invoke($command)->getResult();
     }
 }

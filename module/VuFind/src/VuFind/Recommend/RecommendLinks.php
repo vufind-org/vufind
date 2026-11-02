@@ -1,8 +1,9 @@
 <?php
+
 /**
- * RecommendLinks Recommendations Module
+ * RecommendLinks Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * RecommendLinks Recommendations Module
+ * RecommendLinks Recommendations Module.
  *
  * This class recommends links to services, that user may try.
  *
@@ -41,27 +45,20 @@ namespace VuFind\Recommend;
 class RecommendLinks implements RecommendInterface
 {
     /**
-     * Links to show
+     * Links to show.
      *
      * @var array
      */
     protected $links = [];
 
     /**
-     * Configuration loader
+     * Constructor.
      *
-     * @var \VuFind\Config\PluginManager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    #[Autowire]
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -81,9 +78,8 @@ class RecommendLinks implements RecommendInterface
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'RecommendLinks' : $settings[0];
         $iniName = $settings[1] ?? 'searches';
-        $config = $this->configLoader->get($iniName);
-        $this->links = isset($config->$mainSection)
-            ? $config->$mainSection->toArray() : [];
+        $config = $this->configManager->getConfigArray($iniName);
+        $this->links = $config[$mainSection] ?? [];
     }
 
     /**
@@ -105,7 +101,7 @@ class RecommendLinks implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -119,7 +115,7 @@ class RecommendLinks implements RecommendInterface
     }
 
     /**
-     * Get array of links with title as key and value as link
+     * Get array of links with title as key and value as link.
      *
      * @return \VuFind\Search\Base\Results
      */

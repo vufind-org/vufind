@@ -1,0 +1,46 @@
+<h1>Որոնման օգտակար խորհուրդներ</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#boolean_operators">Բուլյան օպերատորներ</a>
+    <ul>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a id="boolean_operators"></a>Բուլյան օպերատորներ</dt>
+  <dd>
+    <p>
+      Բուլյան օպերատորները թույլ են տալիս տերմինները զուգակցել տրամաբանական օպերատորների հետ:
+      Թույլատրվում են հետևյալ օպերատորները: <strong>AND</strong>, <strong>OR</strong> և <strong>NOT</strong>.
+    </p>
+    <p>Note: Բուլյան ԲՈԼՈՐ օպերատորները պետք է լինեն CAPS</p>
+    <dl>
+      <dt><a id="boolean_and"></a>AND</dt>
+      <dd>
+        <p>Այս <strong>AND</strong> օպերատորը կապի լռելյայն օպերատորն է: Սա նշանակում է, որ եթե երկու տերմինների միջև չկա բուլյան օպերատոր, ապա օգտագործվում է AND օպերատորը: AND օպերատորը համընկնում է այն գրառումներին, որտեղ երկու տերմիններն էլ առկա են գրառման դաշտի ցանկացած վայրում:</p>
+        <p>"Keynes" և "economics" պարունակող գրառումներ որոնելու համար օգտագործեք հարցումը՝ </p>
+        <pre class="code">economics Keynes</pre>
+        <p>or</p>
+        <pre class="code">economics AND Keynes</pre>
+      </dd>
+      <dt><a id="boolean_or"></a>OR</dt>
+      <dd>
+        <p>OR օպերատորը կապում է երկու տերմին և գտնում է համապատասխան գրառումը, եթե տերմիններից որևէ մեկը գոյություն ունի գրառումում:</p>
+        <p>"economics Keynes" կամ պարզապես "Keynes" պարունակող փաստաթղթեր որոնելու համար օգտագործեք հարցումը՝</p>
+        <pre class="code">"economics Keynes" OR Keynes</pre>
+      </dd>
+      <dt><a id="boolean_not"></a>NOT</dt>
+      <dd>
+        <p>NOT օպերատորը բացառում է այն գրառումները, որոնք պարունակում են NOT-ից հետո տերմինը:</p>
+        <p>"economics" պարունակող, բայց "Keynes" չպարունակող փաստաթղթեր փնտրելու համար օգտագործեք հարցումը՝</p>
+        <pre class="code">economics NOT Keynes</pre>
+        <p>Նշում. NOT օպերատորը չի կարող օգտագործվել միայն մեկ տերմինով: Օրինակ, հետևյալ որոնումը արդյունք չի տա՝</p>
+        <pre class="code">NOT economics</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

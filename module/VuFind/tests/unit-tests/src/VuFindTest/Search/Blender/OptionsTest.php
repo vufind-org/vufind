@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Blender Options Test
+ * Blender Options Test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Blender;
 
 use VuFind\Search\Blender\Options;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Options Test
+ * Blender Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -40,17 +43,48 @@ use VuFind\Search\Blender\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
-     * Test that the Options object returns correct data.
+     * Data provider for testOptions.
+     *
+     * @return \Iterator
+     */
+    public static function optionsProvider(): \Iterator
+    {
+        yield [
+            [],
+            null,
+        ];
+        yield [
+            [
+                'Advanced_Searches' => [
+                    'foo' => 'bar',
+                ],
+            ],
+            'blender-advanced',
+        ];
+    }
+
+    /**
+     * Test that the Options object returns correct data .
+     *
+     * @param array   $config    Blender configuration
+     * @param ?string $advAction Expected advanced search action
      *
      * @return void
      */
-    public function testOptions(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
+    public function testOptions(array $config, ?string $advAction): void
     {
-        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
-        $options = new Options($configMgr);
-        $this->assertEquals('search-blended', $options->getSearchAction());
-        $this->assertFalse($options->getAdvancedSearchAction());
-        $this->assertFalse($options->getFacetListAction());
+        $mockConfigManager = $this->getMockConfigManager(
+            [
+                'Blender' => $config,
+            ]
+        );
+        $options = new Options($mockConfigManager);
+        $this->assertSame('blender-results', $options->getSearchAction());
+        $this->assertEquals($advAction, $options->getAdvancedSearchAction());
+        $this->assertNull($options->getFacetListAction());
     }
 }

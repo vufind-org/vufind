@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Caching Proxy for Cover Images
+ * Caching Proxy for Cover Images.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,13 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use Laminas\Http\Client;
 use Laminas\Http\Response;
 
+use function dirname;
+
 /**
- * Caching Proxy for Cover Images
+ * Caching Proxy for Cover Images.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -42,32 +46,32 @@ use Laminas\Http\Response;
 class CachingProxy
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * Base directory for cache
+     * Base directory for cache.
      *
      * @var string
      */
     protected $cache;
 
     /**
-     * Array of regular expressions for hosts to cache
+     * Array of regular expressions for hosts to cache.
      *
      * @var array
      */
     protected $allowedHosts;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Client $client       HTTP client
-     * @param string $cache        Base directory for cache
-     * @param array  $allowedHosts Array of regular expressions for hosts to cache
+     * @param Client  $client       HTTP client
+     * @param ?string $cache        Base directory for cache (null to disable caching)
+     * @param array   $allowedHosts Array of regular expressions for hosts to cache
      */
     public function __construct(Client $client, $cache, array $allowedHosts = [])
     {
@@ -86,7 +90,7 @@ class CachingProxy
     public function fetch($url)
     {
         $file = $this->getCacheFile($url);
-        $cacheAllowed = $this->hasLegalHost($url);
+        $cacheAllowed = $this->cache && $this->hasLegalHost($url);
         if (!$cacheAllowed || !($response = $this->fetchCache($file))) {
             $response = $this->client->setUri($url)->send();
             if ($cacheAllowed) {
@@ -120,6 +124,9 @@ class CachingProxy
      */
     protected function setCache($file, Response $response)
     {
+        if (!$this->cache) {
+            return; // don't write if cache is disabled
+        }
         if (!file_exists($this->cache)) {
             mkdir($this->cache);
         }
@@ -153,9 +160,13 @@ class CachingProxy
      * @param string $url URL
      *
      * @return string
+     * @throws \Exception
      */
     protected function getCacheFile($url)
     {
+        if (!$this->cache) {
+            throw new \Exception('Unexpected call to getCacheFile -- cache is disabled.');
+        }
         $hash = md5($url);
         return $this->cache . '/' . substr($hash, 0, 3) . '/' . substr($hash, 3);
     }

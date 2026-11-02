@@ -1,9 +1,9 @@
 <?php
 
 /**
- * EDS API Querybuilder
+ * EDS API Querybuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 use VuFindSearch\ParamBag;
@@ -34,7 +35,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * EDS API Querybuilder
+ * EDS API Querybuilder.
  *
  * @category VuFind
  * @package  Search
@@ -48,12 +49,16 @@ class QueryBuilder
      * Default query (used when query string is empty). This should retrieve all
      * records in the index, facilitating high-level facet-based browsing.
      *
+     * Note that as of May 13, 2025, this functionality is no longer supported by
+     * the API and was disabled in https://github.com/vufind-org/vufind/pull/4364
+     * but the code is retained in case it will be useful again in future.
+     *
      * @var string
      */
     protected $defaultQuery = '(FT yes) OR (FT no)';
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -62,22 +67,24 @@ class QueryBuilder
     /**
      * Construct EdsApi search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
         $queries = $this->abstractQueryToArray($query);
 
         // Send back results
-        $params = new ParamBag(['query' => $queries]);
-        return $params;
+        return new ParamBag(['query' => $queries]);
     }
 
     /**
-     * Convert a single Query object to an eds api query array
+     * Convert a single Query object to an eds api query array.
      *
      * @param Query  $query    Query to convert
      * @param string $operator Operator to apply

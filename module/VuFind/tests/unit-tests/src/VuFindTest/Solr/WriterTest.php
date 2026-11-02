@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr Writer Test Class
+ * Solr Writer Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,19 +26,20 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Solr;
 
-use Laminas\Http\Client as HttpClient;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Table\ChangeTracker;
-use VuFind\Search\BackendManager;
+use VuFind\Db\Service\ChangeTrackerServiceInterface;
 use VuFind\Solr\Writer;
+use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
+use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
-use VuFindSearch\Backend\Solr\HandlerMap;
+use VuFindSearch\Service as SearchService;
 
 /**
- * Solr Utils Test Class
+ * Solr Utils Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,179 +49,129 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  */
 class WriterTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\SearchServiceTrait;
-
     /**
-     * Test commit
+     * Test commit.
      *
      * @return void
      */
-    public function testCommit()
+    public function testCommit(): void
     {
-        $bm = $this->getBackendManagerWithMockSolr(
-            $this->getMockHttpClientExpectingOnlySetTimeout(60 * 60)
-        );
-        $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')
-            ->with($this->isInstanceOf(CommitDocument::class));
-        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
-        $writer->commit('Solr');
+        $expectedCommand = new WriteDocumentCommand('Solr', new CommitDocument(), 60 * 60);
+        $this->getWriter($expectedCommand)->commit('Solr');
     }
 
     /**
-     * Test save
+     * Test save.
      *
      * @return void
      */
-    public function testSave()
+    public function testSave(): void
     {
-        $bm = $this->getBackendManagerWithMockSolr();
-        $commit = new \VuFindSearch\Backend\Solr\Document\CommitDocument();
-        $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')
-            ->with(
-                $this->equalTo($commit),
-                $this->equalTo('update'),
-                $this->callback(function ($params) {
-                    return count($params) === 0;
-                })
-            );
-        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
-        $writer->save('Solr', $commit);
+        $commit = new CommitDocument();
+        $expectedCommand = new WriteDocumentCommand('Solr', $commit);
+        $this->getWriter($expectedCommand)->save('Solr', $commit);
     }
 
     /**
-     * Test save with non-default parameters
+     * Test save with non-default parameters.
      *
      * @return void
      */
-    public function testSaveWithNonDefaults()
+    public function testSaveWithNonDefaults(): void
     {
-        $bm = $this->getBackendManagerWithMockSolr();
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument('a,b,c');
         $params = new \VuFindSearch\ParamBag(['foo' => 'bar']);
-        $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')
-            ->with(
-                $this->equalTo($csv),
-                $this->equalTo('customUpdateHandler'),
-                $this->equalTo($params)
-            );
-        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
-        $writer->save('Solr', $csv, 'customUpdateHandler', $params);
-    }
-
-    /**
-     * Test optimize
-     *
-     * @return void
-     */
-    public function testOptimize()
-    {
-        $bm = $this->getBackendManagerWithMockSolr(
-            $this-> getMockHttpClientExpectingOnlySetTimeout(60 * 60 * 24)
+        $expectedCommand = new WriteDocumentCommand(
+            'Solr',
+            $csv,
+            null,
+            'customUpdateHandler',
+            $params
         );
-        $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')
-            ->with($this->isInstanceOf(OptimizeDocument::class));
-        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
-        $writer->optimize('Solr');
+        $this->getWriter($expectedCommand)->save('Solr', $csv, 'customUpdateHandler', $params);
     }
 
     /**
-     * Test delete all
+     * Test optimize.
      *
      * @return void
      */
-    public function testDeleteAll()
+    public function testOptimize(): void
     {
-        $bm = $this->getBackendManagerWithMockSolr();
-        $connector = $bm->get('Solr')->getConnector();
-        $callback = function ($i): bool {
-            return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
-        };
-        $connector->expects($this->once())->method('write')->with($this->callback($callback));
-        $writer = new Writer($this->getSearchService($bm), $this->getMockChangeTracker());
-        $writer->deleteAll('Solr');
+        $expectedCommand = new WriteDocumentCommand('Solr', new OptimizeDocument(), 60 * 60 * 24);
+        $this->getWriter($expectedCommand)->optimize('Solr');
     }
 
     /**
-     * Test delete records
+     * Test delete all.
      *
      * @return void
      */
-    public function testDeleteRecords()
+    public function testDeleteAll(): void
     {
-        $bm = $this->getBackendManagerWithMockSolr();
-        $connector = $bm->get('Solr')->getConnector();
-        $callback = function ($i): bool {
-            return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><id>foo</id><id>bar</id></delete>";
-        };
-        $connector->expects($this->once())->method('write')->with($this->callback($callback));
-        $ct = $this->getMockChangeTracker();
-        $ct->expects($this->exactly(2))->method('markDeleted')
-            ->withConsecutive(['biblio', 'foo'], ['biblio', 'bar']);
-        $writer = new Writer($this->getSearchService($bm), $ct);
-        $writer->deleteRecords('Solr', ['foo', 'bar']);
+        $deleteDoc = new DeleteDocument();
+        $deleteDoc->addQuery('*:*');
+        $expectedCommand = new WriteDocumentCommand('Solr', $deleteDoc);
+        $this->getWriter($expectedCommand)->deleteAll('Solr');
     }
 
     /**
-     * Get mock backend manager
+     * Test delete records.
      *
-     * @param HttpClient $client HTTP Client (optional)
-     *
-     * @return BackendManager
+     * @return void
      */
-    protected function getBackendManagerWithMockSolr($client = null)
+    public function testDeleteRecords(): void
     {
-        $sm = new \Laminas\ServiceManager\ServiceManager();
-        $pm = new BackendManager($sm);
-        $mockBackend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getConnector', 'getIdentifier'])
-            ->getMock();
-        $handlerMap = new HandlerMap();
-        $client = $client ?? $this->getMockBuilder(\Laminas\Http\Client::class)
-            ->onlyMethods([])
-            ->getMock();
-        $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->setConstructorArgs(['http://localhost:8983/solr/biblio', $handlerMap, $client])
-            ->onlyMethods(['write'])
-            ->getMock();
-        $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
-        $mockBackend->expects($this->any())->method('getIdentifier')->will($this->returnValue('Solr'));
-        $sm->setService('Solr', $mockBackend);
-        return $pm;
+        $deleteDoc = new DeleteDocument();
+        $deleteDoc->addKeys(['foo', 'bar']);
+        $expectedCommand = new WriteDocumentCommand('Solr', $deleteDoc);
+        $this->getWriter($expectedCommand, ['core' => 'biblio'])->deleteRecords('Solr', ['foo', 'bar']);
     }
 
     /**
-     * Get a mock HTTP Client that only expects its setTimeout() to be called once.
+     * Get mock change tracker service.
      *
-     * @param int $timeout Expected timeout
-     *
-     * @return MockObject
+     * @return MockObject&ChangeTrackerServiceInterface
      */
-    protected function getMockHttpClientExpectingOnlySetTimeout(
-        int $timeout
-    ): MockObject {
-        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
-            ->onlyMethods(['setOptions'])
-            ->getMock();
-        $client->expects($this->exactly(1))->method('setOptions')
-            ->with(['timeout' => $timeout]);
-        return $client;
+    protected function getMockChangeTracker(): MockObject&ChangeTrackerServiceInterface
+    {
+        return $this->createMock(ChangeTrackerServiceInterface::class);
     }
 
     /**
-     * Get mock change tracker
+     * Create a mock search service for a single command and its result.
      *
-     * @return ChangeTracker
+     * @param object $expectedCommand Expected command class
+     * @param mixed  $result          Result to return for the invoked command
+     *
+     * @return MockObject&SearchService
      */
-    protected function getMockChangeTracker()
+    protected function getMockSearchService($expectedCommand, $result): MockObject&SearchService
     {
-        return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['markDeleted'])
-            ->getMock();
+        $resultCommand = $this->createMock($expectedCommand::class);
+        $resultCommand->expects($this->once())->method('getResult')->willReturn($result);
+
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
+        $searchService->expects($this->once())
+            ->method('invoke')
+            ->with($expectedCommand)
+            ->willReturn($resultCommand);
+        return $searchService;
+    }
+
+    /**
+     * Create a Writer for a single command and its result.
+     *
+     * @param object $expectedCommand Expected command class
+     * @param mixed  $result          Result to return for the invoked command
+     *
+     * @return Writer
+     */
+    protected function getWriter($expectedCommand, $result = 'TEST'): Writer
+    {
+        return new Writer(
+            $this->getMockSearchService($expectedCommand, $result),
+            $this->getMockChangeTracker()
+        );
     }
 }

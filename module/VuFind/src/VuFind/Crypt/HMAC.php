@@ -1,8 +1,9 @@
 <?php
+
 /**
- * HMAC hash generator
+ * HMAC hash generator.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Crypt
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Crypt;
 
 /**
- * HMAC hash generator wrapper
+ * HMAC hash generator wrapper.
  *
  * @category VuFind
  * @package  Crypt
@@ -39,14 +41,14 @@ namespace VuFind\Crypt;
 class HMAC
 {
     /**
-     * Hash key
+     * Hash key.
      *
      * @var string
      */
     protected $hashKey;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $key Hash key
      */
@@ -56,7 +58,7 @@ class HMAC
     }
 
     /**
-     * Accepts $keysToHash, a list of array keys, and $keyValueArray, a keyed array
+     * Accepts $keysToHash, a list of array keys, and $keyValueArray, a keyed array.
      *
      * @param array $keysToHash    A list of keys to hash
      * @param array $keyValueArray A keyed array

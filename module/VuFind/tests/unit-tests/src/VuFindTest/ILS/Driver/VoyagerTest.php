@@ -1,8 +1,9 @@
 <?php
+
 /**
- * ILS driver test
+ * ILS driver test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
+use PDOStatement;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ILS\Driver\Voyager;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -98,11 +102,89 @@ class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
                     'Membership List of the Happy Hour Brotherhood, 1991',
                     'Dime Novel Sketches, Numbers 1-249, Arranged Alphabetically',
                     'Special birthday no., 1938 (photocopy)',
-                    'Supplements (Golden Days (undated), Index-Digest (issues 1-159; undated), Oct. 1958, Apr. 1959, Sep. 1960, Sep. 1962, Nov. 1962, Dec. 1962, Feb. 1963, Nov. 1965,  May 15, 1970, Jul. 15, 1972, Jul. 15, 1974, Dec. 1975, Oct. 1976, Aug. 1977, Feb. 1978, Aug. 1978, Feb. 1979, Apr. 1980, Oct. 1981, Dec. 1985, Aug. 1998, Fall 2014)',
+                    'Supplements (Golden Days (undated), Index-Digest (issues 1-159; undated), Oct. 1958, Apr. 1959,'
+                    . ' Sep. 1960, Sep. 1962, Nov. 1962, Dec. 1962, Feb. 1963, Nov. 1965,  May 15, 1970, Jul. 15, 1972'
+                    . ', Jul. 15, 1974, Dec. 1975, Oct. 1976, Aug. 1977, Feb. 1978, Aug. 1978, Feb. 1979, Apr. 1980, '
+                    . 'Oct. 1981, Dec. 1985, Aug. 1998, Fall 2014)',
                     'Box of duplicate issues',
                 ],
             ],
             $results
         );
+    }
+
+    /**
+     * Test that patron usernames are correctly encoded during login.
+     *
+     * @return void
+     */
+    public function testUsernameEncodingDuringLogin(): void
+    {
+        // Create a mock SQL response
+        $mockResult = $this->createMock(PDOStatement::class);
+        $mockResult->method('fetch')->willReturn(null);
+
+        $driver = $this->getDriverWithMockSqlResponse($mockResult);
+        $this->assertNull($driver->patronLogin('Tést', 'foo'));
+        $this->assertEquals([':username' => mb_convert_encoding('tést', 'ISO-8859-1', 'UTF-8')], $driver->lastBind);
+        $this->assertEquals(
+            'SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, PATRON.LAST_NAME as LOGIN '
+            . 'FROM .PATRON, .PATRON_BARCODE '
+            . 'WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND '
+            . 'lower(PATRON_BARCODE.PATRON_BARCODE) = :username AND PATRON_BARCODE.BARCODE_STATUS IN (1,4)',
+            $driver->lastSql
+        );
+    }
+
+    /**
+     * Get a Voyager driver customized to return a mock SQL response.
+     *
+     * @param MockObject&PDOStatement $mockResult Mock result to return from executeSQL
+     *
+     * @return Voyager
+     */
+    protected function getDriverWithMockSqlResponse(MockObject&PDOStatement $mockResult): Voyager
+    {
+        return new class ($mockResult) extends Voyager {
+            /**
+             * Last SQL statement passed to executeSQL.
+             *
+             * @var string
+             */
+            public string $lastSql = '';
+
+            /**
+             * Last bind array passed to executeSQL.
+             *
+             * @var array
+             */
+            public array $lastBind = [];
+
+            /**
+             * Constructor.
+             *
+             * @param MockObject&PDOStatement $mockResult Mock result to return from executeSQL
+             */
+            public function __construct(protected MockObject&PDOStatement $mockResult)
+            {
+                parent::__construct(new \VuFind\Date\Converter());
+            }
+
+            /**
+             * Execute an SQL query.
+             *
+             * @param string|array $sql  SQL statement (string or array that includes
+             * bind params)
+             * @param array        $bind Bind parameters (if $sql is string)
+             *
+             * @return PDOStatement
+             */
+            protected function executeSQL($sql, $bind = [])
+            {
+                $this->lastSql = $sql;
+                $this->lastBind = $bind;
+                return $this->mockResult;
+            }
+        };
     }
 }

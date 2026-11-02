@@ -1,0 +1,32 @@
+<div class="databases">
+  <?php $databases = $this->recommend->getResults(); ?>
+  <?php $linkToAll = $this->recommend->getLinkToAllDatabases(); ?>
+  <?php if (!empty($databases)): ?>
+    <h2><?=$this->transEsc('databases_recommend_heading')?></h2>
+    <?php if ($this->transEsc('databases_recommend_intro', [], '')): ?>
+      <p><?=$this->transEsc('databases_recommend_intro')?></p>
+    <?php endif; ?>
+    <ul class="list-group">
+      <?php foreach ($databases as $database): ?>
+        <li class="list-group-item">
+          <span>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database['url']))?>" class="title icon-link" target="_blank">
+              <?=$this->icon('external-link', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->escapeHtml($database['name'])?></span>
+            </a>
+          </span>
+        </li>
+      <?php endforeach; ?>
+      <?php if ($linkToAll): ?>
+        <li class="list-group-item">
+          <span>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($linkToAll))?>" class="title icon-link" target="_blank">
+              <?=$this->icon('external-link', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('databases_recommend_link_to_all')?></span>
+            </a>
+          </span>
+        </li>
+      <?php endif; ?>
+    </ul>
+  <?php endif ?>
+</div>

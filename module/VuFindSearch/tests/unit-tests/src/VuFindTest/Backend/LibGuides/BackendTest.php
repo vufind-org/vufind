@@ -3,7 +3,7 @@
 /**
  * Unit tests for LibGuides backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\LibGuides;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -49,6 +50,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
      * Test retrieving a record (not supported).
@@ -80,14 +82,15 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/tests-measures?hs=a', $rec->getUniqueID());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/testprep', $rec->getUniqueID());
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/psyctests-measures?hs=a', $recs[1]->getUniqueID());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/tests-measures', $recs[1]->getUniqueID());
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/social-work?hs=a', $recs[2]->getUniqueID());
-        $this->assertEquals(40, $coll->getTotal());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/psyctests-measures', $recs[2]->getUniqueID());
+        $this->assertEquals(53, $coll->getTotal());
         $this->assertEquals(0, $coll->getOffset());
     }
 
@@ -112,7 +115,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnector(), $this->getRCFactory());
-        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**
@@ -137,7 +140,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultRecordCollectionFactory()
     {
         $back = new Backend($this->getConnector());
-        $this->assertTrue($back->getRecordCollectionFactory() instanceof RecordCollectionFactory);
+        $this->assertInstanceOf(RecordCollectionFactory::class, $back->getRecordCollectionFactory());
     }
 
     /**
@@ -152,7 +155,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->search(new Query(), 1, 1);
     }
@@ -165,12 +168,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testMergedParamBag()
     {
         $myParams = new ParamBag(['foo' => 'bar']);
-        $expectedParams = ['foo' => 'bar', 'search' => 'baz'];
+        $expectedParams = ['foo' => 'bar', 'search' => 'baz', 'widget_type' => '1'];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->with($this->equalTo($expectedParams), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->with($expectedParams, 0, 10)
+            ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
     }
@@ -183,15 +186,17 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testSearchFallback()
     {
         $conn = $this->getConnectorMock(['query']);
-        $expectedParams0 = ['search' => 'baz'];
-        $expectedParams1 = ['search' => 'fallback'];
-        $conn->expects($this->exactly(2))
-            ->method('query')
-            ->withConsecutive([$expectedParams0, 0, 10], [$expectedParams1, 0, 10])
-            ->willReturnOnConsecutiveCalls(
+        $expectedParams0 = ['search' => 'baz', 'widget_type' => '1'];
+        $expectedParams1 = ['search' => 'fallback', 'widget_type' => '1'];
+        $this->expectConsecutiveCalls(
+            $conn,
+            'query',
+            [[$expectedParams0, 0, 10], [$expectedParams1, 0, 10]],
+            [
                 ['recordCount' => 0, 'documents' => []],
-                ['recordCount' => 0, 'documents' => []]
-            );
+                ['recordCount' => 0, 'documents' => []],
+            ]
+        );
         $back = new Backend($conn, null, 'fallback');
         $back->search(new Query('baz'), 0, 10);
     }
@@ -235,7 +240,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a real record collection factory
+     * Build a real record collection factory.
      *
      * @return RecordCollectionFactory
      */

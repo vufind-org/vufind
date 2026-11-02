@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Index-based generator plugin
+ * Index-based generator plugin.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
 /**
- * Index-based generator plugin
+ * Index-based generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -39,7 +41,7 @@ namespace VuFind\Sitemap\Plugin;
 class Index extends AbstractGeneratorPlugin
 {
     /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */
@@ -60,21 +62,21 @@ class Index extends AbstractGeneratorPlugin
     protected $idFetcher;
 
     /**
-     * Page size for data retrieval
+     * Page size for data retrieval.
      *
      * @var int
      */
     protected $countPerPage;
 
     /**
-     * Search filters
+     * Search filters.
      *
      * @var string[]
      */
     protected $filters;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                   $backendSettings Settings specifying which
      * backends to index
@@ -110,6 +112,8 @@ class Index extends AbstractGeneratorPlugin
     /**
      * Generate urls for the sitemap.
      *
+     * May yield a string per URL or an array that defines lastmod in addition to url.
+     *
      * @return \Generator
      */
     public function getUrls(): \Generator
@@ -133,13 +137,17 @@ class Index extends AbstractGeneratorPlugin
                     $this->countPerPage,
                     $this->filters
                 );
-                foreach ($result['ids'] as $item) {
+                foreach ($result['ids'] as $index => $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
+                    if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;
-                    yield $loc;
+                    if (isset($result['lastmods'][$index])) {
+                        yield ['url' => $loc, 'lastmod' => $result['lastmods'][$index]];
+                    } else {
+                        yield $loc;
+                    }
                 }
                 $currentPage++;
                 $this->verboseMsg("Page $currentPage, $recordCount processed");

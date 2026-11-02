@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class for theme resource generator commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Generate;
 
 use Symfony\Component\Console\Command\Command;
@@ -45,14 +47,14 @@ use VuFindTheme\GeneratorInterface;
 abstract class AbstractThemeCommand extends Command
 {
     /**
-     * Theme resource generator
+     * Theme resource generator.
      *
      * @var GeneratorInterface
      */
     protected $generator;
 
     /**
-     * Type of resource being generated (used in help messages)
+     * Type of resource being generated (used in help messages).
      *
      * @var string
      */
@@ -66,7 +68,7 @@ abstract class AbstractThemeCommand extends Command
     protected $extraSuccessMessage = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorInterface $generator Generator to call
      * @param string|null        $name      The name of the command; passing null
@@ -116,7 +118,7 @@ abstract class AbstractThemeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $name = $input->getArgument('name');
         if (empty($name)) {
@@ -128,9 +130,9 @@ abstract class AbstractThemeCommand extends Command
 
         if (!$this->generate($name)) {
             $output->writeln($this->generator->getLastError());
-            return 1;
+            return self::FAILURE;
         }
         $output->writeln(rtrim("\tFinished. {$this->extraSuccessMessage}"));
-        return 0;
+        return self::SUCCESS;
     }
 }

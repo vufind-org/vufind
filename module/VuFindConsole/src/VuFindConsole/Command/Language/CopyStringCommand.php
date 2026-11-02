@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Language command: copy string.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Language;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,15 +44,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'language/copystring',
+    description: 'String copier'
+)]
 class CopyStringCommand extends AbstractCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'language/copystring';
-
     /**
      * Configure the command.
      *
@@ -59,7 +59,6 @@ class CopyStringCommand extends AbstractCommand
     {
         $note = "(may include 'textdomain::' prefix)";
         $this
-            ->setDescription('String copier')
             ->setHelp('Copies one language string to another.')
             ->addArgument(
                 'source',
@@ -85,7 +84,7 @@ class CopyStringCommand extends AbstractCommand
     }
 
     /**
-     * Add a line to a language file
+     * Add a line to a language file.
      *
      * @param string $filename File to update
      * @param string $key      Name of language key
@@ -95,11 +94,11 @@ class CopyStringCommand extends AbstractCommand
      */
     protected function addLineToFile($filename, $key, $value)
     {
-        $fHandle = fopen($filename, "a");
+        $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }
-        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fwrite($fHandle, "\n$key = \"" . $value . "\"\n");
         fclose($fHandle);
     }
 
@@ -125,7 +124,7 @@ class CopyStringCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
@@ -136,16 +135,17 @@ class CopyStringCommand extends AbstractCommand
         [$sourceDomain, $sourceKey] = $this->extractTextDomain($source);
         [$targetDomain, $targetKey] = $this->extractTextDomain($target);
 
-        if (!($sourceDir = $this->getLangDir($output, $sourceDomain))
+        if (
+            !($sourceDir = $this->getLangDir($output, $sourceDomain))
             || !($targetDir = $this->getLangDir($output, $targetDomain, true))
         ) {
-            return 1;
+            return self::FAILURE;
         }
 
         // First, collect the source values from the source text domain:
         $sources = [];
         $sourceCallback
-            = function ($full) use ($output, $replaceRule, $sourceKey, & $sources) {
+            = function ($full) use ($output, $replaceRule, $sourceKey, &$sources): void {
                 $strings = $this->reader->getTextDomain($full, false);
                 if (!isset($strings[$sourceKey])) {
                     $output->writeln('Source key not found.');
@@ -162,7 +162,7 @@ class CopyStringCommand extends AbstractCommand
         $this->createMissingFiles($targetDir->path, array_keys($sources));
 
         // Now copy the values to their destination:
-        $targetCallback = function ($full) use ($targetKey, $sources) {
+        $targetCallback = function ($full) use ($targetKey, $sources): void {
             if (isset($sources[basename($full)])) {
                 $this->addLineToFile($full, $targetKey, $sources[basename($full)]);
                 $this->normalizer->normalizeFile($full);
@@ -170,6 +170,6 @@ class CopyStringCommand extends AbstractCommand
         };
         $this->processDirectory($targetDir, $targetCallback, [$output, 'writeln']);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

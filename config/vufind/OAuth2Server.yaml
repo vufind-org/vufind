@@ -1,0 +1,196 @@
+# OAuth2 Server Configuration.
+#
+# See https://vufind.org/wiki/configuration:oauth2_oidc for more information.
+#
+# An example for generating the private/public key pair:
+#
+# openssl genrsa -out local/config/vufind/oauth2_private.key 2048
+# chown apache local/config/vufind/oauth2_private.key
+# chmod 600 local/config/vufind/oauth2_private.key
+# openssl rsa -in local/config/vufind/oauth2_private.key -pubout > local/config/vufind/oauth2_public.key
+# chown apache local/config/vufind/oauth2_public.key
+# chmod 600 local/config/vufind/oauth2_public.key
+#
+#
+
+# Authorization server configuration
+Server:
+  # User field to be used as identifier in tokens.
+  # Needs to be one of the unique fields id, username, cat_id.
+  # Note: The field needs to be unique and required for every user. There are systems
+  # where the cat_id is not required. Creating tokens for users without a cat_id will
+  # result in an error.
+  # Security Warning! The tokens are not encrypted. Hence, the used field will be readable
+  # by everyone who has access to the token.
+  userIdentifierField: "id"
+  # Create keys e.g. as above and point the following setting to it. The paths can be
+  # absolute or relative to the config directory.
+  privateKeyPath: "oauth2_private.key"
+  publicKeyPath: "oauth2_public.key"
+  # Encryption key used to encrypt payloads. Make sure it is random and long enough
+  # (at least 32 characters).
+  encryptionKey: ""
+  # Salt for hashes (e.g. library_user_id claim). Make sure it is random and long
+  # enough (at least 32 characters).
+  hashSalt: ""
+  # Uncomment to disable key permission checks. Only meant for testing, so avoid in
+  # any production-like environment if possible.
+  #keyPermissionChecks: false
+  # Optional URL for public documentation (returned in the discovery response)
+  documentationUrl: ""
+
+# Known clients configuration
+Clients:
+  example:
+    # Client name
+    name: Foo Client
+    # Redirect URI
+    redirectUri: "https://oauth-client/auth"
+    # Whether to use PKCE (see https://tools.ietf.org/html/rfc7636 for details). Must
+    # be enabled for non-confidential clients.
+    pkce: true
+    # Whether the client is confidential (as opposed to a public one such as an
+    # in-browser app). Only confidential clients can be verified by the client
+    # secret.
+    isConfidential: false
+    # Hash of a client secret. You can use the following command to get a hash for a
+    # password:
+    # php -r 'echo password_hash("secret",  PASSWORD_DEFAULT) . PHP_EOL;'
+    # Note that a secret can only be used with confidential clients since public
+    # ones have no way of using it securely.
+    secret: ""
+    # By default a client can request all scopes. This setting can be used to limit
+    # the allowed scopes to a subset of all available ones.
+    #allowedScopes:
+    #  - openid
+    #  - email
+
+# Scope configuration. Keys are scope identifiers. Each identifier should include a
+# description (translation key) to be displayed to the user. The ils field should be
+# set to true if the information comes from a user profile in the library system.
+# This allows VuFind to display the library login or card selection form when
+# appropriate.
+# The claims configuration key maps a scope to a set of user claims (attributes).
+# See ClaimMappings below for mappings from VuFind fields to OAuth2 claims.
+# Note that the OpenID Connect specification defines several standard claims
+# (see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims).
+# Note also that some or most of the information may only be available when the user
+# has an active library card.
+Scopes:
+  openid: # A built-in set required for OpenID
+    description: external_auth_scope_openid
+    claims:
+      - sub   # A built-in claim, required for proper functionality
+      - nonce # A built-in claim, required for proper functionality
+  username:
+    description: external_auth_scope_username
+    claims:
+      - username
+  cat_id:
+    description: external_auth_scope_cat_id
+    claims:
+      - cat_id
+  address: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_address
+    ils: true
+    #claims:
+    #  - address
+  email: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_email
+    #claims:
+    #  - email
+    #  - email_verified
+  phone: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_phone
+    ils: true
+    #claims:
+    #  - phone
+  profile: # A predefined set required for OpenID; do not specify claims here
+    description: external_auth_scope_profile
+    ils: true
+    #claims:
+    #  - name
+    #  - family_name
+    #  - given_name
+    #  - middle_name
+    #  - nickname
+    #  - preferred_username
+    #  - profile
+    #  - picture
+    #  - website
+    #  - gender
+    #  - birthdate
+    #  - zoneinfo
+    #  - locale
+    #  - updated_at
+  id:
+    description: external_auth_scope_unique_id
+    claims:
+      - id
+  name:
+    description: external_auth_scope_name
+    claims:
+      - name
+      - given_name
+      - family_name
+  age:
+    description: external_auth_scope_age
+    ils: true
+    claims:
+      - age
+  birthdate:
+    description: external_auth_scope_birthdate
+    ils: true
+    claims:
+      - birthdate
+  locale:
+    description: external_auth_scope_locale
+    claims:
+      - locale
+  block_status:
+    description: external_auth_scope_block_status
+    ils: true
+    claims:
+      - block_status
+  library_user_id:
+    description: external_auth_scope_library_user_id
+    claims:
+      - library_user_id
+
+# Mappings from claim id to VuFind user or patron profile fields.
+# Claims can be mapped to any of the user entity methods or ILS profile fields or one
+# of the following:
+# - full_name     User's full name
+# - age           User's age in years
+# - block_status  Whether the user has blocks in ILS (true/false or null if unknown)
+# - address_json  Address fields in JSON (see
+#                 https://openid.net/specs/openid-connect-core-1_0.html#AddressClaim)
+# - library_user_id_hash A unique hash of cat_id or getCatUsername (typically library
+#                        card number but can be e.g. an email as well). The field is
+#                        padded with hashSalt before hashing.
+#
+ClaimMappings:
+  id: getId
+  username: getUsername
+  cat_id: getCatId
+  name: full_name # special field created from getFirstname + ' ' + getLastname
+  given_name: getFirstname
+  family_name: getLastname
+  email: getEmail
+  age: age
+  birthdate: birthdate
+  locale: getLastLanguage
+  phone: phone
+  address: address_json # special field including all address fields
+  block_status: block_status # special field indicating whether the patron has blocks
+  library_user_id: library_user_id_hash # special field with a hash of cat_username
+
+# Grants configuration. Life times are indicated as ISO 8601 periods. See
+# https://en.wikipedia.org/wiki/ISO_8601#Durations for more information.
+Grants:
+  # Life time for an authorization code (should be kept short). Default is 1 minute.
+  authCodeLifeTime: PT1M
+  # Access token life time. Default is 1 hour.
+  accessTokenLifeTime: PT1H
+  # Refresh token life time (should be kept short). Default is 1 minute.
+  refreshTokenLifeTime: PT1M

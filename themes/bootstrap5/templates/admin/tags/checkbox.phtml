@@ -1,0 +1,7 @@
+<div class="checkbox">
+  <?php $escId = $this->escapeHtmlAttr($this->prefix . 'checkbox_' . $this->tag['id']); ?>
+  <label for="<?=$escId?>">
+    <input id="<?=$escId?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->tag['id'])?>" class="checkbox_ui">
+    <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->tag['id'])?>">
+  </label>
+</div>

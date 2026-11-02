@@ -1,0 +1,27 @@
+<?php
+$item = $this->getThisLoader->getItem();
+if (empty($item)) {
+    return;
+}
+$check = $item['check'] ?? false;
+$link = $this->getThisLoader->getLink();
+$dataLightbox = !empty($item['linkLightbox']) ? 'data-lightbox' : '';
+?>
+<?php if (($item['is_holdable'] ?? false) && !empty($link)) : ?>
+  <div>
+    <p>
+      <strong><?= $this->transEsc('campus_pickup') ?>:</strong>
+      <?= $this->transEsc('campus_pickup_place_request_text') ?>
+    </p>
+    <ul>
+      <li>
+        <a
+          <?= $dataLightbox ?>
+          href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($link))?>"
+        >
+          <?= $this->transEsc($check ? 'Check Hold' : 'campus_pickup_place_request') ?>
+        </a>
+      </li>
+    </ul>
+  </div>
+<?php endif ?>

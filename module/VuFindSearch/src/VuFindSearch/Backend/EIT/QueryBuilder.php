@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EIT QueryBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -28,17 +29,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EIT;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
-
 use VuFindSearch\Query\QueryGroup;
+
+use function count;
 
 /**
  * EIT QueryBuilder.
- * Largely copied from the WorldCat QueryBuilder
+ * Largely copied from the WorldCat QueryBuilder.
  *
  * @category VuFind
  * @package  Search
@@ -54,7 +57,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -63,19 +66,22 @@ class QueryBuilder
     /**
      * Return EIT search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query User query
+     * @param AbstractQuery $query  User query
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(AbstractQuery $query)
+    public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);
 
         // Send back results
-        $params = new ParamBag();
-        $params->set('query', $queryStr);
-        return $params;
+        $newParams = new ParamBag();
+        $newParams->set('query', $queryStr);
+        return $newParams;
     }
 
     /// Internal API
@@ -118,10 +124,10 @@ class QueryBuilder
                 }
                 // Is this an exclusion (NOT) group or a normal group?
                 if ($params->isNegated()) {
-                    $excludes[] = join(" OR ", $thisGroup);
+                    $excludes[] = implode(' OR ', $thisGroup);
                 } else {
                     $groups[]
-                        = join(" " . $params->getOperator() . " ", $thisGroup);
+                        = implode(' ' . $params->getOperator() . ' ', $thisGroup);
                 }
             } else {
                 // Basic Search
@@ -133,11 +139,11 @@ class QueryBuilder
         $queryStr = '';
         if (count($groups) > 0) {
             $queryStr
-                .= "(" . join(") " . $query->getOperator() . " (", $groups) . ")";
+                .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
         }
         // and concatenate exclusion after that
         if (count($excludes) > 0) {
-            $queryStr .= " NOT ((" . join(") OR (", $excludes) . "))";
+            $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
         }
 
         return $queryStr;

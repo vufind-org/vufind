@@ -1,8 +1,9 @@
 <?php
+
 /**
- * HeadThemeResources view helper Test Class
+ * Slot view helper Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\Slot;
 
 /**
- * HeadThemeResources view helper Test Class
+ * Slot view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +51,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
         $ret = $helper('test');
-        $this->assertTrue($ret instanceof Slot);
+        $this->assertInstanceOf(Slot::class, $ret);
     }
 
     /**
@@ -109,7 +111,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         // test object
         $helper('array')->clear();
         $ret = $helper('array')->set(new \SplStack());
-        $this->assertEquals(\SplStack::class, get_class($ret));
+        $this->assertEquals(\SplStack::class, $ret::class);
 
         // test shortcuts
         $ret = $helper('short', 'SUCCESS');
@@ -196,11 +198,11 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(null, $helper('test')->get());
 
         // test empty strings
-        $ret = $helper('test')->set('');
+        $helper('test')->set('');
         $ret = $helper('test')->prepend('PRE1');
         $this->assertEquals('PRE1', $ret);
         $helper('test')->clear();
-        $ret = $helper('test')->set('BASE');
+        $helper('test')->set('BASE');
         $ret = $helper('test')->prepend('');
         $this->assertEquals('BASE', $ret);
     }
@@ -238,11 +240,11 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(null, $helper('test')->get());
 
         // test empty strings
-        $ret = $helper('test')->set('');
+        $helper('test')->set('');
         $ret = $helper('test')->append('POST');
         $this->assertEquals('POST', $ret);
         $helper('test')->clear();
-        $ret = $helper('test')->set('BASE');
+        $helper('test')->set('BASE');
         $ret = $helper('test')->append('');
         $this->assertEquals('BASE', $ret);
     }
@@ -292,25 +294,13 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build Slot helper with mock view
+     * Build Slot helper with mock view.
      *
      * @return \VuFindTheme\View\Helper\Slot
      */
     protected function getHelper()
     {
         $helper = new Slot();
-        $helper->setView($this->getMockView());
         return $helper;
-    }
-
-    /**
-     * Get a fake view object.
-     *
-     * @return \Laminas\View\Renderer\PhpRenderer
-     */
-    protected function getMockView()
-    {
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        return $view;
     }
 }

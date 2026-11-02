@@ -1,0 +1,56 @@
+<h1>Hilfe zur Suche</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#boolean_operators">Boolesche Operatoren</a>
+    <ul>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a id="boolean_operators"></a>Boolesche Operatoren</dt>
+  <dd>
+    <p>
+    Boolesche Operatoren erlauben es, Wörter logisch miteinander zu verknüpfen.
+     Folgende Operatoren sind erlaubt: <strong>AND</strong>, <strong>OR</strong> und <strong>NOT</strong>.
+    </p>
+    <p>Hinweis: Boolesche Operatoren müssen großgeschrieben werden!</p>
+    <dl>
+      <dt><a id="boolean_and"></a>AND</dt>
+      <dd>
+      <p>Die Und-Verknüpfung <strong>(AND)</strong> ist der Standardoperator. Das
+           bedeutet, dass wenn zwischen zwei Wörtern kein Operator gesetzt wird,
+           die Und-Verknüpfung verwendet wird. Wenn Sie zwei Wörter mit AND verbinden,
+           erhalten Sie Treffer, in denen beide Wörter vorhanden sind.
+        </p>
+        <p>Beispiel: Sie suchen nach Titeln, in denen die Wörter "Ökonomie" und "Keynes" enthalten sind:</p>
+        <pre class="code">Ökonomie Keynes</pre>
+        <p>oder</p>
+        <pre class="code">Ökonomie AND Keynes</pre>
+      </dd>
+      <dt><a id="boolean_or"></a>OR</dt>
+      <dd>
+        <p>Steht eine Oder-Verknüpfung <strong>(OR)</strong> zwischen zwei Wörtern, so
+           erhalten Sie Treffer, in denen eines oder beide Wörter gefunden wurden.
+        </p>
+        <p>Beispiel: Sie suchen nach Titeln, in denen die Phrasen "Ökonomie Keynes" oder
+           "Keynes" enthalten sind:</p>
+        <pre class="code">"Ökonomie Keynes" OR Keynes</pre>
+      </dd>
+      <dt><a id="boolean_not"></a>NOT</dt>
+      <dd>
+        <p>Indem Sie <strong>NOT</strong> vor ein Wort setzen, schließen Sie Treffer aus,
+         die dieses Wort enthalten.</p>
+        <p>Beispiel: Sie wollen nach Titeln suchen, welche das Wort "Ökonomie"
+           enthalten, aber nicht das Wort "Keynes":</p>
+        <pre class="code">Ökonomie NOT Keynes</pre>
+        <p>Hinweis: NOT muss mit mindestens zwei Wörtern verwendet werden.
+           Beispielsweise liefert folgende Suche keine Treffer:</p>
+        <pre class="code">NOT Ökonomie</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

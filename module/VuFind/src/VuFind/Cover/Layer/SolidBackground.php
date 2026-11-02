@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solid cover background layer
+ * Solid cover background layer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
 /**
- * Solid cover background layer
+ * Solid cover background layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -39,7 +41,7 @@ namespace VuFind\Cover\Layer;
 class SolidBackground extends AbstractBackgroundLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)

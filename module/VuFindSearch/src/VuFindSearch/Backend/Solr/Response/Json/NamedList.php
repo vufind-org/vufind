@@ -3,7 +3,7 @@
 /**
  * SOLR NamedList with parameter json.nl=arrarr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,10 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use Countable;
 use Iterator;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * SOLR NamedList with parameter json.nl=arrarr.
@@ -54,7 +59,7 @@ class NamedList implements Countable, Iterator
     protected $list;
 
     /**
-     * The current position
+     * The current position.
      *
      * @var array
      */
@@ -105,8 +110,7 @@ class NamedList implements Countable, Iterator
      *
      * @return mixed
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->valid() ? $this->current[1] : null;
     }
@@ -116,8 +120,7 @@ class NamedList implements Countable, Iterator
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->valid() ? $this->current[0] : null;
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr Search Object Options Test
+ * Solr Search Object Options Test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 
 /**
- * Solr Search Object Options Test
+ * Solr Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -41,28 +43,50 @@ use VuFind\Search\Solr\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Get Options object
+     * Get Options object.
      *
-     * @param PluginManager $configManager Config manager for Options object (null
+     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
      * for new mock)
      *
      * @return Options
      */
-    protected function getOptions($configManager = null)
+    protected function getOptions(?ConfigManagerInterface $configManager = null): Options
     {
-        return new Options($configManager ?? $this->getMockConfigPluginManager([]));
+        return new Options($configManager ?? $this->getMockConfigManager());
     }
 
     /**
-     * Test that correct search class ID is reported
+     * Test that correct search class ID is reported.
      *
      * @return void
      */
-    public function testGetSearchClassId()
+    public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Solr', $this->getOptions()->getSearchClassId());
+        $this->assertSame('Solr', $this->getOptions()->getSearchClassId());
+    }
+
+    /**
+     * Test default sort tie-breaker behavior.
+     *
+     * @return void
+     */
+    public function testDefaultSortTieBreaker(): void
+    {
+        $this->assertNull($this->getOptions()->getSortTieBreaker());
+    }
+
+    /**
+     * Test configuration of sort tie-breaker setting.
+     *
+     * @return void
+     */
+    public function testSortTieBreakerConfiguration(): void
+    {
+        $configs = ['searches' => ['General' => ['tie_breaker_sort' => 'foo']]];
+        $options = $this->getOptions($this->getMockConfigManager($configs));
+        $this->assertSame('foo', $options->getSortTieBreaker());
     }
 }

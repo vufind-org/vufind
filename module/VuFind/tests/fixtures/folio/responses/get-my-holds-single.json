@@ -1,0 +1,13 @@
+[
+  {
+    "expectedPath": "/request-storage/requests",
+    "expectedParams": {
+      "query": "((requesterId == \"foo\" or proxyUserId == \"foo\") and status == Open*)",
+      "offset": 0,
+      "limit": 1000
+    },
+    "comment": "User with 1 holds, request will expire on 2022-12-28T05:59:59.000+00:00",
+    "status": 200,
+    "body": "{\"requests\":[{\"id\":\"fake-request-num\",\"requestLevel\":\"Item\",\"requestType\":\"Hold\",\"requestDate\":\"2022-12-20T05:55:01.000+00:00\",\"requesterId\":\"foo\",\"instanceId\":\"fake-instance-id\",\"holdingsRecordId\":\"a6630c3f-8ecd-4d2b-809b-abeeaa4ac111\",\"itemId\":\"fake-item-id\",\"status\":\"Open - Not yet filled\",\"position\":3,\"instance\":{\"title\":\"Organic farming : everything you need to know \",\"identifiers\":[{\"value\":\"9780760324691 (pbk.) :\",\"identifierTypeId\":\"id-type-id\"}]},\"item\":{\"barcode\":\"2713958827\"},\"requester\":{\"firstName\":\"John\",\"lastName\":\"Testuser\",\"barcode\":\"995324292\"},\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2022-12-28T05:59:59.000+00:00\",\"pickupServicePointId\":\"psp-id\",\"metadata\":{\"createdDate\":\"2022-12-20T05:55:02.908+00:00\",\"createdByUserId\":\"fake-user-2\",\"updatedDate\":\"2022-12-20T05:55:02.970+00:00\",\"updatedByUserId\":\"fake-user-2\"}}],\"totalRecords\":1}"
+  }
+]

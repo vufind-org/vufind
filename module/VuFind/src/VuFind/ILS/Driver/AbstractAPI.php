@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract Driver for API-based ILS drivers
+ * Abstract Driver for API-based ILS drivers.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -25,18 +26,20 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Laminas\Http\Response;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
-use VuFind\Exception\BadRequest;
-use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
 
+use function in_array;
+use function is_string;
+
 /**
- * Abstract Driver for API-based ILS drivers
+ * Abstract Driver for API-based ILS drivers.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -44,7 +47,8 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInterface,
+abstract class AbstractAPI extends AbstractBase implements
+    HttpServiceAwareInterface,
     LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
@@ -53,7 +57,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Allow default corrections to all requests
+     * Allow default corrections to all requests.
      *
      * @param \Laminas\Http\Headers $headers the request headers
      * @param array                 $params  the parameters object
@@ -66,7 +70,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     }
 
     /**
-     * Function that obscures and logs debug data
+     * Function that obscures and logs debug data.
      *
      * @param string                $method      Request method
      * (GET/POST/PUT/DELETE/etc.)
@@ -87,26 +91,74 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         $this->debug(
             $method . ' request.' .
             ' URL: ' . $path . '.' .
-            ' Params: ' . print_r($logParams, true) . '.' .
-            ' Headers: ' . print_r($logHeaders, true)
+            ' Params: ' . $this->varDump($logParams) . '.' .
+            ' Headers: ' . $this->varDump($logHeaders)
         );
     }
 
     /**
-     * Make requests
+     * Does $code match the setting for allowed failure codes?
      *
-     * @param string $method  GET/POST/PUT/DELETE/etc
-     * @param string $path    API path (with a leading /)
-     * @param array  $params  Parameters object to be sent as data
-     * @param array  $headers Additional headers
+     * @param int               $code                Code to check.
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
+     *
+     * @return bool
+     */
+    protected function failureCodeIsAllowed(int $code, $allowedFailureCodes): bool
+    {
+        if ($allowedFailureCodes === true) {    // "allow everything" case
+            return true;
+        }
+        return is_string($allowedFailureCodes)
+            ? preg_match($allowedFailureCodes, (string)$code)
+            : in_array($code, (array)$allowedFailureCodes);
+    }
+
+    /**
+     * Support method for makeRequest to process an unexpected status code. Can return true to trigger
+     * a retry of the API call or false to throw an exception.
+     *
+     * @param Response $response      HTTP response
+     * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
+    {
+        // No retries by default.
+        return false;
+    }
+
+    /**
+     * Make requests.
+     *
+     * @param string            $method              GET/POST/PUT/DELETE/etc
+     * @param string            $path                API path (with a leading /)
+     * @param string|array      $params              Query parameters
+     * @param array             $headers             Additional headers
+     * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
+     * NOT cause an ILSException to be thrown. May be an array of integers, a regular
+     * expression, or boolean true to allow all codes.
+     * @param string|array      $debugParams         Value to use in place of $params
+     * in debug messages (useful for concealing sensitive data, etc.)
+     * @param int               $attemptNumber       Counter to keep track of attempts
+     * (starts at 1 for the first attempt)
      *
      * @return \Laminas\Http\Response
+     * @throws ILSException
      */
     public function makeRequest(
-        $method = "GET",
-        $path = "/",
+        $method = 'GET',
+        $path = '/',
         $params = [],
-        $headers = []
+        $headers = [],
+        $allowedFailureCodes = [],
+        $debugParams = null,
+        $attemptNumber = 1
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -120,7 +172,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
-            $this->debugRequest($method, $path, $params, $req_headers);
+            $this->debugRequest($method, $path, $debugParams ?? $params, $req_headers);
         }
 
         // Add params
@@ -133,17 +185,59 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
                 $client->setParameterPost($params);
             }
         }
-        $response = $client->send();
-        switch ($response->getStatusCode()) {
-        case 400:
-            throw new BadRequest($response->getBody());
-        case 401:
-        case 403:
-            throw new Forbidden($response->getBody());
-        case 404:
-            throw new RecordMissing($response->getBody());
-        case 500:
-            throw new ILSException("500: Internal Server Error");
+        $startTime = microtime(true);
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . $e::class . ': ' . (string)$e);
+            throw new ILSException('Error during send operation.');
+        }
+        $endTime = microtime(true);
+        $responseTime = $endTime - $startTime;
+        $this->debug('Request Response Time --- ' . $responseTime . ' seconds. ' . $path);
+        $code = $response->getStatusCode();
+        if (
+            !$response->isSuccess()
+            && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
+        ) {
+            $this->logError(
+                "Unexpected error response (attempt #$attemptNumber"
+                . "); code: {$response->getStatusCode()}, body: {$response->getBody()}"
+            );
+            if ($this->shouldRetryAfterUnexpectedStatusCode($response, $attemptNumber)) {
+                return $this->makeRequest(
+                    $method,
+                    $path,
+                    $params,
+                    $headers,
+                    $allowedFailureCodes,
+                    $debugParams,
+                    $attemptNumber + 1
+                );
+            } else {
+                throw new ILSException("Unexpected error code '$code' returned from $path.");
+            }
+        }
+        if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
+            if (APPLICATION_ENV !== 'development') {
+                $this->logError(
+                    'SECURITY: json_log_file enabled outside of development mode; disabling feature.'
+                );
+            } else {
+                $body = $response->getBody();
+                $jsonBody = @json_decode($body);
+                $json = file_exists($jsonLog)
+                    ? json_decode(file_get_contents($jsonLog)) : [];
+                $json[] = [
+                    'expectedMethod' => $method,
+                    'expectedPath' => $path,
+                    'expectedParams' => $params,
+                    'body' => $jsonBody ? $jsonBody : $body,
+                    'bodyType' => $jsonBody ? 'json' : 'string',
+                    'status' => $code,
+                ];
+                file_put_contents($jsonLog, json_encode($json));
+            }
         }
         return $response;
     }

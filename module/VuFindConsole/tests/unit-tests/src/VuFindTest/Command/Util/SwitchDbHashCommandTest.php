@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SwitchDbHashCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,15 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
-use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
+use Closure;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Locator;
 use VuFind\Config\Writer;
-use VuFind\Db\Table\User;
+use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
 /**
@@ -47,56 +51,93 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
  */
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
-     * Prepare a mock object
+     * Expected path to config.ini.
      *
-     * @param string $class Class to mock
-     *
-     * @return mixed
+     * @var string
      */
-    protected function prepareMock($class)
+    protected $expectedConfigIniPath;
+
+    /**
+     * Encryption algorithm to use.
+     *
+     * @var string
+     */
+    protected $encryptionAlgorithm = 'aes';
+
+    /**
+     * Get mock user database service object.
+     *
+     * @return MockObject&UserServiceInterface
+     */
+    protected function getMockUserService(): MockObject&UserServiceInterface
     {
-        return $this->getMockBuilder($class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(UserServiceInterface::class);
     }
 
     /**
-     * Get mock table object
+     * Get mock card table object.
      *
-     * @return User
+     * @return MockObject&UserCardServiceInterface
      */
-    protected function getMockTable()
+    protected function getMockCardService(): MockObject&UserCardServiceInterface
     {
-        return $this->prepareMock(User::class);
+        return $this->createMock(UserCardServiceInterface::class);
     }
 
     /**
-     * Get mock command object
+     * Get mock command object.
      *
-     * @param array $config Config settings
-     * @param User  $table  User table gateway
+     * @param array                     $config      Config settings
+     * @param ?UserServiceInterface     $userService User table gateway
+     * @param ?UserCardServiceInterface $cardService User table gateway
+     *
+     * @return MockObject&SwitchDbHashCommand
      */
-    protected function getMockCommand(array $config = [], $table = null)
-    {
+    protected function getMockCommand(
+        array $config = [],
+        ?UserServiceInterface $userService = null,
+        ?UserCardServiceInterface $cardService = null
+    ): MockObject&SwitchDbHashCommand {
         return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
-                    new Config($config),
-                    $table ?? $this->getMockTable(),
+                    $config,
+                    $userService ?? $this->getMockUserService(),
+                    $cardService ?? $this->getMockCardService(),
+                    Closure::fromCallable(
+                        function ($algo, $key) {
+                            return (new BlockCipher())->setAlgorithm($algo)->setKey($key);
+                        }
+                    ),
+                    $this->getPathResolver(),
                 ]
             )->onlyMethods(['getConfigWriter'])
             ->getMock();
     }
 
     /**
-     * Get a mock config writer
+     * Get a mock config writer.
      *
-     * @return Writer
+     * @return MockObject&Writer
      */
-    protected function getMockConfigWriter()
+    protected function getMockConfigWriter(): MockObject&Writer
     {
-        return $this->prepareMock(Writer::class);
+        return $this->createMock(Writer::class);
+    }
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->expectedConfigIniPath = $this->getPathResolver()
+            ->getLocalConfigPath('config.ini', null, true);
     }
 
     /**
@@ -104,7 +145,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -122,13 +163,13 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutKeyParameter()
+    public function testWithoutKeyParameter(): void
     {
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $commandTester->execute(['newmethod' => $this->encryptionAlgorithm]);
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Please specify a key as the second parameter.\n",
             $commandTester->getDisplay()
         );
@@ -139,45 +180,46 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoActionNeeded()
+    public function testNoActionNeeded(): void
     {
         $command = $this->getMockCommand(
             [
                 'Authentication' => [
                     'encrypt_ils_password' => true,
-                    'ils_encryption_algo' => 'blowfish',
+                    'ils_encryption_algo' => $this->encryptionAlgorithm,
                     'ils_encryption_key' => 'bar',
-                ]
+                ],
             ]
         );
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'bar']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'bar']
+        );
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "No changes requested -- no action needed.\n",
             $commandTester->getDisplay()
         );
     }
 
     /**
-     * Test failed configurate write.
+     * Test failed configuration write.
      *
      * @return void
      */
-    public function testFailedConfigWrite()
+    public function testFailedConfigWrite(): void
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->once())->method('save')
-            ->will($this->returnValue(false));
+        $writer->expects($this->once())->method('save')->willReturn(false);
         $command = $this->getMockCommand();
-        $command->expects($this->once())->method('getConfigWriter')
-            ->will($this->returnValue($writer));
+        $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
-        $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tWrite failed!\n",
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
             $commandTester->getDisplay()
         );
     }
@@ -187,30 +229,37 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessNoUsers()
+    public function testSuccessNoUsers(): void
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->exactly(3))->method('set')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
                 ['Authentication', 'encrypt_ils_password', true],
-                ['Authentication', 'ils_encryption_algo', 'blowfish'],
-                ['Authentication', 'ils_encryption_key', 'foo']
-            );
-        $writer->expects($this->once())->method('save')
-            ->will($this->returnValue(true));
-        $table = $this->getMockTable();
-        $table->expects($this->once())->method('select')
-            ->will($this->returnValue([]));
-        $command = $this->getMockCommand([], $table);
-        $command->expects($this->once())->method('getConfigWriter')
-            ->will($this->returnValue($writer));
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm,
+                ],
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
+        $writer->expects($this->once())->method('save')->willReturn(true);
+        $userService = $this->getMockUserService();
+        $userService->expects($this->once())->method('getAllUsersWithCatUsernames')->willReturn([]);
+        $cardService = $this->getMockCardService();
+        $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([]);
+        $command = $this->getMockCommand([], $userService, $cardService);
+        $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
-        $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
-            . "\tFinished.\n",
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 0 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
     }
@@ -218,33 +267,81 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock row representing a user.
      *
-     * @return \VuFind\Db\Row\Search
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUserObject()
+    protected function getMockUserObject(): MockObject&UserEntityInterface
     {
-        $data = [
-            'id' => 2,
-            'username' => 'foo',
-            'email' => 'fake@myuniversity.edu',
-            'created' => '2000-01-01 00:00:00',
-            'cat_password' => 'mypassword',
-            'last_language' => 'en',
-        ];
-        $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
-        $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->setConstructorArgs([$adapter])
-            ->onlyMethods(['save'])
-            ->getMock();
-        $user->populate($data, true);
+        $user = $this->createMock(UserEntityInterface::class);
+        $user->method('getId')->willReturn(2);
+        $user->method('getUsername')->willReturn('foo');
+        $user->method('getEmail')->willReturn('fake@myuniversity.edu');
+        $user->method('getCreated')->willReturn(\DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00'));
+        $user->method('getLastLanguage')->willReturn('en');
+        // Use mock setters and getters to actually store/retrieve an encrypted password value
+        $rawPass = 'mypassword';
+        $rawSetter = function ($new) use (&$rawPass) {
+            $rawPass = $new;
+            return true;
+        };
+        $rawGetter = function () use (&$rawPass) {
+            return $rawPass;
+        };
+        $user->method('setRawCatPassword')->with($this->callback($rawSetter))->willReturn($user);
+        $user->method('getRawCatPassword')->willReturnCallback($rawGetter);
+        $enc = null;
+        $encSetter = function ($new) use (&$enc) {
+            $enc = $new;
+            return true;
+        };
+        $encGetter = function () use (&$enc) {
+            return $enc;
+        };
+        $user->method('setCatPassEnc')->with($this->callback($encSetter))->willReturn($user);
+        $user->method('getCatPassEnc')->willReturnCallback($encGetter);
         return $user;
     }
 
     /**
-     * Decode a hash to confirm that it was encoded correctly.
+     * Get a mock row representing a card.
+     *
+     * @return MockObject&UserCardEntityInterface
      */
-    protected function decode($hash)
+    protected function getMockUserCardEntity(): MockObject&UserCardEntityInterface
     {
-        $cipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+        $card = $this->createMock(UserCardEntityInterface::class);
+        $rawPass = 'mypassword';
+        $rawSetter = function ($new) use (&$rawPass) {
+            $rawPass = $new;
+            return true;
+        };
+        $rawGetter = function () use (&$rawPass) {
+            return $rawPass;
+        };
+        $card->method('setRawCatPassword')->with($this->callback($rawSetter))->willReturn($card);
+        $card->method('getRawCatPassword')->willReturnCallback($rawGetter);
+        $enc = null;
+        $encSetter = function ($new) use (&$enc) {
+            $enc = $new;
+            return true;
+        };
+        $encGetter = function () use (&$enc) {
+            return $enc;
+        };
+        $card->method('setCatPassEnc')->with($this->callback($encSetter))->willReturn($card);
+        $card->method('getCatPassEnc')->willReturnCallback($encGetter);
+        return $card;
+    }
+
+    /**
+     * Decode a hash to confirm that it was encoded correctly.
+     *
+     * @param string $hash Hash to decode
+     *
+     * @return string
+     */
+    protected function decode(string $hash): string
+    {
+        $cipher = new BlockCipher(['algorithm' => $this->encryptionAlgorithm]);
         $cipher->setKey('foo');
         return $cipher->decrypt($hash);
     }
@@ -254,35 +351,87 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithUser()
+    public function testSuccessWithUser(): void
     {
         $writer = $this->getMockConfigWriter();
-        $writer->expects($this->exactly(3))->method('set')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
                 ['Authentication', 'encrypt_ils_password', true],
-                ['Authentication', 'ils_encryption_algo', 'blowfish'],
-                ['Authentication', 'ils_encryption_key', 'foo']
-            );
-        $writer->expects($this->once())->method('save')
-            ->will($this->returnValue(true));
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm,
+                ],
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
+        $writer->expects($this->once())->method('save')->willReturn(true);
         $user = $this->getMockUserObject();
-        $user->expects($this->once())->method('save');
-        $table = $this->getMockTable();
-        $table->expects($this->once())->method('select')
-            ->will($this->returnValue([$user]));
-        $command = $this->getMockCommand([], $table);
-        $command->expects($this->once())->method('getConfigWriter')
-            ->will($this->returnValue($writer));
+        $userService = $this->getMockUserService();
+        $userService->expects($this->once())->method('getAllUsersWithCatUsernames')->willReturn([$user]);
+        $userService->expects($this->once())->method('persistEntity')->with($user);
+        $cardService = $this->getMockCardService();
+        $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([]);
+        $command = $this->getMockCommand([], $userService, $cardService);
+        $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['newmethod' => 'blowfish', 'newkey' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
-        $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
-            . "\tFinished.\n",
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(null, $user['cat_password']);
-        $this->assertEquals('mypassword', $this->decode($user['cat_pass_enc']));
+        $this->assertEquals(null, $user->getRawCatPassword());
+        $this->assertSame('mypassword', $this->decode($user->getCatPassEnc()));
+    }
+
+    /**
+     * Test success with a card to update.
+     *
+     * @return void
+     */
+    public function testSuccessWithCard(): void
+    {
+        $writer = $this->getMockConfigWriter();
+        $this->expectConsecutiveCalls(
+            $writer,
+            'set',
+            [
+                ['Authentication', 'encrypt_ils_password', true],
+                [
+                    'Authentication',
+                    'ils_encryption_algo',
+                    $this->encryptionAlgorithm,
+                ],
+                ['Authentication', 'ils_encryption_key', 'foo'],
+            ]
+        );
+        $writer->expects($this->once())->method('save')->willReturn(true);
+        $card = $this->getMockUserCardEntity();
+        $userService = $this->getMockUserService();
+        $userService->expects($this->once())->method('getAllUsersWithCatUsernames')->willReturn([]);
+        $cardService = $this->getMockCardService();
+        $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([$card]);
+        $cardService->expects($this->once())->method('persistEntity')
+            ->with($card);
+        $command = $this->getMockCommand([], $userService, $cardService);
+        $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
+        );
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 0 user(s).\n\tConverting hashes for 1 card(s).\n\tFinished.\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(null, $card->getRawCatPassword());
+        $this->assertSame('mypassword', $this->decode($card->getCatPassEnc()));
     }
 }

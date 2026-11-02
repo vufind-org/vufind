@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Fetch alphabrowse data from the backend (currently only supported by Solr)
+ * Fetch alphabrowse data from the backend (currently only supported by Solr).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 
 /**
- * Fetch alphabrowse data from the backend (currently only supported by Solr)
+ * Fetch alphabrowse data from the backend (currently only supported by Solr).
  *
  * @category VuFind
  * @package  Search
@@ -95,7 +96,7 @@ class AlphabeticBrowseCommand extends CallMethodCommand
         string $from,
         int $page,
         int $limit = 20,
-        ParamBag $params = null,
+        ?ParamBag $params = null,
         int $offsetDelta = 0
     ) {
         $this->source = $source;
@@ -124,7 +125,7 @@ class AlphabeticBrowseCommand extends CallMethodCommand
             $this->getPage(),
             $this->getLimit(),
             $this->getSearchParameters(),
-            $this->getOffsetDelta()
+            $this->getOffsetDelta(),
         ];
     }
 
@@ -159,6 +160,19 @@ class AlphabeticBrowseCommand extends CallMethodCommand
     }
 
     /**
+     * Set result page to return.
+     *
+     * @param int $page New result page
+     *
+     * @return static
+     */
+    public function setPage(int $page): static
+    {
+        $this->page = $page;
+        return $this;
+    }
+
+    /**
      * Return number of results to return on each page.
      *
      * @return int
@@ -176,5 +190,18 @@ class AlphabeticBrowseCommand extends CallMethodCommand
     public function getOffsetDelta(): int
     {
         return $this->offsetDelta;
+    }
+
+    /**
+     * Set delta to use when calculating page offset.
+     *
+     * @param int $delta New offset delta
+     *
+     * @return static
+     */
+    public function setOffsetDelta(int $delta): static
+    {
+        $this->offsetDelta = $delta;
+        return $this;
     }
 }

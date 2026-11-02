@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
+
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * @category VuFind
  * @package  Related_Records
@@ -39,37 +43,37 @@ namespace VuFind\Related;
 class Bookplate implements RelatedInterface
 {
     /**
-     * Bookplate config
+     * Bookplate config.
      */
     protected $config;
 
     /**
-     * Data fields (usually Solr)
+     * Data fields (usually Solr).
      */
     protected $fields;
 
     /**
-     * Bookplate strings
+     * Bookplate strings.
      */
     protected $bookplateStrs;
 
     /**
-     * Bookplate image names or full URLs
+     * Bookplate image names or full URLs.
      */
     protected $bookplateImages;
 
     /**
-     * Bookplate thumbnail image names or thumbnail URLs
+     * Bookplate thumbnail image names or thumbnail URLs.
      */
     protected $bookplateThumbnails;
 
     /**
-     * URL template for full bookplate
+     * URL template for full bookplate.
      */
     protected $fullUrlTemplate;
 
     /**
-     * URL temlate for thumbnail
+     * URL template for thumbnail.
      */
     protected $thumbUrlTemplate;
 
@@ -79,20 +83,13 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
-     * Configuration loader
+     * Constructor.
      *
-     * @var \VuFind\Config\PluginManager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader PluginManager
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    #[Autowire]
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -108,7 +105,7 @@ class Bookplate implements RelatedInterface
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
         $configSection = !empty($config[1]) ? $config[1] : 'Record';
-        $this->config = $this->configLoader->get($configFile)->$configSection;
+        $this->config = $this->configManager->getConfigArray($configFile)[$configSection] ?? [];
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
             $this->getBookplateTitlesField()
@@ -146,7 +143,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullUrlTemplate()
     {
-        return $this->config->bookplate_full ?? '';
+        return $this->config['bookplate_full'] ?? '';
     }
 
     /**
@@ -156,17 +153,17 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbUrlTemplate()
     {
-        return $this->config->bookplate_thumb ?? '';
+        return $this->config['bookplate_thumb'] ?? '';
     }
 
     /**
      * Display titles under bookplates.
      *
-     * @return boolean
+     * @return bool
      */
     protected function displayBookplateTitles()
     {
-        return $this->config->bookplate_display_title ?? true;
+        return $this->config['bookplate_display_title'] ?? true;
     }
 
     /**
@@ -176,7 +173,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateTitlesField()
     {
-        return $this->config->bookplate_titles_field ?? '';
+        return $this->config['bookplate_titles_field'] ?? '';
     }
 
     /**
@@ -188,7 +185,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullImagesField()
     {
-        return $this->config->bookplate_images_field ?? '';
+        return $this->config['bookplate_images_field'] ?? '';
     }
 
     /**
@@ -200,7 +197,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbnailsField()
     {
-        return $this->config->bookplate_thumbnails_field ?? '';
+        return $this->config['bookplate_thumbnails_field'] ?? '';
     }
 
     /**

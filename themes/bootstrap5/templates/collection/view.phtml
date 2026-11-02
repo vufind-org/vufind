@@ -1,0 +1,71 @@
+<?php
+  // Set up standard record scripts:
+  $this->assetManager()->appendScriptLink('record.js');
+  $this->assetManager()->appendScriptLink('record_tabs.js');
+  $this->assetManager()->appendScriptLink('check_save_statuses.js');
+
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+    $this->assetManager()->appendScriptLink($script);
+  }
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF', options: ['excludeSearchId' => true]), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Add canonical header link for SEO:
+  $canonicalUrl = $this->recordLinker()->getUrl($this->driver, ['excludeSearchId' => true]);
+  $this->headLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
+
+  // Set flag for special cases relating to full-width hierarchy tree tab:
+  $tree = (strtolower($this->activeTab) == 'hierarchytree');
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  } else {
+    $this->breadcrumbs()->add($this->translate('Collections'), $this->url('collections-home'));
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
+
+  // Set up search box:
+  $this->globals()['searchbox'] = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      [
+        'ignoreHiddenFiltersInRequest' => true,
+      ]
+  );
+?>
+
+<?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+  <?=$this->render('record/prev-next.phtml'); ?>
+<?php endif; ?>
+
+<?=$this->record($this->driver)->getToolbar()?>
+
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?> solo"<?php endif; ?>>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getCollectionMetadata()?>
+
+    <?php if (count($this->tabs) > 0): ?>
+      <a id="tabnav"></a>
+      <div class="record-tabs">
+        <?=$this->component(
+          'tabs',
+          [
+            'tabs' => $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
+            'activeTab' => $this->activeTab,
+            'tabContentClasses' => ['collectionDetails' . ($tree ? 'Tree' : '')],
+          ]
+        )?>
+      </div>
+    <?php endif; ?>
+
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
+  </div>
+</div>

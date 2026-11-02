@@ -3,7 +3,7 @@
 /**
  * Mix-in for constructing the search service for tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use VuFind\Search\BackendManager;
@@ -42,7 +43,7 @@ use VuFind\Search\BackendManager;
 trait SearchServiceTrait
 {
     /**
-     * Create a search service to wrap the provided BackendManager instance
+     * Create a search service to wrap the provided BackendManager instance.
      *
      * @param BackendManager $bm BackendManager to wrap in service
      *
@@ -52,7 +53,7 @@ trait SearchServiceTrait
     {
         $shared = new \Laminas\EventManager\SharedEventManager();
         $shared->attach(
-            'VuFindSearch',
+            \VuFindSearch\Service::class,
             \VuFindSearch\Service::EVENT_RESOLVE,
             [$bm, 'onResolve']
         );

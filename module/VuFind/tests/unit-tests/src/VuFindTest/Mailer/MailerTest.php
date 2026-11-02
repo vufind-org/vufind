@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,16 +26,22 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Mailer;
 
-use Laminas\Mail\Address;
-use Laminas\Mail\AddressList;
-use VuFind\Mailer\Factory as MailerFactory;
+use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use VuFind\Mailer\Mailer;
+use VuFind\Mailer\MailerFactory;
+use VuFind\View\Renderer\LaminasTemplateRenderer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Container\MockContainer;
 
+use function count;
+
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +51,8 @@ use VuFindTest\Container\MockContainer;
  */
 class MailerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test that the factory configures the object correctly.
@@ -57,26 +65,30 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             'Mail' => [
                 'host' => 'vufindtest.localhost',
                 'port' => 123,
-                'connection_time_limit' => 600,
-                'name' => 'foo',
+                'name' => 'foo?bar',
                 'username' => 'vufinduser',
                 'password' => 'vufindpass',
-            ]
+                'connection_time_limit' => 60,
+            ],
         ];
-        $cm = $this->getMockConfigPluginManager(compact('config'));
+        $configDsn = [
+            'Mail' => [
+                'dsn' => 'esmtp://foo@bar/',
+            ],
+        ];
+        $cm = $this->getMockConfigManager(compact('config'));
         $sm = new MockContainer($this);
-        $sm->set(\VuFind\Config\PluginManager::class, $cm);
+        $sm->set(\VuFind\Config\ConfigManagerInterface::class, $cm);
         $factory = new MailerFactory();
-        $mailer = $factory($sm, Mailer::class);
-        $options = $mailer->getTransport()->getOptions();
-        $this->assertEquals('vufindtest.localhost', $options->getHost());
-        $this->assertEquals('foo', $options->getName());
-        $this->assertEquals(123, $options->getPort());
-        $this->assertEquals(600, $options->getConnectionTimeLimit());
-        $this->assertEquals('login', $options->getConnectionClass());
+
         $this->assertEquals(
-            ['username' => 'vufinduser', 'password' => 'vufindpass'],
-            $options->getConnectionConfig()
+            'smtp://vufinduser:vufindpass@vufindtest.localhost:123?local_domain=foo%3Fbar&ping_threshold=60',
+            $this->callMethod($factory, 'getDSN', [$config])
+        );
+
+        $this->assertEquals(
+            'esmtp://foo@bar/',
+            $this->callMethod($factory, 'getDSN', [$configDsn])
         );
     }
 
@@ -88,14 +100,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSend()
     {
         $callback = function ($message): bool {
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && '<from@example.com>' == $message->getFrom()->current()->toString()
-                && 'body' == $message->getBody()
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer($callback);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
 
@@ -107,16 +117,13 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithAddressObjectInSender()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && 'Sender TextName <from@example.com>' == $fromString
-                && 'body' == $message->getBody()
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && '"Sender TextName" <from@example.com>' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $mailer = $this->getMailer($callback);
         $address = new Address('from@example.com', 'Sender TextName');
-        $mailer = new Mailer($transport);
         $mailer->send('to@example.com', $address, 'subject', 'body');
     }
 
@@ -128,38 +135,33 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithAddressObjectInRecipient()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
-                && '<from@example.com>' == $message->getFrom()->current()->toString()
-                && 'body' == $message->getBody()
+            return '"Recipient TextName" <to@example.com>' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $mailer = $this->getMailer($callback);
         $address = new Address('to@example.com', 'Recipient TextName');
-        $mailer = new Mailer($transport);
         $mailer->send($address, 'from@example.com', 'subject', 'body');
     }
 
     /**
-     * Test sending an email using an address list object for the To field.
+     * Test sending an email using an address list for the To field.
      *
      * @return void
      */
-    public function testSendWithAddressListObjectInRecipient()
+    public function testSendWithAddressListInRecipient()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
-                && '<from@example.com>' == $message->getFrom()->current()->toString()
-                && 'body' == $message->getBody()
+            return '"Recipient TextName" <to@example.com>' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $list = new AddressList();
-        $list->add(new Address('to@example.com', 'Recipient TextName'));
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer($callback);
+        $list = [
+            new Address('to@example.com', 'Recipient TextName'),
+        ];
         $mailer->send($list, 'from@example.com', 'subject', 'body');
     }
 
@@ -171,18 +173,15 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithFromOverride()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && '<me@example.com>' == $message->getReplyTo()->current()->toString()
-                && 'me <no-reply@example.com>' == $fromString
-                && 'body' == $message->getBody()
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'me@example.com' == $message->getReplyTo()[0]->toString()
+                && '"me" <no-reply@example.com>' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $address = new Address('me@example.com');
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer($callback);
         $mailer->setFromAddressOverride('no-reply@example.com');
+        $address = new Address('me@example.com');
         $mailer->send('to@example.com', $address, 'subject', 'body');
     }
 
@@ -194,17 +193,14 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithReplyTo()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
-                && '<me@example.com>' == $fromString
-                && 'body' == $message->getBody()
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'reply-to@example.com' == $message->getReplyTo()[0]->toString()
+                && 'me@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $mailer = $this->getMailer($callback);
         $address = new Address('me@example.com');
-        $mailer = new Mailer($transport);
         $mailer->send('to@example.com', $address, 'subject', 'body', null, 'reply-to@example.com');
     }
 
@@ -217,19 +213,75 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendWithFromOverrideAndReplyTo()
     {
         $callback = function ($message): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
-                && 'me <no-reply@example.com>' == $fromString
-                && 'body' == $message->getBody()
+            $fromString = $message->getFrom()[0]->toString();
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'reply-to@example.com' == $message->getReplyTo()[0]->toString()
+                && '"me" <no-reply@example.com>' == $fromString
+                && 'body' == $message->getBody()->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $address = new Address('me@example.com');
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer($callback);
         $mailer->setFromAddressOverride('no-reply@example.com');
+        $address = new Address('me@example.com');
         $mailer->send('to@example.com', $address, 'subject', 'body', null, 'reply-to@example.com');
+    }
+
+    /**
+     * Test sending an email with subject in the body.
+     *
+     * @return void
+     */
+    public function testSendWithSubjectInBody()
+    {
+        $callback = function ($message): bool {
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
+                && 'overridden subject' == $message->getSubject();
+        };
+        $mailer = $this->getMailer($callback);
+        $mailer->send(
+            'to@example.com',
+            'from@example.com',
+            'subject',
+            <<<EOT
+                Subject: overridden subject
+
+                body
+                EOT
+        );
+    }
+
+    /**
+     * Test sending an email with subject not allowed in the body.
+     *
+     * @return void
+     */
+    public function testSendWithSubjectNotAllowedInBody()
+    {
+        $body = <<<EOT
+            Subject: overridden subject
+
+            body
+            EOT;
+        $callback = function ($message) use ($body): bool {
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && $body == $message->getBody()->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $mailer = $this->getMailer($callback);
+        $mailer->send(
+            'to@example.com',
+            'from@example.com',
+            'subject',
+            <<<EOT
+                Subject: overridden subject
+
+                body
+                EOT,
+            subjectInBody: false
+        );
     }
 
     /**
@@ -241,10 +293,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_RECIPIENT);
 
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
-        $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
+        $mailer = $this->getMailer();
+        $mailer->send('bad@.bad', 'from@example.com', 'subject', 'body');
     }
 
     /**
@@ -256,16 +308,16 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Reply-To Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_REPLY_TO);
 
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer();
         $mailer->send(
             'good@good.com',
             'from@example.com',
             'subject',
             'body',
             null,
-            'bad@bad'
+            'bad@.bad'
         );
     }
 
@@ -278,14 +330,14 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_RECIPIENT);
 
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer();
         $mailer->send('', 'from@example.com', 'subject', 'body');
     }
 
     /**
-     * Test that we only accept one recipient by default
+     * Test that we only accept one recipient by default.
      *
      * @return void
      */
@@ -293,9 +345,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Too Many Email Recipients');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_TOO_MANY_RECIPIENTS);
 
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer();
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
     }
 
@@ -308,25 +360,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_SENDER);
 
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
-        $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
-    }
-
-    /**
-     * Test bad from address in Address object.
-     *
-     * @return void
-     */
-    public function testBadFromInAddressObject()
-    {
-        $this->expectException(\VuFind\Exception\Mail::class);
-        $this->expectExceptionMessage('Invalid Sender Email Address');
-
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $mailer = new Mailer($transport);
-        $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
+        $mailer = $this->getMailer();
+        $mailer->send('to@example.com', 'bad@.bad', 'subject', 'body');
     }
 
     /**
@@ -339,101 +376,119 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Boom');
 
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
-        $mailer = new Mailer($transport);
+        $transport = $this->createMock(MailerInterface::class);
+        $transport->expects($this->once())->method('send')->willThrowException(new \Exception('Boom'));
+        $mailer = new Mailer($transport, $this->createMock(TemplateRendererInterface::class));
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
 
     /**
-     * Test sendLink
+     * Test unknown exception.
+     *
+     * @return void
+     */
+    public function testUnknownException()
+    {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
+        $mailer = $this->createMock(Mailer::class);
+        $mailer->expects($this->once())->method('send')->willThrowException(
+            new \VuFind\Exception\Mail(
+                'Technical message',
+                \VuFind\Exception\Mail::ERROR_UNKNOWN
+            )
+        );
+        try {
+            $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+        } catch (\VuFind\Exception\Mail $e) {
+            $this->assertSame('email_failure', $e->getDisplayMessage());
+        }
+    }
+
+    /**
+     * Test sendLink.
      *
      * @return void
      */
     public function testSendLink()
     {
-        $viewCallback = function ($in): bool {
-            return $in['msgUrl'] == 'http://foo'
-                && $in['to'] == 'to@example.com;to2@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->onlyMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
-            ->will($this->returnValue('body'));
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->method('renderTemplateAsString')
+            ->willReturnCallback(
+                function (?\Psr\Http\Message\ServerRequestInterface $request, ?string $template, array $params) {
+                    $this->assertSame('Email/share-link.phtml', $template);
+                    $this->assertSame('http://foo', $params['msgUrl']);
+                    $this->assertSame('to@example.com;to2@example.com', $params['to']);
+                    $this->assertSame('from@example.com', $params['from']);
+                    $this->assertSame('message', $params['message']);
+                    return 'body';
+                }
+            );
 
         $callback = function ($message): bool {
             $to = $message->getTo();
-            return $to->has('to@example.com')
-                && $to->has('to2@example.com')
+            return 'to@example.com' === $to[0]->toString()
+                && 'to2@example.com' === $to[1]->toString()
                 && 2 == count($to)
-                && '<from@example.com>' == $message->getFrom()->current()->toString()
-                && '<cc@example.com>' == $message->getCc()->current()->toString()
-                && 'body' == $message->getBody()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'cc@example.com' == $message->getCc()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'Library Catalog Search Result' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer($callback, $renderer);
         $mailer->setMaxRecipients(2);
         $mailer->sendLink(
             'to@example.com;to2@example.com',
             'from@example.com',
             'message',
             'http://foo',
-            $view,
             null,
             'cc@example.com'
         );
     }
 
     /**
-     * Test sendRecord
+     * Test sendRecord.
      *
      * @return void
      */
     public function testSendRecord()
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
+        $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
 
-        $viewCallback = function ($in) use ($driver): bool {
-            return $in['driver'] == $driver
-                && $in['to'] == 'to@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->onlyMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
-            ->will($this->returnValue('body'));
+        $templateRenderer = $this->createMock(LaminasTemplateRenderer::class);
+        $templateRenderer->expects($this->once())->method('renderTemplateAsString')
+            ->willReturnCallback(
+                function (
+                    ?ServerRequestInterface $request = null,
+                    ?string $template = null,
+                    array $params = [],
+                    array $childTemplates = []
+                ) use ($driver): string {
+                    $this->assertNotInstanceOf(ServerRequestInterface::class, $request);
+                    $this->assertSame('Email/record.phtml', $template);
+                    $this->assertSame($driver, $params['driver']);
+                    $this->assertSame('to@example.com', $params['to']);
+                    $this->assertSame('from@example.com', $params['from']);
+                    $this->assertSame('message', $params['message']);
+                    $this->assertEmpty($childTemplates);
+
+                    return 'body';
+                }
+            );
 
         $callback = function ($message): bool {
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && '<from@example.com>' == $message->getFrom()->current()->toString()
-                && 'body' == $message->getBody()
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
                 && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
-        $mailer = new Mailer($transport);
-        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
-    }
-
-    /**
-     * Test connection reset
-     *
-     * @return void
-     */
-    public function testResetConnection()
-    {
-        $transport = $this->createMock(\Laminas\Mail\Transport\Smtp::class);
-        $transport->expects($this->once())->method('disconnect');
-        $mailer = new Mailer($transport);
-        $mailer->resetConnection();
+        $mailer = $this->getMailer($callback, $templateRenderer);
+        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver);
     }
 
     /**
@@ -447,26 +502,32 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
         $text = 'this is the text part';
         $callback = function ($message) use ($html, $text): bool {
-            $fromString = $message->getFrom()->current()->toString();
-            return '<to@example.com>' == $message->getTo()->current()->toString()
-                && 'Sender TextName <from@example.com>' == $fromString
+            return 'to@example.com' == $message->getTo()[0]->toString()
+                && '"Sender TextName" <from@example.com>' == $message->getFrom()[0]->toString()
                 && 'subject' == $message->getSubject()
-                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $html)
-                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $text)
-                && 'multipart/alternative' == $message->getHeaders()->get('Content-Type')->getType();
+                && str_contains($message->getBody()->getParts()[0]->getBody(), $text)
+                && str_contains($message->getBody()->getParts()[1]->getBody(), $html);
         };
-        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
-        $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('from@example.com', 'Sender TextName');
-        $mailer = new Mailer($transport);
+        $mailer = $this->getMailer($callback);
         $body = $mailer->buildMultipartBody($text, $html);
         $mailer->send('to@example.com', $address, 'subject', $body);
     }
-}
 
-class MockEmailRenderer extends \Laminas\View\Renderer\PhpRenderer
-{
-    public function partial($template, $driver)
+    /**
+     * Create mailer with a mock transport.
+     *
+     * @param ?callable                  $callback Mock send method result callback
+     * @param ?TemplateRendererInterface $renderer Template renderer
+     *
+     * @return Mailer
+     */
+    protected function getMailer($callback = null, ?TemplateRendererInterface $renderer = null)
     {
+        $transport = $this->createMock(MailerInterface::class);
+        if ($callback) {
+            $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        }
+        return new Mailer($transport, $renderer ?? $this->createStub(TemplateRendererInterface::class));
     }
 }

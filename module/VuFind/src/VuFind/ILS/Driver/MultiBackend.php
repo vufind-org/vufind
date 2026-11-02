@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Multiple Backend Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2012-2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILSdrivers
@@ -26,9 +27,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_int;
+use function is_string;
+use function strlen;
 
 /**
  * Multiple Backend Driver.
@@ -42,76 +53,27 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class MultiBackend extends AbstractMultiDriver
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
 
     /**
-     * ID fields in holds
+     * ID fields in holds.
      */
     public const HOLD_ID_FIELDS = ['id', 'item_id', 'cat_username'];
 
     /**
-     * The array of configured driver names.
-     *
-     * @var string[]
-     */
-    protected $drivers = [];
-
-    /**
-     * The default driver to use
+     * The default driver to use.
      *
      * @var string
      */
     protected $defaultDriver;
 
     /**
-     * The path to the driver configurations relative to the config path
-     *
-     * @var string
-     */
-    protected $driversConfigPath;
-
-    /**
-     * The array of cached drivers
-     *
-     * @var object[]
-     */
-    protected $driverCache = [];
-
-    /**
-     * The array of driver configuration options.
-     *
-     * @var string[]
-     */
-    protected $config = [];
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
-     * ILS driver manager
-     *
-     * @var PluginManager
-     */
-    protected $driverManager;
-
-    /**
      * An array of methods that should determine source from a specific parameter
-     * field
+     * field.
      *
      * @var array
      */
@@ -138,9 +100,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         'findReserves',
         'getCourses',
         'getDepartments',
-        'getFunds',
         'getInstructors',
-        'getNewItems',
         'getOfflineMode',
         'getSuppressedAuthorityRecords',
         'getSuppressedRecords',
@@ -148,32 +108,18 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
-     * @param PluginManager                 $dm           ILS driver manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Auth\ILSAuthenticator         $ilsAuth       ILS authenticator
+     * @param PluginManager                         $driverManager ILS driver manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        PluginManager $dm
+        \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        PluginManager $driverManager
     ) {
-        $this->configLoader = $configLoader;
-        $this->ilsAuth = $ilsAuth;
-        $this->driverManager = $dm;
-    }
-
-    /**
-     * Set the driver configuration.
-     *
-     * @param Config $config The configuration to be set
-     *
-     * @return void
-     */
-    public function setConfig($config)
-    {
-        $this->config = $config;
+        parent::__construct($configManager, $driverManager);
     }
 
     /**
@@ -187,17 +133,12 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new ILSException('Configuration needs to be set.');
-        }
-        $this->drivers = $this->config['Drivers'];
+        parent::init();
         $this->defaultDriver = $this->config['General']['default_driver'] ?? null;
-        $this->driversConfigPath
-            = $this->config['General']['drivers_config_path'] ?? null;
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -215,13 +156,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $status = $driver->getStatus($this->getLocalId($id));
             return $this->addIdPrefixes($status, $source);
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -241,7 +182,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $driver = $this->getDriver($source);
                 $grouped[$source] = [
                     'driver' => $driver,
-                    'ids' => []
+                    'ids' => [],
                 ];
             }
             $grouped[$source]['ids'][] = $id;
@@ -264,7 +205,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     $statuses = array_map(
                         function ($id) {
                             return [
-                                ['id' => $id, 'error' => 'An error has occurred']
+                                ['id' => $id, 'error' => 'An error has occurred'],
                             ];
                         },
                         $localIds
@@ -283,13 +224,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
@@ -298,14 +239,15 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
         if ($driver = $this->getDriver($source)) {
             // If the patron belongs to another source, just pass on an empty array
             // to indicate that the patron has logged in but is not available for the
             // current catalog.
-            if ($patron
+            if (
+                $patron
                 && !$this->driverSupportsSource($source, $patron['cat_username'])
             ) {
                 $patron = [];
@@ -317,13 +259,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             );
             return $this->addIdPrefixes($holdings, $source);
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -339,13 +281,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver = $this->getDriver($source)) {
             return $driver->getPurchaseHistory($this->getLocalId($id));
         }
-        // Return an empy array if driver is not available; id can point to an ILS
+        // Return an empty array if driver is not available; id can point to an ILS
         // that's not currently configured.
         return [];
     }
 
     /**
-     * Get available login targets (drivers enabled for login)
+     * Get available login targets (drivers enabled for login).
      *
      * @return string[] Source ID's
      */
@@ -355,7 +297,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get default login driver
+     * Get default login driver.
      *
      * @return string Default login driver or empty string
      */
@@ -372,37 +314,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        if ($driver = $this->getDriver($this->defaultDriver)) {
-            $result = $driver->getNewItems($page, $limit, $daysOld, $fundId);
-            if (isset($result['results'])) {
-                $result['results']
-                    = $this->addIdPrefixes($result['results'], $this->defaultDriver);
-            }
-            return $result;
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -417,7 +329,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -432,7 +344,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -447,7 +359,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -470,7 +382,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -487,13 +399,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $source
             );
         }
-        // Return an empy array if driver is not available; cat_username can point
+        // Return an empty array if driver is not available; cat_username can point
         // to an ILS that's not currently configured.
         return [];
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -515,7 +427,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Patron Call Slips
+     * Get Patron Call Slips.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -528,7 +440,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
             $params = [
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
             ];
             if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 // Return empty array if not supported by the driver
@@ -541,13 +453,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Check whether a hold or recall request is valid
+     * Check whether a hold or recall request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -573,13 +485,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Check whether a storage retrieval request is valid
+     * Check whether a storage retrieval request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -589,7 +501,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
-            if (!$this->driverSupportsSource($source, $id)
+            if (
+                !$this->driverSupportsSource($source, $id)
                 || !is_callable([$driver, 'checkStorageRetrievalRequestIsValid'])
             ) {
                 return false;
@@ -604,7 +517,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -612,10 +525,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -649,7 +562,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location
      *
@@ -657,7 +570,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string A location ID
@@ -682,14 +595,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $id          BIB ID
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group
+     * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
      * @return array  An array of associative arrays with requestGroupId and
@@ -703,9 +616,10 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $params = [
                 $this->stripIdPrefixes($id, $source),
                 $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
+                $this->stripIdPrefixes($holdDetails, $source),
             ];
-            if (!$this->driverSupportsSource($source, $id)
+            if (
+                !$this->driverSupportsSource($source, $id)
                 || !$this->driverSupportsMethod($driver, __FUNCTION__, $params)
             ) {
                 // Return empty array since the sources don't match or the method
@@ -719,18 +633,17 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group
+     * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
-     * @return string A location ID
+     * @return false|string       The default request group for the patron.
      */
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
@@ -738,10 +651,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver = $this->getDriver($source)) {
             $params = [
                 $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
+                $this->stripIdPrefixes($holdDetails, $source),
             ];
             if (!empty($holdDetails)) {
-                if (!$this->driverSupportsSource($source, $holdDetails['id'])
+                if (
+                    !$this->driverSupportsSource($source, $holdDetails['id'])
                     || !$this->driverSupportsMethod($driver, __FUNCTION__, $params)
                 ) {
                     // Return false since the sources don't match or the method
@@ -756,7 +670,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details
@@ -773,7 +687,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                 return [
                     'success' => false,
-                    'sysMessage' => 'ILSMessages::hold_wrong_user_institution'
+                    'sysMessage' => 'ILSMessages::hold_wrong_user_institution',
                 ];
             }
             $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
@@ -783,7 +697,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, the ILS requires some information on the hold.
      * This function returns the required information, which is then submitted
@@ -806,13 +720,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $source,
                 self::HOLD_ID_FIELDS
             ),
-            $this->stripIdPrefixes($patron, $source)
+            $this->stripIdPrefixes($patron, $source),
         ];
         return $this->callMethodIfSupported($source, __FUNCTION__, $params, false);
     }
 
     /**
-     * Place Storage Retrieval Request
+     * Place Storage Retrieval Request.
      *
      * Attempts to place a storage retrieval request on a particular item and returns
      * an array with result details
@@ -826,13 +740,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     {
         $source = $this->getSource($details['patron']['cat_username']);
         $driver = $this->getDriver($source);
-        if ($driver
+        if (
+            $driver
             && is_callable([$driver, 'placeStorageRetrievalRequest'])
         ) {
             if (!$this->driverSupportsSource($source, $details['id'])) {
                 return [
                     'success' => false,
-                    'sysMessage' => 'ILSMessages::storage_wrong_user_institution'
+                    'sysMessage' => 'ILSMessages::storage_wrong_user_institution',
                 ];
             }
             return $driver->placeStorageRetrievalRequest(
@@ -843,13 +758,13 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Check whether an ILL request is valid
+     * Check whether an ILL request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -862,7 +777,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $params = [
             $this->stripIdPrefixes($id, $source),
             $this->stripIdPrefixes($data, $source),
-            $patron
+            $patron,
         ];
         return $this->callMethodIfSupported(
             $source,
@@ -874,7 +789,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -890,7 +805,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         // Patron is not stripped so that the correct library can be determined
         $params = [
             $this->stripIdPrefixes($id, $source, ['id']),
-            $patron
+            $patron,
         ];
         return $this->callMethodIfSupported(
             $source,
@@ -902,7 +817,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -921,7 +836,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $params = [
             $this->stripIdPrefixes($id, $source, ['id']),
             $pickupLib,
-            $patron
+            $patron,
         ];
         return $this->callMethodIfSupported(
             $source,
@@ -933,7 +848,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details (or throws an exception on failure of support
@@ -959,7 +874,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL Requests by a specific patron.
      *
@@ -972,7 +887,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
             $params = [
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
             ];
             if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 // Return empty array if not supported by the driver
@@ -1001,7 +916,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
             $params = [
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
             ];
             if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 return false;
@@ -1024,7 +939,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
             $params = [
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
             ];
             if (!$this->driverSupportsMethod($driver, __FUNCTION__, $params)) {
                 return false;
@@ -1042,7 +957,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $source = null;
         if (!empty($params)) {
@@ -1074,8 +989,31 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
+     * Patron Login.
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return ?array          Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function patronLogin($username, $password)
+    {
+        $source = $this->getSource($username);
+        $result = $this->callMethodIfSupported($source, __FUNCTION__, func_get_args());
+        if (is_array($result)) {
+            $result['__source'] = $source;
+        }
+        return $result;
+    }
+
+    /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters.
@@ -1120,7 +1058,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Extract local ID from the given prefixed ID
+     * Extract local ID from the given prefixed ID.
      *
      * @param string $id The id to be split
      *
@@ -1137,7 +1075,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Extract source from the given ID
+     * Extract source from the given ID.
      *
      * @param string $id The id to be split
      *
@@ -1154,7 +1092,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get source for a method and parameters
+     * Get source for a method and parameters.
      *
      * @param string $method Method
      * @param array  $params Parameters
@@ -1163,18 +1101,17 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     protected function getSourceForMethod(string $method, array $params): string
     {
-        $source = '';
-        $checkFields = $this->sourceCheckFields[$method] ?? null;
-        if ($checkFields) {
-            $source = $this->getSourceFromParams($params, (array)$checkFields);
-        } else {
-            $source = $this->getSourceFromParams($params);
+        if ($source = $params['__source'] ?? null) {
+            return $source;
         }
-        return $source;
+        if ($checkFields = $this->sourceCheckFields[$method] ?? null) {
+            return $this->getSourceFromParams($params, (array)$checkFields);
+        }
+        return $this->getSourceFromParams($params);
     }
 
     /**
-     * Get source from method parameters
+     * Get source from method parameters.
      *
      * @param array $params      Parameters of a driver method call
      * @param array $allowedKeys Keys to use for source identification
@@ -1214,84 +1151,23 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @param string $source The source name of the driver to get.
      *
-     * @return mixed  On success a driver object, otherwise null.
+     * @return mixed On success a driver object, otherwise null.
      */
     protected function getDriver($source)
     {
         if (!$source) {
             // Check for default driver
-            if ($this->defaultDriver) {
-                $this->debug('Using default driver ' . $this->defaultDriver);
-                $source = $this->defaultDriver;
-            }
-        }
-
-        // Check for a cached driver
-        if (!array_key_exists($source, $this->driverCache)) {
-            // Create the driver
-            $this->driverCache[$source] = $this->createDriver($source);
-            if (null === $this->driverCache[$source]) {
-                $this->debug("Could not initialize driver for source '$source'");
+            if (!$this->defaultDriver) {
                 return null;
             }
+            $this->debug('Using default driver ' . $this->defaultDriver);
+            $source = $this->defaultDriver;
         }
-        return $this->driverCache[$source];
+        return parent::getDriver($source);
     }
 
     /**
-     * Create a driver for the given source.
-     *
-     * @param string $source Source id for the driver.
-     *
-     * @return mixed On success a driver object, otherwise null.
-     */
-    protected function createDriver($source)
-    {
-        if (!isset($this->drivers[$source])) {
-            return null;
-        }
-        $driver = $this->drivers[$source];
-        $config = $this->getDriverConfig($source);
-        if (!$config) {
-            $this->error("No configuration found for source '$source'");
-            return null;
-        }
-        $driverInst = clone $this->driverManager->get($driver);
-        $driverInst->setConfig($config);
-        $driverInst->init();
-        return $driverInst;
-    }
-
-    /**
-     * Get configuration for the ILS driver.  We will load an .ini file named
-     * after the driver class and number if it exists;
-     * otherwise we will return an empty array.
-     *
-     * @param string $source The source id to use for determining the
-     * configuration file
-     *
-     * @return array   The configuration of the driver
-     */
-    protected function getDriverConfig($source)
-    {
-        // Determine config file name based on class name:
-        try {
-            $path = empty($this->driversConfigPath)
-                ? $source
-                : $this->driversConfigPath . '/' . $source;
-
-            $config = $this->configLoader->get($path);
-        } catch (\Laminas\Config\Exception\RuntimeException $e) {
-            // Configuration loading failed; probably means file does not
-            // exist -- just return an empty array in that case:
-            $this->error("Could not load config for $source");
-            return [];
-        }
-        return $config->toArray();
-    }
-
-    /**
-     * Change local ID's to global ID's in the given array
+     * Change local ID's to global ID's in the given array.
      *
      * @param mixed  $data         The data to be modified, normally
      * array or array of arrays
@@ -1311,6 +1187,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         }
 
         foreach ($data as $key => $value) {
+            if (null === $value) {
+                continue;
+            }
             if (is_array($value)) {
                 $data[$key] = $this->addIdPrefixes(
                     $value,
@@ -1318,7 +1197,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     $modifyFields
                 );
             } else {
-                if (!ctype_digit((string)$key)
+                if (
+                    !ctype_digit((string)$key)
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
@@ -1330,7 +1210,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Change global ID's to local ID's in the given array
+     * Change global ID's to local ID's in the given array.
      *
      * @param mixed  $data         The data to be modified, normally
      * array or array of arrays
@@ -1353,6 +1233,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $array = is_array($data) ? $data : [$data];
 
         foreach ($array as $key => $value) {
+            if (null === $value) {
+                continue;
+            }
             if (is_array($value)) {
                 if (in_array($key, $ignoreFields)) {
                     continue;
@@ -1364,7 +1247,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 );
             } else {
                 $prefixLen = strlen($source) + 1;
-                if ((!is_array($data)
+                if (
+                    (!is_array($data)
                     || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
@@ -1376,27 +1260,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Check whether the given driver supports the given method
-     *
-     * @param object $driver ILS Driver
-     * @param string $method Method name
-     * @param array  $params Array of passed parameters
-     *
-     * @return bool
-     */
-    protected function driverSupportsMethod($driver, $method, $params = null)
-    {
-        if (is_callable([$driver, $method])) {
-            if (method_exists($driver, 'supportsMethod')) {
-                return $driver->supportsMethod($method, $params ?: []);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Check if the given ILS driver supports the source of a record
+     * Check if the given ILS driver supports the source of a record.
      *
      * @param string $driverSource Driver's source identifier
      * @param string $id           Prefixed identifier to compare with

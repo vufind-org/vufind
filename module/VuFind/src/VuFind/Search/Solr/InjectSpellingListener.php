@@ -3,7 +3,7 @@
 /**
  * Solr spelling listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,16 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
@@ -53,42 +53,26 @@ class InjectSpellingListener
     use LoggerAwareTrait;
 
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
      * Is spelling active?
      *
      * @var bool
      */
-    protected $active = false;
-
-    /**
-     * Dictionaries for spellcheck.
-     *
-     * @var array
-     */
-    protected $dictionaries;
+    protected bool $active = false;
 
     /**
      * Constructor.
      *
      * @param BackendInterface $backend      Backend
      * @param array            $dictionaries Spelling dictionaries to use.
-     * @param LoggerInterface  $logger       Logger
+     * @param ?LoggerInterface $logger       Logger
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        array $dictionaries,
-        LoggerInterface $logger = null
+        protected BackendInterface $backend,
+        protected array $dictionaries,
+        ?LoggerInterface $logger = null
     ) {
-        $this->backend = $backend;
-        $this->dictionaries = $dictionaries;
         $this->setLogger($logger);
     }
 
@@ -99,15 +83,15 @@ class InjectSpellingListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_PRE,
             [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );
@@ -120,7 +104,7 @@ class InjectSpellingListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if ($command->getContext() !== 'search') {
@@ -163,7 +147,7 @@ class InjectSpellingListener
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         // Do nothing if spelling is disabled or context is wrong
         $command = $event->getParam('command');
@@ -194,7 +178,7 @@ class InjectSpellingListener
      *
      * @return void
      */
-    protected function aggregateSpellcheck(Spellcheck $spellcheck, $query)
+    protected function aggregateSpellcheck(Spellcheck $spellcheck, string $query): void
     {
         while (next($this->dictionaries) !== false) {
             $params = new ParamBag();
@@ -206,10 +190,10 @@ class InjectSpellingListener
                 $spellcheck->mergeWith($collection->getSpellcheck());
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 // Don't let exceptions cause the whole search to fail
-                if ($this->logger instanceof \VuFind\Log\Logger) {
+                if ($this->logger instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $this->logger->logException(
                         $e,
-                        new \Laminas\Stdlib\Parameters()
+                        []
                     );
                 }
             }

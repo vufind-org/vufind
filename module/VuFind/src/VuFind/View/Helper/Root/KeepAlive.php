@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KeepAlive view helper
+ * KeepAlive view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2014.
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -27,10 +28,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * KeepAlive view helper
+ * KeepAlive view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -39,23 +43,25 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class KeepAlive extends \Laminas\View\Helper\AbstractHelper
+class KeepAlive
 {
     /**
-     * Keep-alive interval in seconds or 0 if disabled
+     * Keep-alive interval in seconds or 0 if disabled.
      *
      * @var int
      */
     protected $interval;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param int $interval Keep-alive interval in seconds or 0 if disabled
+     * @param array $config Configuration
      */
-    public function __construct($interval)
-    {
-        $this->interval = $interval;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array')]
+        array $config
+    ) {
+        $this->interval = $config['Session']['keepAlive'] ?? 0;
     }
 
     /**

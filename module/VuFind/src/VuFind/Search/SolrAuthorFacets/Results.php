@@ -1,10 +1,11 @@
 <?php
+
 /**
- * AuthorFacets aspect of the Search Multi-class (Results)
+ * AuthorFacets aspect of the Search Multi-class (Results).
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -25,10 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrAuthorFacets;
 
+use VuFindSearch\Command\SearchCommand;
+
+use function array_slice;
+use function count;
+
 /**
- * AuthorFacets Search Results
+ * AuthorFacets Search Results.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -44,14 +51,14 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query = $this->getParams()->getQuery();
         $params = $this->getParams()->getBackendParameters();
         // Perform the search:
+        $command = new SearchCommand($this->backendId, $query, 0, 0, $params);
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, 0, 0, $params);
-
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:
@@ -74,7 +81,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return bool
      */
-    public function isSavedSearch()
+    public function isSavedSearch(): bool
     {
         // Author searches are never saved:
         return false;

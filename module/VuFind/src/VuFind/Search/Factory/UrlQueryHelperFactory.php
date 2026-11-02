@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory to build UrlQueryHelper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Base\Params;
@@ -46,7 +48,7 @@ class UrlQueryHelperFactory
      *
      * @var string
      */
-    protected $helperClass = UrlQueryHelper::class;
+    protected string $helperClass = UrlQueryHelper::class;
 
     /**
      * Extract default settings from the search parameters.
@@ -55,7 +57,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function getDefaults(Params $params)
+    protected function getDefaults(Params $params): array
     {
         $options = $params->getOptions();
         return [
@@ -75,7 +77,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function addDefaultsToConfig(Params $params, array $config)
+    protected function addDefaultsToConfig(Params $params, array $config): array
     {
         // Load defaults unless they have been overridden in existing config
         // array.
@@ -104,7 +106,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function getUrlParams(Params $params, array $config)
+    protected function getUrlParams(Params $params, array $config): array
     {
         $urlParams = [];
         $sort = $params->getSort();
@@ -122,22 +124,11 @@ class UrlQueryHelperFactory
         if ($params->getPage() != 1) {
             $urlParams['page'] = $params->getPage();
         }
-        $filters = $params->getRawFilters();
-        if (!empty($filters)) {
-            $urlParams['filter'] = [];
-            foreach ($filters as $field => $values) {
-                foreach ($values as $current) {
-                    $urlParams['filter'][] = $field . ':"' . $current . '"';
-                }
-            }
+        if ($filters = $params->getFiltersAsQueryParams()) {
+            $urlParams['filter'] = $filters;
         }
-        $hiddenFilters = $params->getHiddenFilters();
-        if (!empty($hiddenFilters)) {
-            foreach ($hiddenFilters as $field => $values) {
-                foreach ($values as $current) {
-                    $urlParams['hiddenFilters'][] = $field . ':"' . $current . '"';
-                }
-            }
+        if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
+            $urlParams['hiddenFilters'] = $hiddenFilters;
         }
         $shards = $params->getSelectedShards();
         if (!empty($shards)) {
@@ -155,14 +146,14 @@ class UrlQueryHelperFactory
     }
 
     /**
-     * Construct the UrlQueryHelper
+     * Construct the UrlQueryHelper.
      *
      * @param Params $params VuFind search parameters
      * @param array  $config Config options
      *
      * @return UrlQueryHelper
      */
-    public function fromParams(Params $params, array $config = [])
+    public function fromParams(Params $params, array $config = []): UrlQueryHelper
     {
         $finalConfig = $this->addDefaultsToConfig($params, $config);
         return new $this->helperClass(

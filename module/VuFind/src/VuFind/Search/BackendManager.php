@@ -3,7 +3,7 @@
 /**
  * Manager for search backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,18 +26,20 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-
 use SplObjectStorage;
-
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function gettype;
+use function is_object;
+use function sprintf;
 
 /**
  * Manager for search backends.
@@ -113,7 +115,7 @@ class BackendManager
             throw new UnexpectedValueException(
                 sprintf(
                     'Object of class %s does not implement the expected interface',
-                    get_class($backend)
+                    $backend::class
                 )
             );
         }
@@ -160,8 +162,8 @@ class BackendManager
     {
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
-            $events->attach('VuFind\Search', Service::EVENT_RESOLVE, $listener);
-            $this->listeners->attach($events, $listener);
+            $events->attach(Service::class, Service::EVENT_RESOLVE, $listener);
+            $this->listeners->offsetSet($events, $listener);
         }
     }
 
@@ -176,8 +178,8 @@ class BackendManager
     {
         if ($this->listeners->offsetExists($events)) {
             $listener = $this->listeners->offsetGet($events);
-            $events->detach($listener, 'VuFind\Search');
-            $this->listeners->detach($events);
+            $events->detach($listener, Service::class);
+            $this->listeners->offsetUnset($events);
         }
     }
 }

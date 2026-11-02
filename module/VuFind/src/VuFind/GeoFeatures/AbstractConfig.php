@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract Configuration Module
+ * Abstract Configuration Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\GeoFeatures;
 
-use Laminas\Config\Config;
-
 /**
- * MapTab Configuration Class
+ * MapTab Configuration Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,20 +41,12 @@ use Laminas\Config\Config;
 class AbstractConfig
 {
     /**
-     * Configuration loader
+     * Constructor.
      *
-     * @var \VuFind\Config\PluginManager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -69,11 +61,11 @@ class AbstractConfig
      */
     protected function getOptions($configName, $section, $validOptions)
     {
-        $config = $this->configLoader->get($configName);
+        $config = $this->configManager->getConfigArray($configName);
         $options = [];
         foreach ($validOptions as $field) {
-            if (isset($config->$section->$field)) {
-                $options[$field] = $config->$section->$field;
+            if (isset($config[$section][$field])) {
+                $options[$field] = $config[$section][$field];
             }
         }
         return $options;

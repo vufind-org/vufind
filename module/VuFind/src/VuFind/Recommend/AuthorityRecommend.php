@@ -1,8 +1,9 @@
 <?php
+
 /**
- * AuthorityRecommend Recommendations Module
+ * AuthorityRecommend Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,13 +27,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Recommend;
 
-use Laminas\Stdlib\Parameters;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 
+use function count;
+use function intval;
+
 /**
- * AuthorityRecommend Module
+ * AuthorityRecommend Module.
  *
  * This class provides recommendations based on Authority records.
  * i.e. searches for a pseudonym will provide the user with a link
@@ -51,14 +56,14 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 class AuthorityRecommend implements RecommendInterface
 {
     /**
-     * User search query
+     * User search query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Configured filters for authority searches
+     * Configured filters for authority searches.
      *
      * @var array
      */
@@ -73,25 +78,18 @@ class AuthorityRecommend implements RecommendInterface
     protected $resultLimit = 0;
 
     /**
-     * Current user search
+     * Current user search.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Generated recommendations
+     * Generated recommendations.
      *
      * @var array
      */
     protected $recommendations = [];
-
-    /**
-     * Results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
 
     /**
      * Which lookup mode(s) to use.
@@ -108,13 +106,13 @@ class AuthorityRecommend implements RecommendInterface
     protected $header = 'See also';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**
@@ -177,7 +175,7 @@ class AuthorityRecommend implements RecommendInterface
         try {
             $authResults = $this->resultsManager->get('SolrAuth');
             $authParams = $authResults->getParams();
-            $authParams->initFromRequest(new Parameters($params));
+            $authParams->initFromRequest($params);
             foreach ($this->filters as $filter) {
                 $authParams->addHiddenFilter($filter);
             }
@@ -222,7 +220,7 @@ class AuthorityRecommend implements RecommendInterface
             'type0' => ['Heading'],
             'bool1' => ['NOT'],
             'lookfor1' => [$this->lookfor],
-            'type1' => ['MainHeading']
+            'type1' => ['MainHeading'],
         ];
 
         // loop through records and assign id and headings to separate arrays defined
@@ -242,7 +240,7 @@ class AuthorityRecommend implements RecommendInterface
         // Build a simple "MainHeading" search.
         $params = [
             'lookfor' => [$this->lookfor],
-            'type' => ['MainHeading']
+            'type' => ['MainHeading'],
         ];
 
         // loop through records and assign id and headings to separate arrays defined
@@ -266,11 +264,11 @@ class AuthorityRecommend implements RecommendInterface
      */
     protected function isModeActive($mode)
     {
-        return $this->mode === '*' || strpos($this->mode, $mode) !== false;
+        return $this->mode === '*' || str_contains($this->mode, $mode);
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -293,7 +291,8 @@ class AuthorityRecommend implements RecommendInterface
         }
 
         // check result limit before proceeding...
-        if ($this->resultLimit > 0
+        if (
+            $this->resultLimit > 0
             && $this->resultLimit < $results->getResultTotal()
         ) {
             return;

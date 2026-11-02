@@ -1,8 +1,9 @@
 <?php
+
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind SearchSpecs Configuration Reader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -25,27 +26,26 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind SearchSpecs Configuration Reader.
  *
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @deprecated Use \VuFind\Config\ConfigManager instead
  */
 class SearchSpecsReader extends YamlReader
 {
     /**
-     * Constructor
+     * Cache directory name.
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @var string
      */
-    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
-    {
-        parent::__construct($cacheManager);
-        $this->cacheName = 'searchspecs';
-    }
+    protected $cacheName = 'searchspecs';
 }

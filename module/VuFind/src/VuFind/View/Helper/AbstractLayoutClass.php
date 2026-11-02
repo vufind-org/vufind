@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Helper class for managing high-level (body vs. sidebar) page layout.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper;
 
 /**
@@ -36,32 +38,20 @@ namespace VuFind\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
+abstract class AbstractLayoutClass
 {
     /**
-     * Does the sidebar go on the left?
+     * Constructor.
      *
-     * @var bool
+     * @param bool $sidebarOnLeft Does the sidebar go on the left?
+     * @param bool $offcanvas     Is offcanvas menu active?
+     * @param bool $rtl           Are we in right-to-left mode?
      */
-    protected $sidebarOnLeft;
-
-    /**
-     * Is the sidebar offcanvas?
-     *
-     * @var bool
-     */
-    protected $offcanvas;
-
-    /**
-     * Constructor
-     *
-     * @param bool $left      Does the sidebar go on the left?
-     * @param bool $offcanvas Is offcanvas menu active?
-     */
-    public function __construct($left = false, $offcanvas = false)
-    {
-        $this->sidebarOnLeft = $left;
-        $this->offcanvas = $offcanvas;
+    public function __construct(
+        protected bool $sidebarOnLeft = false,
+        protected bool $offcanvas = false,
+        protected bool $rtl = false
+    ) {
     }
 
     /**
@@ -73,5 +63,5 @@ abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string       CSS classes to apply
      */
-    abstract public function __invoke($class);
+    abstract public function __invoke(string $class);
 }

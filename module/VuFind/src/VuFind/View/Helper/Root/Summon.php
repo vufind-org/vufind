@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Summon support functions.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Summon
@@ -25,9 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+namespace VuFind\View\Helper\Root;
 
 /**
  * Summon support functions.
@@ -38,7 +38,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Summon extends AbstractHelper
+class Summon
 {
     /**
      * Export support function to convert Summon format to EndNote format.
@@ -50,18 +50,18 @@ class Summon extends AbstractHelper
     public function getEndnoteFormat($format)
     {
         switch ($format) {
-        case 'Journal Article':
-            return 'Journal Article';
-        case 'Book':
-            return 'Book';
-        case 'Book Chapter':
-            return 'Book Section';
-        case 'Conference Proceeding':
-            return 'Conference Paper';
-        case 'Dissertation':
-            return 'Thesis';
-        default:
-            return 'Generic';
+            case 'Journal Article':
+                return 'Journal Article';
+            case 'Book':
+                return 'Book';
+            case 'Book Chapter':
+                return 'Book Section';
+            case 'Conference Proceeding':
+                return 'Conference Paper';
+            case 'Dissertation':
+                return 'Thesis';
+            default:
+                return 'Generic';
         }
     }
 
@@ -75,40 +75,50 @@ class Summon extends AbstractHelper
     public function getRefWorksFormat($format)
     {
         switch ($format) {
-        case 'Book Chapter':
-            return 'Book, Section';
-        case 'Book':
-            return 'Book, Whole';
-        case 'eBook':
-            return 'Book, Whole';
-        case 'Computer File':
-            return 'Computer Program';
-        case 'Conference Proceeding':
-            return 'Conference Proceedings';
-        case 'Dissertation':
-            return 'Dissertation/Thesis';
-        case 'Journal Article':
-            return 'Journal Article';
-        case 'Journal':
-            return 'Journal, Electronic';
-        case 'Trade Publication Article':
-            return 'Magazine Article';
-        case 'Map':
-            return 'Map';
-        case 'Music Score':
-            return 'Music Score';
-        case 'Newspaper Article':
-            return 'Newspaper Article';
-        case 'Report':
-            return 'Report';
-        case 'Audio Recording':
-            return 'Sound Recording';
-        case 'Video Recording':
-            return 'Video/ DVD';
-        case 'Web Resource':
-            return 'Web Page';
-        default:
-            return 'Generic';
+            case 'Book Chapter':
+                return 'Book, Section';
+            case 'Book':
+                return 'Book, Whole';
+            case 'eBook':
+                return 'Book, Whole';
+            case 'Computer File':
+                return 'Computer Program';
+            case 'Conference Proceeding':
+                return 'Conference Proceedings';
+            case 'Dissertation':
+                return 'Dissertation/Thesis';
+            case 'Journal Article':
+                return 'Journal Article';
+            case 'Journal':
+                return 'Journal, Electronic';
+            case 'Trade Publication Article':
+                return 'Magazine Article';
+            case 'Map':
+                return 'Map';
+            case 'Music Score':
+                return 'Music Score';
+            case 'Newspaper Article':
+                return 'Newspaper Article';
+            case 'Report':
+                return 'Report';
+            case 'Audio Recording':
+                return 'Sound Recording';
+            case 'Video Recording':
+                return 'Video/ DVD';
+            case 'Web Resource':
+                return 'Web Page';
+            default:
+                return 'Generic';
         }
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

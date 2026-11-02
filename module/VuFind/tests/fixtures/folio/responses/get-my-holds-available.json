@@ -1,0 +1,13 @@
+[
+  {
+    "comment": "User with 1 hold, hold is available for pickup until 2022-12-29T05:59:59.000+00:00",
+    "expectedPath": "/request-storage/requests",
+    "expectedParams": {
+      "query": "((requesterId == \"foo\" or proxyUserId == \"foo\") and status == Open*)",
+      "offset": 0,
+      "limit": 1000
+    },
+    "status": 200,
+    "body": "{\"requests\":[{\"id\":\"fake-request-num\",\"requestLevel\":\"Item\",\"requestType\":\"Page\",\"requestDate\":\"2022-12-20T05:55:33.000+00:00\",\"requesterId\":\"foo\",\"instanceId\":\"fake-instance-id\",\"holdingsRecordId\":\"fake-holding-id\",\"itemId\":\"fake-item-id\",\"status\":\"Open - Awaiting pickup\",\"position\":1,\"instance\":{\"title\":\"Presentation secrets : do what you never thought possible with your presentations \",\"identifiers\":[{\"value\":\"9781118034965 (pbk : alk paper)\",\"identifierTypeId\":\"id-type-id\"}]},\"item\":{\"barcode\":\"431332678\"},\"requester\":{\"firstName\":\"John\",\"lastName\":\"TestuserJohn\",\"barcode\":\"995324292\"},\"fulfilmentPreference\":\"Hold Shelf\",\"holdShelfExpirationDate\":\"2022-12-29T05:59:59.000+00:00\",\"pickupServicePointId\":\"psp-id\",\"metadata\":{\"createdDate\":\"2022-12-20T05:55:34.325+00:00\",\"createdByUserId\":\"fake-user-2\",\"updatedDate\":\"2022-12-20T06:07:27.712+00:00\",\"updatedByUserId\":\"fake-user-2\"}}],\"totalRecords\":1}"
+  }
+]

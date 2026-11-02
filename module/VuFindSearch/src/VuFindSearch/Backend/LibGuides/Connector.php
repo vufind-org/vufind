@@ -3,7 +3,7 @@
 /**
  * LibGuides connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -27,9 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\LibGuides;
 
 use Laminas\Http\Client as HttpClient;
+
+use function array_slice;
+use function count;
+use function strlen;
 
 /**
  * LibGuides connector.
@@ -41,66 +46,75 @@ use Laminas\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * The HTTP_Request object used for API transactions
+     * The HTTP_Request object used for API transactions.
      *
      * @var HttpClient
      */
     public $client;
 
     /**
-     * Institution code
+     * Institution code.
      *
      * @var string
      */
     protected $iid;
 
     /**
-     * Base URL for API
+     * Base URL for API.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * API version number
+     * API version number.
      *
      * @var float
      */
     protected $apiVersion;
 
     /**
-     * Constructor
+     * Optionally load & display the description of each resource.
+     *
+     * @var bool
+     */
+    protected $displayDescription;
+
+    /**
+     * Constructor.
      *
      * Sets up the LibGuides Client
      *
-     * @param string     $iid        Institution ID
-     * @param HttpClient $client     HTTP client
-     * @param float      $apiVersion API version number
-     * @param string     $baseUrl    API base URL (optional)
+     * @param string     $iid                Institution ID
+     * @param HttpClient $client             HTTP client
+     * @param float      $apiVersion         API version number
+     * @param string     $baseUrl            API base URL (optional)
+     * @param bool       $displayDescription Optionally load & display the description of each resource
      */
-    public function __construct($iid, $client, $apiVersion = 1, $baseUrl = null)
+    public function __construct($iid, $client, $apiVersion = 1, $baseUrl = null, $displayDescription = false)
     {
         $this->apiVersion = $apiVersion;
         if (empty($baseUrl)) {
             $this->host = ($this->apiVersion < 2)
-                ? "http://api.libguides.com/api_search.php?"
-                : "http://lgapi.libapps.com/widgets.php?";
+                ? 'http://api.libguides.com/api_search.php?'
+                : 'http://lgapi.libapps.com/widgets.php?';
         } else {
             // Ensure appropriate number of question marks:
             $this->host = rtrim($baseUrl, '?') . '?';
         }
         $this->iid = $iid;
         $this->client = $client;
+        $this->displayDescription = $displayDescription;
     }
 
     /**
-     * Execute a search.  adds all the querystring parameters into
-     * $this->client and returns the parsed response
+     * Execute a search. Adds all the querystring parameters into
+     * $this->client and returns the parsed response.
      *
      * @param array $params    Incoming search parameters.
      * @param int   $offset    Search offset
@@ -126,7 +140,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 $result = [
                     'recordCount' => 0,
                     'documents' => [],
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             } else {
                 throw $e;
@@ -182,27 +196,45 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         $items = [];
 
-        // Extract titles and URLs from response:
-        $regex = '/<a href="([^"]*)"[^>]*>([^<]*)</';
-        $count = preg_match_all($regex, $data, $matches);
+        $itemRegex = '/<li>(.*?)<\/li>/';
+        $linkRegex = '/<a href="([^"]*)"[^>]*>([^<]*)</';
+        $descriptionRegex = '/<div class="s-lg-(?:widget|guide)-list-description">(.*?)<\/div>/';
 
-        for ($i = 0; $i < $count; $i++) {
-            $items[] = [
-                'id' => $matches[1][$i],    // ID = URL
-                'title' => $matches[2][$i],
+        // Extract each result item
+        $itemCount = preg_match_all($itemRegex, $data, $itemMatches);
+
+        for ($i = 0; $i < $itemCount; $i++) {
+            // Extract the link, which contains both the title and URL.
+            $linkCount = preg_match_all($linkRegex, $itemMatches[1][$i], $linkMatches);
+            if ($linkCount != 1) {
+                throw new \Exception('LibGuides result item included more than one link: ' . $itemMatches[1][$i]);
+            }
+            $item = [
+                'id' => $linkMatches[1][0],    // ID = URL
+                'title' => $linkMatches[2][0],
             ];
+
+            // Extract the description.
+            if ($this->displayDescription) {
+                $descriptionCount = preg_match_all($descriptionRegex, $itemMatches[1][$i], $descriptionMatches);
+                if ($descriptionCount >= 1) {
+                    $item['description'] = html_entity_decode(strip_tags($descriptionMatches[1][0]));
+                }
+            }
+
+            $items[] = $item;
         }
 
         $results = [
             'recordCount' => count($items),
-            'documents' => $items
+            'documents' => $items,
         ];
 
         return $results;
     }
 
     /**
-     * Prepare API parameters
+     * Prepare API parameters.
      *
      * @param array $params Incoming parameters
      *
@@ -228,7 +260,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 'list_format' => 1,
                 'output_format' => 1,
                 'load_type' => 2,
-                'enable_description' => 0,
+                'enable_description' => $this->displayDescription ? 1 : 0,
                 'enable_group_search_limit' => 0,
                 'enable_subject_search_limit' => 0,
                 'widget_embed_type' => 2,

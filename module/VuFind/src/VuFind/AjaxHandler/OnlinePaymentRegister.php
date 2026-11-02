@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * AJAX handler for registering an online payment with the ILS.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) The National Library of Finland 2015-2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+
+declare(strict_types=1);
+
+namespace VuFind\AjaxHandler;
+
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
+
+/**
+ * AJAX handler for registering an online payment with the ILS.
+ *
+ * @category VuFind
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class OnlinePaymentRegister extends AbstractOnlinePaymentAction
+{
+    /**
+     * Handle a request.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return array [response data, HTTP status code]
+     */
+    public function handleRequest(ServerRequestInterface $request): array
+    {
+        $localIdentifier = $this->getPostOrQueryParam($request, 'localIdentifier');
+        if (!$localIdentifier) {
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
+        }
+        $payment = $this->paymentService->getPaymentByLocalIdentifier($localIdentifier);
+        if (!$payment) {
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
+        }
+        if ($payment->isRegistered()) {
+            // Already registered, return success:
+            return $this->formatResponse('');
+        }
+        if (!$payment->isRegistrationNeeded()) {
+            // Bad status, return error:
+            return $this->formatResponse('', HttpStatus::ERROR);
+        }
+        if ($payment->isRegistrationInProgress()) {
+            // Registration already in progress, return error:
+            return $this->formatResponse('', HttpStatus::ERROR);
+        }
+
+        $result = $this->onlinePaymentManager->registerPaymentWithILS($payment);
+        return $this->formatResponse('', $result ? null : HttpStatus::ERROR);
+    }
+}

@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * Database service plugin manager.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2023.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ */
+
+namespace VuFind\Db\Service;
+
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\ServiceManager\AbstractPluginFactory;
+
+/**
+ * Database service plugin manager.
+ *
+ * @category VuFind
+ * @package  Database
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ */
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+{
+    /**
+     * Default plugin aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        AccessTokenServiceInterface::class => AccessTokenService::class,
+        ApiKeyServiceInterface::class => ApiKeyService::class,
+        AuthHashServiceInterface::class => AuthHashService::class,
+        ChangeTrackerServiceInterface::class => ChangeTrackerService::class,
+        CommentsServiceInterface::class => CommentsService::class,
+        AuditEventServiceInterface::class => AuditEventService::class,
+        ExternalSessionServiceInterface::class => ExternalSessionService::class,
+        FeedbackServiceInterface::class => FeedbackService::class,
+        LoginTokenServiceInterface::class => LoginTokenService::class,
+        NoticeServiceInterface::class => NoticeService::class,
+        OaiResumptionServiceInterface::class => OaiResumptionService::class,
+        PaymentServiceInterface::class => PaymentService::class,
+        PaymentFeeServiceInterface::class => PaymentFeeService::class,
+        RatingsServiceInterface::class => RatingsService::class,
+        RecordServiceInterface::class => RecordService::class,
+        ResourceServiceInterface::class => ResourceService::class,
+        ResourceTagsServiceInterface::class => ResourceTagsService::class,
+        SearchServiceInterface::class => SearchService::class,
+        SessionServiceInterface::class => SessionService::class,
+        ShortlinksServiceInterface::class => ShortlinksService::class,
+        TagServiceInterface::class => TagService::class,
+        UserCardServiceInterface::class => UserCardService::class,
+        UserListServiceInterface::class => UserListService::class,
+        UserResourceServiceInterface::class => UserResourceService::class,
+        UserServiceInterface::class => UserService::class,
+        UserSessionPersistenceInterface::class => UserService::class,
+    ];
+
+    /**
+     * Constructor.
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
+    /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    protected function getExpectedInterface()
+    {
+        return DbServiceInterface::class;
+    }
+}

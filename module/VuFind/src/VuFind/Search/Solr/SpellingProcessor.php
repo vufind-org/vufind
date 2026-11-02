@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Solr spelling processor.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -25,11 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
-use Laminas\Config\Config;
+use Closure;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\QueryInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Solr spelling processor.
@@ -43,25 +51,25 @@ use VuFindSearch\Query\AbstractQuery;
 class SpellingProcessor
 {
     /**
-     * Spelling limit
+     * Spelling limit.
      *
      * @var int
      */
-    protected $spellingLimit;
+    protected int $spellingLimit;
 
     /**
      * Spell check words with numbers in them?
      *
      * @var bool
      */
-    protected $spellSkipNumeric;
+    protected bool $spellSkipNumeric;
 
     /**
      * Offer expansions on terms as well as basic replacements?
      *
      * @var bool
      */
-    protected $expand;
+    protected bool $expand;
 
     /**
      * Show the full modified search phrase on screen rather then just the suggested
@@ -69,28 +77,28 @@ class SpellingProcessor
      *
      * @var bool
      */
-    protected $phrase;
+    protected bool $phrase;
 
     /**
      * Callback for normalizing text.
      *
-     * @var callable
+     * @var ?Closure
      */
-    protected $normalizer;
+    protected ?Closure $normalizer;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config   $config     Spelling configuration (optional)
-     * @param callable $normalizer Callback for normalization of text (optional).
+     * @param ?array    $config     Spelling configuration (optional)
+     * @param ?callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct($config = null, $normalizer = null)
+    public function __construct(?array $config = null, ?callable $normalizer = null)
     {
-        $this->spellingLimit = $config->limit ?? 3;
-        $this->spellSkipNumeric = $config->skip_numeric ?? true;
-        $this->expand = $config->expand ?? true;
-        $this->phrase = $config->phrase ?? false;
-        $this->normalizer = $normalizer;
+        $this->spellingLimit = $config['limit'] ?? 3;
+        $this->spellSkipNumeric = $config['skip_numeric'] ?? true;
+        $this->expand = $config['expand'] ?? true;
+        $this->phrase = $config['phrase'] ?? false;
+        $this->normalizer = ($normalizer !== null) ? $normalizer(...) : null;
     }
 
     /**
@@ -98,7 +106,7 @@ class SpellingProcessor
      *
      * @return bool
      */
-    public function shouldSkipNumericSpelling()
+    public function shouldSkipNumericSpelling(): bool
     {
         return $this->spellSkipNumeric;
     }
@@ -108,13 +116,13 @@ class SpellingProcessor
      *
      * @return int
      */
-    public function getSpellingLimit()
+    public function getSpellingLimit(): int
     {
         return $this->spellingLimit;
     }
 
     /**
-     * Input Tokenizer - Specifically for spelling purposes
+     * Input Tokenizer - Specifically for spelling purposes.
      *
      * Because of its focus on spelling, these tokens are unsuitable
      * for actual searching. They are stripping important search data
@@ -125,13 +133,13 @@ class SpellingProcessor
      *
      * @return array        Tokenized array
      */
-    public function tokenize($input)
+    public function tokenize(string $input): array
     {
         // Exclusion list of useless tokens:
-        $joins = ["AND", "OR", "NOT"];
+        $joins = ['AND', 'OR', 'NOT'];
 
         // Strip out parentheses -- irrelevant for tokenization:
-        $paren = ["(" => " ", ")" => " "];
+        $paren = ['(' => ' ', ')' => ' '];
         $input = trim(strtr($input, $paren));
 
         // Base of this algorithm comes straight from PHP doc example by
@@ -140,7 +148,7 @@ class SpellingProcessor
         $token = strtok($input, " \t");
         while ($token !== false) {
             // find double quoted tokens
-            if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
+            if (str_starts_with($token, '"') && !str_ends_with($token, '"')) {
                 $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
@@ -152,9 +160,9 @@ class SpellingProcessor
 
         // If the last token ends in a double quote but the input string does not,
         // the tokenization process added the quote, which will break spelling
-        // replacements.  We need to strip it back off again:
+        // replacements. We need to strip it back off again:
         $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
-        if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
+        if ($last && str_ends_with($last, '"') && !str_ends_with($input, '"')) {
             $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
         }
         return $tokens;
@@ -169,16 +177,17 @@ class SpellingProcessor
      * @return array
      * @throws \Exception
      */
-    public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query)
+    public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query): array
     {
         $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
-            if (!$this->shouldSkipTerm($query, $term, false)
+            if (
+                !$this->shouldSkipTerm($query, $term, false)
                 && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
             ) {
                 $allSuggestions[$term] = [
                     'freq' => $info['origFreq'],
-                    'suggestions' => $suggestions
+                    'suggestions' => $suggestions,
                 ];
             }
         }
@@ -190,15 +199,15 @@ class SpellingProcessor
     }
 
     /**
-     * Support method for getSuggestions()
+     * Support method for getSuggestions().
      *
-     * @param AbstractQuery $query Query for which info should be retrieved
-     * @param array         $info  Spelling suggestion information
+     * @param QueryInterface $query Query for which info should be retrieved
+     * @param array          $info  Spelling suggestion information
      *
      * @return array
      * @throws \Exception
      */
-    protected function formatAndFilterSuggestions($query, $info)
+    protected function formatAndFilterSuggestions(QueryInterface $query, array $info): array
     {
         // Validate response format
         if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
@@ -224,15 +233,15 @@ class SpellingProcessor
     /**
      * Should we skip the specified term?
      *
-     * @param AbstractQuery $query         Query for which info should be retrieved
-     * @param string        $term          Term to check
-     * @param bool          $queryContains Should we skip the term if it is found
+     * @param QueryInterface $query         Query for which info should be retrieved
+     * @param string         $term          Term to check
+     * @param bool           $queryContains Should we skip the term if it is found
      * in the query (true), or should we skip the term if it is NOT found in the
      * query (false)?
      *
      * @return bool
      */
-    protected function shouldSkipTerm($query, $term, $queryContains)
+    protected function shouldSkipTerm(QueryInterface $query, string $term, bool $queryContains): bool
     {
         // If term is numeric and we're in "skip numeric" mode, we should skip it:
         if ($this->shouldSkipNumericSpelling() && is_numeric($term)) {
@@ -251,16 +260,16 @@ class SpellingProcessor
      *
      * @return array
      */
-    public function processSuggestions($suggestions, $query, Params $params)
+    public function processSuggestions(array $suggestions, string $query, Params $params): array
     {
         $returnArray = [];
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
-            $targetTerm = "";
+            $targetTerm = '';
             foreach ($this->tokenize($query) as $token) {
                 // Is the term part of the current token?
-                if (strpos($token, (string)$term) !== false) {
+                if (str_contains($token, (string)$term)) {
                     $inToken = true;
                     // We need to replace the whole token
                     $targetTerm = $token;
@@ -276,7 +285,7 @@ class SpellingProcessor
                 }
             }
             // If no tokens were found, just look for the suggestion 'as is'
-            if ($targetTerm == "") {
+            if ($targetTerm == '') {
                 $targetTerm = $term;
                 $returnArray = $this->doSingleReplace(
                     $term,
@@ -305,13 +314,13 @@ class SpellingProcessor
      * @return array              $returnArray modified
      */
     protected function doSingleReplace(
-        $term,
-        $targetTerm,
-        $inToken,
-        $details,
-        $returnArray,
+        string $term,
+        string $targetTerm,
+        bool $inToken,
+        array $details,
+        array $returnArray,
         Params $params
-    ) {
+    ): array {
         $returnArray[$targetTerm]['freq'] = $details['freq'];
         foreach ($details['suggestions'] as $word => $freq) {
             // If the suggested word is part of a token, we need to make sure we
@@ -328,13 +337,13 @@ class SpellingProcessor
             // Basic spelling suggestion data
             $returnArray[$targetTerm]['suggestions'][$label] = [
                 'freq' => $freq,
-                'new_term' => $replacement
+                'new_term' => $replacement,
             ];
 
             // Only generate expansions if enabled in config
             if ($this->expand) {
                 // Parentheses differ for shingles
-                $replacement = (strstr($targetTerm, " ") !== false)
+                $replacement = (strstr($targetTerm, ' ') !== false)
                     ? "(($targetTerm) OR ($replacement))"
                     : "($targetTerm OR $replacement)";
                 $returnArray[$targetTerm]['suggestions'][$label]['expand_term']

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for CommentRecord AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Captcha\Service\CaptchaService;
+use VuFind\Ratings\RatingsService;
+use VuFind\Record\ResourcePopulator;
 
 /**
  * Factory for CommentRecord AJAX handler.
@@ -41,11 +46,10 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CommentRecordFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class CommentRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -63,20 +67,22 @@ class CommentRecordFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
-        $controllerPluginManager = $container->get('ControllerPluginManager');
+        $servicePluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $tablePluginManager->get(\VuFind\Db\Table\Resource::class),
-            $controllerPluginManager
-                ->get(\VuFind\Controller\Plugin\Captcha::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
-            $capabilities->getCommentSetting() !== 'disabled'
+            $container->get(ResourcePopulator::class),
+            $servicePluginManager->get(\VuFind\Db\Service\CommentsServiceInterface::class),
+            $container->get(CaptchaService::class),
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
+            $capabilities->getCommentSetting() !== 'disabled',
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Config\AccountCapabilities::class),
+            $container->get(RatingsService::class)
         );
     }
 }

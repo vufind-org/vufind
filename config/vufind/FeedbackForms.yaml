@@ -17,6 +17,7 @@
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
+#   formActionRoute (string) Sets the route to which form data should be posted. (default = feedback-form)
 #   emailSubject (string) Email subject (translation key). (default = email_subject
 #                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)
@@ -40,16 +41,38 @@
 #     - name: Recipient 2
 #       email: recipient2@email
 #
-#   response (string) Reponse after form submit (translation key)
+#   response (string) Response after form submit (translation key)
 #   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
 #   senderEmailRequired (boolean) Require sender to fill out email field
 #   senderNameRequired (boolean)  Require sender to fill out name field
+#
+#   primaryHandler (string)   Handlers to process form data - default is 'email', available
+#                             options are: 'email', 'database'. When this handler fails, the
+#                             whole feedback send action fails. You can add your own handler
+#                             by implementing \VuFind\Form\Handler\HandlerInterface, and adding
+#                             it to module config under key:
+#                               'vufind' -> 'plugin_manager' -> 'form_handler'
+#                             Example:
+#                               primaryHandler: database
+#   secondaryHandlers (array) Additional handlers could be defined here. They can fail silently,
+#                             but could be useful as safety/notify handlers.
+#                             Example:
+#                               secondaryHandlers:
+#                                 - email
 #
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)
 #
 #     Help texts may contain HTML-formatting.
+#
+#   prefillFields (array) Fields that could be prefilled by passing parameter to form URL. Could be
+#                         used only with hidden, text and textarea types.
+#                         Example:
+#                           prefillFields:
+#                             - siteCode
+#                          With configured field 'siteCode' enables prefilling the field with
+#                          /Feedback/Form/FeedbackSite?siteCode=website
 #
 #   fields (array) List of form elements with the following options:
 #
@@ -136,20 +159,21 @@ forms:
   # Main Feedback form
 
   FeedbackSite:
-    title: Send us your feedback!
+    title: feedback_title
     enabled: true
     useCaptcha: true
     reportReferrer: false
     reportUserAgent: true
+    #formActionRoute: controller-route
     #emailFrom:
     #  name: Your Library - Site Feedback
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
-
+    primaryHandler: email
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
-    response: Thank you for your feedback.
+    response: feedback_response
     senderEmailRequired: false
     senderNameRequired: false
 
@@ -172,7 +196,8 @@ forms:
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
-    response: Thank you for your feedback.
+    response: feedback_response
+    primaryHandler: email
 
     recipient:
       name: Your Library
@@ -231,10 +256,8 @@ forms:
 
       - name: boolean
         type: radio
-        label: Need Help?
+        label: feedback_help_label
         required: true
         options:
           - Yes
           - No
-
-

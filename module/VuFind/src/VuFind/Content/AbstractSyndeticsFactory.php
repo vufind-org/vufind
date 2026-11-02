@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generic Syndetics content plugin factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -45,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class AbstractSyndeticsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,25 +63,14 @@ class AbstractSyndeticsFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-
-        // Special case: if the class name ends in Plus, we need to strip off
-        // the "Plus" and instead configure the base Syndetics class into "plus"
-        // mode.
-        $plus = substr($requestedName, -4) === 'Plus';
-        $className = $plus
-            ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
-
-        return new $className(
-            isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
-            $plus,
-            $config->Syndetics->timeout ?? 10
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        return new $requestedName(
+            $config['Syndetics']['timeout'] ?? 10
         );
     }
 }

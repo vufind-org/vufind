@@ -1,8 +1,9 @@
 <?php
+
 /**
- * GetIdsWithTermsCommand Test Class
+ * GetIdsWithTermsCommand Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap\Command;
 
 use VuFind\Sitemap\Plugin\Index\TermsIdFetcher;
@@ -33,8 +35,10 @@ use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
 use VuFindSearch\Service;
 
+use function array_slice;
+
 /**
- * GetIdsWithTermsCommand Test Class
+ * GetIdsWithTermsCommand Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,22 +48,24 @@ use VuFindSearch\Service;
  */
 class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
+
     /**
-     * Unique key field to use in tests
+     * Unique key field to use in tests.
      *
      * @var string
      */
     protected $uniqueKey = 'id';
 
     /**
-     * Page size to use in tests
+     * Page size to use in tests.
      *
      * @var int
      */
     protected $countPerPage = 100;
 
     /**
-     * Get a terms response
+     * Get a terms response.
      *
      * @param int[] $expectedIds IDs to return in response
      *
@@ -74,8 +80,8 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         return new Terms(
             [
                 'terms' => [
-                    $this->uniqueKey => $ids
-                ]
+                    $this->uniqueKey => $ids,
+                ],
             ]
         );
     }
@@ -100,15 +106,13 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock search service
+     * Get mock search service.
      *
      * @return Service
      */
     protected function getMockService(): Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**
@@ -120,10 +124,9 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTermsCommand(Terms $terms): TermsCommand
     {
-        $command = $this->getMockBuilder(TermsCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(TermsCommand::class);
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($terms));
+            ->willReturn($terms);
         return $command;
     }
 
@@ -134,10 +137,9 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockKeyCommand(): GetUniqueKeyCommand
     {
-        $command = $this->getMockBuilder(GetUniqueKeyCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(GetUniqueKeyCommand::class);
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($this->uniqueKey));
+            ->willReturn($this->uniqueKey);
         return $command;
     }
 
@@ -152,7 +154,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         $fetcher = new TermsIdFetcher($this->getMockService());
         $fetcher->getIdsFromBackend(
             'foo',
-            0,
+            '0',
             $this->countPerPage,
             ['format:Book']
         );
@@ -165,27 +167,29 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     public function testFetching(): void
     {
-        $context1 = ['offset' => null, 'countPerPage' => $this->countPerPage];
         $expectedIds1 = range(0, $this->countPerPage - 1);
         $expectedResponse1 = $this->getTermsResponse($expectedIds1);
-        $context2 = ['offset' => 99, 'countPerPage' => $this->countPerPage];
         $expectedIds2 = [];
         $expectedResponse2 = $this->getTermsResponse($expectedIds2);
         $service = $this->getMockService();
 
         // Set up all the expected commands...
-        $service->expects($this->any())->method('invoke')
-            ->withConsecutive(
+        $this->expectConsecutiveCalls(
+            $service,
+            'invoke',
+            [
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation(''))],
                 [$this->isInstanceOf(GetUniqueKeyCommand::class)],
                 [$this->callback($this->getIdsExpectation('99'))],
-            )->willReturnOnConsecutiveCalls(
+            ],
+            [
                 $this->getMockKeyCommand(),
                 $this->getMockTermsCommand($expectedResponse1),
                 $this->getMockKeyCommand(),
-                $this->getMockTermsCommand($expectedResponse2)
-            );
+                $this->getMockTermsCommand($expectedResponse2),
+            ]
+        );
         $fetcher = new TermsIdFetcher($service);
         $this->assertEquals(
             ['ids' => $expectedIds1, 'nextOffset' => 99],
@@ -196,11 +200,11 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
                 []
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => $expectedIds2],
             $fetcher->getIdsFromBackend(
                 'foo',
-                99,
+                '99',
                 $this->countPerPage,
                 []
             )

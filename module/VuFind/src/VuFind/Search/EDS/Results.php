@@ -1,9 +1,11 @@
 <?php
+
 /**
- * EDS API Results
+ * EDS API Results.
  *
- * PHP version 7
+ * PHP version 8
  *
+ * Copyright (C) Villanova University 2022.
  * Copyright (C) EBSCO Industries 2013
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,19 +18,26 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
+use VuFind\Record\Loader;
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Service as SearchService;
+
 /**
- * EDS API Results
+ * EDS API Results.
  *
  * @category VuFind
  * @package  EBSCO
@@ -41,16 +50,47 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'EDS';
+    protected ?string $backendId = 'EDS';
 
     /**
-     * Facet list
+     * Facet list.
      *
      * @var array
      */
-    protected $responseFacets;
+    protected array $responseFacets;
+
+    /**
+     * Constructor.
+     *
+     * @param \VuFind\Search\Base\Params $params        Object representing user
+     * search parameters.
+     * @param SearchService              $searchService Search service
+     * @param Loader                     $recordLoader  Record loader
+     * @param array                      $config        Backend config
+     */
+    public function __construct(
+        Params $params,
+        SearchService $searchService,
+        Loader $recordLoader,
+        protected array $config
+    ) {
+        parent::__construct($params, $searchService, $recordLoader);
+    }
+
+    /**
+     * Store an empty response with an error message instead of performing a search.
+     *
+     * @param string|array $error Error message(s) to display to user.
+     *
+     * @return void
+     */
+    protected function storeErrorResponse(string|array $error): void
+    {
+        parent::storeErrorResponse($error);
+        $this->responseFacets = [];
+    }
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -58,49 +98,117 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
+        $allTerms = trim($query->getAllTerms());
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $params = $this->getParams();
+        $backendParams = $params->getBackendParameters();
+        if ($allTerms === '') {
+            if (!($this->config['General']['limiter_only'] ?? false)) {
+                $this->storeErrorResponse('empty_search_disallowed');
+                return;
+            } elseif (!$this->paramsIncludeLimiter($backendParams)) {
+                $this->storeErrorResponse('empty_search_no_filters_disallowed');
+                return;
+            }
+            // Limiter-only is allowed, and there is a limiter, so continue.
+        }
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
-            $params
+            $backendParams
         );
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         if (null != $collection) {
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();
 
-            // Add a publication date facet
-            $this->responseFacets[] = [
-                'fieldName' => 'PublicationDate',
-                'displayName' => 'PublicationDate',
-                'displayText' => 'Publication Date',
-                'counts' => []
-            ];
+            // Add fake date facets if flagged earlier; this is necessary in order
+            // to display the date range facet control in the interface.
+            $dateFacets = $this->getParams()->getDateFacetSettings();
+            if (!empty($dateFacets)) {
+                foreach ($dateFacets as $dateFacet) {
+                    $this->responseFacets[$dateFacet] = [''];
+                }
+            }
 
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
+            $this->restrictedView = $collection->isRestrictedView();
+
+            // For a page parameter being out of the results list, we do not want
+            // to return any results from another page.
+            if ($this->getResultTotal() > 0 && $params->getPage() > $this->getLastAvailablePage()) {
+                $this->results = [];
+            }
         }
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Return true if the given $params include any filters that limit the number
+     * of results.  EDS "filters" can also include expanders.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ParamBag $params The params
+     *
+     * @return bool
+     */
+    public function paramsIncludeLimiter(ParamBag $params): bool
+    {
+        return (bool)array_filter(
+            $params->get('filters') ?? [],
+            fn ($filter) => !str_starts_with($filter, 'EXPAND')
+        );
+    }
+
+    /**
+     * Returns the stored list of facets for the last search.
+     *
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         if (null === $this->responseFacets) {
             $this->performAndProcessSearch();
         }
         return $this->buildFacetList($this->responseFacets, $filter);
+    }
+
+    /**
+     * Get an array of the record ID mapped to its score.
+     *
+     * @return array
+     */
+    public function getScores(): array
+    {
+        $scoreMap = [];
+        foreach ($this->results as $record) {
+            $scoreMap[$record->getUniqueID()] = $record->getScore();
+        }
+        return $scoreMap;
+    }
+
+    /**
+     * Getting the highest relevance of all the results.
+     *
+     * @return ?float
+     */
+    public function getMaxScore(): ?float
+    {
+        if (
+            empty($this->results) ||
+            'relevance' != $this->getParams()->getSort()
+        ) {
+            return null;
+        }
+        return $this->results[0]->getScore();
     }
 }

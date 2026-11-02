@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: Generate record route.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -40,15 +43,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/recordroute',
+    description: 'Record route generator'
+)]
 class RecordRouteCommand extends AbstractRouteCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/recordroute';
-
     /**
      * Configure the command.
      *
@@ -57,7 +57,6 @@ class RecordRouteCommand extends AbstractRouteCommand
     protected function configure()
     {
         $this
-            ->setDescription('Record route generator')
             ->setHelp('Adds a record route.')
             ->addArgument(
                 'base',
@@ -66,7 +65,7 @@ class RecordRouteCommand extends AbstractRouteCommand
             )->addArgument(
                 'controller',
                 InputArgument::REQUIRED,
-                'the controller name (used in URL), e.g. MyResearch'
+                'the controller name (used in URL), e.g. Account'
             )->addArgument(
                 'target_module',
                 InputArgument::REQUIRED,
@@ -82,7 +81,7 @@ class RecordRouteCommand extends AbstractRouteCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $base = $input->getArgument('base');
         $controller = $input->getArgument('controller');
@@ -100,6 +99,6 @@ class RecordRouteCommand extends AbstractRouteCommand
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);
-        return 0;
+        return self::SUCCESS;
     }
 }

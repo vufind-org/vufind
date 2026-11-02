@@ -1,0 +1,46 @@
+<?php
+  // Convert Primo formats to VuFind formats so icons display correctly:
+  switch ($this->format) {
+      case 'Audio Recording':
+          echo 'audio';
+          break;
+      case 'Book':
+      case 'Book Chapter':
+          echo 'book';
+          break;
+      case 'Computer File':
+      case 'Website':
+          echo 'electronic';
+          break;
+      case 'Dissertation':
+      case 'Manuscript':
+      case 'Paper':
+      case 'Patent':
+          echo 'manuscript';
+          break;
+      case 'eBook':
+          echo 'ebook';
+          break;
+      case 'Kit':
+          echo 'kit';
+          break;
+      case 'Image':
+      case 'Photograph':
+          echo 'photo';
+          break;
+      case 'Score':
+          echo 'musicalscore';
+          break;
+      case 'Newspaper Article':
+          echo 'newspaper';
+          break;
+      case 'Video':
+          echo 'video';
+          break;
+      case 'Map':
+          echo 'map';
+          break;
+      default:
+          echo 'journal';
+          break;
+  }

@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><NCIPMessage xmlns="http://www.niso.org/2008/ncip"><Problem><ProblemType>Needed Data Missing</ProblemType><ProblemDetail>UserId or AuthenticationInput must be provided.</ProblemDetail><ProblemElement>LookupUser</ProblemElement></Problem></NCIPMessage>

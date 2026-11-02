@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Abstract class for representing XML sitemaps
+ * Abstract class for representing XML sitemaps.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Sitemap;
 
+use function count;
+use function dirname;
+
 /**
- * Abstract class for representing XML sitemaps
+ * Abstract class for representing XML sitemaps.
  *
  * @category VuFind
  * @package  Sitemap
@@ -117,13 +122,13 @@ abstract class AbstractFile
         // if a subfolder was specified that does not exist, make one
         $dirname = dirname($file);
         if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
+            mkdir($dirname, 0o755, true);
         }
         return file_put_contents($file, $this->toString());
     }
 
     /**
-     * Check if the sitemap is empty
+     * Check if the sitemap is empty.
      *
      * @return bool
      */
@@ -133,7 +138,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Get the count of items
+     * Get the count of items.
      *
      * @return int
      */
@@ -143,7 +148,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Remove all entries
+     * Remove all entries.
      *
      * @return void
      */
@@ -153,7 +158,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Get any extra namespace declarations needed for the sitemap
+     * Get any extra namespace declarations needed for the sitemap.
      *
      * @return array
      */

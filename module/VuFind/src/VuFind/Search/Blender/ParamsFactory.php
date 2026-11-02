@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for Blender search params objects.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019-2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search\Blender;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -33,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for Solr search params objects.
+ * Factory for Blender search params objects.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -44,7 +46,25 @@ use Psr\Container\ContainerInterface;
 class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
 {
     /**
-     * Create an object
+     * Configuration file to read Blender settings from.
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var string
+     */
+    protected $blenderIni = 'Blender';
+
+    /**
+     * Configuration file to read Blender mappings settings from.
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var string
+     */
+    protected $blenderMappingsConfig = 'BlenderMappings';
+
+    /**
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -60,17 +80,16 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $blenderConfig = $configLoader->get('Blender');
-        $backendConfig = $blenderConfig->Backends
-            ? $blenderConfig->Backends->toArray() : [];
+        $blenderConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->blenderIni);
+        $backendConfig = $blenderConfig['Backends'] ?? [];
         if (!$backendConfig) {
-            throw new \Exception('No backends enabled in Blender.ini');
+            throw new \Exception('No backends enabled in ' . $this->blenderIni . '.ini');
         }
 
         $facetHelper
@@ -82,12 +101,13 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             $searchParams[] = $paramsManager->get($backendId);
         }
 
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
+        $blenderMappings = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->blenderMappingsConfig);
         return parent::__invoke(
             $container,
             $requestedName,
-            [$facetHelper, $searchParams, $blenderConfig, $blenderMappings]
+            [$facetHelper, $searchParams, $blenderMappings]
         );
     }
 }

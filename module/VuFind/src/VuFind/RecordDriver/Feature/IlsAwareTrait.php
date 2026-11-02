@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS support for MARC and other types of records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -27,9 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function in_array;
 
 /**
  * ILS support for MARC and other types of records.
@@ -44,7 +48,7 @@ use VuFind\Exception\ILS as ILSException;
 trait IlsAwareTrait
 {
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var \VuFind\ILS\Connection
      */
@@ -58,21 +62,21 @@ trait IlsAwareTrait
     protected $ilsBackends = [];
 
     /**
-     * Hold logic
+     * Hold logic.
      *
      * @var \VuFind\ILS\Logic\Holds
      */
     protected $holdLogic = null;
 
     /**
-     * Title hold logic
+     * Title hold logic.
      *
      * @var \VuFind\ILS\Logic\TitleHolds
      */
     protected $titleHoldLogic = null;
 
     /**
-     * Attach an ILS connection and related logic to the driver
+     * Attach an ILS connection and related logic to the driver.
      *
      * @param \VuFind\ILS\Connection       $ils            ILS connection
      * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
@@ -143,14 +147,36 @@ trait IlsAwareTrait
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
-            if ("monograph" == $biblioLevel || strstr($biblioLevel, "part")) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
+            if ('monograph' == $biblioLevel || strstr($biblioLevel, 'part')) {
+                if ($this->ils->getTitleHoldsMode() != 'disabled') {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }
             }
         }
 
         return false;
+    }
+
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        $params = [$this->getUniqueID()];
+        return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord', $params)
+            ? $this->ils->getUrlsForRecord($this->getUniqueID())
+            : [];
     }
 
     /**

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Load a recommendation module via AJAX.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,14 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Helper\Root\Recommend as RecommendHelper;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Load a recommendation module via AJAX.
@@ -43,74 +48,59 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recommend extends AbstractBase
+class Recommend extends AbstractBase implements TranslatorAwareInterface
 {
-    /**
-     * Recommendation plugin manager
-     *
-     * @var RecommendManager
-     */
-    protected $pluginManager;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Solr search results object
+     * Constructor.
      *
-     * @var Results
-     */
-    protected $results;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings   $ss       Session settings
-     * @param RecommendManager  $pm       Recommendation plugin manager
-     * @param Results           $results  Solr results object
-     * @param RendererInterface $renderer View renderer
+     * @param SessionSettings           $sessionSettings        Session settings
+     * @param RecommendManager          $recommendPluginManager Recommendation plugin manager
+     * @param Results                   $results                Solr results object
+     * @param TemplateRendererInterface $renderer               Template renderer,
+     * @param RecommendHelper           $recommendHelper        Recommend view helper
      */
     public function __construct(
-        SessionSettings $ss,
-        RecommendManager $pm,
-        Results $results,
-        RendererInterface $renderer
+        SessionSettings $sessionSettings,
+        protected RecommendManager $recommendPluginManager,
+        protected Results $results,
+        protected TemplateRendererInterface $renderer,
+        protected RecommendHelper $recommendHelper,
     ) {
-        $this->sessionSettings = $ss;
-        $this->pluginManager = $pm;
-        $this->results = $results;
-        $this->renderer = $renderer;
+        parent::__construct($sessionSettings);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $module = $this->pluginManager->get($params->fromQuery('mod'));
-        $module->setConfig($params->fromQuery('params'));
+        if (!($moduleName = $this->getQueryParam($request, 'mod'))) {
+            return $this->formatResponse(
+                $this->translate('bulk_error_missing'),
+                HttpStatus::BAD_REQUEST
+            );
+        }
+        $module = $this->recommendPluginManager->get($moduleName);
+        $module->setConfig($this->getQueryParam($request, 'params', ''));
         $paramsObj = $this->results->getParams();
-        $request = new Parameters($params->fromQuery());
+        $request = $request->getQueryParams();
         // Initialize search parameters from Ajax request parameters in case the
         // original request parameters were passed to the Ajax request.
         $paramsObj->initFromRequest($request);
-        $module->init($paramsObj, $request);
+        $module->init($paramsObj, new Parameters($request));
         $module->process($this->results);
 
         // Render recommendations:
-        $recommend = $this->renderer->plugin('recommend');
-        return $this->formatResponse($recommend($module));
+        return $this->formatResponse(($this->recommendHelper)($module));
     }
 }

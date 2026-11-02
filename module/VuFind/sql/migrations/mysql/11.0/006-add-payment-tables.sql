@@ -1,0 +1,40 @@
+CREATE TABLE `payment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `local_identifier` varchar(255) NOT NULL,
+  `remote_identifier` varchar(255) NULL,
+  `user_id` int(11) NOT NULL,
+  `source_ils` varchar(255) NOT NULL,
+  `cat_username` varchar(50) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `currency` varchar(3) NOT NULL,
+  `service_fee` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `paid` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registration_started` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registered` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `status_message` varchar(255) DEFAULT '',
+  `reported` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `payment_local_identifier_idx` (`local_identifier`),
+  KEY `payment_user_id_idx` (`user_id`),
+  KEY `payment_status_cat_username_created_idx` (`status`, `cat_username`, `created`),
+  KEY `payment_paid_reported_idx` (`paid`,`reported`),
+  CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_bin;
+
+CREATE TABLE `payment_fee` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `payment_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `amount` int NOT NULL DEFAULT '0',
+  `tax_percent` int NOT NULL DEFAULT '0',
+  `currency` varchar(3) NOT NULL,
+  `fine_id` varchar(1024) NOT NULL DEFAULT '',
+  `organization` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `payment_fee_payment_id_idx` (`payment_id`),
+  CONSTRAINT `payment_fee_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_unicode_ci;

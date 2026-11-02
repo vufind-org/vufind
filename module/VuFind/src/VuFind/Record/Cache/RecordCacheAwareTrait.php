@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Default implementation of RecordCacheAwareInterface
+ * Default implementation of RecordCacheAwareInterface.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) 2014 University of Freiburg.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Record\Cache;
 
 /**
- * Default implementation of RecordCacheAwareInterface
+ * Default implementation of RecordCacheAwareInterface.
  *
  * @category VuFind
  * @package  Record
@@ -39,14 +41,14 @@ namespace VuFind\Record\Cache;
 trait RecordCacheAwareTrait
 {
     /**
-     * Record cache
+     * Record cache.
      *
      * @var \VuFind\Record\Cache
      */
     protected $recordCache = null;
 
     /**
-     * Set record cache
+     * Set record cache.
      *
      * @param \VuFind\Record\Cache $recordCache record cache
      *
@@ -58,7 +60,7 @@ trait RecordCacheAwareTrait
     }
 
     /**
-     * Get record cache
+     * Get record cache.
      *
      * @return \VuFind\Record\Cache
      */

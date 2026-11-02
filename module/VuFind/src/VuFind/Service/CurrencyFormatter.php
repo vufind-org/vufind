@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Currency formatter
+ * Currency formatter.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -26,12 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Service;
 
 use NumberFormatter;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Currency formatter
+ * Currency formatter.
  *
  * @category VuFind
  * @package  Service
@@ -43,13 +46,6 @@ use NumberFormatter;
 class CurrencyFormatter
 {
     /**
-     * Default currency format (ISO 4217) to use.
-     *
-     * @var string
-     */
-    protected $defaultCurrency;
-
-    /**
      * Number formatter.
      *
      * @var NumberFormatter
@@ -57,28 +53,29 @@ class CurrencyFormatter
     protected $formatter;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string $defaultCurrency Default currency format (ISO 4217) to use (null
-     * for default from locale)
+     * @param ?string $defaultCurrency Default currency format (ISO 4217) to use (null for default from system locale)
+     * @param ?string $locale          Locale to use for number formatting (null for default system locale)
      */
-    public function __construct($defaultCurrency = null)
-    {
-        // Initialize number formatter:
-        $locale = setlocale(LC_MONETARY, 0);
-        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+    public function __construct(
+        #[Autowire(config: 'config', path: 'Site/defaultCurrency')]
+        protected ?string $defaultCurrency = null,
+        #[Autowire(config: 'config', path: 'Site/locale')]
+        ?string $locale = null
+    ) {
+        // Initialize number formatter (an empty string makes NumberFormatter use the default locale):
+        $this->formatter = new NumberFormatter($locale ?? '', NumberFormatter::CURRENCY);
 
         // Initialize default currency:
         if (null === $defaultCurrency) {
-            $localeInfo = localeconv();
-            $defaultCurrency = isset($localeInfo['int_curr_symbol'])
-                ? trim($localeInfo['int_curr_symbol']) : '';
+            $defaultCurrency = trim($this->formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE) ?: '');
         }
         $this->defaultCurrency = empty($defaultCurrency) ? 'USD' : $defaultCurrency;
     }
 
     /**
-     * Convert currency from float to display format
+     * Convert currency from float to display format.
      *
      * @param float  $number   The number to format
      * @param string $currency Currency format (ISO 4217) to use (null for default)

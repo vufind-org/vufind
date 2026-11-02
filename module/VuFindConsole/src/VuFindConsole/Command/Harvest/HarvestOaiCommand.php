@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Console command: VuFind-specific customizations to OAI-PMH harvest command
+ * Console command: VuFind-specific customizations to OAI-PMH harvest command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,13 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Harvest;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\PathResolver;
+use VuFindHarvest\OaiPmh\HarvesterFactory;
 
 /**
- * Console command: VuFind-specific customizations to OAI-PMH harvest command
+ * Console command: VuFind-specific customizations to OAI-PMH harvest command.
  *
  * @category VuFind
  * @package  Console
@@ -39,14 +44,34 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'harvest/harvest_oai',
+    description: 'OAI-PMH harvester'
+)]
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
     /**
-     * The name of the command
+     * Constructor.
      *
-     * @var string
+     * @param PathResolver      $pathResolver Config file path resolver
+     * @param Client            $client       HTTP client (omit for default)
+     * @param string            $harvestRoot  Root directory for harvesting (omit for
+     * default)
+     * @param ?HarvesterFactory $factory      Harvester factory (omit for default)
+     * @param bool              $silent       Should we suppress output?
+     * @param string|null       $name         The name of the command; passing null
+     * means it must be set in configure()
      */
-    protected static $defaultName = 'harvest/harvest_oai';
+    public function __construct(
+        protected PathResolver $pathResolver,
+        $client = null,
+        $harvestRoot = null,
+        ?HarvesterFactory $factory = null,
+        $silent = false,
+        $name = null,
+    ) {
+        parent::__construct($client, $harvestRoot, $factory, $silent, $name);
+    }
 
     /**
      * Warn the user if VUFIND_LOCAL_DIR is not set.
@@ -80,13 +105,13 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->checkLocalSetting($output);
 
         // Add the default --ini setting if missing:
         if (!$input->getOption('ini')) {
-            $ini = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+            $ini = $this->pathResolver->getConfigPath('oai.ini', 'harvest');
             $input->setOption('ini', $ini);
         }
         return parent::execute($input, $output);

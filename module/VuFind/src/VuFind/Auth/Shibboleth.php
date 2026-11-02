@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Shibboleth authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  * Copyright (C) The National Library of Finland 2016.
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -31,10 +32,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -68,89 +73,64 @@ class Shibboleth extends AbstractBase
      */
     protected $attribsToCheck = [
         'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
-        'college', 'major', 'home_library'
+        'college', 'major', 'home_library',
     ];
 
     /**
-     * Session manager
+     * Read attributes from headers instead of environment variables.
      *
-     * @var \Laminas\Session\ManagerInterface
-     */
-    protected $sessionManager;
-
-    /**
-     * Configuration loading implementation
-     *
-     * @var ConfigurationLoaderInterface
-     */
-    protected $configurationLoader;
-
-    /**
-     * Http Request object
-     *
-     * @var \Laminas\Http\PhpEnvironment\Request
-     */
-    protected $request;
-
-    /**
-     * Read attributes from headers instead of environment variables
-     *
-     * @var boolean
+     * @var bool
      */
     protected $useHeaders = false;
 
     /**
-     * Name of attribute with shibboleth identity provider
+     * Name of attribute with shibboleth identity provider.
      *
      * @var string
      */
     protected $shibIdentityProvider = self::DEFAULT_IDPSERVERPARAM;
 
     /**
-     * Name of attribute with shibboleth session ID
+     * Name of attribute with shibboleth session ID.
      *
      * @var string
      */
     protected $shibSessionId = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Session\ManagerInterface    $sessionManager      Session
-     * manager
-     * @param ConfigurationLoaderInterface         $configurationLoader Configuration
-     * loader
-     * @param \Laminas\Http\PhpEnvironment\Request $request             Http
-     * request object
+     * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
+     * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
+     * @param Request                           $request             Http request object
+     * @param ILSAuthenticator                  $ilsAuthenticator    ILS authenticator
      */
     public function __construct(
-        \Laminas\Session\ManagerInterface $sessionManager,
-        ConfigurationLoaderInterface $configurationLoader,
-        \Laminas\Http\PhpEnvironment\Request $request
+        protected \Laminas\Session\ManagerInterface $sessionManager,
+        protected ConfigurationLoaderInterface $configurationLoader,
+        protected Request $request,
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
-        $this->sessionManager = $sessionManager;
-        $this->configurationLoader = $configurationLoader;
-        $this->request = $request;
     }
 
     /**
      * Set configuration.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param ?array $config Configuration to set
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(?array $config): void
     {
         parent::setConfig($config);
-        $this->useHeaders = $this->config->Shibboleth->use_headers ?? false;
-        $this->shibIdentityProvider = $this->config->Shibboleth->idpserverparam
+        $this->useHeaders = $this->config['Shibboleth']['use_headers'] ?? false;
+        $this->shibIdentityProvider = $this->config['Shibboleth']['idpserverparam']
             ?? self::DEFAULT_IDPSERVERPARAM;
-        $this->shibSessionId = $this->config->Shibboleth->session_id ?? null;
+        $this->shibSessionId = $this->config['Shibboleth']['session_id'] ?? null;
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -160,15 +140,15 @@ class Shibboleth extends AbstractBase
     protected function validateConfig()
     {
         // Throw an exception if the required username setting is missing.
-        $shib = $this->config->Shibboleth;
-        if (!isset($shib->username) || empty($shib->username)) {
+        $shib = $this->config['Shibboleth'] ?? [];
+        if (empty($shib['username'])) {
             throw new AuthException(
-                "Shibboleth username is missing in your configuration file."
+                'Shibboleth username is missing in your configuration file.'
             );
         }
 
         // Throw an exception if no login endpoint is available.
-        if (!isset($shib->login)) {
+        if (!isset($shib['login'])) {
             throw new AuthException(
                 'Shibboleth login configuration parameter is not set.'
             );
@@ -176,13 +156,12 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -191,13 +170,17 @@ class Shibboleth extends AbstractBase
         // Check if username is set.
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
+        if (!isset($shib['username'])) {
+            $this->debug('Username attribute configuration missing.');
+            throw new AuthException('authentication_error_admin');
+        }
         $username = $this->getAttribute($request, $shib['username']);
         if (empty($username)) {
             $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
                 : $request->getServer()->toArray();
             $this->debug(
                 "No username attribute ({$shib['username']}) present in request: "
-                . print_r($details, true)
+                . $this->varDump($details)
             );
             throw new AuthException('authentication_error_admin');
         }
@@ -209,82 +192,68 @@ class Shibboleth extends AbstractBase
                     : $request->getServer()->toArray();
                 $this->debug(
                     "Attribute '$key' does not match required value '$value' in"
-                    . ' request: ' . print_r($details, true)
+                    . ' request: ' . $this->varDump($details)
                 );
                 throw new AuthException('authentication_error_denied');
             }
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($username);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
-        // attributes since we need to use saveCredentials method to store it):
+        // attributes since we need to pass it to saveUserAndCredentials method to store it):
         $catPassword = null;
 
         // Has the user configured attributes to use for populating the user table?
         foreach ($this->attribsToCheck as $attribute) {
             if (isset($shib[$attribute])) {
                 $value = $this->getAttribute($request, $shib[$attribute]);
-                if ($attribute == 'email') {
-                    $user->updateEmail($value);
-                } elseif ($attribute == 'cat_username' && isset($shib['prefix'])
+                if ($attribute == 'email' && !empty($value)) {
+                    $userService->updateUserEmail($user, $value);
+                } elseif (
+                    $attribute == 'cat_username' && isset($shib['prefix'])
                     && !empty($value)
                 ) {
-                    $user->cat_username = $shib['prefix'] . '.' . $value;
+                    $user->setCatUsername($shib['prefix'] . '.' . $value);
                 } elseif ($attribute == 'cat_password') {
                     $catPassword = $value;
                 } else {
-                    $user->$attribute = $value ?? '';
+                    $this->setUserValueByField($user, $attribute, $value ?? '');
                 }
             }
         }
 
-        // Save credentials if applicable. Note that we want to allow empty
-        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
-        // we also want to be careful not to replace a non-blank password with a
-        // blank one in case the auth mechanism fails to provide a password on
-        // an occasion after the user has manually stored one. (For discussion,
-        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
-        // (unlikely) scenario that a password can actually change from non-blank
-        // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
-                empty($catPassword) ? $user->getCatPassword() : $catPassword
-            );
-        }
-
+        // Save and return user data:
+        $this->saveUserAndCredentials($user, $catPassword, $this->ilsAuthenticator);
         $this->storeShibbolethSession($request);
-
-        // Save and return the user object:
-        $user->save();
         return $user;
     }
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
-        $shibTarget = $config->Shibboleth->target ?? $target;
-        $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
+        $shibTarget = $config['Shibboleth']['target'] ?? $target;
+        $append = (str_contains($shibTarget, '?')) ? '&' : '?';
         // Adding the auth_method parameter makes it possible to handle logins when
         // using an auth method that proxies others.
-        $sessionInitiator = $config->Shibboleth->login
+        $sessionInitiator = $config['Shibboleth']['login']
             . '?target=' . urlencode($shibTarget)
             . urlencode($append . 'auth_method=Shibboleth');
 
-        if (isset($config->Shibboleth->provider_id)) {
+        if (isset($config['Shibboleth']['provider_id'])) {
             $sessionInitiator = $sessionInitiator . '&entityID=' .
-                urlencode($config->Shibboleth->provider_id);
+                urlencode($config['Shibboleth']['provider_id']);
         }
 
         return $sessionInitiator;
@@ -298,8 +267,9 @@ class Shibboleth extends AbstractBase
     public function isExpired()
     {
         $config = $this->getConfig();
-        if (!isset($this->shibSessionId)
-            || !($config->Shibboleth->checkExpiredSession ?? true)
+        if (
+            !isset($this->shibSessionId)
+            || !($config['Shibboleth']['checkExpiredSession'] ?? true)
         ) {
             return false;
         }
@@ -308,24 +278,19 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
-                : '?';
-            $url = $config->Shibboleth->logout . $append . 'return='
-                . urlencode($url);
+        if (!empty($config['Shibboleth']['logout'])) {
+            $append = (str_contains($config['Shibboleth']['logout'], '?')) ? '&' : '?';
+            $url = $config['Shibboleth']['logout'] . $append . 'return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
@@ -335,10 +300,8 @@ class Shibboleth extends AbstractBase
     /**
      * Connect user authenticated by Shibboleth to library card.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
-     * containing account credentials.
-     * @param \VuFind\Db\Row\User                  $connectingUser Connect newly
-     * created library card to this user.
+     * @param Request             $request        Request object containing account credentials.
+     * @param UserEntityInterface $connectingUser Connect newly created library card to this user.
      *
      * @return void
      */
@@ -355,7 +318,8 @@ class Shibboleth extends AbstractBase
             $username = $shib['prefix'] . '.' . $username;
         }
         $password = $shib['cat_password'] ?? null;
-        $connectingUser->saveLibraryCard(
+        $this->getDbService(UserCardServiceInterface::class)->persistLibraryCardData(
+            $connectingUser,
             null,
             $shib['prefix'],
             $username,
@@ -364,7 +328,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Return configuration loader
+     * Return configuration loader.
      *
      * @return ConfigurationLoaderInterface configuration loader
      */
@@ -388,14 +352,14 @@ class Shibboleth extends AbstractBase
 
         // Now extract user attribute values:
         foreach ($config as $key => $value) {
-            if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
+            if (preg_match('/userattribute_[0-9]{1,}/', $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
                 $sortedUserAttributes[$value] = $config[$valueKey] ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value . " is missing!"
+                        'User attribute value of ' . $value . ' is missing!'
                     );
                 }
             }
@@ -405,10 +369,9 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Add session id mapping to external_session table for single logout support
+     * Add session id mapping to external_session table for single logout support.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @return void
      */
@@ -422,8 +385,8 @@ class Shibboleth extends AbstractBase
             return;
         }
         $localSessionId = $this->sessionManager->getId();
-        $externalSession = $this->getDbTableManager()->get('ExternalSession');
-        $externalSession->addSessionMapping($localSessionId, $shibSessionId);
+        $this->getDbService(ExternalSessionServiceInterface::class)
+            ->addSessionMapping($localSessionId, $shibSessionId);
         $this->debug(
             "Cached Shibboleth session id '$shibSessionId' for local session"
             . " '$localSessionId'"
@@ -431,9 +394,9 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Fetch entityId used for authentication
+     * Fetch entityId used for authentication.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
+     * @param Request $request Request object
      *
      * @return string entityId of IdP
      */
@@ -445,8 +408,8 @@ class Shibboleth extends AbstractBase
     /**
      * Extract attribute from request.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request   Request object
-     * @param string                               $attribute Attribute name
+     * @param Request $request   Request object
+     * @param string  $attribute Attribute name
      *
      * @return ?string attribute value
      */

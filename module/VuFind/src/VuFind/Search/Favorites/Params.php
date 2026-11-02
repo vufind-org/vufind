@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Favorites aspect of the Search Multi-class (Params)
+ * Favorites aspect of the Search Multi-class (Params).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Favorites;
 
 /**
- * Search Favorites Parameters
+ * Search Favorites Parameters.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -41,15 +43,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters($request)
+    protected function initFilters(array $request): void
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
-        $id = $request->get('id');
+        $id = $request['id'] ?? null;
         if (!empty($id)) {
             $this->addFilter("lists:{$id}");
         }

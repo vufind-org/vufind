@@ -3,7 +3,7 @@
 /**
  * JSON-based record collection for records from multiple sources.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -17,16 +17,26 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Blender\Response\Json;
+
+use VuFindSearch\Response\RecordInterface;
+
+use function array_slice;
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_string;
 
 /**
  * JSON-based record collection for records from multiple sources.
@@ -35,58 +45,38 @@ namespace VuFindSearch\Backend\Blender\Response\Json;
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
-class RecordCollection
-    extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
+class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
-     * Blender configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration
-     *
-     * @var array
-     */
-    protected $mappings;
-
-    /**
-     * Backends to be used for initial results
+     * Backends to be used for initial results.
      *
      * @var array
      */
     protected $initialResultsBackends;
 
     /**
-     * Any errors encountered
+     * Any errors encountered.
      *
      * @var array
      */
     protected $errors = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config   Configuration
-     * @param array                  $mappings Mappings configuration
+     * @param ?array $config   Blender configuration
+     * @param array  $mappings Mappings configuration
      */
-    public function __construct($config = null, $mappings = [])
+    public function __construct(protected ?array $config = null, protected array $mappings = [])
     {
-        $this->config = $config;
-        $this->mappings = $mappings;
         $this->response = static::$template;
-        $this->initialResultsBackends
-            = isset($this->config->Blending->initialResults)
-            ? $this->config->Blending->initialResults->toArray()
-            : [];
+        $this->initialResultsBackends = $config['Blending']['initialResults'] ?? [];
     }
 
     /**
-     * Initialize blended results
+     * Initialize blended results.
      *
      * Creates a record list from 0 to $limit
      *
@@ -140,7 +130,7 @@ class RecordCollection
     }
 
     /**
-     * Add an error message
+     * Add an error message.
      *
      * @param mixed $error Error
      *
@@ -182,7 +172,7 @@ class RecordCollection
     }
 
     /**
-     * Get delimiter for the given facet field
+     * Get delimiter for the given facet field.
      *
      * @param string $field Facet field
      *
@@ -190,12 +180,11 @@ class RecordCollection
      */
     public function getFacetDelimiter(string $field): string
     {
-        foreach ($this->config->Advanced_Settings->delimited_facets ?? []
-            as $current
-        ) {
+        $delimitedFacets = $this->config['Advanced_Settings']['delimited_facets'] ?? [];
+        foreach ($delimitedFacets as $current) {
             $parts = explode('|', $current);
             if ($parts[0] === $field) {
-                return $parts[1] ?? $this->config->Advanced_Settings->delimiter
+                return $parts[1] ?? $this->config['Advanced_Settings']['delimiter']
                     ?? '';
             }
         }
@@ -203,7 +192,7 @@ class RecordCollection
     }
 
     /**
-     * Collect records from all backends to an associative array
+     * Collect records from all backends to an associative array.
      *
      * @param array $collections Array of record collections
      *
@@ -215,15 +204,11 @@ class RecordCollection
         foreach ($collections as $backendId => $collection) {
             $result[$backendId] = [];
             $records = $collection->getRecords();
-            $label = $this->config->Backends[$backendId];
             foreach ($records as $record) {
                 $record->setSourceIdentifiers(
                     $record->getSourceIdentifier(),
                     $backendId
                 );
-                if ($label) {
-                    $record->addLabel($label, 'source');
-                }
                 $result[$backendId][] = $record;
             }
         }
@@ -231,7 +216,26 @@ class RecordCollection
     }
 
     /**
-     * Store errors from all backends
+     * Add a record to the collection.
+     *
+     * @param RecordInterface $record        Record to add
+     * @param bool            $checkExisting Whether to check for existing record in
+     * the collection (slower, but makes sure there are no duplicates)
+     *
+     * @return void
+     */
+    public function add(RecordInterface $record, $checkExisting = true)
+    {
+        $label = $this->config['Backends'][$record->getSearchBackendIdentifier()]
+            ?? '';
+        if ($label) {
+            $record->addLabel($label, 'source');
+        }
+        parent::add($record, $checkExisting);
+    }
+
+    /**
+     * Store errors from all backends.
      *
      * @param array $collections Array of record collections
      *
@@ -241,13 +245,13 @@ class RecordCollection
     {
         foreach ($collections as $backendId => $collection) {
             foreach ($collection->getErrors() as $error) {
-                $label = $this->config->Backends[$backendId];
+                $label = $this->config['Backends'][$backendId] ?? null;
                 if (is_string($error) && $label) {
                     $error = [
                         'msg' => '%%error%% -- %%label%%',
                         'tokens' => [
                             '%%error%%' => $error,
-                            '%%label%%' => $label
+                            '%%label%%' => $label,
                         ],
                         'translate' => true,
                         'translateTokens' => true,
@@ -259,7 +263,7 @@ class RecordCollection
     }
 
     /**
-     * Calculate the backend to be used for a record at the given position
+     * Calculate the backend to be used for a record at the given position.
      *
      * Note: This does not take into account whether there are enough records in the
      * source.
@@ -289,7 +293,7 @@ class RecordCollection
     }
 
     /**
-     * Merge facets
+     * Merge facets.
      *
      * @param array $collections Result collections
      *
@@ -301,9 +305,8 @@ class RecordCollection
 
         // Iterate through mappings and merge values. It is important to do it this
         // way since multiple facets may map to a single one.
-        foreach ($this->mappings['Facets']['Fields'] ?? []
-            as $facetField => $settings
-        ) {
+        $facetFieldData = $this->mappings['Facets']['Fields'] ?? [];
+        foreach ($facetFieldData as $facetField => $settings) {
             // Get merged list of facet values:
             $list = $this->mapFacetValues($collections, $settings);
             // Re-sort the list:
@@ -333,7 +336,7 @@ class RecordCollection
     }
 
     /**
-     * Map facet values from the backends into a merged list
+     * Map facet values from the backends into a merged list.
      *
      * @param array $collections Result collections
      * @param array $settings    Settings for a single facet field
@@ -374,11 +377,23 @@ class RecordCollection
                 }
             }
         }
+
+        foreach ($settings['Mappings'] as $backendId => $mappings) {
+            $ignore = $mappings['Ignore'] ?? false;
+            if ($ignore && ($collections[$backendId] ?? false)) {
+                $ignoredKeys = is_array($ignore) ? $ignore : array_keys($result);
+                foreach ($ignoredKeys as $ignoredValue) {
+                    $result[$ignoredValue] = ($result[$ignoredValue] ?? 0)
+                        + $collections[$backendId]->getTotal();
+                }
+            }
+        }
+
         return $result;
     }
 
     /**
-     * Get parent hierachy keys for a facet value
+     * Get parent hierarchy keys for a facet value.
      *
      * For example with '2/Main/Sub/Shelf/' the result is:
      * [
@@ -403,7 +418,7 @@ class RecordCollection
     }
 
     /**
-     * Get facet counts for Blender backend facet
+     * Get facet counts for Blender backend facet.
      *
      * @param array $collections Collections
      *
@@ -412,11 +427,11 @@ class RecordCollection
     protected function getBlenderFacetStats(array $collections): array
     {
         $delimiter = $this->getFacetDelimiter('blender_backend');
-        $orFacets = $this->config->Results_Settings->orFacets ?? '';
+        $orFacets = $this->config['Results_Settings']['orFacets'] ?? '';
         $orFacetList = array_map('trim', explode(',', $orFacets));
         $isOrFacet = '*' === $orFacets || in_array('blender_backend', $orFacetList);
         $result = [];
-        foreach ($this->config->Backends as $backendId => $name) {
+        foreach ($this->config['Backends'] ?? [] as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
             if (isset($collections[$backendId])) {
                 if ($total = $collections[$backendId]->getTotal()) {
@@ -430,7 +445,7 @@ class RecordCollection
     }
 
     /**
-     * Convert a facet value from a backend
+     * Convert a facet value from a backend.
      *
      * @param string $value        Facet value
      * @param string $type         Facet type

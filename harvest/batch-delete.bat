@@ -1,5 +1,5 @@
 @echo off
-rem Make sure that environment edits are local and that we have access to the 
+rem Make sure that environment edits are local and that we have access to the
 rem Windows command extensions.
 setlocal enableextensions
 if not errorlevel 1 goto extensionsokay
@@ -9,7 +9,7 @@ goto end
 
 rem Make sure VUFIND_HOME is set:
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist %0\..\..\env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -30,13 +30,20 @@ set SCRIPT_NAME=%0
 
 rem Set default behavior
 set SKIP_OPTIMIZE=0
+set PREFIX=
 
 rem Process switches
 :switchloop
 if "%1"=="-s" goto sswitch
+if "%1"=="--id-prefix" goto idpswitch
 goto switchloopend
 :sswitch
 set SKIP_OPTIMIZE=1
+shift
+goto switchloop
+:idpswitch
+set PREFIX=%2
+shift
 shift
 goto switchloop
 :switchloopend
@@ -58,6 +65,7 @@ echo Example: %SCRIPT_NAME% oai_source
 echo.
 echo Options:
 echo -s:  Skip optimize operation after importing.
+echo --id-prefix [prefix]: Specify a prefix to prepend to all IDs.
 goto end
 :paramsokay
 
@@ -81,7 +89,7 @@ set FOUNDSOME=0
 for %%a in (%BASEPATH%\*.delete) do (
   set FOUNDSOME=1
   echo Processing %%a...
-  php deletes.php %%a flat %2
+  php deletes.php %%a flat %2 --id-prefix=%PREFIX%
   move %%a %BASEPATH%\processed\ > nul
 )
 

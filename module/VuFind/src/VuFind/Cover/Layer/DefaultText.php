@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Default cover text layer
+ * Default cover text layer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
+use function count;
+
 /**
- * Default cover text layer
+ * Default cover text layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -39,7 +43,7 @@ namespace VuFind\Cover\Layer;
 class DefaultText extends AbstractTextLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)
@@ -59,7 +63,7 @@ class DefaultText extends AbstractTextLayer
     }
 
     /**
-     * Render title in wrapped, black text with white border
+     * Render title in wrapped, black text with white border.
      *
      * @param resource $im         Image resource to draw on
      * @param object   $settings   Settings object
@@ -78,7 +82,8 @@ class DefaultText extends AbstractTextLayer
         $line = '';
         $lineCount = 0;
         $i = 0;
-        while ($i < count($words)
+        while (
+            $i < count($words)
             && $lineCount < $settings->maxTitleLines - 1
         ) {
             $pline = $line;
@@ -134,7 +139,7 @@ class DefaultText extends AbstractTextLayer
     }
 
     /**
-     * Render author at bottom in wrapped, white text with black border
+     * Render author at bottom in wrapped, white text with black border.
      *
      * @param resource $im       Image resource to draw on
      * @param object   $settings Settings object
@@ -155,9 +160,10 @@ class DefaultText extends AbstractTextLayer
                 $settings->authorFont,
                 $fontSize
             );
-        } while ($textWidth > $settings->wrapWidth &&
+        } while (
+            $textWidth > $settings->wrapWidth &&
               $fontSize > $settings->minAuthorFontSize
-          );
+        );
         // Too small to read? Align left
         $textWidth = $this->textWidth(
             $author,

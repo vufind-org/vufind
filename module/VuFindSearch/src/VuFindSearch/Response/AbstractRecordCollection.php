@@ -3,7 +3,7 @@
 /**
  * Abstract record collection (implements some shared low-level functionality).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Response;
+
+use function array_slice;
+use function count;
+use function in_array;
 
 /**
  * Abstract record collection (implements some shared low-level functionality).
@@ -47,14 +52,14 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     protected $records = [];
 
     /**
-     * Source identifier
+     * Source identifier.
      *
      * @var string
      */
     protected $source;
 
     /**
-     * Array pointer
+     * Array pointer.
      *
      * @var int
      */
@@ -185,6 +190,23 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Sets the result set identifier for all records in the collection.
+     *
+     * This method assigns a given UUID to each record in the collection by calling
+     * the `setResultSetIdentifier` method on each record.
+     *
+     * @param string $uuid A valid UUID to be assigned to each record in the collection.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid)
+    {
+        foreach ($this->records as $record) {
+            $record->setResultSetIdentifier($uuid);
+        }
+    }
+
+    /**
      * Add a record to the collection.
      *
      * @param RecordInterface $record        Record to add
@@ -202,7 +224,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
-     * Check if the collection contains the given record
+     * Check if the collection contains the given record.
      *
      * @param RecordInterface $record Record to check
      *
@@ -246,8 +268,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface
      */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->records[$this->pointer];
     }
@@ -277,8 +298,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->pointer + $this->getOffset();
     }

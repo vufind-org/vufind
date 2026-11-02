@@ -3,7 +3,7 @@
 /**
  * Trait for tests involving Laminas Views.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,7 +26,25 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
+
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Renderer\PhpRenderer;
+use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
+use VuFind\View\Helper\Root\CleanHtml;
+use VuFind\View\Helper\Root\CleanHtmlFactory;
+use VuFind\View\Helper\Root\SearchMemory;
+use VuFind\View\Helper\Root\Url;
+use VuFindTest\Container\MockContainer;
+use VuFindTheme\View\Helper\AssetManager;
+use VuFindTheme\View\Helper\AssetManagerFactory;
 
 /**
  * Trait for tests involving Laminas Views.
@@ -40,33 +58,64 @@ namespace VuFindTest\Feature;
 trait ViewTrait
 {
     /**
+     * Get a working AssetManager helper.
+     *
+     * @param PhpRenderer $renderer View for helper
+     *
+     * @return AssetManager
+     */
+    protected function getAssetManager(PhpRenderer $renderer): AssetManager
+    {
+        $container = new MockContainer($this);
+        $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
+        $services = [
+            \Laminas\View\Helper\HeadLink::class => new \Laminas\View\Helper\HeadLink(),
+            \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle(),
+            \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript(),
+            \Laminas\View\Helper\Url::class => new \Laminas\View\Helper\Url(),
+        ];
+        $viewHelperManager = $renderer->getHelperPluginManager();
+        foreach ($services as $key => $value) {
+            if (!$viewHelperManager->has($key)) {
+                $viewHelperManager->setService($key, $value);
+            }
+        }
+        $container->set(\Laminas\View\HelperPluginManager::class, $viewHelperManager);
+        $factory = new AssetManagerFactory();
+        $assetManager = $factory($container, AssetManager::class);
+
+        return $assetManager;
+    }
+
+    /**
      * Get a working renderer.
      *
      * @param array  $plugins Custom VuFind plug-ins to register
      * @param string $theme   Theme directory to load from
      *
-     * @return \Laminas\View\Renderer\PhpRenderer
+     * @return PhpRenderer
      */
-    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap3')
+    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap5')
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
         // This assumes that all themes will be testing inherit directly
-        // from root with no intermediate themes.  Probably safe for most
+        // from root with no intermediate themes. Probably safe for most
         // test situations, though other scenarios are possible.
         $resolver->setPaths(
             [
                 $this->getPathForTheme('root'),
-                $this->getPathForTheme($theme)
+                $this->getPathForTheme($theme),
             ]
         );
-        $renderer = new \Laminas\View\Renderer\PhpRenderer();
+        $renderer = new PhpRenderer();
         $renderer->setResolver($resolver);
-        if (!empty($plugins)) {
-            $pluginManager = $renderer->getHelperPluginManager();
-            foreach ($plugins as $key => $value) {
-                $pluginManager->setService($key, $value);
-            }
+        $pluginManager = $renderer->getHelperPluginManager();
+        if (!isset($plugins['assetManager'])) {
+            $plugins['assetManager'] = $this->getAssetManager($renderer);
+        }
+        foreach ($plugins as $key => $value) {
+            $pluginManager->setService($key, $value);
         }
         return $renderer;
     }
@@ -81,5 +130,76 @@ trait ViewTrait
     protected function getPathForTheme($theme)
     {
         return APPLICATION_PATH . '/themes/' . $theme . '/templates';
+    }
+
+    /**
+     * Get mock SearchMemory view helper.
+     *
+     * @param ?Memory        $memory       Optional search memory
+     * @param ?Url           $url          URL helper
+     * @param ?EscapeHtml    $escapeHtml   EscapeHtml helper
+     * @param ?PluginManager $searchParams SearchParams helper
+     *
+     * @return SearchMemory
+     */
+    protected function getSearchMemoryViewHelper(
+        ?Memory $memory = null,
+        ?Url $url = null,
+        ?EscapeHtml $escapeHtml = null,
+        ?PluginManager $searchParams = null
+    ): SearchMemory {
+        if (null === $memory) {
+            $memory = $this->createMock(Memory::class);
+            $memory->method('getLastSearchId')->willReturn(-123);
+        }
+        $url ??= $this->createMock(Url::class);
+        $escapeHtml ??= $this->createMock(EscapeHtml::class);
+        $searchParams ??= $this->createMock(PluginManager::class);
+        return new SearchMemory($memory, $url, $escapeHtml, $searchParams);
+    }
+
+    /**
+     * Create the cleanHtml helper.
+     *
+     * @return CleanHtml
+     */
+    protected function createCleanHtmlHelper(): CleanHtml
+    {
+        // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
+        $cacheOptions = new class () extends AdapterOptions {
+            /**
+             * Get cache dir.
+             *
+             * @return string
+             */
+            public function getCacheDir(): string
+            {
+                return '';
+            }
+        };
+        $cache = $this->createMock(StorageInterface::class);
+        $cache->expects($this->any())
+            ->method('getOptions')
+            ->willReturn($cacheOptions);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $cacheManager->expects($this->any())
+            ->method('getCache')
+            ->willReturn($cache);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
+        $configManager->expects($this->any())
+            ->method('getConfigArray')
+            ->willReturn([]);
+        $container = $this->createMock(ContainerInterface::class);
+        $container->expects($this->any())
+            ->method('get')
+            ->willReturnCallback(
+                function ($class) use ($cacheManager, $configManager) {
+                    return match ($class) {
+                        CacheManager::class => $cacheManager,
+                        ConfigManagerInterface::class => $configManager,
+                    };
+                }
+            );
+        return (new CleanHtmlFactory())($container, CleanHtml::class);
     }
 }

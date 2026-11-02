@@ -1,8 +1,9 @@
 <?php
+
 /**
- * HTTP Request class
+ * HTTP Request class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HTTP
@@ -25,10 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Http\PhpEnvironment;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\Factory\DefaultFactory;
+
+use function is_array;
+use function is_string;
+
 /**
- * HTTP Request class
+ * HTTP Request class.
  *
  * @category VuFind
  * @package  HTTP
@@ -36,11 +44,12 @@ namespace VuFind\Http\PhpEnvironment;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[DefaultFactory(name: InvokableFactory::class)]
 class Request extends \Laminas\Http\PhpEnvironment\Request
 {
     /**
      * Return the parameter container responsible for query parameters or a single
-     * query parameter
+     * query parameter.
      *
      * @param string|null $name    Parameter name to retrieve, or null to get the
      * whole container.
@@ -88,7 +97,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Clean up a parameter
+     * Clean up a parameter.
      *
      * @param \Laminas\Stdlib\ParametersInterface|mixed $param Parameter
      *
@@ -96,7 +105,8 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      */
     protected function cleanup($param)
     {
-        if (is_array($param)
+        if (
+            is_array($param)
             || $param instanceof \Laminas\Stdlib\ParametersInterface
         ) {
             foreach ($param as $key => &$value) {
@@ -117,7 +127,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Check if a parameter is valid
+     * Check if a parameter is valid.
      *
      * @param mixed $param Parameter to check
      *
@@ -133,9 +143,6 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
             return false;
         }
         // Check for null in string:
-        if (strpos($param, "\x00") !== false) {
-            return false;
-        }
-        return true;
+        return !str_contains($param, "\x00");
     }
 }

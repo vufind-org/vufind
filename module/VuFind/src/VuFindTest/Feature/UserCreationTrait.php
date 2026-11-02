@@ -3,7 +3,7 @@
 /**
  * Trait with utility methods for user creation/management.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
@@ -57,7 +58,7 @@ trait UserCreationTrait
             'email' => 'username1@ignore.com',
             'username' => 'username1',
             'password' => 'test',
-            'password2' => 'test'
+            'password2' => 'test',
         ];
 
         foreach ($defaults as $field => $default) {
@@ -129,6 +130,24 @@ trait UserCreationTrait
     }
 
     /**
+     * Make new account.
+     *
+     * @param Element $page     Page element
+     * @param string  $username Username to create
+     *
+     * @return void
+     */
+    protected function makeAccount(Element $page, string $username): void
+    {
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm(
+            $page,
+            ['username' => $username, 'email' => $username . '@vufind.org']
+        );
+        $this->clickCss($page, '#accountForm .btn.btn-primary');
+    }
+
+    /**
      * Submit the login form (assuming it's open).
      *
      * @param Element $page    Page element.
@@ -142,5 +161,23 @@ trait UserCreationTrait
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
+    }
+
+    /**
+     * Function to press the login button and create a default user.
+     *
+     * @param Element $page      Page element.
+     * @param array   $overrides Optional overrides for form values.
+     *
+     * @return void
+     */
+    protected function createAndLoginUser(Element $page, array $overrides = []): void
+    {
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page, $overrides);
+
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
     }
 }

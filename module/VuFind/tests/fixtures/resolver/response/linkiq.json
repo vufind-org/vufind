@@ -1,0 +1,47 @@
+{
+   "contextObjects" : [
+      {
+         "contextObject" : "issn=00000019",
+         "contextObjectFacts" : [],
+         "contextObjectId" : "1",
+         "targetLinks" : [
+            {
+               "category" : "FullText",
+               "hoverText" : "Hover text",
+               "iconLibRef" : 25,
+               "iconText" : "Folder",
+               "iconUrl" : "",
+               "linkId" : 12345,
+               "linkName" : "Publication Finder (Books & Journals)",
+               "linkText" : "Test Publisher",
+               "notes" : [],
+               "packageInfo" : {
+                  "coverage" : {
+                     "coverageDates" : [
+                        {
+                           "coverageBegin" : "19970101",
+                           "coverageEnd" : "19991231"
+                        },
+                        {
+                           "coverageBegin" : "20010101",
+                           "coverageEnd" : "99991231"
+                        }
+                     ],
+                     "coverageStatement" : "Not published during year 2000",
+                     "embargoUnitType" : "WEEK",
+                     "embargoValue" : 3
+                  },
+                  "packageId" : 123123,
+                  "packageName" : "Test Package",
+                  "titleId" : "edp12345"
+               },
+               "proxyUrl" : true,
+               "rank" : 8,
+               "targetUrl" : "http://localhost/public/linkout/v1/ftf?ref=121212"
+            }
+         ]
+      }
+   ],
+   "diagnosticMessages" : [],
+   "statsInfo" : []
+}

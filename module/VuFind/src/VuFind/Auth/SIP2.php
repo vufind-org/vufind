@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SIP2 authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -26,9 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * SIP2 authentication module.
@@ -43,13 +47,23 @@ use VuFind\Exception\Auth as AuthException;
 class SIP2 extends AbstractBase
 {
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Constructor.
+     *
+     * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
+     */
+    #[Autowire]
+    public function __construct(protected ILSAuthenticator $ilsAuthenticator)
+    {
+    }
+
+    /**
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -62,9 +76,9 @@ class SIP2 extends AbstractBase
         // Attempt SIP2 Authentication
         $mysip = new \sip2();
         $config = $this->getConfig();
-        if (isset($config->SIP2)) {
-            $mysip->hostname = $config->SIP2->host;
-            $mysip->port = $config->SIP2->port;
+        if (isset($config['SIP2'])) {
+            $mysip->hostname = $config['SIP2']['host'];
+            $mysip->port = $config['SIP2']['port'];
         }
 
         if (!$mysip->connect()) {
@@ -76,13 +90,13 @@ class SIP2 extends AbstractBase
         $msg_result = $mysip->get_message($in);
 
         // Make sure the response is 98 as expected
-        if (!preg_match("/^98/", $msg_result)) {
+        if (!preg_match('/^98/', $msg_result)) {
             $mysip->disconnect();
             throw new AuthException('authentication_error_technical');
         }
         $result = $mysip->parseACSStatusResponse($msg_result);
 
-        //  Use result to populate SIP2 setings
+        //  Use result to populate SIP2 settings
         $mysip->AO = $result['variable']['AO'][0];
         $mysip->AN = $result['variable']['AN'][0];
 
@@ -93,21 +107,19 @@ class SIP2 extends AbstractBase
         $msg_result = $mysip->get_message($in);
 
         // Make sure the response is 24 as expected
-        if (!preg_match("/^24/", $msg_result)) {
+        if (!preg_match('/^24/', $msg_result)) {
             $mysip->disconnect();
             throw new AuthException('authentication_error_technical');
         }
 
         $result = $mysip->parsePatronStatusResponse($msg_result);
         $mysip->disconnect();
-        if (($result['variable']['BL'][0] == 'Y')
+        if (
+            ($result['variable']['BL'][0] == 'Y')
             and ($result['variable']['CQ'][0] == 'Y')
         ) {
             // Success!!!
             $user = $this->processSIP2User($result, $username, $password);
-
-            // Set login cookie for 1 hour
-            $user->password = $password; // Need this for Metalib
         } else {
             throw new AuthException('authentication_error_invalid');
         }
@@ -116,7 +128,7 @@ class SIP2 extends AbstractBase
     }
 
     /**
-     * Process SIP2 User Account
+     * Process SIP2 User Account.
      *
      * Based on code by Bob Wicksall <bwicksall@pls-net.org>.
      *
@@ -125,20 +137,20 @@ class SIP2 extends AbstractBase
      * @param string $password The user's ILS password
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
+     * @return UserEntityInterface Processed User object.
      */
     protected function processSIP2User($info, $username, $password)
     {
-        $user = $this->getUserTable()->getByUsername($info['variable']['AA'][0]);
+        $user = $this->getOrCreateUserByUsername($info['variable']['AA'][0]);
 
-        // This could potentially be different depending on the ILS.  Name could be
+        // This could potentially be different depending on the ILS. Name could be
         // Bob Wicksall or Wicksall, Bob. This is currently assuming Wicksall, Bob
         $ae = $info['variable']['AE'][0];
-        $user->firstname = trim(substr($ae, 1 + strripos($ae, ',')));
-        $user->lastname = trim(substr($ae, 0, strripos($ae, ',')));
+        $user->setFirstname(trim(substr($ae, 1 + strripos($ae, ','))));
+        $user->setLastname(trim(substr($ae, 0, strripos($ae, ','))));
         // I'm inserting the sip username and password since the ILS is the source.
         // Should revisit this.
-        $user->saveCredentials($username, $password);
+        $this->ilsAuthenticator->saveUserCatalogCredentials($user, $username, $password);
         return $user;
     }
 }

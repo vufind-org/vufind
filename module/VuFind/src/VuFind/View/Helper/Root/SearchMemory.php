@@ -1,8 +1,9 @@
 <?php
+
 /**
  * View helper for remembering recent user searches/parameters.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,19 +17,23 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * View helper for remembering recent user searches/parameters.
@@ -36,26 +41,38 @@ use VuFind\Search\Memory;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchMemory extends AbstractHelper
+class SearchMemory
 {
     /**
-     * Search memory
+     * Constructor.
      *
-     * @var Memory
+     * @param Memory        $memory       Search memory service
+     * @param Url           $url          Url view helper
+     * @param EscapeHtml    $escapeHtml   EscapeHtml view helper
+     * @param PluginManager $searchParams Search Params plugin manager
      */
-    protected $memory;
+    public function __construct(
+        protected Memory $memory,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+        protected PluginManager $searchParams
+    ) {
+    }
 
     /**
-     * Constructor
+     * Invoke the helper.
      *
-     * @param Memory $memory Search memory
+     * @return static
      */
-    public function __construct(Memory $memory)
+    public function __invoke(): static
     {
-        $this->memory = $memory;
+        return $this;
     }
 
     /**
@@ -70,13 +87,53 @@ class SearchMemory extends AbstractHelper
      */
     public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
-        $last = $this->memory->retrieveSearch();
-        if (!empty($last)) {
-            $escaper = $this->getView()->plugin('escapeHtml');
-            return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
-                . $suffix;
+        if ($url = $this->getLastSearchUrl()) {
+            return $prefix . '<a href="' . ($this->escapeHtml)($url) . '">' . $link . '</a>' . $suffix;
         }
         return '';
+    }
+
+    /**
+     * If a previous search is recorded in the session, return its URL.
+     *
+     * @return string|null
+     */
+    public function getLastSearchUrl(): ?string
+    {
+        if ($lastSearch = $this->getLastSearch()) {
+            $params = $lastSearch->getParams();
+            $searchClassId = $params->getSearchClassId();
+            // Use last settings for params that are not stored in the search:
+            foreach (['limit', 'view', 'sort'] as $setting) {
+                $value = $this->memory->retrieveLastSetting($searchClassId, $setting);
+                if ($value) {
+                    $method = 'set' . ucfirst($setting);
+                    $params->$method($value);
+                }
+            }
+
+            $url = ($this->url)($lastSearch->getOptions()->getSearchAction());
+            $queryHelper = $lastSearch->getUrlQuery();
+            // Try to append page number and page size from search context parameters saved in params object
+            $searchContext = $params->getSavedSearchContextParameters();
+            if (!empty($searchContext['limit'])) {
+                $queryHelper = $queryHelper->setLimit($searchContext['limit']);
+            }
+            if (!empty($searchContext['page'])) {
+                $queryHelper = $queryHelper->setPage($searchContext['page']);
+            }
+            $queryHelper = $queryHelper->setJumpto(false);
+
+            $url .= $queryHelper->getParams(false);
+
+            // Make sure the URL stored in search memory stays in sync; if the stored URL has been manipulated
+            // through the EditMemory action and the user goes back to a page with a sid parameter, things can
+            // get into a bad state. Refreshing the value here ensures consistent behavior.
+            $this->memory->rememberSearch($url);
+
+            return $url;
+        }
+        return null;
     }
 
     /**
@@ -127,12 +184,11 @@ class SearchMemory extends AbstractHelper
     public function getEditLink($searchClassId, $action, $value)
     {
         $query = compact('searchClassId') + [$action => $value];
-        $url = $this->getView()->plugin('url');
-        return $url('search-editmemory', [], compact('query'));
+        return ($this->url)('search-editmemory', [], compact('query'));
     }
 
     /**
-     * Retrieve the parameters of the last search by the search class
+     * Retrieve the parameters of the last search by the search class.
      *
      * @param string $searchClassId Search class
      *
@@ -142,21 +198,59 @@ class SearchMemory extends AbstractHelper
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
-        $request = new \Laminas\Stdlib\Parameters();
-        $request->fromString($queryParams ?? '');
-        $paramsPlugin = $this->getView()->plugin('searchParams');
-        $params = $paramsPlugin($searchClassId);
+        $request = [];
+        parse_str($queryParams ?? '', $request);
+        $params = $this->searchParams->get($searchClassId);
         // Make sure the saved URL represents search results from $searchClassId;
         // if the user jumps from search results of one backend to a record of a
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
         if ($lastUrl) {
-            $expectedPath
-                = $this->view->url($params->getOptions()->getSearchAction());
-            if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
+            $expectedPath = ($this->url)($params->getOptions()->getSearchAction());
+            if (str_starts_with($lastUrl, $expectedPath)) {
                 $params->initFromRequest($request);
             }
         }
         return $params;
+    }
+
+    /**
+     * Get current search id.
+     *
+     * @return ?int
+     */
+    public function getCurrentSearchId(): ?int
+    {
+        return $this->memory->getCurrentSearchId();
+    }
+
+    /**
+     * Get current search.
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getCurrentSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getCurrentSearch();
+    }
+
+    /**
+     * Get last search id.
+     *
+     * @return ?int
+     */
+    public function getLastSearchId(): ?int
+    {
+        return $this->memory->getLastSearchId();
+    }
+
+    /**
+     * Get last search.
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getLastSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getLastSearch();
     }
 }

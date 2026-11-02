@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<courses total_record_count="2">
+    <course link="http://localhost/v1/courses/1234">
+        <id>1234</id>
+        <code>VFB</code>
+        <name>VuFind Basics</name>
+        <section></section>
+        <academic_department />
+        <school_faculty />
+        <processing_department desc="VuFind University">VU</processing_department>
+        <status>INACTIVE</status>
+        <visibility>UNARCHIVED</visibility>
+        <start_date>2025-01-01Z</start_date>
+        <end_date>2025-12-31Z</end_date>
+        <weekly_hours>0</weekly_hours>
+        <participants>7</participants>
+        <year>2025</year>
+        <instructors>
+            <instructor>
+                <primary_id>john</primary_id>
+                <first_name>John</first_name>
+                <last_name>Doe</last_name>
+            </instructor>
+        </instructors>
+        <campuses />
+        <notes />
+        <created_by>JSmith</created_by>
+        <created_date>2024-01-01Z</created_date>
+        <last_modified_by>JSmith</last_modified_by>
+        <last_modified_date>2025-01-01Z</last_modified_date>
+        <rolled_from></rolled_from>
+    </course>
+    <course link="http://localhost/v1/courses/5678">
+        <id>5678</id>
+        <code>AVF</code>
+        <name>Advanced VuFind</name>
+        <section>VUFIND_SECTION</section>
+        <academic_department />
+        <school_faculty />
+        <status>INACTIVE</status>
+        <visibility>UNARCHIVED</visibility>
+        <start_date>2025-09-01Z</start_date>
+        <end_date>2025-09-01Z</end_date>
+        <weekly_hours>0</weekly_hours>
+        <participants>0</participants>
+        <year></year>
+        <instructors />
+        <campuses />
+        <notes />
+        <created_by>SMiller</created_by>
+        <created_date>2024-01-01Z</created_date>
+        <last_modified_by>SMiller</last_modified_by>
+        <last_modified_date>2025-09-05Z</last_modified_date>
+        <rolled_from></rolled_from>
+    </course>
+</courses>

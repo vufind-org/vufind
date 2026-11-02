@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Auth handler plugin manager
+ * Auth handler plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Auth handler plugin manager
+ * Auth handler plugin manager.
  *
  * @category VuFind
  * @package  Authentication
@@ -47,7 +47,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'almadatabase' => AlmaDatabase::class,
-        'cas' => CAS::class,
         'choiceauth' => ChoiceAuth::class,
         'database' => Database::class,
         'email' => Email::class,
@@ -56,7 +55,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ldap' => LDAP::class,
         'multiauth' => MultiAuth::class,
         'multiils' => MultiILS::class,
+        'openidconnect' => OpenIDConnect::class,
         'shibboleth' => Shibboleth::class,
+        'simulatedsso' => SimulatedSSO::class,
         'sip2' => SIP2::class,
         // for legacy 1.x compatibility
         'db' => Database::class,
@@ -64,27 +65,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AlmaDatabase::class => ILSFactory::class,
-        CAS::class => InvokableFactory::class,
-        ChoiceAuth::class => ChoiceAuthFactory::class,
-        Database::class => InvokableFactory::class,
-        Email::class => EmailFactory::class,
-        Facebook::class => FacebookFactory::class,
-        ILS::class => ILSFactory::class,
-        LDAP::class => InvokableFactory::class,
-        MultiAuth::class => MultiAuthFactory::class,
-        MultiILS::class => ILSFactory::class,
-        Shibboleth::class => ShibbolethFactory::class,
-        SIP2::class => InvokableFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -108,6 +89,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return AbstractBase::class;
+        return AuthInterface::class;
     }
 }

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Metadata vocabulary base class
- * (provides results from available RecordDriver methods in a standardized form)
+ * (provides results from available RecordDriver methods in a standardized form).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Tübingen 2019.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -26,11 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\MetadataVocabulary;
+
+use function is_array;
 
 /**
  * Metadata vocabulary base class
- * (provides results from available RecordDriver methods in a standardized form)
+ * (provides results from available RecordDriver methods in a standardized form).
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,7 +45,7 @@ namespace VuFind\MetadataVocabulary;
 abstract class AbstractBase implements MetadataVocabularyInterface
 {
     /**
-     * This varriable can be overwritten by child classes
+     * This variable can be overwritten by child classes
      * to define which custom field is filled by which generic fields.
      *
      * @var array
@@ -49,7 +53,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
     protected $vocabFieldToGenericFieldsMap = [];
 
     /**
-     * Generate standardized data from available RecordDriver methods
+     * Generate standardized data from available RecordDriver methods.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -81,7 +85,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
     }
 
     /**
-     * Perform mapping from generic data to vocabulary data
+     * Perform mapping from generic data to vocabulary data.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *

@@ -270,7 +270,13 @@ Facets:
         Primo:
           Field: creationdate
         Solr:
-          Field: publish_date
+          Field: publishDateRange
+    source:
+      Mappings:
+        EDS:
+          Field: ContentProvider
+        ProQuestFSG:
+          Field: Databases
     topic:
       Mappings:
         EDS:
@@ -311,17 +317,17 @@ Sorting:
       Mappings:
         Primo: screator
         Solr: author
-        solrAuth: heading
+        SolrAuth: heading
     relevance:
       Mappings:
         EDS: relevance
         Primo: relevance
-        Solr: relevance
+        Solr: relevance,id asc
     title:
       Mappings:
         Primo: title
         Solr: title
-        solrAuth: heading
+        SolrAuth: heading
     year:
       Mappings:
         EDS: date

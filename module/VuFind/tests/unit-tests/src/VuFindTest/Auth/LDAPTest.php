@@ -1,8 +1,9 @@
 <?php
+
 /**
  * LDAP authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
+use Laminas\Http\Request;
 use VuFind\Auth\LDAP;
 
 /**
@@ -46,95 +48,58 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
      * @return LDAP
      */
-    public function getAuthObject($config = null)
+    public function getAuthObject(?array $config = null): LDAP
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
-        $authManager = new \VuFind\Auth\PluginManager(
-            new \VuFindTest\Container\MockContainer($this)
-        );
-        $obj = $authManager->get('LDAP');
-        $obj->setConfig($config);
+        $obj = new LDAP($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the LDAP object.
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig()
+    public function getAuthConfig(): array
     {
-        $ldapConfig = new Config(
-            [
-                'host' => 'localhost',
-                'port' => 1234,
-                'basedn' => 'basedn',
-                'username' => 'username'
-            ],
-            true
-        );
-        return new Config(['LDAP' => $ldapConfig], true);
+        $ldapConfig = [
+            'uri' => 'ldaps://localhost',
+            'basedn' => 'basedn',
+            'username' => 'username',
+        ];
+        return ['LDAP' => $ldapConfig];
     }
 
     /**
-     * Verify that missing host causes failure.
+     * Data provider for testWithMissingConfiguration.
+     *
+     * @return \Iterator
+     */
+    public static function configKeyProvider(): \Iterator
+    {
+        yield 'missing uri' => ['uri'];
+        yield 'missing basedn' => ['basedn'];
+        yield 'missing username' => ['username'];
+    }
+
+    /**
+     * Verify that missing configuration causes failure.
+     *
+     * @param string $key Configuration key to exclude
      *
      * @return void
      */
-    public function testWithMissingHost()
+    #[\PHPUnit\Framework\Attributes\DataProvider('configKeyProvider')]
+    public function testWithMissingConfiguration(string $key): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
-        unset($config->LDAP->host);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing port causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingPort()
-    {
-        $this->expectException(\VuFind\Exception\Auth::class);
-
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->port);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing baseDN causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingBaseDN()
-    {
-        $this->expectException(\VuFind\Exception\Auth::class);
-
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->basedn);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing UID causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingUid()
-    {
-        $this->expectException(\VuFind\Exception\Auth::class);
-
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->username);
+        unset($config['LDAP'][$key]);
         $this->getAuthObject($config)->getConfig();
     }
 
@@ -143,11 +108,11 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCaseNormalization()
+    public function testCaseNormalization(): void
     {
         $config = $this->getAuthConfig();
-        $config->LDAP->username = 'UPPER';
-        $config->LDAP->basedn = 'MixedCase';
+        $config['LDAP']['username'] = 'UPPER';
+        $config['LDAP']['basedn'] = 'MixedCase';
         $auth = $this->getAuthObject($config);
         // username should be lowercased:
         $this->assertEquals(
@@ -166,7 +131,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateIsDisallowed()
+    public function testCreateIsDisallowed(): void
     {
         $this->assertFalse($this->getAuthObject()->supportsCreation());
     }
@@ -177,14 +142,14 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Laminas\Http\Request
+     * @return Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = []): Request
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
-        $request = new \Laminas\Http\Request();
+        $request = new Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
@@ -194,7 +159,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -207,7 +172,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 

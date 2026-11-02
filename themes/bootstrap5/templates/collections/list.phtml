@@ -1,0 +1,11 @@
+<div class="list-group">
+  <?php foreach ($result as $i => $item): ?>
+    <a class="list-group-item" href="<?=$this->url('collection', ['id' => $item['value']])?>">
+      <strong><?=$this->escapeHtml($item['displayText'])?></strong>
+      <span class="badge">
+        <?=$item['count']?> <?=$this->transEsc('items')?>
+        <?=$this->icon('page-next') ?>
+      </span>
+    </a>
+  <?php endforeach; ?>
+</div>

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Laminas\Feed\Feed extension for Open Search
+ * Laminas\Feed\Feed extension for Open Search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
 
 use Laminas\Feed\Uri;
@@ -32,13 +34,16 @@ use Laminas\Feed\Writer\Exception;
 use Laminas\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
 use Laminas\Stdlib\StringUtils;
 
+use function in_array;
+use function is_string;
+
 /**
- * Laminas\Feed\Feed extension for Open Search
+ * Laminas\Feed\Feed extension for Open Search.
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to
- * Itunes-related functionality.  To work around this, we are extending the
- * equivalent Itunes plugin.  This works fine, but perhaps in future there will
+ * Itunes-related functionality. To work around this, we are extending the
+ * equivalent Itunes plugin. This works fine, but perhaps in future there will
  * be a more elegant way to achieve the same effect.
  *
  * @category VuFind
@@ -50,56 +55,56 @@ use Laminas\Stdlib\StringUtils;
 class Feed extends ParentFeed
 {
     /**
-     * Total results
+     * Total results.
      *
      * @var int
      */
     protected $totalResults = null;
 
     /**
-     * Start index
+     * Start index.
      *
      * @var int
      */
     protected $startIndex = null;
 
     /**
-     * Items per page
+     * Items per page.
      *
      * @var int
      */
     protected $itemsPerPage = null;
 
     /**
-     * Search terms
+     * Search terms.
      *
      * @var string
      */
     protected $searchTerms = null;
 
     /**
-     * Links
+     * Links.
      *
      * @var array
      */
     protected $links = [];
 
     /**
-     * Encoding of all text values
+     * Encoding of all text values.
      *
      * @var string
      */
     protected $encoding = 'UTF-8';
 
     /**
-     * The used string wrapper supporting encoding
+     * The used string wrapper supporting encoding.
      *
      * @var StringWrapperInterface
      */
     protected $stringWrapper;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -107,7 +112,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set feed encoding
+     * Set feed encoding.
      *
      * @param string $enc encoding to set
      *
@@ -121,7 +126,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get feed encoding
+     * Get feed encoding.
      *
      * @return string
      */
@@ -131,7 +136,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set total results
+     * Set total results.
      *
      * @param int $totalResults number to set
      *
@@ -144,7 +149,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get total results
+     * Get total results.
      *
      * @return int
      */
@@ -154,7 +159,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set start index
+     * Set start index.
      *
      * @param int $startIndex index to set
      *
@@ -167,7 +172,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get start index
+     * Get start index.
      *
      * @return int
      */
@@ -177,7 +182,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set items per page
+     * Set items per page.
      *
      * @param int $itemsPerPage number to set
      *
@@ -190,7 +195,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get items per page
+     * Get items per page.
      *
      * @return int
      */
@@ -200,7 +205,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set search terms
+     * Set search terms.
      *
      * @param string $searchTerms search terms
      *
@@ -213,7 +218,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get search terms
+     * Get search terms.
      *
      * @return string
      */
@@ -223,7 +228,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Add a link
+     * Add a link.
      *
      * @param string $url   the url of the link
      * @param string $role  the role of the link
@@ -259,7 +264,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get the links
+     * Get the links.
      *
      * @return string
      */

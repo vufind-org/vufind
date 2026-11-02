@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Favorites aspect of the Search Multi-class (Options)
+ * Favorites aspect of the Search Multi-class (Options).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Favorites;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Search Favorites Options
+ * Search Favorites Options.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -38,29 +42,36 @@ namespace VuFind\Search\Favorites;
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
+
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->defaultSort = 'title';
         $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
-            'year DESC' => 'sort_year', 'year' => 'sort_year asc'
+            'year DESC' => 'sort_year', 'year' => 'sort_year_asc',
+            'last_saved DESC' => 'sort_saved', 'last_saved' => 'sort_saved_asc',
         ];
-        $config = $configLoader->get($this->mainIni);
-        if (isset($config->Social->lists_default_limit)) {
-            $this->defaultLimit = $config->Social->lists_default_limit;
+
+        if (null !== ($limit = $this->mainConfig['Social']['lists_default_limit'] ?? null)) {
+            $this->defaultLimit = $limit;
         }
-        if (isset($config->Social->lists_limit_options)) {
-            $this->limitOptions = explode(',', $config->Social->lists_limit_options);
+        if (null !== ($limitOptions = $this->mainConfig['Social']['lists_limit_options'] ?? null)) {
+            $this->limitOptions = $this->explodeListSetting($limitOptions, 'intval');
         }
-        if (isset($config->Social->lists_view)) {
-            $this->listviewOption = $config->Social->lists_view;
+        if (null !== ($view = $this->mainConfig['Social']['lists_view'] ?? null)) {
+            $this->listviewOption = $view;
+        }
+        if ($sortOptions = $this->mainConfig['List_Sorting'] ?? null) {
+            $this->sortOptions = (array)$sortOptions;
+            $this->defaultSort = array_keys($this->sortOptions)[0];
         }
     }
 
@@ -69,22 +80,22 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
-        return 'myresearch-favorites';
+        return 'lists-allitems';
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         return ['side' => 'FavoriteFacets'];
     }

@@ -1,11 +1,12 @@
 <?php
+
 /**
- * MemCache session handler
+ * MemCache session handler.
  *
  * Note: This relies on PHP's Memcache extension
  * (see http://us.php.net/manual/en/book.memcache.php)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -28,12 +29,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use function get_class;
+use function in_array;
 
 /**
- * Memcache session handler
+ * Memcache session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -44,20 +47,19 @@ use Laminas\Config\Config;
 class Memcache extends AbstractBase
 {
     /**
-     * Memcache connection
+     * Memcache connection.
      *
      * @var \Memcache
      */
     protected $connection;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config                 $config Session configuration ([Session] section
-     * of config.ini)
-     * @param ?\Memcache|?\Memcached $client Optional Memcache client object
+     * @param ?array                    $config Session configuration ([Session] section of config.ini)
+     * @param \Memcache|\Memcached|null $client Optional Memcache client object
      */
-    public function __construct(Config $config = null, object $client = null)
+    public function __construct(?array $config = null, ?object $client = null)
     {
         parent::__construct($config);
         $this->connect($config, $client);
@@ -66,22 +68,21 @@ class Memcache extends AbstractBase
     /**
      * Set up the connection to Memcache.
      *
-     * @param ?Config                $config Session configuration ([Session] section
-     * of config.ini)
-     * @param ?\Memcache|?\Memcached $client Optional Memcache client object
+     * @param ?array                    $config Session configuration ([Session] section of config.ini)
+     * @param \Memcache|\Memcached|null $client Optional Memcache client object
      *
      * @return void
      */
-    protected function connect(?Config $config, ?object $client): void
+    protected function connect(?array $config, ?object $client): void
     {
         // Set defaults if nothing set in config file.
-        $host = $config->memcache_host ?? 'localhost';
-        $port = $config->memcache_port ?? 11211;
-        $timeout = $config->memcache_connection_timeout ?? 1;
-        $clientClass = $config->memcache_client ?? 'Memcache';
+        $host = $config['memcache_host'] ?? 'localhost';
+        $port = $config['memcache_port'] ?? 11211;
+        $timeout = $config['memcache_connection_timeout'] ?? 1;
+        $clientClass = $config['memcache_client'] ?? \Memcache::class;
 
         // Create/validate client object:
-        if (!in_array($clientClass, ['Memcache', 'Memcached'])) {
+        if (!in_array($clientClass, [\Memcache::class, \Memcached::class])) {
             throw new \Exception("Unsupported Memcache client: $clientClass");
         }
         $this->connection = $client ?? new $clientClass();
@@ -97,18 +98,16 @@ class Memcache extends AbstractBase
         );
 
         // Establish connection:
-        switch ($clientClass) {
-        case 'Memcache':
+        if ($clientClass === \Memcache::class) {
+            trigger_error('Memcache support is deprecated; use Memcached instead', E_USER_DEPRECATED);
             if (!$this->connection->connect($host, $port, $timeout)) {
                 throw $connectionException;
             }
-            break;
-        case 'Memcached':
+        } else {
             $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
             if (!$this->connection->addServer($host, $port)) {
                 throw $connectionException;
             }
-            break;
         }
     }
 

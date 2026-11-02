@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Tag view helper
+ * Tag view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\Config\AccountCapabilities;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Tag view helper
+ * Tag view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,36 +41,36 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class UserTags extends AbstractHelper
+class UserTags
 {
     /**
-     * Tag mode (enabled or disabled)
+     * Tag mode (enabled or disabled).
      *
      * @var string
      */
-    protected $mode;
+    protected string $mode;
 
     /**
-     * List tag mode (enabled or disabled)
+     * List tag mode (enabled or disabled).
      *
      * @var string
      */
-    protected $listMode;
+    protected string $listMode;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string $mode     Tag mode (enabled or disabled)
-     * @param string $listMode List tag mode (enabled or disabled)
+     * @param AccountCapabilities $capabilities Account capabilities service
      */
-    public function __construct($mode = 'enabled', $listMode = 'disabled')
+    #[Autowire]
+    public function __construct(AccountCapabilities $capabilities)
     {
-        $this->mode = $mode;
-        $this->listMode = $listMode;
+        $this->mode = $capabilities->getTagSetting();
+        $this->listMode = $capabilities->getListTagSetting();
     }
 
     /**
-     * Get mode
+     * Get mode.
      *
      * @return string
      */
@@ -77,12 +80,22 @@ class UserTags extends AbstractHelper
     }
 
     /**
-     * Get list mode
+     * Get list mode.
      *
      * @return string
      */
     public function getListMode()
     {
         return $this->listMode;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }

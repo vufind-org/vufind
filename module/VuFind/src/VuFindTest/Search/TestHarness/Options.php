@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test options search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Search\TestHarness;
+
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Test options search model.
@@ -41,19 +45,17 @@ namespace VuFindTest\Search\TestHarness;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         // Turn on first/last navigation if configured:
-        $config = $configLoader->get('config');
-        if (isset($config->Record->first_last_navigation)
-            && $config->Record->first_last_navigation
-        ) {
-            $this->firstlastNavigation = true;
+        $config = $configManager->getConfigArray('config');
+        if ($config['Record']['first_last_navigation'] ?? false) {
+            $this->recordPageFirstLastNavigation = true;
         }
     }
 
@@ -62,7 +64,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'fake-fake';
     }

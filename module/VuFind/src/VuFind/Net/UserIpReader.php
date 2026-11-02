@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Service to retrieve user IP address.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Net
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Net;
 
-use Laminas\Stdlib\Parameters;
+use function count;
 
 /**
  * Service to retrieve user IP address.
@@ -41,40 +43,18 @@ use Laminas\Stdlib\Parameters;
 class UserIpReader
 {
     /**
-     * Server parameters
+     * Constructor.
      *
-     * @var Parameters
-     */
-    protected $server;
-
-    /**
-     * Configuration specifying allowed HTTP headers containing IPs (false for none).
-     * See [Proxy] allow_forwarded_ips setting in config.ini for more details.
-     *
-     * @var string|bool
-     */
-    protected $allowForwardedIps;
-
-    /**
-     * IP addresses to exclude from consideration
-     *
-     * @var array
-     */
-    protected $ipFilter;
-
-    /**
-     * Constructor
-     *
-     * @param Parameters  $server            Server parameters
-     * @param string|bool $allowForwardedIps Forwarded header configuration string
-     * (false to disable checking IP-related X- headers)
+     * @param array       $server            Server parameters
+     * @param string|bool $allowForwardedIps Configuration specifying allowed HTTP headers containing IPs (false for
+     * none). See [Proxy] allow_forwarded_ips setting in config.ini for more details.
      * @param array       $ipFilter          IP addresses to exclude from
      * consideration
      */
     public function __construct(
-        Parameters $server,
-        $allowForwardedIps = false,
-        array $ipFilter = []
+        protected array $server,
+        protected string|bool $allowForwardedIps = false,
+        protected array $ipFilter = []
     ) {
         $this->server = $server;
         $this->allowForwardedIps = $allowForwardedIps;
@@ -94,7 +74,7 @@ class UserIpReader
                 [$field, $behavior] = explode(':', $chunk . ':', 2);
 
                 // Look up field value; skip if empty:
-                $fieldValue = $this->server->get($field);
+                $fieldValue = $this->server[$field] ?? null;
                 if (empty($fieldValue)) {
                     continue;
                 }
@@ -112,23 +92,18 @@ class UserIpReader
                 // Also note that we need to use array_shift/array_pop/current here
                 // in place of specific indexes, because the filtering above may have
                 // left non-consecutive keys in place.
-                switch (strtolower(rtrim($behavior, ':'))) {
-                case 'first':
-                    if (!empty($parts)) {
-                        return array_shift($parts);
-                    }
-                case 'last':
-                    if (!empty($parts)) {
-                        return array_pop($parts);
-                    }
-                default:
-                    if (count($parts) === 1) {
-                        return current($parts);
-                    }
+                $finalBehavior = strtolower(rtrim($behavior, ':'));
+                $partCount = count($parts);
+                if ($finalBehavior === 'first' && $partCount > 0) {
+                    return array_shift($parts);
+                } elseif ($finalBehavior === 'last' && $partCount > 0) {
+                    return array_pop($parts);
+                } elseif ($partCount === 1) {
+                    return current($parts);
                 }
             }
         }
         // Default case: use REMOTE_ADDR directly.
-        return $this->server->get('REMOTE_ADDR');
+        return $this->server['REMOTE_ADDR'] ?? null;
     }
 }

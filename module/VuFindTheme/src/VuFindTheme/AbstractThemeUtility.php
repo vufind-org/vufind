@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class to hold shared logic for theme utilities.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -25,7 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
+
+use VuFind\Exception\FileAccess;
+use VuFind\Feature\DirUtilityTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base class to hold shared logic for theme utilities.
@@ -38,25 +44,28 @@ namespace VuFindTheme;
  */
 abstract class AbstractThemeUtility
 {
+    use DirUtilityTrait;
+
     /**
-     * Theme info object
+     * Theme info object.
      *
      * @var ThemeInfo
      */
     protected $info;
 
     /**
-     * Last error message
+     * Last error message.
      *
      * @var string
      */
     protected $lastError = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo $info Theme info object
      */
+    #[Autowire]
     public function __construct(ThemeInfo $info)
     {
         $this->info = $info;
@@ -82,29 +91,12 @@ abstract class AbstractThemeUtility
      */
     protected function copyDir($src, $dest)
     {
-        if (!is_dir($dest)) {
-            if (!mkdir($dest)) {
-                return $this->setLastError("Cannot create $dest");
-            }
+        try {
+            self::cpDir($src, $dest);
+        } catch (FileAccess $e) {
+            $this->setLastError($e->getMessage());
+            return false;
         }
-        $dir = opendir($src);
-        while ($current = readdir($dir)) {
-            if ($current === '.' || $current === '..') {
-                continue;
-            }
-            if (is_dir("$src/$current")) {
-                if (!$this->copyDir("$src/$current", "$dest/$current")) {
-                    return false;
-                }
-            } elseif (!file_exists("$dest/$current")
-                && !copy("$src/$current", "$dest/$current")
-            ) {
-                return $this->setLastError(
-                    "Cannot copy $src/$current to $dest/$current."
-                );
-            }
-        }
-        closedir($dir);
         return true;
     }
 
@@ -117,21 +109,13 @@ abstract class AbstractThemeUtility
      */
     protected function deleteDir($path)
     {
-        $dir = opendir($path);
-        while ($current = readdir($dir)) {
-            if ($current === '.' || $current === '..') {
-                continue;
-            }
-            if (is_dir("$path/$current")) {
-                if (!$this->deleteDir("$path/$current")) {
-                    return false;
-                }
-            } elseif (!unlink("$path/$current")) {
-                return $this->setLastError("Cannot delete $path/$current");
-            }
+        try {
+            self::rmDir($path);
+        } catch (FileAccess $e) {
+            $this->setLastError($e->getMessage());
+            return false;
         }
-        closedir($dir);
-        return rmdir($path);
+        return true;
     }
 
     /**

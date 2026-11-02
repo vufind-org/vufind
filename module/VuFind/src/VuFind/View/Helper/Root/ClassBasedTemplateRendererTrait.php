@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Trait for view helpers that render a template based on a class name.
  *
  * Note: This trait is for view helpers only. It expects $this->getView() method to
  * be available.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  * Copyright (C) The National Library of Finland 2020.
@@ -20,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -30,10 +31,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
+use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
+
+use function sprintf;
 
 /**
  * Trait for view helpers that render a template based on a class name.
@@ -48,11 +53,51 @@ use Laminas\View\Resolver\ResolverInterface;
 trait ClassBasedTemplateRendererTrait
 {
     /**
-     * Cache for found templates
+     * Cache for found templates.
      *
      * @var array
      */
     protected $templateCache = [];
+
+    /**
+     * View renderer.
+     *
+     * @var ?RendererInterface
+     */
+    protected ?RendererInterface $viewRenderer = null;
+
+    /**
+     * View resolver.
+     *
+     * @var ?ResolverInterface
+     */
+    protected ?ResolverInterface $viewResolver = null;
+
+    /**
+     * Context helper.
+     *
+     * @var ?Context
+     */
+    protected ?Context $contextHelper = null;
+
+    /**
+     * Helper setter function for required dependencies.
+     *
+     * @param RendererInterface $viewRenderer  View renderer
+     * @param ResolverInterface $viewResolver  View resolver
+     * @param Context           $contextHelper Context helper
+     *
+     * @return void
+     */
+    protected function setClassBasedTemplateRendererDependencies(
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        Context $contextHelper
+    ) {
+        $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
+        $this->contextHelper = $contextHelper;
+    }
 
     /**
      * Recursively locate a template that matches the provided class name
@@ -96,6 +141,48 @@ trait ClassBasedTemplateRendererTrait
     }
 
     /**
+     * Get the context helper.
+     *
+     * @throws RuntimeException If context helper is not set
+     * @return Context
+     */
+    protected function getContextHelper(): Context
+    {
+        if (null === $this->contextHelper) {
+            throw new RuntimeException('Context helper not set in ' . __CLASS__);
+        }
+        return $this->contextHelper;
+    }
+
+    /**
+     * Get the view renderer.
+     *
+     * @throws RuntimeException If view renderer is not set
+     * @return RendererInterface
+     */
+    public function getViewRenderer(): RendererInterface
+    {
+        if (null === $this->viewRenderer) {
+            throw new RuntimeException('View renderer not set in ' . __CLASS__);
+        }
+        return $this->viewRenderer;
+    }
+
+    /**
+     * Get the view resolver.
+     *
+     * @throws RuntimeException If view resolver is not set
+     * @return ResolverInterface
+     */
+    public function getViewResolver(): ResolverInterface
+    {
+        if (null === $this->viewResolver) {
+            throw new RuntimeException('View resolver not set in ' . __CLASS__);
+        }
+        return $this->viewResolver;
+    }
+
+    /**
      * Render a template associated with the provided class name, applying to
      * specified context variables.
      *
@@ -105,8 +192,8 @@ trait ClassBasedTemplateRendererTrait
      * @param bool   $throw     If true (default), an exception is thrown if the
      * template is not found. Otherwise an empty string is returned.
      *
-     * @return string
      * @throws RuntimeException
+     * @return string
      */
     protected function renderClassTemplate(
         $template,
@@ -114,10 +201,9 @@ trait ClassBasedTemplateRendererTrait
         $context = [],
         $throw = true
     ) {
-        // Set up the needed context in the view:
-        $view = $this->getView();
-        $contextHelper = $view->plugin('context');
-        $oldContext = $contextHelper($view)->apply($context);
+        $viewRenderer = $this->getViewRenderer();
+        $contextHelper = $this->getContextHelper();
+        $oldContext = $contextHelper($viewRenderer)->apply($context);
 
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);
@@ -129,10 +215,10 @@ trait ClassBasedTemplateRendererTrait
             );
         }
 
-        $html = $classTemplate ? $view->render($classTemplate) : '';
+        $html = $classTemplate ? $viewRenderer->render($classTemplate) : '';
 
         // Restore the original context before returning the result:
-        $contextHelper($view)->restore($oldContext);
+        $contextHelper($viewRenderer)->restore($oldContext);
         return $html;
     }
 
@@ -152,14 +238,14 @@ trait ClassBasedTemplateRendererTrait
                 = $this->resolveClassTemplate(
                     $template,
                     $className,
-                    $this->getView()->resolver()
+                    $this->getViewResolver()
                 );
         }
         return $this->templateCache[$className][$template];
     }
 
     /**
-     * Helper to grab the end of the class name
+     * Helper to grab the end of the class name.
      *
      * @param string $className Class name to abbreviate
      *
@@ -168,11 +254,15 @@ trait ClassBasedTemplateRendererTrait
     protected function getBriefClass($className)
     {
         $classParts = explode('\\', $className);
-        return array_pop($classParts);
+        $className = array_pop($classParts);
+        // In case this is an anonymous class, we may need to strip off a suffix
+        // (needed, for example, for RecordDataFormatterTest):
+        $classNameParts = explode('@', $className);
+        return $classNameParts[0];
     }
 
     /**
-     * Helper to put the template path and class name together
+     * Helper to put the template path and class name together.
      *
      * @param string $template  Template path (with %s as class name placeholder)
      * @param string $className Class name to abbreviate

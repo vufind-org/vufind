@@ -3,7 +3,7 @@
 /**
  * WorldCat record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Summon\Response;
 
 use VuFindSearch\Response\AbstractRecordCollection;
+
+use function is_array;
 
 /**
  * WorldCat record collection.
@@ -102,30 +105,30 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Get best bets from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
     public function getBestBets()
     {
-        return $this->response['recommendationLists']['bestBet'] ?? false;
+        return $this->response['recommendationLists']['bestBet'] ?? [];
     }
 
     /**
      * Get database recommendations from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
     public function getDatabaseRecommendations()
     {
-        return $this->response['recommendationLists']['database'] ?? false;
+        return $this->response['recommendationLists']['database'] ?? [];
     }
 
     /**
      * Get topic recommendations from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
     public function getTopicRecommendations()
     {
-        return $this->response['topicRecommendations'] ?? false;
+        return $this->response['topicRecommendations'] ?? [];
     }
 }

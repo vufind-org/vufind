@@ -1,0 +1,44 @@
+<?=$this->component('page-title', ['title' => $this->translate('Payment::Events'), 'level' => 2, 'lightboxLevel' => 3]);?>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><?=$this->transEsc('Payment::Date')?></th>
+      <th><?=$this->transEsc('Payment::Server IP')?></th>
+      <th><?=$this->transEsc('Payment::Server Name')?></th>
+      <th><?=$this->transEsc('Payment::Request')?></th>
+      <th><?=$this->transEsc('Payment::Message')?></th>
+      <th><?=$this->transEsc('Payment::Details')?></th>
+  </thead>
+  <tbody>
+    <?php foreach ($this->paymentEvents as $event): ?>
+      <?php $eventData = $event->getData(); ?>
+      <tr>
+        <td>
+          <time datetime="<?=$this->escapeHtmlAttr($event->getDate()->format('Y-m-d\TH:i:s'))?>">
+            <span title="<?=$this->escapeHtmlAttr($event->getDate()->format('Y-m-d H:i:s'))?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $event->getDate()->getTimestamp())?>
+          </time>
+        </td>
+        <td>
+          <?=$this->escapeHtml($event->getServerIp())?>
+        </td>
+        <td>
+          <?=$this->escapeHtml($event->getServerName())?>
+        </td>
+        <td>
+          <?=$this->escapeHtml($eventData['__request_uri'] ?? '')?>
+        </td>
+        <td>
+          <?=$this->transEsc('Payment::' . $event->getMessage())?>
+        </td>
+        <td>
+          <?php
+            if ($error = $eventData['error'] ?? null) {
+              echo $this->transEsc("Payment::$error");
+            }
+          ?>
+        </td>
+      </tr>
+    <?php endforeach;?>
+  </tbody>
+</table>

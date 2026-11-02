@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SIP2 authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
+use Laminas\Http\Request;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\SIP2;
 
 /**
@@ -44,38 +47,29 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
-     * @return LDAP
+     * @return SIP2
      */
-    public function getAuthObject($config = null)
+    public function getAuthObject(?array $config = null): SIP2
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
-        $authManager = new \VuFind\Auth\PluginManager(
-            new \VuFindTest\Container\MockContainer($this)
-        );
-        $obj = $authManager->get('SIP2');
-        $obj->setConfig($config);
+        $obj = new SIP2($this->createMock(ILSAuthenticator::class));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the LDAP object.
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig()
+    public function getAuthConfig(): array
     {
-        $config = new Config(
-            [
-                'host' => 'my.fake.host',
-                'port' => '6002'
-            ],
-            true
-        );
-        return new Config(['MultiAuth' => $config], true);
+        $config = [
+            'host' => 'my.fake.host',
+            'port' => '6002',
+        ];
+        return ['MultiAuth' => $config];
     }
 
     /**
@@ -84,14 +78,14 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Laminas\Http\Request
+     * @return Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = []): Request
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
-        $request = new \Laminas\Http\Request();
+        $request = new Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
@@ -101,7 +95,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -114,7 +108,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 

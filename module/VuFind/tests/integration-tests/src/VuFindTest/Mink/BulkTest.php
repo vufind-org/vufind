@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink bulk action test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -39,11 +41,11 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\RetryClickTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -61,7 +63,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function getSearchResultsPage()
+    protected function getSearchResultsPage(): Element
     {
         $session = $this->getMinkSession();
         $path = '/Search/Results?lookfor=id%3A(testsample1+OR+testsample2)';
@@ -77,38 +79,54 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Set up a generic bulk test by configuring VuFind to include bulk options
      * and then running a search.
      *
+     * @param array $extraConfig Extra config settings
+     *
      * @return Element
      */
-    protected function setUpGenericBulkTest($checkBoxes = true)
+    protected function setUpGenericBulkTest($extraConfig = []): Element
     {
+        $extraConfig['config']['Site'] = ['showBulkOptions' => true];
+        $extraConfig['config']['Mail'] = ['testOnly' => 1];
         // Activate the bulk options:
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Site' => ['showBulkOptions' => true],
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
+        $this->changeConfigs($extraConfig);
 
         return $this->getSearchResultsPage();
     }
 
     /**
-     * Assert that the "no items were selected" message is visible in the
-     * lightbox.
+     * Open a lightbox and assert that the "no items were selected" message is visible in the lightbox.
      *
-     * @param Element $page Page element
+     * @param Element $page           Page element
+     * @param string  $buttonSelector CSS selector for the element to click
      *
      * @return void
      */
-    protected function checkForNonSelectedMessage(Element $page)
+    protected function openLightboxAndCheckForNonSelectedMessage(Element $page, string $buttonSelector): void
     {
-        $warning = $this->findCss($page, '.modal-body .alert-danger');
-        $this->assertEquals(
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
-            $warning->getText()
+            $alert->getText()
+        );
+    }
+
+    /**
+     * Assert that the "Selection of %%count%% items exceeds the limit of %%limit%% for this action.
+     * Please select fewer items." message is visible in the lightbox.
+     *
+     * @param Element $page  Page element
+     * @param int     $count Number of selected items
+     * @param int     $limit Action limit
+     *
+     * @return void
+     */
+    protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
+    {
+        $this->assertSame(
+            'Selection of ' . $count . ' items exceeds the limit of '
+            . $limit . ' for this action. Please select fewer items.',
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
     }
 
@@ -119,10 +137,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForLoginMessage(Element $page)
+    protected function checkForLoginMessage(Element $page): void
     {
         $warning = $this->findCss($page, '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()
@@ -132,17 +150,14 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the email control works.
      *
-     * @retryCallback tearDownAfterClass
-     *
      * @return void
      */
-    public function testBulkEmail()
+    public function testBulkEmail(): void
     {
         $page = $this->setUpGenericBulkTest();
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, '#ribbon-email');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, '#ribbon-email');
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
@@ -166,26 +181,24 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
-            $this->findCss($page, '.modal-body .alert-success')->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
     }
 
     /**
      * Test that the save control works.
      *
-     * @depends testBulkEmail
-     *
      * @return void
      */
-    public function testBulkSave()
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
+    public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, '#ribbon-save');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, '#ribbon-save');
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
@@ -200,16 +213,15 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.modal-body input[name=submit]');
-        $result = $this->findCss($page, '.modal-body .alert-success');
-        $this->assertEquals(
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
-            $result->getText()
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
         $this->assertMatchesRegularExpression(
-            '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
+            '|href="[^"]*/Lists/List/[0-9]+"|',
             $result->getOuterHtml()
         );
 
@@ -218,33 +230,137 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the export control works.
+     * Test that we can bulk-delete records from a favorites list.
      *
      * @return void
      */
-    public function testBulkExport()
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkSave')]
+    public function testBulkDeleteFromList(): void
     {
-        $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-export');
+        // Log in to account that owns the list:
+        $session = $this->getMinkSession();
+        // Use old path intentionally:
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Go to the list:
+        $this->clickCss($page, 'a.user-list-link');
+        $this->waitForPageLoad($page);
 
         // First try clicking without selecting anything:
-        $button->click();
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, 'button[name="delete"]');
+        $this->closeLightbox($page, true);
+
+        // Now do it for real:
+        $page->find('css', '#myresearchCheckAll')->check();
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->waitForPageLoad($page);
+
+        // Confirm contents of confirmation box:
+        $this->assertSame(
+            'Title: Journal of rational emotive therapy : Title: Rational living.',
+            $this->findCssAndGetText($page, '#modal ul.record-list')
+        );
+        $this->clickCss($page, '#modal input[type="submit"]');
+        $this->waitForPageLoad($page);
+
+        // If all records were deleted, success message should be visible, and delete button should be gone after
+        // lightbox is closed.
+        $this->waitForLightboxHidden();
+        $this->assertSame(
+            'Your saved item(s) were deleted.',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+        $this->unFindCss($page, 'button[name="delete"]');
+    }
+
+    /**
+     * Data provider to allow testing of top or bottom controls.
+     *
+     * @return \Iterator
+     */
+    public static function topOrBottomProvider(): \Iterator
+    {
+        yield 'top button' => [''];
+        yield 'bottom button' => ['bottom_'];
+    }
+
+    /**
+     * Test that the export control works.
+     *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
+    public function testBulkExport(string $idPrefix): void
+    {
+        $session = $this->getMinkSession();
+        $page = $this->setUpGenericBulkTest();
+        $buttonSelector = '#' . $idPrefix . 'ribbon-export';
+
+        // First try clicking without selecting anything:
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
 
         // Select EndNote option
-        $select = $this->findCss($page, '#format');
+        try {
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $select = $this->findCss($page, '#format', 1500);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            $select = $this->findCss($page, '#format');
+        }
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
-        $submit->click();
-        $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
-        $this->assertEquals('Download File', $result->getText());
+        $this->clickCss($page, '.form-cart-export input[name=submitButton]');
+        $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
+        $this->assertSame('Download File', $buttonText);
+    }
+
+    /**
+     * Test that the print control works.
+     *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
+    public function testBulkPrint(string $idPrefix): void
+    {
+        $session = $this->getMinkSession();
+        $page = $this->setUpGenericBulkTest();
+        $buttonSelector = '#' . $idPrefix . 'ribbon-print';
+
+        // First try clicking without selecting anything:
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
+        $page->find('css', '.modal-body .btn')->click();
+
+        // Now do it for real -- we should get redirected.
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+        [, $params] = explode('?', $session->getCurrentUrl());
+        if (str_starts_with($params, 'lookfor')) {
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            [, $params] = explode('?', $session->getCurrentUrl());
+        }
+        $this->assertSame(
+            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
+            str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
+        );
     }
 
     /**
@@ -252,25 +368,106 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBulkPrint()
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
+    public function testBulkActionLimits(): void
     {
         $session = $this->getMinkSession();
-        $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-print');
-
-        // First try clicking without selecting anything:
-        $button->click();
-        $this->checkForNonSelectedMessage($page);
-        $page->find('css', '.modal-body .btn')->click();
-
-        // Now do it for real -- we should get redirected.
+        $page = $this->setUpGenericBulkTest([
+            'config' => [
+                'BulkActions' => [
+                    'limits' => [
+                        'default' => 1,
+                        'email' => 1,
+                        'export' => 2,
+                        'print' => 1,
+                        'saveCart' => 2,
+                        'delete' => 1,
+                    ],
+                ],
+                'Export' => [
+                    'EndNote' => 'record,bulk',
+                    'MARC' => 'record,bulk',
+                ],
+            ],
+            'export' => [
+                'EndNote' => [
+                    'requiredMethods' => ['getTitle'],
+                    'limit' => 1,
+                ],
+                'MARC' => [
+                    'requiredMethods' => ['getMarcReader'],
+                    'limit' => 2,
+                ],
+            ],
+        ]);
         $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
-        [, $params] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals(
-            'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
-            str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
+
+        // check email limit
+        $this->clickCss($page, '#ribbon-email');
+        $this->waitForPageLoad($page);
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
+
+        // check print limit
+        $this->clickCss($page, '#ribbon-print');
+        $this->waitForPageLoad($page);
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
+
+        // check saveCart limit without exceeding limit
+        $this->clickCss($page, '#ribbon-save');
+        $this->waitForPageLoad($page);
+        $this->checkForLoginMessage($page);
+
+        // Log in to account created in previous test.
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+
+        // Save the favorites.
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
+        $this->assertSame(
+            'Your item(s) were saved successfully. Go to List.',
+            $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
+
+        // check export limit exceeded
+        $this->clickCss($page, '#ribbon-export');
+        $this->waitForPageLoad($page);
+        $select = $this->findCss($page, '#format');
+        $select->selectOption('EndNote');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $submit->click();
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page);
+
+        // check export limit not exceeded
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->clickCss($page, '#ribbon-export');
+        $this->waitForPageLoad($page);
+        $select = $this->findCss($page, '#format');
+        $select->selectOption('MARC');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $submit->click();
+        $this->assertSame(
+            'Download File',
+            $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn')
+        );
+
+        // check delete limit exceeded
+        $session->visit($this->getVuFindUrl() . '/Lists/AllItems');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // go to the list:
+        $this->clickCss($page, 'a.user-list-link');
+        $this->waitForPageLoad($page);
+
+        // try deleting to many items
+        $page->find('css', '#myresearchCheckAll')->check();
+        $this->clickCss($page, 'button[name="delete"]');
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
     }
 
     /**

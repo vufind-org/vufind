@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * Versions Test Class.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2022.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+
+namespace VuFindTest\RecordTab;
+
+use VuFind\RecordTab\Versions;
+
+/**
+ * Versions Test Class.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+class VersionsTest extends \PHPUnit\Framework\TestCase
+{
+    use \VuFindTest\Feature\TranslatorTrait;
+
+    /**
+     * Test getting Description.
+     *
+     * @return void
+     */
+    public function testGetDescription(): void
+    {
+        $count = 5;
+        $som = $this->getMockPluginManager();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
+        $recordDriver->method('tryMethod')
+            ->with('getOtherVersionCount')
+            ->willReturn($count);
+        $obj = new Versions($som);
+        $obj->setRecordDriver($recordDriver);
+        $translator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'other_versions_title' => 'Count:%%count%%',
+                ],
+            ]
+        );
+        $obj->setTranslator($translator);
+        $obj->getDescription();
+        $this->assertEquals("Count:$count", $obj->getDescription());
+    }
+
+    /**
+     * Data provider for testIsActive.
+     *
+     * @return \Iterator
+     */
+    public static function isActiveProvider(): \Iterator
+    {
+        yield 'Test1' => ['foo', 1, true];
+        yield 'Test2' => ['foo', 0, false];
+        yield 'Test3' => [null, 1, false];
+        yield 'Test4' => ['foo', 0, false];
+    }
+
+    /**
+     * Test if the tab is active.
+     *
+     * @param ?string $versionAction  Action from Plugin
+     * @param int     $versionCount   Version count from Record Driver
+     * @param bool    $expectedResult Expected return value from isActive
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
+    public function testisActive(?string $versionAction, int $versionCount, bool $expectedResult): void
+    {
+        $som = $this->getMockPluginManager();
+        $optionsMock = $this->createMock(\VuFind\Search\Base\Options::class);
+        $som->method('get')->with('foo')->willReturn($optionsMock);
+        $optionsMock->expects($this->once())->method('getVersionsAction')
+            ->willReturn($versionAction);
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
+        $recordDriver->expects($this->once())->method('getSourceIdentifier')
+            ->willReturn('foo');
+        $recordDriver->method('tryMethod')
+            ->with('getOtherVersionCount')
+            ->willReturn($versionCount);
+        $obj = new Versions($som);
+        $obj->setRecordDriver($recordDriver);
+        $this->assertSame($expectedResult, $obj->isActive());
+    }
+
+    /**
+     * Build a mock plugin manager.
+     *
+     * @return PluginManager
+     */
+    protected function getMockPluginManager()
+    {
+        return $this->createMock(\VuFind\Search\Options\PluginManager::class);
+    }
+}

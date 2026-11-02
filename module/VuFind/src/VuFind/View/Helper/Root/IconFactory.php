@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Icon helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -26,13 +27,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Icon helper factory.
@@ -47,7 +51,7 @@ use Psr\Container\ContainerInterface;
 class IconFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -63,29 +67,31 @@ class IconFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
+            ->getMergedConfig('icons');
+
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause
         // unnecessary out of memory exceptions when a memory limit is enabled; we
         // can disable these problematic checks by setting memory_limit to -1.
         $cacheConfig = [
             'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
-            'options' => ['memory_limit' => -1]
+            'options' => ['memory_limit' => -1],
         ];
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);
         $helpers = $container->get('ViewHelperManager');
+        $renderer = $container->get(RendererInterface::class);
         return new $requestedName(
             $config,
             $cache,
             $helpers->get('escapeHtmlAttr'),
-            $helpers->get('headLink'),
-            $container->get('ViewManager')->getViewModel()->rtl
+            $renderer,
+            $container->get(GlobalsContainer::class)['rtl']
         );
     }
 }

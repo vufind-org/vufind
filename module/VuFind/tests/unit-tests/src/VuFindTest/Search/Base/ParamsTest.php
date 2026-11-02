@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Base Search Object Parameters Test
+ * Base Search Object Parameters Test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2022.
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -28,14 +29,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Base;
 
-use VuFind\Config\PluginManager;
+use minSO;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
+use VuFind\Search\QueryAdapter;
+use VuFindSearch\Query\Query;
 
 /**
- * Base Search Object Parameters Test
+ * Base Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests
@@ -47,44 +52,27 @@ use VuFind\Search\Base\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\SearchObjectsTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Get mock Options object
+     * Get mock Params object.
      *
-     * @param PluginManager $configManager Config manager for Options object (null
-     * for new mock)
-     *
-     * @return Options
-     */
-    protected function getMockOptions(PluginManager $configManager = null): Options
-    {
-        return $this->getMockForAbstractClass(
-            Options::class,
-            [$configManager ?? $this->getMockConfigPluginManager([])]
-        );
-    }
-
-    /**
-     * Get mock Params object
-     *
-     * @param Options       $options       Options object to send to Params
-     * constructor (null for new mock)
-     * @param PluginManager $configManager Config manager for Params object (null
+     * @param Options                $options       Options object to send to Params
+     *                                              constructor (null for new mock)
+     * @param ConfigManagerInterface $configManager Config manager for Params object (null
      * for new mock)
      *
      * @return Params
      */
     protected function getMockParams(
         ?Options $options = null,
-        ?PluginManager $configManager = null
+        ?ConfigManagerInterface $configManager = null
     ): Params {
-        $configManager = $configManager ?? $this->getMockConfigPluginManager([]);
-        return $this->getMockForAbstractClass(
-            Params::class,
-            [$options ?? $this->getMockOptions($configManager), $configManager]
-        );
+        $configManager ??= $this->getMockConfigManager();
+        return new class ($options ?? $this->getBaseOptionsObject($configManager), $configManager) extends Params {
+        };
     }
 
     /**
@@ -96,7 +84,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         // None by default:
         $params = $this->getMockParams();
-        $this->assertEquals([], $params->getCheckboxFacets());
+        $this->assertSame([], $params->getCheckboxFacets());
 
         $expectedSelected = $expectedUnselected = [
             'desc' => 'checkbox_label',
@@ -132,7 +120,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFacet('building', 'building_label');
 
         // No filters:
-        $this->assertEquals([], $params->getFilterList());
+        $this->assertSame([], $params->getFilterList());
 
         // Add multiple filters:
         $params->addFilter('~format:bar');
@@ -142,7 +130,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($params->hasFilter('~format:bar'));
         $this->assertTrue($params->hasFilter('~format:baz'));
         $this->assertTrue($params->hasFilter('building:main'));
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'format_label' => [
                     [
@@ -156,7 +144,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'baz',
                         'field' => 'format',
                         'operator' => 'OR',
-                    ]
+                    ],
                 ],
                 'building_label' => [
                     [
@@ -170,15 +158,15 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'sub',
                         'field' => 'building',
                         'operator' => 'NOT',
-                    ]
-                ]
+                    ],
+                ],
             ],
             $params->getFilterList()
         );
 
         // Remove format filters and verify:
         $params->removeAllFilters('format');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'building_label' => [
                     [
@@ -192,8 +180,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'sub',
                         'field' => 'building',
                         'operator' => 'NOT',
-                    ]
-                ]
+                    ],
+                ],
 
             ],
             $params->getFilterList()
@@ -201,7 +189,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Remove building:main filter and verify:
         $params->removeFilter('building:main');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'building_label' => [
                     [
@@ -209,8 +197,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'sub',
                         'field' => 'building',
                         'operator' => 'NOT',
-                    ]
-                ]
+                    ],
+                ],
 
             ],
             $params->getFilterList()
@@ -218,7 +206,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Remove the remaining building filter with removeAllFilters and verify:
         $params->removeAllFilters('building');
-        $this->assertEquals([], $params->getFilterList());
+        $this->assertSame([], $params->getFilterList());
 
         // Test that removeAllFilters without parameters removes everything:
         $params->addFilter('~format:bar');
@@ -232,7 +220,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($params->hasFilter('~format:bar'));
         $this->assertFalse($params->hasFilter('format:baz'));
         $this->assertFalse($params->hasFilter('-building:main'));
-        $this->assertEquals([], $params->getFilterList());
+        $this->assertSame([], $params->getFilterList());
     }
 
     /**
@@ -244,18 +232,18 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getMockParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // If we add a checkbox facet for a field that already has an assigned label,
         // we expect the checkbox label to override the field label:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
     }
 
     /**
@@ -270,21 +258,21 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params,
             'facetAliases',
             [
-                'foo_old' => 'foo'
+                'foo_old' => 'foo',
             ]
         );
 
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo_old'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo_old'));
 
         // If we add a checkbox facet for a field that already has an assigned label,
         // we expect the checkbox label to override the field label:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo_old', 'bar'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo_old', 'bar'));
     }
 
     /**
@@ -294,7 +282,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Mock', $this->getMockParams()->getSearchClassId());
+        $this->assertSame('Mock', $this->getMockParams()->getSearchClassId());
     }
 
     /**
@@ -308,19 +296,53 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Key test: word boundaries:
         $params->setBasicSearch('go good googler');
-        $this->assertEquals(
+        $this->assertSame(
             'run good googler',
             $params->getDisplayQueryWithReplacedTerm('go', 'run')
         );
 
         // Key test: replacement of wildcard queries:
         $params->setBasicSearch('oftamologie*');
-        $this->assertEquals(
+        $this->assertSame(
             'ophtalmologie*',
             $params->getDisplayQueryWithReplacedTerm(
                 'oftamologie*',
                 'ophtalmologie*'
             )
         );
+    }
+
+    /**
+     * Test query adapters.
+     *
+     * @return void
+     */
+    public function testQueryAdapters(): void
+    {
+        $params = $this->getMockParams();
+        $params->setQuery(new Query('foo'));
+        $params->setLimit(50);
+
+        $minified = $this->createMock(minSO::class);
+        $params->minify($minified);
+        $this->assertEquals(
+            [
+                [
+                    'l' => 'foo',
+                    'i' => null,
+                    's' => 'b',
+                ],
+            ],
+            $minified->t
+        );
+        $this->assertEquals(50, $minified->scp['limit']);
+
+        $customAdapter = $this->createMock(QueryAdapter::class);
+        $customAdapter->expects($this->once())
+            ->method('minify')
+            ->willReturn('CUSTOM');
+        $params->setQueryAdapter($customAdapter);
+        $params->minify($minified);
+        $this->assertEquals('CUSTOM', $minified->t);
     }
 }

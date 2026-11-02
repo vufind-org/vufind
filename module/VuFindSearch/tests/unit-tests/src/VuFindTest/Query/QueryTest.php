@@ -3,7 +3,7 @@
 /**
  * Unit tests for Query class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Query;
 
 use PHPUnit\Framework\TestCase;
@@ -43,7 +44,7 @@ use VuFindSearch\Query\Query;
 class QueryTest extends TestCase
 {
     /**
-     * Test containsTerm() method
+     * Test containsTerm() method.
      *
      * @return void
      */
@@ -68,7 +69,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test replaceTerm() method
+     * Test replaceTerm() method.
      *
      * @return void
      */
@@ -110,7 +111,7 @@ class QueryTest extends TestCase
     public function testMultipleReplacements()
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
-        $q = new Query("color code");
+        $q = new Query('color code');
         $q->replaceTerm(
             'color code',
             '((color code) OR (color codes))',
@@ -129,7 +130,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test normalization-related logic
+     * Test normalization-related logic.
      *
      * @return void
      */
@@ -145,10 +146,15 @@ class QueryTest extends TestCase
         );
         $q->replaceTerm('test', 'mess', $normalizer);
         $this->assertEquals('this is a mess of things', $q->getString());
+
+        // Test UNICODE characters ("composers" in Northern Sámi):
+        $q = new Query('šuokŋadahkkit');
+        $this->assertTrue($q->containsTerm('šuokŋadahkkit', $normalizer));
+        $this->assertTrue($q->containsTerm('suokŋadahkkit', $normalizer));
     }
 
     /**
-     * Test setHandler() method
+     * Test setHandler() method.
      *
      * @return void
      */
@@ -160,7 +166,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test setOperator() method
+     * Test setOperator() method.
      *
      * @return void
      */

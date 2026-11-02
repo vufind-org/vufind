@@ -1,8 +1,9 @@
 <?php
+
 /**
- * CollectionSideFacets recommendation module Test Class
+ * CollectionSideFacets recommendation module Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\CollectionSideFacets;
 
 /**
- * CollectionSideFacets recommendation module Test Class
+ * CollectionSideFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -40,51 +42,39 @@ use VuFind\Recommend\CollectionSideFacets;
  */
 class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
-     * Test "getResults"
+     * Test "getResults".
      *
      * @return void
      */
     public function testKeywordFilter()
     {
         $results = $this->getSolrResults($this->getMockParams());
-        $results->getParams()->expects($this->once())->method('getDisplayQuery')->will($this->returnValue('foo'));
-        $csf = $this->getSideFacets(null, $results, '::facets:true');
+        $results->getParams()->expects($this->once())->method('getDisplayQuery')->willReturn('foo');
+        $csf = $this->getSideFacets($results, '::facets:true');
         $this->assertEquals('foo', $csf->getKeywordFilter());
         $this->assertTrue($csf->keywordFilterEnabled());
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
-     * @param \VuFind\Config\PluginManager                $configLoader config loader
-     * @param \VuFind\Search\Solr\Results                 $results      results
-     * object
-     * @param string                                      $settings     settings
-     * @param \Laminas\Stdlib\Parameters                  $request      request
-     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical
-     * facet helper (true to build default, null to omit)
+     * @param ?\VuFind\Search\Solr\Results $results  results object
+     * @param string                       $settings settings
      *
-     * @return SideFacets
+     * @return CollectionSideFacets
      */
     protected function getSideFacets(
-        $configLoader = null,
-        $results = null,
-        $settings = '',
-        $request = null,
-        $facetHelper = true
-    ) {
-        $sf = new CollectionSideFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
-            $facetHelper ? new \VuFind\Search\Solr\HierarchicalFacetHelper() : false
-        );
+        ?\VuFind\Search\Solr\Results $results = null,
+        string $settings = ''
+    ): CollectionSideFacets {
+        $sf = new CollectionSideFacets($this->getMockConfigManager([]));
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            new \Laminas\Stdlib\Parameters([])
         );
         $sf->process($results ?? $this->getSolrResults());
         return $sf;
@@ -102,10 +92,8 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

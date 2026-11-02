@@ -3,7 +3,7 @@
 /**
  * Exception for paging too deep into search results.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Exception;
 
 use Exception;
@@ -52,10 +53,10 @@ class DeepPagingException extends RuntimeException
     /**
      * Constructor.
      *
-     * @param string    $message   Exception message
-     * @param int       $code      Exception code
-     * @param int       $legalPage A legal page number for results
-     * @param Exception $prev      Previous exception
+     * @param string     $message   Exception message
+     * @param int        $code      Exception code
+     * @param int        $legalPage A legal page number for results
+     * @param ?Exception $prev      Previous exception
      *
      * @return void
      */
@@ -63,7 +64,7 @@ class DeepPagingException extends RuntimeException
         $message,
         $code,
         $legalPage = 0,
-        Exception $prev = null
+        ?Exception $prev = null
     ) {
         parent::__construct($message, $code, $prev);
         $this->legalPage = $legalPage;

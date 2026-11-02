@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Link Resolver Driver Wrapper
+ * Link Resolver Driver Wrapper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -19,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -28,10 +29,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver;
 
+use function call_user_func_array;
+use function is_callable;
+
 /**
- * Resolver Connection Class
+ * Resolver Connection Class.
  *
  * This abstract class defines the signature for the available methods for
  * interacting with the local OpenURL Resolver. It is a cutdown version
@@ -55,14 +60,14 @@ class Connection
     protected $driver = false;
 
     /**
-     * The path to the resolver cache, if any (empty string for no caching)
+     * The path to the resolver cache, if any (empty string for no caching).
      *
      * @var string
      */
     protected $cachePath = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * This is responsible for instantiating the driver that has been specified.
      *
@@ -94,14 +99,14 @@ class Connection
     {
         if (is_dir($cacheDir) && is_writable($cacheDir)) {
             $this->cachePath = $cacheDir;
-            if (!(substr($this->cachePath, -1) == '/')) {
+            if (!str_ends_with($this->cachePath, '/')) {
                 $this->cachePath .= '/';
             }
         }
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * This is responsible for retrieving the valid links for a
      * particular OpenURL. The links may be cached or fetched remotely.
@@ -131,7 +136,7 @@ class Connection
 
     /**
      * Default method -- pass along calls to the driver if available; return
-     * false otherwise.  This allows custom functions to be implemented in
+     * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
      * @param string $methodName The name of the called method.

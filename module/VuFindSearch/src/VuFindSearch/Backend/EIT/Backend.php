@@ -3,7 +3,7 @@
 /**
  * EIT backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,15 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EIT;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -84,7 +82,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -92,14 +90,14 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         if (null === $params) {
             $params = new ParamBag();
         }
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params, $offset, $limit);
-        $this->log('debug', print_r($response, true));
+        $this->debug('Response: ' . $this->varDump($response));
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -108,12 +106,12 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $response   = $this->connector->getRecord($id, $params);
         $collection = $this->createRecordCollection($response);

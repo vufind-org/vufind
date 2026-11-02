@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr Connection Test Class
+ * Solr Connection Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration\Connection;
 
 use VuFindSearch\ParamBag;
 
 /**
- * Solr Connection Test Class
+ * Solr Connection Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -68,10 +70,10 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $extras = new ParamBag(['extras' => 'id']);
         $result = $solr->alphabeticBrowse('author', 'Dublin Society', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
-        $this->assertEquals($item['count'], count($item['extras']['id']));
-        $this->assertTrue(empty($item['useInstead']));
-        $this->assertTrue(in_array(['vtls000013187'], $item['extras']['id']));
-        $this->assertTrue(in_array('Royal Dublin Society', $item['seeAlso']));
+        $this->assertCount($item['count'], $item['extras']['id']);
+        $this->assertEmpty($item['useInstead']);
+        $this->assertContains(['vtls000013187'], $item['extras']['id']);
+        $this->assertContains('Royal Dublin Society', $item['seeAlso']);
         $this->assertEquals('Dublin Society', $item['heading']);
     }
 
@@ -88,10 +90,10 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             ->alphabeticBrowse('author', 'Dublin Society, Royal', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(0, $item['count']);
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('Dublin Society, Royal', $item['heading']);
-        $this->assertTrue(empty($item['seeAlso']));
-        $this->assertTrue(in_array('Royal Dublin Society', $item['useInstead']));
+        $this->assertEmpty($item['seeAlso']);
+        $this->assertContains('Royal Dublin Society', $item['useInstead']);
     }
 
     /**
@@ -106,12 +108,12 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $result = $solr->alphabeticBrowse('dewey', '123.45 .I39', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(1, $item['count']);
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('123.45 .I39', $item['heading']);
         $result = $solr->alphabeticBrowse('dewey', '123.46 .Q39', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(1, $item['count']);
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('123.46 .Q39', $item['heading']);
     }
 
@@ -124,9 +126,9 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $solr = $this->getBackend();
         $currentPageInfo = $solr->terms('id', 'test', 1)->getFieldTerms('id');
-        $this->assertEquals(1, count($currentPageInfo));
+        $this->assertCount(1, $currentPageInfo);
         foreach ($currentPageInfo as $key => $value) {
-            $this->assertEquals('test', substr($key, 0, 4));
+            $this->assertSame('test', substr($key, 0, 4));
         }
     }
 }

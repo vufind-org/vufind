@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<collection>
+    <record>
+        <leader>01919cam a2200421 i 4500</leader>
+        <controlfield tag="001">in00006796642</controlfield>
+        <controlfield tag="008">230324t20182018ilua 000 0 eng d</controlfield>
+        <controlfield tag="005">20230412235149.0</controlfield>
+        <datafield ind1=" " ind2="0" tag="651">
+            <subfield code="a">Guerrero (Mexico : State)</subfield>
+            <subfield code="x">Social life and customs</subfield>
+            <subfield code="v">Pictorial works.</subfield>
+        </datafield>
+        <datafield ind1=" " ind2="0" tag="650">
+            <subfield code="a">Street photography</subfield>
+            <subfield code="z">Mexico</subfield>
+            <subfield code="z">Guerrero (State)</subfield>
+        </datafield>
+        <datafield ind1=" " ind2="7" tag="655">
+            <subfield code="a">Photobooks.</subfield>
+            <subfield code="2">lcgft</subfield>
+            <subfield code="0">http://id.loc.gov/authorities/genreForms/gf2014026144</subfield>
+        </datafield>
+    </record>
+</collection>

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Record ID list (support class for Loader)
+ * Record ID list (support class for Loader).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -25,12 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 use VuFind\RecordDriver\AbstractBase as Record;
 
+use function is_array;
+
 /**
- * Record ID list (support class for Loader)
+ * Record ID list (support class for Loader).
  *
  * @category VuFind
  * @package  Record
@@ -55,7 +59,7 @@ class SourceAndIdList
     protected $bySource = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $ids Array of associative arrays with id/source keys or strings
      * in source|id format. In associative array formats, there is also an optional
@@ -73,7 +77,7 @@ class SourceAndIdList
             if (!is_array($details)) {
                 $parts = explode('|', $details, 2);
                 $ids[$i] = $details = [
-                    'source' => $parts[0], 'id' => $parts[1]
+                    'source' => $parts[0], 'id' => $parts[1],
                 ];
             }
             $this->bySource[$details['source']][$details['id']][] = $i;
@@ -112,7 +116,7 @@ class SourceAndIdList
      */
     public function getRecordPositions(Record $record)
     {
-        $id = $record->getUniqueId();
+        $id = $record->getUniqueID();
         $source = $record->getSourceIdentifier();
 
         // In some cases (e.g. Summon), the ID may have changed, so also check the

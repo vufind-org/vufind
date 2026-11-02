@@ -62,35 +62,31 @@
                 </field>
 
                 <!-- LANGUAGE -->
-                <xsl:if test="/oai_doaj:doajArticle/oai_doaj:language">
-                    <xsl:for-each select="/oai_doaj:doajArticle/oai_doaj:language">
-                        <xsl:if test="string-length() > 0">
-                            <field name="language">
-                                <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
-                            </field>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="oai_doaj:language">
+                    <xsl:if test="string-length() > 0">
+                        <field name="language">
+                            <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- FORMAT -->
                 <field name="format">Article</field>
 
                 <!-- AUTHOR -->
-                <xsl:if test="oai_doaj:authors/oai_doaj:author/oai_doaj:name">
-                    <xsl:for-each select="oai_doaj:authors/oai_doaj:author/oai_doaj:name">
-                        <xsl:if test="normalize-space()">
-                            <field name="author">
+                <xsl:for-each select="oai_doaj:authors/oai_doaj:author/oai_doaj:name">
+                    <xsl:if test="normalize-space()">
+                        <field name="author">
+                            <xsl:value-of select="normalize-space()"/>
+                        </field>
+                        <!-- use first author value for sorting -->
+                        <xsl:if test="position()=1">
+                            <field name="author_sort">
                                 <xsl:value-of select="normalize-space()"/>
                             </field>
-                            <!-- use first author value for sorting -->
-                            <xsl:if test="position()=1">
-                                <field name="author_sort">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                            </xsl:if>
                         </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- TITLE -->
                 <xsl:if test="oai_doaj:title[normalize-space()]">
@@ -104,7 +100,7 @@
                         <xsl:value-of select="oai_doaj:title[normalize-space()]"/>
                     </field>
                     <field name="title_sort">
-                        <xsl:value-of select="php:function('VuFind::stripArticles', string(oai_doaj:title[normalize-space()]))"/>
+                        <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string(oai_doaj:title[normalize-space()])))"/>
                     </field>
                 </xsl:if>
 
@@ -141,6 +137,9 @@
                     <field name="publishDate">
                         <xsl:value-of select="oai_doaj:publicationDate"/>
                     </field>
+                    <field name="publishDateRange">
+                        <xsl:value-of select="oai_doaj:publicationDate"/>
+                    </field>
                     <field name="publishDateSort">
                         <xsl:value-of select="oai_doaj:publicationDate"/>
                     </field>
@@ -154,15 +153,13 @@
                 </xsl:if>
 
                 <!-- SUBJECT -->
-                <xsl:if test="oai_doaj:keywords">
-                    <xsl:for-each select="oai_doaj:keywords/oai_doaj:keyword">
-                        <xsl:if test="string-length() > 0">
-                            <field name="topic">
-                                <xsl:value-of select="normalize-space()"/>
-                            </field>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="oai_doaj:keywords/oai_doaj:keyword">
+                    <xsl:if test="string-length() > 0">
+                        <field name="topic">
+                            <xsl:value-of select="normalize-space()"/>
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- URL -->
                 <xsl:if test="oai_doaj:fullTextUrl">

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Current path view helper
+ * Current path view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,12 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\ServerUrl;
+use VuFind\ServiceManager\Factory\Autowire;
+
+use function strlen;
 
 /**
- * Current path view helper
+ * Current path view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,8 +43,19 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CurrentPath extends AbstractHelper
+class CurrentPath
 {
+    /**
+     * Constructor.
+     *
+     * @param ServerUrl $serverUrl ServerUrl helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected ServerUrl $serverUrl,
+    ) {
+    }
+
     /**
      * Get the path of the current URL.
      *
@@ -47,9 +63,8 @@ class CurrentPath extends AbstractHelper
      */
     public function __invoke()
     {
-        $serverUrlHelper = $this->getView()->plugin('serverurl');
-        $base = rtrim($serverUrlHelper(), '/');
-        $full = $serverUrlHelper(true);
+        $base = rtrim(($this->serverUrl)(), '/');
+        $full = ($this->serverUrl)(true);
         $parts = explode('?', $full);
         return substr($parts[0], strlen($base));
     }

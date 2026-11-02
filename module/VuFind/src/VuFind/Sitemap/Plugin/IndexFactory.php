@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Index-based generator plugin factory
+ * Index-based generator plugin factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -34,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Index-based generator plugin factory
+ * Index-based generator plugin factory.
  *
  * @category VuFind
  * @package  Sitemap
@@ -45,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class IndexFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -61,38 +63,35 @@ class IndexFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $sitemapConfig = $configLoader->get('sitemap');
-        $retrievalMode = $sitemapConfig->Sitemap->retrievalMode ?? 'search';
+        $sitemapConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('sitemap');
+        $retrievalMode = $sitemapConfig['Sitemap']['retrievalMode'] ?? 'search';
         return new $requestedName(
             $this->getBackendSettings($sitemapConfig),
             $this->getIdFetcher($container, $retrievalMode),
-            $sitemapConfig->Sitemap->countPerPage ?? 10000,
-            (array)($sitemapConfig->Sitemap->extraFilters ?? [])
+            $sitemapConfig['Sitemap']['countPerPage'] ?? 10000,
+            (array)($sitemapConfig['Sitemap']['extraFilters'] ?? [])
         );
     }
 
     /**
      * Process backend configuration into a convenient array.
      *
-     * @param Config $config Sitemap config
+     * @param array $config Sitemap config
      *
      * @return array
      */
-    protected function getBackendSettings($config): array
+    protected function getBackendSettings(array $config): array
     {
         // Process backend configuration:
-        $backendConfig = $config->Sitemap->index ?? ['Solr,/Record/'];
+        $backendConfig = (array)($config['Sitemap']['index'] ?? ['Solr,/Record/']);
         if (!$backendConfig) {
             return [];
         }
-        $backendConfig = is_callable([$backendConfig, 'toArray'])
-            ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
             $parts = array_map('trim', explode(',', $n));
             return ['id' => $parts[0], 'url' => $parts[1]];

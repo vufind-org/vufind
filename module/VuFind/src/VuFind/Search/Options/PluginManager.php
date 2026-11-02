@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Search options plugin manager
+ * Search options plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Options;
 
 /**
- * Search options plugin manager
+ * Search options plugin manager.
  *
  * @category VuFind
  * @package  Search
@@ -49,12 +51,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'combined' => \VuFind\Search\Combined\Options::class,
         'eds' => \VuFind\Search\EDS\Options::class,
         'eit' => \VuFind\Search\EIT\Options::class,
+        'epf' => \VuFind\Search\EPF\Options::class,
         'emptyset' => \VuFind\Search\EmptySet\Options::class,
         'favorites' => \VuFind\Search\Favorites\Options::class,
         'libguides' => \VuFind\Search\LibGuides\Options::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Options::class,
         'mixedlist' => \VuFind\Search\MixedList\Options::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Options::class,
         'primo' => \VuFind\Search\Primo\Options::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Options::class,
         'search2' => \VuFind\Search\Search2\Options::class,
         'search2collection' => \VuFind\Search\Search2\Options::class,
         'solr' => \VuFind\Search\Solr\Options::class,
@@ -67,42 +72,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summon' => \VuFind\Search\Summon\Options::class,
         'tags' => \VuFind\Search\Tags\Options::class,
         'worldcat' => \VuFind\Search\WorldCat\Options::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Options::class,
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        \VuFind\Search\Blender\Options::class => OptionsFactory::class,
-        \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
-        \VuFind\Search\Combined\Options::class => OptionsFactory::class,
-        \VuFind\Search\EDS\Options::class =>
-            \VuFind\Search\EDS\OptionsFactory::class,
-        \VuFind\Search\EIT\Options::class => OptionsFactory::class,
-        \VuFind\Search\EmptySet\Options::class => OptionsFactory::class,
-        \VuFind\Search\Favorites\Options::class => OptionsFactory::class,
-        \VuFind\Search\LibGuides\Options::class => OptionsFactory::class,
-        \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
-        \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
-        \VuFind\Search\Primo\Options::class => OptionsFactory::class,
-        \VuFind\Search\Search2\Options::class => OptionsFactory::class,
-        \VuFind\Search\Search2Collection\Options::class => OptionsFactory::class,
-        \VuFind\Search\Solr\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrAuth\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrAuthor\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrAuthorFacets\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrCollection\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrReserves\Options::class => OptionsFactory::class,
-        \VuFind\Search\SolrWeb\Options::class => OptionsFactory::class,
-        \VuFind\Search\Summon\Options::class => OptionsFactory::class,
-        \VuFind\Search\Tags\Options::class => OptionsFactory::class,
-        \VuFind\Search\WorldCat\Options::class => OptionsFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Bookplate Related Items Test Class
+ * Bookplate Related Items Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,16 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Related;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\Bookplate;
-use VuFind\Related\BookplateFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 
 /**
- * Bookplate Related Items Test Class
+ * Bookplate Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,10 +45,10 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
  */
 class BookplateTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Test default behavior (no bookplates)
+     * Test default behavior (no bookplates).
      *
      * @return void
      */
@@ -75,14 +76,14 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'bookplate_full' => 'https://localhost/%%img%%',
                 'bookplate_thumb' => 'https://localhost/%%thumb%%',
                 'bookplate_display_title' => true,
-            ]
+            ],
         ];
         $container = $this->getContainer('config', $config);
         $driver = $this->getTestRecord(
             [
                 'donor_str' => 'Mr. Donor',
                 'donor_image_str' => 'image.jpg',
-                'donor_thumb_str' => 'thumb.jpg'
+                'donor_thumb_str' => 'thumb.jpg',
             ]
         );
         $bookplate = $this->getBookplate($container);
@@ -93,7 +94,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'fullUrl' => 'https://localhost/image.jpg',
                 'thumbUrl' => 'https://localhost/thumb.jpg',
                 'displayTitle' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $bookplate->getBookplateDetails());
     }
@@ -114,7 +115,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'bookplate_full' => 'https://localhost/%%img%%',
                 'bookplate_thumb' => 'https://localhost/%%thumb%%',
                 'bookplate_display_title' => false,
-            ]
+            ],
         ];
         $container = $this->getContainer('foo', $config);
         $driver = $this->getTestRecord(
@@ -138,7 +139,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'fullUrl' => 'https://localhost/image2.jpg',
                 'thumbUrl' => 'https://localhost/thumb2.jpg',
                 'displayTitle' => false,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $bookplate->getBookplateDetails());
     }
@@ -150,10 +151,10 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return Bookplate
      */
-    protected function getBookplate(MockContainer $container = null): Bookplate
+    protected function getBookplate(?MockContainer $container = null): Bookplate
     {
-        $factory = new BookplateFactory();
-        return $factory($container ?? $this->getContainer(), Bookplate::class);
+        $container ??= $this->getContainer();
+        return new Bookplate($container->get(ConfigManagerInterface::class));
     }
 
     /**
@@ -170,8 +171,8 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
     ): MockContainer {
         $container = new MockContainer($this);
         $container->set(
-            ConfigManager::class,
-            $this->getMockConfigPluginManager([$expectedConfig => $config])
+            ConfigManagerInterface::class,
+            $this->getMockConfigManager([$expectedConfig => $config])
         );
         return $container;
     }

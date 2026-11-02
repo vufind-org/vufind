@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Author aspect of the Search Multi-class (Options)
+ * Author aspect of the Search Multi-class (Options).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrAuthor;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -39,25 +43,25 @@ namespace VuFind\Search\SolrAuthor;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // No spell check needed in author module:
         $this->spellcheck = false;
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'author-facetlist';
     }
@@ -67,32 +71,32 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'author-home';
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $ss = $this->configLoader->get($this->getSearchIni());
+        $ss = $this->configManager->getConfigArray($this->getSearchIni());
 
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:
-        if (isset($ss->AuthorModuleRecommendations)) {
+        if (isset($ss['AuthorModuleRecommendations'])) {
             $recommend = [];
-            foreach ($ss->AuthorModuleRecommendations as $section => $content) {
+            foreach ($ss['AuthorModuleRecommendations'] as $section => $content) {
                 $recommend[$section] = [];
                 foreach ($content as $current) {
                     $recommend[$section][] = $current;
@@ -103,5 +107,18 @@ class Options extends \VuFind\Search\Solr\Options
         }
 
         return $recommend;
+    }
+
+    /**
+     * Get the search class ID for identifying search box options; this is normally
+     * the same as the current search class ID, but some "special purpose" search
+     * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
+     * generation.
+     *
+     * @return string
+     */
+    public function getSearchBoxSearchClassId(): string
+    {
+        return 'Solr';
     }
 }

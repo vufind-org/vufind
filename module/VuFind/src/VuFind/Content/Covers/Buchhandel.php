@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Buchhandel cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 /**
@@ -41,21 +43,21 @@ namespace VuFind\Content\Covers;
 class Buchhandel extends \VuFind\Content\AbstractCover
 {
     /**
-     * Base URL for Buchhandel
+     * Base URL for Buchhandel.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * API token for Buchhandel
+     * API token for Buchhandel.
      *
      * @var string
      */
     protected $apiToken;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url      Base URL for Buchhandel
      * @param string $apiToken API token for Buchhandel
@@ -87,14 +89,14 @@ class Buchhandel extends \VuFind\Content\AbstractCover
         }
         $isbn = $ids['isbn']->get13();
         switch ($size) {
-        case 'small':
-        case 'medium':
-        case 'large':
-            $lsize = substr($size, 0, 1);
-            break;
-        default:
-            $lsize = "s";
-            break;
+            case 'small':
+            case 'medium':
+            case 'large':
+                $lsize = substr($size, 0, 1);
+                break;
+            default:
+                $lsize = 's';
+                break;
         }
 
         return "{$this->url}{$isbn}/{$lsize}?access_token={$this->apiToken}";

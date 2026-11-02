@@ -3,7 +3,7 @@
 /**
  * History unit tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
-use VuFind\Db\Table\Search as SearchTable;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\History;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
@@ -62,13 +63,11 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testExplicitlyDisabledScheduleOptions(): void
     {
-        $config = new \Laminas\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => false,
-                ]
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => false,
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals([], $history->getScheduleOptions());
     }
@@ -81,13 +80,11 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultScheduleOptions(): void
     {
-        $config = new \Laminas\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => true,
-                ]
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => true,
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals(
             [0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'],
@@ -102,14 +99,12 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testSingleNonDefaultScheduleOption(): void
     {
-        $config = new \Laminas\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => true,
-                    'scheduled_search_frequencies' => 'Always'
-                ]
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => true,
+                'scheduled_search_frequencies' => 'Always',
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals([0 => 'Always'], $history->getScheduleOptions());
     }
@@ -121,16 +116,14 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testMultipleNonDefaultScheduleOptions(): void
     {
-        $config = new \Laminas\Config\Config(
-            [
-                'Account' => [
-                    'schedule_searches' => true,
-                    'scheduled_search_frequencies' => [
-                        1 => 'One', 2 => 'Two'
-                    ]
-                ]
-            ]
-        );
+        $config = [
+            'Account' => [
+                'schedule_searches' => true,
+                'scheduled_search_frequencies' => [
+                    1 => 'One', 2 => 'Two',
+                ],
+            ],
+        ];
         $history = $this->getHistory(null, null, $config);
         $this->assertEquals(
             [1 => 'One', 2 => 'Two'],
@@ -145,36 +138,30 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testPurgeHistory(): void
     {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\Search::class)
-            ->disableOriginalConstructor()->onlyMethods(['destroySession'])
-            ->getMock();
-        $table->expects($this->once())->method('destroySession')
-            ->with($this->equalTo('foosession'), $this->equalTo(1234));
-        $history = $this->getHistory($table);
+        $service = $this->createMock(SearchServiceInterface::class);
+        $service->expects($this->once())->method('destroySession')->with('foosession', 1234);
+        $history = $this->getHistory($service);
         $history->purgeSearchHistory(1234);
     }
 
     /**
      * Get object for testing.
      *
-     * @param SearchTable            $searchTable    Search table
-     * @param ResultsManager         $resultsManager Results manager
-     * @param \Laminas\Config\Config $config         Configuration
+     * @param ?SearchServiceInterface $searchService  Search service
+     * @param ?ResultsManager         $resultsManager Results manager
+     * @param ?array                  $config         Configuration
      *
      * @return History
      */
     protected function getHistory(
-        SearchTable $searchTable = null,
-        ResultsManager $resultsManager = null,
-        \Laminas\Config\Config $config = null
+        ?SearchServiceInterface $searchService = null,
+        ?ResultsManager $resultsManager = null,
+        ?array $config = null
     ): History {
         return new History(
-            $searchTable ?: $this->getMockBuilder(\VuFind\Db\Table\Search::class)
-                ->disableOriginalConstructor()->getMock(),
+            $searchService ?? $this->createStub(SearchServiceInterface::class),
             'foosession',
-            $resultsManager ?: $this
-                ->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-                ->disableOriginalConstructor()->getMock(),
+            $resultsManager ?? $this->createStub(\VuFind\Search\Results\PluginManager::class),
             $config
         );
     }

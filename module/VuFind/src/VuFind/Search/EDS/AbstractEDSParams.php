@@ -1,0 +1,168 @@
+<?php
+
+/**
+ * Common EDS & EPF API Params.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) EBSCO Industries 2013
+ * Copyright (C) The National Library of Finland 2022
+ * Copyright (C) Villanova University 2023
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  EBSCO
+ * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+
+namespace VuFind\Search\EDS;
+
+use VuFindSearch\ParamBag;
+
+use function count;
+use function in_array;
+
+/**
+ * Common EDS & EPF API Params.
+ *
+ * @category VuFind
+ * @package  EBSCO
+ * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+class AbstractEDSParams extends \VuFind\Search\Base\Params
+{
+    /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected array $forcedOrFields = [
+    ];
+
+    /**
+     * Set up filters based on VuFind settings.
+     *
+     * @param ParamBag $params Parameter collection to update
+     *
+     * @return void
+     */
+    public function createBackendFilterParameters(ParamBag $params): void
+    {
+        // Which filters should be applied to our query?
+        $filterList = $this->getFilterList();
+        $hiddenFilterList = $this->getHiddenFilters();
+        // Loop through all filters and add appropriate values to request:
+        foreach ($filterList as $filterArray) {
+            foreach ($filterArray as $filt) {
+                $fq = $filt['field']
+                    . ($this->filterRequiresFacetOperator($filt['field']) ?
+                        ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
+                    . ":{$filt['value']}";
+                $params->add('filters', $fq);
+            }
+        }
+        foreach ($hiddenFilterList as $field => $hiddenFilters) {
+            foreach ($hiddenFilters as $value) {
+                $hfq = $field
+                    . ($this->filterRequiresFacetOperator($field) ?
+                        ":{$this->getFacetOperator($field)}" : '')
+                    . ":{$value}";
+                $params->add('filters', $hfq);
+            }
+        }
+    }
+
+    /**
+     * Determines if the given filter field is a normal one, which should include the AND/OR operator,
+     * or a special filter which should not.
+     *
+     * @param string $field Filter field name
+     *
+     * @return bool
+     */
+    protected function filterRequiresFacetOperator(string $field): bool
+    {
+        return !(str_starts_with($field, 'LIMIT')
+            || str_starts_with($field, 'EXPAND')
+            || str_starts_with($field, 'SEARCHMODE')
+            || str_starts_with($field, 'PublicationDate'));
+    }
+
+    /**
+     * Return the value for which search view we use.
+     *
+     * @return string
+     */
+    public function getView(): string
+    {
+        $viewArr = explode('_', $this->view ?? '');
+        return $viewArr[0];
+    }
+
+    /**
+     * Get facet operator for the specified field.
+     *
+     * @param string  $field             Field name
+     * @param ?string $specifiedOperator Operator specified on a config filter line
+     *
+     * @return string
+     */
+    public function getFacetOperator(string $field, ?string $specifiedOperator = null): string
+    {
+        if ($specifiedOperator && $specifiedOperator != 'AND') {
+            return $specifiedOperator;
+        }
+        if (in_array($field, $this->forcedOrFields)) {
+            return 'OR';
+        }
+        return parent::getFacetOperator($field);
+    }
+
+    /**
+     * Return the value for which search view we use.
+     *
+     * @return string
+     */
+    public function getEbscoView(): string
+    {
+        $viewArr = explode('_', $this->view ?? '');
+        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEbscoView();
+    }
+
+    /**
+     * Basic 'getter' for list of available view options.
+     *
+     * @return array
+     */
+    public function getViewList(): array
+    {
+        $list = [];
+        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
+            $list[$key] = [
+                'desc' => $value,
+                'selected' => ($key == $this->getView() . '_' . $this->getEbscoView()),
+            ];
+        }
+        return $list;
+    }
+}

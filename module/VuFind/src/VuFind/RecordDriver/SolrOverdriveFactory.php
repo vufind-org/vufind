@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for Overdrive record drivers.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -47,7 +49,7 @@ use VuFind\DigitalContent\OverdriveConnector;
 class SolrOverdriveFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -63,14 +65,14 @@ class SolrOverdriveFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('config');
-        $odConfig = $configManager->get('Overdrive');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('config');
+        $odConfig = $configManager->getConfigArray('Overdrive');
         $connector = $container->get(OverdriveConnector::class);
         return new $requestedName($config, $odConfig, $connector);
     }

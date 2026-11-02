@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Hold Logic Class
+ * Hold Logic Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -26,13 +27,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Logic;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
+use function in_array;
+use function is_array;
+
 /**
- * Hold Logic Class
+ * Hold Logic Class.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -44,65 +49,19 @@ use VuFind\ILS\Connection as ILSConnection;
 class Holds
 {
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
-     * Catalog connection object
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
-
-    /**
-     * HMAC generator
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac;
-
-    /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Holding locations to hide from display
-     *
-     * @var array
-     */
-    protected $hideHoldings = [];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
-     * @param ILSConnection                 $ils     A catalog connection
+     * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \Laminas\Config\Config        $config  VuFind configuration
+     * @param array                         $config  VuFind configuration
      */
     public function __construct(
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        ILSConnection $ils,
-        \VuFind\Crypt\HMAC $hmac,
-        \Laminas\Config\Config $config
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        protected ILSConnection $catalog,
+        protected \VuFind\Crypt\HMAC $hmac,
+        protected array $config
     ) {
-        $this->ilsAuth = $ilsAuth;
-        $this->hmac = $hmac;
-        $this->config = $config;
-
-        if (isset($this->config->Record->hide_holdings)) {
-            foreach ($this->config->Record->hide_holdings as $current) {
-                $this->hideHoldings[] = $current;
-            }
-        }
-
-        $this->catalog = $ils;
     }
 
     /**
@@ -111,7 +70,7 @@ class Holds
      * @param array $holdings An associative array of location => item array
      *
      * @return array          An associative array keyed by location with each
-     * entry being an array with 'notes', 'summary' and 'items' keys.  The 'notes'
+     * entry being an array with 'notes', 'summary' and 'items' keys. The 'notes'
      * and 'summary' arrays are note/summary information collected from within the
      * items.
      */
@@ -125,7 +84,7 @@ class Holds
             $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => $items[0]['location'] ?? '',
-                'locationhref' => $items[0]['locationhref'] ?? ''
+                'locationhref' => $items[0]['locationhref'] ?? '',
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -133,12 +92,14 @@ class Holds
                     if (in_array($fieldName, ['notes', 'holdings_notes'])) {
                         if (empty($item[$fieldName])) {
                             // begin aliasing
-                            if ($fieldName == 'notes'
+                            if (
+                                $fieldName == 'notes'
                                 && !empty($item['holdings_notes'])
                             ) {
                                 // using notes as alias for holdings_notes
                                 $item[$fieldName] = $item['holdings_notes'];
-                            } elseif ($fieldName == 'holdings_notes'
+                            } elseif (
+                                $fieldName == 'holdings_notes'
                                 && !empty($item['notes'])
                             ) {
                                 // using holdings_notes as alias for notes
@@ -174,20 +135,19 @@ class Holds
 
     /**
      * Public method for getting item holdings from the catalog and selecting which
-     * holding method to call
+     * holding method to call.
      *
-     * @param string $id      A Bib ID
-     * @param array  $ids     A list of Source Records (if catalog is for a
-     * consortium)
-     * @param array  $options Optional options to pass on to getHolding()
+     * @param string $id            A Bib ID
+     * @param array  $ids           A list of Source Records (if catalog is for a consortium)
+     * @param array  $options       Optional options to pass on to getHolding()
+     * @param array  $linkOverrides Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $options = [])
+    public function getHoldings($id, $ids = null, $options = [], array $linkOverrides = [])
     {
-        if (!$this->catalog) {
-            return [];
-        }
         // Retrieve stored patron credentials; it is the responsibility of the
         // controller and view to inform the user that these credentials are
         // needed for hold data.
@@ -222,25 +182,27 @@ class Holds
 
         $mode = $this->catalog->getHoldsMode();
 
-        if ($mode == "disabled") {
+        if ($mode == 'disabled') {
             $holdings = $this->standardHoldings($result);
-        } elseif ($mode == "driver") {
-            $holdings = $this->driverHoldings($result, $config, !empty($blocks));
+        } elseif ($mode == 'driver') {
+            $holdings = $this->driverHoldings($result, $config, !empty($blocks), $linkOverrides);
         } else {
-            $holdings = $this->generateHoldings($result, $mode, $config);
+            $holdings = $this->generateHoldings($result, $mode, $config, $linkOverrides);
         }
 
         $holdings = $this->processStorageRetrievalRequests(
             $holdings,
             $id,
             $patron,
-            !empty($blocks)
+            !empty($blocks),
+            $linkOverrides
         );
         $holdings = $this->processILLRequests(
             $holdings,
             $id,
             $patron,
-            !empty($blocks)
+            !empty($blocks),
+            $linkOverrides
         );
 
         $result['blocks'] = $blocks;
@@ -250,7 +212,7 @@ class Holds
     }
 
     /**
-     * Protected method for standard (i.e. No Holds) holdings
+     * Protected method for standard (i.e. No Holds) holdings.
      *
      * @param array $result A result set returned from a driver
      *
@@ -261,7 +223,7 @@ class Holds
         $holdings = [];
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
@@ -272,32 +234,37 @@ class Holds
     }
 
     /**
-     * Protected method for driver defined holdings
+     * Protected method for driver defined holdings.
      *
      * @param array $result          A result set returned from a driver
      * @param array $holdConfig      Hold configuration from driver
      * @param bool  $requestsBlocked Are user requests blocked?
+     * @param array $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings($result, $holdConfig, $requestsBlocked)
+    protected function driverHoldings($result, $holdConfig, $requestsBlocked, array $linkOverrides = [])
     {
         $holdings = [];
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
-                        if (!$requestsBlocked
+                        if (
+                            !$requestsBlocked
                             && ($copy['addLink'] ?? false)
                             && ($copy['is_holdable'] ?? true)
                         ) {
                             $copy['link'] = $this->getRequestDetails(
                                 $copy,
                                 $holdConfig['HMACKeys'],
-                                'Hold'
+                                'Hold',
+                                $linkOverrides
                             );
                             $copy['linkLightbox'] = true;
                             // If we are unsure whether hold options are available,
@@ -315,30 +282,33 @@ class Holds
     }
 
     /**
-     * Protected method for vufind (i.e. User) defined holdings
+     * Protected method for vufind (i.e. User) defined holdings.
      *
-     * @param array  $result     A result set returned from a driver
-     * @param string $type       The holds mode to be applied from:
+     * @param array  $result        A result set returned from a driver
+     * @param string $type          The holds mode to be applied from:
      * (all, holds, recalls, availability)
-     * @param array  $holdConfig Hold configuration from driver
+     * @param array  $holdConfig    Hold configuration from driver
+     * @param array  $linkOverrides Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array A sorted results set
      */
-    protected function generateHoldings($result, $type, $holdConfig)
+    protected function generateHoldings($result, $type, $holdConfig, array $linkOverrides = [])
     {
         $holdings = [];
         $any_available = false;
 
-        $holds_override = $this->config->Catalog->allow_holds_override ?? false;
+        $holds_override = $this->config['Catalog']['allow_holds_override'] ?? false;
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !in_array($copy['location'], $this->hideHoldings);
+                $show = isset($copy['location']) && !in_array($copy['location'], $this->getSuppressedLocations());
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
                     // Are any copies available?
-                    if ($copy['availability'] == true) {
+                    if ($copy['availability']->isAvailable()) {
                         $any_available = true;
                     }
                 }
@@ -356,27 +326,27 @@ class Holds
                             ? $copy['holdOverride'] : $type;
 
                         switch ($currentType) {
-                        case "all":
-                            $addlink = true; // always provide link
-                            break;
-                        case "holds":
-                            $addlink = $copy['availability'];
-                            break;
-                        case "recalls":
-                            $addlink = !$copy['availability'];
-                            break;
-                        case "availability":
-                            $addlink = !$copy['availability']
-                                && ($any_available == false);
-                            break;
-                        default:
-                            $addlink = false;
-                            break;
+                            case 'all':
+                                $addlink = true; // always provide link
+                                break;
+                            case 'holds':
+                                $addlink = $copy['availability']->isAvailable();
+                                break;
+                            case 'recalls':
+                                $addlink = !$copy['availability']->isAvailable();
+                                break;
+                            case 'availability':
+                                $addlink = !$copy['availability']->isAvailable()
+                                    && ($any_available == false);
+                                break;
+                            default:
+                                $addlink = false;
+                                break;
                         }
                         // If a valid holdable status has been set, use it to
                         // determine if a hold link is created
                         if ($addlink && ($copy['is_holdable'] ?? true)) {
-                            if ($holdConfig['function'] == "getHoldLink") {
+                            if ($holdConfig['function'] == 'getHoldLink') {
                                 /* Build opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->catalog->getHoldLink(
@@ -391,7 +361,8 @@ class Holds
                                     = $this->getRequestDetails(
                                         $copy,
                                         $holdConfig['HMACKeys'],
-                                        'Hold'
+                                        'Hold',
+                                        $linkOverrides
                                     );
                                 $holdings[$location_key][$copy_key]['linkLightbox']
                                     = true;
@@ -412,6 +383,9 @@ class Holds
      * @param string $id              Record ID
      * @param array  $patron          Patron
      * @param bool   $requestsBlocked Are user requests blocked?
+     * @param array  $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array Modified holdings
      */
@@ -419,7 +393,8 @@ class Holds
         $holdings,
         $id,
         $patron,
-        $requestsBlocked
+        $requestsBlocked,
+        array $linkOverrides = []
     ) {
         if (!is_array($holdings)) {
             return $holdings;
@@ -440,14 +415,16 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (!$requestsBlocked
+                if (
+                    !$requestsBlocked
                     && isset($copy['addStorageRetrievalRequestLink'])
                     && $copy['addStorageRetrievalRequestLink']
                 ) {
                     $copy['storageRetrievalRequestLink'] = $this->getRequestDetails(
                         $copy,
                         $requestConfig['HMACKeys'],
-                        'StorageRetrievalRequest'
+                        'StorageRetrievalRequest',
+                        $linkOverrides
                     );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
@@ -466,16 +443,19 @@ class Holds
      * @param string $id              Record ID
      * @param array  $patron          Patron
      * @param bool   $requestsBlocked Are user requests blocked?
+     * @param array  $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array Modified holdings
      */
-    protected function processILLRequests($holdings, $id, $patron, $requestsBlocked)
+    protected function processILLRequests($holdings, $id, $patron, $requestsBlocked, array $linkOverrides = [])
     {
         if (!is_array($holdings)) {
             return $holdings;
         }
 
-        // Are storage retrieval requests allowed?
+        // Are ILL requests allowed?
         $requestConfig = $this->catalog->checkFunction(
             'ILLRequests',
             compact('id', 'patron')
@@ -490,13 +470,15 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (!$requestsBlocked && isset($copy['addILLRequestLink'])
+                if (
+                    !$requestsBlocked && isset($copy['addILLRequestLink'])
                     && $copy['addILLRequestLink']
                 ) {
                     $copy['ILLRequestLink'] = $this->getRequestDetails(
                         $copy,
                         $requestConfig['HMACKeys'],
-                        'ILLRequest'
+                        'ILLRequest',
+                        $linkOverrides
                     );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
@@ -509,20 +491,30 @@ class Holds
     }
 
     /**
-     * Get Hold Form
+     * Get Hold Form.
      *
      * Supplies holdLogic with the form details required to place a request
      *
-     * @param array  $details  An array of item data
-     * @param array  $HMACKeys An array of keys to hash
-     * @param string $action   The action for which the details are built
+     * @param array  $details       An array of item data
+     * @param array  $HMACKeys      An array of keys to hash
+     * @param string $action        The action for which the details are built
+     * @param array  $linkOverrides Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
-     * @return array             Details for generating URL
+     * @return array Details for generating URL
      */
-    protected function getRequestDetails($details, $HMACKeys, $action)
+    protected function getRequestDetails($details, $HMACKeys, $action, array $linkOverrides = [])
     {
         // Include request type in the details
         $details['requestType'] = $action;
+
+        if (
+            ($details['availability'] ?? null) instanceof AvailabilityStatusInterface
+            && empty($details['status'])
+        ) {
+            $details['status'] = $details['availability']->getStatusDescription();
+        }
 
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $details);
@@ -532,24 +524,26 @@ class Holds
         foreach ($details as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
-                $queryString[] = $key . "=" . urlencode($param);
+                $queryString[] = $key . '=' . urlencode($param);
             }
         }
 
         // Add HMAC
-        $queryString[] = "hashKey=" . urlencode($HMACkey);
+        $queryString[] = 'hashKey=' . urlencode($HMACkey);
         $queryString = implode('&', $queryString);
 
         // Build Params
         return [
-            'action' => $action, 'record' => $details['id'],
-            'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
-            'query' => $queryString, 'anchor' => "#tabnav"
+            'action' => $action,
+            'record' => $linkOverrides['id'] ?? $details['id'],
+            'source' => $linkOverrides['source'] ?? $details['source'] ?? DEFAULT_SEARCH_BACKEND,
+            'query' => $queryString,
+            'anchor' => '#tabnav',
         ];
     }
 
     /**
-     * Get a grouping key for a holdings item
+     * Get a grouping key for a holdings item.
      *
      * @param array $copy Item information
      *
@@ -558,14 +552,14 @@ class Holds
     protected function getHoldingsGroupKey($copy)
     {
         // Group by holdings id and location unless configured otherwise
-        $grouping = $this->config->Catalog->holdings_grouping
+        $grouping = $this->config['Catalog']['holdings_grouping']
             ?? 'holdings_id,location';
 
-        $groupKey = "";
+        $groupKey = '';
 
         // Multiple keys may be used here (delimited by comma)
-        foreach (array_map('trim', explode(",", $grouping)) as $key) {
-            // backwards-compatibility:
+        foreach (array_map('trim', explode(',', $grouping)) as $key) {
+            // Legacy backwards-compatibility:
             // The config.ini file originally expected only
             //   two possible settings: holdings_id and location_name.
             // However, when location_name was set, the code actually
@@ -573,12 +567,12 @@ class Holds
             // From now on, we will expect (via config.ini documentation)
             //   the value of 'location', but still continue to honor
             //   'location_name'.
-            if ($key == "location_name") {
-                $key = "location";
+            if ($key == 'location_name') {
+                $key = 'location';
             }
 
             if (isset($copy[$key])) {
-                if ($groupKey != "") {
+                if ($groupKey != '') {
                     $groupKey .= '|';
                 }
                 $groupKey .= $copy[$key];
@@ -586,7 +580,7 @@ class Holds
         }
 
         // default:
-        if ($groupKey == "") {
+        if ($groupKey == '') {
             $groupKey = $copy['location'];
         }
 
@@ -600,6 +594,6 @@ class Holds
      */
     public function getSuppressedLocations()
     {
-        return $this->hideHoldings;
+        return (array)($this->config['Record']['hide_holdings'] ?? []);
     }
 }

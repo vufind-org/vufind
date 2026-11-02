@@ -3,7 +3,7 @@
 /**
  * Unit tests for multiindex listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -61,7 +61,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
             'QueryFields' => [
                 'A' => [
                     ['onephrase', 500],
-                    ['and', 200]
+                    ['and', 200],
                 ],
                 'B' => [
                     ['and', 100],
@@ -76,12 +76,12 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                         ['onephrase', 300],
                     ],
                     '-E' => [
-                        ['or', '~']
-                    ]
-                ]
+                        ['or', '~'],
+                    ],
+                ],
             ],
             'FilterQuery' => 'format:Book',
-        ]
+        ],
     ];
 
     /**
@@ -127,8 +127,13 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
-        $client         = new \Laminas\Http\Client();
-        $connector      = new Connector('http://example.org/', $handlermap, $client);
+        $connector      = new Connector(
+            'http://localhost/',
+            $handlermap,
+            function () {
+                return new \Laminas\Http\Client();
+            }
+        );
         $this->backend  = new Backend($connector);
         $this->backend->setIdentifier('foo');
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);
@@ -157,7 +162,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
 
         $facets   = $params->get('facet.field');
         sort($facets);
-        $this->assertEquals(['field_1', 'field_2'], $facets);
+        $this->assertSame(['field_1', 'field_2'], $facets);
     }
 
     /**
@@ -196,9 +201,9 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
-            $this->equalTo('pre'),
-            $this->equalTo([$this->listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$this->listener, 'onSearchPre']
         );
         $this->listener->attach($mock);
     }
@@ -240,15 +245,15 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                           0 => [
                               0 => ['AND', 50],
                               'C' => [
-                                  ['onephrase', 200]
+                                  ['onephrase', 200],
                               ],
                               'D' => [
-                                  ['onephrase', 300]
-                              ]
-                          ]
+                                  ['onephrase', 300],
+                              ],
+                          ],
                       ],
                       'FilterQuery' => 'format:Book',
-                  ]
+                  ],
             ],
             $specs
         );

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Demo CAPTCHA (expect hard-coded value; used for test suite only).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -41,14 +43,17 @@ use Laminas\Mvc\Controller\Plugin\Params;
 class Demo extends AbstractBase
 {
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function verify(Params $params): bool
+    public function verify(array $postParams, array $queryParams): bool
     {
-        return $params->fromPost('demo_captcha') === 'demo';
+        return ($postParams['demo_captcha'] ?? null) === 'demo';
     }
 }

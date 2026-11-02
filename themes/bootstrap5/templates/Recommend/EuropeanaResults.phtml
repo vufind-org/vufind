@@ -1,0 +1,33 @@
+<?php $data = $this->recommend->getResults(); ?>
+<?php if (is_array($data)): ?>
+  <div class="sidegroup rssResults">
+    <div class="suggestionHeader">
+    <a href="http://www.europeana.eu/portal/" title="Europeana.eu" target="_blank">
+      <img alt="Europeana.eu" src="<?=$this->imageLink(strtolower($data['feedTitle']) . '.png')?>">
+    </a>
+    </div>
+    <div>
+      <ul class="list-group">
+        <?php $i = 0; ?>
+        <?php foreach ($data['worksArray'] as $workKey => $work): ?>
+          <li class="list-group-item suggestedResult <?php (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
+            <div class="resultitem clearfix">
+              <?php if (isset($work['enclosure'])): ?>
+                <span class="europeanaImg"><img src="<?=$this->escapeHtmlAttr($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtmlAttr($workKey)?>"></span>
+              <?php endif; ?>
+              <a href="<?=$this->escapeHtmlAttr($work['link'])?>" target="_blank">
+                <span><?=$this->escapeHtml($this->truncate($work['title'], 90))?></span>
+              </a>
+            </div>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+      <p class="olSubjectMore">
+        <a href="<?=$this->escapeHtmlAttr($data['sourceLink'])?>" title="<?=$this->escapeHtmlAttr($data['feedTitle'])?>" target="_blank">
+          <?=$this->transEsc('more_ellipsis')?>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+<?php endif; ?>

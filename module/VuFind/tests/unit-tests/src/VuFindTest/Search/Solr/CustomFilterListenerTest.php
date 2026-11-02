@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Unit tests for Custom Filter Listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
@@ -46,7 +48,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\MockSearchCommandTrait;
 
     /**
-     * Get a mock backend
+     * Get a mock backend.
      *
      * @param string $id ID of fake backend.
      *
@@ -54,11 +56,8 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockBackend(string $id = 'Solr'): Backend
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->will(
-            $this->returnValue($id)
-        );
+        $backend = $this->createMock(Backend::class);
+        $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }
 
@@ -87,9 +86,9 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo('VuFind\Search'),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }
@@ -102,7 +101,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testRemapping(): void
     {
         $normal = [
-            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
         $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
@@ -110,7 +109,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
-            ['foo:"bar"', "field1:normal OR field2:alsoNormal"],
+            ['foo:"bar"', 'field1:normal OR field2:alsoNormal'],
             $params->get('fq')
         );
     }
@@ -123,7 +122,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testMismatchedBackendIsIgnored(): void
     {
         $normal = [
-            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
         $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
@@ -144,7 +143,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     public function testWrongContextIsIgnored(): void
     {
         $normal = [
-            'vufind:"normal"' => "field1:normal OR field2:alsoNormal",
+            'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
         $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
@@ -174,7 +173,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
-            ['foo:"bar"', "field3:invertedFilter"],
+            ['foo:"bar"', 'field3:invertedFilter'],
             $params->get('fq')
         );
     }

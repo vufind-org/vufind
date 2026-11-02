@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Dynamic Book Cover Generator
+ * Dynamic Book Cover Generator.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,14 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use VuFind\Cover\Layer\LayerInterface;
 use VuFind\Cover\Layer\PluginManager as LayerManager;
 use VuFindTheme\ThemeInfo;
 
+use function count;
+
 /**
- * Dynamic Book Cover Generator
+ * Dynamic Book Cover Generator.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -72,35 +76,35 @@ class Generator
     ];
 
     /**
-     * Active style configuration
+     * Active style configuration.
      *
      * @var object
      */
     protected $settings;
 
     /**
-     * Base for image
+     * Base for image.
      *
      * @var resource
      */
     protected $im;
 
     /**
-     * ThemeInfo object
+     * ThemeInfo object.
      *
      * @var ThemeInfo
      */
     protected $themeTools;
 
     /**
-     * Layer manager
+     * Layer manager.
      *
      * @var LayerManager
      */
     protected $layerManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo    $themeTools For font loading
      * @param LayerManager $lm         Layer manager
@@ -186,7 +190,7 @@ class Generator
     }
 
     /**
-     * Generates a dynamic cover image from elements of the item
+     * Generates a dynamic cover image from elements of the item.
      *
      * @param string $title      Title of the book
      * @param string $author     Author of the book
@@ -209,7 +213,7 @@ class Generator
     }
 
     /**
-     * Get the layer plugin for the background
+     * Get the layer plugin for the background.
      *
      * @return LayerInterface
      */
@@ -222,7 +226,7 @@ class Generator
     }
 
     /**
-     * Get the layer plugin for the text
+     * Get the layer plugin for the text.
      *
      * @return LayerInterface
      */
@@ -235,7 +239,7 @@ class Generator
     }
 
     /**
-     * Find font in the theme folder
+     * Find font in the theme folder.
      *
      * @param string $font Font_name.ttf
      *

@@ -1,4 +1,5 @@
 <?php
+
 namespace VuFindConsole\Module\Configuration;
 
 $config = [
@@ -6,8 +7,6 @@ $config = [
         'factories' => [
             'VuFind\Sitemap\Generator' => 'VuFind\Sitemap\GeneratorFactory',
             'VuFindConsole\Command\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFindConsole\ConsoleRunner' => 'VuFindConsole\ConsoleRunnerFactory',
-            'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
         ],
     ],
     'view_manager' => [

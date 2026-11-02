@@ -1,0 +1,237 @@
+{
+  "ResultId": 1,
+  "Header": {
+    "DbId": "cat012345a",
+    "DbLabel": "FOLIO Demo",
+    "An": "demo.oai.edge.demo.folio.provider.com.fs00000000.976cbaf6.fb02.48a2.8f82.a19203769b52",
+    "RelevancyScore": "957",
+    "PubType": "Book",
+    "PubTypeId": "book",
+    "PreciseRelevancyScore": "956.712036132813"
+  },
+  "PLink": "https://www.plink.com",
+  "ImageInfo": [
+    {
+      "Size": "thumb",
+      "Target": "https://www.thumbnail.com"
+    },
+    {
+      "Size": "medium",
+      "Target": "https://www.medium.com"
+    }
+  ],
+  "FullText": {
+    "Text": {
+      "Availability": "0"
+    }
+  },
+  "Items": [
+    {
+      "Name": "Title",
+      "Label": "Title",
+      "Group": "Ti",
+      "Data": "Our Queen / Robert Hardman ; photographs by Ian Jones."
+    },
+    {
+      "Name": "Language",
+      "Label": "Language",
+      "Group": "Lang",
+      "Data": "English"
+    },
+    {
+      "Name": "Author",
+      "Label": "Authors",
+      "Group": "Au",
+      "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22Hardman%2C+Robert%22&quot;&gt;Hardman, Robert&lt;/searchLink&gt;"
+    },
+    {
+      "Name": "PubInfo",
+      "Label": "Publication Information",
+      "Group": "PubInfo",
+      "Data": "London : Hutchinson, 2011."
+    },
+    {
+      "Name": "DatePub",
+      "Label": "Publication Date",
+      "Group": "Date",
+      "Data": "2011"
+    },
+    {
+      "Name": "PhysDesc",
+      "Label": "Physical Description",
+      "Group": "PhysDesc",
+      "Data": "ix, 356 p., [24] p. of plates : col. ill. ; 25 cm."
+    },
+    {
+      "Name": "TypePub",
+      "Label": "Publication Type",
+      "Group": "TypPub",
+      "Data": "Book"
+    },
+    {
+      "Name": "TypeDocument",
+      "Label": "Document Type",
+      "Group": "TypDoc",
+      "Data": "Bibliographies; Non-fiction; Individual biography"
+    },
+    {
+      "Name": "Subject",
+      "Label": "Subject Terms",
+      "Group": "Su",
+      "Data": "&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Queens+--+Great+Britain+--+Biography%22&quot;&gt;Queens -- Great Britain -- Biography&lt;/searchLink&gt;&lt;br /&gt;&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Monarchy+--+Great+Britain+--+History+--+20th+century%22&quot;&gt;Monarchy -- Great Britain -- History -- 20th century&lt;/searchLink&gt;"
+    },
+    {
+      "Name": "SubjectGeographic",
+      "Label": "Subject Terms",
+      "Group": "Su",
+      "Data": "&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Great+Britain+--+Kings+and+rulers+--+Biography%22&quot;&gt;Great Britain -- Kings and rulers -- Biography&lt;/searchLink&gt;"
+    },
+    {
+      "Name": "SubjectPerson",
+      "Label": "Subject Terms",
+      "Group": "Su",
+      "Data": "&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Elizabeth+II%2C+Queen+of+Great+Britain%2C+1926-2022%22&quot;&gt;Elizabeth II, Queen of Great Britain, 1926-2022&lt;/searchLink&gt;&lt;br /&gt;&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Elizabeth+II%2C+Queen+of+Great+Britain%2C+1926-2022+--+Family%22&quot;&gt;Elizabeth II, Queen of Great Britain, 1926-2022 -- Family&lt;/searchLink&gt;&lt;br /&gt;&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22Windsor%2C+House+of%22&quot;&gt;Windsor, House of&lt;/searchLink&gt;"
+    },
+    {
+      "Name": "Note",
+      "Label": "Notes",
+      "Group": "Note",
+      "Data": "Includes bibliographical references (p. [339]) and index"
+    },
+    {
+      "Name": "ISBN",
+      "Label": "ISBN",
+      "Group": "ISBN",
+      "Data": "9780091936891&lt;br /&gt;0091936896"
+    },
+    {
+      "Name": "NumberControlLC",
+      "Label": "LCCN",
+      "Group": "ID",
+      "Data": "2011507398"
+    },
+    {
+      "Name": "NumberOther",
+      "Label": "OCLC",
+      "Group": "ID",
+      "Data": "ocn751819212"
+    },
+    {
+      "Name": "URL",
+      "Label": "Online Access",
+      "Group": "URL",
+      "Data": "&lt;link linkTarget=&quot;URL&quot; linkTerm=&quot;http://www.loc.gov/catdir/enhancements/fy1301/2011507398-b.html&quot; linkWindow=&quot;_blank&quot;&gt;Contributor biographical information&lt;/link&gt;&lt;br /&gt;&lt;link linkTarget=&quot;URL&quot; linkTerm=&quot;http://www.loc.gov/catdir/enhancements/fy1301/2011507398-d.html&quot; linkWindow=&quot;_blank&quot;&gt;Publisher description&lt;/link&gt;"
+    },
+    {
+      "Name": "AN",
+      "Label": "Accession Number",
+      "Group": "ID",
+      "Data": "demo.oai.edge.demo.folio.provider.com.fs00000000.976cbaf6.fb02.48a2.8f82.a19203769b52"
+    }
+  ],
+  "RecordInfo": {
+    "BibRecord": {
+      "BibEntity": {
+        "Languages": [
+          {
+            "Text": "English"
+          }
+        ],
+        "Subjects": [
+          {
+            "SubjectFull": "Elizabeth II, Queen of Great Britain, 1926-2022",
+            "Type": "general"
+          },
+          {
+            "SubjectFull": "Elizabeth II, Queen of Great Britain, 1926-2022 -- Family",
+            "Type": "general"
+          },
+          {
+            "SubjectFull": "Windsor, House of",
+            "Type": "general"
+          },
+          {
+            "SubjectFull": "Queens -- Great Britain -- Biography",
+            "Type": "general"
+          },
+          {
+            "SubjectFull": "Monarchy -- Great Britain -- History -- 20th century",
+            "Type": "general"
+          },
+          {
+            "SubjectFull": "Great Britain -- Kings and rulers -- Biography",
+            "Type": "general"
+          }
+        ],
+        "Titles": [
+          {
+            "TitleFull": "Our Queen.",
+            "Type": "main"
+          }
+        ]
+      },
+      "BibRelationships": {
+        "HasContributorRelationships": [
+          {
+            "PersonEntity": {
+              "Name": {
+                "NameFull": "Hardman, Robert"
+              }
+            }
+          }
+        ],
+        "IsPartOfRelationships": [
+          {
+            "BibEntity": {
+              "Dates": [
+                {
+                  "D": "01",
+                  "M": "01",
+                  "Type": "published",
+                  "Y": "2011"
+                }
+              ],
+              "Identifiers": [
+                {
+                  "Type": "isbn-print",
+                  "Value": "9780091936891"
+                },
+                {
+                  "Type": "isbn-print",
+                  "Value": "0091936896"
+                }
+              ],
+              "Titles": [
+                {
+                  "TitleFull": "Our Queen / Robert Hardman ; photographs by Ian Jones.",
+                  "Type": "main"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Holdings": [
+    {
+      "HoldingSimple": {
+        "CopyInformationList": [
+          {
+            "Sublocation": "Main Library Stacks",
+            "ShelfLocator": "551157"
+          },
+          {
+            "Sublocation": "Main Library Stacks",
+            "ShelfLocator": "551157[1]"
+          },
+          {
+            "Sublocation": "Main Library Stacks",
+            "ShelfLocator": "551157-1"
+          }
+        ]
+      }
+    }
+  ],
+  "IllustrationInfo": {}
+}

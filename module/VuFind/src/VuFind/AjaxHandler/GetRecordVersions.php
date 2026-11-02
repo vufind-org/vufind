@@ -1,8 +1,9 @@
 <?php
+
 /**
- * AJAX handler for fetching versions link
+ * AJAX handler for fetching versions link.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,16 +26,20 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
 
+use function count;
+use function is_array;
+
 /**
- * AJAX handler for fetching versions link
+ * AJAX handler for fetching versions link.
  *
  * @category VuFind
  * @package  AJAX
@@ -45,28 +50,28 @@ use VuFind\View\Helper\Root\Record;
 class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Record plugin
+     * Record plugin.
      *
      * @var Record
      */
     protected $recordPlugin;
 
     /**
-     * Tab manager
+     * Tab manager.
      *
      * @var TabManager
      */
     protected $tabManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss     Session settings
      * @param Loader          $loader Record loader
@@ -79,34 +84,66 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         Record $rp,
         TabManager $tm
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
         $this->recordLoader = $loader;
         $this->recordPlugin = $rp;
         $this->tabManager = $tm;
     }
 
     /**
-     * Handle a request.
+     * Load a single record and render the link template.
      *
-     * @param Params $params Parameter helper from controller
+     * @param string $id       Record id
+     * @param string $source   Record source
+     * @param string $searchId Search ID
      *
-     * @return array [response data, HTTP status code]
+     * @return string
      */
-    public function handleRequest(Params $params)
+    protected function getVersionsLinkForRecord($id, $source, $searchId)
     {
-        $this->disableSessionWrites(); // avoid session write timing bug
-
-        $id = $params->fromPost('id') ?: $params->fromQuery('id');
-        $source = $params->fromPost('source') ?: $params->fromQuery('source');
         $driver = $this->recordLoader->load($id, $source);
         $tabs = $this->tabManager->getTabsForRecord($driver);
         $full = true;
 
-        $html = ($this->recordPlugin)($driver)->renderTemplate(
+        return ($this->recordPlugin)($driver)->renderTemplate(
             'versions-link.phtml',
-            compact('driver', 'tabs', 'full')
+            compact('driver', 'tabs', 'full', 'searchId')
         );
+    }
 
-        return $this->formatResponse($html);
+    /**
+     * Handle a request.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return array [response data, HTTP status code]
+     */
+    public function handleRequest(ServerRequestInterface $request): array
+    {
+        $this->disableSessionWrites(); // avoid session write timing bug
+
+        $id = $this->getPostOrQueryParam($request, 'id');
+        $source = $this->getPostOrQueryParam($request, 'source');
+        $searchId = $this->getPostOrQueryParam($request, 'sid');
+
+        if (!is_array($id)) {
+            return $this->formatResponse(
+                $this->getVersionsLinkForRecord($id, $source ?? DEFAULT_SEARCH_BACKEND, $searchId)
+            );
+        }
+
+        $htmlByRecord = [];
+        for ($i = 0; $i < count($id); $i++) {
+            $currentSource = $source[$i] ?? DEFAULT_SEARCH_BACKEND;
+            $key = $currentSource . '|' . $id[$i];
+
+            $htmlByRecord[$key] = $this->getVersionsLinkForRecord(
+                $id[$i],
+                $currentSource,
+                $searchId
+            );
+        }
+
+        return $this->formatResponse(['records' => $htmlByRecord]);
     }
 }

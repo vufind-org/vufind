@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR raw CSV document class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Document;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\Document\RawCSVDocument;
 
 /**
@@ -51,10 +51,10 @@ class RawCSVDocumentTest extends TestCase
     public function testBasicBehavior()
     {
         $document = new RawCSVDocument('a,b,c');
-        $this->assertEquals(
+        $this->assertSame(
             'text/csv',
             $document->getContentType()
         );
-        $this->assertEquals('a,b,c', $document->getContent());
+        $this->assertSame('a,b,c', $document->getContent());
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * LibGuides aspect of the Search Multi-class (Options)
+ * LibGuides aspect of the Search Multi-class (Options).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_LibGuides
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\LibGuides;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * LibGuides Search Options
+ * LibGuides Search Options.
  *
  * @category VuFind
  * @package  Search_LibGuides
@@ -39,22 +43,21 @@ namespace VuFind\Search\LibGuides;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Name of .ini file to use for LibGuides API and display settings.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @var string
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    protected string $iniName = 'LibGuides';
+
+    /**
+     * Constructor.
+     *
+     * @param ConfigManagerInterface $configManager Config manager
+     */
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        $this->searchIni = $this->facetsIni = 'LibGuides';
-        parent::__construct($configLoader);
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions
-                = explode(",", $searchSettings->General->limit_options);
-        }
+        $this->searchIni = $this->facetsIni = $this->iniName;
+        parent::__construct($configManager);
     }
 
     /**
@@ -62,21 +65,21 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'libguides-results';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         // Not currently supported:
-        return false;
+        return null;
     }
 
     /**
@@ -84,7 +87,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Not currently supported
         return false;

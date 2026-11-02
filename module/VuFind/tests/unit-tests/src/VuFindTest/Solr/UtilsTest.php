@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Solr Utils Test Class
+ * Solr Utils Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Solr;
 
 use VuFind\Solr\Utils;
 
 /**
- * Solr Utils Test Class
+ * Solr Utils Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,12 +50,12 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     public function testParseRange()
     {
         // basic range test:
-        $result = Utils::parseRange("[1 TO 100]");
+        $result = Utils::parseRange('[1 TO 100]');
         $this->assertEquals('1', $result['from']);
         $this->assertEquals('100', $result['to']);
 
         // test whitespace handling:
-        $result = Utils::parseRange("[1      TO     100]");
+        $result = Utils::parseRange('[1      TO     100]');
         $this->assertEquals('1', $result['from']);
         $this->assertEquals('100', $result['to']);
 
@@ -63,39 +65,60 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSanitizeDate.
+     *
+     * @return \Iterator
+     */
+    public static function sanitizeDateProvider(): \Iterator
+    {
+        yield ['[2014]', false, '2014-01-01T00:00:00Z'];
+        yield ['n.d.', false, null];
+        yield ['may 7, 1981', false, '1981-05-07T00:00:00Z'];
+        yield ['July 1570', false, '1570-07-01T00:00:00Z'];
+        yield ['incomprehensible garbage', false, null];
+        yield ['1930/12/21', false, '1930-12-21T00:00:00Z'];
+        yield ['1964?', false, '1964-01-01T00:00:00Z'];
+        yield ['1947-3', false, '1947-03-01T00:00:00Z'];
+        yield ['1973-02-31', false, '1973-02-01T00:00:00Z'];
+        // illegal day
+        yield ['1973-31-31', false, '1973-01-01T00:00:00Z'];
+        // illegal month
+        yield ['1964-zz', false, '1964-01-01T00:00:00Z'];
+        yield ['1964-01-zz', false, '1964-01-01T00:00:00Z'];
+        yield ['Winter 2012', false, '2012-01-01T00:00:00Z'];
+        yield ['05-1901', false, '1901-05-01T00:00:00Z'];
+        yield ['5-1901', false, '1901-05-01T00:00:00Z'];
+        yield ['05/1901', false, '1901-05-01T00:00:00Z'];
+        yield ['5/1901', false, '1901-05-01T00:00:00Z'];
+        yield ['2nd Quarter 2004', false, '2004-01-01T00:00:00Z'];
+        yield ['Nov 2009 and Dec 2009', false, '2009-01-01T00:00:00Z'];
+        yield ['29.02.2024', false, '2024-02-29T00:00:00Z'];
+        // leap year
+        yield ['29.02.2024', true, '2024-02-29T23:59:59Z'];
+        // leap year
+        yield ['29.02.2023', false, '2023-03-01T00:00:00Z'];
+        // not a leap year
+        yield ['29.02.2023', true, '2023-03-01T23:59:59Z'];
+        // not a leap year
+        yield ['2024', true, '2024-12-31T23:59:59Z'];
+        yield ['2024-11', true, '2024-11-30T23:59:59Z'];
+        yield ['2024-02', true, '2024-02-29T23:59:59Z'];
+        // leap year
+        yield ['2023-02', true, '2023-02-28T23:59:59Z'];
+    }
+
+    /**
      * Test sanitizeDate functionality.
+     *
+     * @param string  $date     Date string
+     * @param bool    $rangeEnd Is this the end of a range?
+     * @param ?string $expected Expected result
      *
      * @return void
      */
-    public function testSanitizeDate()
+    #[\PHPUnit\Framework\Attributes\DataProvider('sanitizeDateProvider')]
+    public function testSanitizeDate($date, $rangeEnd, $expected)
     {
-        $tests = [
-            '[2014]' => '2014-01-01',
-            'n.d.' => null,
-            'may 7, 1981' => '1981-05-07',
-            'July 1570' => '1570-07-01',
-            'incomprehensible garbage' => null,
-            '1930/12/21' => '1930-12-21',
-            '1964?' => '1964-01-01',
-            '1947-3' => '1947-03-01',
-            '1973-02-31' => '1973-02-01',       // illegal day
-            '1973-31-31' => '1973-01-01',       // illegal month
-            '1964-zz' => '1964-01-01',
-            '1964-01-zz' => '1964-01-01',
-            'Winter 2012' => '2012-01-01',
-            '05-1901' => '1901-05-01',
-            '5-1901' => '1901-05-01',
-            '05/1901' => '1901-05-01',
-            '5/1901' => '1901-05-01',
-            '2nd Quarter 2004' => '2004-01-01',
-            'Nov 2009 and Dec 2009' => '2009-01-01',
-        ];
-
-        foreach ($tests as $in => $out) {
-            $this->assertEquals(
-                $out === null ? null : $out . 'T00:00:00Z', // append standard time value unless null
-                Utils::sanitizeDate($in)
-            );
-        }
+        $this->assertEquals($expected, Utils::sanitizeDate($date, $rangeEnd));
     }
 }

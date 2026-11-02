@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Autocomplete handler plugin manager
+ * Autocomplete handler plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
+
 namespace VuFind\Autocomplete;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Autocomplete handler plugin manager
+ * Autocomplete handler plugin manager.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -48,7 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'none' => None::class,
         'eds' => Eds::class,
-        'oclcidentities' => OCLCIdentities::class,
+        'oclcidentities' => None::class,
         'search2' => Search2::class,
         'search2cn' => Search2CN::class,
         'solr' => Solr::class,
@@ -59,7 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrprefix' => SolrPrefix::class,
         // for legacy 1.x compatibility
         'noautocomplete' => 'None',
-        'oclcidentitiesautocomplete' => 'OCLCIdentities',
+        'oclcidentitiesautocomplete' => 'None',
         'solrautocomplete' => 'Solr',
         'solrauthautocomplete' => 'SolrAuth',
         'solrcnautocomplete' => 'SolrCN',
@@ -68,26 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        None::class => InvokableFactory::class,
-        Eds::class => EdsFactory::class,
-        OCLCIdentities::class => InvokableFactory::class,
-        Search2::class => SolrFactory::class,
-        Search2CN::class => SolrFactory::class,
-        Solr::class => SolrFactory::class,
-        SolrAuth::class => SolrFactory::class,
-        SolrCN::class => SolrFactory::class,
-        SolrReserves::class => SolrFactory::class,
-        Tag::class => InvokableFactory::class,
-        SolrPrefix::class => SolrFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

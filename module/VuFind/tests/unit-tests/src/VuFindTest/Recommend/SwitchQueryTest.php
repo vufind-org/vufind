@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SwitchQuery recommendation module Test Class
+ * SwitchQuery recommendation module Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchQuery;
 use VuFind\Search\BackendManager;
 
 /**
- * SwitchQuery recommendation module Test Class
+ * SwitchQuery recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +46,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SearchServiceTrait;
 
     /**
-     * Test "getResults"
+     * Test "getResults".
      *
      * @return void
      */
@@ -56,7 +58,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lowercase booleans
+     * Test lowercase booleans.
      *
      * @return void
      */
@@ -74,7 +76,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lowercase booleans with case insensitive setting (should be skipped)
+     * Test lowercase booleans with case insensitive setting (should be skipped).
      *
      * @return void
      */
@@ -87,7 +89,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test id query
+     * Test id query.
      *
      * @return void
      */
@@ -102,7 +104,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query
+     * Test advanced query.
      *
      * @return void
      */
@@ -117,7 +119,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unwanted booleans
+     * Test unwanted booleans.
      *
      * @return void
      */
@@ -135,7 +137,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unwanted quotes
+     * Test unwanted quotes.
      *
      * @return void
      */
@@ -145,14 +147,14 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
             [
-                'switchquery_unwantedquotes' => 'my phrase'
+                'switchquery_unwantedquotes' => 'my phrase',
             ],
             $sq->getSuggestions()
         );
     }
 
     /**
-     * Test transform unwanted character
+     * Test transform unwanted character.
      *
      * @return void
      */
@@ -162,14 +164,14 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $sq = $this->getSwitchQuery($results, ':wildcard:truncatechar');
         $this->assertEquals(
             [
-                'switchquery_truncatechar' => 'abc'
+                'switchquery_truncatechar' => 'abc',
             ],
             $sq->getSuggestions()
         );
     }
 
     /**
-     * Test transform unwanted character on phrase (should omit suggestion)
+     * Test transform unwanted character on phrase (should omit suggestion).
      *
      * @return void
      */
@@ -181,7 +183,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param \VuFind\Search\Solr\Results $results  results object
      * @param string                      $settings settings
@@ -191,7 +193,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getSwitchQuery($results = null, $settings = '', $bm = null)
     {
-        $results = $results ?? $this->getMockResults();
+        $results ??= $this->getMockResults();
         $sq = new SwitchQuery(
             $this->getSearchService($bm ?? $this->getMockBackendManager())
         );
@@ -212,16 +214,11 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     protected function getMockBackendManager($csBools = true, $csRanges = true)
     {
         $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper($csBools, $csRanges);
-        $queryBuilder = $this->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
-            ->disableOriginalConstructor()->getMock();
-        $queryBuilder->expects($this->any())->method('getLuceneHelper')
-            ->will($this->returnValue($helper));
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')
-            ->will($this->returnValue('Solr'));
-        $backend->expects($this->any())->method('getQueryBuilder')
-            ->will($this->returnValue($queryBuilder));
+        $queryBuilder = $this->createMock(\VuFindSearch\Backend\Solr\QueryBuilder::class);
+        $queryBuilder->method('getLuceneHelper')->willReturn($helper);
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
+        $backend->method('getIdentifier')->willReturn('Solr');
+        $backend->method('getQueryBuilder')->willReturn($queryBuilder);
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set('Solr', $backend);
         return new BackendManager($container);
@@ -238,10 +235,8 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     protected function getMockResults($query = '', $type = 'basic')
     {
         $params = $this->getMockParams($query, $type);
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -255,12 +250,9 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockParams($query = '', $type = 'basic')
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getDisplayQuery')
-            ->will($this->returnValue($query));
-        $params->expects($this->any())->method('getSearchType')
-            ->will($this->returnValue($type));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getDisplayQuery')->willReturn($query);
+        $params->method('getSearchType')->willReturn($type);
         return $params;
     }
 }

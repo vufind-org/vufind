@@ -1,8 +1,9 @@
 <?php
+
 /**
  * View helper for loading theme-related resources.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -25,7 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
+
+use Laminas\View\Helper\HeadLink;
+use Laminas\View\Helper\HeadMeta;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\ResourceContainer;
+
+use function in_array;
+use function is_array;
 
 /**
  * View helper for loading theme-related resources.
@@ -36,34 +46,45 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
+class SetupThemeResources
 {
     /**
-     * Theme resource container
+     * Constructor.
      *
-     * @var \VuFindTheme\ResourceContainer
+     * @param ResourceContainer $container    Theme resource container
+     * @param HeadMeta          $headMeta     HeadMeta helper
+     * @param AssetManager      $assetManager HeadMeta helper
+     * @param HeadLink          $headLink     HeadLink helper
+     * @param ImageLink         $imageLink    ImageLink helper
      */
-    protected $container;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindTheme\ResourceContainer $container Theme resource container
-     */
-    public function __construct(\VuFindTheme\ResourceContainer $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        protected \VuFindTheme\ResourceContainer $container,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadMeta $headMeta,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadLink $headLink,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected ImageLink $imageLink,
+    ) {
     }
 
     /**
      * Set up items based on contents of theme resource container.
      *
+     * @param bool $partial Whether rendering an HTML snippet instead of a full page
+     *
      * @return void
      */
-    public function __invoke()
+    public function __invoke(bool $partial = false)
     {
-        $this->addMetaTags();
-        $this->addLinks();
+        // meta tags are illegal outside of <head>, so we don't want to render them
+        // in partial mode:
+        if (!$partial) {
+            $this->addMetaTags();
+        }
+        $this->addLinks($partial);
         $this->addScripts();
     }
 
@@ -75,8 +96,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     protected function addMetaTags()
     {
         // Set up encoding:
-        $headMeta = $this->getView()->plugin('headMeta');
-        $headMeta()->prependHttpEquiv(
+        ($this->headMeta)->prependHttpEquiv(
             'Content-Type',
             'text/html; charset=' . $this->container->getEncoding()
         );
@@ -84,58 +104,53 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Set up generator:
         $generator = $this->container->getGenerator();
         if (!empty($generator)) {
-            $headMeta()->appendName('Generator', $generator);
+            ($this->headMeta)->appendName('Generator', $generator);
         }
     }
 
     /**
      * Add links to header.
      *
+     * @param bool $partial Whether rendering an HTML snippet instead of a full page
+     *
      * @return void
      */
-    protected function addLinks()
+    protected function addLinks(bool $partial = false)
     {
-        // Convenient shortcut to view helper:
-        $headLink = $this->getView()->plugin('headLink');
-
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            // Special case for media with paretheses
-            // ie. (min-width: 768px)
-            if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
-                $parts[1] .= ':' . $parts[2];
-                array_splice($parts, 2, 1);
+            $this->assetManager->forcePrependStyleLink(
+                $current['file'],
+                empty($current['media']) ? 'all' : $current['media'],
+                $current['conditional'] ?? '',
+                $current['extras'] ?? []
+            );
+        }
+
+        // Insert link elements for favicons specified in the `favicons` property of theme.config.php.
+        // If `favicon` is a string then treat it as a single file path to an .ico icon.
+        // If `favicon` is an array then treat each item as an assoc array of html attributes and render
+        // a link element for each.
+        // Skip favicons in partial mode because they are illegal outside of <head>.
+        if (!$partial && ($favicon = $this->container->getFavicon())) {
+            if (is_array($favicon)) {
+                foreach ($favicon as $attrs) {
+                    if (isset($attrs['href'])) {
+                        $attrs['href'] = ($this->imageLink)($attrs['href']);
+                    }
+                    $attrs['rel'] ??= 'icon';
+                    ($this->headLink)($attrs);
+                }
+            } else {
+                ($this->headLink)(
+                    [
+                        'href' => ($this->imageLink)($favicon),
+                        'type' => 'image/x-icon',
+                        'rel' => 'icon',
+                    ]
+                );
             }
-            $headLink()->forcePrependStylesheet(
-                trim($parts[0]),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
-            );
-        }
-
-        // Compile and load LESS (make sure we prepend them in the appropriate order
-        // theme resources should load before extras added by individual templates):
-        foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            $headLink()->forcePrependStylesheet(
-                $headLink()->addLessStylesheet(trim($parts[0])),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
-            );
-        }
-
-        // If we have a favicon, load it now:
-        $favicon = $this->container->getFavicon();
-        if (!empty($favicon)) {
-            $imageLink = $this->getView()->plugin('imageLink');
-            $headLink(
-                [
-                    'href' => $imageLink($favicon),
-                    'type' => 'image/x-icon', 'rel' => 'shortcut icon'
-                ]
-            );
         }
     }
 
@@ -146,28 +161,24 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
      */
     protected function addScripts()
     {
-        $legalHelpers = ['footScript', 'headScript'];
+        $legalPositions = ['header', 'footer'];
 
         // Load Javascript (same ordering considerations as CSS, above):
         $js = array_reverse($this->container->getJs());
 
         foreach ($js as $current) {
-            $position = $current['position'] ?? 'header';
-            $helper = substr($position, 0, 4) . 'Script';
-            if (!in_array($helper, $legalHelpers)) {
+            $position = strtolower($current['position'] ?? 'header');
+            if (!in_array($position, $legalPositions)) {
                 throw new \Exception(
                     'Invalid script position for '
                     . $current['file'] . ': ' . $position . '.'
                 );
             }
-
-            $this->getView()
-                ->plugin($helper)
-                ->forcePrependFile(
-                    $current['file'],
-                    'text/javascript',
-                    $current['attributes'] ?? []
-                );
+            $this->assetManager->forcePrependScriptLink(
+                $current['file'],
+                $current['attributes'] ?? [],
+                position: $position
+            );
         }
     }
 }

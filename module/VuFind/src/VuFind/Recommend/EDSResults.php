@@ -1,8 +1,9 @@
 <?php
+
 /**
- * EDSResults Recommendations Module
+ * EDSResults Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
- * EDSResults Recommendations Module
+ * EDSResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of EDS.
  *
@@ -38,7 +40,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EDSResults extends SearchObject
+class EDSResults extends AbstractSearchObject
 {
     /**
      * Get the search class ID to use for building search objects.
@@ -48,5 +50,15 @@ class EDSResults extends SearchObject
     protected function getSearchClassId()
     {
         return 'EDS';
+    }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'EDS Results';
     }
 }

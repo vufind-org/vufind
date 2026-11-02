@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for Primo Central records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use function in_array;
 
 /**
  * Model for Primo Central records.
@@ -146,7 +150,13 @@ class Primo extends DefaultRecord
      */
     public function getFormats()
     {
-        return (array)($this->fields['format'] ?? []);
+        // Convert to displayable words and return as an array:
+        return array_map(
+            function ($s) {
+                return ucwords(str_replace('_', ' ', $s));
+            },
+            (array)($this->fields['format'])
+        );
     }
 
     /**
@@ -219,10 +229,26 @@ class Primo extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
+        $params = ['size' => $size];
+
         if ($isbn = $this->getCleanISBN()) {
-            return ['size' => $size, 'isn' => $isbn];
+            $params['isn'] = $isbn;
         }
-        return ['size' => $size, 'contenttype' => 'JournalArticle'];
+
+        if ($issn = $this->getCleanISSN()) {
+            $params['issn'] = $issn;
+        }
+
+        $formats = $this->getFormats();
+        if (!empty($formats)) {
+            $params['contenttype'] = $formats[0];
+        }
+
+        if (empty($params['isn']) && empty($params['issn']) && empty($params['contenttype'])) {
+            $params['contenttype'] = 'JournalArticle';
+        }
+
+        return $params;
     }
 
     /**
@@ -269,8 +295,21 @@ class Primo extends DefaultRecord
     }
 
     /**
+     * Get citation references.
+     *
+     * @return array
+     */
+    public function getCitations(): array
+    {
+        return [
+            'cites' => $this->fields['cites'] ?? [],
+            'cited_by' => $this->fields['cited_by'] ?? [],
+        ];
+    }
+
+    /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *

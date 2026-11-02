@@ -1,8 +1,9 @@
 <?php
+
 /**
- * RecordDataFormatter spec builder Test Class
+ * RecordDataFormatter spec builder Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root\RecordDataFormatter;
 
 use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
 
 /**
- * RecordDataFormatter spec builder Test Class
+ * RecordDataFormatter spec builder Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,16 +45,17 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test the spec builder
+     * Test the spec builder.
      *
      * @return void
      */
-    public function testBuilder()
+    public function testBuilder(): void
     {
+        // Test building a spec:
         $builder = new SpecBuilder();
-        $builder->setLine('foo', 'getFoo');
-        $builder->setLine('bar', 'getBar');
-        $builder->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
+        $builder->setLine('foo', 'getFoo')
+            ->setLine('bar', 'getBar')
+            ->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
         $expected = [
             'foo' => [
                 'dataMethod' => 'getFoo',
@@ -72,6 +75,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $builder->getArray());
+        // Test various methods of reordering the spec:
         $builder->reorderKeys(['xyzzy', 'bar']);
         $expected['xyzzy']['pos'] = 100;
         $expected['bar']['pos'] = 200;
@@ -85,5 +89,9 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         $expected['bar']['pos'] = 400;
         $expected['foo']['pos'] = 100;
         $this->assertEquals($expected, $builder->getArray());
+        // Test that we can remove lines from the spec:
+        $builder->removeLine('bar');
+        $builder->removeLine('foo');
+        $this->assertSame(['xyzzy' => $expected['xyzzy']], $builder->getArray());
     }
 }

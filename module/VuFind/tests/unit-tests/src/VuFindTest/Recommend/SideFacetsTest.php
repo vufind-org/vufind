@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SideFacets recommendation module Test Class
+ * SideFacets recommendation module Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,15 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SideFacets;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
 
 /**
- * SideFacets recommendation module Test Class
+ * SideFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,10 +44,10 @@ use VuFind\Search\Solr\Results;
  */
 class SideFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Test "getResults"
+     * Test "getResults".
      *
      * @return void
      */
@@ -58,62 +59,26 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHierarchicalFacets() and getHierarchicalFacetSortOptions()
+     * Test getHierarchicalFacets() and getHierarchicalFacetSortOptions().
      *
      * @return void
      */
     public function testHierarchicalGetters(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'SpecialFacets' => [
                         'hierarchical' => ['format'],
-                        'hierarchicalFacetSortOptions' => ['a', 'b', 'c']
-                    ]
-                ]
+                        'hierarchicalFacetSortOptions' => ['a', 'b', 'c'],
+                    ],
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
-        $sf = $this->getSideFacets($configLoader, null, '', null, null);
+        $sf = $this->getSideFacets($configManager);
         $this->assertEquals(['format'], $sf->getHierarchicalFacets());
         $this->assertEquals(['a', 'b', 'c'], $sf->getHierarchicalFacetSortOptions());
-    }
-
-    /**
-     * Test missing hierarchical facet helper
-     *
-     * @return void
-     */
-    public function testMissingHierarchicalFacetHelper(): void
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            'VuFind\\Recommend\\SideFacets: hierarchical facet helper unavailable'
-        );
-
-        $configLoader = $this->getMockConfigPluginManager(
-            [
-                'facets' => [
-                    'Results' => [
-                        'format' => 'Format',
-                    ],
-                    'SpecialFacets' => [
-                        'hierarchical' => ['format']
-                    ]
-                ]
-            ],
-            [],
-            $this->once()
-        );
-        $results = $this->getMockResults();
-        $response = ['format' => ['dummy']];
-        $results->expects($this->once())->method('getFacetList')
-            ->with($this->equalTo(['format' => 'Format']))
-            ->will($this->returnValue($response));
-        $sf = $this->getSideFacets($configLoader, $results, '', null, null);
-        $sf->getFacetSet();
     }
 
     /**
@@ -123,7 +88,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testFacetInit(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'Results' => [
@@ -134,29 +99,28 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                     'Checkboxes' => [
                         'description' => 'filter',
-                    ]
-                ]
+                    ],
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')
             ->with(
-                $this->equalTo('format'),
-                $this->equalTo('Format'),
-                $this->equalTo(true)
+                'format',
+                'Format',
+                true
             );
         $params->expects($this->once())
             ->method('addCheckboxFacet')
-            ->with($this->equalTo('filter'), $this->equalTo('description'));
+            ->with('filter', 'description');
         // test ~ checkbox flip function:
-        $this->getSideFacets($configLoader, $results, ':~Checkboxes');
+        $this->getSideFacets($configManager, $results, ':~Checkboxes');
     }
 
     /**
-     * Test getFacetOperator
+     * Test getFacetOperator.
      *
      * @return void
      */
@@ -166,7 +130,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             'AND',
             $this->getSideFacets()->getFacetOperator('format')
         ); // default
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'Results' => [
@@ -175,17 +139,16 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => [
                         'orFacets' => '*',  // test or facet support
                     ],
-                ]
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
-        $sf = $this->getSideFacets($configLoader);
+        $sf = $this->getSideFacets($configManager);
         $this->assertEquals('OR', $sf->getFacetOperator('format'));
     }
 
     /**
-     * Test excludeAllowed
+     * Test excludeAllowed.
      *
      * @return void
      */
@@ -194,7 +157,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(
             $this->getSideFacets()->excludeAllowed('format')
         ); // default
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'Results' => [
@@ -203,23 +166,22 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => [
                         'exclude' => '*',  // test or facet support
                     ],
-                ]
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
-        $sf = $this->getSideFacets($configLoader);
+        $sf = $this->getSideFacets($configManager);
         $this->assertTrue($sf->excludeAllowed('format'));
     }
 
     /**
-     * Test getAllRangeFacets()
+     * Test getAllRangeFacets().
      *
      * @return void
      */
     public function testGetAllRangeFacets(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'SpecialFacets' => [
@@ -227,11 +189,10 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                         'fullDateRange' => ['fullDate'],
                         'genericRange' => ['generic'],
                         'numericRange' => ['numeric'],
-                    ]
-                ]
+                    ],
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $filters = [
             'date' => ['[1900 TO 1905]'],
@@ -240,13 +201,13 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             'numeric' => ['[1 TO 9]'],
         ];
         $results = $this->getMockResults();
-        $results->getParams()->expects($this->any())->method('getRawFilters')
-            ->will($this->returnValue($filters));
-        $sf = $this->getSideFacets($configLoader, $results);
+        $results->getParams()->method('getRawFilters')
+            ->willReturn($filters);
+        $sf = $this->getSideFacets($configManager, $results);
         $expected = [
             'date' => ['type' => 'date', 'values' => ['1900', '1905']],
             'fullDate' => [
-                'type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31']
+                'type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31'],
             ],
             'generic' => ['type' => 'generic', 'values' => ['A', 'Z']],
             'numeric' => ['type' => 'numeric', 'values' => ['1', '9']],
@@ -265,46 +226,44 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test asterisk support in getCollapsedFacets
+     * Test asterisk support in getCollapsedFacets.
      *
      * @return void
      */
     public function testGetCollapsedFacetsDelimitedList(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'Results_Settings' => ['collapsedFacets' => '   foo, bar,baz   '],
-                ]
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
-        $sf = $this->getSideFacets($configLoader);
+        $sf = $this->getSideFacets($configManager);
         $this->assertEquals(['foo', 'bar', 'baz'], $sf->getCollapsedFacets());
     }
 
     /**
-     * Test delimited list support in getCollapsedFacets
+     * Test delimited list support in getCollapsedFacets.
      *
      * @return void
      */
     public function testGetCollapsedFacetsWildcard(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
                     'Results' => [
                         'format' => 'Format',
                     ],
                     'Results_Settings' => ['collapsedFacets' => '*'],
-                ]
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $results = $this->getMockResults();
-        $sf = $this->getSideFacets($configLoader, $results);
+        $sf = $this->getSideFacets($configManager, $results);
         $this->assertEquals(['format'], $sf->getCollapsedFacets());
     }
 
@@ -319,8 +278,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo([]), $this->equalTo(true))
-            ->will($this->returnValue([]));
+            ->with([], true)
+            ->willReturn([]);
         $params->expects($this->never())->method('addCheckboxFacet');
         $sf = $this->getSideFacets(null, $results);
         $this->assertEquals([], $sf->getCheckboxFacetSet());
@@ -333,25 +292,30 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetCheckboxFacetSetReturnsValueWhenAppropriate(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
-                    'Checkboxes' => ['foo' => 'bar']
-                ]
+                    'Checkboxes' => ['foo' => 'bar'],
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
-        $checkboxData = ['fake result'];
+        $checkboxData = [
+            [
+                'filter' => 'fake result:1',
+            ],
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']), $this->equalTo(true))
-            ->will($this->returnValue($checkboxData));
+            ->with(['foo'], true)
+            ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
-            ->with($this->equalTo('foo'), $this->equalTo('bar'));
-        $sf = $this->getSideFacets($configLoader, $results, ':Checkboxes');
-        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+            ->with('foo', 'bar');
+        $sf = $this->getSideFacets($configManager, $results, ':Checkboxes');
+        $expected = $checkboxData;
+        $expected[0]['count'] = null;
+        $this->assertEquals($expected, $sf->getCheckboxFacetSet());
     }
 
     /**
@@ -361,54 +325,53 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDynamicCheckboxesCanBeDisabled(): void
     {
-        $configLoader = $this->getMockConfigPluginManager(
+        $configManager = $this->getMockConfigManager(
             [
                 'facets' => [
-                    'Checkboxes' => ['foo' => 'bar']
-                ]
+                    'Checkboxes' => ['foo' => 'bar'],
+                ],
             ],
-            [],
-            $this->once()
+            getConfigArrayExpect: $this->once()
         );
-        $checkboxData = ['fake result'];
+        $checkboxData = [
+            [
+                'filter' => 'fake result:1',
+            ],
+        ];
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']), $this->equalTo(false))
-            ->will($this->returnValue($checkboxData));
+            ->with(['foo'], false)
+            ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
-            ->with($this->equalTo('foo'), $this->equalTo('bar'));
+            ->with('foo', 'bar');
         $settings = 'Results:Checkboxes:facets:false';
-        $sf = $this->getSideFacets($configLoader, $results, $settings);
-        $this->assertEquals($checkboxData, $sf->getCheckboxFacetSet());
+        $sf = $this->getSideFacets($configManager, $results, $settings);
+        $expected = $checkboxData;
+        $expected[0]['count'] = null;
+        $this->assertEquals($expected, $sf->getCheckboxFacetSet());
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param Results                      $results      results object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
-     * @param HierarchicalFacetHelper      $facetHelper  hierarchical facet helper
-     * (true to build default, null to omit)
+     * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
+     * @param ?Results                               $results       results object
+     * @param string                                 $settings      settings
+     * @param ?\Laminas\Stdlib\Parameters            $request       request
      *
      * @return SideFacets
      */
     protected function getSideFacets(
-        \VuFind\Config\PluginManager $configLoader = null,
-        Results $results = null,
+        ?\VuFind\Config\ConfigManagerInterface $configManager = null,
+        ?Results $results = null,
         string $settings = '',
-        \Laminas\Stdlib\Parameters $request = null,
-        $facetHelper = true
+        ?\Laminas\Stdlib\Parameters $request = null
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
         }
-        $sf = new SideFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
-            true === $facetHelper ? new HierarchicalFacetHelper() : $facetHelper
-        );
+        $sf = new SideFacets($configManager ?? $this->getMockConfigManager());
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
@@ -421,38 +384,38 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock results object.
      *
-     * @param Params $params Params to include in container.
+     * @param ?Params $params Params to include in container.
      *
      * @return Results
      */
-    protected function getMockResults(Params $params = null): Results
+    protected function getMockResults(?Params $params = null): Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+        $options = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $params->method('getOptions')->willReturn($options);
+
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
+        $results->method('getOptions')->willReturn($options);
         return $results;
     }
 
     /**
      * Get a mock params object.
      *
-     * @param \VuFindSearch\Query\Query $query Query to include in container.
+     * @param ?\VuFindSearch\Query\Query $query Query to include in container.
      *
      * @return Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null): Params
+    protected function getMockParams(?\VuFindSearch\Query\Query $query = null): Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

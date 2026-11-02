@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -18,8 +17,8 @@ declare(strict_types=1);
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  I18n
@@ -27,10 +26,15 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\I18n;
 
+use function sprintf;
+
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * @category VuFind
  * @package  I18n
@@ -41,7 +45,7 @@ namespace VuFind\I18n;
 class Sorter implements SorterInterface
 {
     /**
-     * Intl Collator
+     * Intl Collator.
      *
      * @var \Collator
      */
@@ -55,7 +59,7 @@ class Sorter implements SorterInterface
     protected $respectLocale;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Collator $collator      Current user locale
      * @param bool      $respectLocale Do respect current locale?
@@ -67,7 +71,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Compare function
+     * Compare function.
      *
      * @param string $string1 First string to compare
      * @param string $string2 Second string to compare
@@ -82,7 +86,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Sort array by values
+     * Sort array by values.
      *
      * @param array $array Array to sort
      *
@@ -96,7 +100,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Sort array by values and maintain index association
+     * Sort array by values and maintain index association.
      *
      * @param array $array Array to sort
      *
@@ -110,7 +114,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Natural sort by values and maintain index association
+     * Natural sort by values and maintain index association.
      *
      * @param array $array Array to sort
      *
@@ -124,7 +128,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Function to actually do natural sorting
+     * Function to actually do natural sorting.
      *
      * @param array $array Array to sort
      *
@@ -141,7 +145,7 @@ class Sorter implements SorterInterface
             $data
         );
         $success = $this->collator->asort($data);
-        foreach ($data as $key => $item) {
+        foreach (array_keys($data) as $key) {
             $data[$key] = $array[$key];
         }
         $array = $data;

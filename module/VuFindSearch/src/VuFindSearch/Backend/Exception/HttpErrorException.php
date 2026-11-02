@@ -3,7 +3,7 @@
 /**
  * HTTP error exception.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Exception;
 
 use Exception;
-
 use Laminas\Http\Response;
 
 /**
@@ -82,10 +82,10 @@ abstract class HttpErrorException extends BackendException
     /**
      * Constructor.
      *
-     * @param string    $message  Exception message
-     * @param int       $code     Exception code
-     * @param Response  $response Server response
-     * @param Exception $prev     Previous exception
+     * @param string     $message  Exception message
+     * @param int        $code     Exception code
+     * @param Response   $response Server response
+     * @param ?Exception $prev     Previous exception
      *
      * @return void
      */
@@ -93,7 +93,7 @@ abstract class HttpErrorException extends BackendException
         $message,
         $code,
         Response $response,
-        Exception $prev = null
+        ?Exception $prev = null
     ) {
         parent::__construct($message, $code, $prev);
         $this->response = $response;

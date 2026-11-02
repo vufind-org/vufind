@@ -3,7 +3,7 @@
 /**
  * Solr hierarchical facet listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2014.
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -28,15 +28,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -51,95 +53,52 @@ use VuFindSearch\Service;
 class HierarchicalFacetListener
 {
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
-     * Service container.
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
-     * Facet configuration.
-     *
-     * @var Config
-     */
-    protected $facetConfig;
-
-    /**
-     * Facet helper.
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $facetHelper;
-
-    /**
      * Facet display styles.
      *
      * @var array
      */
-    protected $displayStyles;
+    protected array $displayStyles;
 
     /**
-     * Hierarchy level separators
+     * Hierarchy level separators.
      *
      * @var array
      */
-    protected $separators;
+    protected array $separators;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
-    protected $translatedFacets = [];
+    protected array $translatedFacets = [];
 
     /**
-     * Text domains for translated facets
+     * Text domains for translated facets.
      *
      * @var array
      */
-    protected $translatedFacetsTextDomains = [];
+    protected array $translatedFacetsTextDomains = [];
 
     /**
      * Constructor.
      *
-     * @param BackendInterface        $backend        Search backend
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $facetConfig    Facet config file id
+     * @param BackendInterface        $backend     Search backend
+     * @param HierarchicalFacetHelper $facetHelper Hierarchical facet helper
+     * @param array                   $facetConfig Facet configuration
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        ServiceLocatorInterface $serviceLocator,
-        $facetConfig
+        protected BackendInterface $backend,
+        protected HierarchicalFacetHelper $facetHelper,
+        protected array $facetConfig
     ) {
-        $this->backend = $backend;
-        $this->serviceLocator = $serviceLocator;
+        $specialFacets = $this->facetConfig['SpecialFacets'] ?? [];
+        $this->displayStyles = $specialFacets['hierarchicalFacetDisplayStyles'] ?? [];
+        $this->separators = $specialFacets['hierarchicalFacetSeparators'] ?? [];
 
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $this->facetConfig = $config->get($facetConfig);
-        $this->facetHelper = $this->serviceLocator
-            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-
-        $specialFacets = $this->facetConfig->SpecialFacets;
-        $this->displayStyles
-            = isset($specialFacets->hierarchicalFacetDisplayStyles)
-            ? $specialFacets->hierarchicalFacetDisplayStyles->toArray()
-            : [];
-        $this->separators
-            = isset($specialFacets->hierarchicalFacetSeparators)
-            ? $specialFacets->hierarchicalFacetSeparators->toArray()
-            : [];
-
-        $translatedFacets = $this->facetConfig->Advanced_Settings->translated_facets
-            ?? [];
+        $translatedFacets = $this->facetConfig['Advanced_Settings']['translated_facets'] ?? [];
         foreach ($translatedFacets as $current) {
             $parts = explode(':', $current);
             $this->translatedFacets[] = $parts[0];
@@ -158,22 +117,22 @@ class HierarchicalFacetListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
+    ): void {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );
     }
 
     /**
-     * Format hierarchical facets accordingly
+     * Format hierarchical facets accordingly.
      *
      * @param EventInterface $event Event
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
 
@@ -181,30 +140,28 @@ class HierarchicalFacetListener
             return $event;
         }
         $context = $command->getContext();
-        if ($context == 'search' || $context == 'retrieve'
-            || $context == 'retrieveBatch' || $context == 'similar'
-        ) {
+        if (in_array($context, ['search', 'retrieve', 'retrieveBatch', 'similar'])) {
             $this->processHierarchicalFacets($event);
         }
         return $event;
     }
 
     /**
-     * Process hierarchical facets and format them accordingly
+     * Process hierarchical facets and format them accordingly.
      *
      * @param EventInterface $event Event
      *
      * @return void
      */
-    protected function processHierarchicalFacets($event)
+    protected function processHierarchicalFacets(EventInterface $event): void
     {
-        if (empty($this->facetConfig->SpecialFacets->hierarchical)) {
+        if (empty($this->facetConfig['SpecialFacets']['hierarchical'])) {
             return;
         }
         $result = $event->getParam('command')->getResult();
         foreach ($result->getRecords() as $record) {
             $fields = $record->getRawData();
-            foreach ($this->facetConfig->SpecialFacets->hierarchical as $facetName) {
+            foreach ($this->facetConfig['SpecialFacets']['hierarchical'] as $facetName) {
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
@@ -214,7 +171,8 @@ class HierarchicalFacetListener
                         // Include a translation for each value only if we don't
                         // display full hierarchy or this is the deepest hierarchy
                         // level available
-                        if (!$allLevels
+                        if (
+                            !$allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
                                 $fields[$facetName],
                                 $value
@@ -240,14 +198,14 @@ class HierarchicalFacetListener
     }
 
     /**
-     * Format a facet field according to the settings
+     * Format a facet field according to the settings.
      *
      * @param string $facet Facet field
      * @param string $value Facet value
      *
      * @return string Formatted field
      */
-    protected function formatFacetField($facet, $value)
+    protected function formatFacetField(string $facet, string $value): string
     {
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'

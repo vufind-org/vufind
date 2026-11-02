@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Solr-based similarity.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2009.
+ * Copyright (C) Villanova University 2009, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -25,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
+
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Command\SimilarCommand;
+
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Solr-based similarity.
  *
  * @category VuFind
  * @package  Related_Records
@@ -39,27 +44,20 @@ namespace VuFind\Related;
 class Similar implements RelatedInterface
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Search service
+     * Constructor.
      *
-     * @var \VuFindSearch\Service
+     * @param \VuFindSearch\Service $searchService Search service
      */
-    protected $searchService;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindSearch\Service $search Search service
-     */
-    public function __construct(\VuFindSearch\Service $search)
+    #[Autowire]
+    public function __construct(protected \VuFindSearch\Service $searchService)
     {
-        $this->searchService = $search;
     }
 
     /**
@@ -72,10 +70,11 @@ class Similar implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $this->results = $this->searchService->similar(
+        $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
-            $driver->getUniqueId()
+            $driver->getUniqueID()
         );
+        $this->results = $this->searchService->invoke($command)->getResult();
     }
 
     /**

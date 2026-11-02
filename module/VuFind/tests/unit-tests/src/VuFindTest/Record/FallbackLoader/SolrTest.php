@@ -3,9 +3,9 @@
 /**
  * Solr fallback loader test.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2021, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,18 +17,22 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record\FallbackLoader;
 
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Solr;
+use VuFind\Record\RecordIdUpdater;
 
 /**
  * Solr fallback loader test.
@@ -48,33 +52,34 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      */
     public function testEnabledLoader(): void
     {
-        $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()->getMock();
+        $record = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $record->expects($this->once())->method('setPreviousUniqueId')
-            ->with($this->equalTo('oldId'));
-        $record->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue('newId'));
+            ->with('oldId');
+        $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
             ['recordCount' => 1]
         );
         $collection->add($record);
-        $expectedQuery = new \VuFindSearch\Query\Query('previous_id_str_mv:"oldId"');
-        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $search->expects($this->once())->method('search')
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->expects($this->once())->method('getResult')->willReturn($collection);
+        $checkCommand = function ($command) {
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'Solr'
+                && $command->getArguments()[0]->getString() ===
+                'previous_id_str_mv:"oldId"';
+        };
+        $search = $this->createMock(\VuFindSearch\Service::class);
+        $search->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->willReturn($commandObj);
+        $updater = $this->createMock(RecordIdUpdater::class);
+        $updater->expects($this->once())->method('updateRecordId')
             ->with(
-                $this->equalTo('Solr'),
-                $this->equalTo($expectedQuery)
-            )->will($this->returnValue($collection));
-        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
-            ->disableOriginalConstructor()->getMock();
-        $resource->expects($this->once())->method('updateRecordId')
-            ->with(
-                $this->equalTo('oldId'),
-                $this->equalTo('newId'),
-                $this->equalTo('Solr')
+                'oldId',
+                'newId',
+                'Solr'
             );
-        $loader = new Solr($resource, $search);
+        $loader = new Solr($this->createMock(ResourceServiceInterface::class), $updater, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));
     }
 
@@ -85,11 +90,9 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabledLoader(): void
     {
-        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
-            ->disableOriginalConstructor()->getMock();
-        $loader = new Solr($resource, $search, null);
-        $this->assertEquals(0, count($loader->load(['oldId'])));
+        $search = $this->createMock(\VuFindSearch\Service::class);
+        $updater = $this->createMock(RecordIdUpdater::class);
+        $loader = new Solr($this->createMock(ResourceServiceInterface::class), $updater, $search, null);
+        $this->assertCount(0, $loader->load(['oldId']));
     }
 }

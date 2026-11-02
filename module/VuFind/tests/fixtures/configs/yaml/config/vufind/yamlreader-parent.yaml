@@ -1,0 +1,18 @@
+Overridden:
+  Original: Will not exist
+Other:
+  Merged:
+    Foo:
+      - Foo
+      - Bar
+    Baz:
+      - Bar
+      - Bar
+  Replaced:
+    ParentOnly: Will exist
+    Original: Will not exist
+    Boolean: true
+  NonMerged:
+    Original: Will not exist
+  ParentOnly:
+    - true

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * SummonResultsDeferred Recommendations Module
+ * SummonResultsDeferred Recommendations Module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -26,10 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
+use function is_object;
+
 /**
- * SummonResultsDeferred Recommendations Module
+ * SummonResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the SummonResults
  * module.
@@ -43,20 +47,18 @@ namespace VuFind\Recommend;
 class SummonResultsDeferred extends AbstractSummonRecommendDeferred
 {
     /**
-     * Label for current search type
+     * Label for current search type.
      *
      * @var string
      */
     protected $typeLabel = '';
 
     /**
-     * Constructor
+     * Number of expected module parameters (from .ini config).
+     *
+     * @var int
      */
-    public function __construct()
-    {
-        $this->module = 'SummonResults';
-        $this->paramCount = 2;
-    }
+    protected $paramCount = 2;
 
     /**
      * Called before the Search Results object performs its main search
@@ -81,6 +83,16 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
                 $params->getSearchHandler()
             );
         }
+    }
+
+    /**
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
+     */
+    protected function getAjaxModule()
+    {
+        return 'SummonResults';
     }
 
     /**

@@ -1,0 +1,40 @@
+<div class="combined-search-container">
+  <?php $columnedParams = []; ?>
+  <?php $columnIndex = 0; ?>
+  <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+    <?php
+      if (
+        !($currentSearch['ajax'] ?? false)                        // AJAX column
+        && ($currentSearch['hide_if_empty'] ?? false)             // set to hide when empty
+        && $currentSearch['view']->results->getResultTotal() <= 0 // and empty
+      ) {
+        continue;
+      }
+      $colParams = [
+        'searchClassId' => $searchClassId,
+        'currentSearch' => $currentSearch,
+        'domId' => $currentSearch['domId'],
+      ];
+      if (isset($currentSearch['ajax'])) {
+        $colParams['ajax'] = $currentSearch['ajax'];
+      }
+      // Distribute
+      $col = $columnIndex % $columns;
+      if (!isset($columnedParams[$col])) {
+        $columnedParams[$col] = [];
+      }
+      $columnedParams[$col][] = $colParams;
+      $columnIndex++;
+    ?>
+  <?php endforeach; ?>
+  <?php foreach ($columnedParams as $currColumn): ?>
+    <div class="combined-column">
+      <?php foreach ($currColumn as $colParams): ?>
+        <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
+          <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
+          <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  <?php endforeach; ?>
+</div>

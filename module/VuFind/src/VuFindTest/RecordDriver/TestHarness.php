@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Test harness for simulating record drivers (ignore outside of test suite!)
+ * Test harness for simulating record drivers (ignore outside of test suite!).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 /**
- * Test harness for simulating record drivers (ignore outside of test suite!)
+ * Test harness for simulating record drivers (ignore outside of test suite!).
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -39,7 +41,7 @@ namespace VuFindTest\RecordDriver;
 class TestHarness extends \VuFind\RecordDriver\AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -56,10 +58,10 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      */
     public function __call($method, $params)
     {
-        if (substr($method, 0, 3) == 'get') {
+        if (str_starts_with($method, 'get')) {
             $index = substr($method, 3);
             return $this->fields[$index] ?? null;
-        } elseif (substr($method, 0, 3) == 'set') {
+        } elseif (str_starts_with($method, 'set')) {
             $index = substr($method, 3);
             $this->fields[$index] = $params[0];
         }
@@ -98,7 +100,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
         // overridden via rawData (but also allow the "normal" method as a
         // fallback):
         return isset($this->fields['SourceIdentifier'])
-            ? $this->__call('getSourceIdentifier', $this->sourceIdentifier)
+            ? $this->__call('getSourceIdentifier', [])
             : parent::getSourceIdentifier();
     }
 }

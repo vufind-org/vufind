@@ -1,9 +1,9 @@
 <?php
 
 /**
- * EDS API Query Adapter: search query parameters to AbstractQuery object
+ * EDS API Query Adapter: search query parameters to AbstractQuery object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -26,15 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
-use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
+use function call_user_func;
+use function count;
+
 /**
- * EDS API Query Adapter: search query parameters to AbstractQuery object
+ * EDS API Query Adapter: search query parameters to AbstractQuery object.
  *
  * @category VuFind
  * @package  EBSCO
@@ -45,41 +48,20 @@ use VuFindSearch\Query\QueryGroup;
 class QueryAdapter extends \VuFind\Search\QueryAdapter
 {
     /**
-     * Convert a Query or QueryGroup into a human-readable display query.
-     *
-     * @param AbstractQuery $query     Query to convert
-     * @param callable      $translate Callback to translate strings
-     * @param callable      $showName  Callback to translate field names
-     *
-     * @return string
-     */
-    public static function display(AbstractQuery $query, $translate, $showName)
-    {
-        // Simple case -- basic query:
-        if ($query instanceof Query) {
-            return $query->getString();
-        }
-
-        // Complex case -- advanced query:
-        return self::displayAdvanced($query, $translate, $showName);
-    }
-
-    /**
      * Support method for display() -- process advanced queries.
      *
-     * @param AbstractQuery $query     Query to convert
-     * @param callable      $translate Callback to translate strings
-     * @param callable      $showName  Callback to translate field names
+     * @param QueryGroup $query     Query to convert
+     * @param callable   $translate Callback to translate strings
+     * @param callable   $showName  Callback to translate field names
      *
      * @return string
      */
-    protected static function displayAdvanced(
-        AbstractQuery $query,
-        $translate,
-        $showName
-    ) {
-        $output = '';
-        //There should only ever be 1 group with EDS queries.
+    protected function displayAdvanced(
+        QueryGroup $query,
+        callable $translate,
+        callable $showName
+    ): string {
+        // There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {
             if ($search instanceof QueryGroup) {
@@ -96,15 +78,13 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                             . call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
-        $output = '(' . join(' ', $all) . ')';
-
-        return $output;
+        return '(' . implode(' ', $all) . ')';
     }
 }

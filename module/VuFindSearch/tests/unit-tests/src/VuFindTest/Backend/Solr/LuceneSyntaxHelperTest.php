@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Unit tests for Lucene syntax helper
+ * Unit tests for Lucene syntax helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
 /**
- * Unit tests for Lucene syntax helper
+ * Unit tests for Lucene syntax helper.
  *
  * @category VuFind
  * @package  Search
@@ -44,41 +45,53 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
+     * Data provider for testCapitalizeBooleans.
+     *
+     * @return \Iterator
+     */
+    public static function capitalizeBooleansProvider(): \Iterator
+    {
+        yield ['this not that', 'this NOT that'];
+        // capitalize not
+        yield ['this nOt that', 'this NOT that'];
+        // strange capitalization
+        yield ['this and that', 'this AND that'];
+        // capitalize and
+        yield ['and and and', 'and AND and'];
+        yield ['this aNd that', 'this AND that'];
+        // strange capitalization
+        yield ['this or that', 'this OR that'];
+        // capitalize or
+        // handle multiple operators:
+        yield ['apples and oranges (not that)', 'apples AND oranges (NOT that)'];
+        yield [
+            '(this or that) and (apples not oranges)',
+            '(this OR that) AND (apples NOT oranges)',
+        ];
+        // do not capitalize inside quotes:
+        yield ['"this not that"', '"this not that"'];
+        yield ['"this and that"', '"this and that"'];
+        yield ['"this or that"', '"this or that"'];
+        yield ['"apples and oranges (not that)"', '"apples and oranges (not that)"'];
+        yield ['this AND that', 'this AND that'];
+        // don't mess up existing caps
+        // handle words resembling operators:
+        yield ['andornot noted andy oranges', 'andornot noted andy oranges'];
+    }
+
+    /**
      * Test capitalizeBooleans functionality.
+     *
+     * @param $input    Input to test
+     * @param $expected Expected output
      *
      * @return void
      */
-    public function testCapitalizeBooleans()
+    #[\PHPUnit\Framework\Attributes\DataProvider('capitalizeBooleansProvider')]
+    public function testCapitalizeBooleans(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper();
-
-        // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
-        $tests = [
-            ['this not that', 'this NOT that'],        // capitalize not
-            ['this and that', 'this AND that'],        // capitalize and
-            ['this or that', 'this OR that'],          // capitalize or
-            ['apples and oranges (not that)', 'apples AND oranges (NOT that)'],
-            ['"this not that"', '"this not that"'],    // do not capitalize inside quotes
-            ['"this and that"', '"this and that"'],    // do not capitalize inside quotes
-            ['"this or that"', '"this or that"'],      // do not capitalize inside quotes
-            ['"apples and oranges (not that)"', '"apples and oranges (not that)"'],
-            ['this AND that', 'this AND that'],        // don't mess up existing caps
-            ['and and and', 'and AND and'],
-            ['andornot noted andy oranges', 'andornot noted andy oranges'],
-            ['(this or that) and (apples not oranges)', '(this OR that) AND (apples NOT oranges)'],
-            ['this aNd that', 'this AND that'],        // strange capitalization of AND
-            ['this nOt that', 'this NOT that'],        // strange capitalization of NOT
-        ];
-        // @codingStandardsIgnoreEnd
-
-        // Test all the operations:
-        foreach ($tests as $current) {
-            $this->assertEquals(
-                $lh->capitalizeBooleans($current[0]),
-                $current[1]
-            );
-        }
+        $this->assertEquals($expected, $lh->capitalizeBooleans($input));
     }
 
     /**
@@ -86,7 +99,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testContainsBooleans()
+    public function testContainsBooleans(): void
     {
         $lh = new LuceneSyntaxHelper();
         $this->assertTrue($lh->containsBooleans('this AND that'));
@@ -108,7 +121,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSelectiveBooleanCapitalization()
+    public function testSelectiveBooleanCapitalization(): void
     {
         $lh = new LuceneSyntaxHelper();
         $in = 'this or that and the other not everything else (not me)';
@@ -139,7 +152,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBoolsToCap()
+    public function testGetBoolsToCap(): void
     {
         $lh = new LuceneSyntaxHelper();
 
@@ -184,7 +197,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHasCaseSensitiveBooleans()
+    public function testHasCaseSensitiveBooleans(): void
     {
         $lh = new LuceneSyntaxHelper();
 
@@ -207,53 +220,63 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test capitalizeRanges functionality.
+     * Data provider for testCapitalizeRanges.
      *
-     * @return void
+     * @return \Iterator
      */
-    public function testCapitalizeRanges()
+    public static function capitalizeRangesProvider(): \Iterator
     {
-        $lh = new LuceneSyntaxHelper();
-
-        // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
-        $tests = [
-            ['"{a to b}"', '"{a to b}"'],              // don't capitalize inside quotes
-            ['"[a to b]"', '"[a to b]"'],
-            ['[a to b]', '([a TO b] OR [A TO B])'],    // expand alphabetic cases
-            ['[a TO b]', '([a TO b] OR [A TO B])'],
-            ['[a To b]', '([a TO b] OR [A TO B])'],
-            ['[a tO b]', '([a TO b] OR [A TO B])'],
-            ['{a to b}', '({a TO b} OR {A TO B})'],
-            ['{a TO b}', '({a TO b} OR {A TO B})'],
-            ['{a To b}', '({a TO b} OR {A TO B})'],
-            ['{a tO b}', '({a TO b} OR {A TO B})'],
-            ['[1900 to 1910]', '[1900 TO 1910]'],      // don't expand numeric cases
-            ['[1900 TO 1910]', '[1900 TO 1910]'],
-            ['{1900 to 1910}', '{1900 TO 1910}'],
-            ['{1900 TO 1910}', '{1900 TO 1910}'],
-            ['[a      to      b]', '([a TO b] OR [A TO B])'],   // handle extra spaces
-            // special case for timestamps:
-            ['[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]', '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]'],
-            ['{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}', '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}']
+        // don't capitalize inside quotes
+        yield ['"{a to b}"', '"{a to b}"'];
+        yield ['"[a to b]"', '"[a to b]"'];
+        // expand alphabetic cases
+        yield ['[a to b]', '([a TO b] OR [A TO B])'];
+        yield ['[a TO b]', '([a TO b] OR [A TO B])'];
+        yield ['[a To b]', '([a TO b] OR [A TO B])'];
+        yield ['[a tO b]', '([a TO b] OR [A TO B])'];
+        yield ['{a to b}', '({a TO b} OR {A TO B})'];
+        yield ['{a TO b}', '({a TO b} OR {A TO B})'];
+        yield ['{a To b}', '({a TO b} OR {A TO B})'];
+        yield ['{a tO b}', '({a TO b} OR {A TO B})'];
+        // don't expand numeric cases
+        yield ['[1900 to 1910]', '[1900 TO 1910]'];
+        yield ['[1900 TO 1910]', '[1900 TO 1910]'];
+        yield ['{1900 to 1910}', '{1900 TO 1910}'];
+        yield ['{1900 TO 1910}', '{1900 TO 1910}'];
+        // handle extra spaces
+        yield ['[a      to      b]', '([a TO b] OR [A TO B])'];
+        // special case for timestamps:
+        yield [
+            '[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]',
+            '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]',
         ];
-        // @codingStandardsIgnoreEnd
-
-        // Test all the operations:
-        foreach ($tests as $current) {
-            $this->assertEquals(
-                $lh->capitalizeRanges($current[0]),
-                $current[1]
-            );
-        }
+        yield [
+            '{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}',
+            '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}',
+        ];
     }
 
     /**
-     * Test advanced query detection (default settings)
+     * Test capitalizeRanges functionality.
+     *
+     * @param $input    Input to test
+     * @param $expected Expected output
      *
      * @return void
      */
-    public function testContainsAdvancedLuceneSyntaxWithDefaults()
+    #[\PHPUnit\Framework\Attributes\DataProvider('capitalizeRangesProvider')]
+    public function testCapitalizeRanges(string $input, string $expected): void
+    {
+        $lh = new LuceneSyntaxHelper();
+        $this->assertEquals($expected, $lh->capitalizeRanges($input));
+    }
+
+    /**
+     * Test advanced query detection (default settings).
+     *
+     * @return void
+     */
+    public function testContainsAdvancedLuceneSyntaxWithDefaults(): void
     {
         $lh = new LuceneSyntaxHelper();
 
@@ -293,11 +316,11 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query detection (with case insensitivity)
+     * Test advanced query detection (with case insensitivity).
      *
      * @return void
      */
-    public function testContainsAdvancedLuceneSyntaxWithCaseInsensitivity()
+    public function testContainsAdvancedLuceneSyntaxWithCaseInsensitivity(): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
 
@@ -315,11 +338,11 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test case insensitive range normalization
+     * Test case insensitive range normalization.
      *
      * @return void
      */
-    public function testCaseInsensitiveRangeNormalization()
+    public function testCaseInsensitiveRangeNormalization(): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
         $this->assertFalse($lh->hasCaseSensitiveRanges());
@@ -330,107 +353,158 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test colon normalization
+     * Data provider for testColonNormalization.
      *
-     * @return void
+     * @return \Iterator
      */
-    public function testColonNormalization()
+    public static function colonNormalizationProvider(): \Iterator
     {
-        $lh = new LuceneSyntaxHelper(false, false);
-        $tests = [
-            'this : that' => 'this  that',
-            'this: that' => 'this that',
-            'this that:' => 'this that',
-            ':this that' => 'this that',
-            'this :that' => 'this that',
-            'this:that' => 'this:that',
-            'this::::::that' => 'this:that',
-            '"this : that"' => '"this : that"',
-            '::::::::::::::::::::' => '',
-         ];
-        foreach ($tests as $input => $expected) {
-            $this->assertEquals(
-                $expected,
-                $lh->normalizeSearchString($input)
-            );
-        }
+        yield ['this : that', 'this  that'];
+        yield ['this: that', 'this that'];
+        yield ['this that:', 'this that'];
+        yield [':this that', 'this that'];
+        yield ['this :that', 'this that'];
+        yield ['this:that', 'this:that'];
+        yield ['this::::::that', 'this:that'];
+        yield ['"this : that"', '"this : that"'];
+        yield ['::::::::::::::::::::', ''];
     }
 
     /**
-     * Test search term extraction
+     * Test colon normalization.
+     *
+     * @param $input    Input to test
+     * @param $expected Expected output
      *
      * @return void
      */
-    public function testExtractSearchTerms()
+    #[\PHPUnit\Framework\Attributes\DataProvider('colonNormalizationProvider')]
+    public function testColonNormalization(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
-        $tests = [
-            'keyword' => 'keyword',
-            'two keywords' => 'two keywords',
-            'index:keyword' => 'keyword',
-            'index:keyword anotherkeyword' => 'keyword anotherkeyword',
-            'index:keyword anotherindex:anotherkeyword' => 'keyword anotherkeyword',
-            '(index:keyword)' => 'keyword',
-            'index:(keyword1 keyword2)' => '(keyword1 keyword2)',
-            '{!local params}keyword' => 'keyword',
-            'keyword~' => 'keyword',
-            'keyword~0.8' => 'keyword',
-            'keyword keyword2^20' => 'keyword keyword2',
-            '"keyword keyword2 keyword3"~2' => '"keyword keyword2 keyword3"',
-            '"kw1 kw2 kw3"~2 kw4^200' => '"kw1 kw2 kw3" kw4',
-            '+keyword -keyword2^20' => 'keyword keyword2',
-            'index:+keyword index2:-keyword2^20' => 'keyword keyword2',
-            'index:[start TO end]' => '[start TO end]',
-            'index:{start TO end}' => '{start TO end}',
-            'es\\"caped field:test' => 'es\\"caped test'
-        ];
-        foreach ($tests as $input => $expected) {
-            $this->assertEquals(
-                $expected,
-                $lh->extractSearchTerms($input)
-            );
-        }
+        $this->assertEquals(
+            $expected,
+            $lh->normalizeSearchString($input)
+        );
     }
 
     /**
-     * Test normalization of unquoted special characters
+     * Data provider for testExtractSearchTerms.
+     *
+     * @return \Iterator
+     */
+    public static function extractSearchTermsProvider(): \Iterator
+    {
+        yield ['keyword', 'keyword'];
+        yield ['two keywords', 'two keywords'];
+        yield ['index:keyword', 'keyword'];
+        yield ['index:keyword anotherkeyword', 'keyword anotherkeyword'];
+        yield ['index:keyword anotherindex:anotherkeyword', 'keyword anotherkeyword'];
+        yield ['(index:keyword)', 'keyword'];
+        yield ['index:(keyword1 keyword2)', '(keyword1 keyword2)'];
+        yield ['{!local params}keyword', 'keyword'];
+        yield ['keyword~', 'keyword'];
+        yield ['keyword~0.8', 'keyword'];
+        yield ['keyword keyword2^20', 'keyword keyword2'];
+        yield ['"keyword keyword2 keyword3"~2', '"keyword keyword2 keyword3"'];
+        yield ['"kw1 kw2 kw3"~2 kw4^200', '"kw1 kw2 kw3" kw4'];
+        yield ['+keyword -keyword2^20', 'keyword keyword2'];
+        yield ['index:+keyword index2:-keyword2^20', 'keyword keyword2'];
+        yield ['index:[start TO end]', '[start TO end]'];
+        yield ['index:{start TO end}', '{start TO end}'];
+        yield ['es\\"caped field:test', 'es\\"caped test'];
+        yield ['field:"quoted:contents"', '"quoted:contents"'];
+    }
+
+    /**
+     * Test search term extraction.
+     *
+     * @param $input    Input to test
+     * @param $expected Expected output
      *
      * @return void
      */
-    public function testUnquotedNormalization()
+    #[\PHPUnit\Framework\Attributes\DataProvider('extractSearchTermsProvider')]
+    public function testExtractSearchTerms(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
-        $tests = [
-            'this - that' => 'this that',
-            'this -- that' => 'this that',
-            '- this that' => 'this that',
-            'this that -' => 'this that',
-            '-- this -- that --' => 'this that',
-            'this -that' => 'this -that',
-            'this + that' => 'this that',
-            '+ this ++ that +' => 'this that',
-            'this +that' => 'this +that',
-            'this / that' => 'this "/" that',
-            'this/that' => 'this/that',
-            '/this' => 'this',
-            '/this that' => 'this that',
-            'this/' => 'this',
-            'this that/' => 'this that',
-            '/this that/' => 'this that',
+        $this->assertEquals($expected, $lh->extractSearchTerms($input));
+    }
 
-            // Quoted ones must not be affected
-            '"this - that"' => '"this - that"',
-            '"- this that"' => '"- this that"',
-            '"this that -"' => '"this that -"',
-            '"this + that"' => '"this + that"',
-            '"+ this ++ that +"' => '"+ this ++ that +"',
-            '"this / that"' => '"this / that"',
-        ];
-        foreach ($tests as $input => $expected) {
-            $this->assertEquals(
-                $expected,
-                $lh->normalizeSearchString($input)
-            );
-        }
+    /**
+     * Data provider for testUnquotedNormalization.
+     *
+     * @return \Iterator
+     */
+    public static function unquotedNormalizationProvider(): \Iterator
+    {
+        // Unquoted ones that may need changes:
+        yield ['this - that', 'this that'];
+        yield ['this -- that', 'this that'];
+        yield ['- this that', 'this that'];
+        yield ['this that -', 'this that'];
+        yield ['-- this -- that --', 'this that'];
+        yield ['this -that', 'this -that'];
+        yield ['this + that', 'this that'];
+        yield ['+ this ++ that +', 'this that'];
+        yield ['this +that', 'this +that'];
+        yield ['this / that', 'this "/" that'];
+        yield ['this/that', 'this/that'];
+        yield ['/this', 'this'];
+        yield ['/this that', 'this that'];
+        yield ['this/', 'this'];
+        yield ['this that/', 'this that'];
+        yield ['/this that/', 'this that'];
+        yield ['(this that', 'this that'];
+        yield ['((this) that', 'this that'];
+        yield ['this that)', 'this that'];
+        yield ['this (that))', 'this that'];
+        yield ['((( this that', 'this that'];
+        yield ['\\((( this that', '\\( this that'];
+        yield ['\\\\\\((( this that', '\\\\\\( this that'];
+        yield ['\\"((( this that\\"', '\\" this that\\"'];
+        yield ['&', '&'];
+        yield ['&&', ''];
+        yield ['|', '|'];
+        yield ['||', ''];
+        yield ['AND', 'and'];
+        yield ['OR', 'or'];
+        yield ['NOT', 'not'];
+        yield ['*:*', ''];
+        yield [' AND OR', ''];
+        yield ['AND OR NOT +-"&&||', ''];
+        yield ['AND OR NOT +-"&&|| &', 'AND OR NOT +-"&&|| &'];
+        // Quoted ones that must not be affected:
+        yield ['"this - that"', '"this - that"'];
+        yield ['"- this that"', '"- this that"'];
+        yield ['"this that -"', '"this that -"'];
+        yield ['"this + that"', '"this + that"'];
+        yield ['"+ this ++ that +"', '"+ this ++ that +"'];
+        yield ['"this / that"', '"this / that"'];
+        yield ['"(this that"', '"(this that"'];
+        yield ['"(this (that"', '"(this (that"'];
+        yield ['"this) that"', '"this) that"'];
+        yield ['"((( this that"', '"((( this that"'];
+        yield ['"((("', '"((("'];
+        yield ['"\\((("', '"\\((("'];
+        yield ['"\\\\((("', '"\\\\((("'];
+    }
+
+    /**
+     * Test normalization of unquoted special characters.
+     *
+     * @param string $input    Input string
+     * @param string $expected Expected result
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unquotedNormalizationProvider')]
+    public function testUnquotedNormalization(string $input, string $expected)
+    {
+        $lh = new LuceneSyntaxHelper(false, false);
+        $this->assertEquals(
+            $expected,
+            $lh->normalizeSearchString($input)
+        );
     }
 }

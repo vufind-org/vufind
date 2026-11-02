@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Relais: Check if logged-in patron can order an item.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * Relais: Check if logged-in patron can order an item.
@@ -43,15 +46,15 @@ class RelaisInfo extends AbstractRelaisAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $oclcNumber = $params->fromQuery('oclcNumber');
-        $lin = $this->user['cat_username'] ?? null;
+        $oclcNumber = $this->getQueryParam($request, 'oclcNumber');
+        $lin = $this->user?->getCatUsername();
 
         // Authenticate
         $authResponse = $this->relais->authenticatePatron($lin, true);
@@ -59,7 +62,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
@@ -67,7 +70,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($allowLoan == false) {
             return $this->formatResponse(
                 'AllowLoan was false',
-                self::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Title Hold Logic Class
+ * Title Hold Logic Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -26,13 +27,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Logic;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
+use function in_array;
+use function is_array;
+use function is_bool;
+
 /**
- * Title Hold Logic Class
+ * Title Hold Logic Class.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -44,104 +50,64 @@ use VuFind\ILS\Connection as ILSConnection;
 class TitleHolds
 {
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
-     * Catalog connection object
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
-
-    /**
-     * HMAC generator
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac;
-
-    /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Holding locations to hide from display
+     * Holding locations to hide from display.
      *
      * @var array
      */
-    protected $hideHoldings = [];
+    protected $hideHoldings;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
-     * @param ILSConnection                 $ils     A catalog connection
+     * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \Laminas\Config\Config        $config  VuFind configuration
+     * @param array                         $config  VuFind configuration
      */
     public function __construct(
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        ILSConnection $ils,
-        \VuFind\Crypt\HMAC $hmac,
-        \Laminas\Config\Config $config
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        protected ILSConnection $catalog,
+        protected \VuFind\Crypt\HMAC $hmac,
+        protected array $config
     ) {
-        $this->ilsAuth = $ilsAuth;
-        $this->hmac = $hmac;
-        $this->config = $config;
-
-        if (isset($this->config->Record->hide_holdings)) {
-            foreach ($this->config->Record->hide_holdings as $current) {
-                $this->hideHoldings[] = $current;
-            }
-        }
-
-        $this->catalog = $ils;
+        $this->hideHoldings = $this->config['Record']['hide_holdings'] ?? [];
     }
 
     /**
-     * Public method for getting title level holds
+     * Public method for getting title level holds.
      *
-     * @param string $id A Bib ID
+     * @param string $id            A Bib ID
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
      *
      * @todo Indicate login failure or ILS connection failure somehow?
      */
-    public function getHold($id)
+    public function getHold($id, array $linkOverrides = [])
     {
         // Get Holdings Data
-        if ($this->catalog) {
-            $mode = $this->catalog->getTitleHoldsMode();
-            if ($mode == 'disabled') {
-                return false;
-            } elseif ($mode == 'driver') {
-                try {
-                    $patron = $this->ilsAuth->storedCatalogLogin();
-                    if (!$patron) {
-                        return false;
-                    }
-                    return $this->driverHold($id, $patron);
-                } catch (ILSException $e) {
+        $mode = $this->catalog->getTitleHoldsMode();
+        if ($mode == 'disabled') {
+            return false;
+        } elseif ($mode == 'driver') {
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
+                if (!$patron) {
                     return false;
                 }
-            } else {
-                try {
-                    $patron = $this->ilsAuth->storedCatalogLogin();
-                } catch (ILSException $e) {
-                    $patron = false;
-                }
-                $mode = $this->checkOverrideMode($id, $mode);
-                return $this->generateHold($id, $mode, $patron);
+                return $this->driverHold($id, $patron, $linkOverrides);
+            } catch (ILSException $e) {
+                return false;
             }
+        } else {
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
+            } catch (ILSException $e) {
+                $patron = false;
+            }
+            $mode = $this->checkOverrideMode($id, $mode);
+            return $this->generateHold($id, $mode, $patron, $linkOverrides);
         }
-        return false;
     }
 
     /**
@@ -174,17 +140,16 @@ class TitleHolds
      */
     protected function checkOverrideMode($id, $mode)
     {
-        if (isset($this->config->Catalog->allow_holds_override)
-            && $this->config->Catalog->allow_holds_override
-        ) {
+        if ($this->config['Catalog']['allow_holds_override'] ?? false) {
             $holdings = $this->getHoldings($id);
 
             // For title holds, the most important override feature to handle
-            // is to prevent displaying a link if all items are disabled.  We
+            // is to prevent displaying a link if all items are disabled. We
             // may eventually want to address other scenarios as well.
             $allDisabled = true;
             foreach ($holdings as $holding) {
-                if (!isset($holding['holdOverride'])
+                if (
+                    !isset($holding['holdOverride'])
                     || 'disabled' != $holding['holdOverride']
                 ) {
                     $allDisabled = false;
@@ -196,14 +161,15 @@ class TitleHolds
     }
 
     /**
-     * Protected method for driver defined title holds
+     * Protected method for driver defined title holds.
      *
-     * @param string $id     A Bib ID
-     * @param array  $patron An Array of patron data
+     * @param string $id            A Bib ID
+     * @param array  $patron        An Array of patron data
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function driverHold($id, $patron)
+    protected function driverHold($id, $patron, array $linkOverrides = [])
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
@@ -214,48 +180,51 @@ class TitleHolds
         if (isset($checkHolds['HMACKeys'])) {
             $data = ['id' => $id, 'level' => 'title'];
             $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ((is_array($result) && $result['valid'])
+            if (
+                (is_array($result) && $result['valid'])
                 || (is_bool($result) && $result)
             ) {
-                return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
+                return $this->getHoldDetails($data, $checkHolds['HMACKeys'], $linkOverrides);
             }
         }
         return false;
     }
 
     /**
-     * Protected method for vufind (i.e. User) defined holds
+     * Protected method for vufind (i.e. User) defined holds.
      *
-     * @param string $id     A Bib ID
-     * @param string $type   The holds mode to be applied from:
-     * (disabled, always, availability, driver)
-     * @param array  $patron Patron
+     * @param string $id            A Bib ID
+     * @param string $type          The holds mode to be applied from:
+     *                              (disabled, always, availability,
+     *                              driver)
+     * @param array  $patron        Patron
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold($id, $type, $patron)
+    protected function generateHold($id, $type, $patron, array $linkOverrides = [])
     {
         $any_available = false;
         $addlink = false;
 
         $data = [
             'id' => $id,
-            'level' => 'title'
+            'level' => 'title',
         ];
-
         // Are holds allows?
         $checkHolds = $this->catalog->checkFunction(
             'Holds',
             compact('id', 'patron')
         );
 
-        if ($checkHolds != false) {
+        if ($checkHolds) {
             if ($type == 'always') {
                 $addlink = true;
             } elseif ($type == 'availability') {
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
-                    if ($holding['availability']
+                    if (
+                        $holding['availability']->isAvailable()
                         && !in_array($holding['location'], $this->hideHoldings)
                     ) {
                         $any_available = true;
@@ -270,7 +239,7 @@ class TitleHolds
                     return $this->catalog->getHoldLink($id, $data);
                 } else {
                     // Return non-opac link
-                    return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
+                    return $this->getHoldDetails($data, $checkHolds['HMACKeys'], $linkOverrides);
                 }
             }
         }
@@ -278,16 +247,17 @@ class TitleHolds
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * Supplies the form details required to place a hold
      *
-     * @param array $data     An array of item data
-     * @param array $HMACKeys An array of keys to hash
+     * @param array $data          An array of item data
+     * @param array $HMACKeys      An array of keys to hash
+     * @param array $linkOverrides Optional id and source to override standard record driver
      *
      * @return array          Details for generating URL
      */
-    protected function getHoldDetails($data, $HMACKeys)
+    protected function getHoldDetails($data, $HMACKeys, array $linkOverrides)
     {
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $data);
@@ -307,8 +277,11 @@ class TitleHolds
 
         // Build Params
         return [
-            'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
-            'anchor' => '#tabnav'
+            'action' => 'Hold',
+            'record' => $linkOverrides['id'] ?? $data['id'],
+            'source' => $linkOverrides['source'] ?? DEFAULT_SEARCH_BACKEND,
+            'query' => $queryString,
+            'anchor' => '#tabnav',
         ];
     }
 }

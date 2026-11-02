@@ -1,0 +1,231 @@
+<?php
+
+/**
+ * Trait for tests involving config related services.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) The National Library of Finland 2022-2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+
+namespace VuFindTest\Feature;
+
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigLoader;
+use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\Handler\PluginManager as ConfigHandlerPluginManager;
+use VuFind\Config\PathResolver;
+use VuFindTest\Container\MockContainer;
+
+use function defined;
+use function is_callable;
+use function strlen;
+
+/**
+ * Trait for tests involving config related services.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+trait ConfigRelatedServicesTrait
+{
+    /**
+     * Get a config file path resolver.
+     *
+     * @param ?string $baseDir     Optional directory to override APPLICATION_PATH
+     * @param ?string $localDir    Optional directory to override LOCAL_OVERRIDE_DIR
+     * @param ?string $baseSubDir  Optional subdirectory for base directories (for simplified fixture dirs)
+     * @param ?string $localSubDir Optional subdirectory for local directories (for simplified fixture dirs)
+     *
+     * @return PathResolver
+     */
+    protected function getPathResolver(
+        ?string $baseDir = null,
+        ?string $localDir = null,
+        ?string $baseSubDir = null,
+        ?string $localSubDir = null,
+    ): PathResolver {
+        return $this->getContainerWithConfigRelatedServices(
+            baseDir: $baseDir,
+            localDir: $localDir,
+            baseSubDir: $baseSubDir,
+            localSubDir: $localSubDir,
+        )->get(PathResolver::class);
+    }
+
+    /**
+     * Get a container with config related services.
+     *
+     * @param ?array  $moduleConfig Optional config to override
+     * APPLICATION_PATH . '/module/VuFind/config/module.config.php'
+     * @param ?string $baseDir      Optional directory to override APPLICATION_PATH
+     * @param ?string $localDir     Optional directory to override LOCAL_OVERRIDE_DIR
+     * @param ?string $baseSubDir   Optional subdirectory for base directories (for simplified fixture dirs)
+     * @param ?string $localSubDir  Optional subdirectory for local directories (for simplified fixture dirs)
+     *
+     * @return MockContainer
+     */
+    protected function getContainerWithConfigRelatedServices(
+        ?array $moduleConfig = null,
+        ?string $baseDir = null,
+        ?string $localDir = null,
+        ?string $baseSubDir = null,
+        ?string $localSubDir = null
+    ): MockContainer {
+        $container = new MockContainer($this);
+        $this->addConfigRelatedServicesToContainer(
+            $container,
+            $moduleConfig,
+            $baseDir,
+            $localDir,
+            $baseSubDir,
+            $localSubDir
+        );
+        return $container;
+    }
+
+    /**
+     * Add config related services to a mock container.
+     *
+     * @param MockContainer $container    Mock Container
+     * @param ?array        $moduleConfig Optional config to override
+     * APPLICATION_PATH . '/module/VuFind/config/module.config.php'
+     * @param ?string       $baseDir      Optional directory to override APPLICATION_PATH
+     * @param ?string       $localDir     Optional directory to override LOCAL_OVERRIDE_DIR
+     * @param ?string       $baseSubDir   Optional subdirectory for base directories (for simplified fixture dirs)
+     * @param ?string       $localSubDir  Optional subdirectory for local directories (for simplified fixture dirs)
+     *
+     * @return void
+     */
+    protected function addConfigRelatedServicesToContainer(
+        MockContainer $container,
+        ?array $moduleConfig = null,
+        ?string $baseDir = null,
+        ?string $localDir = null,
+        ?string $baseSubDir = null,
+        ?string $localSubDir = null
+    ): void {
+        $moduleConfig ??= include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+        $baseDir ??= APPLICATION_PATH;
+        $localDir ??= defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? LOCAL_OVERRIDE_DIR
+            : null;
+
+        $configHandlerPluginManager = new ConfigHandlerPluginManager(
+            $container,
+            $moduleConfig['vufind']['plugin_managers']['config_handler']
+        );
+        $container->set(ConfigHandlerPluginManager::class, $configHandlerPluginManager);
+
+        $pathResolver = PathResolver::getPathResolverForDirectories(
+            $configHandlerPluginManager,
+            $baseDir,
+            $localDir,
+            $baseSubDir,
+            $localSubDir
+        );
+        $container->set(PathResolver::class, $pathResolver);
+
+        $configLoader = new ConfigLoader($configHandlerPluginManager, $pathResolver);
+        $container->set(ConfigLoader::class, $configLoader);
+
+        $storage = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
+        $storage->expects($this->any())->method('getOptions')->willReturn($options);
+        $storage->expects($this->any())->method('getItem')->willReturn(null);
+        $cacheManager = $this->createMock(\VuFind\Cache\Manager::class);
+        $cacheManager->expects($this->any())->method('getCache')->willReturn($storage);
+
+        $configManager = new ConfigManager($configLoader, $configHandlerPluginManager, $cacheManager);
+        $container->set(ConfigManagerInterface::class, $configManager);
+    }
+
+    /**
+     * Get a mock configuration plugin manager with the given configuration "files"
+     * available.
+     *
+     * @param array|callable   $configs               An associative array of configurations
+     * where key is the file (e.g. 'config') and value an array of configuration
+     * sections and directives or alternatively a callable that returns that array
+     * @param array|callable   $default               Default configuration to return when no
+     * entry is found in $configs or alternatively a callable that returns that array
+     * @param ?InvocationOrder $getConfigArrayExpect  The expected invocation order for the getConfigArray()
+     * method (null for any)
+     * @param ?InvocationOrder $getConfigObjectExpect The expected invocation order for the getConfigObject()
+     * method (null for any)
+     *
+     * @return MockObject&ConfigManagerInterface
+     */
+    protected function getMockConfigManager(
+        array|callable $configs = [],
+        array|callable $default = [],
+        ?InvocationOrder $getConfigArrayExpect = null,
+        ?InvocationOrder $getConfigObjectExpect = null
+    ): ConfigManagerInterface {
+        $configsCallback = is_callable($configs) ? $configs : fn () => $configs;
+        $defaultCallback = is_callable($default) ? $default : fn () => $default;
+        $manager = $this->createMock(ConfigManagerInterface::class);
+        $manager->expects($getConfigArrayExpect ?? $this->any())
+            ->method('getConfigArray')
+            ->with($this->isType('string'))
+            ->willReturnCallback(
+                function ($config) use ($configsCallback, $defaultCallback): array {
+                    return $configsCallback()[$config] ?? $defaultCallback();
+                }
+            );
+        $manager->expects($getConfigObjectExpect ?? $this->any())
+            ->method('getConfigObject')
+            ->with($this->isType('string'))
+            ->willReturnCallback(
+                function ($config) use ($configsCallback, $defaultCallback): Config {
+                    return new Config($configsCallback()[$config] ?? $defaultCallback());
+                }
+            );
+        return $manager;
+    }
+
+    /**
+     * Get a mock configuration manager that will throw an exception.
+     *
+     * @param \Throwable $exception Exception to throw
+     *
+     * @return MockObject&ConfigManagerInterface
+     */
+    protected function getMockFailingConfigManager(
+        \Throwable $exception
+    ): ConfigManagerInterface {
+        $manager = $this->createMock(ConfigManagerInterface::class);
+        $manager->expects($this->any())
+            ->method('getConfig')
+            ->with($this->isType('string'))
+            ->willThrowException($exception);
+        return $manager;
+    }
+}

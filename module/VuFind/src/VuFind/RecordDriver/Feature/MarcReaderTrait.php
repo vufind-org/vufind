@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Functions for reading MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -26,7 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Functions for reading MARC records.
@@ -64,7 +71,7 @@ trait MarcReaderTrait
     public function getRawMarcData()
     {
         // Set preferred MARC field from config or default, if it's not existing
-        $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
+        $preferredMarcFields = $this->mainConfig['Record']['preferredMarcFields']
             ?? 'fullrecord';
         $preferredMarcFieldArray = explode(',', $preferredMarcFields);
         $preferredMarcField = 'fullrecord';
@@ -73,6 +80,9 @@ trait MarcReaderTrait
                 $preferredMarcField = $testField;
                 break;
             }
+        }
+        if (empty($this->fields[$preferredMarcField])) {
+            throw new \Exception('Missing MARC data in record ' . $this->getUniqueID());
         }
         return trim($this->fields[$preferredMarcField]);
     }
@@ -95,9 +105,9 @@ trait MarcReaderTrait
 
     /**
      * Return an array of all values extracted from the specified field/subfield
-     * combination.  If multiple subfields are specified and $concat is true, they
+     * combination. If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array
-     * will correspond with a single MARC field.  If $concat is false, the return
+     * will correspond with a single MARC field. If $concat is false, the return
      * array will contain separate entries for separate subfields.
      *
      * @param string $field     The MARC field number to read
@@ -136,11 +146,11 @@ trait MarcReaderTrait
     protected function getFirstFieldValue($field, $subfields = null)
     {
         $matches = $this->getFieldArray($field, $subfields);
-        return $matches[0] ?? null;
+        return $matches[0] ?? '';
     }
 
     /**
-     * Get the item's publication information
+     * Get the item's publication information.
      *
      * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
      *
@@ -149,14 +159,14 @@ trait MarcReaderTrait
     protected function getPublicationInfo($subfield = 'a')
     {
         // Get string separator for publication information:
-        $separator = $this->mainConfig->Record->marcPublicationInfoSeparator ?? ' ';
+        $separator = $this->mainConfig['Record']['marcPublicationInfoSeparator'] ?? ' ';
 
         // First check old-style 260 field:
         $results = $this->getFieldArray('260', [$subfield], true, $separator);
 
         // Now track down relevant RDA-style 264 fields; we only care about
         // copyright and publication places (and ignore copyright places if
-        // publication places are present).  This behavior is designed to be
+        // publication places are present). This behavior is designed to be
         // consistent with default SolrMarc handling of names/dates.
         $pubResults = $copyResults = [];
 
@@ -166,16 +176,16 @@ trait MarcReaderTrait
                 ->getSubfieldArray($currentField, [$subfield], true, $separator);
             if (!empty($currentVal)) {
                 switch ($currentField['i2']) {
-                case '1':
-                    $pubResults = array_merge($pubResults, $currentVal);
-                    break;
-                case '4':
-                    $copyResults = array_merge($copyResults, $currentVal);
-                    break;
+                    case '1':
+                        $pubResults = array_merge($pubResults, $currentVal);
+                        break;
+                    case '4':
+                        $copyResults = array_merge($copyResults, $currentVal);
+                        break;
                 }
             }
         }
-        $replace260 = $this->mainConfig->Record->replaceMarc260 ?? false;
+        $replace260 = $this->mainConfig['Record']['replaceMarc260'] ?? false;
         if (count($pubResults) > 0) {
             return $replace260 ? $pubResults : array_merge($results, $pubResults);
         } elseif (count($copyResults) > 0) {
@@ -186,7 +196,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return first subfield with the given code in the provided MARC field
+     * Return first subfield with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get
@@ -199,7 +209,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return all subfields with the given code in the provided MARC field
+     * Return all subfields with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get
@@ -213,9 +223,9 @@ trait MarcReaderTrait
 
     /**
      * Return an array of non-empty subfield values found in the provided MARC
-     * field.  If $concat is true, the array will contain either zero or one
+     * field. If $concat is true, the array will contain either zero or one
      * entries (empty array if no subfields found, subfield values concatenated
-     * together in specified order if found).  If concat is false, the array
+     * together in specified order if found). If concat is false, the array
      * will contain a separate entry for each subfield value found.
      *
      * @param array  $currentField Result from MarcReader::getFields

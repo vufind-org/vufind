@@ -1,8 +1,9 @@
 <?php
+
 /**
  * XSLT importer support methods for sitemaps.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
+
+use function chr;
+use function is_array;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -214,10 +219,9 @@ class VuFindSitemap extends VuFind
     }
 
     /**
-     * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
-     * This method will only work if Aperture is properly configured in the
-     * web/conf/fulltext.ini file.  Without proper configuration, this will
-     * simply return an empty string.
+     * Harvest the contents of a document file (PDF, Word, etc.). This method will
+     * only work if a full text extractor is properly configured in the fulltext.ini
+     * file. Without proper configuration, this will simply return an empty string.
      *
      * @param string $url URL of file to retrieve.
      *
@@ -250,14 +254,14 @@ class VuFindSitemap extends VuFind
 
         // Use the appropriate full text parser:
         switch ($parser) {
-        case 'Aperture':
-            $fields = static::getApertureFields($htmlFile);
-            break;
-        case 'Tika':
-            $fields = static::getTikaFields($htmlFile);
-            break;
-        default:
-            throw new \Exception('Unexpected parser: ' . $parser);
+            case 'Aperture':
+                $fields = static::getApertureFields($htmlFile);
+                break;
+            case 'Tika':
+                $fields = static::getTikaFields($htmlFile);
+                break;
+            default:
+                throw new \Exception('Unexpected parser: ' . $parser);
         }
 
         // Clean up HTML file:
@@ -281,6 +285,9 @@ class VuFindSitemap extends VuFind
         // Add other key values:
         $fields['url'] = $url;
         $fields['last_indexed'] = date('Y-m-d\TH:i:s\Z');
+
+        // Format the sortable title:
+        $fields['title_sort'] = static::stripArticles($fields['title'] ?? '');
 
         return $fields;
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Record tab plugin manager
+ * Record tab plugin manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -25,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Record tab plugin manager
+ * Record tab plugin manager.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -46,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'channels' => Channels::class,
         'collectionhierarchytree' => CollectionHierarchyTree::class,
         'collectionlist' => CollectionList::class,
         'componentparts' => ComponentParts::class,
@@ -54,50 +55,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'formats' => Formats::class,
         'hierarchytree' => HierarchyTree::class,
         'holdingsils' => HoldingsILS::class,
-        'holdingsworldcat' => HoldingsWorldCat::class,
+        'holdingsworldcat2' => HoldingsWorldCat2::class,
         'map' => Map::class,
         'preview' => Preview::class,
         'reviews' => Reviews::class,
         'search2collectionlist' => Search2CollectionList::class,
-        'similaritemscarousel' => SimilarItemsCarousel::class,
         'staffviewarray' => StaffViewArray::class,
         'staffviewmarc' => StaffViewMARC::class,
         'staffviewoverdrive' => StaffViewOverdrive::class,
         'toc' => TOC::class,
         'usercomments' => UserComments::class,
         'versions' => Versions::class,
+        // Legacy backward compatibility:
+        'similaritemscarousel' => Channels::class,
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
-        CollectionList::class => CollectionListFactory::class,
-        ComponentParts::class => ComponentPartsFactory::class,
-        Description::class => InvokableFactory::class,
-        Excerpt::class => ExcerptFactory::class,
-        Formats::class => InvokableFactory::class,
-        HierarchyTree::class => HierarchyTreeFactory::class,
-        HoldingsILS::class => HoldingsILSFactory::class,
-        HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
-        Map::class => MapFactory::class,
-        Preview::class => PreviewFactory::class,
-        Reviews::class => ReviewsFactory::class,
-        Search2CollectionList::class => CollectionListFactory::class,
-        SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
-        StaffViewArray::class => InvokableFactory::class,
-        StaffViewMARC::class => InvokableFactory::class,
-        StaffViewOverdrive::class => InvokableFactory::class,
-        TOC::class => TOCFactory::class,
-        UserComments::class => UserCommentsFactory::class,
-        Versions::class => VersionsFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -110,9 +84,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
-        $this->addInitializer(
-            \LmcRbacMvc\Initializer\AuthorizationServiceInitializer::class
-        );
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

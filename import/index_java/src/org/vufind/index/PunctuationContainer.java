@@ -14,8 +14,8 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import java.util.LinkedHashSet;
@@ -44,14 +44,15 @@ public class PunctuationContainer
 
     private static String configFilename = "author-classification.ini";
 
-    private Set<Pattern> punctuationRegEx = new LinkedHashSet<Pattern>();
-    private Set<String> punctuationPairs = new LinkedHashSet<String>();
-    private Set<String> untrimmedAbbreviations = new LinkedHashSet<String>();
+    private Set<Pattern> punctuationRegEx = null;
+    private Set<String> punctuationPairs = null;
+    private Set<String> untrimmedAbbreviations = null;
 
     public Set<Pattern> getPunctuationRegEx()
     {
         // Populate set if empty:
-        if (punctuationRegEx.isEmpty()) {
+        if (punctuationRegEx == null) {
+            punctuationRegEx = new LinkedHashSet<Pattern>();
             String configSection = "PunctuationRegExToStrip";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
             if (all.isEmpty()) {
@@ -68,10 +69,11 @@ public class PunctuationContainer
     public Set<String> getPunctuationPairs()
     {
         // Populate set if empty:
-        if (punctuationPairs.isEmpty()) {
+        if (punctuationPairs == null) {
             String configSection = "PunctuationMatchedChars";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
             if (all.isEmpty()) {
+                punctuationPairs = new LinkedHashSet<String>();
                 logger.warn(configSection + " section missing from " + configFilename);
             } else {
                 punctuationPairs = new LinkedHashSet<String>(all.values());
@@ -83,10 +85,11 @@ public class PunctuationContainer
     public Set<String> getUntrimmedAbbreviations()
     {
         // Populate set if empty:
-        if (untrimmedAbbreviations.isEmpty()) {
+        if (untrimmedAbbreviations == null) {
             String configSection = "PunctuationUntrimmedAbbreviations";
             Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
             if (all.isEmpty()) {
+                untrimmedAbbreviations = new LinkedHashSet<String>();
                 logger.warn(configSection + " section missing from " + configFilename);
             } else {
                 untrimmedAbbreviations = new LinkedHashSet<String>(all.values());

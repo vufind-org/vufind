@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Model for Solr web records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 /**
@@ -39,14 +41,11 @@ namespace VuFind\RecordDriver;
 class SolrWeb extends SolrDefault
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
-     * file
+     * @param ?array $mainConfig     VuFind main configuration (omit for built-in defaults)
+     * @param ?array $recordConfig   Record-specific configuration file (omit to use $mainConfig as $recordConfig)
+     * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
         $mainConfig = null,
@@ -66,6 +65,16 @@ class SolrWeb extends SolrDefault
     public function getBreadcrumb()
     {
         return $this->getTitle();
+    }
+
+    /**
+     * Get the fulltext for the current record.
+     *
+     * @return string
+     */
+    public function getFulltext(): string
+    {
+        return $this->fields['fulltext'] ?? '';
     }
 
     /**

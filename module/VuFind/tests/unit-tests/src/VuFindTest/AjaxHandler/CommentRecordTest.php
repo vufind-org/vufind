@@ -1,8 +1,9 @@
 <?php
+
 /**
  * CommentRecord test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,14 +26,19 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Db\Row\Resource;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\Resource as ResourceTable;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\CommentsServiceInterface;
+use VuFind\Ratings\RatingsService;
+use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\ResourcePopulator;
+use VuFind\RecordDriver\DefaultRecord;
 
 /**
  * CommentRecord test class.
@@ -43,33 +49,34 @@ use VuFind\Db\Table\Resource as ResourceTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
+class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CommentRecord handler for testing.
      *
-     * @param bool      $enabled Are comments enabled?
-     * @param User|bool $user    Return value for isLoggedIn() in auth manager
+     * @param bool                 $enabled Are comments enabled?
+     * @param ?UserEntityInterface $user    Return value for getUserObject() in auth manager
      *
      * @return CommentRecord
      */
-    protected function getHandler($enabled = true, $user = false)
+    protected function getHandler(bool $enabled = true, ?UserEntityInterface $user = null): CommentRecord
     {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
-        $this->container
-            ->set(\VuFind\Db\Table\PluginManager::class, $this->container);
-        $this->container->set('ControllerPluginManager', $this->container);
+        $this->container->set(\VuFind\Db\Service\PluginManager::class, $this->container);
 
         // Set up auth manager with user:
         $authManager = $this->getMockAuthManager($user);
         $this->container->set(\VuFind\Auth\Manager::class, $authManager);
 
         // Set up capability configuration:
-        $cfg = new \Laminas\Config\Config(
-            ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']]
+        $cfg = ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']];
+        $capabilities = new AccountCapabilities(
+            $cfg,
+            function () use ($authManager) {
+                return $authManager;
+            }
         );
-        $capabilities = new AccountCapabilities($cfg, $authManager);
         $this->container->set(AccountCapabilities::class, $capabilities);
 
         // Build the handler:
@@ -78,33 +85,16 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
     }
 
     /**
-     * Return a mock resource row that expects a specific user and comment.
-     *
-     * @param string $comment Comment to expect
-     * @param User   $user    User to expect
-     *
-     * @return Resource
-     */
-    protected function getMockResource($comment, $user)
-    {
-        $row = $this->container->createMock(Resource::class, ['addComment']);
-        $row->expects($this->once())->method('addComment')
-            ->with($this->equalTo($comment), $this->equalTo($user))
-            ->will($this->returnValue(true));
-        return $row;
-    }
-
-    /**
      * Test the AJAX handler's response when comments are disabled.
      *
      * @return void
      */
-    public function testDisabledResponse()
+    public function testDisabledResponse(): void
     {
         $handler = $this->getHandler(false);
-        $this->assertEquals(
+        $this->assertSame(
             ['Comments disabled', 400],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -113,12 +103,12 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testLoggedOutUser()
+    public function testLoggedOutUser(): void
     {
         $handler = $this->getHandler(true);
-        $this->assertEquals(
+        $this->assertSame(
             ['You must be logged in first', 401],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -127,12 +117,12 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testEmptyQuery()
+    public function testEmptyQuery(): void
     {
         $handler = $this->getHandler(true, $this->getMockUser());
-        $this->assertEquals(
+        $this->assertSame(
             ['bulk_error_missing', 400],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -141,25 +131,47 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @return void
      */
-    public function testSuccessfulTransaction()
+    public function testSuccessfulTransaction(): void
     {
-        $user = $this->getMockUser();
-        $table = $this->container
-            ->createMock(ResourceTable::class, ['findResource']);
-        $table->expects($this->once())->method('findResource')
-            ->with($this->equalTo('foo'), $this->equalTo('Solr'))
-            ->will($this->returnValue($this->getMockResource('bar', $user)));
-        $this->container->set(ResourceTable::class, $table);
+        $user = $this->createMock(UserEntityInterface::class);
+        $user->method('getId')->willReturn(1);
+        $resource = $this->createMock(ResourceEntityInterface::class);
+        $this->container->get(ResourcePopulator::class)->expects($this->once())
+            ->method('getOrCreateResourceForRecordId')
+            ->with('foo', 'Solr')
+            ->willReturn($resource);
+        $mockCommentsService = $this->createMock(CommentsServiceInterface::class);
+        $mockCommentsService->expects($this->once())->method('addComment')
+            ->with('bar', $user, $resource)
+            ->willReturn(1);
+        $this->container->set(CommentsServiceInterface::class, $mockCommentsService);
+
+        $driver = $this->createMock(DefaultRecord::class);
+        $driver->expects($this->once())
+            ->method('isRatingAllowed')
+            ->willReturn(true);
+        $ratingService = $this->container->get(RatingsService::class);
+        $ratingService->expects($this->once())
+            ->method('saveRating')
+            ->with($driver, $user->getId(), 100);
+        $recordLoader = $this->container->createMock(RecordLoader::class, ['load']);
+        $recordLoader->expects($this->once())
+            ->method('load')
+            ->with('foo', DEFAULT_SEARCH_BACKEND)
+            ->willReturn($driver);
+        $this->container->set(RecordLoader::class, $recordLoader);
+
         $handler = $this->getHandler(true, $user);
         $post = [
             'id' => 'foo',
             'comment' => 'bar',
+            'rating' => '100',
         ];
         $this->assertEquals(
             [
-                ['commentId' => true]
+                ['commentId' => true],
             ],
-            $handler->handleRequest($this->getParamsHelper([], $post))
+            $handler->handleRequest($this->getRequest([], $post))
         );
     }
 }

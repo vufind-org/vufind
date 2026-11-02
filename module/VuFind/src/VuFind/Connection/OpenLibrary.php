@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Open Library Utilities
+ * Open Library Utilities.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OpenLibrary
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
+use function count;
+
 /**
- * Open Library Utilities
+ * Open Library Utilities.
  *
  * Class for accessing helpful Open Library APIs.
  *
@@ -41,14 +45,14 @@ namespace VuFind\Connection;
 class OpenLibrary
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Http\Client $client HTTP client
      */
@@ -60,7 +64,7 @@ class OpenLibrary
     /**
      * Returns an array of elements for each work matching the
      *    parameters. An API call will be made for each subjectType until
-     *    data is returned
+     *    data is returned.
      *
      * @param string $subject        The subject term to be looked for
      * @param string $publishedIn    Date range in the form YYYY-YYYY
@@ -90,25 +94,24 @@ class OpenLibrary
         // normalise subject term
         $subject = $this->normaliseSubjectString($subject);
         if ($ebooks) {
-            $ebooks = "true";
+            $ebooks = 'true';
         }
         if ($details) {
-            $details = "true";
+            $details = 'true';
         }
 
         for ($i = 0; $i < count($subjectTypes); $i++) {
             if (empty($result)) {
-                $subjectType = "";
-                $subjectType = $subjectTypes[$i] == "topic" ? "" :
-                    $subjectTypes[$i] . ":";
+                $subjectType = $subjectTypes[$i] == 'topic' ? '' :
+                    $subjectTypes[$i] . ':';
 
                 // build url
                 // ebooks parameter does not work at present, so limit has been set
                 // to 50 to increase likelihood of full-text, public scans being
                 // returned. see https://bugs.launchpad.net/openlibrary/+bug/709772
-                $url = "http://openlibrary.org/subjects/" . $subjectType . $subject .
-                    ".json?ebooks=" . $ebooks . "&details=" . $details .
-                    "&offset=" . $offset . "&limit=50&published_in=" . $publishedIn;
+                $url = 'http://openlibrary.org/subjects/' . $subjectType . $subject .
+                    '.json?ebooks=' . $ebooks . '&details=' . $details .
+                    '&offset=' . $offset . '&limit=50&published_in=' . $publishedIn;
 
                 // make API call
                 $result = $this->processSubjectsApi($url, $limit, $publicFullText);
@@ -145,7 +148,8 @@ class OpenLibrary
                 $i = 1;
                 foreach ($data['works'] as $work) {
                     if ($i <= $limit) {
-                        if ($publicFullText && (!$work['public_scan']
+                        if (
+                            $publicFullText && (!$work['public_scan']
                             || !$work['has_fulltext'])
                         ) {
                             continue;
@@ -160,7 +164,7 @@ class OpenLibrary
                         }
                         $result[$i]['key'] = $work['key'];
                         $result[$i]['ia'] = $work['ia'];
-                        $result[$i]['mainAuthor'] = $work['authors'][0]['name'];
+                        $result[$i]['mainAuthor'] = $work['authors'][0]['name'] ?? null;
                         $i++;
                     }
                 }
@@ -171,7 +175,7 @@ class OpenLibrary
 
     /**
      * Support function to return a normalised version of the search string
-     *     for use in the API url
+     *     for use in the API url.
      *
      * @param string $subject Search string to normalise
      *
@@ -182,7 +186,7 @@ class OpenLibrary
         // Normalise search term
         $subject = str_replace(['"', ',', '/'], '', $subject);
         $subject = trim(strtolower($subject));
-        $subject = preg_replace("/\s+/", "_", $subject);
+        $subject = preg_replace("/\s+/", '_', $subject);
         return $subject;
     }
 }

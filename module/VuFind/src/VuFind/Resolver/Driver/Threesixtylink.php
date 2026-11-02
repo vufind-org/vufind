@@ -1,8 +1,9 @@
 <?php
+
 /**
- * 360Link Link Resolver Driver
+ * 360Link Link Resolver Driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -18,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -27,13 +28,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
 use DOMXpath;
 
 /**
- * 360Link Link Resolver Driver
+ * 360Link Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -44,14 +46,14 @@ use DOMXpath;
 class Threesixtylink extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
@@ -63,7 +65,7 @@ class Threesixtylink extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -74,14 +76,14 @@ class Threesixtylink extends AbstractBase
     public function fetchLinks($openURL)
     {
         // Make the call to SerialsSolutions and load results
-        $url = $this->baseUrl . (substr($this->baseUrl, -1) == '/' ? '' : '/') .
+        $url = $this->baseUrl . (str_ends_with($this->baseUrl, '/') ? '' : '/') .
             'openurlxml?version=1.0&' . $openURL;
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display
@@ -136,25 +138,25 @@ class Threesixtylink extends AbstractBase
                     $record['service_type'] = 'getHolding';
                 }
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:providerName",
+                    './/ssopenurl:holdingData/ssopenurl:providerName',
                     $linkGroup
                 );
                 $title = $elems->item(0)->textContent;
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:databaseName",
+                    './/ssopenurl:holdingData/ssopenurl:databaseName',
                     $linkGroup
                 );
                 $title .= ' - ' . $elems->item(0)->textContent;
                 $record['title'] = $title;
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:startDate",
+                    './/ssopenurl:holdingData/ssopenurl:startDate',
                     $linkGroup
                 );
                 if ($elems->length > 0) {
                     $record['coverage'] = $elems->item(0)->textContent . ' - ';
                 }
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:endDate",
+                    './/ssopenurl:holdingData/ssopenurl:endDate',
                     $linkGroup
                 );
                 if ($elems->length > 0) {

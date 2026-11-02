@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Overdrive Connector factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,9 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
- * USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  DigitalContent
@@ -28,6 +28,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -50,7 +51,7 @@ class OverdriveConnectorFactory implements
     \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -66,15 +67,20 @@ class OverdriveConnectorFactory implements
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
 
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('config');
-        $odConfig = $configManager->get('Overdrive');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('config');
+        $odConfig = $configManager->getConfigArray('Overdrive');
+
+        // Allow simulated connection if configured:
+        if ($odConfig['API']['simulateConnection'] ?? false) {
+            return new FakeOverdriveConnector($config, $odConfig);
+        }
         $auth = $container->get(\VuFind\Auth\ILSAuthenticator::class);
         $sessionContainer = null;
 
@@ -95,7 +101,7 @@ class OverdriveConnectorFactory implements
         $connector->setCacheStorage(
             $container->get(\VuFind\Cache\Manager::class)->getCache(
                 'object',
-                "Overdrive"
+                'Overdrive'
             )
         );
 

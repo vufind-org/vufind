@@ -1,0 +1,8 @@
+[
+    {
+        "expectedMethod": "POST",
+        "expectedPath": "/circulation/renew-by-id",
+        "expectedParams": "{\"itemId\":\"record1\",\"userId\":\"foo\"}",
+        "body": "{ \"itemId\": \"record1\", \"sysMessage\": \"success\", \"dueDate\": \"2022-01-01 00:00\", \"action\": \"success\" }"
+    }
+]

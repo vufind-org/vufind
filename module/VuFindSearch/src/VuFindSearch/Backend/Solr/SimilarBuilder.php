@@ -3,7 +3,7 @@
 /**
  * SOLR SimilarBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,9 +30,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
+
+use function sprintf;
 
 /**
  * SOLR SimilarBuilder.
@@ -49,7 +52,7 @@ use VuFindSearch\ParamBag;
 class SimilarBuilder implements SimilarBuilderInterface
 {
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
@@ -64,14 +67,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     protected $useHandler = false;
 
     /**
-     * MoreLikeThis Handler parameters
+     * MoreLikeThis Handler parameters.
      *
      * @var string
      */
     protected $handlerParams = '';
 
     /**
-     * Number of similar records to retrieve
+     * Number of similar records to retrieve.
      *
      * @var int
      */
@@ -80,27 +83,26 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param \Laminas\Config\Config $searchConfig Search config
-     * @param string                 $uniqueKey    Solr field used to store unique
-     * identifier
+     * @param ?array $searchConfig Search config
+     * @param string $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        \Laminas\Config\Config $searchConfig = null,
+        ?array $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
-        if (isset($searchConfig->MoreLikeThis)) {
-            $mlt = $searchConfig->MoreLikeThis;
-            if (isset($mlt->useMoreLikeThisHandler)
-                && $mlt->useMoreLikeThisHandler
+        if (isset($searchConfig['MoreLikeThis'])) {
+            $mlt = $searchConfig['MoreLikeThis'];
+            if (
+                $mlt['useMoreLikeThisHandler'] ?? false
             ) {
                 $this->useHandler = true;
-                $this->handlerParams = $mlt->params ?? '';
+                $this->handlerParams = $mlt['params'] ?? '';
             }
-            if (isset($mlt->count)) {
-                $this->count = $mlt->count;
+            if (isset($mlt['count'])) {
+                $this->count = $mlt['count'];
             }
         }
     }
@@ -110,13 +112,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string $id Record Id
+     * @param string    $id     Record Id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
-    public function build($id)
+    public function build(string $id, ?ParamBag $params = null): ParamBag
     {
-        $params = new ParamBag();
+        $params = $params ?: new ParamBag();
         if ($this->useHandler) {
             $mltParams = $this->handlerParams
                 ? $this->handlerParams
@@ -128,7 +131,6 @@ class SimilarBuilder implements SimilarBuilderInterface
                 'q',
                 sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
-            $params->set('qt', 'morelikethis');
         }
         if (null === $params->get('rows')) {
             $params->set('rows', $this->count);

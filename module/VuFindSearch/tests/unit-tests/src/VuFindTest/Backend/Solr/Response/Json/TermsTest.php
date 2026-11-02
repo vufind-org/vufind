@@ -3,7 +3,7 @@
 /**
  * Unit tests for terms information.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
@@ -43,7 +44,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 class TermsTest extends TestCase
 {
     /**
-     * Test terms
+     * Test terms.
      *
      * @return void
      */
@@ -54,11 +55,11 @@ class TermsTest extends TestCase
             [
                 'terms' => [
                     'field1' => $field1,
-                ]
+                ],
             ]
         );
 
-        $this->assertEquals(\ArrayIterator::class, get_class($terms->getIterator()));
+        $this->assertInstanceOf(\ArrayIterator::class, $terms->getIterator());
         $this->assertNull($terms->getFieldTerms('field2'));
         $fieldTerms = $terms->getFieldTerms('field1');
         $this->assertCount(3, $fieldTerms);

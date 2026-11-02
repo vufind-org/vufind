@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Combined search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,16 +18,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Combined;
+
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Combined search model.
@@ -33,25 +39,25 @@ namespace VuFind\Search\Combined;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface               $configManager  Config loader
+     * @param \VuFind\Search\Options\PluginManager $optionsManager Options plugin manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        parent::__construct($configLoader);
-        $searchSettings = $this->configLoader->get('combined');
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
+    public function __construct(
+        ConfigManagerInterface $configManager,
+        protected \VuFind\Search\Options\PluginManager $optionsManager
+    ) {
+        parent::__construct($configManager);
+        $searchSettings = $this->configManager->getConfigArray('combined');
+        $this->basicHandlers = $searchSettings['Basic_Searches'] ?? [];
     }
 
     /**
@@ -59,31 +65,69 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'combined-results';
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         $recommend = [];
-        $config = $this->configLoader->get('combined');
+        $config = $this->configManager->getConfigArray('combined');
         foreach (['top', 'bottom'] as $location) {
-            if (isset($config->RecommendationModules->$location)) {
+            if (isset($config['RecommendationModules'][$location])) {
                 $recommend[$location]
-                    = $config->RecommendationModules->$location->toArray();
+                    = $config['RecommendationModules'][$location];
             }
         }
         return $recommend;
+    }
+
+    /**
+     * Get tab configuration based on the full combined results configuration.
+     *
+     * @return array
+     */
+    public function getTabConfig(): array
+    {
+        $config = $this->configManager->getConfigArray('combined');
+
+        // Strip out non-tab sections of the configuration:
+        unset($config['Basic_Searches']);
+        unset($config['HomePage']);
+        unset($config['Layout']);
+        unset($config['RecommendationModules']);
+
+        return $config;
+    }
+
+    /**
+     * Does this search option support the cart/book bag?
+     *
+     * @return bool
+     */
+    public function supportsCart(): bool
+    {
+        // Cart is supported if any of the tabs support cart:
+        foreach (array_keys($this->getTabConfig()) as $current) {
+            [$searchClassId] = explode(':', $current);
+            $currentOptions = $this->optionsManager->get($searchClassId);
+            if ($currentOptions->supportsCart()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

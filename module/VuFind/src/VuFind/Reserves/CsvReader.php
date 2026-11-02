@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Support class to build reserves data from CSV file(s).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Reserves
@@ -25,7 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki Wiki
  */
+
 namespace VuFind\Reserves;
+
+use function count;
+use function is_array;
 
 /**
  * Support class to build reserves data from CSV file(s).
@@ -39,49 +44,49 @@ namespace VuFind\Reserves;
 class CsvReader
 {
     /**
-     * Files to load
+     * Files to load.
      *
      * @var array
      */
     protected $files;
 
     /**
-     * CSV delimiter
+     * CSV delimiter.
      *
      * @var string
      */
     protected $delimiter;
 
     /**
-     * Field template (value => index)
+     * Field template (value => index).
      *
      * @var array
      */
     protected $template;
 
     /**
-     * Instructor data loaded from files
+     * Instructor data loaded from files.
      *
      * @var array
      */
     protected $instructors = [];
 
     /**
-     * Course data loaded from files
+     * Course data loaded from files.
      *
      * @var array
      */
     protected $courses = [];
 
     /**
-     * Department data loaded from files
+     * Department data loaded from files.
      *
      * @var array
      */
     protected $departments = [];
 
     /**
-     * Reserves data loaded from files
+     * Reserves data loaded from files.
      *
      * @var array
      */
@@ -102,13 +107,13 @@ class CsvReader
     protected $errors = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array|string $files     Array of files to load (or single filename).
      * @param string       $delimiter Delimiter used by file(s).
      * @param string       $template  Template showing field positions within
-     * file(s).  Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
-     * DEPARTMENT and/or SKIP.  Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
+     * file(s). Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
+     * DEPARTMENT and/or SKIP. Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
      *
      * @throws \Exception
      */
@@ -157,7 +162,7 @@ class CsvReader
             throw new \Exception("Could not open $fn!");
         }
         $lineNo = $goodLines = 0;
-        while ($line = fgetcsv($fh, 0, $this->delimiter)) {
+        while ($line = fgetcsv($fh, 0, $this->delimiter, escape: '\\')) {
             $lineNo++;
 
             if (count($line) < count($this->template)) {
@@ -222,7 +227,7 @@ class CsvReader
     }
 
     /**
-     * Get instructor data
+     * Get instructor data.
      *
      * @return array
      * @throws \Exception
@@ -234,7 +239,7 @@ class CsvReader
     }
 
     /**
-     * Get course data
+     * Get course data.
      *
      * @return array
      * @throws \Exception
@@ -246,7 +251,7 @@ class CsvReader
     }
 
     /**
-     * Get department data
+     * Get department data.
      *
      * @return array
      * @throws \Exception
@@ -258,7 +263,7 @@ class CsvReader
     }
 
     /**
-     * Get reserves data
+     * Get reserves data.
      *
      * @return array
      * @throws \Exception
@@ -270,7 +275,7 @@ class CsvReader
     }
 
     /**
-     * Get collected error messages
+     * Get collected error messages.
      *
      * @return string
      */

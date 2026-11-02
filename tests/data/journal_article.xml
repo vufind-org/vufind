@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>     nas  2200301 a 4500</leader>
+    <controlfield tag="001">jnl1</controlfield>
+    <controlfield tag="008">231104c2023    xx  x goo     0   a|eng||</controlfield>
+    <datafield tag="024" ind1=" " ind2=" ">
+      <subfield code="2">test</subfield>
+      <subfield code="a">jnl1</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="0">
+      <subfield code="a">Arithmetic Facts</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>     nab  2200301 a 4500</leader>
+    <controlfield tag="001">jnl1-1</controlfield>
+    <controlfield tag="008">231104c2023    xx  x goo     0   a|eng||</controlfield>
+    <datafield tag="245" ind1="1" ind2="0">
+      <subfield code="a">Adding is Commutative</subfield>
+    </datafield>
+    <datafield tag="773" ind1=" " ind2=" ">
+      <subfield code="t">Arithmetic Facts</subfield>
+      <subfield code="g">Vol. 1, no. 1 (Apr. 2023)</subfield>
+      <subfield code="w">jnl1</subfield>
+    </datafield>
+  </record>
+</collection>

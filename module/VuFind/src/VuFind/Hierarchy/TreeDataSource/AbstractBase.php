@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Hierarchy Tree Data Source (abstract base)
+ * Hierarchy Tree Data Source (abstract base).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
- * Hierarchy Tree Data Source (abstract base)
+ * Hierarchy Tree Data Source (abstract base).
  *
  * This is a base helper class for producing hierarchy Trees.
  *
@@ -38,12 +40,12 @@ namespace VuFind\Hierarchy\TreeDataSource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractBase implements \Laminas\Log\LoggerAwareInterface
+abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Hierarchy driver
+     * Hierarchy driver.
      *
      * @var \VuFind\Hierarchy\Driver\AbstractBase
      */
@@ -64,7 +66,7 @@ abstract class AbstractBase implements \Laminas\Log\LoggerAwareInterface
     protected $recordRoute = 'record';
 
     /**
-     * Get the hierarchy driver
+     * Get the hierarchy driver.
      *
      * @return \VuFind\Hierarchy\Driver\AbstractBase
      * @throws \Exception
@@ -78,7 +80,7 @@ abstract class AbstractBase implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the hierarchy driver
+     * Set the hierarchy driver.
      *
      * @param \VuFind\Hierarchy\Driver\AbstractBase $driver Hierarchy driver
      *
@@ -109,6 +111,19 @@ abstract class AbstractBase implements \Laminas\Log\LoggerAwareInterface
     {
         return $this->recordRoute;
     }
+
+    /**
+     * Get JSON for the specified hierarchy ID.
+     *
+     * Build the JSON file from the Solr fields
+     *
+     * @param string $id      Hierarchy ID.
+     * @param array  $options Additional options for JSON generation. (Currently one
+     * option is supported: 'refresh' may be set to true to bypass caching).
+     *
+     * @return string
+     */
+    abstract public function getJSON($id, $options = []);
 
     /**
      * Get XML for the specified hierarchy ID.

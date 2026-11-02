@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Search Results for second Solr index
+ * Search Results for second Solr index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Search2
@@ -26,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Search2;
 
 /**
- * Search Results for second Solr index
+ * Search Results for second Solr index.
  *
  * @category VuFind
  * @package  Search_Search2
@@ -40,9 +41,9 @@ namespace VuFind\Search\Search2;
 class Results extends \VuFind\Search\Solr\Results
 {
     /**
-     * Backend ID
+     * Search backend identifier.
      *
-     * @var string
+     * @var ?string
      */
-    protected $backendId = 'Search2';
+    protected ?string $backendId = 'Search2';
 }

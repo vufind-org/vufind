@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Hierarchy Driver Factory Class
+ * Hierarchy Driver Factory Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Hierarchy_Drivers
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
 use Psr\Container\ContainerInterface;
 
 /**
- * Hierarchy Driver Factory Class
+ * Hierarchy Driver Factory Class.
  *
  * This is a factory class to build objects for managing hierarchies.
  *
@@ -53,12 +55,12 @@ class ConfigurationBasedFactory
      *
      * @return object
      *
-     * @throws Exception if options is populated
+     * @throws \Exception if options is populated
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
@@ -67,14 +69,14 @@ class ConfigurationBasedFactory
         $parts = explode('\\', $requestedName);
         $config = end($parts);
         // Set up options based on global VuFind settings:
-        $configReader = $container->get(\VuFind\Config\PluginManager::class);
-        $globalConfig = $configReader->get('config');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $globalConfig = $configManager->getConfigArray('config');
         $options = [
-            'enabled' => $globalConfig->Hierarchy->showTree ?? false
+            'enabled' => $globalConfig['Hierarchy']['showTree'] ?? false,
         ];
 
         // Load driver-specific configuration:
-        $driverConfig = $configReader->get($config);
+        $driverConfig = $configManager->getConfigArray($config);
 
         // Build object:
         return new ConfigurationBased(

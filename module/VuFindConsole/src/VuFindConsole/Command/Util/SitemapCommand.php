@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Console command: generate sitemaps
+ * Console command: generate sitemaps.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -34,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Sitemap\Generator;
 
 /**
- * Console command: generate sitemaps
+ * Console command: generate sitemaps.
  *
  * @category VuFind
  * @package  Console
@@ -42,24 +45,21 @@ use VuFind\Sitemap\Generator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/sitemap',
+    description: 'XML sitemap generator'
+)]
 class SitemapCommand extends Command
 {
     /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/sitemap';
-
-    /**
-     * Sitemap generator
+     * Sitemap generator.
      *
      * @var Generator
      */
     protected $generator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Generator   $generator Sitemap generator
      * @param string|null $name      The name of the command; passing null means it
@@ -79,7 +79,6 @@ class SitemapCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('XML sitemap generator')
             ->setHelp('Generates XML sitemap files.')
             ->addOption(
                 'baseurl',
@@ -108,7 +107,7 @@ class SitemapCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->hasOption('verbose') && $input->getOption('verbose')) {
             $this->generator->setVerbose([$output, 'writeln']);
@@ -126,6 +125,6 @@ class SitemapCommand extends Command
         foreach ($this->generator->getWarnings() as $warning) {
             $output->writeln("$warning");
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

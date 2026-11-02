@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Grid cover background layer
+ * Grid cover background layer.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -25,10 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
+use function strlen;
+
 /**
- * Grid cover background layer
+ * Grid cover background layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -39,7 +43,7 @@ namespace VuFind\Cover\Layer;
 class GridBackground extends AbstractBackgroundLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)
@@ -57,7 +61,7 @@ class GridBackground extends AbstractBackgroundLayer
     }
 
     /**
-     * Turn number into pattern
+     * Turn number into pattern.
      *
      * @param int $seed Seed used to generate the pattern
      *
@@ -87,7 +91,7 @@ class GridBackground extends AbstractBackgroundLayer
 
     /**
      * Convert 16 long binary string to 8x8 color grid
-     * Reflects vertically and horizontally
+     * Reflects vertically and horizontally.
      *
      * @param resource $im       Active image resource
      * @param string   $pattern  Binary string of pattern
@@ -106,19 +110,19 @@ class GridBackground extends AbstractBackgroundLayer
             $settings->height,
             $this->getColor($im, $settings->baseColor)
         );
-        $halfWidth = $settings->width / 2;
-        $halfHeight = $settings->height / 2;
-        $boxWidth  = $settings->width / 8;
-        $boxHeight = $settings->height / 8;
+        $halfWidth = (int)($settings->width / 2);
+        $halfHeight = (int)($settings->height / 2);
+        $boxWidth  = (int)($settings->width / 8);
+        $boxHeight = (int)($settings->height / 8);
 
         $bc = str_split($pattern);
-        for ($k = 0;$k < 4;$k++) {
+        for ($k = 0; $k < 4; $k++) {
             $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
             $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
             $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
-            for ($i = 0;$i < 16;$i++) {
-                if ($bc[$i] == "1") {
+            for ($i = 0; $i < 16; $i++) {
+                if ($bc[$i] == '1') {
                     imagefilledrectangle(
                         $im,
                         $x,

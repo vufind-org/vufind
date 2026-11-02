@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
+ * Translate view helper Test Class (and by extension, the TranslatorAwareTrait).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\I18n\TranslatableString;
@@ -32,7 +34,7 @@ use VuFind\View\Helper\Root\Translate;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
+ * Translate view helper Test Class (and by extension, the TranslatorAwareTrait).
  *
  * @category VuFind
  * @package  Tests
@@ -45,15 +47,15 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     use TranslatorTrait;
 
     /**
-     * Test translation without a loaded translator
+     * Test translation without a loaded translator.
      *
      * @return void
      */
-    public function testTranslateWithoutTranslator()
+    public function testTranslateWithoutTranslator(): void
     {
         $translate = new Translate();
         // Simple case that tests default values and tokens in a single pass:
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 'foo',
@@ -64,11 +66,11 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid translation array
+     * Test invalid translation array.
      *
      * @return void
      */
-    public function testTranslateWithEmptyArray()
+    public function testTranslateWithEmptyArray(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected value sent to translator!');
@@ -78,11 +80,11 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid translation array
+     * Test invalid translation array.
      *
      * @return void
      */
-    public function testTranslateWithOverfilledArray()
+    public function testTranslateWithOverfilledArray(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected value sent to translator!');
@@ -92,11 +94,11 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test translation with a loaded translator
+     * Test translation with a loaded translator.
      *
      * @return void
      */
-    public function testTranslateWithTranslator()
+    public function testTranslateWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -104,7 +106,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         );
 
         // Simple case that tests default values and tokens in a single pass:
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 'foo',
@@ -113,7 +115,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             )
         );
         // Test namespace syntax:
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 'default::foo',
@@ -122,7 +124,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             )
         );
         // Test array syntax:
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 ['foo'],
@@ -130,7 +132,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 'failure'
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 [null, 'foo'],
@@ -138,7 +140,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 'failure'
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 ['default', 'foo'],
@@ -153,7 +155,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslateTranslatableStringDefaultValues()
+    public function testTranslateTranslatableStringDefaultValues(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -161,25 +163,99 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         );
 
         $s = new TranslatableString('foo', 'bar');
-        $this->assertEquals('bar', $translate($s));
+        $this->assertSame('bar', $translate($s));
 
         $s = new TranslatableString('foo', new TranslatableString('bar', 'baz'));
-        $this->assertEquals('baz', $translate($s));
+        $this->assertSame('baz', $translate($s));
     }
 
     /**
-     * Test translation of a TranslatableString object with a loaded translator
+     * Test translation with domain fallback.
      *
      * @return void
      */
-    public function testTranslateTranslatableStringWithTranslator()
+    public function testTranslationWithDomainFallback(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(
+                [
+                    'default' => ['4' => 'success'],
+                    'domain1' => ['1' => 'success'],
+                    'domain2' => ['1' => 'fail', '2' => 'success'],
+                    'domain3' => ['1' => 'fail', '2' => 'fail', '3' => 'success'],
+                ]
+            )
+        );
+
+        for ($x = 1; $x <= 4; $x++) {
+            // Check using default namespace:
+            $this->assertSame(
+                'success',
+                $translate((string)$x, fallbackDomains: ['domain1', 'domain2', 'domain3'])
+            );
+            // String format with no default:
+            $this->assertSame(
+                'success',
+                $translate("domain1::$x", fallbackDomains: ['domain2', 'domain3', 'default'])
+            );
+            // String format with default set:
+            $this->assertSame(
+                'success',
+                $translate("domain1::$x", default: 'foo', fallbackDomains: ['domain2', 'domain3', 'default'])
+            );
+            // Array format:
+            $this->assertSame(
+                'success',
+                $translate(['domain1', $x], fallbackDomains: ['domain2', 'domain3', 'default'])
+            );
+        }
+    }
+
+    /**
+     * Test translation of a key with illegal characters.
+     *
+     * @return void
+     */
+    public function testTranslationWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => ['_28_29_3F_21' => 'success']])
+        );
+
+        $this->assertSame('success', $translate('()?!'));
+    }
+
+    /**
+     * Test default fallback after translation of a key with illegal characters when
+     * no matching translations are found.
+     *
+     * @return void
+     */
+    public function testTranslationDefaultsWithIllegalKeyCharacters(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => []])
+        );
+
+        $this->assertSame('()?!', $translate('()?!'));
+    }
+
+    /**
+     * Test translation of a TranslatableString object with a loaded translator.
+     *
+     * @return void
+     */
+    public function testTranslateTranslatableStringWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
             $this->getMockTranslator(
                 [
                     'default' => ['foo' => '%%token%%'],
-                    'other' => ['foo' => 'Foo', 'bar' => 'Bar']
+                    'other' => ['foo' => 'Foo', 'bar' => 'Bar'],
                 ]
             )
         );
@@ -187,7 +263,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         // Test a TranslatableString with a translation.
         $str1 = new TranslatableString('foo', 'bar');
         // Simple case that tests default values and tokens in a single pass:
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 $str1,
@@ -199,7 +275,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         // Test a TranslatableString with a fallback.
         $str2 = new TranslatableString('bar', 'foo');
         // Simple case that tests default values and tokens in a single pass:
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 $str2,
@@ -211,7 +287,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         // Test a TranslatableString with no fallback.
         $str3 = new TranslatableString('xyzzy', 'bar');
         // Simple case that tests default values and tokens in a single pass:
-        $this->assertEquals(
+        $this->assertSame(
             'failure',
             $translate(
                 $str3,
@@ -225,27 +301,27 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             'xyzzy',
             new TranslatableString('bar', 'baz')
         );
-        $this->assertEquals('baz', $translate($str4));
+        $this->assertSame('baz', $translate($str4));
         $str5 = new TranslatableString(
             'xyzzy',
             new TranslatableString('foo', 'baz')
         );
-        $this->assertEquals('%%token%%', $translate($str5));
+        $this->assertSame('%%token%%', $translate($str5));
 
         // Test a TranslatableString with translation forbidden
         $str6 = new TranslatableString('foo', 'bar', false);
-        $this->assertEquals('bar', $translate($str6));
+        $this->assertSame('bar', $translate($str6));
         $str7 = new TranslatableString('foo', '', false);
-        $this->assertEquals('', $translate($str7));
+        $this->assertSame('', $translate($str7));
     }
 
     /**
      * Test translation of a TranslatableString object using text domains with a
-     * loaded translator
+     * loaded translator.
      *
      * @return void
      */
-    public function testTranslateTranslatableStringAndTextDomainsWithTranslator()
+    public function testTranslateTranslatableStringAndTextDomainsWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -259,32 +335,32 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
 
         // Primary string translatable
         $str1 = new TranslatableString('d1::f1', 'd2::f2');
-        $this->assertEquals('str1', $translate($str1));
+        $this->assertSame('str1', $translate($str1));
         // Secondary string translatable
         $str2 = new TranslatableString('d1::f2', 'd2::f2');
-        $this->assertEquals('str2', $translate($str2));
+        $this->assertSame('str2', $translate($str2));
         // No string translatable
         $str3 = new TranslatableString('d1::f2', 'd2::f1');
-        $this->assertEquals('failure', $translate($str3, [], 'failure'));
+        $this->assertSame('failure', $translate($str3, [], 'failure'));
 
         // Secondary string a translatable TranslatableString
         $str4 = new TranslatableString(
             'd1::f2',
             new TranslatableString('d2::f2', 'd3::f3')
         );
-        $this->assertEquals('str2', $translate($str4));
+        $this->assertSame('str2', $translate($str4));
         // Secondary string a TranslatableString with no translation
         $str5 = new TranslatableString(
             'd1::f2',
             new TranslatableString('d2::f1', 'failure')
         );
-        $this->assertEquals('failure', $translate($str5));
+        $this->assertSame('failure', $translate($str5));
         // Secondary string a non-translatable TranslatableString
         $str6 = new TranslatableString(
             'd1::f2',
             new TranslatableString('d2::f2', 'failure', false)
         );
-        $this->assertEquals('failure', $translate($str6));
+        $this->assertSame('failure', $translate($str6));
 
         // Three levels of TranslatableString with the last one translatable
         $str7 = new TranslatableString(
@@ -294,7 +370,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 new TranslatableString('d2::f2', 'failure')
             )
         );
-        $this->assertEquals('str2', $translate($str7));
+        $this->assertSame('str2', $translate($str7));
 
         // Three levels of TranslatableString with no translation
         $str8 = new TranslatableString(
@@ -304,15 +380,15 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 new TranslatableString('d3::f2', 'failure')
             )
         );
-        $this->assertEquals('failure', $translate($str8));
+        $this->assertSame('failure', $translate($str8));
     }
 
     /**
-     * Test translation with a loaded translator and a text domain
+     * Test translation with a loaded translator and a text domain.
      *
      * @return void
      */
-    public function testTranslateTextDomainWithTranslator()
+    public function testTranslateTextDomainWithTranslator(): void
     {
         $translate = new Translate();
         $translate->setTranslator(
@@ -320,7 +396,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         );
 
         // This one will work -- TextDomain defined above
-        $this->assertEquals(
+        $this->assertSame(
             'baz',
             $translate(
                 'zap::foo',
@@ -330,7 +406,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         );
 
         // This one will use incoming string -- TextDomain undefined
-        $this->assertEquals(
+        $this->assertSame(
             'failure',
             $translate(
                 'undefined::foo',
@@ -341,11 +417,11 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test nested translation with potential text domain conflict
+     * Test nested translation with potential text domain conflict.
      *
      * @return void
      */
-    public function testTranslateNestedTextDomainWithConflict()
+    public function testTranslateNestedTextDomainWithConflict(): void
     {
         $translations = [
             'd1' => ['foo' => 'bar', 'failure' => 'success'],
@@ -359,32 +435,29 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             'd1::baz',
             new TranslatableString('d2::foo', 'failure')
         );
-        $this->assertEquals('failure', $translate($str));
+        $this->assertSame('failure', $translate($str));
     }
 
     /**
-     * Test locale retrieval without a loaded translator
+     * Test locale retrieval without a loaded translator.
      *
      * @return void
      */
-    public function testLocaleWithoutTranslator()
+    public function testLocaleWithoutTranslator(): void
     {
         $translate = new Translate();
         $this->assertEquals('foo', $translate->getTranslatorLocale('foo'));
     }
 
     /**
-     * Test locale retrieval without a loaded translator
+     * Test locale retrieval without a loaded translator.
      *
      * @return void
      */
-    public function testLocaleWithTranslator()
+    public function testLocaleWithTranslator(): void
     {
         $translate = new Translate();
-        $translator = $this->createMock(\Laminas\I18n\Translator\Translator::class);
-        $translator->expects($this->once())->method('getLocale')
-            ->will($this->returnValue('foo'));
-        $translate->setTranslator($translator);
+        $translate->setTranslator($this->getMockTranslator([], 'foo'));
         $this->assertEquals('foo', $translate->getTranslatorLocale());
     }
 
@@ -393,11 +466,86 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTranslator()
+    public function testGetTranslator(): void
     {
         $translate = new Translate();
-        $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
+        $translator = $this->createMock(\Laminas\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
+    }
+
+    /**
+     * Test ICU translation with a translator object.
+     *
+     * @return void
+     */
+    public function testIcuMessageTranslation(): void
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => ['foo' => '{bar, plural, =1 {one} other {many = #}}']])
+        );
+
+        $this->assertSame(
+            'one',
+            $translate(
+                'foo',
+                ['bar' => '1'],
+                'failure',
+                true
+            )
+        );
+        $this->assertSame(
+            'many = 7',
+            $translate(
+                'foo',
+                ['bar' => '7'],
+                'failure',
+                true
+            )
+        );
+
+        $translate->setTranslator(
+            $this->getMockTranslator(
+                ['default' => ['foo' => '{bar, plural, =1 {jeden} few {několik} other {mnoho = #}}']],
+                'cs-CZ'
+            )
+        );
+        $this->assertSame(
+            'jeden',
+            $translate(
+                'foo',
+                ['bar' => '1'],
+                'failure',
+                true
+            )
+        );
+        $this->assertSame(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '2'],
+                'failure',
+                true
+            )
+        );
+        $this->assertSame(
+            'několik',
+            $translate(
+                'foo',
+                ['bar' => '3'],
+                'failure',
+                true
+            )
+        );
+        $this->assertSame(
+            'mnoho = 12',
+            $translate(
+                'foo',
+                ['bar' => '12'],
+                'failure',
+                true
+            )
+        );
     }
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait for caching data.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\Cache;
 
 use Laminas\Cache\Storage\StorageInterface;
@@ -43,7 +45,7 @@ trait CacheTrait
     use KeyGeneratorTrait;
 
     /**
-     * Cache for storing data temporarily (e.g. patron blocks with the ILS driver)
+     * Cache for storing data temporarily (e.g. patron blocks with the ILS driver).
      *
      * @var StorageInterface
      */
@@ -59,11 +61,11 @@ trait CacheTrait
     /**
      * Set a cache storage object.
      *
-     * @param StorageInterface $cache Cache storage interface
+     * @param ?StorageInterface $cache Cache storage interface
      *
      * @return void
      */
-    public function setCacheStorage(StorageInterface $cache = null)
+    public function setCacheStorage(?StorageInterface $cache = null)
     {
         $this->cache = $cache;
     }

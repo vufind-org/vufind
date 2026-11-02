@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Channel provider interface.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -16,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
@@ -45,33 +48,40 @@ interface ChannelProviderInterface
     /**
      * Hook to configure search parameters before executing search.
      *
-     * @param Params $params Search parameters to adjust
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
      *
      * @return void
      */
-    public function configureSearchParams(Params $params);
+    public function configureSearchParams(Params $params, HttpRequest $request): void;
 
     /**
      * Return channel information derived from a record driver object.
      *
      * @param RecordDriver $driver       Record driver
-     * @param string       $channelToken Token identifying a single specific channel
-     * to load (if omitted, all channels will be loaded)
+     * @param ?string      $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded) -- not used in this provider
+     * @param string       $context      Context of channel load ('default' for normal
+     * Channels page, 'tab' for record tab)
      *
      * @return array
      */
-    public function getFromRecord(RecordDriver $driver, $channelToken = null);
+    public function getFromRecord(
+        RecordDriver $driver,
+        ?string $channelToken = null,
+        string $context = 'default'
+    ): array;
 
     /**
      * Return channel information derived from a search results object.
      *
      * @param Results $results      Search results
-     * @param string  $channelToken Token identifying a single specific channel
+     * @param ?string $channelToken Token identifying a single specific channel
      * to load (if omitted, all channels will be loaded)
      *
      * @return array
      */
-    public function getFromSearch(Results $results, $channelToken = null);
+    public function getFromSearch(Results $results, ?string $channelToken = null): array;
 
     /**
      * Set the options for the provider.

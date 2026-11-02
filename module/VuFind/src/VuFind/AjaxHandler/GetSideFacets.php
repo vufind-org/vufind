@@ -1,10 +1,11 @@
 <?php
+
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2018-2019.
+ * Copyright (C) The National Library of Finland 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -16,132 +17,89 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
 use VuFind\Search\Base\Results;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
-use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
+
+use function in_array;
+use function is_callable;
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
-    implements \Laminas\Log\LoggerAwareInterface
+class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Recommend plugin manager
+     * Constructor.
      *
-     * @var RecommendPluginManager
-     */
-    protected $recommendPluginManager;
-
-    /**
-     * Search runner
-     *
-     * @var SearchRunner
-     */
-    protected $searchRunner;
-
-    /**
-     * Hierarchical facet helper
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $facetHelper;
-
-    /**
-     * Main facet configuration
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $facetConfig;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings         $ss       Session settings
-     * @param RecommendPluginManager  $rpm      Recommend plugin manager
-     * @param SearchRunner            $sr       Search runner
-     * @param HierarchicalFacetHelper $fh       Facet helper
-     * @param \Laminas\Config\Config  $fc       Facet config
-     * @param RendererInterface       $renderer View renderer
+     * @param SessionSettings           $ss                     Session settings
+     * @param RecommendPluginManager    $recommendPluginManager Recommend plugin manager
+     * @param SearchRunner              $searchRunner           Search runner
+     * @param TemplateRendererInterface $renderer               Template renderer
      */
     public function __construct(
         SessionSettings $ss,
-        \VuFind\Recommend\PluginManager $rpm,
-        SearchRunner $sr,
-        HierarchicalFacetHelper $fh,
-        \Laminas\Config\Config $fc,
-        RendererInterface $renderer
+        protected \VuFind\Recommend\PluginManager $recommendPluginManager,
+        protected SearchRunner $searchRunner,
+        protected TemplateRendererInterface $renderer
     ) {
-        $this->sessionSettings = $ss;
-        $this->recommendPluginManager = $rpm;
-        $this->searchRunner = $sr;
-        $this->facetHelper = $fh;
-        $this->facetConfig = $fc;
-        $this->renderer = $renderer;
+        parent::__construct($ss);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        // Allow both GET and POST variables:
-        $request = $params->fromQuery() + $params->fromPost();
-
-        $configIndex = $request['configIndex'] ?? 0;
-        $configLocation = $request['location'] ?? 'side';
+        $configIndex = $this->getPostOrQueryParam($request, 'configIndex', 0);
+        $configLocation = $this->getPostOrQueryParam($request, 'location', 'side');
         $results = $this->getFacetResults($request, $configIndex, $configLocation);
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $this->logError('Faceting request failed');
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
 
         // Set appropriate query suppression / extra field behavior:
         $queryHelper = $results->getUrlQuery();
-        $queryHelper->setSuppressQuery((bool)($request['querySuppressed'] ?? false));
-        $extraFields = array_filter(explode(',', $request['extraFields'] ?? ''));
+        $queryHelper->setSuppressQuery((bool)($this->getPostOrQueryParam($request, 'querySuppressed', false)));
+        $extraFields = array_filter(explode(',', $this->getPostOrQueryParam($request, 'extraFields', '')));
         foreach ($extraFields as $field) {
-            if (isset($request[$field])) {
-                $queryHelper->setDefaultParameter($field, $request[$field]);
+            if (null !== ($value = $this->getPostOrQueryParam($request, $field))) {
+                $queryHelper->setDefaultParameter($field, $value);
             }
         }
 
@@ -149,28 +107,30 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
         if (null === $recommend) {
             return $this->formatResponse(
                 'Invalid config requested',
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 
         $context = [
             'recommend' => $recommend,
             'params' => $results->getParams(),
-            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND
+            'searchClassId' => $this->getPostOrQueryParam($request, 'searchClassId', DEFAULT_SEARCH_BACKEND),
         ];
-        if (isset($request['enabledFacets'])) {
+        if ($enabledFacets = $this->getPostOrQueryParam($request, 'enabledFacets')) {
             // Render requested facets separately
             $facets = $this->formatFacets(
+                $request,
                 $context,
                 $recommend,
-                $request['enabledFacets'],
+                (array)$enabledFacets,
                 $results
             );
             return $this->formatResponse(compact('facets'));
         }
 
         // Render full sidefacets
-        $html = $this->renderer->render(
+        $html = $this->renderer->renderTemplateAsString(
+            $request,
             'Recommend/SideFacets.phtml',
             $context
         );
@@ -178,17 +138,17 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
     }
 
     /**
-     * Perform search and return the results
+     * Perform search and return the results.
      *
-     * @param array  $request Request params
-     * @param string $index   Index of SideFacetsDeferred in configuration
-     * @param string $loc     Location where SideFacetsDeferred is configured
+     * @param ServerRequestInterface $request Request
+     * @param string                 $index   Index of SideFacetsDeferred in configuration
+     * @param string                 $loc     Location where SideFacetsDeferred is configured
      *
      * @return Results
      */
-    protected function getFacetResults(array $request, $index, $loc)
+    protected function getFacetResults(ServerRequestInterface $request, $index, $loc)
     {
-        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc) {
+        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc): void {
             $listener = new RecommendListener(
                 $this->recommendPluginManager,
                 $searchId
@@ -214,119 +174,56 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
         };
 
         $runner = $this->searchRunner;
-        return $runner->run(
-            $request,
-            $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
+        $results = $runner->run(
+            $request->getParsedBody() + $request->getQueryParams(),
+            $this->getPostOrQueryParam($request, 'searchClassId', DEFAULT_SEARCH_BACKEND),
             $setupCallback
         );
+        // Restore limit overridden by the setup callback above:
+        if ($limit = $this->getPostOrQueryParam($request, 'limit')) {
+            $results->getParams()->setLimit($limit);
+        }
+        return $results;
     }
 
     /**
-     * Format facets according to their type
+     * Format facets according to their type.
      *
-     * @param array      $context   View rendering context
-     * @param SideFacets $recommend Recommendation module
-     * @param array      $facets    Facets to process
-     * @param Results    $results   Search results
+     * @param ServerRequestInterface $request   Request
+     * @param array                  $context   View rendering context
+     * @param SideFacets             $recommend Recommendation module
+     * @param array                  $facets    Facets to process
+     * @param Results                $results   Search results
      *
      * @return array
      */
     protected function formatFacets(
+        ServerRequestInterface $request,
         $context,
         SideFacets $recommend,
         $facets,
         Results $results
     ) {
         $response = [];
-        $options = $results->getOptions();
-        $hierarchicalFacets = $options->getHierarchicalFacets();
-        $hierarchicalFacetSortOptions
-            = $recommend->getHierarchicalFacetSortOptions();
         $facetSet = $recommend->getFacetSet();
-        $urlHelper = $results->getUrlQuery();
+        $checkboxFacets = array_column($recommend->getCheckboxFacetSet(), 'filter');
         foreach ($facets as $facet) {
-            if (strpos($facet, ':')) {
-                $response[$facet]['checkboxCount']
-                    = $this->getCheckboxFacetCount($facet, $results);
-            } elseif (in_array($facet, $hierarchicalFacets)) {
-                $response[$facet]['list'] = $this->getHierarchicalFacetData(
-                    $facet,
-                    $hierarchicalFacetSortOptions,
-                    $facetSet[$facet]['list'] ?? [],
-                    $urlHelper
-                );
+            if (in_array($facet, $checkboxFacets)) {
+                $response[$facet]['checkboxCount'] = $recommend->getCheckboxFacetCount($facet);
             } else {
                 $context['facet'] = $facet;
-                $context['cluster'] = $facetSet[$facet] ?? [];
+                $context['cluster'] = $facetSet[$facet] ?? [
+                    'label' => $results->getParams()->getFacetLabel($facet),
+                    'list' => [],
+                ];
                 $context['collapsedFacets'] = [];
-                $response[$facet]['html'] = $this->renderer->render(
+                $response[$facet]['html'] = $this->renderer->renderTemplateAsString(
+                    $request,
                     'Recommend/SideFacets/facet.phtml',
                     $context
                 );
             }
         }
         return $response;
-    }
-
-    /**
-     * Get the result count for a checkbox facet
-     *
-     * @param string  $facet   Facet
-     * @param Results $results Search results
-     *
-     * @return int|null
-     */
-    protected function getCheckboxFacetCount($facet, Results $results)
-    {
-        // There's currently no good way to return counts for checkbox filters.
-        return null;
-    }
-
-    /**
-     * Get facet data for a hierarchical facet
-     *
-     * @param string         $facet       Facet
-     * @param array          $sortOptions Hierarhical facet sort options
-     * @param array          $facetList   Facet list
-     * @param UrlQueryHelper $urlHelper   UrlQueryHelper for creating facet URLs
-     *
-     * @return array
-     */
-    protected function getHierarchicalFacetData(
-        $facet,
-        $sortOptions,
-        $facetList,
-        UrlQueryHelper $urlHelper
-    ) {
-        if (!empty($sortOptions[$facet])) {
-            $this->facetHelper->sortFacetList(
-                $facetList,
-                'top' === $sortOptions[$facet]
-            );
-        }
-
-        $result = $this->facetHelper->buildFacetArray(
-            $facet,
-            $facetList,
-            $urlHelper,
-            false
-        );
-
-        if (!empty($this->facetConfig->FacetFilters->$facet)
-            || !empty($this->facetConfig->ExcludeFilters->$facet)
-        ) {
-            $filters = !empty($this->facetConfig->FacetFilters->$facet)
-                ? $this->facetConfig->FacetFilters->$facet->toArray() : [];
-            $excludeFilters = !empty($this->facetConfig->ExcludeFilters->$facet)
-                ? $this->facetConfig->ExcludeFilters->$facet->toArray() : [];
-
-            $result = $this->facetHelper->filterFacets(
-                $result,
-                $filters,
-                $excludeFilters
-            );
-        }
-
-        return $result;
     }
 }

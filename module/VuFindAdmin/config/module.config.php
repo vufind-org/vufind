@@ -1,26 +1,8 @@
 <?php
+
 namespace VuFindAdmin\Module\Configuration;
 
 $config = [
-    'controllers' => [
-        'factories' => [
-            'VuFindAdmin\Controller\AdminController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\ConfigController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\MaintenanceController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\OverdriveController' =>
-                'VuFind\Controller\AbstractBaseFactory',
-        ],
-        'aliases' => [
-            'Admin' => 'VuFindAdmin\Controller\AdminController',
-            'AdminConfig' => 'VuFindAdmin\Controller\ConfigController',
-            'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
-            'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
-            'AdminTags' => 'VuFindAdmin\Controller\TagsController',
-            'AdminOverdrive' => 'VuFindAdmin\Controller\OverdriveController',
-        ],
-    ],
     'router' => [
         'routes' => [
             'admin' => [
@@ -30,20 +12,11 @@ $config = [
                     'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
-                    ]
+                        'admin_route' => true,
+                    ],
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
-                    'disabled' => [
-                        'type' => 'Laminas\Router\Http\Literal',
-                        'options' => [
-                            'route'    => '/Disabled',
-                            'defaults' => [
-                                'controller' => 'Admin',
-                                'action'     => 'Disabled',
-                            ]
-                        ]
-                    ],
                     'config' => [
                         'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
@@ -51,8 +24,28 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminConfig',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
+                    ],
+                    'feedback-details' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Feedback/Details/:id',
+                            'defaults' => [
+                                'controller' => 'AdminFeedback',
+                                'action'     => 'Details',
+                            ],
+                        ],
+                    ],
+                    'feedback' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Feedback[/:action]',
+                            'defaults' => [
+                                'controller' => 'AdminFeedback',
+                                'action'     => 'Home',
+                            ],
+                        ],
                     ],
                     'maintenance' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -61,8 +54,28 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminMaintenance',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
+                    ],
+                    'notices' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Notices[/:action][?notice_id=:notice_id]',
+                            'defaults' => [
+                                'controller' => 'AdminNotices',
+                                'action'     => 'Home',
+                            ],
+                        ],
+                    ],
+                    'script' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Script[/:name]',
+                            'defaults' => [
+                                'controller' => 'AdminMaintenance',
+                                'action'     => 'Script',
+                            ],
+                        ],
                     ],
                     'social' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -71,8 +84,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminSocial',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'tags' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -81,8 +94,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminTags',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'overdrive' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -91,9 +104,121 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminOverdrive',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
+                    'payment' => [
+                        'type' => 'Laminas\Router\Http\Literal',
+                        'options' => [
+                            'route'    => '/Payment',
+                            'defaults' => [
+                                'controller' => 'AdminPayment',
+                                'action'     => 'Home',
+                            ],
+                        ],
+                    ],
+                    'payment-details' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Payment/:id/Details',
+                            'defaults' => [
+                                'controller' => 'AdminPayment',
+                                'action'     => 'Details',
+                            ],
+                        ],
+                    ],
+                    'payment-resolve' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Payment/:id/Resolve',
+                            'defaults' => [
+                                'controller' => 'AdminPayment',
+                                'action'     => 'Resolve',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'vufind' => [
+        'action_config' => [
+            'vufindadmin_admin' => [
+                'actionIds' => [
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'admin/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminconfig/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminfeedback/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminmaintenance/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminnotices/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminpayment/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminoverdrive/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'adminsocial/',
+                    ],
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'admintags/',
+                    ],
+                ],
+                'accessPermission' => 'access.AdminModule',
+            ],
+            'vufindadmin_notices' => [
+                'actionIds' => [
+                    [
+                        'type' => 'prefix',
+                        'prefix' => 'notices/',
+                    ],
+                ],
+                'accessPermission' => 'access.AdminModule',
+            ],
+        ],
+        'plugin_managers' => [
+            'action' => [
+                'autodiscovery_namespaces' => [
+                    'VuFindAdmin\Action' => true,
+                ],
+                'aliases' => [
+                    'adminconfig/enableautoconfig' => \VuFindAdmin\Action\AdminConfig\EnableAutoConfigAction::class,
+                    'adminfeedback/updatestatus' => \VuFindAdmin\Action\AdminFeedback\UpdateStatusAction::class,
+                    'adminmaintenance/clearcache' => \VuFindAdmin\Action\AdminMaintenance\ClearCacheAction::class,
+                    'adminmaintenance/deleteexpiredsearches'
+                        => \VuFindAdmin\Action\AdminMaintenance\DeleteExpiredSearchesAction::class,
+                    'adminmaintenance/deleteexpiredsessions'
+                        => \VuFindAdmin\Action\AdminMaintenance\DeleteExpiredSessionsAction::class,
+                    'adminmaintenance/updatebrowscapcache'
+                        => \VuFindAdmin\Action\AdminMaintenance\UpdateBrowscapCacheAction::class,
+                ],
+                'category_aliases' => [
+                    'Adminconfig' => 'AdminConfig',
+                    'Adminfeedback' => 'AdminFeedback',
+                    'Adminmaintenance' => 'AdminMaintenance',
+                    'Adminnotices' => 'AdminNotices',
+                    'Adminoverdrive' => 'AdminOverdrive',
+                    'Adminpayment' => 'AdminPayment',
+                    'Adminsocial' => 'AdminSocial',
+                    'Admintags' => 'AdminTags',
                 ],
             ],
         ],

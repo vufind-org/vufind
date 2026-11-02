@@ -1,9 +1,9 @@
 <?php
 
 /**
- * MarkdownFactory Test Class
+ * MarkdownFactory Test Class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -33,7 +34,7 @@ use League\CommonMark\ConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
 /**
- * MarkdownFactory Test Class
+ * MarkdownFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,11 +44,11 @@ use VuFind\Service\MarkdownFactory;
  */
 class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test to ensure the markdown factory is using right config for markdown
-     * service
+     * service.
      *
      * @return void
      */
@@ -137,6 +138,11 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     'tag' => 'div',
                     'attributes' => 'class:table-responsive,title:table',
                 ],
+                'alignment_attributes' => [
+                    'left' => 'class:left,align:left',
+                    'center' => 'class:center, align: center',
+                    'right' => 'class:right',
+                ],
             ],
             'VuFindTest\Markdown\ExampleExtension' => [
                 'config_key' => 'example',
@@ -149,6 +155,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             'HeadingPermalink' => [
                 'min_heading_level' => '3',
                 'max_heading_level' => '4',
+                'apply_id_to_heading' => 'true',
             ],
         ];
         $customEnvironment2 = [
@@ -171,6 +178,20 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                         'title' => 'table',
                     ],
                 ],
+                'alignment_attributes' => [
+                    'left' => [
+                        'class' => 'left',
+                        'align' => 'left',
+                    ],
+                    'center' => [
+                        'class' => 'center',
+                        'align' => 'center',
+                    ],
+                    'right' => [
+                        'class' => 'right',
+                    ],
+                ],
+                'max_autocompleted_cells' => 10000,
             ],
             'example' => [
                 'example' => 'example',
@@ -188,6 +209,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'normalize' => 'relative',
                 'html_class' => 'table-of-contents',
                 'placeholder' => null,
+                'max_placeholder_entries' => null,
             ],
             'heading_permalink' => [
                 'min_heading_level' => 3,
@@ -199,6 +221,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'title' => 'Permalink',
                 'symbol' => '¶',
                 'aria_hidden' => true,
+                'apply_id_to_heading' => true,
+                'heading_class' => '',
             ],
         ];
 
@@ -219,7 +243,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that extensions are added based on configuration
+     * Test that extensions are added based on configuration.
      *
      * @return void
      */
@@ -285,15 +309,18 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 $this->expectException($test['exception']);
             }
             $result = $this->getMarkdownEnvironmentExtensions($test['config']);
-            $result = array_map(function ($extension) {
-                return get_class($extension);
-            }, $result);
+            $result = array_map(
+                function ($extension) {
+                    return $extension::class;
+                },
+                $result
+            );
             $this->assertEquals($test['expected'], $result);
         }
     }
 
     /**
-     * Return config of created markdown service environment
+     * Return config of created markdown service environment.
      *
      * @param array $config Configuration settings
      *
@@ -306,7 +333,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return config of created markdown service environment
+     * Return config of created markdown service environment.
      *
      * @param array $config Configuration settings
      *
@@ -319,12 +346,12 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create markdown converter
+     * Create markdown converter.
      *
-     * @param array $config
+     * @param array $config Configuration
      *
      * @return ConverterInterface
-     * @throws \Interop\Container\Exception\ContainerException
+     * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Throwable
      */
     protected function getMarkdownConverter(array $config): ConverterInterface
@@ -349,13 +376,13 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Markdown\ExampleExtension()
         );
         $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(['markdown' => $config])
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(['markdown' => $config])
         );
         $markdownFactory = new MarkdownFactory();
         return $markdownFactory(
             $container,
-            \League\CommonMark\ConverterInterface::class
+            \League\CommonMark\MarkdownConverter::class
         );
     }
 }

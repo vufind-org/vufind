@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Trait for setting up view options. Designed to be included in a subclass of
  * \VuFind\Search\Base\Options.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -17,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -26,9 +27,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\Search\Options;
 
-use Laminas\Config\Config;
+namespace VuFind\Search\Options;
 
 /**
  * Trait for setting up view options. Designed to be included in a subclass of
@@ -45,24 +45,21 @@ trait ViewOptionsTrait
     /**
      * Set up the view options.
      *
-     * @param ?Config $searchSettings Search settings.
+     * @param ?array $searchSettings Search settings.
      *
      * @return void
      */
-    public function initViewOptions(?Config $searchSettings)
+    public function initViewOptions(?array $searchSettings): void
     {
-        if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = $searchSettings->General->default_view;
+        if (null !== ($defaultView = $searchSettings['General']['default_view'] ?? null)) {
+            $this->setConfiguredDefaultView($defaultView);
         }
         // Load view preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Views)) {
-            foreach ($searchSettings->Views as $key => $value) {
-                $this->viewOptions[$key] = $value;
-            }
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
+        if ($viewOptions = $searchSettings['Views'] ?? []) {
+            $this->viewOptions = $viewOptions;
         } else {
-            $this->viewOptions = ['list' => 'List'];
+            $defaultView = $this->getConfiguredDefaultView();
+            $this->viewOptions = [$defaultView => $defaultView];
         }
     }
 }

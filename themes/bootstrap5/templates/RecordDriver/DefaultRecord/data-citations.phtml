@@ -1,0 +1,13 @@
+<?php
+$links = [];
+if ($data['cites']) {
+    $links[] = '<a class="icon-link" href="' . $this->record($this->driver)->getLink('cites', $data['cites'][0]) . '" rel="nofollow">'
+        . $this->icon('cites', 'icon-link__icon') . ' <span class="icon-link__label">' . $this->transEsc('results_cited_by_title_search_link')
+        . '</span></a>';
+}
+if ($data['cited_by']) {
+    $links[] = '<a class="icon-link" href="' . $this->record($this->driver)->getLink('citedBy', $data['cited_by'][0]) . '" rel="nofollow">'
+        . $this->icon('cited-by', 'icon-link__icon') . ' <span class="icon-link__label">' . $this->transEsc('results_citing_title_search_link')
+        . '</span></a>';
+}
+echo implode('<br>', $links);
