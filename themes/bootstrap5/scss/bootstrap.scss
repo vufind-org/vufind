@@ -170,8 +170,19 @@ h3.popover-header {
 // Normalize highlighting
 .highlight,
 mark {
-  background: color.adjust(#FF0, $lightness: 20%);
   padding: .1em .2em;
+}
+@include color-mode(light, true) {
+.highlight,
+  mark {
+    background: color.adjust(#FF0, $lightness: 20%);
+  }
+}
+@include color-mode(dark, true) {
+.highlight,
+  mark {
+    background: #440;
+  }
 }
 
 // Normalize
