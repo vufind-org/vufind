@@ -64,7 +64,7 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
         }
         $mod = new $class();
         $mod->setConfig($settings);
-        $mod->init($results->getParams(), $request->toArray());
+        $mod->init($results->getParams(), $request);
         $mod->process($results);
         return $mod;
     }
