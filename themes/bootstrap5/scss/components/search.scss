@@ -999,15 +999,6 @@ table.search-history-table {
     }
   }
 }
-@include color-mode(light, true) {
-  .searchForm {
-    .searchForm-query {
-      #searchForm-reset {
-        background-color: var(--bs-tertiary-bg);
-      }
-    }
-  }
-}
 
 /* Hide virtual keyboard on narrow screens */
 @media (max-width: 400px) {
