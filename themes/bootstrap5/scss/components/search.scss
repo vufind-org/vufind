@@ -982,11 +982,29 @@ table.search-history-table {
       height: 2em;
       border: none;
       border-radius: 50%;
-      background-color: $gray-lighter;
       margin: 0;
       padding: 2px;
       font-size: 1em;
       cursor: pointer;
+    }
+  }
+}
+
+@include color-mode(light, true) {
+  .searchForm {
+    .searchForm-query {
+      #searchForm-reset {
+        background-color: $gray-lighter;
+      }
+    }
+  }
+}
+@include color-mode(light, true) {
+  .searchForm {
+    .searchForm-query {
+      #searchForm-reset {
+        background-color: var(--bs-tertiary-bg);
+      }
     }
   }
 }
