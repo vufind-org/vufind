@@ -2,7 +2,7 @@
     // Set page title.
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
-<table class="staff-view table table-striped">
+<table class="staff-view table">
   <?php
     $rawData = $this->driver->getRawData();
     ksort($rawData);

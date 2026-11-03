@@ -9,7 +9,8 @@
   </xsl:template>
 
   <xsl:template match="marc:record">
-      <table class="staff-view--marc table table-striped">
+    <div class="staffview-table-wrapper">
+      <table class="staff-view--marc">
         <tr class="pace-car">
           <th class="marc__tag"/>
           <td class="marc__ind"/>
@@ -22,6 +23,7 @@
         </tr>
         <xsl:apply-templates select="marc:datafield|marc:controlfield"/>
       </table>
+    </div>
   </xsl:template>
 
   <xsl:template match="//marc:controlfield">
