@@ -123,7 +123,7 @@ class EuropeanaResults implements
      *
      * @param string $key API key
      */
-    public function __construct(protected $key)
+    public function __construct(protected string $key)
     {
     }
 
