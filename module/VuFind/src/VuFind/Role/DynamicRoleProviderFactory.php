@@ -108,26 +108,6 @@ class DynamicRoleProviderFactory implements FactoryInterface
         \VuFind\Config\ConfigManagerInterface $configManager,
         array $permissions
     ): array {
-        // Add admin settings if they are absent:
-        if (!$this->permissionDefined($permissions, 'access.AdminModule')) {
-            $config = $configManager->getConfigArray('config');
-            $permissions['legacy.AdminModule'] = [];
-            if (isset($config['AdminAuth']['ipRegEx'])) {
-                $permissions['legacy.AdminModule']['ipRegEx']
-                    = $config['AdminAuth']['ipRegEx'];
-            }
-            if (isset($config['AdminAuth']['userWhitelist'])) {
-                $permissions['legacy.AdminModule']['username']
-                    = $config['AdminAuth']['userWhitelist'];
-            }
-            // If no settings exist in config.ini, we grant access to everyone
-            // by allowing both logged-in and logged-out roles.
-            if (empty($permissions['legacy.AdminModule'])) {
-                $permissions['legacy.AdminModule']['role'] = ['guest', 'loggedin'];
-            }
-            $permissions['legacy.AdminModule']['permission'] = 'access.AdminModule';
-        }
-
         // Add staff view setting it they are absent:
         if (!$this->permissionDefined($permissions, 'access.StaffViewTab')) {
             $permissions['legacy.StaffViewTab']['role'] = ['guest', 'loggedin'];
