@@ -212,7 +212,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     public function testFeedbackAdmin(): void
     {
         // Go to admin page:
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl('/Admin/Feedback'));
         $page = $session->getPage();
