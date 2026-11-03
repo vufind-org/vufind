@@ -17,7 +17,6 @@ $autocomplete-secondary   : darkgray !default; // item description
   margin-top: 2px;
   padding: 0;
   border: 1px solid $autocomplete-border;
-  background-color: $autocomplete-item-bg;
   overflow: hidden;
   z-index: 50;
 
@@ -33,7 +32,6 @@ $autocomplete-secondary   : darkgray !default; // item description
     cursor: pointer;
 
     &:last-child { border: 0; }
-    &:hover { background-color: $autocomplete-hover-bg; }
     &.is-selected {
       background-color: $autocomplete-active-bg;
       color: color-contrast($autocomplete-active-bg);
@@ -50,5 +48,28 @@ $autocomplete-secondary   : darkgray !default; // item description
     color: color-contrast($autocomplete-disabled-bg);
     background-color: $autocomplete-disabled-bg;
     cursor: default;
+  }
+}
+
+@include color-mode(light, true) {
+  .autocomplete-results {
+    background-color: $autocomplete-item-bg;
+
+    .ac-item {
+      &:hover { background-color: $autocomplete-hover-bg; }
+    }
+  }
+}
+@include color-mode(dark, true) {
+  .autocomplete-results {
+    background-color: var(--bs-body-bg);
+
+    .ac-item {
+      &:hover { background-color: var(--bs-tertiary-bg); }
+    }
+    .ac-header {
+      color: var(--bs-body-color);
+      background-color: var(--bs-secondary-bg);
+    }
   }
 }

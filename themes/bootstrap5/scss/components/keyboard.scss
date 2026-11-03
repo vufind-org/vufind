@@ -4,24 +4,10 @@
 .keyboard-selection {
   display: inline-block;
 
-  button.dropdown-toggle {
-    color: $input-color;
-    background-color: white;
-  }
-
   button.dropdown-toggle:hover,
   button.dropdown-toggle:focus,
   &.open > button.dropdown-toggle {
-    color: white;
-    background-color: $primary;
-    border-color: $primary;
     outline: none;
-  }
-
-  &:not(.open) {
-    .activated:not(:hover){
-      background: color.adjust($primary, $lightness: 55%);
-    }
   }
 
   > .dropdown-menu {
@@ -36,6 +22,29 @@
     border: 0;
     .icon {
       margin: 0;
+    }
+  }
+}
+
+@include color-mode(light, true) {
+  .keyboard-selection {
+    button.dropdown-toggle {
+      color: $input-color;
+      background-color: white;
+    }
+
+    button.dropdown-toggle:hover,
+    button.dropdown-toggle:focus,
+    &.open > button.dropdown-toggle {
+      color: white;
+      background-color: $primary;
+      border-color: $primary;
+    }
+
+    &:not(.open) {
+      .activated:not(:hover){
+        background: color.adjust($primary, $lightness: 55%);
+      }
     }
   }
 }
@@ -66,25 +75,43 @@
   display: none;
   position: absolute;
   z-index: 1;
-  &.hg-theme-default {
-    background-color: #dddddd;
-  }
 
   .hg-button.hg-functionBtn {
     font-weight: bold;
     font-size: 30px;
-    background-color: #f4f4f4;
     span {
       padding-top: 5px;
-    }
-
-    &.hg-button-space {
-      background-color: white;
     }
   }
 
   .hg-standardBtn {
     font-size: 18px;
+  }
+}
+
+@include color-mode(light, true) {
+  .simple-keyboard {
+    &.hg-theme-default {
+      background-color: #dddddd;
+    }
+    .hg-button.hg-functionBtn {
+      background-color: #f4f4f4;
+      &.hg-button-space {
+        background-color: white;
+      }
+    }
+  }
+}
+@include color-mode(dark, true) {
+  .simple-keyboard {
+    &.hg-theme-default {
+      background-color: var(--bs-gray-dark);
+    }
+
+    .hg-standardBtn, .hg-functionBtn {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+    }
   }
 }
 
