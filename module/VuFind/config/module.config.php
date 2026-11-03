@@ -167,14 +167,11 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'Index' => 'VuFind\Controller\IndexController',
-            'index' => 'VuFind\Controller\IndexController',
         ],
     ],
     'controller_plugins' => [
