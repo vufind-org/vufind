@@ -677,8 +677,8 @@ class Upgrade implements LoggerAwareInterface
             || isset($captcha['image_lineNoiseLevel'])
         ) {
             $this->addWarning(
-                'The image captcha settings in the [Captcha] section of config.ini have changed. Please review and' .
-                ' adjust as required.'
+                'The image captcha settings in the [Captcha] section of config.ini have changed. Please review and'
+                . ' adjust as required.'
             );
         }
 
