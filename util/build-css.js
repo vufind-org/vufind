@@ -204,7 +204,11 @@ program
   .option("-M, --no-minify", "do not minify CSS with clean-css (faster compilation)")
   .option(
     "-S, --no-sourcemaps",
-    "do not generate sourcemaps (faster compilation)"
+    "do not generate source maps (faster compilation)"
+  )
+  .option(
+    "-P, --no-sourcemap-standard-path",
+    "use system path for source maps instead of standard path"
   )
   .option("--temp <path>",
     "Override temporary file location",
@@ -223,9 +227,15 @@ const DO_MINIFY = Boolean(CLI_OPTIONS.minify);
 // i.e., npm run build:scss -- --no-sourcemaps
 const DO_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemaps);
 
+// use standard VuFind path (/usr/local/vufind) in sourcemaps, unless
+// told not to with --no-sourcemap-standard-path (-P).
+// Always use standard path when building CSS for pull-requests.
+const USE_STANDARD_PATH_IN_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemapStandardPath);
+
 console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly)}`);
 console.log(`MINIFY: ${String(DO_MINIFY)}`);
 console.log(`SOURCEMAPS: ${String(DO_SOURCEMAPS)}`);
+console.log(`SOURCEMAPS-STANDARD-PATH: ${String(USE_STANDARD_PATH_IN_SOURCEMAPS)}`);
 
 
 /**
@@ -328,6 +338,9 @@ function compileTheme(themeName) {
     if (!CLI_OPTIONS.checkOnly) {
       console.log(`- writing source map to theme/${themeName}/css/${sourceMapName}`);
       const sourceMapPath = themePath(themeName, `css/${sourceMapName}`);
+      if (USE_STANDARD_PATH_IN_SOURCEMAPS) {
+        sourceMapContent = sourceMapContent.replaceAll('file://' + process.env.VUFIND_HOME, 'file:///usr/local/vufind');
+      }
       fs.writeFileSync(sourceMapPath, sourceMapContent, "utf8");
     }
   }
