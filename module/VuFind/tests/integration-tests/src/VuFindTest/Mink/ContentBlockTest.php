@@ -56,6 +56,6 @@ class ContentBlockTest extends \VuFindTest\Integration\MinkTestCase
         );
         // If everything is working, the heading from the CatalogResults module should show on the home page:
         $page = $this->getSearchHomePage();
-        $this->assertEquals('Catalog Results', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Catalog Results', $this->findCssAndGetText($page, 'h2'));
     }
 }
