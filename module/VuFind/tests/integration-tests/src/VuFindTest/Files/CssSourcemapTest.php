@@ -47,7 +47,6 @@ class CssSourcemapTest extends \PHPUnit\Framework\TestCase
      */
     public static function fileProvider(): \Iterator
     {
-        // format: base 10 number, base 62 number
         yield 'bootstrap5' => ['themes/bootstrap5/css/compiled.css.map'];
         yield 'local_theme_example' => ['themes/local_theme_example/css/compiled.css.map'];
         yield 'sandal5' => ['themes/sandal5/css/compiled.css.map'];
