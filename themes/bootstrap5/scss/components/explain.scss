@@ -76,21 +76,15 @@
     margin-bottom: 1rem;
   }
 }
-@include color-mode(light, true) {
-  .exact-match {
-    color: black;
-  }
 
+@include color-mode(light, true) {
   .inexact-match {
     color: #436c71;
   }
 }
-@include color-mode(dark, true) {
-  .exact-match {
-    color: green;
-  }
 
+@include color-mode(dark, true) {
   .inexact-match {
-    color: color.adjust(#436c71, $lightness: 30%);
+    color: #90B8BD
   }
 }
