@@ -281,7 +281,6 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFeedbackFormWithCaptcha(): void
     {
-        // By default, no OpenURL on record page:
         $page = $this->setupPage(
             [
                 'Captcha' => ['types' => ['demo'], 'forms' => 'feedback'],
@@ -337,6 +336,40 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
+        $this->assertSame(
+            'Thank you for your feedback.',
+            $this->findCssAndGetText($page, '#modal .alert-success')
+        );
+    }
+
+    /**
+     * Test feedback form with a choice of two CAPTCHAs.
+     *
+     * @return void
+     */
+    public function testCaptchaChoice(): void
+    {
+        $page = $this->setupPage(
+            [
+                'Captcha' => [
+                    'types' => ['demo', 'dumb'],
+                    'forms' => 'feedback',
+                ],
+            ]
+        );
+        $this->fillInAndSubmitFeedbackForm($page);
+        // CAPTCHA should have failed...
+        $this->assertSame(
+            'CAPTCHA not passed',
+            $this->findCssAndGetText($page, '.modal-body .alert-danger')
+        );
+        // Now fix the second CAPTCHA:
+        $this->clickCss($page, '#modal .nav-link[aria-controls="Dumb"]');
+        $prompt = $this->findCssAndGetText($page, '#Dumb pre');
+        $this->findCss($page, '#modal #captcha-input-Dumb')->setValue(strrev($prompt));
+        $this->clickCss($page, '#modal input[type="submit"]');
+        // Ensure that no errors leaked through from the unpassed CAPTCHA:
+        $this->unFindCss($page, '#modal .alert-danger');
         $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
