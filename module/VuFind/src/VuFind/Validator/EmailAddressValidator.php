@@ -31,6 +31,7 @@
 namespace VuFind\Validator;
 
 use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\EmailValidation;
 use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 
 /**
@@ -55,9 +56,9 @@ class EmailAddressValidator
     /**
      * Email validation handler.
      *
-     * @var ?NoRFCWarningsValidation
+     * @var ?EmailValidation
      */
-    protected ?NoRFCWarningsValidation $validationHandler = null;
+    protected ?EmailValidation $validationHandler = null;
 
     /**
      * Check email address validity.
