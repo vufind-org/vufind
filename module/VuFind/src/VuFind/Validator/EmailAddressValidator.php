@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -38,6 +39,7 @@ use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
  * @category VuFind
  * @package  Validator
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -66,10 +68,8 @@ class EmailAddressValidator
      */
     public function isValid(string $email): bool
     {
-        if (null === $this->validator) {
-            $this->validator = new EmailValidator();
-            $this->validationHandler ??= new NoRFCWarningsValidation();
-        }
+        $this->validator ??= new EmailValidator();
+        $this->validationHandler ??= new NoRFCWarningsValidation();
         return $this->validator->isValid($email, $this->validationHandler);
     }
 }
