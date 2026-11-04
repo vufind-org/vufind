@@ -348,7 +348,7 @@ abstract class AbstractRequestBase implements HelperInterface
      *
      * @return array
      */
-    protected function getValidIds(): array
+    public function getValidIds(): array
     {
         return $this->getSession()->validIds ?? [];
     }

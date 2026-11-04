@@ -125,14 +125,12 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             // in the mock IP reader above, to confirm that the IP reader is
             // being used instead of the request; this ensures that proxies
             // are handled correctly, etc.
-            $fakeServer = new \Laminas\Stdlib\Parameters(
-                [
-                    'REMOTE_ADDR' => '5.6.7.8',
-                    'HTTP_USER_AGENT' => 'Fake browser',
-                    'HTTP_HOST' => 'localhost:80',
-                    'REQUEST_URI' => '/foo/bar',
-                ]
-            );
+            $fakeServer = [
+                'REMOTE_ADDR' => '5.6.7.8',
+                'HTTP_USER_AGENT' => 'Fake browser',
+                'HTTP_HOST' => 'localhost:80',
+                'REQUEST_URI' => '/foo/bar',
+            ];
             $logger->logException($e, $fakeServer);
         }
     }

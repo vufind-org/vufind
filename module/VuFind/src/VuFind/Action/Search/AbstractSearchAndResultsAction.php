@@ -34,7 +34,6 @@ namespace VuFind\Action\Search;
 
 use Exception;
 use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -323,7 +322,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // to properly populate special controls on the advanced screen.
         if (!$saved && count($options->getDefaultFilters()) > 0) {
             $saved = $this->resultsPluginManager->get($this->getSearchClassId());
-            $saved->getParams()->initFromRequest(new \Laminas\Stdlib\Parameters([]));
+            $saved->getParams()->initFromRequest([]);
         }
 
         $templateParams = $this->createTemplateParams(compact('options', 'saved'));
@@ -483,7 +482,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // Get results
         $results = $this->resultsPluginManager->get($this->getSearchClassId());
         $params = $results->getParams();
-        $params->initFromRequest(new Parameters($this->request->getQueryParams()));
+        $params->initFromRequest($this->request->getQueryParams());
         // Get parameters
         $facet = $this->getQueryParam('facet', '');
         $contains = $this->getQueryParam('contains', '');

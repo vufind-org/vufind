@@ -212,7 +212,7 @@ class StorageRetrievalRequestAction extends AbstractRecordAction implements Tran
                         'html' => true,
                         'msg' => 'storage_retrieval_request_place_success_html',
                         'tokens' => [
-                            '%%url%%' => $this->routeHelper->getUrlFromRoute('myresearch-storageretrievalrequests'),
+                            '%%url%%' => $this->routeHelper->getUrlFromRoute('storageretrievalrequests-list'),
                         ],
                     ];
                     $flashMessagesHelper->addSuccessMessage($msg);
