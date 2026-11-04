@@ -111,7 +111,6 @@ class FixDatabaseAction extends AbstractUpgradeAction
         array $config,
         CookieManager $cookieManager,
         SessionManager $sessionManager,
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         EntityManager $entityManager,
         protected MigrationManager $migrationManager,
         #[Autowire(container: DbServicePluginManager::class)]

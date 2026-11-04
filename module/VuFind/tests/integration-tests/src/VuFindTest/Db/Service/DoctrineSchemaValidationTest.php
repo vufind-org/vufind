@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Db\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaValidator;
 
 use function get_class;
@@ -81,7 +82,7 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
     public function testSchemaValidation(): void
     {
         $container = $this->getLiveDatabaseContainer();
-        $entityManager = $container->get('doctrine.entitymanager.orm_vufind');
+        $entityManager = $container->get(EntityManagerInterface::class);
         // Flush the Doctrine cache to be sure we're validating the latest data:
         if ($cache = $entityManager->getCache()) {
             $cache->evictCollectionRegions();

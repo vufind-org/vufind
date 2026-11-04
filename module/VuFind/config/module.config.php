@@ -211,9 +211,11 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            // For legacy compatibility with Doctrine Laminas module
             'doctrine.connection.orm_vufind' => 'VuFind\Db\Connection',
             'doctrine.entitymanager.orm_vufind' => 'Doctrine\ORM\EntityManager',
 
+            'Doctrine\ORM\EntityManagerInterface' => 'Doctrine\ORM\EntityManager',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',

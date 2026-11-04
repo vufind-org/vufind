@@ -63,7 +63,6 @@ class ConsoleRunner
     public function __construct(
         #[Autowire(service: \VuFindConsole\Command\PluginManager::class)]
         protected ContainerInterface $pluginManager,
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         protected EntityManagerInterface $entityManager,
     ) {
     }

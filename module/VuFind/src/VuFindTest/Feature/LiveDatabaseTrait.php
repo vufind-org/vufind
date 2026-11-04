@@ -96,12 +96,8 @@ trait LiveDatabaseTrait
     protected function addDoctrineDependenciesToContainer($container): void
     {
         $container->setAlias(
-            'doctrine.entitymanager.orm_vufind',
+            \Doctrine\ORM\EntityManagerInterface::class,
             \Doctrine\ORM\EntityManager::class
-        );
-        $container->setAlias(
-            'doctrine.connection.orm_vufind',
-            \VuFind\Db\Connection::class
         );
         $connectionFactory = new \VuFind\Db\ConnectionFactory();
         $container->set(
