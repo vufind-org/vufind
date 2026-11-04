@@ -68,7 +68,7 @@ class EmailAddressValidator
     {
         if (null === $this->validator) {
             $this->validator = new EmailValidator();
-            $this->validationHandler = new NoRFCWarningsValidation();
+            $this->validationHandler ??= new NoRFCWarningsValidation();
         }
         return $this->validator->isValid($email, $this->validationHandler);
     }
