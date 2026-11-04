@@ -81,7 +81,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Create a mock SQL response
         $mockResult = $this->createMock(PDOStatement::class);
-        $mockResult->method('fetch')->willReturnCallback(function () use ($location) {
+        $mockResult->method('fetch')->willReturnCallback(function () use ($location): mixed {
             static $called = false;
             if ($called) {
                 return null;
@@ -127,7 +127,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Create a mock SQL response
         $mockResult = $this->createMock(PDOStatement::class);
-        $mockResult->method('fetch')->willReturnCallback(function () use ($name) {
+        $mockResult->method('fetch')->willReturnCallback(function () use ($name): mixed {
             static $called = false;
             if ($called) {
                 return null;

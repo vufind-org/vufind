@@ -160,7 +160,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
                 return $this->getHelper(ForwardHelper::class)->forwardTo(
                     $request->withParsedBody($postParams),
                     $response,
-                    'MyResearch/EditList'
+                    'Lists/Edit'
                 );
             }
             // Process submission if necessary:

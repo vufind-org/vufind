@@ -407,7 +407,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         if ($this->defaultSessionInitiatorTarget === null) {
             $serverHelper = $this->viewRenderer->plugin('serverurl');
             $urlHelper = $this->viewRenderer->plugin('url');
-            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('account-home'));
         }
         return $this->defaultSessionInitiatorTarget;
     }
@@ -905,10 +905,9 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
                     $this->userSession->setPreAuthenticationData(null);
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
-                } else {
-                    // After successful token verification, clear list to shrink session:
-                    $this->csrf->trimTokenList(0);
                 }
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->trimTokenList(0);
             }
 
             // Perform authentication:
