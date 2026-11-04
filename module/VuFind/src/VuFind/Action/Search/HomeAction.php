@@ -55,10 +55,6 @@ class HomeAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $myData = $this->myDataService->createEntity();
-        $myData->setType('test');
-        $myData->setData(['some data']);
-        $this->myDataService->persistEntity($myData);
         return $this->renderHomePage();
     }
 }

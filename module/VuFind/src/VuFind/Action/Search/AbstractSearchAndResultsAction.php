@@ -46,7 +46,6 @@ use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
 use VuFind\ContentBlock\BlockLoader;
 use VuFind\Db\Entity\SearchEntityInterface;
-use VuFind\Db\Service\SessionDataServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\ConfigException;
@@ -160,8 +159,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected ThemeInfo $themeInfo,
         protected SearchHistory $searchHistory,
         protected SearchOptionsPluginManager $searchOptionsPluginManager,
-        #[Autowire(container: DbServicePluginManager::class)]
-        protected SessionDataServiceInterface $myDataService,
     ) {
         parent::__construct();
     }
