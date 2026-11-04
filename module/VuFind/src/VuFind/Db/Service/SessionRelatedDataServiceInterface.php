@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service for my_data.
+ * Base interface for VuFind session related database services.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Db\Service;
 
-use VuFind\Db\Entity\MyDataEntityInterface;
-
 /**
- * Database service for my_data.
+ * Base interface for VuFind session related database services.
  *
  * @category VuFind
  * @package  Database
@@ -40,53 +38,23 @@ use VuFind\Db\Entity\MyDataEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class MyDataService extends AbstractSessionDataService implements MyDataServiceInterface
+interface SessionRelatedDataServiceInterface extends DBServiceInterface
 {
     /**
-     * Get class name of entity managed by the service.
+     * Destroy data for a given session.
      *
-     * @return string
-     */
-    protected function getEntityClass(): string
-    {
-        return MyDataEntityInterface::class;
-    }
-
-    /**
-     * Create an entity.
-     *
-     * @return MyDataEntityInterface
-     */
-    public function createEntity(): MyDataEntityInterface
-    {
-        return $this->entityPluginManager->get(MyDataEntityInterface::class);
-    }
-
-    /**
-     * Get an entity by ID.
-     *
-     * @param int $id ID
-     *
-     * @return ?MyDataEntityInterface
-     */
-    public function getById(int $id): ?MyDataEntityInterface
-    {
-        return $this->entityManager->find(MyDataEntityInterface::class, $id);
-    }
-
-    /**
-     * Delete an entity by ID.
-     *
-     * @param int $id ID
+     * @param string $sessionId Session ID.
      *
      * @return void
      */
-    public function deleteById(int $id): void
-    {
-        $dql = 'DELETE FROM ' . MyDataEntityInterface::class . ' e'
-            . ' WHERE e.id = :id';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameter('id', $id);
-        $query->execute();
-    }
+    public function destroySession(string $sessionId): void;
+
+    /**
+     * Delete rows without existing session. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param ?int $limit Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null, array &$orphanSessionsCache = []): int;
 }

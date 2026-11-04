@@ -34,7 +34,6 @@ namespace VuFind\Session;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
-use VuFind\Db\Service\SessionServiceInterface;
 
 /**
  * Base class for session handling.

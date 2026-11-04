@@ -208,6 +208,8 @@ abstract class AbstractExpireCommand extends Command
      * @param OutputInterface $output Output object
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function postProcess(InputInterface $input, OutputInterface $output): void
     {

@@ -29,7 +29,7 @@
 
 namespace VuFind\Session;
 
-use VuFind\Db\Service\MyDataServiceInterface;
+use VuFind\Db\Service\SessionDataServiceInterface;
 
 /**
  * Trait for handling session related databases.
@@ -49,6 +49,6 @@ trait SessionDatabaseTrait
      */
     public function getSessionDatabaseServices()
     {
-        return ['my_data' => MyDataServiceInterface::class];
+        return ['session_data' => SessionDataServiceInterface::class];
     }
 }

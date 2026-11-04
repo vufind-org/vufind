@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base interface for VuFind session related database services.
+ * Database service interface for session_data.
  *
  * PHP version 8
  *
@@ -29,32 +29,32 @@
 
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\SessionDataEntityInterface;
+
 /**
- * Base interface for VuFind session related database services.
+ * Database service interface for session_data.
  *
  * @category VuFind
  * @package  Database
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways interface
  */
-interface SessionDataServiceInterface extends DBServiceInterface
+interface SessionDataServiceInterface extends SessionRelatedDataServiceInterface
 {
     /**
-     * Destroy data for a given session.
+     * Create an entity.
      *
-     * @param string $sessionId Session ID.
-     *
-     * @return void
+     * @return SessionDataEntityInterface
      */
-    public function destroySession(string $sessionId): void;
+    public function createEntity(): SessionDataEntityInterface;
 
     /**
-     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     * Get by type and current session.
      *
-     * @param ?int $limit Maximum number of rows to delete or null for no limit.
+     * @param string $type Type
      *
-     * @return int Number of rows deleted
+     * @return ?SessionDataEntityInterface
      */
-    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null, array &$orphanSessionsCache = []): int;
+    public function getByType(string $type): ?SessionDataEntityInterface;
 }

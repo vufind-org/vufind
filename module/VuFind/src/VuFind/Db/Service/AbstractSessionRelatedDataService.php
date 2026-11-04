@@ -33,7 +33,6 @@ use Doctrine\ORM\EntityManager;
 use Laminas\Session\SessionManager;
 use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Entity\SessionEntityInterface;
 use VuFind\Db\PersistenceManager;
 use VuFind\Session\HandlerInterface;
 
@@ -46,7 +45,7 @@ use VuFind\Session\HandlerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-abstract class AbstractSessionDataService extends AbstractDbService implements SessionDataServiceInterface
+abstract class AbstractSessionRelatedDataService extends AbstractDbService implements SessionRelatedDataServiceInterface
 {
     /**
      * Get class name of entity managed by the service.

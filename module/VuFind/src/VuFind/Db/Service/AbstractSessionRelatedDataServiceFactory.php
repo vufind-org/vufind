@@ -36,6 +36,7 @@ use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\PersistenceManager;
+use VuFind\Session\SessionHandlerTrait;
 
 /**
  * Factory for session related services.
@@ -46,8 +47,10 @@ use VuFind\Db\PersistenceManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AbstractSessionDataServiceFactory implements FactoryInterface
+class AbstractSessionRelatedDataServiceFactory implements FactoryInterface
 {
+    use SessionHandlerTrait;
+
     /**
      * Create an object.
      *
@@ -75,25 +78,5 @@ class AbstractSessionDataServiceFactory implements FactoryInterface
             $this->getHandler($container),
             ...($options ?? [])
         );
-    }
-
-    /**
-     * Set up the session handler by retrieving all the pieces from the service
-     * manager and injecting appropriate dependencies.
-     *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return array
-     */
-    protected function getHandler(ContainerInterface $container)
-    {
-        // Load and validate session configuration:
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        if (!isset($config['Session']['type'])) {
-            throw new \Exception('Cannot initialize session; configuration missing');
-        }
-
-        return $container->get(\VuFind\Session\PluginManager::class)
-            ->get($config['Session']['type']);
     }
 }

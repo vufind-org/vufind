@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service interface for my_data.
+ * Entity model interface for session_data table.
  *
  * PHP version 8
  *
@@ -27,43 +27,71 @@
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service;
-
-use VuFind\Db\Entity\MyDataEntityInterface;
+namespace VuFind\Db\Entity;
 
 /**
- * Database service interface for my_data.
+ * Entity model interface for session_data table.
  *
  * @category VuFind
  * @package  Database
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways interface
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface MyDataServiceInterface extends SessionDataServiceInterface
+interface SessionDataEntityInterface extends EntityInterface
 {
     /**
-     * Create an entity.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return MyDataEntityInterface
+     * @return ?int
      */
-    public function createEntity(): MyDataEntityInterface;
+    public function getId(): ?int;
 
     /**
-     * Get an entity by ID.
+     * Get session identifier.
      *
-     * @param int $id ID
-     *
-     * @return ?MyDataEntityInterface
+     * @return string
      */
-    public function getById(int $id): ?MyDataEntityInterface;
+    public function getSessionId(): string;
 
     /**
-     * Delete an entity by ID.
+     * Set session identifier.
      *
-     * @param int $id ID
+     * @param string $sessionId Session id
      *
-     * @return void
+     * @return static
      */
-    public function deleteById(int $id): void;
+    public function setSessionId(string $sessionId): static;
+
+    /**
+     * Get type.
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set type.
+     *
+     * @param string $type Type
+     *
+     * @return static
+     */
+    public function setType(string $type): static;
+
+    /**
+     * Data setter.
+     *
+     * @param array $data Data.
+     *
+     * @return static
+     */
+    public function setData(array $data): static;
+
+    /**
+     * Get data.
+     *
+     * @return array
+     */
+    public function getData(): array;
 }

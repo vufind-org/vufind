@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for my_data table.
+ * Entity model for session_data table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Entity model for my_data table.
+ * Entity model for session_data table.
  *
  * @category VuFind
  * @package  Database
@@ -40,10 +40,11 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-#[ORM\Table(name: 'my_data')]
+#[ORM\Table(name: 'session_data')]
 #[ORM\Index(name: 'session_id_idx', columns: ['session_id'])]
+#[ORM\Index(name: 'session_data_session_id_type_index', columns: ['session_id', 'type'])]
 #[ORM\Entity]
-class MyData implements MyDataEntityInterface
+class SessionData implements SessionDataEntityInterface
 {
     /**
      * Unique ID.
@@ -58,18 +59,26 @@ class MyData implements MyDataEntityInterface
     /**
      * Session ID.
      *
-     * @var ?string
+     * @var string
      */
-    #[ORM\Column(name: 'session_id', type: 'string', length: 128, nullable: true)]
-    protected ?string $sessionId = null;
+    #[ORM\Column(name: 'session_id', type: 'string', length: 128, nullable: false)]
+    protected string $sessionId;
+
+    /**
+     * Type.
+     *
+     * @var string
+     */
+    #[ORM\Column(name: 'type', type: 'string', length: 50, nullable: false)]
+    protected string $type;
 
     /**
      * Data.
      *
-     * @var ?string
+     * @var array
      */
-    #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
-    protected ?string $data = null;
+    #[ORM\Column(name: 'data', type: 'json', nullable: false)]
+    protected array $data = [];
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -84,9 +93,9 @@ class MyData implements MyDataEntityInterface
     /**
      * Get session identifier.
      *
-     * @return ?string
+     * @return string
      */
-    public function getSessionId(): ?string
+    public function getSessionId(): string
     {
         return $this->sessionId;
     }
@@ -94,24 +103,47 @@ class MyData implements MyDataEntityInterface
     /**
      * Set session identifier.
      *
-     * @param ?string $sessionId Session id
+     * @param string $sessionId Session id
      *
      * @return static
      */
-    public function setSessionId(?string $sessionId): static
+    public function setSessionId(string $sessionId): static
     {
         $this->sessionId = $sessionId;
         return $this;
     }
 
     /**
-     * Data setter.
+     * Get type.
      *
-     * @param ?string $data Data.
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set type.
+     *
+     * @param string $type Type
      *
      * @return static
      */
-    public function setData(?string $data): static
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Data setter.
+     *
+     * @param array $data Data.
+     *
+     * @return static
+     */
+    public function setData(array $data): static
     {
         $this->data = $data;
         return $this;
@@ -120,9 +152,9 @@ class MyData implements MyDataEntityInterface
     /**
      * Get data.
      *
-     * @return ?string
+     * @return array
      */
-    public function getData(): ?string
+    public function getData(): array
     {
         return $this->data;
     }
