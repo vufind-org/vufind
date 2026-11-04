@@ -35,6 +35,7 @@ use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 use Laminas\Cache\Storage\Adapter\BlackHole;
+use Laminas\Cache\Storage\Adapter\Filesystem;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\PostEvent;
 use Laminas\Cache\Storage\StorageInterface;
@@ -96,10 +97,14 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
 
             // Cache item pool decorator requires static TTL support that file system cache does not provide. Doctrine
             // doesn't need it, so fake the support:
-            $eventManager = $this->cacheStorage->getEventManager();
-            $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
-            $cache = new CacheItemPoolDecorator($this->cacheStorage);
-            $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
+            if ($this->cacheStorage instanceof Filesystem) {
+                $eventManager = $this->cacheStorage->getEventManager();
+                $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
+                $cache = new CacheItemPoolDecorator($this->cacheStorage);
+                $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
+            } else {
+                $cache = new CacheItemPoolDecorator($this->cacheStorage);
+            }
         }
 
         $isDevMode = APPLICATION_ENV == 'development';
