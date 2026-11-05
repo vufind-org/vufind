@@ -83,7 +83,6 @@ class FixAnonymousTagsAction extends AbstractUpgradeAction
         array $config,
         CookieManager $cookieManager,
         SessionManager $sessionManager,
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         EntityManager $entityManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService,
