@@ -40,7 +40,7 @@ use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
-use WebSocket\ConnectionException;
+use WebSocket\Exception\ConnectionLevelInterface as ConnectionException;
 
 use function call_user_func;
 use function count;
