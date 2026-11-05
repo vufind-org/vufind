@@ -101,7 +101,7 @@ class Generator
     public function __construct(
         protected ThemeInfo $themeTools,
         protected LayerManager $layerManager,
-        array $settingsArr = []
+        array $settings = []
     ) {
         $this->setOptions($settingsArr);
     }
