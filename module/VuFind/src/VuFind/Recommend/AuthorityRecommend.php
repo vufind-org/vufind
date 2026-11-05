@@ -158,7 +158,7 @@ class AuthorityRecommend implements RecommendInterface
     public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Save user search query:
-        $this->lookfor = $request['lookfor'];
+        $this->lookfor = $request['lookfor'] ?? '';
     }
 
     /**
