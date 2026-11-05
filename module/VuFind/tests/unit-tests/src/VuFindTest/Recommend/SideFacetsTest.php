@@ -375,7 +375,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? []
+            $request
         );
         $sf->process($results);
         return $sf;
