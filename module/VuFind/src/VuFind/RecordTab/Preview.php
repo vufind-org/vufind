@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Embedded Preview tab.
  *
@@ -40,21 +42,16 @@ namespace VuFind\RecordTab;
  */
 class Preview extends AbstractBase
 {
-    /**
-     * Is this tab active?
-     *
-     * @var bool
-     */
-    protected $active = false;
 
     /**
      * Constructor.
      *
      * @param bool $active Is this tab active?
      */
-    public function __construct($active)
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected $active = false)
     {
-        $this->active = $active;
     }
 
     /**
