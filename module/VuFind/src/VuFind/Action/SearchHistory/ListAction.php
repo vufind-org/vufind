@@ -33,13 +33,8 @@ namespace VuFind\Action\SearchHistory;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
-use VuFind\Search\History;
-use VuFind\Search\Memory;
-use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Search history list action.
@@ -51,24 +46,8 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ListAction extends AbstractTemplateRenderingAction
+class ListAction extends AbstractSearchHistoryAction
 {
-    /**
-     * Constructor.
-     *
-     * @param AuthManager $authManager Authentication manager
-     * @param History     $history     Search history
-     * @param Memory      $memory      Search memory
-     */
-    #[Autowire]
-    public function __construct(
-        protected AuthManager $authManager,
-        protected History $history,
-        protected Memory $memory,
-    ) {
-        parent::__construct();
-    }
-
     /**
      * Handle search history display and purge.
      *
@@ -92,15 +71,15 @@ class ListAction extends AbstractTemplateRenderingAction
         $userId = $user?->getId();
 
         if ($this->getQueryParam('purge')) {
-            $this->history->purgeSearchHistory($userId);
+            $this->searchHistory->purgeSearchHistory($userId);
 
             // We don't want to remember the last search after a purge:
-            $this->memory->forgetSearch();
+            $this->searchMemory->forgetSearch();
         }
-        $templateParams = $this->history->getSearchHistory($userId);
+        $templateParams = $this->searchHistory->getSearchHistory($userId);
         // Eliminate schedule settings if scheduled searches are disabled; add user email data if scheduled searches are
         // enabled.
-        $scheduleOptions = $this->history->getScheduleOptions();
+        $scheduleOptions = $this->searchHistory->getScheduleOptions();
         if (!$scheduleOptions) {
             unset($templateParams['schedule']);
         } else {

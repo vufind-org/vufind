@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Config;
 
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
@@ -692,6 +694,37 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 "Missing $service warning"
             );
         }
+    }
+
+    /**
+     * Data provider for testObsoleteCaptchaSettingWarning().
+     *
+     * @return Generator<string, array<string>>
+     */
+    public static function obsoleteCaptchaSettingProvider(): Generator
+    {
+        yield 'image_fontSize' => ['captcha-fontsize'];
+        yield 'image_dotNoiseLevel' => ['captcha-dotnoiselevel'];
+        yield 'image_lineNoiseLevel' => ['captcha-linenoiselevel'];
+    }
+
+    /**
+     * Test that deprecated image CAPTCHA settings trigger a warning.
+     *
+     * @param string $fixture Fixture to load for test
+     *
+     * @return void
+     */
+    #[DataProvider('obsoleteCaptchaSettingProvider')]
+    public function testObsoleteCaptchaSettingWarning(string $fixture): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $this->assertContainsWarnings(
+            $upgrader,
+            'The image captcha settings in the [Captcha] section of config.ini have changed. Please review and'
+            . ' adjust as required.',
+            'Missing image CAPTCHA warning for fixture: ' . $fixture
+        );
     }
 
     /**

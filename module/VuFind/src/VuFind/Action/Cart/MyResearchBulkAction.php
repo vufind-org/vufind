@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart MyResearch bulk action.
+ * Cart Account bulk action.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\ForwardHelper;
 
 /**
- * Cart MyResearch bulk action.
+ * Cart Account bulk action.
  *
  * @category VuFind
  * @package  Action
@@ -49,7 +49,7 @@ use VuFind\ActionHelper\ForwardHelper;
 class MyResearchBulkAction extends AbstractCartAction
 {
     /**
-     * Process a MyResearch bulk action.
+     * Process an Account bulk action.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -60,31 +60,31 @@ class MyResearchBulkAction extends AbstractCartAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // We came in from the MyResearch section -- let's remember which list (if any) we came from so we can redirect
+        // We came in from the Account section -- let's remember which list (if any) we came from so we can redirect
         // there when we're done:
         $listID = $this->getPostParam('listID');
         $routeHelper = $this->getRouteHelper();
         $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = empty($listID)
-            ? $routeHelper->getUrlFromRoute('myresearch-favorites')
+            ? $routeHelper->getUrlFromRoute('lists-allitems')
             : $routeHelper->getUrlFromRoute('userList', ['id' => $listID]);
 
         // Now forward to the requested controller/action:
         $action = null;
         if ('' !== $this->getPostParam('email', '')) {
-            $action = 'Cart/Email';
+            $action = 'cart/email';
         } elseif ('' !== $this->getPostParam('print', '')) {
-            $action = 'Cart/PrintCart';
+            $action = 'cart/printcart';
         } elseif ('' !== $this->getPostParam('delete', '')) {
-            $action = 'MyResearch/Delete';
+            $action = 'lists/deleteitems';
         } elseif ('' !== $this->getPostParam('add', '')) {
-            $action = 'Cart/Home';
+            $action = 'cart/home';
         } elseif ('' !== $this->getPostParam('export', '')) {
-            $action = 'Cart/Export';
+            $action = 'cart/export';
         } else {
             if (!($action = $this->followupHelper->retrieveAndClear('cartAction', null))) {
                 throw new \Exception('Unrecognized bulk action.');
             }
-            $action = "Cart/$action";
+            $action = "cart/$action";
         }
         return $this->getHelper(ForwardHelper::class)->forwardTo($request, $response, $action);
     }
