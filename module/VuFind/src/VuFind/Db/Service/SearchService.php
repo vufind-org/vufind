@@ -48,7 +48,7 @@ class SearchService extends AbstractSessionRelatedDataService implements
     Feature\DeleteExpiredInterface
 {
     /**
-     * Additional conditions when deleting sessions
+     * Additional conditions when deleting sessions.
      *
      * @var string
      */

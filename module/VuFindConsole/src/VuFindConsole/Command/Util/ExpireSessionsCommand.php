@@ -85,14 +85,14 @@ class ExpireSessionsCommand extends AbstractExpireCommand
      * Constructor.
      *
      * @param DeleteExpiredInterface $service        Service on which to expire rows
-     * @param ServiceManager         $serviceManager Service manager
      * @param ?string                $name           The name of the command; passing null means it
      *                                               must be set in configure()
+     * @param ServiceManager         $serviceManager Service manager
      */
     public function __construct(
         DeleteExpiredInterface $service,
+        ?string $name,
         protected ServiceManager $serviceManager,
-        ?string $name = null
     ) {
         parent::__construct($service, $name);
     }
@@ -109,10 +109,9 @@ class ExpireSessionsCommand extends AbstractExpireCommand
     {
         $batchSize = $input->getOption('batch');
         $sleepTime = $input->getOption('sleep');
-        $orphanSessionsCache = [];
         foreach ($this->getSessionDatabaseServices() as $serviceName => $serviceClass) {
             $service = $this->serviceManager->get($serviceClass);
-            $total = $service->deleteRowsWithoutSession($sleepTime, $batchSize, $orphanSessionsCache);
+            $total = $service->deleteRowsWithoutSession($sleepTime, $batchSize);
             $output->writeln(
                 $this->getTimestampedMessage("Total $total {$serviceName} deleted.")
             );

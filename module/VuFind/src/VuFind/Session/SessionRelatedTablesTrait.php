@@ -29,8 +29,6 @@
 
 namespace VuFind\Session;
 
-use VuFind\Db\Entity\AuditEvent;
-use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\SessionDataServiceInterface;
@@ -54,11 +52,9 @@ trait SessionRelatedTablesTrait
     public function getSessionDatabaseServices()
     {
         return [
-            'audit_event' => AuditEvent::class,
-            'auth_hash' => AuthHashServiceInterface::class,
             'external_session' => ExternalSessionServiceInterface::class,
             'search' => SearchServiceInterface::class,
-            'session_data' => SessionDataServiceInterface::class
+            'session_data' => SessionDataServiceInterface::class,
         ];
     }
 }

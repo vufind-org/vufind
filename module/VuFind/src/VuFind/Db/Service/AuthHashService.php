@@ -41,20 +41,10 @@ use VuFind\Db\Entity\AuthHashEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AuthHashService extends AbstractSessionRelatedDataService implements
+class AuthHashService extends AbstractDbService implements
     AuthHashServiceInterface,
     Feature\DeleteExpiredInterface
 {
-    /**
-     * Get class name of entity managed by the service.
-     *
-     * @return string
-     */
-    protected function getEntityClass(): string
-    {
-        return AuthHashEntityInterface::class;
-    }
-
     /**
      * Create an auth_hash entity object.
      *

@@ -46,7 +46,7 @@ use VuFind\Net\UserIpReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AuditEventServiceFactory extends AbstractSessionRelatedDataServiceFactory
+class AuditEventServiceFactory extends AbstractDbServiceFactory
 {
     use ExplodeSettingTrait;
 

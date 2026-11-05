@@ -36,6 +36,8 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\PersistenceManager;
 use VuFind\Session\HandlerInterface;
 
+use function array_key_exists;
+
 /**
  * Abstract database service for session related data.
  *
@@ -48,7 +50,7 @@ use VuFind\Session\HandlerInterface;
 abstract class AbstractSessionRelatedDataService extends AbstractDbService implements SessionRelatedDataServiceInterface
 {
     /**
-     * Additional conditions when deleting sessions
+     * Additional conditions when deleting sessions.
      *
      * @var string
      */
@@ -105,7 +107,8 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     public function destroySession(string $sessionId): void
     {
         $parameters = ['sessionId' => $sessionId];
-        $dql = 'DELETE FROM ' . $this->getEntityClass() . ' e WHERE e.sessionId = :sessionId' . $this->additionalDeleteConditions;
+        $dql = 'DELETE FROM ' . $this->getEntityClass() . ' e WHERE e.sessionId = :sessionId'
+            . $this->additionalDeleteConditions;
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->execute();
@@ -114,11 +117,12 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     /**
      * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
-     * @param ?int $limit Maximum number of rows to delete or null for no limit.
+     * @param int  $sleepTime Sleep time between deletion of batches.
+     * @param ?int $limit     Maximum number of rows to delete or null for no limit.
      *
      * @return int Number of rows deleted
      */
-    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null, array &$orphanSessionsCache = []): int
+    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null): int
     {
         $dql = 'SELECT DISTINCT e.sessionId '
             . 'FROM ' . $this->getEntityClass() . ' e';
@@ -127,8 +131,10 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
 
         $sessionIds = array_map(fn ($row) => $row['sessionId'], $sessionIdsQuery->getResult());
 
+        $orphanSessionsCache = [];
+
         foreach ($sessionIds as $sessionId) {
-            if (!key_exists($sessionId, $orphanSessionsCache)) {
+            if (!array_key_exists($sessionId, $orphanSessionsCache)) {
                 $orphanSessionsCache[$sessionId] = empty($this->sessionHandler->read($sessionId));
             }
         }

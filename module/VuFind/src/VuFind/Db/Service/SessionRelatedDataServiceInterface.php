@@ -38,7 +38,7 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface SessionRelatedDataServiceInterface extends DBServiceInterface
+interface SessionRelatedDataServiceInterface extends DbServiceInterface
 {
     /**
      * Destroy data for a given session.
@@ -50,11 +50,12 @@ interface SessionRelatedDataServiceInterface extends DBServiceInterface
     public function destroySession(string $sessionId): void;
 
     /**
-     * Delete rows without existing session. Allows setting a limit so that rows can be deleted in small batches.
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
-     * @param ?int $limit Maximum number of rows to delete or null for no limit.
+     * @param int  $sleepTime Sleep time between deletion of batches.
+     * @param ?int $limit     Maximum number of rows to delete or null for no limit.
      *
      * @return int Number of rows deleted
      */
-    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null, array &$orphanSessionsCache = []): int;
+    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null): int;
 }
