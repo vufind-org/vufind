@@ -299,15 +299,13 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the authorization service (note that we're doing this on-demand
-     * rather than through injection with the AuthorizationServiceAwareInterface
-     * to minimize expensive initialization when authorization is not needed.
+     * Get the authorization service.
      *
-     * @return \Lmc\Rbac\Mvc\Service\AuthorizationService
+     * @return \VuFind\Service\AuthorizationServiceInterface
      */
     protected function getAuthorizationService()
     {
-        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        return $this->getService(\VuFind\Service\AuthorizationService::class);
     }
 
     /**

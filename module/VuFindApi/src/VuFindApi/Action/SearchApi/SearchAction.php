@@ -31,7 +31,6 @@
 namespace VuFindApi\Action\SearchApi;
 
 use Exception;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\ConfigManager;
@@ -45,6 +44,7 @@ use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchRunner;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Results as SolrResults;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Exception\ApiException;
 use VuFindApi\Formatter\FacetFormatter;
@@ -76,7 +76,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
     /**
      * Constructor.
      *
-     * @param AuthorizationService          $authorizationService       Authorization service
+     * @param AuthorizationServiceInterface $authorizationService       Authorization service
      * @param DeveloperSettingsService      $developerSettingsService   Developer settings service
      * @param array                         $config                     VuFind configuration
      * @param RecordFormatter               $recordFormatter            Record formatter
@@ -89,7 +89,7 @@ class SearchAction extends AbstractApiSearchAndRecordAction
      * @param HierarchicalFacetHelper       $hierarchicalFacetHelper    Hierarchical facet helper
      */
     public function __construct(
-        AuthorizationService $authorizationService,
+        AuthorizationServiceInterface $authorizationService,
         DeveloperSettingsService $developerSettingsService,
         #[Autowire(config: 'config')]
         array $config,

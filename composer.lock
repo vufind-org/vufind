@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4c3bef21c7230cf11530f785dd9c82b",
+    "content-hash": "328dddf0a32052b33ebb223316ff0cd6",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5754,88 +5754,6 @@
                 "source": "https://github.com/LM-Commons/LmcRbac/tree/2.3.0"
             },
             "time": "2025-12-10T21:48:51+00:00"
-        },
-        {
-            "name": "lm-commons/lmc-rbac-mvc",
-            "version": "4.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LM-Commons/LmcRbacMvc.git",
-                "reference": "6118182191536a6ff3d0ac2d02ca4e7429ef546a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/6118182191536a6ff3d0ac2d02ca4e7429ef546a",
-                "reference": "6118182191536a6ff3d0ac2d02ca4e7429ef546a",
-                "shasum": ""
-            },
-            "require": {
-                "laminas/laminas-eventmanager": "^3.0",
-                "laminas/laminas-mvc": "^3.2",
-                "laminas/laminas-servicemanager": "^3.15",
-                "lm-commons/lmc-rbac": "^2.1",
-                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
-            },
-            "require-dev": {
-                "laminas/laminas-authentication": "^2.2",
-                "laminas/laminas-coding-standard": "^3.0",
-                "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "^11.5.44",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^6.13.1"
-            },
-            "suggest": {
-                "lm-commons/lmc-rbac-mvc-devtools": "if you want to collect and show information about roles and guards in Laminas Developer Tools"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "module": "Lmc\\Rbac\\Mvc",
-                    "config-provider": "Lmc\\Rbac\\Mvc\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Lmc\\Rbac\\Mvc\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kyle Spraggs",
-                    "email": "theman@spiffyjr.me",
-                    "homepage": "http://www.spiffyjr.me/"
-                },
-                {
-                    "name": "Michaël Gallego",
-                    "email": "mic.gallego@gmail.com",
-                    "homepage": "http://www.michaelgallego.fr"
-                },
-                {
-                    "name": "Jean-Marie Leroux",
-                    "email": "jmleroux.pro@gmail.com"
-                },
-                {
-                    "name": "Eric Richer",
-                    "email": "eric.richer@vistoconsulting.com"
-                }
-            ],
-            "description": "Laminas Framework MVC Module that provides a layer of features of Laminas\\Permissions\\Rbac",
-            "homepage": "https://www.github.com/Lm-Commons/LmcRbacMvc",
-            "keywords": [
-                "laminas",
-                "module",
-                "permissions",
-                "rbac"
-            ],
-            "support": {
-                "issues": "https://github.com/LM-Commons/LmcRbacMvc/issues",
-                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/4.2.0"
-            },
-            "time": "2025-11-25T00:00:42+00:00"
         },
         {
             "name": "matthiasmullie/minify",
@@ -15905,15 +15823,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
