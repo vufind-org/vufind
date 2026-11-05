@@ -119,7 +119,11 @@ class MapSelection implements
      * @param array   $basemapOptions      Basemap Options
      * @param array   $mapSelectionOptions Map Options
      */
-    public function __construct(protected $searchService, protected $basemapOptions, $mapSelectionOptions)
+    public function __construct(
+        protected Service $searchService,
+        protected array $basemapOptions,
+        array $mapSelectionOptions
+    )
     {
         $this->defaultCoordinates = explode(
             ',',
