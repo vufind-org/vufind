@@ -95,7 +95,7 @@ class Generator
      *
      * @param ThemeInfo    $themeTools   For font loading
      * @param LayerManager $layerManager Layer manager
-     * @param array        $settingsArr  Overwrite styles
+     * @param array        $settings     Overwrite styles
      */
     #[Autowire]
     public function __construct(
