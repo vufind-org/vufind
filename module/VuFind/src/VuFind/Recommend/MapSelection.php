@@ -123,8 +123,7 @@ class MapSelection implements
         protected Service $searchService,
         protected array $basemapOptions,
         array $mapSelectionOptions
-    )
-    {
+    ) {
         $this->defaultCoordinates = explode(
             ',',
             $mapSelectionOptions['default_coordinates']
