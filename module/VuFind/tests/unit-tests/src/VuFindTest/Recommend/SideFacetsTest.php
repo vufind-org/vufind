@@ -366,7 +366,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         ?\VuFind\Config\ConfigManagerInterface $configManager = null,
         ?Results $results = null,
         string $settings = '',
-        ?array $request = null
+        array $request = []
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
