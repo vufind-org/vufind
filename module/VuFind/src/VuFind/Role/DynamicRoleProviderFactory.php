@@ -70,7 +70,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Get a configuration array.
      *
      * @param ContainerInterface $container  Service container
-     * @param array              $rbacConfig Lmc\Rbac\Mvc configuration
+     * @param array              $rbacConfig Authorization configuration
      *
      * @return array
      */
@@ -78,7 +78,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         ContainerInterface $container,
         array $rbacConfig
     ): array {
-        // Get role provider settings from the Lmc\Rbac\Mvc configuration:
+        // Get role provider settings from the authorization configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
