@@ -48,6 +48,13 @@ use VuFind\Session\HandlerInterface;
 abstract class AbstractSessionRelatedDataService extends AbstractDbService implements SessionRelatedDataServiceInterface
 {
     /**
+     * Additional conditions when deleting sessions
+     *
+     * @var string
+     */
+    protected string $additionalDeleteConditions = '';
+
+    /**
      * Get class name of entity managed by the service.
      *
      * @return string
@@ -60,6 +67,8 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager Database entity plugin manager
      * @param PersistenceManager  $persistenceManager  Entity persistence manager
+     * @param SessionManager      $sessionManager      Session manager
+     * @param HandlerInterface    $sessionHandler      Session handler
      */
     public function __construct(
         EntityManager $entityManager,
@@ -80,7 +89,9 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
      */
     public function persistEntity(EntityInterface $entity): void
     {
-        $entity->setSessionId($this->sessionManager->getId());
+        if (!$entity->getSessionId()) {
+            $entity->setSessionId($this->sessionManager->getId());
+        }
         $this->persistenceManager->persistEntity($entity);
     }
 
@@ -94,7 +105,7 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     public function destroySession(string $sessionId): void
     {
         $parameters = ['sessionId' => $sessionId];
-        $dql = 'DELETE FROM ' . $this->getEntityClass() . ' e WHERE e.sessionId = :sessionId';
+        $dql = 'DELETE FROM ' . $this->getEntityClass() . ' e WHERE e.sessionId = :sessionId' . $this->additionalDeleteConditions;
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->execute();
@@ -130,7 +141,7 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
                 $subQueryBuilder = $this->entityManager->createQueryBuilder();
                 $subQueryBuilder->select('e.id')
                     ->from($this->getEntityClass(), 'e')
-                    ->where('e.sessionId IN (:sessionIds)')
+                    ->where('e.sessionId IN (:sessionIds)' . $this->additionalDeleteConditions)
                     ->setParameter('sessionIds', $sessionIdsChunk);
                 if ($limit) {
                     $subQueryBuilder->setMaxResults($limit);

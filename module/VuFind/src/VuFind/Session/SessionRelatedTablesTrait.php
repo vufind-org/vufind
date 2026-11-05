@@ -29,6 +29,10 @@
 
 namespace VuFind\Session;
 
+use VuFind\Db\Entity\AuditEvent;
+use VuFind\Db\Service\AuthHashServiceInterface;
+use VuFind\Db\Service\ExternalSessionServiceInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\SessionDataServiceInterface;
 
 /**
@@ -40,7 +44,7 @@ use VuFind\Db\Service\SessionDataServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-trait SessionDatabaseTrait
+trait SessionRelatedTablesTrait
 {
     /**
      * Get list of session related database services.
@@ -49,6 +53,12 @@ trait SessionDatabaseTrait
      */
     public function getSessionDatabaseServices()
     {
-        return ['session_data' => SessionDataServiceInterface::class];
+        return [
+            'audit_event' => AuditEvent::class,
+            'auth_hash' => AuthHashServiceInterface::class,
+            'external_session' => ExternalSessionServiceInterface::class,
+            'search' => SearchServiceInterface::class,
+            'session_data' => SessionDataServiceInterface::class
+        ];
     }
 }

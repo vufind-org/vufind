@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use Laminas\Session\SessionManager;
 use VuFind\Db\Entity\AuditEventEntityInterface;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
@@ -40,6 +41,7 @@ use VuFind\Db\PersistenceManager;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 
+use VuFind\Session\HandlerInterface;
 use function in_array;
 use function is_string;
 
@@ -52,16 +54,28 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AuditEventService extends AbstractDbService implements
+class AuditEventService extends AbstractSessionRelatedDataService implements
     AuditEventServiceInterface,
     Feature\DeleteExpiredInterface
 {
+    /**
+     * Get class name of entity managed by the service.
+     *
+     * @return string
+     */
+    protected function getEntityClass(): string
+    {
+        return AuditEventEntityInterface::class;
+    }
+
     /**
      * Constructor.
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager Database entity plugin manager
      * @param PersistenceManager  $persistenceManager  Entity persistence manager
+     * @param SessionManager $sessionManager Session manager
+     * @param HandlerInterface $sessionHandler Session handler
      * @param array               $enabledEventTypes   Event types enabled in configuration
      * @param ?string             $sessionId           Session ID (if applicable)
      * @param ?string             $clientIp            Client IP address (if applicable)
@@ -73,6 +87,8 @@ class AuditEventService extends AbstractDbService implements
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
         PersistenceManager $persistenceManager,
+        SessionManager $sessionManager,
+        HandlerInterface $sessionHandler,
         protected array $enabledEventTypes,
         protected ?string $sessionId,
         protected ?string $clientIp,
@@ -80,7 +96,7 @@ class AuditEventService extends AbstractDbService implements
         protected ?string $serverName,
         protected ?string $requestUri
     ) {
-        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager, $sessionManager, $sessionHandler);
     }
 
     /**

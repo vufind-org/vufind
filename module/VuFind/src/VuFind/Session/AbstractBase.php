@@ -51,7 +51,7 @@ abstract class AbstractBase implements HandlerInterface
     // manager is injected by AbstractBaseFactory explicitly for compatibility with
     // the secure delegator factory, so we don't need to auto-inject it.
     use DbServiceAwareTrait;
-    use SessionDatabaseTrait;
+    use SessionRelatedTablesTrait;
 
     /**
      * Session lifetime in seconds.

@@ -34,7 +34,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
-use VuFind\Session\SessionDatabaseTrait;
+use VuFind\Session\SessionRelatedTablesTrait;
 
 /**
  * Console command: expire sessions.
@@ -50,7 +50,7 @@ use VuFind\Session\SessionDatabaseTrait;
 )]
 class ExpireSessionsCommand extends AbstractExpireCommand
 {
-    use SessionDatabaseTrait;
+    use SessionRelatedTablesTrait;
 
     /**
      * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
