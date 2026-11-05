@@ -42,7 +42,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'session_data')]
 #[ORM\Index(name: 'session_id_idx', columns: ['session_id'])]
-#[ORM\Index(name: 'session_data_session_id_type_index', columns: ['session_id', 'type'])]
+#[ORM\UniqueConstraint(name: 'session_data_session_id_type_index', columns: ['session_id', 'type'])]
 #[ORM\Entity]
 class SessionData implements SessionDataEntityInterface
 {
