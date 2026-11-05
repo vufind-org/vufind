@@ -36,7 +36,7 @@ use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\PersistenceManager;
 use VuFind\Session\HandlerInterface;
 
-use function array_key_exists;
+use function count;
 
 /**
  * Abstract database service for session related data.

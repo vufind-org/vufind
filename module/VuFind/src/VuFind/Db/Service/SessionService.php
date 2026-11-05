@@ -229,7 +229,7 @@ class SessionService extends AbstractDbService implements
      * Check which session IDs exist.
      *
      * @param array $sessionIds Session IDs to check
-     * @param int   $lifetime Session lifetime (in seconds)
+     * @param int   $lifetime   Session lifetime (in seconds)
      *
      * @return array Existing session IDs
      */
