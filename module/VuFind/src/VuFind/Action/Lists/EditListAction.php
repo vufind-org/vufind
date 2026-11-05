@@ -45,7 +45,6 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\MissingField as MissingFieldException;
-use VuFind\Favorites\FavoritesService;
 
 /**
  * "Edit list" action.
