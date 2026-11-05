@@ -41,6 +41,7 @@ use Laminas\Cache\Storage\PostEvent;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use stdClass;
@@ -90,25 +91,9 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $paths = [
             __DIR__ . '/Entity',
         ];
-        if ('cli' === PHP_SAPI) {
-            $cache = new CacheItemPoolDecorator(new BlackHole());
-        } else {
-            $this->cacheStorage = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
-
-            // Cache item pool decorator requires static TTL support that file system cache does not provide. Doctrine
-            // doesn't need it, so fake the support:
-            if ($this->cacheStorage instanceof Filesystem) {
-                $eventManager = $this->cacheStorage->getEventManager();
-                $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
-                $cache = new CacheItemPoolDecorator($this->cacheStorage);
-                $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
-            } else {
-                $cache = new CacheItemPoolDecorator($this->cacheStorage);
-            }
-        }
 
         $isDevMode = APPLICATION_ENV == 'development';
-        $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode, cache: $cache);
+        $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode, cache: $this->getCache($container));
         $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
         $config->setProxyDir(LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies');
         $config->setProxyNamespace('DoctrineProxies');
@@ -157,5 +142,33 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             $oldCapacities
         );
         $event->setResult($newCapacities);
+    }
+
+    /**
+     * Get cache adapter.
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return CacheItemPoolInterface
+     */
+    protected function getCache(ContainerInterface $container): CacheItemPoolInterface
+    {
+        if ('cli' === PHP_SAPI) {
+            return new CacheItemPoolDecorator(new BlackHole());
+        }
+
+        $this->cacheStorage = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
+
+        // Cache item pool decorator requires static TTL support that file system cache does not provide. Doctrine
+        // doesn't need it, so fake the support:
+        if ($this->cacheStorage instanceof Filesystem) {
+            $eventManager = $this->cacheStorage->getEventManager();
+            $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
+            $cache = new CacheItemPoolDecorator($this->cacheStorage);
+            $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
+        } else {
+            $cache = new CacheItemPoolDecorator($this->cacheStorage);
+        }
+        return $cache;
     }
 }
