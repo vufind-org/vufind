@@ -31,6 +31,7 @@ namespace VuFind\Cover;
 
 use VuFind\Cover\Layer\LayerInterface;
 use VuFind\Cover\Layer\PluginManager as LayerManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeInfo;
 
 use function count;
@@ -90,34 +91,19 @@ class Generator
     protected $im;
 
     /**
-     * ThemeInfo object.
-     *
-     * @var ThemeInfo
-     */
-    protected $themeTools;
-
-    /**
-     * Layer manager.
-     *
-     * @var LayerManager
-     */
-    protected $layerManager;
-
-    /**
      * Constructor.
      *
-     * @param ThemeInfo    $themeTools For font loading
-     * @param LayerManager $lm         Layer manager
-     * @param array        $settings   Overwrite styles
+     * @param ThemeInfo    $themeTools   For font loading
+     * @param LayerManager $layerManager Layer manager
+     * @param array        $settingsArr  Overwrite styles
      */
+    #[Autowire]
     public function __construct(
-        ThemeInfo $themeTools,
-        LayerManager $lm,
-        array $settings = []
+        protected ThemeInfo $themeTools,
+        protected LayerManager $layerManager,
+        array $settingsArr = []
     ) {
-        $this->themeTools = $themeTools;
-        $this->layerManager = $lm;
-        $this->setOptions($settings);
+        $this->setOptions($settingsArr);
     }
 
     /**
