@@ -25,7 +25,7 @@
     $attrs->add('id', $id);
   }
   $attrs->add('name', $this->name);
-  $class = trim(($this->class ?? '') . ($this->message ? 'is-invalid' : ''));
+  $class = trim(($this->class ?? '') . ($this->message ? ' is-invalid' : ''));
   if ($class) {
     $attrs->add('class', $class);
   }
