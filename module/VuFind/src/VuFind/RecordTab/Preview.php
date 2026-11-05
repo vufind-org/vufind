@@ -42,7 +42,6 @@ use VuFind\ServiceManager\Factory\Autowire;
  */
 class Preview extends AbstractBase
 {
-
     /**
      * Constructor.
      *
@@ -50,8 +49,8 @@ class Preview extends AbstractBase
      */
     public function __construct(
         #[Autowire(config: 'config')]
-        protected $active = false)
-    {
+        protected $active = false
+    ) {
     }
 
     /**
