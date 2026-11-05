@@ -92,8 +92,7 @@ class ExternalSearchTest extends \PHPUnit\Framework\TestCase
     ): void {
         $rec = new ExternalSearch();
         $rec->setConfig($label . ':' . $template . ($lookforParam ? ":$lookforParam" : ''));
-        $params = [];
-        $params[$lookforParam ?? 'lookfor'] = $lookfor;
+        $params = [$lookforParam ?? 'lookfor' => $lookfor];
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),
             $params
