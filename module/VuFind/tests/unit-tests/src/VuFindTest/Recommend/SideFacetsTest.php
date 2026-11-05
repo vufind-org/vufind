@@ -358,7 +358,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
      * @param ?Results                               $results       results object
      * @param string                                 $settings      settings
-     * @param ?array                                 $request       request
+     * @param array                                  $request       request
      *
      * @return SideFacets
      */
