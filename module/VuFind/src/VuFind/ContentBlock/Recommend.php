@@ -29,7 +29,6 @@
 
 namespace VuFind\ContentBlock;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\RecommendInterface;
 use VuFind\Search\Params\PluginManager as ParamsPluginManager;
@@ -57,12 +56,12 @@ class Recommend implements ContentBlockInterface
      *
      * @param ParamsPluginManager    $paramsManager    Search params plugin manager
      * @param RecommendPluginManager $recommendManager Recommendation plugin manager
-     * @param Parameters             $request          Query parameters from request
+     * @param array                  $request          Query parameters from request
      */
     public function __construct(
         protected ParamsPluginManager $paramsManager,
         protected RecommendPluginManager $recommendManager,
-        protected Parameters $request
+        protected array $request
     ) {
     }
 

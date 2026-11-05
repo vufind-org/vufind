@@ -103,12 +103,12 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Parse out parameters:
         $settings = explode(':', $this->rawParams);
@@ -129,7 +129,7 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      * Initialize the lookFor query parameter. Called from init().
      *
      * @param \VuFind\Search\Base\Params $params   Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user
+     * @param array                      $request  Parameter array representing user
      * request.
      * @param array                      $settings Parameter array (passed by reference)
      *
@@ -140,7 +140,7 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
     protected function initLookFor($params, $request, &$settings)
     {
         // Map the user-specified query field to 'lookfor' for simplicity:
-        $this->lookfor = $request->get(empty($settings[0]) ? 'lookfor' : $settings[0], '');
+        $this->lookfor = $request[empty($settings[0]) ? 'lookfor' : $settings[0]] ?? '';
         $settings[0] = 'lookfor';
 
         // If lookfor has somehow been set as an array, collapse it into a string:

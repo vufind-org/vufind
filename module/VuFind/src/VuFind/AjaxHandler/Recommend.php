@@ -29,7 +29,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -97,7 +96,7 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
         // Initialize search parameters from Ajax request parameters in case the
         // original request parameters were passed to the Ajax request.
         $paramsObj->initFromRequest($request);
-        $module->init($paramsObj, new Parameters($request));
+        $module->init($paramsObj, $request);
         $module->process($this->results);
 
         // Render recommendations:
