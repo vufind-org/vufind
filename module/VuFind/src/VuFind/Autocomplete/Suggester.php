@@ -29,7 +29,6 @@
 
 namespace VuFind\Autocomplete;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -68,24 +67,24 @@ class Suggester
      * This logic is present in the factory class so that it can be easily shared
      * by multiple AJAX handlers.
      *
-     * @param Parameters $request    The user request
-     * @param string     $typeParam  Request parameter containing search type
-     * @param string     $queryParam Request parameter containing query string
+     * @param array  $request    The user request
+     * @param string $typeParam  Request parameter containing search type
+     * @param string $queryParam Request parameter containing query string
      *
      * @return array
      */
     public function getSuggestions($request, $typeParam = 'type', $queryParam = 'q')
     {
         // Process incoming parameters:
-        $type = $request->get($typeParam, '');
-        $query = $request->get($queryParam, '');
-        $searcher = $request->get('searcher', 'Solr');
+        $type = $request[$typeParam] ?? '';
+        $query = $request[$queryParam] ?? '';
+        $searcher = $request['searcher'] ?? 'Solr';
         // VuFind 11 and earlier used hiddenFilters as the argument name, but filters
         // is more accurate. For now, we'll support both options. From the perspective
         // of autocomplete, hidden or not makes no difference.
         $filters = array_merge(
-            $request->get('filters', []),
-            $request->get('hiddenFilters', [])
+            $request['filters'] ?? [],
+            $request['hiddenFilters'] ?? []
         );
 
         if (str_starts_with($type, 'VuFind:')) {

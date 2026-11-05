@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\Lists;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -137,7 +136,7 @@ class EditListAction extends AbstractListsAction
         // Process form within a try..catch so we can handle errors appropriately:
         try {
             $finalId = $this->favoritesService
-                ->updateListFromRequest($list, $user, new Parameters($this->request->getParsedBody()));
+                ->updateListFromRequest($list, $user, $this->request->getParsedBody());
 
             // If the user is in the process of saving a record, send them back to the save screen; otherwise, send them
             // back to the list they just edited.
