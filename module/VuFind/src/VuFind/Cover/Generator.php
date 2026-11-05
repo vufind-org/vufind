@@ -93,7 +93,7 @@ class Generator
     /**
      * Constructor.
      *
-     * @param ThemeInfo    $themeTools   For font loading
+     * @param ThemeInfo    $themeTools   ThemeInfo object, used for font loading
      * @param LayerManager $layerManager Layer manager
      * @param array        $settings     Overwrite styles
      */
