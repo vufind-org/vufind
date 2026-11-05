@@ -4,8 +4,6 @@ require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
-    'DoctrineModule',
-    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
@@ -13,7 +11,6 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Router',
     'Lmc\Rbac',
-    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
     'Laminas\Mvc\I18n',
     'VuFindTheme',

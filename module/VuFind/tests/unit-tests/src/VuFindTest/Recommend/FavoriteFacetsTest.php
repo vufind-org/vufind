@@ -93,7 +93,7 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         $sf->setConfig('');
         $sf->init(
             $results->getParams(),
-            new \Laminas\Stdlib\Parameters([])
+            []
         );
         $sf->process($results);
         return $sf;

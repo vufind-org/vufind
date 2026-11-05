@@ -2,8 +2,6 @@
 
 namespace VuFind\Module\Config;
 
-$doctrineCacheType = PHP_SAPI == 'cli' ? 'array' : 'filesystem';
-
 $config = [
     'router' => [
         'routes' => [
@@ -191,17 +189,18 @@ $config = [
             \VuFind\ServiceManager\AbstractTopLevelServiceFactory::class,
         ],
         'factories' => [
+            \Doctrine\ORM\EntityManager::class => \VuFind\Db\EntityManagerFactory::class,
             \Detection\MobileDetect::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             \League\CommonMark\MarkdownConverter::class => \VuFind\Service\MarkdownFactory::class,
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
+            \VuFind\Service\AuthorizationService::class => \VuFind\Service\AuthorizationServiceFactory::class,
             \VuFind\SMS\SMSInterface::class => \VuFind\SMS\Factory::class,
             \VuFind\UrlShortener\UrlShortenerInterface::class => \VuFind\UrlShortener\ServiceFactory::class,
             \VuFindHttp\HttpService::class => \VuFind\Service\HttpServiceFactory::class,
             \VuFindSearch\Service::class => \VuFind\Service\SearchServiceFactory::class,
             \Laminas\Session\SessionManager::class => \VuFind\Session\ManagerFactory::class,
-            \Lmc\Rbac\Mvc\Service\AuthorizationService::class => \VuFind\Service\AuthorizationServiceFactory::class,
         ],
         'delegators' => [
             'Laminas\Mvc\I18n\Translator' => [
@@ -212,8 +211,11 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            // For legacy compatibility with Doctrine Laminas module
             'doctrine.connection.orm_vufind' => 'VuFind\Db\Connection',
+            'doctrine.entitymanager.orm_vufind' => 'Doctrine\ORM\EntityManager',
 
+            'Doctrine\ORM\EntityManagerInterface' => 'Doctrine\ORM\EntityManager',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',
@@ -263,6 +265,7 @@ $config = [
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelper',
             'VuFind\Section\SectionServiceInterface' => 'VuFind\Section\SectionService',
+            'VuFind\Service\AuthorizationServiceInterface' => 'VuFind\Service\AuthorizationService',
             'VuFind\SessionManager' => 'Laminas\Session\SessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Session\PluginManager',
             'VuFind\SMS' => 'VuFind\SMS\SMSInterface',
@@ -285,48 +288,6 @@ $config = [
             'VuFind\Form\Form' => false,
             'VuFind\Http\CachingDownloader' => false,
         ],
-    ],
-    'caches' => [
-        'doctrinemodule.cache.filesystem' => [
-            'options' => [
-                'cache_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/objects',
-            ],
-        ],
-    ],
-    'doctrine' => [
-        'configuration' => [
-            'orm_vufind' => [
-                'query_cache' => $doctrineCacheType,
-                'result_cache' => $doctrineCacheType,
-                'metadata_cache' => $doctrineCacheType,
-                'hydration_cache' => $doctrineCacheType,
-                'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
-                'class_metadata_factory_name' => \VuFind\Db\Mapping\ClassMetadataFactory::class,
-            ],
-        ],
-        'driver' => [
-            'vufind_attribute_driver' => [
-                'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
-                'cache' => $doctrineCacheType,
-                'paths' => [
-                    __DIR__ . '/../src/VuFind/Db/Entity',
-                ],
-            ],
-            'orm_default' => [
-                'drivers' => [
-                    'VuFind\Db\Entity' => 'vufind_attribute_driver',
-                ],
-            ],
-        ],
-        'entitymanager' => [
-            'orm_vufind' => [
-                'connection' => 'orm_vufind',
-                'configuration' => 'orm_vufind',
-            ],
-        ],
-    ],
-    'doctrine_factories' => [
-        'entitymanager' => \VuFind\Db\EntityManagerFactory::class,
     ],
     'translator' => [],
     'translator_plugins' => [
