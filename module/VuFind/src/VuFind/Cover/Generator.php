@@ -103,7 +103,7 @@ class Generator
         protected LayerManager $layerManager,
         array $settings = []
     ) {
-        $this->setOptions($settingsArr);
+        $this->setOptions($settings);
     }
 
     /**
