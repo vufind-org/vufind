@@ -134,14 +134,14 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         if ($event->getStorage() !== $this->cacheStorage) {
             return;
         }
-        $oldCapacities = $event->getResult();
-        $newCapacities = new Capabilities(
+        $oldCapabilities = $event->getResult();
+        $newCapabilities = new Capabilities(
             $event->getStorage(),
             new stdClass(),
             ['staticTtl' => true],
-            $oldCapacities
+            $oldCapabilities
         );
-        $event->setResult($newCapacities);
+        $event->setResult($newCapabilities);
     }
 
     /**
