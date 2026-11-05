@@ -52,7 +52,7 @@ class SearchService extends AbstractSessionRelatedDataService implements
      *
      * @var string
      */
-    protected string $additionalDeleteConditions = ' AND s.saved = false';
+    protected string $additionalDeleteConditions = ' AND e.saved = false';
 
     /**
      * Get class name of entity managed by the service.

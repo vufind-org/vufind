@@ -117,46 +117,47 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     /**
      * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
-     * @param int  $sleepTime Sleep time between deletion of batches.
-     * @param ?int $limit     Maximum number of rows to delete or null for no limit.
+     * @param int $sleepTime Sleep time between deletion of batches.
+     * @param int $limit     Maximum number of rows to delete or null for no limit.
      *
      * @return int Number of rows deleted
      */
-    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null): int
+    public function deleteRowsWithoutSession(int $sleepTime = 1, int $limit = 1000): int
     {
-        $dql = 'SELECT DISTINCT e.sessionId '
-            . 'FROM ' . $this->getEntityClass() . ' e';
-
-        $sessionIdsQuery = $this->entityManager->createQuery($dql);
-
-        $sessionIds = array_map(fn ($row) => $row['sessionId'], $sessionIdsQuery->getResult());
-
-        $orphanSessionsCache = [];
-
-        foreach ($sessionIds as $sessionId) {
-            if (!array_key_exists($sessionId, $orphanSessionsCache)) {
-                $orphanSessionsCache[$sessionId] = empty($this->sessionHandler->read($sessionId));
-            }
-        }
-
-        $sessionsIdsToDelete = array_filter($sessionIds, fn ($sessionId) => $orphanSessionsCache[$sessionId]);
-
+        $lastCheckedId = -1;
         $total = 0;
-        foreach (array_chunk($sessionsIdsToDelete, 10) as $sessionIdsChunk) {
+
+        while (
+            count(
+                $sessionIdRows = $this->entityManager->createQueryBuilder()
+                    ->select('e.id, e.sessionId')
+                    ->from($this->getEntityClass(), 'e')
+                    ->where('e.id > :lastCheckedId' . $this->additionalDeleteConditions)
+                    ->setParameter('lastCheckedId', $lastCheckedId)
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult()
+            ) > 0
+        ) {
+            $lastCheckedId = max(array_map(fn ($sessionIdRow) => $sessionIdRow['id'], $sessionIdRows));
+
+            $expiredSessionIds = $this->sessionHandler->expiredSessionIds(
+                array_map(fn ($sessionIdRow) => $sessionIdRow['sessionId'], $sessionIdRows)
+            );
+
             do {
-                $subQueryBuilder = $this->entityManager->createQueryBuilder();
-                $subQueryBuilder->select('e.id')
+                $subQueryBuilder = $this->entityManager->createQueryBuilder()
+                    ->select('e.id')
                     ->from($this->getEntityClass(), 'e')
                     ->where('e.sessionId IN (:sessionIds)' . $this->additionalDeleteConditions)
-                    ->setParameter('sessionIds', $sessionIdsChunk);
-                if ($limit) {
-                    $subQueryBuilder->setMaxResults($limit);
-                }
-                $queryBuilder = $this->entityManager->createQueryBuilder();
-                $queryBuilder->delete($this->getEntityClass(), 'e')
+                    ->setParameter('sessionIds', $expiredSessionIds)
+                    ->setMaxResults($limit);
+                $count = $this->entityManager->createQueryBuilder()
+                    ->delete($this->getEntityClass(), 'e')
                     ->where('e.id IN (:rows)')
-                    ->setParameter('rows', $subQueryBuilder->getQuery()->getResult());
-                $count = $queryBuilder->getQuery()->execute();
+                    ->setParameter('rows', $subQueryBuilder->getQuery()->getResult())
+                    ->getQuery()
+                    ->execute();
                 if ($count > 0) {
                     $total += $count;
                     // Be nice to others and wait between batches

@@ -57,5 +57,5 @@ interface SessionRelatedDataServiceInterface extends DbServiceInterface
      *
      * @return int Number of rows deleted
      */
-    public function deleteRowsWithoutSession(int $sleepTime = 1, ?int $limit = null): int;
+    public function deleteRowsWithoutSession(int $sleepTime = 1, int $limit = 1000): int;
 }
