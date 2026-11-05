@@ -31,8 +31,6 @@
 namespace VuFind\Form;
 
 use DateTime;
-use Egulias\EmailValidator\EmailValidator;
-use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 use Exception;
 use Laminas\Uri\UriFactory;
 use Laminas\View\HelperPluginManager;
@@ -41,6 +39,7 @@ use VuFind\Exception\ConfigException;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Validator\EmailAddressValidator;
 
 use function count;
 use function in_array;
@@ -99,17 +98,19 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param HelperPluginManager $viewHelperManager  View helper manager
-     * @param HandlerManager      $handlerManager     Handler plugin manager
-     * @param DateConverter       $dateConverter      Date converter
-     * @param array               $config             VuFind main configuration
-     * @param array               $feedbackFormConfig Feedback form config
+     * @param HelperPluginManager   $viewHelperManager  View helper manager
+     * @param HandlerManager        $handlerManager     Handler plugin manager
+     * @param DateConverter         $dateConverter      Date converter
+     * @param EmailAddressValidator $emailValidator     Email address validator
+     * @param array                 $config             VuFind main configuration
+     * @param array                 $feedbackFormConfig Feedback form config
      */
     public function __construct(
         #[Autowire(service: 'ViewHelperManager')]
         protected HelperPluginManager $viewHelperManager,
         protected HandlerManager $handlerManager,
         protected DateConverter $dateConverter,
+        protected EmailAddressValidator $emailValidator,
         #[Autowire(config: 'config')]
         protected array $config,
         #[Autowire(config: 'FeedbackForms', configType: 'yaml')]
@@ -629,8 +630,7 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
      */
     protected function isValidEmail(string $email): bool
     {
-        $validator = new EmailValidator();
-        return $validator->isValid($email, new NoRFCWarningsValidation());
+        return $this->emailValidator->isValid($email);
     }
 
     /**

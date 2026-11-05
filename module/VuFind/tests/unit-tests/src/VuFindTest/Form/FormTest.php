@@ -33,6 +33,7 @@ namespace VuFindTest\Form;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Date\Converter;
 use VuFind\Form\Form;
+use VuFind\Validator\EmailAddressValidator;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
@@ -82,6 +83,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             new Converter(),
+            new EmailAddressValidator(),
             $config,
             $feedBackFormConfig
         );
