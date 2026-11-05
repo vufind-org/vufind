@@ -14,7 +14,6 @@ $modules = [
     'Lmc\Rbac',
     'Lmc\Rbac\Mvc',
     'Laminas\I18n',
-    'Laminas\Mvc\I18n',
     'VuFindTheme',
     'VuFindSearch',
     'VuFind',

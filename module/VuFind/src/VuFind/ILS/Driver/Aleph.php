@@ -38,7 +38,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\Translator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ServiceManager\Factory\Autowire;

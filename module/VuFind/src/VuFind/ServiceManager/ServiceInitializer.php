@@ -97,7 +97,7 @@ class ServiceInitializer implements InitializerInterface
             $instance->setLocaleSettings($sm->get(\VuFind\I18n\Locale\LocaleSettings::class));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
-            $instance->setTranslator($sm->get(\Laminas\Mvc\I18n\Translator::class));
+            $instance->setTranslator($sm->get(\Laminas\Translator\TranslatorInterface::class));
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
