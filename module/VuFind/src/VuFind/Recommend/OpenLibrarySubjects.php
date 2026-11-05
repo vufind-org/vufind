@@ -149,7 +149,7 @@ class OpenLibrarySubjects implements
     public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Get and normalise $requestParam
-        $this->subject = $request[$this->requestParam] ?? null;
+        $this->subject = $request[$this->requestParam] ?? '';
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
