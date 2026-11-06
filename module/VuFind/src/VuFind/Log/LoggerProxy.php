@@ -90,21 +90,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an emergency.
-     *
-     * @param Stringable|string $message Message
-     * @param array             $context Extra params (context from PSR-3)
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function emerg(Stringable|string $message, array $context = []): void
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
      * Log an alert.
      *
      * @param Stringable|string $message Message
@@ -131,21 +116,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a critical error.
-     *
-     * @param Stringable|string $message Message
-     * @param array             $context Extra params
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function crit(Stringable|string $message, array $context = []): void
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
      * Log an error.
      *
      * @param Stringable|string $message Message
@@ -159,21 +129,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an error.
-     *
-     * @param Stringable|string $message Message
-     * @param array             $context Extra params
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function err(Stringable|string $message, array $context = []): void
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
      * Log a warning.
      *
      * @param Stringable|string $message Message
@@ -182,21 +137,6 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      * @return void
      */
     public function warning(Stringable|string $message, array $context = []): void
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
-     * Log a warning.
-     *
-     * @param Stringable|string $message Message
-     * @param array             $context Extra params
-     *
-     * @return void
-     *
-     * @deprecated
-     */
-    public function warn(Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }
@@ -258,12 +198,13 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      * Log an exception triggered by the framework for administrative purposes.
      * (Part of ExtendedLoggerInterface).
      *
-     * @param \Exception                 $error  Exception to log
-     * @param \Laminas\Stdlib\Parameters $server Server metadata
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
+     * @param ?string    $level  Optional log level
      *
      * @return void
      */
-    public function logException($error, $server): void
+    public function logException(\Throwable $error, array $server = [], ?string $level = null): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }

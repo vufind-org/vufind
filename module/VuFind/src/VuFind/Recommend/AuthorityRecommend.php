@@ -30,7 +30,7 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Stdlib\Parameters;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use function count;
@@ -92,13 +92,6 @@ class AuthorityRecommend implements RecommendInterface
     protected $recommendations = [];
 
     /**
-     * Results plugin manager.
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
      * Which lookup mode(s) to use.
      *
      * @var string
@@ -115,11 +108,11 @@ class AuthorityRecommend implements RecommendInterface
     /**
      * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**
@@ -182,7 +175,7 @@ class AuthorityRecommend implements RecommendInterface
         try {
             $authResults = $this->resultsManager->get('SolrAuth');
             $authParams = $authResults->getParams();
-            $authParams->initFromRequest(new Parameters($params));
+            $authParams->initFromRequest($params);
             foreach ($this->filters as $filter) {
                 $authParams->addHiddenFilter($filter);
             }

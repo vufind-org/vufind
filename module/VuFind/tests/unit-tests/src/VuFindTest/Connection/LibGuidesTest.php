@@ -30,9 +30,10 @@
 
 namespace VuFindTest\Connection;
 
+use Generator;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
-use VuFind\Config\Config;
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Connection\LibGuides;
 
 /**
@@ -50,11 +51,39 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Data provider for testMissingConfigValidation.
+     *
+     * @return Generator<string, array<string>>
+     */
+    public static function configValidationProvider(): Generator
+    {
+        foreach (['client_id', 'client_secret', 'api_base_url'] as $required) {
+            yield $required => [$required];
+        }
+    }
+
+    /**
+     * Test config validation.
+     *
+     * @param string $missingConfig Config setting to omit
+     *
+     * @return void
+     */
+    #[DataProvider('configValidationProvider')]
+    public function testMissingConfigValidation(string $missingConfig): void
+    {
+        $config = $this->getConfig();
+        unset($config['General'][$missingConfig]);
+        $this->expectExceptionMessage($missingConfig . ' key missing from configuration.');
+        new LibGuides($config, $this->createStub(HttpClient::class));
+    }
+
+    /**
      * Test loading accounts.
      *
      * @return void
      */
-    public function testGetAccounts()
+    public function testGetAccounts(): void
     {
         $config = $this->getConfig();
         $client = $this->getClient('accounts');
@@ -101,19 +130,17 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a fake LibGuidesAPI.ini config.
      *
-     * @return Config The fake config
+     * @return array The fake config
      */
-    protected function getConfig()
+    protected function getConfig(): array
     {
-        return new Config(
-            [
-                'General' => [
-                    'api_base_url' => 'https://foo.org/',
-                    'client_id' => 'username',
-                    'client_secret' => 'email',
-                ],
-            ]
-        );
+        return [
+            'General' => [
+                'api_base_url' => 'https://foo.org/',
+                'client_id' => 'username',
+                'client_secret' => 'email',
+            ],
+        ];
     }
 
     /**
@@ -123,7 +150,7 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
      *
      * @return HttpClient
      */
-    protected function getClient($fixture)
+    protected function getClient($fixture): HttpClient
     {
         $adapter = new TestAdapter();
         $adapter->addResponse($this->getFixture('libguides/api/token'));

@@ -30,7 +30,6 @@
 
 namespace VuFind\Search\Solr;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\BadConfig;
 use VuFindSearch\ParamBag;
@@ -177,23 +176,19 @@ class Params extends \VuFind\Search\Base\Params
         $this->facetHelper = $facetHelper;
 
         // Use basic facet limit by default, if set:
-        $config = $configManager->getConfigObject($options->getFacetsIni());
-        $resultsSettings = isset($config->Results_Settings)
-            ? $config->Results_Settings->toArray() : null;
+        $config = $configManager->getConfigArray($options->getFacetsIni());
+        $resultsSettings = $config['Results_Settings'] ?? null;
         $this->initFacetLimitsFromConfig($resultsSettings);
         $this->initFacetRestrictionsFromConfig($resultsSettings);
-        if (isset($config->LegacyFields)) {
-            $this->facetAliases = $config->LegacyFields->toArray();
+        if (isset($config['LegacyFields'])) {
+            $this->facetAliases = $config['LegacyFields'];
         }
-        if (
-            isset($config->Results_Settings->sorted_by_index)
-            && count($config->Results_Settings->sorted_by_index) > 0
-        ) {
+        if (count($config['Results_Settings']['sorted_by_index'] ?? []) > 0) {
             $this->setIndexSortedFacets(
-                $config->Results_Settings->sorted_by_index->toArray()
+                $config['Results_Settings']['-sorted_by_index']
             );
         }
-        $this->customFilterFieldName = $config->CustomFilters->custom_filter_field ?? 'vufind';
+        $this->customFilterFieldName = $config['CustomFilters']['custom_filter_field'] ?? 'vufind';
         $searchConfig = $this->configManager->getConfigArray($this->getOptions()->getSearchIni());
         $localSortDefinitions = $searchConfig['LocalSortDefinitions'] ?? [];
         foreach ($localSortDefinitions as $alias => $localSortDefinition) {
@@ -341,15 +336,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(Parameters $request): void
+    protected function initSearch(array $request): void
     {
         // Special case -- did we get a list of IDs instead of a standard query?
-        $ids = $request->get('overrideIds', null);
+        $ids = $request['overrideIds'] ?? null;
         if (is_array($ids)) {
             $this->setQueryIDs($ids);
         } else {
@@ -443,9 +438,8 @@ class Params extends \VuFind\Search\Base\Params
     protected function initFacetList(string $facetList, string $facetSettings, ?string $cfgFile = null): bool
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
-        $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
-        $facetSettingsConfig = isset($config->$facetSettings)
-            ? $config->$facetSettings->toArray() : null;
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
+        $facetSettingsConfig = $config['$facetSettings'] ?? null;
         $this->initFacetLimitsFromConfig($facetSettingsConfig);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
@@ -489,17 +483,17 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(Parameters $request): void
+    protected function initFilters(array $request): void
     {
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
         parent::initFilters($request);
-        switch ($request->get('illustration', -1)) {
+        switch ($request['illustration'] ?? -1) {
             case 1:
                 $this->addFilter('illustrated:Illustrated');
                 break;

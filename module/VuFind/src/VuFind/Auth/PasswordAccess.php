@@ -48,24 +48,6 @@ use function in_array;
 class PasswordAccess extends AbstractBase
 {
     /**
-     * Get configuration (load automatically if not previously set). Throw an
-     * exception if the configuration is invalid.
-     *
-     * @throws AuthException
-     * @return \VuFind\Config\Config
-     */
-    public function getConfig()
-    {
-        // Validate configuration if not already validated:
-        if (!$this->configValidated) {
-            $this->validateConfig();
-            $this->configValidated = true;
-        }
-
-        return $this->config;
-    }
-
-    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
@@ -76,7 +58,7 @@ class PasswordAccess extends AbstractBase
      */
     public function authenticate($request)
     {
-        $config = $this->getConfig()->toArray();
+        $config = $this->getConfig();
         $requestPassword = trim($request->getPost()->get('password', ''));
         foreach ($config['PasswordAccess']['access_user_hashed'] ?? [] as $username => $passwordHash) {
             if (password_verify($requestPassword, $passwordHash)) {

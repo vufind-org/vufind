@@ -431,7 +431,7 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
     protected function getAlphabetList(string $action): array
     {
         // Get base alphabet:
-        $chars = $this->config->Browse->alphabet_letters
+        $chars = $this->config['Browse']['alphabet_letters']
             ?? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         // Put numbers in the front for Era since years are important:

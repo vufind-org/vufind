@@ -32,6 +32,7 @@ namespace VuFind\ActionHelper;
 use Laminas\Router\RouteMatch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\ActionConfigManager;
 use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -50,10 +51,12 @@ class ForwardHelper implements HelperInterface
      * Constructor.
      *
      * @param ActionPluginManager $actionPluginManager Action plugin manager
+     * @param ActionConfigManager $actionConfigManager Action configuration manager
      */
     #[Autowire]
     public function __construct(
         protected ActionPluginManager $actionPluginManager,
+        protected ActionConfigManager $actionConfigManager,
     ) {
     }
 
@@ -75,6 +78,7 @@ class ForwardHelper implements HelperInterface
             throw new \InvalidArgumentException("Unknown action '$actionId'");
         }
         $action = $this->actionPluginManager->get($actionId);
+        $this->actionConfigManager->applyActionConfig($action, actionIdentifier: $actionId);
         return $action(
             $request->withAttribute('action-id', $actionId),
             $response

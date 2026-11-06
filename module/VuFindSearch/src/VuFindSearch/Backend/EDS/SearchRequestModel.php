@@ -30,7 +30,6 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 
 use function array_key_exists;
 use function count;
@@ -548,7 +547,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addfilter($facetFilter)
+    public function addFilter($facetFilter)
     {
         $filterComponents = explode(':', $facetFilter, 3);
         if (count($filterComponents) < 3) {

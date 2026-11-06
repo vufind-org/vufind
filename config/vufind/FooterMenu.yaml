@@ -30,7 +30,7 @@ footer-left:
   label: footer_header_search_options
   MenuItems:
     - label: 'Search History'
-      route: search-history
+      route: searchhistory-list
 
     - label: 'Advanced Search'
       route: search-advanced
@@ -67,7 +67,7 @@ footer-right:
     - label: 'Ask a Librarian'
       route: content-page
       routeParams:
-        page: askLibrary
+        page: asklibrary
 
     - label: 'FAQs'
       route: content-page

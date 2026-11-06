@@ -135,18 +135,6 @@ class Mailer implements
     }
 
     /**
-     * Get a blank email message object.
-     *
-     * @return Email
-     *
-     * @deprecated Use getNewMessage
-     */
-    public function getNewBlankMessage(): Email
-    {
-        return $this->getNewMessage();
-    }
-
-    /**
      * Set the mail transport object.
      *
      * @param MailerInterface $transport Mail transport object

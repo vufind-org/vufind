@@ -50,20 +50,6 @@ use function is_string;
 class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
-     * Blender configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Mappings configuration.
-     *
-     * @var array
-     */
-    protected $mappings;
-
-    /**
      * Backends to be used for initial results.
      *
      * @var array
@@ -80,18 +66,13 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config   Configuration
-     * @param array                 $mappings Mappings configuration
+     * @param ?array $config   Blender configuration
+     * @param array  $mappings Mappings configuration
      */
-    public function __construct($config = null, $mappings = [])
+    public function __construct(protected ?array $config = null, protected array $mappings = [])
     {
-        $this->config = $config;
-        $this->mappings = $mappings;
         $this->response = static::$template;
-        $this->initialResultsBackends
-            = isset($this->config->Blending->initialResults)
-            ? $this->config->Blending->initialResults->toArray()
-            : [];
+        $this->initialResultsBackends = $config['Blending']['initialResults'] ?? [];
     }
 
     /**
@@ -199,11 +180,11 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function getFacetDelimiter(string $field): string
     {
-        $delimitedFacets = $this->config->Advanced_Settings->delimited_facets ?? [];
+        $delimitedFacets = $this->config['Advanced_Settings']['delimited_facets'] ?? [];
         foreach ($delimitedFacets as $current) {
             $parts = explode('|', $current);
             if ($parts[0] === $field) {
-                return $parts[1] ?? $this->config->Advanced_Settings->delimiter
+                return $parts[1] ?? $this->config['Advanced_Settings']['delimiter']
                     ?? '';
             }
         }
@@ -245,7 +226,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function add(RecordInterface $record, $checkExisting = true)
     {
-        $label = $this->config->Backends[$record->getSearchBackendIdentifier()]
+        $label = $this->config['Backends'][$record->getSearchBackendIdentifier()]
             ?? '';
         if ($label) {
             $record->addLabel($label, 'source');
@@ -264,7 +245,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     {
         foreach ($collections as $backendId => $collection) {
             foreach ($collection->getErrors() as $error) {
-                $label = $this->config->Backends[$backendId];
+                $label = $this->config['Backends'][$backendId] ?? null;
                 if (is_string($error) && $label) {
                     $error = [
                         'msg' => '%%error%% -- %%label%%',
@@ -446,11 +427,11 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     protected function getBlenderFacetStats(array $collections): array
     {
         $delimiter = $this->getFacetDelimiter('blender_backend');
-        $orFacets = $this->config->Results_Settings->orFacets ?? '';
+        $orFacets = $this->config['Results_Settings']['orFacets'] ?? '';
         $orFacetList = array_map('trim', explode(',', $orFacets));
         $isOrFacet = '*' === $orFacets || in_array('blender_backend', $orFacetList);
         $result = [];
-        foreach ($this->config->Backends as $backendId => $name) {
+        foreach ($this->config['Backends'] ?? [] as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;
             if (isset($collections[$backendId])) {
                 if ($total = $collections[$backendId]->getTotal()) {

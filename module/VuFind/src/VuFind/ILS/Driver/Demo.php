@@ -113,11 +113,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $request;
 
     /**
-     * Should we return bib IDs in MyResearch responses?
+     * Should we return bib IDs in responses?
      *
      * @var bool
      */
-    protected $idsInMyResearch = true;
+    protected $useRecordIds = true;
 
     /**
      * Should we support Storage Retrieval Requests?
@@ -234,8 +234,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (isset($this->config['Catalog']['id'])) {
             $this->catalogId = $this->config['Catalog']['id'];
         }
-        if (isset($this->config['Catalog']['idsInMyResearch'])) {
-            $this->idsInMyResearch = $this->config['Catalog']['idsInMyResearch'];
+        if (isset($this->config['Catalog']['useRecordIds'])) {
+            $this->useRecordIds = $this->config['Catalog']['useRecordIds'];
         }
         if (isset($this->config['Catalog']['storageRetrievalRequests'])) {
             $this->storageRetrievalRequests
@@ -412,7 +412,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
-        return [$record->getUniqueId(), $record->getTitle()];
+        return [$record->getUniqueID(), $record->getTitle()];
     }
 
     /**
@@ -626,9 +626,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 $currentItem['institution_name'] = 'ILL Library';
                 $currentItem['institution_dbkey'] = 'ill_institution';
             } else {
-                if ($this->idsInMyResearch) {
+                if ($this->useRecordIds) {
                     [$currentItem['id'], $currentItem['title']]
-                        = $this->getRandomBibIdAndtitle();
+                        = $this->getRandomBibIdAndTitle();
                     $currentItem['source'] = $this->getRecordSource();
                 } else {
                     $currentItem['title'] = 'Demo Title ' . $i;
@@ -1141,7 +1141,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
             // Some fines will have no id or title:
             if (rand() % 3 != 1) {
-                if ($this->idsInMyResearch) {
+                if ($this->useRecordIds) {
                     [$fine['id'], $fine['title']]
                         = $this->getRandomBibIdAndTitle();
                     $fine['source'] = $this->getRecordSource();
@@ -1411,7 +1411,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 ];
             } else {
                 $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
-                if ($this->idsInMyResearch) {
+                if ($this->useRecordIds) {
                     [$transList[$i]['id'], $transList[$i]['title']]
                         = $this->getRandomBibIdAndTitle();
                     $transList[$i]['source'] = $this->getRecordSource();
@@ -1537,7 +1537,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'barcode' => sprintf('%08d', rand() % 50000),
                 'row_id' => $i,
             ];
-            if ($this->idsInMyResearch) {
+            if ($this->useRecordIds) {
                 [$transList[$i]['id'], $transList[$i]['title']]
                     = $this->getRandomBibIdAndTitle();
                 $transList[$i]['source'] = $this->getRecordSource();
@@ -2177,10 +2177,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     /**
      * Get Renew Details.
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *

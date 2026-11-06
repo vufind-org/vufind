@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use VuFind\Config\Config;
 use VuFindSearch\Backend\Pazpar2\Backend;
 use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\QueryBuilder;
@@ -61,9 +60,9 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration.
      *
-     * @var Config
+     * @var array
      */
-    protected Config $config;
+    protected array $config;
 
     /**
      * Create an object.
@@ -88,7 +87,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     ) {
         $this->setup($container);
         $this->config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject('Pazpar2');
+            ->getConfigArray('Pazpar2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -109,12 +108,12 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
-        if (isset($this->config->General->max_query_time)) {
-            $backend->setMaxQueryTime($this->config->General->max_query_time);
+        if (isset($this->config['General']['max_query_time'])) {
+            $backend->setMaxQueryTime($this->config['General']['max_query_time']);
         }
-        if (isset($this->config->General->progress_target)) {
+        if (isset($this->config['General']['progress_target'])) {
             $backend->setSearchProgressTarget(
-                $this->config->General->progress_target
+                $this->config['General']['progress_target']
             );
         }
         return $backend;
@@ -128,7 +127,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     protected function createConnector(): Connector
     {
         $connector = new Connector(
-            $this->config->General->base_url,
+            $this->config['General']['base_url'],
             $this->createHttpClient()
         );
         $connector->setLogger($this->logger);

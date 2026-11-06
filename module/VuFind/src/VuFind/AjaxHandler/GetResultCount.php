@@ -31,7 +31,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Session\Settings as SessionSettings;
@@ -71,8 +70,8 @@ class GetResultCount extends AbstractBase
     public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();
-        $queryString = $this->getQueryParam($request, 'querystring');
-        parse_str(parse_url($queryString, PHP_URL_QUERY), $searchParams);
+        $queryString = $this->getQueryParam($request, 'querystring', '');
+        parse_str(parse_url($queryString, PHP_URL_QUERY) ?? '', $searchParams);
 
         $backend = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
         $results = $this->resultsManager->get($backend);
@@ -80,7 +79,7 @@ class GetResultCount extends AbstractBase
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->getOptions()->setLimitOptions([0]);
-        $paramsObj->initFromRequest(new Parameters($searchParams));
+        $paramsObj->initFromRequest($searchParams);
 
         return $this->formatResponse(['total' => $results->getResultTotal()]);
     }

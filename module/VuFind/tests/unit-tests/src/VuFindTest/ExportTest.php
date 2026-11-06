@@ -30,7 +30,6 @@
 namespace VuFindTest;
 
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\Config\Config;
 use VuFind\Export;
 
 /**

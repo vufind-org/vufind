@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * RecommendLinks Recommendations Module.
  *
@@ -54,6 +56,7 @@ class RecommendLinks implements RecommendInterface
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
+    #[Autowire]
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
     }

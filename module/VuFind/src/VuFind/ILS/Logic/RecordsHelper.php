@@ -29,7 +29,6 @@
 
 namespace VuFind\ILS\Logic;
 
-use VuFind\Config\Config;
 use VuFind\Record\Loader;
 
 /**
@@ -46,29 +45,13 @@ class RecordsHelper
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * Record loader.
-     *
-     * @var Loader
-     */
-    protected $loader;
-
-    /**
      * Constructor.
      *
-     * @param Config $config VuFind configuration
+     * @param array  $config VuFind configuration
      * @param Loader $loader Record loader
      */
-    public function __construct(Config $config, Loader $loader)
+    public function __construct(protected array $config, protected Loader $loader)
     {
-        $this->config = $config;
-        $this->loader = $loader;
     }
 
     /**
@@ -116,7 +99,7 @@ class RecordsHelper
     public function collectRequestStats(array $records): ?array
     {
         // Collect up to date stats for ajax account notifications:
-        if (!($this->config->Authentication->enableAjax ?? true)) {
+        if (!($this->config['Authentication']['enableAjax'] ?? true)) {
             return null;
         }
         return $this->getRequestSummary(

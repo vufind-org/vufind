@@ -13,5 +13,6 @@ parameters:
     bootstrapFiles:
         - phpstan-constants.php
     level: 1
+    checkFunctionNameCase: true
     parallel:
         processTimeout: 600.0

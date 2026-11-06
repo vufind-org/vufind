@@ -31,6 +31,7 @@ namespace VuFindConsole;
 
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Console runner.
@@ -51,20 +52,14 @@ class ConsoleRunner
     protected $commands;
 
     /**
-     * Plugin manager (to retrieve commands).
-     *
-     * @var ContainerInterface
-     */
-    protected $pluginManager;
-
-    /**
      * Constructor.
      *
-     * @param ContainerInterface $pm Plugin manager (to retrieve commands)
+     * @param ContainerInterface $pluginManager Plugin manager (to retrieve commands)
      */
-    public function __construct(ContainerInterface $pm)
-    {
-        $this->pluginManager = $pm;
+    public function __construct(
+        #[Autowire(service: \VuFindConsole\Command\PluginManager::class)]
+        protected ContainerInterface $pluginManager
+    ) {
     }
 
     /**

@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 use function is_object;
 
@@ -58,8 +60,10 @@ class HierarchyTree extends AbstractBase
      *
      * @param array $config Configuration
      */
-    public function __construct(protected array $config)
-    {
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config
+    ) {
     }
 
     /**
@@ -150,7 +154,7 @@ class HierarchyTree extends AbstractBase
         }
         // If displaying the top of the tree, we should show the full hierarchy;
         // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
-        return $this->getActiveTree() == $recordDriver->getUniqueId();
+        return $this->getActiveTree() == $recordDriver->getUniqueID();
     }
 
     /**

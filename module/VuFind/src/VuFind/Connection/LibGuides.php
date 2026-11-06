@@ -65,13 +65,6 @@ class LibGuides implements
     }
 
     /**
-     * HTTP Client.
-     *
-     * @var \Laminas\Http\HttpClient
-     */
-    protected $client;
-
-    /**
      * Base URL of the LibGuides API.
      *
      * @var string
@@ -102,19 +95,23 @@ class LibGuides implements
     /**
      * Constructor.
      *
-     * @param Config               $config LibGuides API configuration object
+     * @param array                $config LibGuides API configuration object
      * @param \Laminas\Http\Client $client HTTP client
      *
      * @link https://ask.springshare.com/libguides/faq/873#api-auth
      */
     public function __construct(
-        $config,
-        $client
+        array $config,
+        protected \Laminas\Http\Client $client
     ) {
-        $this->client = $client;
-        $this->baseUrl = $config->General->api_base_url;
-        $this->clientId = $config->General->client_id;
-        $this->clientSecret = $config->General->client_secret;
+        foreach (['client_id', 'client_secret', 'api_base_url'] as $required) {
+            if (!isset($config['General'][$required])) {
+                throw new \Exception($required . ' key missing from configuration.');
+            }
+        }
+        $this->baseUrl = $config['General']['api_base_url'];
+        $this->clientId = $config['General']['client_id'];
+        $this->clientSecret = $config['General']['client_secret'];
     }
 
     /**

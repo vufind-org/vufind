@@ -33,6 +33,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Email authentication module.
@@ -51,6 +52,7 @@ class Email extends AbstractBase
      * @param EmailAuthenticator $emailAuthenticator Email authenticator
      * @param ILSAuthenticator   $ilsAuthenticator   ILS authenticator
      */
+    #[Autowire]
     public function __construct(
         protected EmailAuthenticator $emailAuthenticator,
         protected ILSAuthenticator $ilsAuthenticator

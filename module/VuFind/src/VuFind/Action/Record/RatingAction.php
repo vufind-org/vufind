@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Captcha\Service\CaptchaService;
+use VuFind\Config\ConfigManager;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -72,6 +73,7 @@ class RatingAction extends AbstractRecordAction
      * @param SearchMemory             $searchMemory      Search memory
      * @param TabManager               $tabManager        Tab manager
      * @param AuthManager              $authManager       Authentication manager
+     * @param ConfigManager            $configManager     Configuration manager
      * @param RecordLoader             $recordLoader      Record loader
      * @param RecordRouter             $recordRouter      Record router
      * @param ResultScroller           $resultScroller    Result scroller
@@ -86,6 +88,7 @@ class RatingAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -102,6 +105,7 @@ class RatingAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

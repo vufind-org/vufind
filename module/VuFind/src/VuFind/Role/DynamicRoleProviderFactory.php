@@ -136,7 +136,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         }
 
         // Add EDS, EIT and EPF settings if they are absent:
-        foreach (['EDSModule', 'EITModule', 'EPFModule'] as $module) {
+        foreach (['EDSModule', 'EITModule', 'EPFModule', 'ProQuestFSGModule'] as $module) {
             if (!$this->permissionDefined($permissions, 'access.' . $module)) {
                 $permissions['legacy.' . $module] = [
                     'role' => $module === 'EITModule' ? 'loggedin' : ['guest', 'loggedin'],

@@ -86,7 +86,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Go to profile page:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Log back in
         $this->clickCss($page, '#loginOptions a');
@@ -144,7 +144,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         // Go to profile page:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Log back in using UPPERCASE version of username (it was created in lowercase above).
         $this->clickCss($page, '#loginOptions a');
@@ -193,7 +193,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to profile page:
         $session = $this->getMinkSession();
         $page = $session->getPage();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Log in
         $this->clickCss($page, '#loginOptions a');
@@ -215,7 +215,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Go to profile page:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -250,7 +250,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to profile page:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -273,7 +273,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Now go to profile page and confirm that email has changed:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->assertSame(
             'First Name: Tester Last Name: McTestenson Email: new@email.com',
             $this->findCssAndGetText($page, '.table-striped')
@@ -317,7 +317,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to profile page:
         $this->waitForPageLoad($page);
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
 
         // Do patron login:
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
@@ -399,7 +399,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -430,7 +430,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
 
         // Log in
@@ -444,7 +444,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Try to log back in; it shouldn't work:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username2', 'test', false);
         $this->submitLoginForm($page, false);
@@ -674,7 +674,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         if ($multiBackend) {
             // Check that there's no visible recovery link for the default target:
             $this->findCss($page, '.modal-body #login_MultiILS_username');
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 'btn btn-link recover-account-link hidden',
                 function () use ($page) {
                     return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
@@ -683,7 +683,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
             // Switch to demo2 and check that there's now a visible recovery link:
             $this->clickCss($page, '.modal-body #login_MultiILS_target option', null, 1);
-            $this->assertEqualsWithTimeout(
+            $this->assertSameWithTimeout(
                 'btn btn-link recover-account-link',
                 function () use ($page) {
                     return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
@@ -698,7 +698,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', '');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Username cannot be blank',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -707,7 +707,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
         $this->findCssAndSetValue($page, '#recovery_email', '');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Email address missing.',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -716,7 +716,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
         $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
         $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'We could not find your account',
             fn () => $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -726,7 +726,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEqualsWithTimeout(
+        $this->assertSameWithTimeout(
             'Password recovery instructions have been sent to the email address registered with this account.',
             fn () => $this->findCssAndGetText($page, '.alert-info')
         );

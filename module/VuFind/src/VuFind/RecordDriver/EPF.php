@@ -47,7 +47,7 @@ class EPF extends EDS
      *
      * @return string Unique identifier.
      */
-    public function getUniqueId()
+    public function getUniqueID()
     {
         return $this->fields['Header']['PublicationId'];
     }

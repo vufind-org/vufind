@@ -195,7 +195,7 @@ class EmailTest extends \PHPUnit\Framework\TestCase
 
         return new Email(
             $renderer,
-            new \VuFind\Config\Config($config),
+            $config,
             $mailer
         );
     }

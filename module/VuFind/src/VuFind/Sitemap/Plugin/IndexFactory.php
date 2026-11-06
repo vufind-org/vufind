@@ -35,8 +35,6 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
-use function is_callable;
-
 /**
  * Index-based generator plugin factory.
  *
@@ -70,32 +68,30 @@ class IndexFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $sitemapConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('sitemap');
-        $retrievalMode = $sitemapConfig->Sitemap->retrievalMode ?? 'search';
+        $sitemapConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('sitemap');
+        $retrievalMode = $sitemapConfig['Sitemap']['retrievalMode'] ?? 'search';
         return new $requestedName(
             $this->getBackendSettings($sitemapConfig),
             $this->getIdFetcher($container, $retrievalMode),
-            $sitemapConfig->Sitemap->countPerPage ?? 10000,
-            (array)($sitemapConfig->Sitemap->extraFilters ?? [])
+            $sitemapConfig['Sitemap']['countPerPage'] ?? 10000,
+            (array)($sitemapConfig['Sitemap']['extraFilters'] ?? [])
         );
     }
 
     /**
      * Process backend configuration into a convenient array.
      *
-     * @param Config $config Sitemap config
+     * @param array $config Sitemap config
      *
      * @return array
      */
-    protected function getBackendSettings($config): array
+    protected function getBackendSettings(array $config): array
     {
         // Process backend configuration:
-        $backendConfig = $config->Sitemap->index ?? ['Solr,/Record/'];
+        $backendConfig = (array)($config['Sitemap']['index'] ?? ['Solr,/Record/']);
         if (!$backendConfig) {
             return [];
         }
-        $backendConfig = is_callable([$backendConfig, 'toArray'])
-            ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
             $parts = array_map('trim', explode(',', $n));
             return ['id' => $parts[0], 'url' => $parts[1]];
