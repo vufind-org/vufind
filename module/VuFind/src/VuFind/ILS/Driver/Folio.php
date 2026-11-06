@@ -1950,6 +1950,7 @@ class Folio extends AbstractAPI implements
             foreach ($borrowingLocationPatterns as $pattern) {
                 if (preg_match($pattern, $itemLocationName)) {
                     $formattedItem['borrowingLocation'] = $itemLocationName;
+                    break;
                 }
             }
         }
