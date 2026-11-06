@@ -71,6 +71,7 @@ return [
         ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'validation.js', 'priority' => 420],
         ['file' => 'copy_to_clipboard.js', 'priority' => 430],
+        ['file' => 'show_password.js', 'priority' => 440],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -309,6 +310,8 @@ return [
             'page-next-rtl' => 'FontAwesome:angle-left',
             'page-prev' => 'FontAwesome:angle-left',
             'page-prev-rtl' => 'FontAwesome:angle-right',
+            'password-hidden' => 'FontAwesome:eye-slash',
+            'password-shown' => 'FontAwesome:eye',
             'place-hold' => 'FontAwesome:flag',
             'place-ill-request' => 'FontAwesome:right-left',
             'place-recall' => 'FontAwesome:flag',
