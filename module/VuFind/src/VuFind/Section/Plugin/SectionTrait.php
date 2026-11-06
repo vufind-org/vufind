@@ -129,6 +129,10 @@ trait SectionTrait
                 if (!isset($item['checkMethod'])) {
                     return true;
                 }
+                // If there is a checkMethod defined but not present, the section is likely broken.
+                if (!method_exists($this, $item['checkMethod'])) {
+                    return false;
+                }
                 if ('alwaysFail' === $item['checkMethod']) {
                     return false;
                 }
