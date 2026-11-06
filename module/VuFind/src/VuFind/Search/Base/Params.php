@@ -484,7 +484,7 @@ class Params
         if ($handler && preg_match('/^label:(.*)$/', $handler, $matches)) {
             $handler = $this->getOptions()->getHandlerForLabel($matches[1]);
         }
-        $request->set('type', $handler);
+        $request['type'] = $handler;
 
         // Try to initialize a basic search; if that fails, try for an advanced
         // search next!
