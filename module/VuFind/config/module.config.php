@@ -195,12 +195,12 @@ $config = [
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
+            \VuFind\Service\AuthorizationService::class => \VuFind\Service\AuthorizationServiceFactory::class,
             \VuFind\SMS\SMSInterface::class => \VuFind\SMS\Factory::class,
             \VuFind\UrlShortener\UrlShortenerInterface::class => \VuFind\UrlShortener\ServiceFactory::class,
             \VuFindHttp\HttpService::class => \VuFind\Service\HttpServiceFactory::class,
             \VuFindSearch\Service::class => \VuFind\Service\SearchServiceFactory::class,
             \Laminas\Session\SessionManager::class => \VuFind\Session\ManagerFactory::class,
-            \Lmc\Rbac\Mvc\Service\AuthorizationService::class => \VuFind\Service\AuthorizationServiceFactory::class,
 
             // Add a factory definition for the current interface (see also alias below):
             \Laminas\Translator\TranslatorInterface::class => \Laminas\I18n\Translator\TranslatorServiceFactory::class,
@@ -268,6 +268,7 @@ $config = [
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelper',
             'VuFind\Section\SectionServiceInterface' => 'VuFind\Section\SectionService',
+            'VuFind\Service\AuthorizationServiceInterface' => 'VuFind\Service\AuthorizationService',
             'VuFind\SessionManager' => 'Laminas\Session\SessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Session\PluginManager',
             'VuFind\SMS' => 'VuFind\SMS\SMSInterface',

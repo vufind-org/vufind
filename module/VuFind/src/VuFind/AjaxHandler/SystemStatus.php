@@ -31,14 +31,14 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Session\SessionManager;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
 use VuFind\Http\HttpStatus;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Service\AuthorizationServiceAwareInterface;
+use VuFind\Service\AuthorizationServiceAwareTrait;
 use VuFindSearch\Service as SearchService;
 
 /**

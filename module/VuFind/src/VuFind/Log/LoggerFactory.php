@@ -32,7 +32,6 @@ namespace VuFind\Log;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Monolog\Handler\BufferHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
@@ -53,6 +52,7 @@ use VuFind\Log\Handler\SlackWebhookHandler;
 use VuFind\Log\Handler\StreamHandler;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
+use VuFind\Service\AuthorizationServiceInterface;
 
 use function constant;
 use function error_log;
@@ -224,7 +224,7 @@ class LoggerFactory implements FactoryInterface
             && $container->get('Request')->getQuery()->get('debug')
         ) {
             try {
-                return $container->get(AuthorizationService::class)->isGranted('access.DebugMode');
+                return $container->get(AuthorizationServiceInterface::class)->isGranted('access.DebugMode');
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
                 error_log('VuFind Log: Could not get AuthorizationService for dynamic debug: ' . $e->getMessage());
                 return false;

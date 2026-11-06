@@ -60,7 +60,7 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Laminas\Stdlib\Parameters([]);
+            $request = [];
         }
         $mod = new $class();
         $mod->setConfig($settings);
