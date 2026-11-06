@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Factory for the Solr based GVI backend.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Universitätsbibliothek Mannheim 2026.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Search_Factory
+ * @author   Stefan Weil <sw@weilnetz.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+
+namespace VuFind\Search\Factory;
+
+/**
+ * Factory for a second Solr backend.
+ *
+ * @category VuFind
+ * @package  Search_Factory
+ * @author   Stefan Weil <sw@weilnetz.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+class GVIBackendFactory extends SolrDefaultBackendFactory
+{
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->mainConfig = $this->searchConfig = $this->facetConfig = 'GVI';
+        $this->searchSpecsConfig = 'gvisearchspecs.yaml';
+    }
+
+    /**
+     * Get the callback for creating a record.
+     *
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return ?callable
+     */
+    protected function getCreateRecordCallback(): ?callable
+    {
+        $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
+        return [$manager, 'getGVIRecord'];
+    }
+}
