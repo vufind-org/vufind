@@ -29,7 +29,6 @@
 
 namespace VuFind\Action\ExternalAuth;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LogLevel;
@@ -38,6 +37,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -61,13 +61,13 @@ class EzproxyLoginAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager          $authManager          Authentication manager
-     * @param AuthorizationService $authorizationService Authorization service
-     * @param array                $config               VuFind configuration
+     * @param AuthManager                   $authManager          Authentication manager
+     * @param AuthorizationServiceInterface $authorizationService Authorization service
+     * @param array                         $config               VuFind configuration
      */
     public function __construct(
         protected AuthManager $authManager,
-        protected AuthorizationService $authorizationService,
+        protected AuthorizationServiceInterface $authorizationService,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {

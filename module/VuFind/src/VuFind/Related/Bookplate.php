@@ -29,6 +29,8 @@
 
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Related Records: Bookplates.
  *
@@ -85,6 +87,7 @@ class Bookplate implements RelatedInterface
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
+    #[Autowire]
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
     }

@@ -70,7 +70,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Get a configuration array.
      *
      * @param ContainerInterface $container  Service container
-     * @param array              $rbacConfig Lmc\Rbac\Mvc configuration
+     * @param array              $rbacConfig Authorization configuration
      *
      * @return array
      */
@@ -78,7 +78,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         ContainerInterface $container,
         array $rbacConfig
     ): array {
-        // Get role provider settings from the Lmc\Rbac\Mvc configuration:
+        // Get role provider settings from the authorization configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
@@ -108,26 +108,6 @@ class DynamicRoleProviderFactory implements FactoryInterface
         \VuFind\Config\ConfigManagerInterface $configManager,
         array $permissions
     ): array {
-        // Add admin settings if they are absent:
-        if (!$this->permissionDefined($permissions, 'access.AdminModule')) {
-            $config = $configManager->getConfigArray('config');
-            $permissions['legacy.AdminModule'] = [];
-            if (isset($config['AdminAuth']['ipRegEx'])) {
-                $permissions['legacy.AdminModule']['ipRegEx']
-                    = $config['AdminAuth']['ipRegEx'];
-            }
-            if (isset($config['AdminAuth']['userWhitelist'])) {
-                $permissions['legacy.AdminModule']['username']
-                    = $config['AdminAuth']['userWhitelist'];
-            }
-            // If no settings exist in config.ini, we grant access to everyone
-            // by allowing both logged-in and logged-out roles.
-            if (empty($permissions['legacy.AdminModule'])) {
-                $permissions['legacy.AdminModule']['role'] = ['guest', 'loggedin'];
-            }
-            $permissions['legacy.AdminModule']['permission'] = 'access.AdminModule';
-        }
-
         // Add staff view setting it they are absent:
         if (!$this->permissionDefined($permissions, 'access.StaffViewTab')) {
             $permissions['legacy.StaffViewTab']['role'] = ['guest', 'loggedin'];
@@ -136,7 +116,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         }
 
         // Add EDS, EIT and EPF settings if they are absent:
-        foreach (['EDSModule', 'EITModule', 'EPFModule'] as $module) {
+        foreach (['EDSModule', 'EITModule', 'EPFModule', 'ProQuestFSGModule'] as $module) {
             if (!$this->permissionDefined($permissions, 'access.' . $module)) {
                 $permissions['legacy.' . $module] = [
                     'role' => $module === 'EITModule' ? 'loggedin' : ['guest', 'loggedin'],

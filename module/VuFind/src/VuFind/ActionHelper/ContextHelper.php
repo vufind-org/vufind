@@ -30,6 +30,8 @@
 namespace VuFind\ActionHelper;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\PluginManager as HelperPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Action helper for context information.
@@ -42,6 +44,17 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ContextHelper implements HelperInterface
 {
+    /**
+     * Constructor.
+     *
+     * @param UrlHelper $urlHelper URL helper
+     */
+    public function __construct(
+        #[Autowire(container: HelperPluginManager::class)]
+        protected UrlHelper $urlHelper,
+    ) {
+    }
+
     /**
      * Are we currently in a lightbox context?
      *
@@ -60,12 +73,31 @@ class ContextHelper implements HelperInterface
     /**
      * Get referrer of a request.
      *
-     * @param ServerRequestInterface $request Request
+     * @param ServerRequestInterface $request               Request
+     * @param bool                   $checkLightboxReferrer Check lightbox referrer?
+     * @param bool                   $allowExternalUrls     Allow external URLs too?
+     * @param bool                   $allowCurrentUrl       Allow current URL as referrer?
      *
      * @return ?string
      */
-    public function getReferrer(ServerRequestInterface $request): ?string
-    {
-        return $request->getHeader('Referer')[0] ?? null;
+    public function getReferrer(
+        ServerRequestInterface $request,
+        bool $checkLightboxReferrer = false,
+        bool $allowExternalUrls = false,
+        bool $allowCurrentUrl = true
+    ): ?string {
+        // lbreferer is the stored current url of the lightbox which overrides the url from the request when present
+        $referrer = $checkLightboxReferrer ? ($request->getQueryParams()['lbreferer'] ?? null) : null;
+        $referrer ??= $request->getHeader('Referer')[0] ?? null;
+        if ($referrer && !$allowExternalUrls && !$this->urlHelper->isLocalUrl($referrer)) {
+            return null;
+        }
+        // Check that the referrer is not current URL if not allowed:
+        if (!$allowCurrentUrl && (string)$request->getUri() === $referrer) {
+            return null;
+        }
+
+        // Return a non-empty string or null:
+        return $referrer ?: null;
     }
 }

@@ -30,11 +30,11 @@
 namespace VuFindTest\AjaxHandler;
 
 use Laminas\Session\SessionManager;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use VuFind\AjaxHandler\SystemStatus;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFindSearch\Backend\EDS\Command\GetInfoCommand;
 use VuFindSearch\Service as SearchService;
 use VuFindTest\Unit\AjaxHandlerTestCase;
@@ -85,7 +85,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
             $searchService,
             $ilsConnection
         );
-        $mockAuth = $this->createMock(AuthorizationService::class);
+        $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
         $mockAuth->method('isGranted')
             ->with('access.SystemStatus')
             ->willReturn($accessGranted);

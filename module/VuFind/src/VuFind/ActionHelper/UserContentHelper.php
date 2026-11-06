@@ -103,6 +103,16 @@ class UserContentHelper implements HelperInterface
     }
 
     /**
+     * Get enabled tabs for user content as an array with controller names as keys and tab titles as values.
+     *
+     * @return array
+     */
+    public function getUserContentTabs(): array
+    {
+        return $this->accountCapabilities->getUserContentTabs();
+    }
+
+    /**
      * Get paging parameters from query parameters.
      *
      * @param ServerRequestInterface $request  Request
@@ -172,5 +182,15 @@ class UserContentHelper implements HelperInterface
     public function tagsEnabled(): bool
     {
         return $this->accountCapabilities->getTagSetting() !== 'disabled';
+    }
+
+    /**
+     * Are list tags enabled?
+     *
+     * @return bool
+     */
+    public function listTagsEnabled(): bool
+    {
+        return $this->accountCapabilities->getListTagSetting() === 'enabled';
     }
 }

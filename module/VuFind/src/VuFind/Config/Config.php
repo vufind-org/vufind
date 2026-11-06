@@ -44,11 +44,12 @@ use function is_array;
 /**
  * Configuration object.
  *
- * @category VuFind
- * @package  Config
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @category   VuFind
+ * @package    Config
+ * @author     Demian Katz <demian.katz@villanova.edu>
+ * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link       https://vufind.org Main Site
+ * @deprecated An array is now used in place of Config objects, and support will be removed in 13.0
  */
 class Config implements ArrayAccess, Countable, Iterator
 {

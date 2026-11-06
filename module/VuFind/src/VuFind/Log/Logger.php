@@ -67,10 +67,15 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      */
     protected MonologLogger $monologLogger;
 
+    /**
+     * Translation map to convert non-standard short levels to standard levels.
+     *
+     * @var array
+     */
     protected const LEVEL_MAP = [
-        'crit'       => LogLevel::CRITICAL,
-        'err'       => LogLevel::ERROR,
-        'warn'      => LogLevel::WARNING,
+        'crit' => LogLevel::CRITICAL,
+        'err'  => LogLevel::ERROR,
+        'warn' => LogLevel::WARNING,
     ];
 
     /**
@@ -207,13 +212,55 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             ? self::LEVEL_MAP[$level]
             : $level;
 
-        if (is_array($message)) {
-            $context['vufind_log_details'] = $message;
-            $mainMonologMessage = 'Exception/Detailed log. See context for levels.';
-        } else {
-            $mainMonologMessage = $message;
+        // If the details key is set in context, fill in any missing parts
+        $context = $this->fillInMissingDetails($context);
+
+        $this->monologLogger->log($monologLevel, $message, $context);
+    }
+
+    /**
+     * If there are 'details' in the context that are missing any of the key keys
+     * (for each verbosity), use data from the next lower index, if that index is missing,
+     * instead use the next higher index. Leave blank as a last resort.
+     *
+     * @param mixed[] $context Additional context data
+     *
+     * @return mixed[]
+     */
+    protected function fillInMissingDetails(array $context = []): array
+    {
+        if (!is_array($context['details'] ?? null)) {
+            return $context;
         }
-        $this->monologLogger->log($monologLevel, $mainMonologMessage, $context);
+        $details = $context['details'];
+        $levels = [1, 2, 3, 4, 5];
+        $filledDetails = [];
+
+        foreach ($levels as $level) {
+            // This level has data, no need to look further
+            if (!empty($details[$level] ?? '')) {
+                $filledDetails[$level] = $details[$level];
+                continue;
+            }
+
+            // Try prior index (Backfill)
+            if (!empty($details[$level - 1] ?? '')) {
+                $filledDetails[$level] = $details[$level - 1];
+                continue;
+            }
+
+            // Try next index (Frontfill)
+            if (!empty($details[$level + 1] ?? '')) {
+                $filledDetails[$level] = $details[$level + 1];
+                continue;
+            }
+
+            // Leave blank as last resort
+            $filledDetails[$level] = '';
+        }
+
+        $context['details'] = $filledDetails;
+        return $context;
     }
 
     /**
@@ -236,12 +283,34 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an exception triggered by the framework for administrative purposes.
      *
-     * @param \Exception                 $error  Exception to log
-     * @param \Laminas\Stdlib\Parameters $server Server metadata
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
+     * @param ?string    $level  Optional log level. Will determine from the
+     * exception if not provided. (e.g., a \Psr\Log\LogLevel constant)
      *
      * @return void
      */
-    public function logException($error, $server)
+    public function logException(\Throwable $error, array $server = [], ?string $level = null): void
+    {
+        $details = $this->getDetailsFromException($error, $server);
+        $this->log(
+            $level ?? $this->getSeverityFromException($error),
+            $details[1] ?? 'Exception/Detailed log. See context for levels.',
+            compact('details')
+        );
+    }
+
+    /**
+     * Extract the error data from the exception object and server data,
+     * if provided, and convert it into an array with keys for each of
+     * the 5 verbosity levels.
+     *
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
+     *
+     * @return array
+     */
+    protected function getDetailsFromException($error, $server): array
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
@@ -252,19 +321,19 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             $baseError .= ' ; ' . $prev::class . ' : ' . $prev->getMessage();
             $prev = $prev->getPrevious();
         }
-        $referer = $server->get('HTTP_REFERER', 'none');
+        $referer = $server['HTTP_REFERER'] ?? 'none';
         $ipAddr = $this->userIpReader->getUserIp();
         $basicServer
             = ' (Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
-            . $server->get('HTTP_USER_AGENT') . ', '
+            . ($server['HTTP_USER_AGENT'] ?? '') . ', '
             . 'Host = '
-            . $server->get('HTTP_HOST') . ', '
+            . ($server['HTTP_HOST'] ?? '') . ', '
             . 'Request URI = '
-            . $server->get('REQUEST_URI') . ')';
+            . ($server['REQUEST_URI'] ?? '') . ')';
         $detailedServer = "\nServer Context:\n"
-            . print_r($server->toArray(), true);
+            . print_r($server, true);
         $basicBacktrace = $detailedBacktrace = "\nBacktrace:\n";
         if (is_array($error->getTrace())) {
             foreach ($error->getTrace() as $line) {
@@ -292,31 +361,23 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             }
         }
 
-        $errorDetails = [
+        return [
             1 => $baseError,
             2 => $baseError . $basicServer,
             3 => $baseError . $basicServer . $basicBacktrace,
             4 => $baseError . $detailedServer . $basicBacktrace,
             5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
-
-        $this->log(
-            $this->getSeverityFromException($error),
-            $baseError,
-            [
-                'details' => $errorDetails,
-            ]
-        );
     }
 
     /**
      * Given an exception, return a severity level for logging purposes.
      *
-     * @param \Exception $error Exception to analyze
+     * @param \Throwable $error Exception to analyze
      *
-     * @return int
+     * @return string
      */
-    protected function getSeverityFromException($error)
+    protected function getSeverityFromException(\Throwable $error): string
     {
         // If the exception provides the severity level, use it:
         if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {

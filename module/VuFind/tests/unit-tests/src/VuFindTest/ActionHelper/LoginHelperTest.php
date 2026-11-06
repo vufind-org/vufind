@@ -119,7 +119,7 @@ class LoginHelperTest extends TestCase
                         string $target
                     ): ResponseInterface {
                         $this->assertSame(['forcingLogin' => true], $request->getParsedBody());
-                        $this->assertSame('myresearch/login', $target);
+                        $this->assertSame('account/login', $target);
                         return $response->withHeader('X-Method', 'forward');
                     }
                 );
@@ -128,7 +128,7 @@ class LoginHelperTest extends TestCase
                 ->method('redirectToRoute')
                 ->willReturnCallback(
                     function (ResponseInterface $response, string $target): ResponseInterface {
-                        $this->assertSame('myresearch-home', $target);
+                        $this->assertSame('account-home', $target);
                         return $response->withHeader('X-Method', 'redirect');
                     }
                 );
@@ -167,9 +167,9 @@ class LoginHelperTest extends TestCase
      */
     public static function catalogLoginProvider(): Generator
     {
-        yield 'no user' => [false, [], null, 200, 'myresearch/login', false, true];
+        yield 'no user' => [false, [], null, 200, 'account/login', false, true];
 
-        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false, true];
+        yield 'user, no credentials' => [true, [], null, 200, 'account/cataloglogin', false, true];
 
         yield 'user, correct credentials' => [
             true,
@@ -196,7 +196,7 @@ class LoginHelperTest extends TestCase
             ['cat_username' => 'incorrect', 'cat_password' => 'password'],
             null,
             200,
-            'myresearch/cataloglogin',
+            'account/cataloglogin',
             false,
             true,
         ];
@@ -206,7 +206,7 @@ class LoginHelperTest extends TestCase
             ['cat_username' => 'correct', 'cat_password' => 'password'],
             'correct',
             200,
-            'myresearch/cataloglogin',
+            'account/cataloglogin',
             true,
             true,
         ];
@@ -216,7 +216,7 @@ class LoginHelperTest extends TestCase
             [],
             null,
             200,
-            'myresearch/cataloglogin',
+            'account/cataloglogin',
             true,
             true,
         ];
@@ -361,7 +361,7 @@ class LoginHelperTest extends TestCase
     public static function emailCatalogLoginProvider(): Generator
     {
         yield 'default route' => [null, []];
-        yield 'non-default route' => ['myresearch-checkedout', ['foo' => 'bar']];
+        yield 'non-default route' => ['checkouts-list', ['foo' => 'bar']];
     }
 
     /**
@@ -419,7 +419,7 @@ class LoginHelperTest extends TestCase
         $redirectHelper = $this->createMock(RedirectHelper::class);
         $redirectHelper->expects($this->once())
             ->method('redirectToRoute')
-            ->with($response, 'myresearch-verifyotp');
+            ->with($response, 'account-verifyotp');
 
         $helper = $this->getAutowiredObject(
             ActionHelperLoginHelper::class,
@@ -461,7 +461,7 @@ class LoginHelperTest extends TestCase
                 AuthManager::class => $this->getAuthManager($this->createMock(User::class), true),
                 ILSAuthenticator::class => $ilsAuthenticator,
                 FlashMessengerInterface::class => $flashMessenger,
-                ForwardHelper::class => $this->getForwardHelper('myresearch/cataloglogin'),
+                ForwardHelper::class => $this->getForwardHelper('account/cataloglogin'),
             ]
         );
 
@@ -569,6 +569,20 @@ class LoginHelperTest extends TestCase
             null,
             [],
         ];
+        yield 'Login URL not allowed as referrer' => [
+            'http://localhost/vufind/Account/UserLogin?foo=bar',
+            true,
+            [],
+            null,
+            [],
+        ];
+        yield 'Account/Home not allowed as referrer' => [
+            'http://localhost/vufind/Account/Home',
+            true,
+            [],
+            null,
+            [],
+        ];
     }
 
     /**
@@ -606,8 +620,8 @@ class LoginHelperTest extends TestCase
                 function (string $route): string {
                     return match ($route) {
                         'home' => '/',
-                        'myresearch-home' => '/MyResearch/Home',
-                        'myresearch-userlogin' => '/MyResearch/UserLogin'
+                        'account-home' => '/Account/Home',
+                        'account-userlogin' => '/Account/UserLogin'
                     };
                 }
             );
@@ -624,6 +638,7 @@ class LoginHelperTest extends TestCase
         $followupHelper->expects($expectedStoredReferrer ? $this->once() : $this->never())
             ->method('store')
             ->with($expectedStoredExtras, $expectedStoredReferrer);
+
         $helper = $this->getAutowiredObject(
             ActionHelperLoginHelper::class,
             [
@@ -631,7 +646,7 @@ class LoginHelperTest extends TestCase
                 RouteHelper::class => $routeHelper,
                 ServerUrlHelper::class => $serverUrlHelper,
                 UrlHelper::class => $urlHelper,
-                ContextHelper::class => new ContextHelper(),
+                ContextHelper::class => new ContextHelper($urlHelper),
             ]
         );
         $request = new ServerRequest(uri: 'http://localhost/vufind/current');

@@ -32,6 +32,7 @@ namespace VuFindTest\Action;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Router\RouteMatch;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -55,6 +56,27 @@ use VuFind\View\Renderer\TemplateRendererInterface;
  */
 abstract class AbstractActionTestCase extends TestCase
 {
+    /**
+     * Template name captured from the renderTemplate() call in getCapturingRenderer().
+     *
+     * @var ?string
+     */
+    protected ?string $capturedTemplate = null;
+
+    /**
+     * Template parameters captured from the renderTemplate() call in getCapturingRenderer().
+     *
+     * @var array
+     */
+    protected array $capturedTemplateParams = [];
+
+    /**
+     * Number of times the getCapturingRenderer() renderer called renderTemplate().
+     *
+     * @var int
+     */
+    protected int $renderTemplateCallCount = 0;
+
     /**
      * Wire the setter-injected dependencies onto an action.
      *
@@ -110,6 +132,8 @@ abstract class AbstractActionTestCase extends TestCase
      * @param array   $queryParams      Query parameters
      * @param array   $parsedBody       Parsed request body (i.e. POST parameters)
      * @param ?string $matchedRouteName Matched route name to set on the route match
+     * @param array   $headers          Headers
+     * @param array   $serverParams     Server parameters (e.g. HTTP_HOST)
      *
      * @return ServerRequestInterface
      */
@@ -117,15 +141,42 @@ abstract class AbstractActionTestCase extends TestCase
         array $routeParams = [],
         array $queryParams = [],
         array $parsedBody = [],
-        ?string $matchedRouteName = null
+        ?string $matchedRouteName = null,
+        array $headers = [],
+        array $serverParams = []
     ): ServerRequestInterface {
         $routeMatch = new RouteMatch($routeParams);
         if (null !== $matchedRouteName) {
             $routeMatch->setMatchedRouteName($matchedRouteName);
         }
-        return (new ServerRequest())
+        return (new ServerRequest(serverParams: $serverParams, headers: $headers))
             ->withQueryParams($queryParams)
             ->withParsedBody($parsedBody)
             ->withAttribute('route-match', $routeMatch);
+    }
+
+    /**
+     * Get a template renderer that captures the template name and parameters passed to renderTemplate() and returns the
+     * response unchanged.
+     *
+     * @return TemplateRendererInterface
+     */
+    protected function getCapturingRenderer(): TemplateRendererInterface
+    {
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->method('renderTemplate')->willReturnCallback(
+            function (
+                ServerRequestInterface $request,
+                ResponseInterface $response,
+                ?string $template,
+                array $params
+            ): ResponseInterface {
+                $this->renderTemplateCallCount++;
+                $this->capturedTemplate = $template;
+                $this->capturedTemplateParams = $params;
+                return $response;
+            }
+        );
+        return $renderer;
     }
 }

@@ -30,6 +30,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Session\Container as SessionContainer;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Session view helper.
@@ -47,8 +49,10 @@ class Session
      *
      * @param SessionContainer $sessionContainer Session container
      */
-    public function __construct(protected SessionContainer $sessionContainer)
-    {
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'SessionHelper')]
+        protected SessionContainer $sessionContainer
+    ) {
     }
 
     /**

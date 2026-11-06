@@ -21,7 +21,7 @@
 
 <?php
 $script = <<<JS
-    $('#sql_text').click(function(e) {
+    $('#sql_text').on('click', function(e) {
       this.select();
     });
     JS;

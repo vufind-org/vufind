@@ -32,6 +32,7 @@ namespace VuFind\Autocomplete;
 use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_callable;
 use function is_object;
@@ -54,6 +55,7 @@ class Suggester
      * @param ConfigManagerInterface $configManager  Config manager
      * @param OptionsManager         $optionsManager Options manager
      */
+    #[Autowire]
     public function __construct(
         protected PluginManager $pluginManager,
         protected ConfigManagerInterface $configManager,

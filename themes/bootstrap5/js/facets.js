@@ -289,7 +289,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     return newParams;
   }
-  
+
   /**
    * Compile modified facets into lists of added and removed URL parameters.
    */
@@ -316,7 +316,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
     }
   }
-  
+
   /**
    * Compile current parameters and newly added / removed to return the URL to redirect to
    * @returns {string} The new URL to redirect to.
@@ -630,8 +630,20 @@ VuFind.register('sideFacets', function SideFacets() {
    * Show a loading overlay on a facet container.
    *
    * This is used to indicate that new facet data is being loaded.
+   * @param {Event} event The click event.
    */
-  function showLoadingOverlay() {
+  function showLoadingOverlay(event) {
+    const target = event?.currentTarget?.getAttribute('target');
+    if (event && (
+      event.ctrlKey
+      || event.metaKey
+      || event.shiftKey
+      || event.altKey
+      || event.button > 0
+      || (target && target.toLowerCase() !== '_self')
+    )) {
+      return;
+    }
     let elem;
     if (this === undefined || this.nodeName === undefined) {
       elem = $('#search-sidebar .collapse, .checkbox-filters');
@@ -652,7 +664,7 @@ VuFind.register('sideFacets', function SideFacets() {
    */
   function activateFacetBlocking(context) {
     const finalContext = (typeof context === "undefined") ? $(document.body) : context;
-    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
+    finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').on('click', showLoadingOverlay);
   }
 
   /**
@@ -851,7 +863,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
    */
   function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
-    
+
     /**
      * Trigger an AJAX call to update the facet list with a new sort order.
      * @param {HTMLElement} button The button element that was clicked to trigger the sort.
@@ -887,7 +899,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       if (button.attr('disabled')) {
         return false;
       }
-      button.attr('disabled', 1);
+      button.attr('disabled', 'disabled');
       button.html(VuFind.translate('loading_ellipsis'));
 
       const overrideParams = { facetpage: page, layout: 'lightbox', ajax: 1 };
@@ -913,7 +925,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     });
     const updateFacetListHeightFunc = function () {
       const margin = 230;
-      $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
+      $('#modal .lightbox-scroll').css('max-height', (window.innerHeight - margin) + 'px');
     };
     $(window).on('resize', updateFacetListHeightFunc);
     // Initial resize:

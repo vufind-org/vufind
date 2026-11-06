@@ -31,6 +31,7 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Service;
 
 use function is_array;
@@ -64,20 +65,13 @@ class Eds implements AutocompleteInterface
     protected $searchClassId = 'EDS';
 
     /**
-     * Search service.
-     *
-     * @var Service
-     */
-    protected $searchService;
-
-    /**
      * Constructor.
      *
-     * @param Service $ss Search service
+     * @param Service $searchService Search service
      */
-    public function __construct(Service $ss)
+    #[Autowire]
+    public function __construct(protected Service $searchService)
     {
-        $this->searchService = $ss;
     }
 
     /**
