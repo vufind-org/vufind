@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89e0f247fd93e135e15e93da4eb13113",
+    "content-hash": "b79c1bc99265bfd9a7159928a917615c",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3473,84 +3473,6 @@
                 }
             ],
             "time": "2024-11-18T00:14:29+00:00"
-        },
-        {
-            "name": "laminas/laminas-mvc-i18n",
-            "version": "1.9.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-mvc-i18n.git",
-                "reference": "433e71e949438239cce814536711914a37544c42"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-i18n/zipball/433e71e949438239cce814536711914a37544c42",
-                "reference": "433e71e949438239cce814536711914a37544c42",
-                "shasum": ""
-            },
-            "require": {
-                "container-interop/container-interop": "^1.1",
-                "ext-intl": "*",
-                "laminas/laminas-i18n": "^2.13.0",
-                "laminas/laminas-router": "^3.5.0",
-                "laminas/laminas-servicemanager": "^3.15.1",
-                "laminas/laminas-stdlib": "^3.10.1",
-                "laminas/laminas-validator": "^2.19.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "conflict": {
-                "laminas/laminas-mvc": "<3.0.0",
-                "phpspec/prophecy": "<1.8.0",
-                "zendframework/zend-mvc-i18n": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "phpspec/prophecy-phpunit": "^2.0.2",
-                "phpunit/phpunit": "^9.6.13",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^5.15"
-            },
-            "suggest": {
-                "laminas/laminas-cache": "To enable caching of translation strings"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "component": "Laminas\\Mvc\\I18n",
-                    "config-provider": "Laminas\\Mvc\\I18n\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Mvc\\I18n\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Integration between laminas-mvc and laminas-i18n",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "i18n",
-                "laminas",
-                "mvc"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-mvc-i18n/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-mvc-i18n/issues",
-                "rss": "https://github.com/laminas/laminas-mvc-i18n/releases.atom",
-                "source": "https://github.com/laminas/laminas-mvc-i18n"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2024-10-11T09:36:44+00:00"
         },
         {
             "name": "laminas/laminas-paginator",
@@ -15494,15 +15416,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

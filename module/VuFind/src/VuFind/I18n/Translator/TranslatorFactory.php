@@ -29,7 +29,7 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;

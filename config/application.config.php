@@ -12,7 +12,6 @@ $modules = [
     'Laminas\Router',
     'Lmc\Rbac',
     'Laminas\I18n',
-    'Laminas\Mvc\I18n',
     'VuFindTheme',
     'VuFindSearch',
     'VuFind',
