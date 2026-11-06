@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Facebook authentication module.
@@ -49,21 +51,15 @@ class Facebook extends AbstractBase implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Session container.
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
      * Constructor.
      *
-     * @param \Laminas\Session\Container $container Session container for persisting
+     * @param \Laminas\Session\Container $session Session container for persisting
      * state information.
      */
-    public function __construct(\Laminas\Session\Container $container)
-    {
-        $this->session = $container;
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'Facebook')]
+        protected \Laminas\Session\Container $session
+    ) {
     }
 
     /**
@@ -77,14 +73,14 @@ class Facebook extends AbstractBase implements
     protected function validateConfig()
     {
         // Throw an exception if the required username setting is missing.
-        $fb = $this->config->Facebook;
-        if (!isset($fb->appId) || empty($fb->appId)) {
+        $fb = $this->config['Facebook'] ?? [];
+        if (empty($fb['appId'])) {
             throw new AuthException(
                 'Facebook app ID is missing in your configuration file.'
             );
         }
 
-        if (!isset($fb->secret) || empty($fb->secret)) {
+        if (empty($fb['secret'])) {
             throw new AuthException(
                 'Facebook app secret is missing in your configuration file.'
             );
@@ -151,7 +147,7 @@ class Facebook extends AbstractBase implements
             . 'auth_method=Facebook';
         $this->session->lastUri = $target;
         return $base . '?client_id='
-            . urlencode($this->getConfig()->Facebook->appId)
+            . urlencode($this->getConfig()['Facebook']['appId'])
             . '&redirect_uri=' . urlencode($target)
             . '&scope=public_profile,email';
     }
@@ -166,9 +162,9 @@ class Facebook extends AbstractBase implements
     protected function getAccessTokenFromCode($code)
     {
         $requestUrl = 'https://graph.facebook.com/oauth/access_token?'
-            . 'client_id=' . urlencode($this->getConfig()->Facebook->appId)
+            . 'client_id=' . urlencode($this->getConfig()['Facebook']['appId'])
             . '&redirect_uri=' . urlencode($this->session->lastUri)
-            . '&client_secret=' . urlencode($this->getConfig()->Facebook->secret)
+            . '&client_secret=' . urlencode($this->getConfig()['Facebook']['secret'])
             . '&code=' . urlencode($code);
         $response = $this->httpService->get($requestUrl);
         $parts = explode('&', $response->getBody(), 2);

@@ -29,6 +29,7 @@
 
 namespace VuFindTest\ILS\Driver;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\ILS\Driver\KohaRest;
 
 /**
@@ -43,6 +44,7 @@ use VuFind\ILS\Driver\KohaRest;
 class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Default test configuration.
@@ -216,5 +218,53 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->createConnector('purge-transaction-history');
         $this->expectExceptionMessage('Unsupported function');
         $this->driver->purgeTransactionHistory(['id' => 'bar'], [1, 2]);
+    }
+
+    /**
+     * Data provider for testGetStatusCodeItemNotForLoanOrLost.
+     *
+     * @return \Generator
+     */
+    public static function getStatusCodeItemNotForLoanOrLostProvider(): \Iterator
+    {
+        yield 'no data' => [
+            'Item::NotForLoan',
+            [],
+            'Item__NotForLoan-',
+        ];
+
+        yield 'status only' => [
+            'Item::NotForLoan',
+            [
+                'status' => '-',
+            ],
+            'Item__NotForLoan-',
+        ];
+
+        yield 'code only' => [
+            'Item::NotForLoan',
+            [
+                'code' => 'foo',
+            ],
+            'foo',
+        ];
+    }
+
+    /**
+     * Test getStatusCodeItemNotForLoanOrLost method.
+     *
+     * @param string $code     Status code
+     * @param array  $data     Status data
+     * @param string $expected Expected result
+     *
+     * @return void
+     */
+    #[DataProvider('getStatusCodeItemNotForLoanOrLostProvider')]
+    public function testGetStatusCodeItemNotForLoanOrLost(string $code, array $data, string $expected): void
+    {
+        $this->assertSame(
+            $expected,
+            $this->callMethod($this->driver, 'getStatusCodeItemNotForLoanOrLost', [$code, $data, []])
+        );
     }
 }

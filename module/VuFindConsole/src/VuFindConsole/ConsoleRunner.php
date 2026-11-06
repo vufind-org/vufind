@@ -29,8 +29,12 @@
 
 namespace VuFindConsole;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Console\ConsoleRunner as DoctrineConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Console runner.
@@ -51,20 +55,16 @@ class ConsoleRunner
     protected $commands;
 
     /**
-     * Plugin manager (to retrieve commands).
-     *
-     * @var ContainerInterface
-     */
-    protected $pluginManager;
-
-    /**
      * Constructor.
      *
-     * @param ContainerInterface $pm Plugin manager (to retrieve commands)
+     * @param ContainerInterface     $pluginManager Plugin manager (to retrieve commands)
+     * @param EntityManagerInterface $entityManager Entity manager
      */
-    public function __construct(ContainerInterface $pm)
-    {
-        $this->pluginManager = $pm;
+    public function __construct(
+        #[Autowire(service: \VuFindConsole\Command\PluginManager::class)]
+        protected ContainerInterface $pluginManager,
+        protected EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -109,6 +109,10 @@ class ConsoleRunner
         foreach ($commands as $command) {
             $consoleApp->add($this->pluginManager->get($command));
         }
+        // Add Doctrine commands:
+        $entityManagerProvider = new SingleManagerProvider($this->entityManager);
+        DoctrineConsoleRunner::addCommands($consoleApp, $entityManagerProvider);
+
         return $consoleApp->run();
     }
 }

@@ -31,6 +31,7 @@ namespace VuFind;
 
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_callable;
@@ -62,8 +63,11 @@ class Export
      * @param PhpRenderer $viewRenderer View renderer
      */
     public function __construct(
+        #[Autowire(config: 'config')]
         protected array $mainConfig,
+        #[Autowire(config: 'export')]
         protected array $exportConfig,
+        #[Autowire(service: 'ViewRenderer')]
         protected PhpRenderer $viewRenderer
     ) {
     }

@@ -393,7 +393,7 @@ AuthorBrowse:
 
 TitleBrowse:
   QueryFields:
-    title_full:
+    title_fullStr:
       - [onephrase, ~]
 
 DeweyBrowse:

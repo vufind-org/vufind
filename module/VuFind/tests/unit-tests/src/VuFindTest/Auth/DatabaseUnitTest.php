@@ -32,10 +32,10 @@ namespace VuFindTest\Auth;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Database;
-use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Http\PhpEnvironment\Request;
+use VuFind\Validator\EmailAddressValidator;
 
 /**
  * Database authentication test class.
@@ -58,7 +58,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Username cannot be blank');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $db->create($this->getRequest());
     }
 
@@ -72,7 +72,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Password cannot be blank');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $arr = $this->getCreateParams();
         $arr['password'] = $arr['password2'] = '';
         $db->create($this->getRequest($arr));
@@ -88,7 +88,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Passwords do not match');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $arr = $this->getCreateParams();
         $arr['password2'] = 'bad';
         $db->create($this->getRequest($arr));
@@ -222,13 +222,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = new Config(
-            [
-                'Authentication' => $authConfig,
-            ]
-        );
-        $db = new Database();
-        $db->setConfig($config);
+        $config = ['Authentication' => $authConfig];
+        $db = $this->getDatabaseAuth($config);
         $arr = $this->getCreateParams();
         $arr['password'] = $password;
         $arr['password2'] = $password;
@@ -244,15 +239,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreateWithBadPasswordPolicyPattern(): void
     {
-        $config = new Config(
-            [
-                'Authentication' => [
-                    'password_pattern' => 'a/',
-                ],
-            ]
-        );
-        $db = new Database();
-        $db->setConfig($config);
+        $config = ['Authentication' => ['password_pattern' => 'a/']];
+        $db = $this->getDatabaseAuth($config);
         $arr = $this->getCreateParams();
         $arr['password'] = 'abcδ';
         $arr['password2'] = 'abcδ';
@@ -411,13 +399,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         string $expectedExceptionClass,
         string $expectedExceptionMsg
     ): void {
-        $config = new Config(
-            [
-                'Authentication' => $authConfig,
-            ]
-        );
-        $db = new Database();
-        $db->setConfig($config);
+        $config = ['Authentication' => $authConfig];
+        $db = $this->getDatabaseAuth($config);
         $arr = $this->getCreateParams();
         $arr['username'] = $username;
         $this->expectException($expectedExceptionClass);
@@ -435,7 +418,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Service manager missing');
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $db->create($this->getRequest($this->getCreateParams()));
     }
 
@@ -551,8 +534,22 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
             ->with(UserServiceInterface::class)
             ->willReturn($service);
 
-        $db = new Database();
+        $db = $this->getDatabaseAuth();
         $db->setDbServiceManager($serviceManager);
+        return $db;
+    }
+
+    /**
+     * Get a Database authenticator instance.
+     *
+     * @param array $config Configuration
+     *
+     * @return Database
+     */
+    protected function getDatabaseAuth(array $config = []): Database
+    {
+        $db = new Database(new EmailAddressValidator());
+        $db->setConfig($config);
         return $db;
     }
 }

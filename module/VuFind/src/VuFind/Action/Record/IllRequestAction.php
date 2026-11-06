@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\IllRequestsHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Service\AuditEventService;
@@ -78,6 +79,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
      * @param SearchMemory      $searchMemory      Search memory
      * @param TabManager        $tabManager        Tab manager
      * @param AuthManager       $authManager       Authentication manager
+     * @param ConfigManager     $configManager     Configuration manager
      * @param RecordLoader      $recordLoader      Record loader
      * @param RecordRouter      $recordRouter      Record router
      * @param ResultScroller    $resultScroller    Result scroller
@@ -91,6 +93,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -106,6 +109,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,
@@ -188,7 +192,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
                     'html' => true,
                     'msg' => 'ill_request_place_success_html',
                     'tokens' => [
-                        '%%url%%' => $this->routeHelper->getUrlFromRoute('myresearch-illrequests'),
+                        '%%url%%' => $this->routeHelper->getUrlFromRoute('illrequests-list'),
                     ],
                 ];
                 $flashMessagesHelper->addSuccessMessage($msg);
@@ -223,10 +227,9 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         $defaultRequiredDate = $this->dateConverter->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
-        $pickupLibraries = $this->ilsConnection->getILLPickUpLibraries(
+        $pickupLibraries = $this->ilsConnection->getILLPickupLibraries(
             $driver->getUniqueID(),
-            $patron,
-            $gatheredDetails
+            $patron
         );
 
         // Get pickup locations. Note that these are independent of pickup library,

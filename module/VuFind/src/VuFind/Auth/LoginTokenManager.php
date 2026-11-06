@@ -36,7 +36,6 @@ use BrowscapPHP\BrowscapInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -104,7 +103,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     /**
      * LoginToken constructor.
      *
-     * @param Config                     $config            Configuration
+     * @param array                      $config            Configuration
      * @param UserServiceInterface       $userService       User database service
      * @param LoginTokenServiceInterface $loginTokenService Login Token database service
      * @param CookieManager              $cookieManager     Cookie manager
@@ -114,7 +113,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      * @param callable                   $browscapCB        Callback for creating Browscap
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected UserServiceInterface $userService,
         protected LoginTokenServiceInterface $loginTokenService,
         protected CookieManager $cookieManager,
@@ -273,7 +272,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      */
     public function getCookieLifetime(): int
     {
-        return (int)($this->config->Authentication->persistent_login_lifetime ?? 14);
+        return (int)($this->config['Authentication']['persistent_login_lifetime'] ?? 14);
     }
 
     /**
@@ -332,7 +331,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         $userId = $user->getId();
         try {
             if ($series) {
-                $lenient = ($this->config->Authentication->lenient_token_rotation ?? true);
+                $lenient = ($this->config['Authentication']['lenient_token_rotation'] ?? true);
                 $this->loginTokenService->deleteBySeries($series, $lenient ? $currentTokenId : null);
                 $this->debug("Updating login token $token series $series for user {$userId}");
             } else {
@@ -364,16 +363,16 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      */
     protected function sendLoginTokenWarningEmail(UserEntityInterface $user)
     {
-        if (!($this->config->Authentication->send_login_warnings ?? true)) {
+        if (!($this->config['Authentication']['send_login_warnings'] ?? true)) {
             return;
         }
-        $title = $this->config->Site->title ?? '';
+        $title = $this->config['Site']['title'] ?? '';
         if ($toAddr = $user->getEmail()) {
             $message = $this->viewRenderer->render(
                 'Email/login-warning.phtml',
                 compact('title')
             );
-            $subject = $this->config->Authentication->persistent_login_warning_email_subject
+            $subject = $this->config['Authentication']['persistent_login_warning_email_subject']
                 ?? 'persistent_login_warning_email_subject';
 
             try {

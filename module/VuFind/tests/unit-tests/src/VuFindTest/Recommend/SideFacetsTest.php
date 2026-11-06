@@ -74,7 +74,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertEquals(['format'], $sf->getHierarchicalFacets());
@@ -102,7 +102,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $results = $this->getMockResults();
         $params = $results->getParams();
@@ -141,7 +141,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertEquals('OR', $sf->getFacetOperator('format'));
@@ -168,7 +168,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertTrue($sf->excludeAllowed('format'));
@@ -192,7 +192,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $filters = [
             'date' => ['[1900 TO 1905]'],
@@ -238,7 +238,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => ['collapsedFacets' => '   foo, bar,baz   '],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
         $this->assertEquals(['foo', 'bar', 'baz'], $sf->getCollapsedFacets());
@@ -260,7 +260,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => ['collapsedFacets' => '*'],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $results = $this->getMockResults();
         $sf = $this->getSideFacets($configManager, $results);
@@ -298,7 +298,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Checkboxes' => ['foo' => 'bar'],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $checkboxData = [
             [
@@ -331,7 +331,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Checkboxes' => ['foo' => 'bar'],
                 ],
             ],
-            getConfigObjectExpect: $this->once()
+            getConfigArrayExpect: $this->once()
         );
         $checkboxData = [
             [
@@ -358,7 +358,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
      * @param ?Results                               $results       results object
      * @param string                                 $settings      settings
-     * @param ?\Laminas\Stdlib\Parameters            $request       request
+     * @param array                                  $request       request
      *
      * @return SideFacets
      */
@@ -366,7 +366,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         ?\VuFind\Config\ConfigManagerInterface $configManager = null,
         ?Results $results = null,
         string $settings = '',
-        ?\Laminas\Stdlib\Parameters $request = null
+        array $request = []
     ): SideFacets {
         if (null === $results) {
             $results = $this->getMockResults();
@@ -375,7 +375,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            $request
         );
         $sf->process($results);
         return $sf;

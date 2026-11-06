@@ -101,8 +101,8 @@ class SearchMemory
     public function getLastSearchUrl(): ?string
     {
         if ($lastSearch = $this->getLastSearch()) {
-            $searchClassId = $lastSearch->getBackendId();
             $params = $lastSearch->getParams();
+            $searchClassId = $params->getSearchClassId();
             // Use last settings for params that are not stored in the search:
             foreach (['limit', 'view', 'sort'] as $setting) {
                 $value = $this->memory->retrieveLastSetting($searchClassId, $setting);
@@ -198,8 +198,8 @@ class SearchMemory
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
-        $request = new \Laminas\Stdlib\Parameters();
-        $request->fromString($queryParams ?? '');
+        $request = [];
+        parse_str($queryParams ?? '', $request);
         $params = $this->searchParams->get($searchClassId);
         // Make sure the saved URL represents search results from $searchClassId;
         // if the user jumps from search results of one backend to a record of a

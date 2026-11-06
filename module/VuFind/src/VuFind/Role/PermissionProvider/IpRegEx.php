@@ -31,6 +31,7 @@ namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Net\UserIpReader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * IpRegEx permission provider for VuFind.
@@ -44,29 +45,16 @@ use VuFind\Net\UserIpReader;
 class IpRegEx implements PermissionProviderInterface
 {
     /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * User IP address reader.
-     *
-     * @var UserIpReader
-     */
-    protected $userIpReader;
-
-    /**
      * Constructor.
      *
      * @param Request      $request      Request object
      * @param UserIpReader $userIpReader User IP address reader
      */
-    public function __construct(Request $request, UserIpReader $userIpReader)
-    {
-        $this->request = $request;
-        $this->userIpReader = $userIpReader;
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        protected Request $request,
+        protected UserIpReader $userIpReader
+    ) {
     }
 
     /**

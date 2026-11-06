@@ -1,0 +1,137 @@
+
+<?php
+  /**
+   * Form element.
+   *
+   * @property string      $type         Element type (text|textarea|date|email|url|select|radio|checkbox|hidden|submit)
+   * @property string      $id           Element id
+   * @property string      $name         Element name
+   * @property string      $class        Element class (in addition to any default such as form-control)
+   * @property string      $placeholder  Placeholder text
+   * @property ?string     $value        Value (text|date|email|url|submit|textarea) element (if defined, overrides any
+   * value defined in attributes)
+   * @property bool        $required     Is a value required?
+   * @property bool|string $autocomplete Enable autocomplete (optionally with string defining the type)
+   * @property array       $options      Options for a checkbox, radio or select field
+   * @property array       $optionGroups Option groups for a select field (if defined, overrides options)
+   * @property array       $attributes   Any predefined HTML attributes (above settings will override some attributes)
+   * @property string      $message      Any field validation message for an invalid field
+   */
+
+  $invalidElemHtml = '<div class="invalid-feedback">' . $this->transEsc($this->message) . '</div>';
+
+  $attrs = $this->htmlAttributes($this->attributes ?? []);
+  if (null !== ($id = $this->id ?? null)) {
+    $attrs->add('id', $id);
+  }
+  $attrs->add('name', $this->name);
+  $class = trim(($this->class ?? '') . ($this->message ? ' is-invalid' : ''));
+  if ($class) {
+    $attrs->add('class', $class);
+  }
+  if ($this->required) {
+    $attrs->add('required', null);
+  }
+  $placeholder = $this->placeholder ?? null;
+  switch ($this->type) {
+    case 'text':
+    case 'date':
+    case 'email':
+    case 'url':
+      $attrs->add('type', $this->type);
+      if (null !== ($value = $this->value ?? null)) {
+        $attrs->add('value', $value);
+      }
+      if (null !== $placeholder) {
+        $attrs->add('placeholder', $this->translate($placeholder));
+      }
+      $attrs->add('class', 'form-control');
+      echo "<input$attrs>";
+      echo $invalidElemHtml;
+      break;
+    case 'textarea':
+      if (null !== $placeholder) {
+        $attrs->add('placeholder', $placeholder);
+      }
+      $attrs->add('class', 'form-control');
+      echo "<textarea$attrs>" . $this->escapeHtml($this->value ?? '') . '</textarea>';
+      echo $invalidElemHtml;
+      break;
+    case 'select':
+      $attrs->add('class', 'form-select');
+      echo "<select$attrs>";
+      if ($optionGroups = $this->optionGroups ?? null) {
+        foreach ($optionGroups as $group) {
+          echo '<optgroup label="' . $this->escapeHtmlAttr($group['label'] ?? '') . '">';
+          foreach ($group['options'] ?? [] as $value => $option) {
+            echo '<option value="' . $this->escapeHtmlAttr($value) . '"'
+              . (($option['selected'] ?? false) ? ' selected' : '')
+              . '>'
+              . $this->transEsc($option['label'] ?? '')
+              . '</option>';
+          }
+        }
+      } else {
+        foreach ($this->options ?? [] as $value => $option) {
+          echo '<option value="' . $this->escapeHtmlAttr($value) . '"'
+            . (($option['disabled'] ?? false) ? ' disabled' : '')
+            . (($option['selected'] ?? false) ? ' selected' : '')
+            . '>'
+            . $this->transEsc($option['label'] ?? '')
+            . '</option>';
+        }
+      }
+      echo '</select>';
+      echo $invalidElemHtml;
+      break;
+    case 'checkbox':
+    case 'radio':
+      // Note: we can't use the radio-fieldset component due to how it handles translation and legend.
+      echo '<div class="form-check">';
+      $i = 1;
+      foreach ($this->options ?? [] as $value => $option) {
+        $optAttrs = $this->attributes ?? [];
+        $optAttrs['type'] = $this->type;
+        $optAttrs['id'] = ($id ?? $this->name) . '_' . $i;
+        $optAttrs['name'] = $this->name . ('checkbox' === $this->type ? '[]' : '');
+        $optAttrs['value'] = $value;
+        if ($option['selected']) {
+          $optAttrs['checked'] = null;
+        }
+        $attrs = $this->htmlAttributes($optAttrs);
+        $attrs->add('class', 'form-check-input');
+        if ($class) {
+          $attrs->add('class', $class);
+        }
+        echo "<input$attrs>";
+        echo '<label class="form-check-label" for="' . $this->escapeHtmlAttr($optAttrs['id']) . '">';
+        echo $this->transEsc($option['label'] ?? '');
+        echo '</label>';
+        ++$i;
+      }
+      echo $invalidElemHtml;
+      echo '</div>';
+      break;
+    case 'hidden':
+      $attrs = $this->htmlAttributes([
+        'type' => 'hidden',
+        'name' => $this->name,
+        'value' => $this->value ?? '',
+      ]);
+      echo "<input$attrs>";
+      break;
+    case 'submit':
+      $attrs = $this->htmlAttributes([
+        'name' => $this->name,
+        'type' => 'submit',
+        'class' => 'btn btn-primary',
+      ]);
+      if (null !== ($value = $this->value ?? null)) {
+        $attrs->add('value', $value);
+      }
+      echo "<input$attrs>";
+      break;
+    default:
+      throw new \Exception('Invalid field type: ' . $this->type);
+  }
+?>

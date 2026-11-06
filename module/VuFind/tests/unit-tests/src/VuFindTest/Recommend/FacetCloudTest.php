@@ -77,7 +77,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
         $fc->setConfig('');
         $fc->init(
             $results->getParams(),
-            new \Laminas\Stdlib\Parameters([])
+            []
         );
         $fc->process($results);
         return $fc;

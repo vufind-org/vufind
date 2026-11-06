@@ -47,7 +47,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testRead()
+    public function testRead(): void
     {
         $client = $this->createMock(\Credis_Client::class);
         $client->expects($this->once())->method('__call')
@@ -61,7 +61,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 }
             );
         $handler = $this->getHandler($client);
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**
@@ -69,7 +69,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testWrite()
+    public function testWrite(): void
     {
         $client = $this->createMock(\Credis_Client::class);
         $client->expects($this->once())->method('__call')
@@ -93,7 +93,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testDestroyDefault()
+    public function testDestroyDefault(): void
     {
         $client = $this->createMock(\Credis_Client::class);
         $client->expects($this->once())->method('__call')
@@ -117,7 +117,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testDestroyNewRedis()
+    public function testDestroyNewRedis(): void
     {
         $client = $this->createMock(\Credis_Client::class);
         $client->expects($this->once())->method('__call')
@@ -130,9 +130,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
                     return null;
                 }
             );
-        $config = new \VuFind\Config\Config(
-            ['redis_version' => 4]
-        );
+        $config = ['redis_version' => 4];
         $handler = $this->getHandler($client, $config);
         $this->setUpDestroyExpectations('foo');
 
@@ -142,12 +140,12 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Credis_Client        $client Client object
-     * @param \VuFind\Config\Config $config Optional configuration
+     * @param \Credis_Client $client Client object
+     * @param ?array         $config Optional configuration
      *
-     * @return Database
+     * @return Redis
      */
-    protected function getHandler($client, $config = null)
+    protected function getHandler(\Credis_Client $client, ?array $config = null): Redis
     {
         $handler = new Redis($client, $config);
         $this->injectMockDatabaseDependencies($handler);

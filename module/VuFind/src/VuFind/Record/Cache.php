@@ -31,10 +31,10 @@
 
 namespace VuFind\Record;
 
-use VuFind\Config\Config as Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Record Cache.
@@ -65,12 +65,14 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      * Constructor.
      *
      * @param RecordFactory          $recordFactoryManager Record driver plugin manager
-     * @param Config                 $cacheConfig          RecordCache.ini contents
+     * @param array                  $cacheConfig          RecordCache.ini contents
      * @param RecordServiceInterface $recordService        Record database service
      */
     public function __construct(
         protected RecordFactory $recordFactoryManager,
-        protected Config $cacheConfig,
+        #[Autowire(config: 'RecordCache')]
+        protected array $cacheConfig,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RecordServiceInterface $recordService
     ) {
         $this->setContext(Cache::CONTEXT_DEFAULT);
@@ -177,18 +179,17 @@ class Cache implements \Psr\Log\LoggerAwareInterface
             return;
         }
         $context = ucfirst($context);
-        if (!isset($this->cacheConfig->$context)) {
+        if (!isset($this->cacheConfig[$context])) {
             $context = Cache::CONTEXT_DEFAULT;
         }
-        $this->cachableSources = isset($this->cacheConfig->$context)
-            ? $this->cacheConfig->$context->toArray() : [];
+        $this->cachableSources = $this->cacheConfig[$context] ?? [];
         if (
             $context != Cache::CONTEXT_DEFAULT
-            && isset($this->cacheConfig->{Cache::CONTEXT_DEFAULT})
+            && isset($this->cacheConfig[Cache::CONTEXT_DEFAULT])
         ) {
             // Inherit settings from Default section
             $this->cachableSources = array_merge(
-                $this->cacheConfig->{Cache::CONTEXT_DEFAULT}->toArray(),
+                $this->cacheConfig[Cache::CONTEXT_DEFAULT],
                 $this->cachableSources
             );
         }

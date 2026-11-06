@@ -33,6 +33,7 @@ use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Exception\ConfigException;
 use VuFind\Exception\FileAccess as FileAccessException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function get_class;
 
@@ -54,6 +55,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @param PathResolver $pathResolver Path Resolver
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
     ) {

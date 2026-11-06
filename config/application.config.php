@@ -4,30 +4,21 @@ require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
-    'DoctrineModule',
-    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
     'Laminas\Cache\Storage\Adapter\Memcached',
     'Laminas\Cache\Storage\Adapter\Memory',
-    'Laminas\Form',
     'Laminas\Router',
     'Lmc\Rbac',
-    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
     'Laminas\Mvc\I18n',
-    'SlmLocale',
     'VuFindTheme',
     'VuFindSearch',
     'VuFind',
     'VuFindAdmin',
     'VuFindApi',
 ];
-if (!extension_loaded('intl')) {
-    // Disable SlmLocale module if intl extension is missing:
-    $modules = array_diff($modules, ['SlmLocale']);
-}
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }

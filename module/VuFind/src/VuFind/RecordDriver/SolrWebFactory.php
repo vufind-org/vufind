@@ -67,7 +67,7 @@ class SolrWebFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('website');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('website');
         $finalOptions = [$config, $config];
         return parent::__invoke($container, $requestedName, $finalOptions);
     }

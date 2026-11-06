@@ -31,7 +31,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Recommend\DateFacetTrait;
 use VuFind\Search\Base\DateRangeOptionsInterface;
@@ -118,7 +117,7 @@ class GetVisData extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $paramsObj = $this->results->getParams();
-        $paramsObj->initFromRequest(new Parameters($request->getQueryParams()));
+        $paramsObj->initFromRequest($request->getQueryParams());
         foreach ((array)$this->getQueryParam($request, 'hf', []) as $hf) {
             $paramsObj->addHiddenFilter($hf);
         }

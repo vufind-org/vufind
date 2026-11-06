@@ -35,7 +35,6 @@ use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\LoginTokenManager;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\LoginTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -193,7 +192,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getLoginToken($cookieManager, $tokenTable, $userTable, $browscapOk)
     {
-        $config = new Config([]);
+        $config = [];
         $saveHandler = $this->createMock(SaveHandlerInterface::class);
         $sessionManager = $this->createMock(SessionManager::class);
         $sessionManager->method('getSaveHandler')->willReturn($saveHandler);

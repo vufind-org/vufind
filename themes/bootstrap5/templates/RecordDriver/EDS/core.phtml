@@ -117,7 +117,7 @@
           $url = $customLink['Url'] ?? '';
           $mot = $customLink['MouseOverText'] ?? '';
           $icon = $customLink['Icon'] ?? '';
-          $name = $customLink['Text'] ?? '';
+          $name = $customLink['Text'] ?: $mot ?: $url;
         ?>
         <div>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">

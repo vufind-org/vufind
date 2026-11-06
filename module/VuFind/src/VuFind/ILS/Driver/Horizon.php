@@ -356,7 +356,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
-        $sqlArray = $this->getHoldingSql($id);
+        $sqlArray = $this->getHoldingSQL($id);
         $sql = $this->buildSqlFromArray($sqlArray);
 
         $holding = [];

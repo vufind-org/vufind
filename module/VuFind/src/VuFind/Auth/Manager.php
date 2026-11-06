@@ -33,9 +33,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
-use Lmc\Rbac\Mvc\Identity\IdentityProviderInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
@@ -58,7 +56,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements IdentityProviderInterface, LoggerAwareInterface
+class Manager implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -121,7 +119,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param Config                          $config            VuFind configuration
+     * @param array                           $config            VuFind configuration
      * @param UserServiceInterface            $userService       User database service
      * @param UserSessionPersistenceInterface $userSession       User session persistence service
      * @param SessionManager                  $sessionManager    Session manager
@@ -134,7 +132,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      * @param AuditEventServiceInterface      $auditEventService Event database service
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected UserServiceInterface $userService,
         protected UserSessionPersistenceInterface $userSession,
         protected SessionManager $sessionManager,
@@ -148,7 +146,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     ) {
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
-        $method = $this->getPreAuthenticationData()['authMethod'] ?? $config->Authentication->method ?? 'Database';
+        $method = $this->getPreAuthenticationData()['authMethod'] ?? $config['Authentication']['method'] ?? 'Database';
         // Set the active authentication method and force it legal:
         $this->setAuthMethod($method, true);
     }
@@ -231,7 +229,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function supportsRecovery(?string $authMethod = null, ?string $target = null): bool
     {
-        return ($this->config->Authentication->recover_password ?? false)
+        return ($this->config['Authentication']['recover_password'] ?? false)
             && $this->getAuth($authMethod)->supportsPasswordRecovery($target);
     }
 
@@ -269,7 +267,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function supportsEmailChange(?string $authMethod = null): bool
     {
-        return $this->config->Authentication->change_email ?? false;
+        return $this->config['Authentication']['change_email'] ?? false;
     }
 
     /**
@@ -282,7 +280,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function supportsPasswordChange(?string $authMethod = null): bool
     {
-        return ($this->config->Authentication->change_password ?? false)
+        return ($this->config['Authentication']['change_password'] ?? false)
             && $this->getAuth($authMethod)->supportsPasswordChange();
     }
 
@@ -296,7 +294,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function supportsConnectingLibraryCard(?string $authMethod = null): bool
     {
-        return ($this->config->Catalog->auth_based_library_cards ?? false)
+        return ($this->config['Catalog']['auth_based_library_cards'] ?? false)
             && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
     }
 
@@ -309,10 +307,10 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function supportsPersistentLogin(?string $authMethod = null): bool
     {
-        if (!empty($this->config->Authentication->persistent_login)) {
+        if (!empty($this->config['Authentication']['persistent_login'])) {
             return in_array(
                 strtolower($authMethod ?? $this->getSelectedAuthMethod() ?? ''),
-                explode(',', strtolower($this->config->Authentication->persistent_login))
+                explode(',', strtolower($this->config['Authentication']['persistent_login']))
             );
         }
         return false;
@@ -325,7 +323,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function getPersistentLoginLifetime(): int
     {
-        return $this->config->Authentication->persistent_login_lifetime ?? 14;
+        return $this->config['Authentication']['persistent_login_lifetime'] ?? 14;
     }
 
     /**
@@ -408,7 +406,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         if ($this->defaultSessionInitiatorTarget === null) {
             $serverHelper = $this->viewRenderer->plugin('serverurl');
             $urlHelper = $this->viewRenderer->plugin('url');
-            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('account-home'));
         }
         return $this->defaultSessionInitiatorTarget;
     }
@@ -516,7 +514,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     {
         if (null === $this->hideLogin) {
             // Assume login is enabled unless explicitly turned off:
-            $this->hideLogin = ($this->config->Authentication->hideLogin ?? false);
+            $this->hideLogin = ($this->config['Authentication']['hideLogin'] ?? false);
 
             if (!$this->hideLogin) {
                 try {
@@ -544,7 +542,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     public function ajaxEnabled(): bool
     {
         // Assume ajax is enabled unless explicitly turned off:
-        return $this->config->Authentication->enableAjax ?? true;
+        return $this->config['Authentication']['enableAjax'] ?? true;
     }
 
     /**
@@ -555,26 +553,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     public function dropdownEnabled(): bool
     {
         // Assume dropdown is disabled unless explicitly turned on:
-        return $this->config->Authentication->enableDropdown ?? false;
-    }
-
-    /**
-     * Legacy method that logs out the current user.
-     *
-     * @param string $url     URL to redirect user to after logging out.
-     * @param bool   $destroy Should we destroy the session (true) or just reset it
-     * (false); destroy is for log out, reset is for expiration.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     *
-     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
-     */
-    public function logout(string $url, bool $destroy = true): string
-    {
-        $url = $this->getLogoutRedirectUrl($url);
-        $this->clearLoginState($destroy);
-        return $url;
+        return $this->config['Authentication']['enableDropdown'] ?? false;
     }
 
     /**
@@ -740,7 +719,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function inPrivacyMode(): bool
     {
-        return $this->config->Authentication->privacy ?? false;
+        return $this->config['Authentication']['privacy'] ?? false;
     }
 
     /**
@@ -838,7 +817,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     {
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
-        if ($this->config->Authentication->verify_email ?? false) {
+        if ($this->config['Authentication']['verify_email'] ?? false) {
             // If new email address is the current address, just reset any pending
             // email address:
             $user->setPendingEmail($email === $user->getEmail() ? '' : $email);
@@ -925,10 +904,9 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
                     $this->userSession->setPreAuthenticationData(null);
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
-                } else {
-                    // After successful token verification, clear list to shrink session:
-                    $this->csrf->trimTokenList(0);
                 }
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->trimTokenList(0);
             }
 
             // Perform authentication:
@@ -996,7 +974,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             // Attempt catalog login so that any bad credentials are cleared before further processing
             // (avoids e.g. multiple login attempts by account AJAX checks).
             if (
-                ($this->config->Catalog->checkILSCredentialsOnLogin ?? true)
+                ($this->config['Catalog']['checkILSCredentialsOnLogin'] ?? true)
                 && $this->ilsAuthenticator
                 && $this->allowsUserIlsLogin()
                 && ($catUsername = $user->getCatUsername())
@@ -1225,7 +1203,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      */
     public function allowsUserIlsLogin(): bool
     {
-        return $this->config->Catalog->allowUserLogin ?? true;
+        return $this->config['Catalog']['allowUserLogin'] ?? true;
     }
 
     /**

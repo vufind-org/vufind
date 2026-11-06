@@ -177,7 +177,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
                 str_replace(' ', '', $this->findCssAndGetText($page, $backlinkSelector))
             );
         } else {
-            $this->unfindCss($page, $backlinkSelector);
+            $this->unFindCss($page, $backlinkSelector);
         }
 
         // Confirm the expected status of the image (most importantly, should it be visible or hidden?):

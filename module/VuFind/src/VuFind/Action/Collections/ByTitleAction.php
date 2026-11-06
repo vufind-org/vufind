@@ -68,7 +68,7 @@ class ByTitleAction extends AbstractCollectionsAction
             return $this->renderTemplate($request, $response, compact('collections'));
         }
         return $this->getHelper(RedirectHelper::class)
-            ->redirectToRoute($response, 'collection', ['id' => $collections[0]->getUniqueId()]);
+            ->redirectToRoute($response, 'collection', ['id' => $collections[0]->getUniqueID()]);
     }
 
     /**

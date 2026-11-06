@@ -30,10 +30,8 @@
 namespace VuFind\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
-use function intval;
 use function is_string;
 use function strlen;
 
@@ -105,21 +103,21 @@ class LibGuidesProfile implements
      * Constructor.
      *
      * @param LibGuides    $libGuides LibGuides API connection
-     * @param Config       $config    LibGuides API configuration object
+     * @param array        $config    LibGuides API configuration object
      * @param CacheAdapter $cache     Object cache
      */
     public function __construct(
         LibGuides $libGuides,
-        Config $config,
+        array $config,
         CacheAdapter $cache
     ) {
         $this->libGuides = $libGuides;
         $this->setCacheStorage($cache);
 
         // Cache the data related to profiles for up to 10 minutes:
-        $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
+        $this->cacheLifetime = (int)($config['GetAccounts']['cache_lifetime'] ?? 600);
 
-        if ($profile = $config->Profile->toArray()) {
+        if ($profile = $config['Profile'] ?? []) {
             $strategies = $profile['strategies'] ?? [];
             $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 
@@ -150,14 +148,14 @@ class LibGuidesProfile implements
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // No action needed.
     }

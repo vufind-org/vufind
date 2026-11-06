@@ -32,8 +32,10 @@ namespace VuFind;
 use Laminas\Http\Header\Location;
 use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
+use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
 use VuFind\View\GlobalsContainer;
@@ -196,31 +198,25 @@ class Bootstrapper
     }
 
     /**
-     * Set up the initial globals.
-     *
-     * @return void
-     */
-    protected function initGlobals(): void
-    {
-        $settings = $this->container->get(LocaleSettings::class);
-        $locale = $settings->getUserLocale();
-        $globals = $this->container->get(GlobalsContainer::class);
-        $globals['userLang'] = $locale;
-        $globals['allLangs'] = $settings->getEnabledLocales();
-        $globals['rtl'] = $settings->isRightToLeftLocale($locale);
-    }
-
-    /**
-     * Update language in user account, as needed.
+     * Detect locale and update language in user account, as needed.
      *
      * @return void
      */
     protected function initUserLanguage(): void
     {
-        $callback = function (/*$event*/): void {
-            // Store last selected language in user account, if applicable:
+        // Initialize language at a very high priority so that it's available before everything else:
+        $callback = function ($event): void {
+            // Detect language:
             $settings = $this->container->get(LocaleSettings::class);
-            $language = $settings->getUserLocale();
+            $language = $settings->detectLocale(
+                PHP_SAPI !== 'cli' ? Psr7ServerRequest::fromLaminas($event->getRequest()) : null
+            );
+            // Update cookie:
+            $cookies = $this->container->get(CookieManager::class);
+            if ($language !== $cookies->get('language')) {
+                $cookies->set('language', $language);
+            }
+            // Store last selected language in user account, if applicable:
             $authManager = $this->container->get(\VuFind\Auth\Manager::class);
             if (
                 ($user = $authManager->getUserObject())
@@ -229,9 +225,14 @@ class Bootstrapper
                 $user->setLastLanguage($language);
                 $this->getDbService(\VuFind\Db\Service\UserServiceInterface::class)->persistEntity($user);
             }
+            // Populate language-related global values:
+            $globals = $this->container->get(GlobalsContainer::class);
+            $globals['userLang'] = $language;
+            $globals['allLangs'] = $settings->getEnabledLocales();
+            $globals['rtl'] = $settings->isRightToLeftLocale($language);
         };
-        $this->events->attach('dispatch.error', $callback);
-        $this->events->attach('dispatch', $callback);
+        $this->events->attach('dispatch.error', $callback, 15000);
+        $this->events->attach('dispatch', $callback, 15000);
     }
 
     /**
@@ -337,8 +338,8 @@ class Bootstrapper
                     // Console request does not include server,
                     // so use a dummy in that case.
                     $server = (PHP_SAPI == 'cli')
-                        ? new \Laminas\Stdlib\Parameters(['env' => 'console'])
-                        : $event->getRequest()->getServer();
+                        ? ['env' => 'console']
+                        : $event->getRequest()->getServer()->toArray();
                     if (!empty($exception)) {
                         $log->logException($exception, $server);
                     }

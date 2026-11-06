@@ -61,7 +61,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
         $europeana->setHttpService($this->getHttpService());
         $europeana->setConfig(''); // use defaults
         $results = $this->getMockResults();
-        $query = new \Laminas\Stdlib\Parameters(['lookfor' => 'test']);
+        $query = ['lookfor' => 'test'];
         $europeana->init($results->getParams(), $query);
         $europeana->process($results);
         $expectedBaseLink = 'http://www.europeana.eu/portal/record/92099';
