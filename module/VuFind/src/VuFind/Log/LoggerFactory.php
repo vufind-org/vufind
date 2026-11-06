@@ -342,9 +342,7 @@ class LoggerFactory implements FactoryInterface
         if (in_array('ip', $referenceIds)) {
             if ($ip = $container->get(UserIpReader::class)->getUserIp()) {
                 $monologLogger->pushProcessor(function (LogRecord $record) use ($ip) {
-                    $record['extra'] = array_merge($record['extra'], [
-                        'ip' => $ip,
-                    ]);
+                    $record['extra'] = array_merge($record['extra'], compact('ip'));
                     return $record;
                 });
             }
