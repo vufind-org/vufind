@@ -475,7 +475,7 @@ class Params
      */
     protected function initSearch(array $request): void
     {
-        $handler = $request->get('type');
+        $handler = $request['type'] ?? null;
 
         // Flatten type arrays for backward compatibility with legacy URLs:
         if (is_array($handler)) {
