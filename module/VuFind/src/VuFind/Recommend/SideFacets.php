@@ -32,11 +32,11 @@ namespace VuFind\Recommend;
 
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function get_class;
 use function in_array;
-use function intval;
 use function is_array;
 
 /**
@@ -152,6 +152,7 @@ class SideFacets extends AbstractFacets
      * @param ?HierarchicalFacetHelper              $hierarchicalFacetHelper Helper for handling
      * hierarchical facets
      */
+    #[Autowire]
     public function __construct(
         \VuFind\Config\ConfigManagerInterface $configManager,
         protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null
@@ -250,16 +251,16 @@ class SideFacets extends AbstractFacets
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         $mainFacets = $this->mainFacets;
         $checkboxFacets = $this->checkboxFacets;
-        if ($request != null && ($enabledFacets = $request->get('enabledFacets', null)) !== null) {
+        if ($request != null && ($enabledFacets = $request['enabledFacets'] ?? null) !== null) {
             $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
             $checkboxFacets = array_intersect_key($checkboxFacets, array_flip($enabledFacets));
         }
@@ -424,9 +425,9 @@ class SideFacets extends AbstractFacets
         // default. If neither is found, initialize return value to null.
         $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
-            $val = intval($this->showMoreSettings[$facetName]);
+            $val = (int)($this->showMoreSettings[$facetName]);
         } elseif (isset($this->showMoreSettings['*'])) {
-            $val = intval($this->showMoreSettings['*']);
+            $val = (int)($this->showMoreSettings['*']);
         }
 
         // Validate the return value, using default if missing/invalid

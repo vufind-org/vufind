@@ -34,6 +34,7 @@ namespace VuFind\Action\Record;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordTab\TabManager;
@@ -60,6 +61,7 @@ class AjaxTabAction extends AbstractRecordAction
      * @param SearchMemory     $searchMemory     Search memory
      * @param TabManager       $tabManager       Tab manager
      * @param AuthManager      $authManager      Authentication manager
+     * @param ConfigManager    $configManager    Configuration manager
      * @param RecordLoader     $recordLoader     Record loader
      * @param RecordRouter     $recordRouter     Record router
      * @param ResultScroller   $resultScroller   Result scroller
@@ -70,6 +72,7 @@ class AjaxTabAction extends AbstractRecordAction
         SearchMemory $searchMemory,
         TabManager $tabManager,
         AuthManager $authManager,
+        ConfigManager $configManager,
         RecordLoader $recordLoader,
         RecordRouter $recordRouter,
         ResultScroller $resultScroller,
@@ -81,6 +84,7 @@ class AjaxTabAction extends AbstractRecordAction
             $searchMemory,
             $tabManager,
             $authManager,
+            $configManager,
             $recordLoader,
             $recordRouter,
             $resultScroller,

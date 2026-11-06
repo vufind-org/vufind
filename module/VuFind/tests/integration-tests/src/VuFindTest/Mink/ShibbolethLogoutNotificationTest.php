@@ -50,11 +50,31 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
+     * Test missing permission for Shibboleth logout notification.
+     *
+     * @return void
+     */
+    public function testMissingPermission(): void
+    {
+        // Try the GET method:
+        $result = $this->httpGet($this->getVuFindUrl() . '/soap/shiblogout');
+        $this->assertSame(403, $result->getStatusCode());
+
+        // Try the POST method:
+        $result = $this->httpPost(
+            $this->getVuFindUrl() . '/soap/shiblogout',
+            $this->getFixture('shibboleth/logout_notification.xml'),
+            'application/xml'
+        );
+        $this->assertSame(403, $result->getStatusCode());
+    }
+
+    /**
      * Test Shibboleth logout notification.
      *
      * @return void
      */
-    public function testLogoutNotification()
+    public function testLogoutNotification(): void
     {
         $this->changeConfigs(
             [
@@ -74,7 +94,7 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
         // Do a search and make sure it's in history:
         $page = $this->performSearch('building:weird_ids.mrc');
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $this->findCss($page, 'table#recent-searches');
 
         // Add a session id mapping to external_session table:
@@ -90,7 +110,7 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
         );
         $this->assertSame(200, $result->getStatusCode());
 
-        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $session->visit($this->getVuFindUrl() . '/SearchHistory/List');
         $this->unFindCss($page, 'table#recent-searches');
     }
 }

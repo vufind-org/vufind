@@ -30,8 +30,7 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Http\Request;
-use Laminas\Stdlib\Parameters;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Query\Query;
 
 /**
@@ -64,20 +63,13 @@ class AuthorFacets implements RecommendInterface
     protected $results;
 
     /**
-     * Results plugin manager.
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Search\Results\PluginManager $resultsManager Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    #[Autowire]
+    public function __construct(protected \VuFind\Search\Results\PluginManager $resultsManager)
     {
-        $this->resultsManager = $results;
     }
 
     /**
@@ -106,7 +98,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // No action needed here.
     }
@@ -167,7 +159,7 @@ class AuthorFacets implements RecommendInterface
 
         // Initialize object using parameters from the current Solr search object.
         $results->getParams()
-            ->initFromRequest(new Parameters(['lookfor' => $lookfor]));
+            ->initFromRequest(['lookfor' => $lookfor]);
 
         // Send back the results:
         return [

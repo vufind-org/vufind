@@ -30,7 +30,6 @@
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-use VuFind\Config\Config;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
@@ -184,7 +183,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params = new ParamBag([]);
         $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
-        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\VuFind\Service\AuthorizationServiceInterface::class);
         $listener->setAuthorizationService($mockAuth);
 
         $event = $this->getMockPreEvent($params);
@@ -208,7 +207,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
-        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\VuFind\Service\AuthorizationServiceInterface::class);
         $listener->setAuthorizationService($mockAuth);
 
         $event = $this->getMockPreEvent($params);
@@ -232,7 +231,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params = new ParamBag([]);
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
-        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\VuFind\Service\AuthorizationServiceInterface::class);
         $mockAuth->method('isGranted')
             ->with('conditionalFilter.sample')
             ->willReturn(true);
@@ -265,7 +264,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $params = new ParamBag([]);
 
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
-        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\VuFind\Service\AuthorizationServiceInterface::class);
         $mockAuth->method('isGranted')
             ->with('conditionalFilter.sample')
             ->willReturn(false);
@@ -292,7 +291,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         );
 
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
-        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\VuFind\Service\AuthorizationServiceInterface::class);
         $mockAuth->method('isGranted')
             ->with('conditionalFilter.sample')
             ->willReturn(false);
@@ -325,7 +324,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         );
 
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
-        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\VuFind\Service\AuthorizationServiceInterface::class);
         $mockAuth->method('isGranted')
             ->with('conditionalFilter.sample')
             ->willReturn(true);

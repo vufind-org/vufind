@@ -149,21 +149,8 @@ class SearchTabs implements LoggerAwareInterface
                 }
             } catch (\Exception $e) {
                 // Log the error and just don't add tabs that we couldn't get the data for
-                $baseMsg = "Could not add tab for {$key}.";
-                $shortDetails = $e->getMessage();
-                $fullDetails = (string)$e;
-                $this->logError(
-                    $baseMsg,
-                    [
-                        'details' => [
-                            1 => "$baseMsg $shortDetails",
-                            2 => "$baseMsg $shortDetails",
-                            3 => "$baseMsg $shortDetails",
-                            4 => "$baseMsg $fullDetails",
-                            5 => "$baseMsg $fullDetails",
-                        ],
-                    ]
-                );
+                $this->logError("Could not add tab for {$key}.");
+                $this->logException($e);
                 continue;
             }
             $tab = [

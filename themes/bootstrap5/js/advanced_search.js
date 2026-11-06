@@ -23,7 +23,7 @@ function addSearch(group, _fieldValues, isUser = false) {
     .attr('id', 'search_lookfor' + inputID)
     .attr('name', 'lookfor' + group + '[]')
     .val('');
-  $newSearch.find('select.adv-term-type option:first-child').attr('selected', 1);
+  $newSearch.find('select.adv-term-type option:first-child').attr('selected', 'selected');
   $newSearch.find('select.adv-term-type')
     .attr('id', 'search_type' + inputID)
     .attr('name', 'type' + group + '[]');
@@ -38,10 +38,10 @@ function addSearch(group, _fieldValues, isUser = false) {
     $newSearch.find('input.form-control').val(fieldValues.term);
   }
   if (typeof fieldValues.field !== "undefined") {
-    $newSearch.find('select.adv-term-type option[value="' + fieldValues.field + '"]').attr('selected', 1);
+    $newSearch.find('select.adv-term-type option[value="' + fieldValues.field + '"]').attr('selected', 'selected');
   }
   if (typeof fieldValues.op !== "undefined") {
-    $newSearch.find('select.adv-term-op option[value="' + fieldValues.op + '"]').attr('selected', 1);
+    $newSearch.find('select.adv-term-op option[value="' + fieldValues.op + '"]').attr('selected', 'selected');
   }
   // Insert it
   $("#group" + group + "Holder").before($newSearch);
@@ -91,7 +91,7 @@ deleteSearch = function _deleteSearch(group, sindex) {
     var parent = toRemove.parent();
     toRemove.remove();
     if (parent.length) {
-      parent.find('.adv-search input.form-control').focus();
+      parent.find('.adv-search input.form-control').trigger('focus');
     }
     if (groupLength[group] === 1) {
       $('#group' + group + ' .adv-term-remove').addClass('hidden'); // Hide x
@@ -150,7 +150,7 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   $newGroup.find('.search_bool')
     .attr('for', 'search_bool' + nextGroup);
   if (join.length > 0) {
-    $newGroup.find('option[value="' + join + '"]').attr('selected', 1);
+    $newGroup.find('option[value="' + join + '"]').attr('selected', 'selected');
   }
 
   // Insert

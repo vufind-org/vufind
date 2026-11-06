@@ -126,6 +126,24 @@ class ActionConfigManager
                             }
                             $action->setBackendId($value);
                             break;
+                        case 'checkEnabled':
+                            if (!($action instanceof CheckEnabledInterface)) {
+                                throw new ConfigException(
+                                    $action::class . ' (action ' . $actionIdentifier . ')'
+                                    . " does not implement CheckEnabledInterface for $key configuration"
+                                );
+                            }
+                            $action->setCheckEnabled($value);
+                            break;
+                        case 'customConfig':
+                            if (!($action instanceof CustomConfigInterface)) {
+                                throw new ConfigException(
+                                    $action::class . ' (action ' . $actionIdentifier . ')'
+                                    . " does not implement CustomConfigInterface for $key configuration"
+                                );
+                            }
+                            $action->setCustomConfig($value);
+                            break;
                         case 'defaultTab':
                         case 'fallbackDefaultTab':
                             if (!($action instanceof DefaultTabInterface)) {
@@ -148,6 +166,15 @@ class ActionConfigManager
                             break;
                         case 'poweredBy':
                             $this->globalsContainer['poweredBy'] = $value;
+                            break;
+                        case 'searchClassId':
+                            if (!($action instanceof SearchClassIdInterface)) {
+                                throw new ConfigException(
+                                    $action::class . ' (action ' . $actionIdentifier . ')'
+                                    . " does not implement SearchClassIdInterface for $key configuration"
+                                );
+                            }
+                            $action->setSearchClassId($value);
                             break;
                         default:
                             throw new ConfigException(

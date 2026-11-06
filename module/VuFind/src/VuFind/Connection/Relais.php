@@ -30,7 +30,6 @@
 namespace VuFind\Connection;
 
 use Laminas\Http\Client;
-use VuFind\Config\Config;
 
 /**
  * Relais connection class.

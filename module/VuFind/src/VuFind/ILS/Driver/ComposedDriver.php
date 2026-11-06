@@ -298,7 +298,8 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getConfig(string $function, array $params = []): array
     {
-        return $this->defaultCall('getConfig', func_get_args());
+        $driverName = $this->getMainDriverNameForMethod($function);
+        return $this->callDriverMethod($driverName, 'getConfig', func_get_args());
     }
 
     /**
@@ -639,10 +640,7 @@ class ComposedDriver extends AbstractMultiDriver
     /**
      * Get Renew Details.
      *
-     * In order to renew an item, the ILS requires information on the item and
-     * patron. This function returns the information as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkoutDetails An array of item data
      *

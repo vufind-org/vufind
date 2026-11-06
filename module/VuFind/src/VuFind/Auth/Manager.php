@@ -33,9 +33,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
-use Lmc\Rbac\Mvc\Identity\IdentityProviderInterface;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
@@ -58,7 +56,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements IdentityProviderInterface, LoggerAwareInterface
+class Manager implements LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -204,7 +202,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
-        $auth->setConfig(new Config($this->config));
+        $auth->setConfig($this->config);
         return $auth;
     }
 
@@ -408,7 +406,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         if ($this->defaultSessionInitiatorTarget === null) {
             $serverHelper = $this->viewRenderer->plugin('serverurl');
             $urlHelper = $this->viewRenderer->plugin('url');
-            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('account-home'));
         }
         return $this->defaultSessionInitiatorTarget;
     }
@@ -556,25 +554,6 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     {
         // Assume dropdown is disabled unless explicitly turned on:
         return $this->config['Authentication']['enableDropdown'] ?? false;
-    }
-
-    /**
-     * Legacy method that logs out the current user.
-     *
-     * @param string $url     URL to redirect user to after logging out.
-     * @param bool   $destroy Should we destroy the session (true) or just reset it
-     * (false); destroy is for log out, reset is for expiration.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     *
-     * @deprecated Use clearLoginState() and getLogoutRedirectUrl() instead.
-     */
-    public function logout(string $url, bool $destroy = true): string
-    {
-        $url = $this->getLogoutRedirectUrl($url);
-        $this->clearLoginState($destroy);
-        return $url;
     }
 
     /**
@@ -925,10 +904,9 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
                     $this->userSession->setPreAuthenticationData(null);
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
-                } else {
-                    // After successful token verification, clear list to shrink session:
-                    $this->csrf->trimTokenList(0);
                 }
+                // After successful token verification, clear list to shrink session:
+                $this->csrf->trimTokenList(0);
             }
 
             // Perform authentication:

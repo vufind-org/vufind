@@ -29,8 +29,9 @@
 
 namespace VuFind\Role\PermissionProvider;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Service\AuthorizationServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -46,20 +47,13 @@ use function in_array;
 class Username implements PermissionProviderInterface
 {
     /**
-     * Authorization object.
-     *
-     * @var AuthorizationService
-     */
-    protected $auth;
-
-    /**
      * Constructor.
      *
-     * @param AuthorizationService $authorization Authorization service
+     * @param AuthorizationServiceInterface $auth Authorization service
      */
-    public function __construct(AuthorizationService $authorization)
+    #[Autowire]
+    public function __construct(protected AuthorizationServiceInterface $auth)
     {
-        $this->auth = $authorization;
     }
 
     /**

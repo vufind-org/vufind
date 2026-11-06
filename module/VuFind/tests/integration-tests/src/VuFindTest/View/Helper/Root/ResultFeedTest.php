@@ -74,7 +74,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
         $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
-        $router = new \VuFind\Record\Router(new \VuFind\Config\Config([]));
+        $router = new \VuFind\Record\Router([]);
         $memory = $this->createMock(\VuFind\Search\Memory::class);
         $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
         $url->method('__invoke')->willReturn('test/url');
@@ -130,11 +130,12 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         // Set up a request -- we'll sort by title to ensure a predictable order
         // for the result list (relevance or last_indexed may lead to unstable test
         // cases).
-        $request = new \Laminas\Stdlib\Parameters();
-        $request->set('lookfor', 'id:testbug2 OR id:testsample1');
-        $request->set('skip_rss_sort', 1);
-        $request->set('sort', 'title');
-        $request->set('view', 'rss');
+        $request = [
+            'lookfor' => 'id:testbug2 OR id:testsample1',
+            'skip_rss_sort' => 1,
+            'sort' => 'title',
+            'view' => 'rss',
+        ];
 
         $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);

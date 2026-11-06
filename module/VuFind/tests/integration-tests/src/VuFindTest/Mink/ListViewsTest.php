@@ -62,7 +62,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoSearch()
+    protected function goToSearch()
     {
         $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
@@ -78,9 +78,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecord()
+    protected function goToRecord()
     {
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
         // Ensure that accordion has completed its transition:
@@ -99,7 +99,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             ['searches' => ['List' => ['view' => 'tabs']]]
         );
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Assert that we are on the search results screen; we want to make sure that clicking on the comments
         // tab doesn't manipulate the search URL inappropriately.
@@ -139,7 +139,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
             ['searches' => ['List' => ['view' => 'accordion']]]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Open the comments tab:
         $this->clickCss($page, '#usercomments_cd588d8723d65ca0ce9439e79755fa0a');
@@ -171,7 +171,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
             ['searches' => ['List' => ['view' => 'tabs']]]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Click save inside the tools tab
         $this->clickCss($page, '#tab-button-tools-cd588d8723d65ca0ce9439e79755fa0a');
@@ -203,7 +203,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
             ['searches' => ['List' => ['view' => 'accordion']]]
         );
 
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
 
         // Click save inside the tools tab
         $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
@@ -233,7 +233,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function localStorageDance()
     {
-        $page = $this->gotoRecord();
+        $page = $this->goToRecord();
         $session = $this->getMinkSession();
 
         // Reload the page to close all results
@@ -256,7 +256,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('anything else');
         $this->waitForPageLoad($page);
         // Come back
-        $page = $this->gotoSearch();
+        $page = $this->goToSearch();
         // Did our result close after not being being in the last search?
         $result = $page->find('css', '.result.embedded');
         $this->assertIsNotObject($result);

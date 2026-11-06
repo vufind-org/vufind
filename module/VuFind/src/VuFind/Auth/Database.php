@@ -39,6 +39,8 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\DuplicateKeyException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Validator\EmailAddressValidator;
 
 use function in_array;
 use function is_object;
@@ -80,10 +82,14 @@ class Database extends AbstractBase
     /**
      * Constructor.
      *
-     * @param ?PasswordHasher $hasher Password hash service (null to create one)
+     * @param EmailAddressValidator $emailValidator Email address validator
+     * @param ?PasswordHasher       $hasher         Password hash service (null to create one)
      */
-    public function __construct(?PasswordHasher $hasher = null)
-    {
+    #[Autowire]
+    public function __construct(
+        protected EmailAddressValidator $emailValidator,
+        ?PasswordHasher $hasher = null,
+    ) {
         $this->hasher = $hasher ?? new PasswordHasher();
     }
 
@@ -126,7 +132,7 @@ class Database extends AbstractBase
     protected function passwordHashingEnabled()
     {
         $config = $this->getConfig();
-        return $config->Authentication->hash_passwords ?? false;
+        return $config['Authentication']['hash_passwords'] ?? false;
     }
 
     /**
@@ -275,7 +281,7 @@ class Database extends AbstractBase
     protected function checkEmailVerified($user)
     {
         $config = $this->getConfig();
-        $verify_email = $config->Authentication->verify_email ?? false;
+        $verify_email = $config['Authentication']['verify_email'] ?? false;
         if ($verify_email && !$user->getEmailVerified()) {
             throw new AuthEmailNotVerifiedException(
                 $user,
@@ -322,8 +328,7 @@ class Database extends AbstractBase
     {
         // If no inclusion list is configured, all emails are allowed:
         $fullConfig = $this->getConfig();
-        $config = isset($fullConfig->Authentication)
-            ? $fullConfig->Authentication->toArray() : [];
+        $config = $fullConfig['Authentication'] ?? [];
         $rawIncludeList = $config['legal_domains']
             ?? $config['domain_whitelist']  // deprecated configuration
             ?? null;
@@ -498,8 +503,7 @@ class Database extends AbstractBase
     protected function validateParams(array $params, UserServiceInterface $userService): void
     {
         // Invalid Email Check
-        $validator = new \Laminas\Validator\EmailAddress();
-        if (!$validator->isValid($params['email'])) {
+        if (!$this->emailValidator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }
 

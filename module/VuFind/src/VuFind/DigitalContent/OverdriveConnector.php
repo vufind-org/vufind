@@ -33,15 +33,14 @@ use Exception;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client;
 use Laminas\Session\Container;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
-use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Service\AuthorizationServiceAwareInterface;
+use VuFind\Service\AuthorizationServiceAwareTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 use VuFindHttp\HttpServiceAwareTrait;
 

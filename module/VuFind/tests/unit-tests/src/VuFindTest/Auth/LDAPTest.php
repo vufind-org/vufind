@@ -31,7 +31,6 @@ namespace VuFindTest\Auth;
 
 use Laminas\Http\Request;
 use VuFind\Auth\LDAP;
-use VuFind\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -56,7 +55,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public function getAuthObject(?array $config = null): LDAP
     {
         $obj = new LDAP($this->createMock(\VuFind\Auth\ILSAuthenticator::class));
-        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
+        $obj->setConfig($config ?? $this->getAuthConfig());
         return $obj;
     }
 

@@ -31,7 +31,7 @@ namespace VuFind\Search\Primo;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Service\AuthorizationServiceAwareTrait;
 use VuFindSearch\Service;
 
 /**

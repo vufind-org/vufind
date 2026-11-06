@@ -36,12 +36,15 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\BackendIdInterface;
+use VuFind\Action\CheckEnabledInterface;
 use VuFind\Action\DefaultTabInterface;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\ConfigException;
+use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
@@ -66,6 +69,7 @@ use function is_object;
  */
 abstract class AbstractRecordAction extends AbstractTemplateRenderingAction implements
     BackendIdInterface,
+    CheckEnabledInterface,
     DefaultTabInterface
 {
     /**
@@ -114,6 +118,11 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     protected ?string $sourceId = null;
 
     /**
+     * Should we check the config that the source is enabled?
+     */
+    protected bool $checkEnabled = false;
+
+    /**
      * Record driver.
      *
      * @var ?AbstractRecordDriver
@@ -126,6 +135,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
      * @param SearchMemory   $searchMemory   Search memory
      * @param TabManager     $tabManager     Tab manager
      * @param AuthManager    $authManager    Authentication manager
+     * @param ConfigManager  $configManager  Configuration manager
      * @param RecordLoader   $recordLoader   Record loader
      * @param RecordRouter   $recordRouter   Record router
      * @param ResultScroller $resultScroller Result scroller
@@ -135,6 +145,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
         protected SearchMemory $searchMemory,
         protected TabManager $tabManager,
         protected AuthManager $authManager,
+        protected ConfigManager $configManager,
         protected RecordLoader $recordLoader,
         protected RecordRouter $recordRouter,
         protected ResultScroller $resultScroller,
@@ -167,6 +178,29 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     public function setBackendId(string $id): static
     {
         $this->sourceId = $id;
+        return $this;
+    }
+
+    /**
+     * Get "check enabled" flag.
+     *
+     * @return bool
+     */
+    public function getCheckEnabled(): bool
+    {
+        return $this->checkEnabled;
+    }
+
+    /**
+     * Set "check enabled" flag.
+     *
+     * @param bool $checkEnabled Check enabled?
+     *
+     * @return static
+     */
+    public function setCheckEnabled(bool $checkEnabled): static
+    {
+        $this->checkEnabled = true;
         return $this;
     }
 
@@ -243,6 +277,13 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
         if (null === $this->sourceId) {
             $routeName = $request->getAttribute('route-match')?->getMatchedRouteName() ?? '<unknown>';
             throw new ConfigException("sourceId not properly configured for route '$routeName'");
+        }
+
+        if ($this->checkEnabled) {
+            $config = $this->configManager->getConfigArray($this->getBackendId());
+            if (!($config['General']['enabled'] ?? false)) {
+                throw new ForbiddenException($this->getBackendId() . ' is not enabled');
+            }
         }
 
         return null;
