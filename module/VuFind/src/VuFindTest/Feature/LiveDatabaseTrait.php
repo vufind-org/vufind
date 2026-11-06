@@ -48,6 +48,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Record\ResourcePopulator;
+use VuFind\Session\PluginManager as SessionPluginManager;
 use VuFind\Session\SessionContainerRegistry;
 use VuFindTest\Container\MockContainer;
 
@@ -178,6 +179,10 @@ trait LiveDatabaseTrait
             $factory = new \VuFind\ServiceManager\Factory\AutowiringFactory();
             $favoritesService = $factory($container, FavoritesService::class);
             $container->set(FavoritesService::class, $favoritesService);
+
+            $sessionPluginManager = new SessionPluginManager($container, []);
+            $container->set(SessionPluginManager::class, $sessionPluginManager);
+
             $this->liveDatabaseContainer = $container;
         }
         return $this->liveDatabaseContainer;

@@ -224,4 +224,27 @@ class SessionService extends AbstractDbService implements
             ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
         return $queryBuilder->getQuery()->execute();
     }
+
+    /**
+     * Check which session IDs exist.
+     *
+     * @param array $sessionIds Session IDs to check
+     * @param int   $lifetime   Session lifetime (in seconds)
+     *
+     * @return array Existing session IDs
+     */
+    public function existingSessions(array $sessionIds, int $lifetime): array
+    {
+        return array_map(
+            fn ($row) => $row['sessionId'],
+            $this->entityManager->createQueryBuilder()
+                ->select('s.sessionId')
+                ->from(SessionEntityInterface::class, 's')
+                ->where('s.sessionId IN (:sessionIds) AND s.lastUsed > :limit')
+                ->setParameter('sessionIds', $sessionIds)
+                ->setParameter('limit', time() - $lifetime)
+                ->getQuery()
+                ->getResult()
+        );
+    }
 }

@@ -116,4 +116,17 @@ class Database extends AbstractBase
     {
         return $this->getDbService(SessionServiceInterface::class);
     }
+
+    /**
+     * Check which sessions expired based on an array of IDs.
+     *
+     * @param array $sessionIds Session IDs to check.
+     *
+     * @return array
+     */
+    public function expiredSessionIds(array $sessionIds): array
+    {
+        $existingSessionIds = $this->getSessionService()->existingSessions($sessionIds, $this->lifetime);
+        return array_diff($sessionIds, $existingSessionIds);
+    }
 }
