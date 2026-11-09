@@ -30,6 +30,7 @@
 namespace VuFind\ILS\Logic;
 
 use VuFind\Record\Loader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Action helper to perform ILS record related actions.
@@ -50,8 +51,11 @@ class RecordsHelper
      * @param array  $config VuFind configuration
      * @param Loader $loader Record loader
      */
-    public function __construct(protected array $config, protected Loader $loader)
-    {
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config, 
+        protected Loader $loader
+    ){
     }
 
     /**
