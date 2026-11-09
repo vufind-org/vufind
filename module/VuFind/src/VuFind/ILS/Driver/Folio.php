@@ -1010,36 +1010,96 @@ class Folio extends AbstractAPI implements
             );
             return $statement;
         };
+
         $id = $holding->id;
+
         $holdingNotes = array_filter(
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
+
         $hasHoldingNotes = !empty(implode($holdingNotes));
+
+        $holdingsNoteTypes = $this->getHoldingsNoteTypes();
+        $holdingRawNotes = array_map(fn($note) => [
+            'text' => $note?->note ?? '',
+            'type' => $holdingsNoteTypes[$note?->holdingsNoteTypeId ?? ''] ?? '',
+        ], $holding?->notes ?? []);
+
         $holdingsStatements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatements ?? []
         )));
+
         $holdingsSupplements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForSupplements ?? []
         )));
+
         $holdingsIndexes = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForIndexes ?? []
         )));
+
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+
+        $holdingElectronicAccess = array_map(
+            fn($electronicAccessItem) => (array)$electronicAccessItem, 
+            $holding?->electronicAccess ?? []
+        );
+
+        $agreement = null;
+        $agreementNoteTypeId = $this->config['ElectronicHoldings']['agreement_id_note_type'] ?? '';
+        foreach($holdingRawNotes as $note) {
+            if ($agreementNoteTypeId === $note['type']) {
+                $agreement = $this->getAgreement($note['text']);
+                break;
+            }
+        }
+
         return compact(
             'id',
             'holdingNotes',
             'hasHoldingNotes',
+            'holdingRawNotes',
             'holdingsStatements',
             'holdingsSupplements',
             'holdingsIndexes',
             'holdingCallNumber',
-            'holdingCallNumberPrefix'
+            'holdingCallNumberPrefix',
+            'holdingElectronicAccess',
+            'agreement',
         );
     }
+
+    /**
+     * Get holdings note types.
+     *
+     * @return array Map of note type id to name
+     */
+    protected function getHoldingsNoteTypes() {
+        $noteTypes = $this->getCachedData('holdingsNoteTypes');
+        if ($noteTypes) {
+            return $noteTypes;
+        }
+
+        // inventory-storage.holdings-note-types.collection.get
+        $noteTypeResponse  = $this->makeRequest(
+            'GET',
+            '/holdings-note-types?limit=500' 
+        );
+        $notes = json_decode($noteTypeResponse->getBody());  
+        $noteTypes = array();
+        foreach($notes->holdingsNoteTypes as $obj) {
+            // Note key and val here are reversed from the non-holdings note types. Potential confusion.
+            $key = $obj->id;
+            $val = $obj->name;
+            $noteTypes[$key] = $val;
+        }
+        $this->putCachedData('holdingsNoteTypes', $noteTypes);
+        return $noteTypes;
+    }
+
 
     /**
      * Support method for getHoldings() -- return an array of item-level details from
@@ -1066,12 +1126,15 @@ class Folio extends AbstractAPI implements
             'is_holdable' => $this->isHoldable($locationName, $currentLoan),
             'holdings_notes' => $holdingDetails['hasHoldingNotes']
                 ? $holdingDetails['holdingNotes'] : null,
+            'holding_raw_notes' => $holdingDetails['holdingRawNotes'],
             'summary' => array_unique($holdingDetails['holdingsStatements']),
             'supplements' => $holdingDetails['holdingsSupplements'],
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,
             'location_code' => $locationData['code'],
             'folio_location_is_active' => $locationData['isActive'],
+            'holding_electronic_access' => $holdingDetails['holdingElectronicAccess'],
+            'agreement' => $holdingDetails['agreement'],
         ];
     }
 
@@ -1397,6 +1460,311 @@ class Folio extends AbstractAPI implements
             $results[] = $this->processInstanceHoldings($bibId, $holdingsForInstance, $folioItems);
         }
         return $results;
+    }
+
+    /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        if (!($this->config['ElectronicHoldings']['enabled'] ?? false)) {
+            return [];
+        }
+
+        $links = [];
+        $holdings = $this->getHolding($id);
+        foreach ($holdings['holdings'] as $holding) {
+            $holdingRawNotes = array_column($holding['holding_raw_notes'] ?? [], 'text', 'type');
+            $agreement = $holding['agreement'];
+            foreach (($holding['holding_electronic_access'] ?? []) as $index => $electronicAccessItem) {
+                $url = $electronicAccessItem['uri'];
+                if (!$url) {
+                    continue;
+                }
+                $desc = $this->getAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement);
+                $link = compact('url', 'desc');
+                if ($index === array_key_last($holding['holding_electronic_access'] ?? [])) {
+                    $link['accessSummary'] = $this->getAccessSummary($holdingRawNotes, $agreement);
+                    $link['accessDetails'] = $this->getAccessDetails($holdingRawNotes, $agreement);
+                    $link['accessCredentials'] = $this->getAccessCredentials($holdingRawNotes);
+                    $link['sortPosition'] = $this->getUrlSortPosition($holdingRawNotes);
+                }
+                $links[] = $link;
+            }            
+        }
+        usort($links, fn($a, $b) => ($a['sortPosition'] ?? -1) <=> ($b['sortPosition'] ?? -1));
+        return $links;
+    }
+
+    protected function getAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement) {
+        $textSources = $this->config['ElectronicHoldings']['link_text_source'] ?? []; 
+
+        // Just look to the electronic access record.
+        if (in_array('electronic_access_link_text', $textSources)
+            && $text = $electronicAccessItem['linkText'] ?? '') {
+            return $text;
+        }
+
+        // Or, generate text from the holdings notes or agreement.
+        if (in_array('callnumber', $textSources)) {
+            $text = $this->generateAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement);
+            if ($text) {
+                return $text;
+            }
+        }
+
+        // Fallback to the URL.
+        return $electronicAccessItem['uri'];
+    }
+
+    protected function generateAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement) {
+        // The basic link structure is "{Verb} {noun} on {platform}."
+        // Adjust the verb (View, Watch, etc.) and noun (eBook, Video, etc.) based on call number.
+        // If there's an enumeration (i.e Part 1), use that as the noun instead.
+        $callNumber = $holding['callnumber'] ?? '';
+
+        $noun = $callNumber;
+        $platform = $this->getAccessPlatform($holdingRawNotes, $agreement);
+
+        // If there is a specific part (i.e. "Volume 1"), use it instead of the generic noun.
+        if ($materialsSpecification = ($electronicAccessItem['materialsSpecification'] ?? '')) {
+            $noun = $materialsSpecification;
+        }
+
+        // Translate to a text string
+        $callNumber = strtolower(str_replace(' ', '_', $callNumber));
+        $translationTokens = [
+            'resource' => $noun, 
+            'platform' => $platform ?: 'none'
+        ];
+        $text = $this->translate('electronic_holdings_link_text_' . $callNumber, $translationTokens, '', true);
+        if (!$text) {
+            // Fallback if the call number is not handled
+            $text = $this->translate('electronic_holdings_link_text', $translationTokens, null, true);
+        }
+
+       return $text;
+    }
+
+    protected function getUrlSortPosition($holdingRawNotes) {
+        if (!($this->config['ElectronicHoldingsSort']['sort_pos'] ?? [])) {
+            return -1;
+        }
+        $holdingsNotesConfigKeys = $this->getHoldingsNotesConfigKeys('ElectronicHoldingsSort', $holdingRawNotes);
+        $sortPosition = $this->getElectronicHoldingsConfigValue('ElectronicHoldingsSort', 'sort_pos', $holdingsNotesConfigKeys);
+
+        return $sortPosition ?: PHP_INT_MAX;
+    }
+
+    protected function getAccessPlatform($holdingRawNotes, $agreement) {
+        $platform = null;
+
+        // Use holdings notes if found
+        $noteType = $this->config['ElectronicHoldings']['platform_name_note_type'] ?? '';
+        if ($noteType) {
+            $platform = $holdingRawNotes[$noteType] ?? null;
+        }
+
+        // Otherwise, use agreement record data
+        if (!$platform && $agreement) {
+            foreach ($agreement->orgs as $organization) {
+                if ($organization->primaryOrg) {
+                    $platform = $organization->org->name;
+                    break;
+                }
+            }
+        }
+        return $platform;
+    }
+
+    protected function getAccessSummary($holdingRawNotes, $agreement) {
+        if (!($this->config['ElectronicHoldingsDetails']['summary'] ?? [])) {
+            return '';
+        }
+
+        $holdingsNotesConfigKeys = $this->getHoldingsNotesConfigKeys('ElectronicHoldingsDetails', $holdingRawNotes);
+        $accessSummaryTerms = $this->config['ElectronicHoldingsDetails']['summary'] ?? [];
+        $accessSummaryValues = [];
+        foreach ($accessSummaryTerms as $term) {
+            $value = $this->getAccessValue($term, $holdingRawNotes, $agreement, $holdingsNotesConfigKeys);
+            if ($value) {
+                $accessSummaryValues[] = $value;
+            }
+        }
+        $text = join(' - ', $accessSummaryValues);
+        return $text;
+    }
+
+    protected function getAccessDetails($holdingRawNotes, $agreement) {
+        if (!($this->config['ElectronicHoldingsDetails']['details'] ?? [])) {
+            return [];
+        }
+
+        $holdingsNotesConfigKeys = $this->getHoldingsNotesConfigKeys('ElectronicHoldingsDetails', $holdingRawNotes);
+        $details = [];
+        foreach ($this->config['ElectronicHoldingsDetails']['details'] ?? [] as $term => $label) {
+            $value = $this->getAccessValue($term, $holdingRawNotes, $agreement, $holdingsNotesConfigKeys);
+            if ($value) {
+                $details[$term] = [
+                    'label' => $label,
+                    'text' => $value,
+                ];
+            }
+        }
+        return $details;
+    }
+
+    protected function getAccessValue($term, $holdingRawNotes, $agreement, $holdingsNotesConfigKeys) {
+        // First look for a holding note directly storing the value
+        $value = (($noteType = ($this->config['ElectronicHoldings']['holding_note_types'][$term] ?? false))
+            && ($this->config['ElectronicHoldingsDetails']['holding_note'][$term] ?? false))
+            ? $holdingRawNotes[$noteType] ?? ''
+            : '';
+
+        // Next, try use holdings notes storing keys to configured values
+        if (!$value) {
+            $value = $this->getElectronicHoldingsConfigValue(
+                'ElectronicHoldingsDetails',
+                'holding_note_code_' . $term,
+                $holdingsNotesConfigKeys
+            );
+        }
+
+        // Finally, try use agreement record data
+        if (!$value) {
+            $value = $this->getAgreementValue($agreement, $term);
+        }
+
+        return $value ?? '';
+    }
+
+    protected function getHoldingsNotesConfigKeys($configSection, $holdingRawNotes) {
+        $configFields = $this->config[$configSection]['holding_note_code_config_fields'] ?? [];
+
+        $holdingsNoteTypes = array_map(
+            fn($configField) => $this->config['ElectronicHoldings']['holding_note_types'][$configField] ?? '', 
+            $configFields
+        );
+
+        $configKeys = array_map(
+            fn($holdingsNoteType) => $holdingRawNotes[$holdingsNoteType] ?? '',
+            $holdingsNoteTypes
+        );
+
+        return $configKeys;
+    }
+
+    protected function getElectronicHoldingsConfigValue($configSection, $configListName, $configKeys) {
+        if (empty($configKeys)) {
+            return '';
+        }
+
+        $list = $this->config[$configSection][$configListName] ?? [];
+
+        // Try the most specific config first, then simplify as needed to find a value
+        while ($configKeys) {
+            $configKey = join('__', $configKeys);
+            if ($value = ($list[$configKey] ?? '')) {
+                return $value;
+            }
+            array_pop($configKeys);
+        }
+
+        return '';
+    }
+
+    protected function getAgreement($agreementId) {
+        // erm.agreements.item.get
+        $agreementResponse  = $this->makeRequest(
+            'GET',
+            '/erm/sas/' . $agreementId 
+        );
+        $agreement = json_decode($agreementResponse->getBody());  
+        return $agreement;
+    }
+
+    protected function getAgreementValue($agreement, $term) {
+        $agreementKey = $this->config['ElectronicHoldingsDetails']['agreement_properties'][$term] ?? '';
+        if (!$agreementKey) {
+            return '';
+        }
+        $agreementProperties = $agreement->customProperties->$agreementKey ?? [];
+        foreach ($agreementProperties as $property) {
+            if (!$property->internal) {
+                return $property->value->label;
+            }
+        }
+        return '';
+    }
+
+    protected function getAccessCredentials($holdingRawNotes) {
+        $noteType = $this->config['ElectronicHoldings']['access_credentials_organization_code_note_type'] ?? null;
+        if (!$noteType) {
+            return null;
+        }
+
+        $organizationCode = $holdingRawNotes[$noteType] ?? null;
+        if (!$organizationCode) {
+            return null;
+        }
+
+        $organization = $this->getOrganization($organizationCode);
+        if (!$organization) {
+            return null;
+        }
+
+        $accessCredentials = [];
+        foreach ($organization->interfaces as $interfaceId) {
+            $interface = $this->getInterface($interfaceId);
+            // Yes it's 'type' (singular) and it returns an array.
+            $types = $interface->type;
+            if (in_array('End user', $types)) {
+                $credentials = $this->getInterfaceCredentials($interfaceId);
+                $accessCredentials[] = [
+                    "url" => $interface->uri,
+                    "username" => $credentials->username,
+                    "password" => $credentials->password,    
+                ];
+            }
+        }
+        return $accessCredentials;
+    }
+
+    private function getOrganization($organizationCode) {
+        $query = [
+            'query' => '(code=="' . $organizationCode . '")'
+        ];
+        // organizations.organizations.collection.get 
+        $response = $this->makeRequest(
+            'GET',
+            '/organizations/organizations',
+            $query
+        );
+        $json = json_decode($response->getBody());
+        return $json->organizations[0] ?? null;
+    }
+
+    private function getInterface($id) {
+        // organizations-storage.interfaces.item.get
+        $response = $this->makeRequest(
+            'GET',
+            '/organizations-storage/interfaces/' . $id
+        );
+        return json_decode($response->getBody());
+    }
+
+    private function getInterfaceCredentials($id) {
+        // organizations-storage.interfaces.credentials.item.get
+        $response = $this->makeRequest(
+            'GET',
+            '/organizations-storage/interfaces/' . $id . '/credentials'
+        );
+        return json_decode($response->getBody());
     }
 
     /**
