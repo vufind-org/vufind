@@ -33,6 +33,7 @@ namespace VuFind\Action\Account;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
@@ -141,10 +142,9 @@ class ChangeEmailAction extends AbstractAccountAction
                 throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             }
             // Update email:
-            $validator = new \Laminas\Validator\EmailAddress();
             $email = $this->getPostParam('email', '');
             try {
-                if (!$validator->isValid($email)) {
+                if (!$this->getHelper(EmailHelper::class)->isValidAddress($email)) {
                     throw new AuthException('Email address is invalid');
                 }
                 $this->authManager->updateEmail($user, $email);

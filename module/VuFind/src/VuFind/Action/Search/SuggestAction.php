@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\Search;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
@@ -77,8 +76,8 @@ class SuggestAction extends AbstractAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Always use 'AllFields' as our autosuggest type:
-        $query = new Parameters($request->getQueryParams());
-        $query->set('type', 'AllFields');
+        $query = $request->getQueryParams();
+        $query['type'] = 'AllFields';
 
         // Get suggestions:
         $suggestions = $this->suggester->getSuggestions($query, 'type', 'lookfor');
@@ -86,7 +85,7 @@ class SuggestAction extends AbstractAction
         // Send the JSON response:
         return $this->getHelper(ResponseHelper::class)->getJsonResponse(
             $response,
-            [$query->get('lookfor', ''), $suggestions]
+            [$query['lookfor'] ?? '', $suggestions]
         );
     }
 }

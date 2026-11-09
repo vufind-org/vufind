@@ -53,8 +53,6 @@ class UnavailableAction extends AbstractCoverAction
      * @param ResponseInterface      $response Response
      *
      * @return ResponseInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function action(
         ServerRequestInterface $request,
