@@ -1709,7 +1709,7 @@ class Folio extends AbstractAPI implements
             $value = $this->getAccessAgreementValue($agreement, $term);
         }
 
-        return $value ?? '';
+        return $value;
     }
 
     /**
@@ -1746,19 +1746,22 @@ class Folio extends AbstractAPI implements
      * Support method for getUrlsForRecord() -- get the mapped value in Folio.ini configuration for an access
      * property, from a set of config keys.
      *
-     * @param array  $configSection  Section of Folio.ini config
-     * @param string $configListName Name of the configuration array in that section
-     * @param array  $configKeys     The array of config keys
+     * @param string $configSectionName Section name of Folio.ini config
+     * @param string $configListName    Name of the configuration array in that section
+     * @param array  $configKeys        The array of config keys
      *
      * @return string The mapped value for this access property
      */
-    protected function getElectronicHoldingsConfigValue($configSection, $configListName, $configKeys): string
-    {
+    protected function getElectronicHoldingsConfigValue(
+        string $configSectionName,
+        string $configListName,
+        array $configKeys
+    ): string {
         if (empty($configKeys)) {
             return '';
         }
 
-        $list = $this->config[$configSection][$configListName] ?? [];
+        $list = $this->config[$configSectionName][$configListName] ?? [];
 
         // Try the most specific config first, then simplify as needed to find a value
         while ($configKeys) {
