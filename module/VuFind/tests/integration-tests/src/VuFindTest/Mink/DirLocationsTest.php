@@ -136,7 +136,7 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
                         [
                             'name' => 'child-test',
                             'label' => 'child test',
-                            'route' => 'myresearch-favorites',
+                            'route' => 'lists-allitems',
                             'icon' => 'user-favorites',
                         ],
                     ],

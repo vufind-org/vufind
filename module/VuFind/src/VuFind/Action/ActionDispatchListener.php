@@ -180,7 +180,8 @@ class ActionDispatchListener
             $response = $this->actionHelperPluginManager->get(RedirectHelper::class)->redirectToRoute(
                 Psr7Response::fromLaminas($laminasResponse),
                 $redirectRoute,
-                queryParams: $request->getQuery()->toArray()
+                $route->getParams(),
+                $request->getQuery()->toArray()
             );
             $laminasResponse = $this->updateLaminasResponse($laminasResponse, $response);
             $e->setResult($laminasResponse);

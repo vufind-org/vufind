@@ -377,7 +377,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         ) . $searchObject->getUrlQuery()->getParams(false);
         $secret = $this->secretCalculator->getSearchUnsubscribeSecret($s);
         $unsubscribeUrl = $s->getNotificationBaseUrl()
-            . ($this->urlHelper)('myresearch-unsubscribe')
+            . ($this->urlHelper)('account-unsubscribe')
             . "?id={$s->getId()}&key=$secret";
         $params = $searchObject->getParams();
         // Filter function to only pass along selected checkboxes:

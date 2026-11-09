@@ -32,6 +32,8 @@ namespace VuFind\Session\Helper;
 use Laminas\Session\Container;
 use Laminas\Uri\Http;
 use VuFind\Http\ServerUrlHelper;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Session helper to deal with login followup; responsible for remembering URLs
@@ -51,8 +53,11 @@ class FollowupHelper
      * @param Container       $session         Session container
      * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
-    public function __construct(protected Container $session, protected ServerUrlHelper $serverUrlHelper)
-    {
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'Followup')]
+        protected Container $session,
+        protected ServerUrlHelper $serverUrlHelper
+    ) {
     }
 
     /**

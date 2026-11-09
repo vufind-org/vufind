@@ -1557,6 +1557,23 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get config settings for activating the admin module.
+     *
+     * @return array
+     */
+    protected function getAdminPermissionConfig(): array
+    {
+        return [
+            'permissions' => [
+                'default.adminModule' => [
+                    'permission' => 'access.AdminModule',
+                    'role' => ['guest', 'loggedin'],
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void

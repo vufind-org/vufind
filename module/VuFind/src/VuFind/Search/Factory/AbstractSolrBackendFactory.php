@@ -721,7 +721,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $search['ConditionalHiddenFilters']
         );
         $listener->setAuthorizationService(
-            $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
+            $this->getService(\VuFind\Service\AuthorizationServiceInterface::class)
         );
         return $listener;
     }

@@ -59,7 +59,6 @@ class Stripe extends AbstractBase implements
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
      * Mappings from fine tax percentages to tax codes.

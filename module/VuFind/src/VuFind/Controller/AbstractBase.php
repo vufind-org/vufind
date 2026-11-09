@@ -300,15 +300,13 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the authorization service (note that we're doing this on-demand
-     * rather than through injection with the AuthorizationServiceAwareInterface
-     * to minimize expensive initialization when authorization is not needed.
+     * Get the authorization service.
      *
-     * @return \Lmc\Rbac\Mvc\Service\AuthorizationService
+     * @return \VuFind\Service\AuthorizationServiceInterface
      */
     protected function getAuthorizationService()
     {
-        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        return $this->getService(\VuFind\Service\AuthorizationService::class);
     }
 
     /**
@@ -370,9 +368,9 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $this->getRequest()->getPost()->set('forcingLogin', true);
 
         if ($forward) {
-            return $this->forwardTo('MyResearch', 'Login');
+            return $this->forwardTo('Account', 'Login');
         }
-        return $this->redirect()->toRoute('myresearch-home');
+        return $this->redirect()->toRoute('account-home');
     }
 
     /**
@@ -434,7 +432,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                     $this->getDbService(UserSessionPersistenceInterface::class)
                         ->setLibraryCardAuthenticationData($authData);
                     $this->setFollowupUrlToReferer();
-                    return $this->redirect()->toRoute('myresearch-verifyotp');
+                    return $this->redirect()->toRoute('account-verifyotp');
                 } else {
                     $patron = $ilsAuth->newCatalogLogin($username, $password, $user);
 
@@ -466,7 +464,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
 
         // If catalog login failed, send the user to the right page:
         if (!$patron && $forwardToCatalogLogin) {
-            return $this->forwardTo('MyResearch', 'CatalogLogin');
+            return $this->forwardTo('Account', 'CatalogLogin');
         }
 
         // Send either null or patron array back to caller:
@@ -779,21 +777,20 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         if (empty($referer) || !$this->isLocalUrl($referer)) {
             return;
         }
-        // If the referer is the MyResearch/Home action, it probably means
+        // If the referer is the Account/Home action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
         $refererNorm = $this->normalizeUrlForComparison($referer);
-        $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
-        $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
+        $accountHomeUrl = $this->getServerUrl('account-home');
+        $mrhuNorm = $this->normalizeUrlForComparison($accountHomeUrl);
         if ($mrhuNorm === $refererNorm) {
             return;
         }
 
-        // If the referer is the MyResearch/UserLogin action, it probably means
+        // If the referer is the Account/UserLogin action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
-        $myUserLogin = $this->getServerUrl('myresearch-userlogin');
-        $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
+        $mulNorm = $this->normalizeUrlForComparison($this->getServerUrl('account-userlogin'));
         if (str_starts_with($refererNorm, $mulNorm)) {
             return;
         }
