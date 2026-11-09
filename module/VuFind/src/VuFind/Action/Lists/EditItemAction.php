@@ -133,17 +133,16 @@ class EditItemAction extends AbstractListsAction
      *
      * @param UserEntityInterface $user   Logged-in user
      * @param AbstractDriver      $driver Record driver for favorite
-     * @param ?int                $listID List being edited (null if editing all favorites)
      *
      * @return void
      */
-    protected function processEditSubmit(UserEntityInterface $user, AbstractDriver $driver, ?int $listID): void
+    protected function processEditSubmit(UserEntityInterface $user, AbstractDriver $driver): void
     {
         $lists = (array)$this->getPostParam('lists', []);
         $didSomething = false;
         foreach ($lists as $list) {
             $tags = $this->getPostParam('tags' . $list, '');
-            $this->favoritesService->save(
+            $this->favoritesService->saveRecordToFavorites(
                 [
                     'list'  => $list,
                     'mytags'  => $this->tagsService->parse($tags),
