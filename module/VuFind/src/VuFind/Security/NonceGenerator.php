@@ -29,9 +29,6 @@
 
 namespace VuFind\Security;
 
-use PHPMD\Attribute\SuppressWarnings;
-use PHPMD\Rule\Design\NumberOfChildren;
-
 /**
  * VuFind class for generating nonce (number used once) used by content security
  * policy.
