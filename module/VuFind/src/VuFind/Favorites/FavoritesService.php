@@ -477,7 +477,7 @@ class FavoritesService implements TranslatorAwareInterface
             ->setPublic((bool)($request['public'] ?? false));
         $this->saveListForUser($list, $user);
 
-        if (null !== ($tags = $request['tags'])) {
+        if (null !== ($tags = $request['tags'] ?? null)) {
             $this->resourceTagsService->destroyUserListLinks($list, $user);
             foreach ($this->tagsService->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);
