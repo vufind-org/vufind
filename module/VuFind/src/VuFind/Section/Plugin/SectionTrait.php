@@ -30,6 +30,7 @@
 namespace VuFind\Section\Plugin;
 
 use VuFind\Config\Feature\ConfigSettingPropertiesTrait;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Section trait.
@@ -43,6 +44,7 @@ use VuFind\Config\Feature\ConfigSettingPropertiesTrait;
 trait SectionTrait
 {
     use ConfigSettingPropertiesTrait;
+    use LoggerAwareTrait;
 
     /**
      * Section key in configuration.
@@ -129,11 +131,14 @@ trait SectionTrait
                 if (!isset($item['checkMethod'])) {
                     return true;
                 }
-                // If there is a checkMethod defined but not present, the section is likely broken.
-                if (!method_exists($this, $item['checkMethod'])) {
+                if ('alwaysFail' === $item['checkMethod']) {
                     return false;
                 }
-                if ('alwaysFail' === $item['checkMethod']) {
+                if (!method_exists($this, $item['checkMethod'])) {
+                    $this->logError(
+                        "Undefined checkMethod '{$item['checkMethod']}' in section '"
+                        . ($this->sectionKey ?? '') . "'; hiding item."
+                    );
                     return false;
                 }
                 return $this->{$item['checkMethod']}();
