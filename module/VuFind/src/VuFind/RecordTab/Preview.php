@@ -68,8 +68,7 @@ class Preview extends AbstractBase
         } else {
             $cfg = $configOrActive;
 
-            // currently only active if config [content] [previews] contains google
-            // and googleoptions[tab] is not empty.
+            // only active if config [content] [previews] contains google and googleoptions[tab] is not empty.
             $this->active = false;
             if (isset($cfg['Content']['previews'])) {
                 $previews = array_map(
