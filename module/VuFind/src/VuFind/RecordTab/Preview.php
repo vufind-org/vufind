@@ -56,8 +56,8 @@ class Preview extends AbstractBase
     /**
      * Constructor.
      *
-     * @param array|bool $configOrActive Boolean to set the active status explicitly,
-     *                                   or config array to detect it from configuration.
+     * @param array|bool $configOrActive Boolean to set the active status explicitly, or config array to detect it
+     * from configuration.
      */
     public function __construct(
         #[Autowire(config: 'config')]
