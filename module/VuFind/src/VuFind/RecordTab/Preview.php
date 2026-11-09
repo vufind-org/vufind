@@ -31,6 +31,10 @@ namespace VuFind\RecordTab;
 
 use VuFind\ServiceManager\Factory\Autowire;
 
+use function in_array;
+use function is_bool;
+use function strlen;
+
 /**
  * Embedded Preview tab.
  *
@@ -42,7 +46,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  */
 class Preview extends AbstractBase
 {
-     /**
+    /**
      * Is this tab active?
      *
      * @var bool
@@ -53,7 +57,7 @@ class Preview extends AbstractBase
      * Constructor.
      *
      * @param array|bool $configOrActive Boolean to set the active status explicitly,
-     *                                    or config array to detect it from configuration.
+     *                                   or config array to detect it from configuration.
      */
     public function __construct(
         #[Autowire(config: 'config')]
