@@ -53,9 +53,9 @@ class RecordsHelper
      */
     public function __construct(
         #[Autowire(config: 'config')]
-        protected array $config, 
+        protected array $config,
         protected Loader $loader
-    ){
+    ) {
     }
 
     /**
