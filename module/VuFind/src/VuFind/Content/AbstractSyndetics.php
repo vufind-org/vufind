@@ -51,7 +51,7 @@ abstract class AbstractSyndetics extends AbstractBase
     public function __construct(
         #[Autowire(config: 'config', path: 'Syndetics/timeout', default: 10)]
         protected int $timeout = 10
-    ){
+    ) {
     }
 
     /**
