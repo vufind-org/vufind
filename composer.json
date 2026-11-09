@@ -127,7 +127,7 @@
         "dmore/chrome-mink-driver": "2.11.1",
         "friendsofphp/php-cs-fixer": "3.95.27",
         "phpmd/phpmd": "3.0.0",
-        "phpstan/phpstan": "2.3.4",
+        "phpstan/phpstan": "2.3.5",
         "phpunit/php-code-coverage": "^11",
         "phpunit/phpcov": "^10",
         "phpunit/phpunit": "11.5.56",
