@@ -61,7 +61,7 @@ class Preview extends AbstractBase
      */
     public function __construct(
         #[Autowire(config: 'config')]
-        $configOrActive = false
+        array|bool $configOrActive = false
     ) {
         if (is_bool($configOrActive)) {
             $this->active = $configOrActive;
