@@ -82,7 +82,7 @@ class EditItemAction extends AbstractListsAction
 
         // Process save action if necessary:
         if ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
-            $this->processEditSubmit($user, $driver, $listID);
+            $this->processEditSubmit($user, $driver);
             $redirectHelper = $this->getHelper(RedirectHelper::class);
             return null === $listID
                 ? $redirectHelper->redirectToRoute($response, 'lists-allitems')
