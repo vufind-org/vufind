@@ -472,9 +472,9 @@ class FavoritesService implements TranslatorAwareInterface
         ?UserEntityInterface $user,
         array $request
     ): int {
-        $list->setTitle($request['title'])
-            ->setDescription($request['desc'])
-            ->setPublic((bool)$request['public']);
+        $list->setTitle($request['title'] ?? '')
+            ->setDescription($request['desc'] ?? '')
+            ->setPublic((bool)($request['public'] ?? false));
         $this->saveListForUser($list, $user);
 
         if (null !== ($tags = $request['tags'])) {
