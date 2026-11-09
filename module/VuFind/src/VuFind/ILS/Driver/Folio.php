@@ -1020,7 +1020,7 @@ class Folio extends AbstractAPI implements
         $hasHoldingNotes = !empty(implode($holdingNotes));
 
         $holdingsNoteTypes = $this->getHoldingsNoteTypes();
-        $holdingRawNotes = array_map(fn($note) => [
+        $holdingRawNotes = array_map(fn ($note) => [
             'text' => $note?->note ?? '',
             'type' => $holdingsNoteTypes[$note?->holdingsNoteTypeId ?? ''] ?? '',
         ], $holding?->notes ?? []);
@@ -1044,13 +1044,13 @@ class Folio extends AbstractAPI implements
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
 
         $holdingElectronicAccess = array_map(
-            fn($electronicAccessItem) => (array)$electronicAccessItem, 
+            fn ($electronicAccessItem) => (array)$electronicAccessItem,
             $holding?->electronicAccess ?? []
         );
 
         $agreement = null;
         $agreementNoteTypeId = $this->config['ElectronicHoldings']['agreement_id_note_type'] ?? '';
-        foreach($holdingRawNotes as $note) {
+        foreach ($holdingRawNotes as $note) {
             if ($agreementNoteTypeId === $note['type']) {
                 $agreement = $this->getAgreement($note['text']);
                 break;
@@ -1077,7 +1077,8 @@ class Folio extends AbstractAPI implements
      *
      * @return array Map of note type id to name
      */
-    protected function getHoldingsNoteTypes() {
+    protected function getHoldingsNoteTypes()
+    {
         $noteTypes = $this->getCachedData('holdingsNoteTypes');
         if ($noteTypes) {
             return $noteTypes;
@@ -1086,11 +1087,11 @@ class Folio extends AbstractAPI implements
         // inventory-storage.holdings-note-types.collection.get
         $noteTypeResponse  = $this->makeRequest(
             'GET',
-            '/holdings-note-types?limit=500' 
+            '/holdings-note-types?limit=500'
         );
-        $notes = json_decode($noteTypeResponse->getBody());  
-        $noteTypes = array();
-        foreach($notes->holdingsNoteTypes as $obj) {
+        $notes = json_decode($noteTypeResponse->getBody());
+        $noteTypes = [];
+        foreach ($notes->holdingsNoteTypes as $obj) {
             // Note key and val here are reversed from the non-holdings note types. Potential confusion.
             $key = $obj->id;
             $val = $obj->name;
@@ -1099,7 +1100,6 @@ class Folio extends AbstractAPI implements
         $this->putCachedData('holdingsNoteTypes', $noteTypes);
         return $noteTypes;
     }
-
 
     /**
      * Support method for getHoldings() -- return an array of item-level details from
@@ -1495,18 +1495,21 @@ class Folio extends AbstractAPI implements
                     $link['sortPosition'] = $this->getUrlSortPosition($holdingRawNotes);
                 }
                 $links[] = $link;
-            }            
+            }
         }
-        usort($links, fn($a, $b) => ($a['sortPosition'] ?? -1) <=> ($b['sortPosition'] ?? -1));
+        usort($links, fn ($a, $b) => ($a['sortPosition'] ?? -1) <=> ($b['sortPosition'] ?? -1));
         return $links;
     }
 
-    protected function getAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement) {
-        $textSources = $this->config['ElectronicHoldings']['link_text_source'] ?? []; 
+    protected function getAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement)
+    {
+        $textSources = $this->config['ElectronicHoldings']['link_text_source'] ?? [];
 
         // Just look to the electronic access record.
-        if (in_array('electronic_access_link_text', $textSources)
-            && $text = $electronicAccessItem['linkText'] ?? '') {
+        if (
+            in_array('electronic_access_link_text', $textSources)
+            && $text = $electronicAccessItem['linkText'] ?? ''
+        ) {
             return $text;
         }
 
@@ -1522,7 +1525,8 @@ class Folio extends AbstractAPI implements
         return $electronicAccessItem['uri'];
     }
 
-    protected function generateAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement) {
+    protected function generateAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement)
+    {
         // The basic link structure is "{Verb} {noun} on {platform}."
         // Adjust the verb (View, Watch, etc.) and noun (eBook, Video, etc.) based on call number.
         // If there's an enumeration (i.e Part 1), use that as the noun instead.
@@ -1539,8 +1543,8 @@ class Folio extends AbstractAPI implements
         // Translate to a text string
         $callNumber = strtolower(str_replace(' ', '_', $callNumber));
         $translationTokens = [
-            'resource' => $noun, 
-            'platform' => $platform ?: 'none'
+            'resource' => $noun,
+            'platform' => $platform ?: 'none',
         ];
         $text = $this->translate('electronic_holdings_link_text_' . $callNumber, $translationTokens, '', true);
         if (!$text) {
@@ -1548,10 +1552,11 @@ class Folio extends AbstractAPI implements
             $text = $this->translate('electronic_holdings_link_text', $translationTokens, null, true);
         }
 
-       return $text;
+        return $text;
     }
 
-    protected function getUrlSortPosition($holdingRawNotes) {
+    protected function getUrlSortPosition($holdingRawNotes)
+    {
         if (!($this->config['ElectronicHoldingsSort']['sort_pos'] ?? [])) {
             return -1;
         }
@@ -1561,7 +1566,8 @@ class Folio extends AbstractAPI implements
         return $sortPosition ?: PHP_INT_MAX;
     }
 
-    protected function getAccessPlatform($holdingRawNotes, $agreement) {
+    protected function getAccessPlatform($holdingRawNotes, $agreement)
+    {
         $platform = null;
 
         // Use holdings notes if found
@@ -1582,7 +1588,8 @@ class Folio extends AbstractAPI implements
         return $platform;
     }
 
-    protected function getAccessSummary($holdingRawNotes, $agreement) {
+    protected function getAccessSummary($holdingRawNotes, $agreement)
+    {
         if (!($this->config['ElectronicHoldingsDetails']['summary'] ?? [])) {
             return '';
         }
@@ -1596,11 +1603,12 @@ class Folio extends AbstractAPI implements
                 $accessSummaryValues[] = $value;
             }
         }
-        $text = join(' - ', $accessSummaryValues);
+        $text = implode(' - ', $accessSummaryValues);
         return $text;
     }
 
-    protected function getAccessDetails($holdingRawNotes, $agreement) {
+    protected function getAccessDetails($holdingRawNotes, $agreement)
+    {
         if (!($this->config['ElectronicHoldingsDetails']['details'] ?? [])) {
             return [];
         }
@@ -1619,7 +1627,8 @@ class Folio extends AbstractAPI implements
         return $details;
     }
 
-    protected function getAccessValue($term, $holdingRawNotes, $agreement, $holdingsNotesConfigKeys) {
+    protected function getAccessValue($term, $holdingRawNotes, $agreement, $holdingsNotesConfigKeys)
+    {
         // First look for a holding note directly storing the value
         $value = (($noteType = ($this->config['ElectronicHoldings']['holding_note_types'][$term] ?? false))
             && ($this->config['ElectronicHoldingsDetails']['holding_note'][$term] ?? false))
@@ -1643,23 +1652,25 @@ class Folio extends AbstractAPI implements
         return $value ?? '';
     }
 
-    protected function getHoldingsNotesConfigKeys($configSection, $holdingRawNotes) {
+    protected function getHoldingsNotesConfigKeys($configSection, $holdingRawNotes)
+    {
         $configFields = $this->config[$configSection]['holding_note_code_config_fields'] ?? [];
 
         $holdingsNoteTypes = array_map(
-            fn($configField) => $this->config['ElectronicHoldings']['holding_note_types'][$configField] ?? '', 
+            fn ($configField) => $this->config['ElectronicHoldings']['holding_note_types'][$configField] ?? '',
             $configFields
         );
 
         $configKeys = array_map(
-            fn($holdingsNoteType) => $holdingRawNotes[$holdingsNoteType] ?? '',
+            fn ($holdingsNoteType) => $holdingRawNotes[$holdingsNoteType] ?? '',
             $holdingsNoteTypes
         );
 
         return $configKeys;
     }
 
-    protected function getElectronicHoldingsConfigValue($configSection, $configListName, $configKeys) {
+    protected function getElectronicHoldingsConfigValue($configSection, $configListName, $configKeys)
+    {
         if (empty($configKeys)) {
             return '';
         }
@@ -1668,7 +1679,7 @@ class Folio extends AbstractAPI implements
 
         // Try the most specific config first, then simplify as needed to find a value
         while ($configKeys) {
-            $configKey = join('__', $configKeys);
+            $configKey = implode('__', $configKeys);
             if ($value = ($list[$configKey] ?? '')) {
                 return $value;
             }
@@ -1678,17 +1689,19 @@ class Folio extends AbstractAPI implements
         return '';
     }
 
-    protected function getAgreement($agreementId) {
+    protected function getAgreement($agreementId)
+    {
         // erm.agreements.item.get
         $agreementResponse  = $this->makeRequest(
             'GET',
-            '/erm/sas/' . $agreementId 
+            '/erm/sas/' . $agreementId
         );
-        $agreement = json_decode($agreementResponse->getBody());  
+        $agreement = json_decode($agreementResponse->getBody());
         return $agreement;
     }
 
-    protected function getAgreementValue($agreement, $term) {
+    protected function getAgreementValue($agreement, $term)
+    {
         $agreementKey = $this->config['ElectronicHoldingsDetails']['agreement_properties'][$term] ?? '';
         if (!$agreementKey) {
             return '';
@@ -1702,7 +1715,8 @@ class Folio extends AbstractAPI implements
         return '';
     }
 
-    protected function getAccessCredentials($holdingRawNotes) {
+    protected function getAccessCredentials($holdingRawNotes)
+    {
         $noteType = $this->config['ElectronicHoldings']['access_credentials_organization_code_note_type'] ?? null;
         if (!$noteType) {
             return null;
@@ -1726,20 +1740,21 @@ class Folio extends AbstractAPI implements
             if (in_array('End user', $types)) {
                 $credentials = $this->getInterfaceCredentials($interfaceId);
                 $accessCredentials[] = [
-                    "url" => $interface->uri,
-                    "username" => $credentials->username,
-                    "password" => $credentials->password,    
+                    'url' => $interface->uri,
+                    'username' => $credentials->username,
+                    'password' => $credentials->password,
                 ];
             }
         }
         return $accessCredentials;
     }
 
-    private function getOrganization($organizationCode) {
+    private function getOrganization($organizationCode)
+    {
         $query = [
-            'query' => '(code=="' . $organizationCode . '")'
+            'query' => '(code=="' . $organizationCode . '")',
         ];
-        // organizations.organizations.collection.get 
+        // organizations.organizations.collection.get
         $response = $this->makeRequest(
             'GET',
             '/organizations/organizations',
@@ -1749,7 +1764,8 @@ class Folio extends AbstractAPI implements
         return $json->organizations[0] ?? null;
     }
 
-    private function getInterface($id) {
+    private function getInterface($id)
+    {
         // organizations-storage.interfaces.item.get
         $response = $this->makeRequest(
             'GET',
@@ -1758,7 +1774,8 @@ class Folio extends AbstractAPI implements
         return json_decode($response->getBody());
     }
 
-    private function getInterfaceCredentials($id) {
+    private function getInterfaceCredentials($id)
+    {
         // organizations-storage.interfaces.credentials.item.get
         $response = $this->makeRequest(
             'GET',

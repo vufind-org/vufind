@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function array_key_exists;
+
 /**
  * Model for MARC records in Solr.
  *
@@ -72,17 +74,16 @@ class SolrMarc extends SolrDefault
         if ($this->mainConfig['Catalog']['holdings_dedup_urls'] ?? false) {
             // Dedup by URL. Prefer URLs from the ILS, and preserve its sort order.
             $combinedUrls = [];
-            foreach($ilsUrls as $url) {
+            foreach ($ilsUrls as $url) {
                 $combinedUrls[$url['url']] = $url;
             }
-            foreach($marcUrls as $url) {
+            foreach ($marcUrls as $url) {
                 if (!array_key_exists($url['url'], $combinedUrls)) {
                     $combinedUrls[$url['url']] = $url;
                 }
             }
             return array_values($combinedUrls);
-        }
-        else {
+        } else {
             return array_merge($marcUrls, $ilsUrls);
         }
     }
