@@ -1492,7 +1492,7 @@ class Folio extends AbstractAPI implements
                     $link['accessSummary'] = $this->getAccessSummary($holdingRawNotes, $agreement);
                     $link['accessDetails'] = $this->getAccessDetails($holdingRawNotes, $agreement);
                     $link['accessCredentials'] = $this->getAccessCredentials($holdingRawNotes);
-                    $link['sortPosition'] = $this->getUrlSortPosition($holdingRawNotes);
+                    $link['sortPosition'] = $this->getAccessUrlSortPosition($holdingRawNotes);
                 }
                 $links[] = $link;
             }
@@ -1501,8 +1501,23 @@ class Folio extends AbstractAPI implements
         return $links;
     }
 
-    protected function getAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement)
-    {
+    /**
+     * Support method for getUrlsForRecord() -- return the text string for a link from the electronicAccess
+     * data in a holdings record.
+     *
+     * @param array  $electronicAccessItem The electronicAccess item from the holdings record
+     * @param array  $holding              The holdings record
+     * @param array  $holdingRawNotes      The raw notes of the holdings record
+     * @param object $agreement            An agreement record linked to the holdings record
+     *
+     * @return string The link text string
+     */
+    protected function getAccessLinkText(
+        array $electronicAccessItem,
+        array $holding,
+        array $holdingRawNotes,
+        object $agreement
+    ): string {
         $textSources = $this->config['ElectronicHoldings']['link_text_source'] ?? [];
 
         // Just look to the electronic access record.
@@ -1525,8 +1540,22 @@ class Folio extends AbstractAPI implements
         return $electronicAccessItem['uri'];
     }
 
-    protected function generateAccessLinkText($electronicAccessItem, $holding, $holdingRawNotes, $agreement)
-    {
+    /**
+     * Support method for getUrlsForRecord() -- generate a link's text based on holdings record metadata.
+     *
+     * @param array  $electronicAccessItem The electronicAccess item from the holdings record
+     * @param array  $holding              The holdings record
+     * @param array  $holdingRawNotes      The raw notes of the holdings record
+     * @param object $agreement            An agreement record linked to the holdings record
+     *
+     * @return string The generated link text string
+     */
+    protected function generateAccessLinkText(
+        array $electronicAccessItem,
+        array $holding,
+        array $holdingRawNotes,
+        object $agreement
+    ): string {
         // The basic link structure is "{Verb} {noun} on {platform}."
         // Adjust the verb (View, Watch, etc.) and noun (eBook, Video, etc.) based on call number.
         // If there's an enumeration (i.e Part 1), use that as the noun instead.
@@ -1555,18 +1584,16 @@ class Folio extends AbstractAPI implements
         return $text;
     }
 
-    protected function getUrlSortPosition($holdingRawNotes)
-    {
-        if (!($this->config['ElectronicHoldingsSort']['sort_pos'] ?? [])) {
-            return -1;
-        }
-        $holdingsNotesConfigKeys = $this->getHoldingsNotesConfigKeys('ElectronicHoldingsSort', $holdingRawNotes);
-        $sortPosition = $this->getElectronicHoldingsConfigValue('ElectronicHoldingsSort', 'sort_pos', $holdingsNotesConfigKeys);
-
-        return $sortPosition ?: PHP_INT_MAX;
-    }
-
-    protected function getAccessPlatform($holdingRawNotes, $agreement)
+    /**
+     * Support method for getUrlsForRecord() -- get the name of an electornic resource hosting platform
+     * from the holdings record metadata.
+     *
+     * @param array  $holdingRawNotes The raw notes of the holdings record
+     * @param object $agreement       An agreement record linked to the holdings record
+     *
+     * @return string The platform name
+     */
+    protected function getAccessPlatform(array $holdingRawNotes, object $agreement): string
     {
         $platform = null;
 
@@ -1588,7 +1615,16 @@ class Folio extends AbstractAPI implements
         return $platform;
     }
 
-    protected function getAccessSummary($holdingRawNotes, $agreement)
+    /**
+     * Support method for getUrlsForRecord() -- get a one-line summary of key access properties for a
+     * holdings record.
+     *
+     * @param array  $holdingRawNotes The raw notes of the holdings record
+     * @param object $agreement       An agreement record linked to the holdings record
+     *
+     * @return string The one-line summary
+     */
+    protected function getAccessSummary(array $holdingRawNotes, object $agreement): string
     {
         if (!($this->config['ElectronicHoldingsDetails']['summary'] ?? [])) {
             return '';
@@ -1607,7 +1643,16 @@ class Folio extends AbstractAPI implements
         return $text;
     }
 
-    protected function getAccessDetails($holdingRawNotes, $agreement)
+    /**
+     * Support method for getUrlsForRecord() -- get an array of access properties and values for a
+     * holdings record.
+     *
+     * @param array  $holdingRawNotes The raw notes of the holdings record
+     * @param object $agreement       An agreement record linked to the holdings record
+     *
+     * @return array The array of access properties
+     */
+    protected function getAccessDetails($holdingRawNotes, $agreement): array
     {
         if (!($this->config['ElectronicHoldingsDetails']['details'] ?? [])) {
             return [];
@@ -1627,8 +1672,22 @@ class Folio extends AbstractAPI implements
         return $details;
     }
 
-    protected function getAccessValue($term, $holdingRawNotes, $agreement, $holdingsNotesConfigKeys)
-    {
+    /**
+     * Support method for getUrlsForRecord() -- get a single access property value from holdings record metadata.
+     *
+     * @param string $term                    A single property field
+     * @param array  $holdingRawNotes         The raw notes of the holdings record
+     * @param object $agreement               An agreement record linked to the holdings record
+     * @param array  $holdingsNotesConfigKeys Keys to Folio.ini configuration of access property values
+     *
+     * @return string The access property value
+     */
+    protected function getAccessValue(
+        string $term,
+        array $holdingRawNotes,
+        object $agreement,
+        array $holdingsNotesConfigKeys
+    ): string {
         // First look for a holding note directly storing the value
         $value = (($noteType = ($this->config['ElectronicHoldings']['holding_note_types'][$term] ?? false))
             && ($this->config['ElectronicHoldingsDetails']['holding_note'][$term] ?? false))
@@ -1646,21 +1705,34 @@ class Folio extends AbstractAPI implements
 
         // Finally, try use agreement record data
         if (!$value) {
-            $value = $this->getAgreementValue($agreement, $term);
+            $value = $this->getAccessAgreementValue($agreement, $term);
         }
 
         return $value ?? '';
     }
 
-    protected function getHoldingsNotesConfigKeys($configSection, $holdingRawNotes)
+    /**
+     * Support method for getUrlsForRecord() -- get keys to Folio.ini configuration of access property values.
+     * In other words, get the specific holding record note values that Folio.ini maps to a particular access
+     * property's value.
+     *
+     * @param string $configSection   Section name of Folio.ini config
+     * @param array  $holdingRawNotes The raw notes of the holdings record
+     *
+     * @return array An array of config keys.
+     */
+    protected function getHoldingsNotesConfigKeys(string $configSection, array $holdingRawNotes): array
     {
+        // What access property fields do we need config keys for?
         $configFields = $this->config[$configSection]['holding_note_code_config_fields'] ?? [];
 
+        // Map each field to a holdings note type.
         $holdingsNoteTypes = array_map(
             fn ($configField) => $this->config['ElectronicHoldings']['holding_note_types'][$configField] ?? '',
             $configFields
         );
 
+        // Map to this holding record's values for those holding note types.
         $configKeys = array_map(
             fn ($holdingsNoteType) => $holdingRawNotes[$holdingsNoteType] ?? '',
             $holdingsNoteTypes
@@ -1669,7 +1741,17 @@ class Folio extends AbstractAPI implements
         return $configKeys;
     }
 
-    protected function getElectronicHoldingsConfigValue($configSection, $configListName, $configKeys)
+    /**
+     * Support method for getUrlsForRecord() -- get the mapped value in Folio.ini configuration for an access
+     * property, from a set of config keys.
+     *
+     * @param array  $configSection  Section of Folio.ini config
+     * @param string $configListName Name of the configuration array in that section
+     * @param array  $configKeys     The array of config keys
+     *
+     * @return string The mapped value for this access property
+     */
+    protected function getElectronicHoldingsConfigValue($configSection, $configListName, $configKeys): string
     {
         if (empty($configKeys)) {
             return '';
@@ -1689,18 +1771,15 @@ class Folio extends AbstractAPI implements
         return '';
     }
 
-    protected function getAgreement($agreementId)
-    {
-        // erm.agreements.item.get
-        $agreementResponse  = $this->makeRequest(
-            'GET',
-            '/erm/sas/' . $agreementId
-        );
-        $agreement = json_decode($agreementResponse->getBody());
-        return $agreement;
-    }
-
-    protected function getAgreementValue($agreement, $term)
+    /**
+     * Support method for getUrlsForRecord() -- get the agreement custom property matching an access property term.
+     *
+     * @param object $agreement An agreement record linked to the holdings record
+     * @param string $term      A single property field
+     *
+     * @return string The mapped value for this access property
+     */
+    protected function getAccessAgreementValue(object $agreement, string $term): string
     {
         $agreementKey = $this->config['ElectronicHoldingsDetails']['agreement_properties'][$term] ?? '';
         if (!$agreementKey) {
@@ -1715,7 +1794,36 @@ class Folio extends AbstractAPI implements
         return '';
     }
 
-    protected function getAccessCredentials($holdingRawNotes)
+    /**
+     * Support method for getUrlsForRecord() -- get the sort position index for a particular holdings record's url.
+     *
+     * @param array $holdingRawNotes The raw notes of the holdings record
+     *
+     * @return int The index sort position
+     */
+    protected function getAccessUrlSortPosition($holdingRawNotes): int
+    {
+        if (!($this->config['ElectronicHoldingsSort']['sort_pos'] ?? [])) {
+            return -1;
+        }
+        $holdingsNotesConfigKeys = $this->getHoldingsNotesConfigKeys('ElectronicHoldingsSort', $holdingRawNotes);
+        $sortPosition = $this->getElectronicHoldingsConfigValue(
+            'ElectronicHoldingsSort',
+            'sort_pos',
+            $holdingsNotesConfigKeys
+        );
+
+        return $sortPosition ?: PHP_INT_MAX;
+    }
+
+    /**
+     * Support method for getUrlsForRecord() -- get a list of custom access credentials for a holdings record link.
+     *
+     * @param array $holdingRawNotes The raw notes of the holdings record
+     *
+     * @return ?array An array of credentials, each containing a url, username and password
+     */
+    protected function getAccessCredentials(array $holdingRawNotes): ?array
     {
         $noteType = $this->config['ElectronicHoldings']['access_credentials_organization_code_note_type'] ?? null;
         if (!$noteType) {
@@ -1749,7 +1857,32 @@ class Folio extends AbstractAPI implements
         return $accessCredentials;
     }
 
-    private function getOrganization($organizationCode)
+    /**
+     * Get a FOLIO agreement record.
+     *
+     * @param string $agreementId UUID of the agreement record
+     *
+     * @return object The agreement record
+     */
+    protected function getAgreement(string $agreementId): object
+    {
+        // erm.agreements.item.get
+        $agreementResponse  = $this->makeRequest(
+            'GET',
+            '/erm/sas/' . $agreementId
+        );
+        $agreement = json_decode($agreementResponse->getBody());
+        return $agreement;
+    }
+
+    /**
+     * Get a FOLIO organization record.
+     *
+     * @param string $organizationCode Code property of the organization
+     *
+     * @return object The organization record
+     */
+    private function getOrganization($organizationCode): object
     {
         $query = [
             'query' => '(code=="' . $organizationCode . '")',
@@ -1764,7 +1897,14 @@ class Folio extends AbstractAPI implements
         return $json->organizations[0] ?? null;
     }
 
-    private function getInterface($id)
+    /**
+     * Get a FOLIO interface record.
+     *
+     * @param string $id UUID of the interface record
+     *
+     * @return object The interface record
+     */
+    private function getInterface(string $id): object
     {
         // organizations-storage.interfaces.item.get
         $response = $this->makeRequest(
@@ -1774,7 +1914,14 @@ class Folio extends AbstractAPI implements
         return json_decode($response->getBody());
     }
 
-    private function getInterfaceCredentials($id)
+    /**
+     * Get a FOLIO interface credentials record.
+     *
+     * @param string $id UUID of the interface credentials record
+     *
+     * @return object The interface credentials record
+     */
+    private function getInterfaceCredentials(string $id): object
     {
         // organizations-storage.interfaces.credentials.item.get
         $response = $this->makeRequest(
