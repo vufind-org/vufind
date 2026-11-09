@@ -1019,7 +1019,8 @@ class Folio extends AbstractAPI implements
 
         $hasHoldingNotes = !empty(implode($holdingNotes));
 
-        $holdingsNoteTypes = $this->getHoldingsNoteTypes();
+        // Only look up note types when needed, to avoid an unnecessary API call:
+        $holdingsNoteTypes = empty($holding->notes) ? [] : $this->getHoldingsNoteTypes();
         $holdingRawNotes = array_map(fn ($note) => [
             'text' => $note?->note ?? '',
             'type' => $holdingsNoteTypes[$note?->holdingsNoteTypeId ?? ''] ?? '',
