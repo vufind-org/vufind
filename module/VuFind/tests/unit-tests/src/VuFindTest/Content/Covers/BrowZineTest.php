@@ -30,8 +30,6 @@
 namespace VuFindTest\Content\Covers;
 
 use VuFind\Content\Covers\BrowZine;
-use VuFind\Content\Covers\BrowZineFactory;
-use VuFindTest\Container\MockContainer;
 
 /**
  * Unit tests for BrowZine cover loader.
@@ -85,10 +83,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                 }
             );
         }
-        $factory = new BrowZineFactory();
-        $container = new MockContainer($this);
-        $container->set(\VuFindSearch\Service::class, $service);
-        $loader = ($factory)($container, BrowZine::class);
+        $loader = new BrowZine($service, ['https://assets.thirdiron.com/default-journal-cover.png']);
         $this->assertEquals($expected, $loader->getUrl('', 'small', $ids));
     }
 }

@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
@@ -126,7 +127,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector): Backend
     {
-        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $auth = $this->getService(AuthorizationServiceInterface::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
@@ -183,7 +184,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnectorOptions(): array
     {
-        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $auth = $this->getService(AuthorizationServiceInterface::class);
         $options = [
             'search_http_method' => $this->edsConfig['General']['search_http_method']
                 ?? 'POST',

@@ -61,7 +61,6 @@ class UserService extends AbstractDbService implements
      * @param SessionContainer    $userSessionContainer Session container for user data
      */
     public function __construct(
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
         PersistenceManager $persistenceManager,

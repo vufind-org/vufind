@@ -32,6 +32,7 @@
 namespace VuFind\Action\Account;
 
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
@@ -194,8 +195,7 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
     protected function sendChangeNotificationEmail($user, $newEmail)
     {
         // Don't send the notification if the existing email is not valid:
-        $validator = new \Laminas\Validator\EmailAddress();
-        if (!$validator->isValid($user->getEmail())) {
+        if (!$this->getHelper(EmailHelper::class)->isValidAddress($user->getEmail())) {
             return;
         }
 

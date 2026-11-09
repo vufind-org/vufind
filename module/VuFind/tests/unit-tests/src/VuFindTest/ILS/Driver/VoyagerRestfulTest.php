@@ -32,6 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use PDOStatement;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ILS\Driver\VoyagerRestful;
+use VuFind\Validator\EmailAddressValidator;
 
 /**
  * ILS driver test.
@@ -67,7 +68,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function setUp(): void
     {
-        $this->driver = new VoyagerRestful(new \VuFind\Date\Converter());
+        $this->driver = new VoyagerRestful(new \VuFind\Date\Converter(), new EmailAddressValidator());
     }
 
     /**
@@ -81,7 +82,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Create a mock SQL response
         $mockResult = $this->createMock(PDOStatement::class);
-        $mockResult->method('fetch')->willReturnCallback(function () use ($location) {
+        $mockResult->method('fetch')->willReturnCallback(function () use ($location): mixed {
             static $called = false;
             if ($called) {
                 return null;
@@ -127,7 +128,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 
         // Create a mock SQL response
         $mockResult = $this->createMock(PDOStatement::class);
-        $mockResult->method('fetch')->willReturnCallback(function () use ($name) {
+        $mockResult->method('fetch')->willReturnCallback(function () use ($name): mixed {
             static $called = false;
             if ($called) {
                 return null;
@@ -174,7 +175,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
              */
             public function __construct(protected MockObject&PDOStatement $mockResult)
             {
-                parent::__construct(new \VuFind\Date\Converter());
+                parent::__construct(new \VuFind\Date\Converter(), new EmailAddressValidator());
             }
 
             /**
