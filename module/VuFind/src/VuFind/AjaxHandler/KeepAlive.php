@@ -47,21 +47,13 @@ use Psr\Http\Message\ServerRequestInterface;
 class KeepAlive extends AbstractBase
 {
     /**
-     * Session Manager.
-     *
-     * @var SessionManager
-     */
-    protected $sessionManager;
-
-    /**
      * Constructor.
      *
-     * @param SessionManager $sm Session manager
+     * @param SessionManager $sessionManager Session manager
      */
-    public function __construct(SessionManager $sm)
+    public function __construct(protected SessionManager $sessionManager)
     {
         parent::__construct(null);
-        $this->sessionManager = $sm;
     }
 
     /**
