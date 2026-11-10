@@ -33,9 +33,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\IdentifierLinker\PluginManager as LinkerPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Icon;
 use VuFind\View\Renderer\TemplateRendererInterface;
-use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 

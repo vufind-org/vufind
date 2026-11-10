@@ -31,8 +31,8 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
-use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * AJAX handler to get list of comments for a record as HTML.

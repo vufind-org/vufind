@@ -32,9 +32,9 @@ namespace VuFind\AjaxHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
-use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function is_array;

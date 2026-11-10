@@ -32,9 +32,9 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ILS\Connection;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
-use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Get ILS Status" AJAX handler.

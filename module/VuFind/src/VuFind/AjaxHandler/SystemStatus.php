@@ -39,8 +39,8 @@ use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Service\AuthorizationServiceAwareInterface;
 use VuFind\Service\AuthorizationServiceAwareTrait;
-use VuFindSearch\Service as SearchService;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFindSearch\Service as SearchService;
 
 /**
  * "System Status" AJAX handler.

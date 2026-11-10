@@ -35,8 +35,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Recommend\DateFacetTrait;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\Results;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * "Get Visualization Data" AJAX handler.

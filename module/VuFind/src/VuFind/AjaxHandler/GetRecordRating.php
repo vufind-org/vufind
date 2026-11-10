@@ -33,8 +33,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\HttpStatus;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
-use VuFind\View\Helper\Root\Record as RecordHelper;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Helper\Root\Record as RecordHelper;
 
 /**
  * AJAX handler to get the rating for a record.

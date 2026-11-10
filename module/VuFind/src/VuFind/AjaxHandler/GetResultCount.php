@@ -33,8 +33,8 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * "Get Result Counts" AJAX Handler.

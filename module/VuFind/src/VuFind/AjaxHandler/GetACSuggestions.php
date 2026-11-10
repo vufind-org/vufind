@@ -31,8 +31,8 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Autocomplete\Suggester;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * "Get Autocomplete Suggestions" AJAX handler.
