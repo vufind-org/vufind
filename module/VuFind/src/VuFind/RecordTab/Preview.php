@@ -106,18 +106,6 @@ class Preview extends AbstractBase
     }
 
     /**
-     * Is this tab initially visible?
-     *
-     * @return bool
-     */
-    public function isVisible()
-    {
-        // in this case there is no downside to keeping it hidden
-        // until there is content
-        return false;
-    }
-
-    /**
      * Can this tab be loaded via AJAX?
      *
      * @return bool
