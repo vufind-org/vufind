@@ -1806,7 +1806,9 @@ class Folio extends AbstractAPI implements
                     $profile->expirationDate
                 )
                 : null,
-            group: $this->getPatronGroups()[$profile->patronGroup ?? ''] ?? null,
+            group: isset($profile->patronGroup)
+                ? $this->getPatronGroups()[$profile->patronGroup] ?? null
+                : null,
             nonDefaultFields: [
                 'id' => $profile->id,
             ]
