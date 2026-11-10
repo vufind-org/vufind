@@ -58,7 +58,7 @@ class GetRecordDetails extends AbstractBase
      * @param TemplateRendererInterface $renderer     Template renderer
      */
     public function __construct(
-        #[Autowire(config: 'config')]
+        #[Autowire(service: 'Config')]
         protected array $config,
         protected Loader $recordLoader,
         protected TabManager $tabManager,
