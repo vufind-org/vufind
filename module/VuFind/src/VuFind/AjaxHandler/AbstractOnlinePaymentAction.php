@@ -34,8 +34,8 @@ namespace VuFind\AjaxHandler;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\OnlinePayment\OnlinePaymentManager;
-use VuFind\Session\Settings as SessionSettings;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Abstract base class for online payment handlers.
