@@ -55,7 +55,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
      *
      * @param SessionSettings $ss           Session settings
      * @param Loader          $recordLoader Record loader
-     * @param Record          $recordPlugin Record plugin
+     * @param Record          $recordPlugin Record view helper
      * @param TabManager      $tabManager   Tab manager
      */
     public function __construct(
