@@ -35,6 +35,7 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\OnlinePayment\OnlinePaymentManager;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base class for online payment handlers.
@@ -60,8 +61,10 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
      */
     public function __construct(
         SessionSettings $sessionSettings,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected PaymentServiceInterface $paymentService,
         protected OnlinePaymentManager $onlinePaymentManager,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected AuditEventServiceInterface $auditEventService
     ) {
         parent::__construct($sessionSettings);
