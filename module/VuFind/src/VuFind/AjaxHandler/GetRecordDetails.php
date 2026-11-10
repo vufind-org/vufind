@@ -34,6 +34,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Get Record Details" AJAX handler.
@@ -57,9 +58,13 @@ class GetRecordDetails extends AbstractBase
      * @param TemplateRendererInterface $renderer     Template renderer
      */
     public function __construct(
+        #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire]
         protected Loader $recordLoader,
+        #[Autowire]
         protected TabManager $tabManager,
+        #[Autowire]
         protected TemplateRendererInterface $renderer,
     ) {
         parent::__construct(null);

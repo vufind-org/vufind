@@ -35,6 +35,7 @@ use VuFind\Http\ServerUrlHelper;
 use VuFind\IdentifierLinker\PluginManager as LinkerPluginManager;
 use VuFind\View\Helper\Root\Icon;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
@@ -89,11 +90,17 @@ class IdentifierLinksLookup extends AbstractBase
      * @param array                     $config          Main configuration
      */
     public function __construct(
+        #[Autowire]
         protected LinkerPluginManager $pluginManager,
+        #[Autowire]
         protected TemplateRendererInterface $renderer,
+        #[Autowire]
         protected ServerUrlHelper $serverUrlHelper,
+        #[Autowire]
         protected RouteHelper $routeHelper,
+        #[Autowire(container: 'ViewHelperManager')]
         protected Icon $iconHelper,
+        #[Autowire(config: 'config')]
         array $config
     ) {
         parent::__construct(null);

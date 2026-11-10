@@ -34,6 +34,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Get ILS Status" AJAX handler.
@@ -57,6 +58,7 @@ class GetIlsStatus extends AbstractBase
      * @param Connection                $ils      ILS connection
      * @param TemplateRendererInterface $renderer Template renderer
      */
+    #[Autowire]
     public function __construct(
         SessionSettings $ss,
         protected Connection $ils,

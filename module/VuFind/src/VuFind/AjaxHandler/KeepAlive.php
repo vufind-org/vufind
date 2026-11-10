@@ -31,6 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Session\SessionManager;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Keep Alive" AJAX handler.
@@ -51,6 +52,7 @@ class KeepAlive extends AbstractBase
      *
      * @param SessionManager $sessionManager Session manager
      */
+    #[Autowire]
     public function __construct(protected SessionManager $sessionManager)
     {
         parent::__construct(null);

@@ -37,6 +37,7 @@ use VuFind\Resolver\Connection;
 use VuFind\Resolver\Driver\PluginManager as ResolverManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Get Resolver Links" AJAX handler.
@@ -64,9 +65,13 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
      * @param array                     $config        Top-level VuFind configuration (config.ini)
      */
     public function __construct(
+        #[Autowire]
         SessionSettings $ss,
+        #[Autowire]
         protected ResolverManager $pluginManager,
+        #[Autowire]
         protected TemplateRendererInterface $renderer,
+        #[Autowire(config: 'config')]
         protected array $config
     ) {
         parent::__construct($ss);

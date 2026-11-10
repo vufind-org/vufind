@@ -34,6 +34,7 @@ namespace VuFind\AjaxHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Get Result Counts" AJAX Handler.
@@ -53,6 +54,7 @@ class GetResultCount extends AbstractBase
      * @param SessionSettings $sessionSettings Session settings
      * @param ResultsManager  $resultsManager  Results Manager
      */
+    #[Autowire]
     public function __construct(
         SessionSettings $sessionSettings,
         protected ResultsManager $resultsManager

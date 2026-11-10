@@ -34,6 +34,7 @@ use VuFind\Http\HttpStatus;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\View\Helper\Root\Record as RecordHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AJAX handler to get the rating for a record.
@@ -54,8 +55,11 @@ class GetRecordRating extends AbstractBase
      * @param RatingsService $ratingsService Ratings service
      */
     public function __construct(
+        #[Autowire]
         protected RecordLoader $recordLoader,
+        #[Autowire(container: 'ViewHelperManager')]
         protected RecordHelper $recordHelper,
+        #[Autowire]
         protected RatingsService $ratingsService
     ) {
         parent::__construct(null);

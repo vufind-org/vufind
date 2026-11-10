@@ -39,6 +39,7 @@ use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_callable;
@@ -65,6 +66,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
      * @param SearchRunner              $searchRunner           Search runner
      * @param TemplateRendererInterface $renderer               Template renderer
      */
+    #[Autowire]
     public function __construct(
         SessionSettings $ss,
         protected \VuFind\Recommend\PluginManager $recommendPluginManager,

@@ -32,6 +32,7 @@ namespace VuFind\AjaxHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Autocomplete\Suggester;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Get Autocomplete Suggestions" AJAX handler.
@@ -50,6 +51,7 @@ class GetACSuggestions extends AbstractBase
      * @param SessionSettings $ss        Session settings
      * @param Suggester       $suggester Autocomplete suggester
      */
+    #[Autowire]
     public function __construct(SessionSettings $ss, protected Suggester $suggester)
     {
         parent::__construct($ss);

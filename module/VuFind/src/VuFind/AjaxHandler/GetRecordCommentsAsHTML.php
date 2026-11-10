@@ -32,6 +32,7 @@ namespace VuFind\AjaxHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
 use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AJAX handler to get list of comments for a record as HTML.
@@ -50,6 +51,7 @@ class GetRecordCommentsAsHTML extends AbstractBase
      * @param Loader                    $loader   Record loader
      * @param TemplateRendererInterface $renderer Template renderer
      */
+    #[Autowire]
     public function __construct(
         protected Loader $loader,
         protected TemplateRendererInterface $renderer
