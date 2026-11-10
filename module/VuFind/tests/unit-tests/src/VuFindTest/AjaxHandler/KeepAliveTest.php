@@ -52,7 +52,6 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         $sm = $this->container->createMock(SessionManager::class, ['getId']);
         $sm->expects($this->once())->method('getId');
-        $this->container->set(SessionManager::class, $sm);
         $handler = new KeepAlive($sm);
         $this->assertEquals([true], $handler->handleRequest($this->getRequest()));
     }
