@@ -1448,7 +1448,7 @@ class Folio extends AbstractAPI implements
      * Support method for getUrlsForRecord() -- return the text string for a link from the electronicAccess
      * data in a holdings record.
      *
-     * @param array  $electronicAccessItem The electronicAccess item from the holdings record
+     * @param array $electronicAccessItem The electronicAccess item from the holdings record
      *
      * @return string The link text string
      */
