@@ -62,7 +62,6 @@ class GetVisData extends AbstractBase
      * @param Results         $results         Solr search results object
      */
     public function __construct(
-        #[Autowire]
         SessionSettings $sessionSettings,
         #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected Results $results

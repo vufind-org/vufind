@@ -80,17 +80,13 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @param Connection              $ils            ILS connection
      */
     public function __construct(
-        #[Autowire]
         protected SessionManager $sessionManager,
-        #[Autowire]
         protected ResultsManager $resultsManager,
         #[Autowire(config: 'config')]
         protected array $config,
         #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SessionServiceInterface $sessionService,
-        #[Autowire]
         protected SearchService $searchService,
-        #[Autowire]
         protected Connection $ils
     ) {
         parent::__construct(null);

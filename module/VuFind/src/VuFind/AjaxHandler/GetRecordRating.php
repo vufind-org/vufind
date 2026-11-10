@@ -55,11 +55,9 @@ class GetRecordRating extends AbstractBase
      * @param RatingsService $ratingsService Ratings service
      */
     public function __construct(
-        #[Autowire]
         protected RecordLoader $recordLoader,
         #[Autowire(container: 'ViewHelperManager')]
         protected RecordHelper $recordHelper,
-        #[Autowire]
         protected RatingsService $ratingsService
     ) {
         parent::__construct(null);

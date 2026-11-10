@@ -60,11 +60,8 @@ class GetRecordDetails extends AbstractBase
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        #[Autowire]
         protected Loader $recordLoader,
-        #[Autowire]
         protected TabManager $tabManager,
-        #[Autowire]
         protected TemplateRendererInterface $renderer,
     ) {
         parent::__construct(null);

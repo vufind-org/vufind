@@ -62,13 +62,10 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
      * @param RecommendHelper           $recommendHelper        Recommend view helper
      */
     public function __construct(
-        #[Autowire]
         SessionSettings $sessionSettings,
-        #[Autowire]
         protected RecommendManager $recommendPluginManager,
         #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected Results $results,
-        #[Autowire]
         protected TemplateRendererInterface $renderer,
         #[Autowire(container: 'ViewHelperManager')]
         protected RecommendHelper $recommendHelper

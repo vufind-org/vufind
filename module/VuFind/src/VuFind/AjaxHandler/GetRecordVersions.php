@@ -59,13 +59,10 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
      * @param TabManager      $tabManager   Tab manager
      */
     public function __construct(
-        #[Autowire]
         SessionSettings $ss,
-        #[Autowire]
         protected Loader $recordLoader,
         #[Autowire(container: 'ViewHelperManager')]
         protected Record $recordPlugin,
-        #[Autowire]
         protected TabManager $tabManager
     ) {
         parent::__construct($ss);
