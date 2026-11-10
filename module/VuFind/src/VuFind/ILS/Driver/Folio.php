@@ -1806,10 +1806,36 @@ class Folio extends AbstractAPI implements
                     $profile->expirationDate
                 )
                 : null,
+            group: $this->getPatronGroups()[$profile->patronGroup ?? ''] ?? null,
             nonDefaultFields: [
                 'id' => $profile->id,
             ]
         );
+    }
+
+    /**
+     * Get list of patron groups from FOLIO.  Cache as needed.
+     *
+     * @return array An array mapping a patron group UUID to its group name.
+     */
+    protected function getPatronGroups()
+    {
+        $cacheKey = 'patronGroups';
+        $patronGroups = $this->getCachedData($cacheKey);
+        if (null == $patronGroups) {
+            $patronGroups = [];
+            // usergroups.collection.get
+            foreach (
+                $this->getPagedResults(
+                    'usergroups',
+                    '/groups'
+                ) as $patronGroup
+            ) {
+                $patronGroups[$patronGroup->id] = $patronGroup->group;
+            }
+            $this->putCachedData($cacheKey, $patronGroups);
+        }
+        return $patronGroups;
     }
 
     /**
