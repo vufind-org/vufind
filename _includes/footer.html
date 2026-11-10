@@ -1,8 +1,8 @@
 <div class="footer">
   <div class="container">
     <nav>
-      <a href="https://vufind.org/wiki/changelog">Release Schedule</a> &bull;
-      <a href="https://github.com/vufind-org/vufind">GitHub</a> &bull;
+      <a href="https://vufind.org/wiki/changelog">Release Schedule</a> &middot;
+      <a href="https://github.com/vufind-org/vufind">GitHub</a> &middot;
       <a href="https://www.linkedin.com/company/vufind">LinkedIn</a>
     </nav>
 
@@ -65,54 +65,55 @@
 </script>
 <!-- End Matomo Code -->
 
-<dialog id="theme-menu">
-  <form method="dialog" id="theme-form">
-    <fieldset>
-      <legend>Theme</legend>
+<form id="theme-form" popover="hint">
+  <h2>Site Appearance</h2>
 
-      <label for="site-theme-system">
-        <input type="radio" id="site-theme-system" name="site-theme" value="light dark" />
-        System
-      </label>
+  <fieldset>
+    <legend>Theme</legend>
 
-      <label for="site-theme-light">
-        <input type="radio" id="site-theme-light" name="site-theme" value="light" />
-        Light
-      </label>
+    <label for="site-theme-system">
+      <input type="radio" id="site-theme-system" name="site-theme" value="light dark" />
+      <span class="theme-system">System</span>
+    </label>
 
-      <label for="site-theme-dark">
-        <input type="radio" id="site-theme-dark" name="site-theme" value="dark" />
-        Dark
-      </label>
-    </fieldset>
+    <label for="site-theme-light">
+      <input type="radio" id="site-theme-light" name="site-theme" value="light" />
+      <span class="theme-light">Light</span>
+    </label>
 
-    <fieldset>
-      <legend>Font</legend>
+    <label for="site-theme-dark">
+      <input type="radio" id="site-theme-dark" name="site-theme" value="dark" />
+      <span class="theme-dark">Dark</span>
+    </label>
+  </fieldset>
 
-      <label for="site-font-system">
-        <input type="radio" id="site-font-system" name="site-font" value="system" />
-        System
-      </label>
+  <fieldset>
+    <legend>Font</legend>
 
-      <label for="site-font-serif">
-        <input type="radio" id="site-font-serif" name="site-font" value="serif" />
-        Serif
-      </label>
+    <label for="site-font-system">
+      <input type="radio" id="site-font-system" name="site-font" value="system" />
+      <span class="font-system">System</span>
+    </label>
 
-      <label for="site-font-monospace">
-        <input type="radio" id="site-font-monospace" name="site-font" value="monospace" />Monospace
-      </label>
+    <label for="site-font-serif">
+      <input type="radio" id="site-font-serif" name="site-font" value="serif" />
+      <span class="font-serif">Serif</span>
+    </label>
 
-      <label for="site-font-lexend">
-        <input type="radio" id="site-font-lexend" name="site-font" value="lexend" />
-        Lexend
-      </label>
-    </fieldset>
+    <label for="site-font-monospace">
+      <input type="radio" id="site-font-monospace" name="site-font" value="monospace" />
+      <span class="font-monospace">Monospace</span>
+    </label>
 
-    <input type="submit" value="Save" />
-  </form>
-</dialog>
+    <label for="site-font-lexend">
+      <input type="radio" id="site-font-lexend" name="site-font" value="lexend" />
+      <span class="font-lexend">Lexend</span>
+    </label>
+  </fieldset>
 
-<button id="theme-picker" commandfor="theme-menu" command="show-modal">Site Appearance</button>
+  <input type="submit" value="Save" popovertarget="theme-form" popovertargetaction="hide">
+</form>
+
+<button id="theme-picker" popovertarget="theme-form" popovertargetaction="toggle">Site Appearance</button>
 
 <script type="module" src="{{ site.baseurl }}/assets/js/site-preferences.js"></script>

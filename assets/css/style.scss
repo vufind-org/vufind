@@ -145,7 +145,6 @@
 }
 
 @layer theme {
-	[for="site-font-system"],
 	.font-system {
 		font-family: fonts.$system;
 
@@ -154,17 +153,14 @@
 		}
 	}
 
-	[for="site-font-serif"],
 	.font-serif {
 		font-family: fonts.$serif;
 	}
 
-	[for="site-font-monospace"],
 	.font-monospace {
-		font-family: "JetBrains Mono", fonts.$monospace;
+		font-family: fonts.$monospace;
 	}
 
-	[for="site-font-lexend"],
 	.font-lexend {
 		font-family: "Lexend", fonts.$system;
 	}
@@ -178,14 +174,9 @@
 
 	.container {
 		width: 100%;
-		max-width: 1170px;
+		max-width: 991px;
 		margin-inline: auto;
 		padding-inline: 1em;
-	}
-
-	.page--index {
-		max-width: 75ch;
-		margin-inline: auto;
 	}
 
 	.header {
@@ -600,7 +591,7 @@
 		inset-block-end: 1em;
 		padding-inline: 1em;
 		padding-block: 0.5em;
-		font: inherit;
+		font-size: 12pt;
 		color: colors.$text;
 		background-color: colors.$ui;
 		border: 1px solid colors.$text;
@@ -611,34 +602,30 @@
 		}
 	}
 
-	#theme-menu {
-		&:not(.is-shown) {
-			@extend .visually-hidden-focusable;
-		}
-
-		position: fixed;
-		z-index: 40;
-		inset-inline-end: 1em;
-		inset-block-end: 4em;
-		padding: 1em;
-		padding-block-end: 0;
+	#theme-form {
+		padding-inline: 1em;
+		font-size: 1rem;
 		color: colors.$text;
 		background-color: colors.$soft;
 		border: 1px solid;
 		box-shadow: 0 4px 8px -2px #0003;
 
+		h2 {
+			font-size: 1.25rem;
+		}
+
 		fieldset {
+			display: flex;
+			gap: 1em;
 			margin: 0;
 			padding: 0;
 		}
 
 		label {
-			display: grid;
-			grid-template-columns: auto 1fr;
-			gap: 1ch;
-			width: 100%;
-			padding-inline: 1ch;
-			padding-block: 0.3em;
+			display: flex;
+			align-items: center;
+			gap: 0.5ch;
+			padding: 0.5em;
 
 			&:hover,
 			&:focus {
@@ -652,6 +639,10 @@
 			margin-block: 1em;
 			padding-inline: 1ch;
 			padding-block: 0.3em;
+		}
+
+		&::backdrop {
+			background-color: rgb(0 0 0 / 0.5);
 		}
 	}
 }

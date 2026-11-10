@@ -14,14 +14,14 @@
 		const FONT_KEY = "vf-site-font";
 
 	 	(function applySiteTheme() {
-			const theme = localStorage.getItem(THEME_KEY) ?? "light dark";
-
 			// apply to meta tag -> CSS light-dark
+			const theme = localStorage.getItem(THEME_KEY) ?? "light dark";
 			document
 				.querySelector('[name="color-scheme"]')
 				.setAttribute("content", theme);
 
 			// select correct option in form
+			const font = localStorage.getItem(FONT_KEY) ?? "system";
 			document.addEventListener("DOMContentLoaded", () => {
 				document.body.classList.add(`font-${font}`);
 			});

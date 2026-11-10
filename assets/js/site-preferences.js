@@ -1,9 +1,7 @@
 /*global THEME_KEY */
 
 function setSiteTheme(theme) {
-	document
-		.querySelector('[name="color-scheme"]')
-		.setAttribute("content", theme);
+	document.querySelector('[name="color-scheme"]').setAttribute("content", theme);
 	localStorage.setItem(THEME_KEY, theme);
 }
 
@@ -42,9 +40,15 @@ document.addEventListener("DOMContentLoaded", () => {
 /**
  * Form capture
  */
-const themeMenu = document.getElementById("theme-menu");
+
 const themeForm = document.getElementById("theme-form");
-themeMenu.addEventListener("close", () => {
+
+themeForm.addEventListener("submit", (e) => {
+	themeForm.hidePopover();
+	e.preventDefault();
+});
+
+themeForm.addEventListener("toggle", function savePreferences() {
 	const values = new FormData(themeForm);
 
 	localStorage.setItem(THEME_KEY, values.get("site-theme"));
