@@ -1010,25 +1010,38 @@ class Folio extends AbstractAPI implements
             );
             return $statement;
         };
+
         $id = $holding->id;
+
         $holdingNotes = array_filter(
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
+
         $hasHoldingNotes = !empty(implode($holdingNotes));
+
         $holdingsStatements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatements ?? []
         )));
+
         $holdingsSupplements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForSupplements ?? []
         )));
+
         $holdingsIndexes = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForIndexes ?? []
         )));
+
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+
+        $holdingElectronicAccess = array_map(
+            fn ($electronicAccessItem) => (array)$electronicAccessItem,
+            $holding?->electronicAccess ?? []
+        );
+
         return compact(
             'id',
             'holdingNotes',
@@ -1037,7 +1050,8 @@ class Folio extends AbstractAPI implements
             'holdingsSupplements',
             'holdingsIndexes',
             'holdingCallNumber',
-            'holdingCallNumberPrefix'
+            'holdingCallNumberPrefix',
+            'holdingElectronicAccess',
         );
     }
 
@@ -1072,6 +1086,7 @@ class Folio extends AbstractAPI implements
             'location' => $locationName,
             'location_code' => $locationData['code'],
             'folio_location_is_active' => $locationData['isActive'],
+            'holding_electronic_access' => $holdingDetails['holdingElectronicAccess'],
         ];
     }
 
@@ -1399,6 +1414,61 @@ class Folio extends AbstractAPI implements
         return $results;
     }
 
+    /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        if (!($this->config['ElectronicHoldings']['enabled'] ?? false)) {
+            return [];
+        }
+
+        $links = [];
+        $holdings = $this->getHolding($id);
+        foreach ($holdings['holdings'] as $holding) {
+            foreach (($holding['holding_electronic_access'] ?? []) as $electronicAccessItem) {
+                $url = $electronicAccessItem['uri'];
+                if (!$url) {
+                    continue;
+                }
+                $desc = $this->getAccessLinkText($electronicAccessItem);
+                $link = compact('url', 'desc');
+                $links[] = $link;
+            }
+        }
+        return $links;
+    }
+
+    /**
+     * Support method for getUrlsForRecord() -- return the text string for a link from the electronicAccess
+     * data in a holdings record.
+     *
+     * @param array  $electronicAccessItem The electronicAccess item from the holdings record
+     *
+     * @return string The link text string
+     */
+    protected function getAccessLinkText(
+        array $electronicAccessItem,
+    ): string {
+        $textSources = $this->config['ElectronicHoldings']['link_text_source'] ?? [];
+
+        // Just look to the electronic access record.
+        if (
+            in_array('electronic_access_link_text', $textSources)
+            && $text = $electronicAccessItem['linkText'] ?? ''
+        ) {
+            return $text;
+        }
+
+        // Fallback to the URL.
+        return $electronicAccessItem['uri'];
+    }
+    
     /**
      * Convert a FOLIO date string to a DateTime object.
      *
