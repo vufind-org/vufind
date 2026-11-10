@@ -1037,7 +1037,7 @@ class Folio extends AbstractAPI implements
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
 
-        $holdingElectronicAccess = array_map(
+        $holdingsElectronicAccess = array_map(
             fn ($electronicAccessItem) => (array)$electronicAccessItem,
             $holding?->electronicAccess ?? []
         );
@@ -1051,7 +1051,7 @@ class Folio extends AbstractAPI implements
             'holdingsIndexes',
             'holdingCallNumber',
             'holdingCallNumberPrefix',
-            'holdingElectronicAccess',
+            'holdingsElectronicAccess',
         );
     }
 
@@ -1086,7 +1086,7 @@ class Folio extends AbstractAPI implements
             'location' => $locationName,
             'location_code' => $locationData['code'],
             'folio_location_is_active' => $locationData['isActive'],
-            'holding_electronic_access' => $holdingDetails['holdingElectronicAccess'],
+            'holdings_electronic_access' => $holdingDetails['holdingsElectronicAccess'],
         ];
     }
 
@@ -1431,7 +1431,7 @@ class Folio extends AbstractAPI implements
         $links = [];
         $holdings = $this->getHolding($id);
         foreach ($holdings['holdings'] as $holding) {
-            foreach (($holding['holding_electronic_access'] ?? []) as $electronicAccessItem) {
+            foreach (($holding['holdings_electronic_access'] ?? []) as $electronicAccessItem) {
                 $url = $electronicAccessItem['uri'];
                 if (!$url) {
                     continue;

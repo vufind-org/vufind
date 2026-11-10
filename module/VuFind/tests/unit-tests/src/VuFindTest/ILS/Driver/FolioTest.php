@@ -1094,7 +1094,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
-                    'holding_electronic_access' => [],
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1152,7 +1152,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                         'folio_location_is_active' => true,
                         'loan_type_id' => '',
                         'loan_type_name' => '',
-                        'holding_electronic_access' => [],
+                        'holdings_electronic_access' => [],
                     ],
                 ],
                 'electronic_holdings' => [],
@@ -1186,7 +1186,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                         'folio_location_is_active' => true,
                         'loan_type_id' => 'd012791f-4e26-4dc2-a279-b6a42b1df315',
                         'loan_type_name' => 'Can Circulate',
-                        'holding_electronic_access' => [],
+                        'holdings_electronic_access' => [],
                     ],
                     1 => [
                         'callnumber_prefix' => '',
@@ -1214,7 +1214,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                         'folio_location_is_active' => true,
                         'loan_type_id' => 'd012791f-4e26-4dc2-a279-b6a42b1df315',
                         'loan_type_name' => 'Can Circulate',
-                        'holding_electronic_access' => [],
+                        'holdings_electronic_access' => [],
                     ],
                 ],
                 'electronic_holdings' => [],
@@ -1298,7 +1298,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
-                    'holding_electronic_access' => [],
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1346,7 +1346,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
-                    'holding_electronic_access' => [],
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1392,7 +1392,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
-                    'holding_electronic_access' => [],
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1440,7 +1440,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
-                    'holding_electronic_access' => [],
+                    'holdings_electronic_access' => [],
                 ],
                 1 => [
                     'callnumber_prefix' => '',
@@ -1468,7 +1468,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'folio_location_is_active' => true,
                     'loan_type_id' => '',
                     'loan_type_name' => '',
-                    'holding_electronic_access' => [],
+                    'holdings_electronic_access' => [],
                 ],
             ],
             'electronic_holdings' => [],
@@ -1501,7 +1501,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'uri' => 'https://example.com/two',
                 ],
             ],
-            $holding['holdings'][0]['holding_electronic_access']
+            $holding['holdings'][0]['holdings_electronic_access']
         );
     }
 
@@ -1573,7 +1573,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Test getUrlsForRecord.
      *
      * @param ?array $electronicHoldingsConfig [ElectronicHoldings] config section (null to omit)
-     * @param array  $holdingsElectronicAccess holding_electronic_access value for each holding
+     * @param array  $holdingsElectronicAccess holdings_electronic_access value for each holding
      * @param array  $expected                 Expected URL list
      *
      * @return void
@@ -1590,7 +1590,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         }
         $this->createConnector('empty', $config, null, ['getHolding']);
         $holdings = array_map(
-            fn ($access) => ['holding_electronic_access' => $access],
+            fn ($access) => ['holdings_electronic_access' => $access],
             $holdingsElectronicAccess
         );
         $this->driver->expects(
