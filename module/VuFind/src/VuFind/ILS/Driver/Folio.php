@@ -1468,7 +1468,7 @@ class Folio extends AbstractAPI implements
         // Fallback to the URL.
         return $electronicAccessItem['uri'];
     }
-    
+
     /**
      * Convert a FOLIO date string to a DateTime object.
      *

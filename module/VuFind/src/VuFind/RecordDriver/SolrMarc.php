@@ -85,6 +85,6 @@ class SolrMarc extends SolrDefault
             return array_values($combinedUrls);
         } else {
             return array_merge($marcUrls, $ilsUrls);
-        }    
+        }
     }
 }
