@@ -46,6 +46,25 @@
   }
   $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding());
   $tabs = array_merge($tabs, $this->recordTabs()->getTabs($this->driver, $filteredTabs, $this->defaultTab));
+
+  // Apply embeddedTabs order if configured:
+  if (!empty($this->embeddedTabs)) {
+    $ordered = [];
+    foreach ($this->embeddedTabs as $tabName) {
+      $key = strtolower($tabName);
+      if (isset($tabs[$key])) {
+        $ordered[$key] = $tabs[$key];
+      }
+    }
+    $tabs = $ordered;
+  }
+
+  $activeTab = $this->defaultEmbeddedTab
+    ? strtolower($this->defaultEmbeddedTab)
+    : $this->defaultTab;
+  if (!isset($tabs[$activeTab]) && !empty($tabs)) {
+    $activeTab = array_key_first($tabs);
+  }
 ?>
 <?=$this->component(
     'tabs',
