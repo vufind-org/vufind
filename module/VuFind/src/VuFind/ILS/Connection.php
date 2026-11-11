@@ -610,7 +610,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $response['extraFields'] = $functionConfig['extraFields'];
             }
             $response['helpText']
-                = $this->getHelpText($functionConfig['helpText']);
+                = $this->getHelpText($functionConfig['helpText'] ?? '');
         }
         return $response;
     }

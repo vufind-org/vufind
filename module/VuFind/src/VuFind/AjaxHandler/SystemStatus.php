@@ -39,6 +39,7 @@ use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Service\AuthorizationServiceAwareInterface;
 use VuFind\Service\AuthorizationServiceAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -81,7 +82,9 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     public function __construct(
         protected SessionManager $sessionManager,
         protected ResultsManager $resultsManager,
+        #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SessionServiceInterface $sessionService,
         protected SearchService $searchService,
         protected Connection $ils
