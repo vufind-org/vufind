@@ -34,6 +34,7 @@ use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Solr\Results;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 use VuFind\View\Renderer\TemplateRendererInterface;
@@ -63,9 +64,11 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
     public function __construct(
         SessionSettings $sessionSettings,
         protected RecommendManager $recommendPluginManager,
+        #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected Results $results,
         protected TemplateRendererInterface $renderer,
-        protected RecommendHelper $recommendHelper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected RecommendHelper $recommendHelper
     ) {
         parent::__construct($sessionSettings);
     }
