@@ -219,6 +219,11 @@ VuFind.register("channels", function Channels() {
     // Disable more paging
     disableLoadMoreBtn(loadMoreBtn);
 
+    // Make sure the channel is initialized
+    if (typeof channelEl.hiddenItems === "undefined") {
+      channelInit(channelEl);
+    }
+
     // Reveal hidden items
     const pageSize = Number(channelEl.dataset.pageSize);
     let hiddenItems = getHiddenItems(channelEl);
