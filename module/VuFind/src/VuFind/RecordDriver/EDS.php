@@ -1121,7 +1121,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getPageCount()
+    public function getPageCount(): string
     {
         if (
             $pageCount = $this->extractEbscoDataFromRecordInfo(
