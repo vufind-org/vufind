@@ -167,7 +167,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $configManager = $this->createMock(ConfigManagerInterface::class);
         $configManager->method('getConfigArray')
-            ->willReturnCallback(function (string $configName) use ($driverConfig) {
+            ->willReturnCallback(function (string $configName) use ($driverConfig): array {
                 // Return $driverConfig for EDS, and an empty array for 'config'
                 return $configName === 'config' ? [] : $driverConfig;
             });
