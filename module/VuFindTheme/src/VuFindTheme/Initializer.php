@@ -190,14 +190,7 @@ class Initializer
         }
 
         // Initialize the color scheme
-        $colorSchemeManager = new ColorSchemeManager(
-            $this->config,
-            $this->serviceManager->get(GlobalsContainer::class),
-            $this->cookieManager,
-            $currentTheme
-        );
-        $selectedColorScheme = $colorSchemeManager->getSelectedColorScheme($this->event?->getRequest());
-        $colorSchemeManager->sendColorSchemeInfoToView($selectedColorScheme);
+        $this->setUpColorSchemes($currentTheme);
     }
 
     /**
@@ -472,5 +465,24 @@ class Initializer
                 );
             }
         }
+    }
+
+    /**
+     * Support method for init() -- set up color scheme once theme is known.
+     *
+     * @param string $currentTheme Theme name
+     *
+     * @return void
+     */
+    protected function setUpColorSchemes(string $currentTheme): void
+    {
+        $colorSchemeManager = new ColorSchemeManager(
+            $this->config,
+            $this->serviceManager->get(GlobalsContainer::class),
+            $this->cookieManager,
+            $currentTheme
+        );
+        $selectedColorScheme = $colorSchemeManager->getSelectedColorScheme($this->event?->getRequest());
+        $colorSchemeManager->sendColorSchemeInfoToView($selectedColorScheme);
     }
 }
