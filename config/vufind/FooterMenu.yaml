@@ -28,6 +28,7 @@
 
 footer-left:
   label: footer_header_search_options
+  CustomLinkPosition: 'footer_left'
   MenuItems:
     - label: 'Search History'
       route: searchhistory-list
@@ -37,6 +38,7 @@ footer-left:
 
 footer-center:
   label: footer_header_find_more
+  CustomLinkPosition: 'footer_center'
   MenuItems:
     - label: 'Browse the Catalog'
       route: browse-home
@@ -55,6 +57,7 @@ footer-center:
 
 footer-right:
   label: footer_header_need_help
+  CustomLinkPosition: 'footer_right'
   MenuItems:
     - label: 'Search Tips'
       route: help

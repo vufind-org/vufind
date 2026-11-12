@@ -9,7 +9,7 @@
       <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $item['__html'], options: ['escapeContent' => false]) ?>
     <?php else: ?>
       <?php
-        $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null);
+        $href = $item['url'] ?? null;
         $hasSubmenuItems = isset($item['submenuItems']);
       ?>
       <?php if (isset($item['label']) && ($href || $hasSubmenuItems)): ?>

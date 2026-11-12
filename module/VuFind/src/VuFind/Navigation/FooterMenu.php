@@ -30,6 +30,7 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Content\CustomLinkManager;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -49,16 +50,18 @@ class FooterMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService Section service
-     * @param array                   $sectionConfig  Section configuration
-     * @param array                   $config         Main configuration
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param CustomLinkManager       $customLinkManager Custom link manager
      */
     public function __construct(
         SectionServiceInterface $sectionService,
         #[Autowire(config: 'FooterMenu')]
         array $sectionConfig,
         #[Autowire(config: 'config')]
-        array $config
+        array $config,
+        CustomLinkManager $customLinkManager,
     ) {
         $this->addRequiredSettings(
             [
@@ -81,7 +84,7 @@ class FooterMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config, $customLinkManager);
     }
 
     /**
@@ -124,6 +127,7 @@ class FooterMenu extends AbstractMenu
         $yaml = <<<YAML
             footer-left:
               label: footer_header_search_options
+              CustomLinkPosition: 'footer_left'
               MenuItems:
                 - label: 'Search History'
                   route: searchhistory-list
@@ -133,6 +137,7 @@ class FooterMenu extends AbstractMenu
 
             footer-center:
               label: footer_header_find_more
+              CustomLinkPosition: 'footer_center'
               MenuItems:
                 - label: 'Browse the Catalog'
                   route: browse-home
@@ -151,6 +156,7 @@ class FooterMenu extends AbstractMenu
 
             footer-right:
               label: footer_header_need_help
+              CustomLinkPosition: 'footer_right'
               MenuItems:
                 - label: 'Search Tips'
                   route: help

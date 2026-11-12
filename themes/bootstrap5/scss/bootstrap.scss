@@ -326,6 +326,13 @@ body.rtl .dropdown-menu {
   }
 }
 
+.header-menu {
+  &:not(:first-child),
+  &:last-child {
+    margin-left: auto;
+  }
+}
+
 /* ------ Browse ------ */
 // Layout
 .browse-container {
