@@ -269,6 +269,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/ajaxtab' => Record\AjaxTabAction::class,
         'search2record/cite' => Record\CiteAction::class,
         'search2record/email' => Record\EmailAction::class,
+        'search2record/explain' => Record\ExplainAction::class,
         'search2record/export' => Record\ExportAction::class,
         'search2record/hold' => Record\HoldAction::class,
         'search2record/home' => Record\HomeAction::class,
@@ -363,8 +364,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Librarycards' => 'LibraryCards',
         'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
+        'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
         'Shortlink' => 'ShortLink',
+        'Simulatedsso' => 'SimulatedSSO',
         'Worldcat' => 'WorldCat',
     ];
 
