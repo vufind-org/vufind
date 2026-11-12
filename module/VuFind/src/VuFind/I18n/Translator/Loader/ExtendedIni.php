@@ -167,7 +167,7 @@ class ExtendedIni implements FileLoaderInterface
         $data = $this->loadLanguageLocale($locale, $filename, $this->useAliases);
 
         // Set up a reference to the current domain for use in alias processing:
-        $this->aliasDomains[$currentDomain] = $data;
+        $this->aliasDomains[$locale][$currentDomain] = $data;
 
         // Apply aliases:
         if ($this->useAliases) {
@@ -273,11 +273,11 @@ class ExtendedIni implements FileLoaderInterface
         [$domain, $key] = $alias;
 
         // If the alias references another TextDomain, we need to load that now.
-        if (!isset($this->aliasDomains[$domain])) {
-            $this->aliasDomains[$domain] = $this->loadLanguageLocale($locale, $domain, true);
+        if (!isset($this->aliasDomains[$locale][$domain])) {
+            $this->aliasDomains[$locale][$domain] = $this->loadLanguageLocale($locale, $domain, true);
         }
-        if ($this->aliasDomains[$domain]->offsetExists($key)) {
-            return $this->aliasDomains[$domain]->offsetGet($key);
+        if ($this->aliasDomains[$locale][$domain]->offsetExists($key)) {
+            return $this->aliasDomains[$locale][$domain]->offsetGet($key);
         } elseif (isset($this->aliases[$domain][$key])) {
             // Circular alias infinite loop prevention:
             $breadcrumbKey = "$domain::$key";
