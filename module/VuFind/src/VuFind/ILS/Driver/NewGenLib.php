@@ -97,9 +97,8 @@ class NewGenLib extends AbstractBase
      * @return array           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($RecordID, ?array $patron = null, array $options = [])
     {
         $holding = $this->getItemStatus($RecordID);
@@ -490,9 +489,8 @@ class NewGenLib extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO

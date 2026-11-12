@@ -402,9 +402,8 @@ class GeniePlus extends AbstractAPI
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
@@ -419,9 +418,8 @@ class GeniePlus extends AbstractAPI
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // Not supported here:
@@ -436,9 +434,8 @@ class GeniePlus extends AbstractAPI
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactions' === $function) {

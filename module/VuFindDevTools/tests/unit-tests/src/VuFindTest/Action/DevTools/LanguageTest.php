@@ -75,9 +75,8 @@ class LanguageTest extends AbstractActionTestCase
                  * keys 'template' and 'params'
                  *
                  * @return ResponseInterface
-                 *
-                 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
                  */
+                #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
                 function (
                     ServerRequestInterface $request,
                     ResponseInterface $response,

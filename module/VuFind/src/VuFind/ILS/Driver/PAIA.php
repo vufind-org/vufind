@@ -445,9 +445,8 @@ class PAIA extends DAIA
      *                 by your ILS to identify the hold – the output of this
      *                 method will be used as part of the input to the
      *                 cancelHolds method.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($hold, $patron = [])
     {
         return $hold['cancel_details'];
@@ -464,9 +463,8 @@ class PAIA extends DAIA
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = null, $holdDetails = null)
     {
         return false;
@@ -483,9 +481,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
         // Not yet implemented
@@ -504,9 +501,8 @@ class PAIA extends DAIA
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         // Not yet implemented
@@ -521,9 +517,8 @@ class PAIA extends DAIA
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyILLRequests($patron)
     {
         // Not yet implemented
@@ -540,9 +535,8 @@ class PAIA extends DAIA
      * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkILLRequestIsValid($id, $data, $patron)
     {
         // Not yet implemented
@@ -559,9 +553,8 @@ class PAIA extends DAIA
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function placeILLRequest($details)
     {
         // Not yet implemented
@@ -578,9 +571,8 @@ class PAIA extends DAIA
      *
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLibraries($id, $patron)
     {
         // Not yet implemented
@@ -598,9 +590,8 @@ class PAIA extends DAIA
      * @param array  $patron    Patron
      *
      * @return bool|array False if request not allowed, or an array of locations.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         // Not yet implemented
@@ -618,9 +609,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function cancelILLRequests($cancelDetails)
     {
         // Not yet implemented
@@ -634,9 +624,8 @@ class PAIA extends DAIA
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelILLRequestDetails($details, $patron)
     {
         // Not yet implemented
@@ -708,9 +697,8 @@ class PAIA extends DAIA
      * @param array $patron The patron array from patronLogin
      *
      * @return array Additional fee data for the item
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getAdditionalFeeData($fee, $patron = null)
     {
         $additionalData = [];
@@ -867,9 +855,8 @@ class PAIA extends DAIA
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = null, $holdDetails = null)
     {
         // How to get valid PickupLocations for a PICA LBS?
@@ -1944,9 +1931,8 @@ class PAIA extends DAIA
      * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
         return $this->checkRequestIsValid($id, $data, $patron);
@@ -1962,9 +1948,8 @@ class PAIA extends DAIA
      * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
@@ -2171,9 +2156,8 @@ class PAIA extends DAIA
      *
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getAccountBlocks($patron)
     {
         $blocks = [];

@@ -675,9 +675,8 @@ class Aleph extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
@@ -1029,9 +1028,8 @@ class Aleph extends AbstractBase implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if ($holdDetails['delete']) {
@@ -1542,9 +1540,8 @@ class Aleph extends AbstractBase implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Loan history is only available if properly configured
@@ -1562,9 +1559,8 @@ class Aleph extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         if ($function == 'Holds') {
@@ -1684,9 +1680,8 @@ class Aleph extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -1746,9 +1741,8 @@ class Aleph extends AbstractBase implements
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // TODO

@@ -70,9 +70,8 @@ class ExampleExtension implements ConfigurableExtensionInterface
      * @param EnvironmentBuilderInterface $environment Environment builder
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function register(EnvironmentBuilderInterface $environment): void
     {
     }

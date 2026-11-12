@@ -59,9 +59,8 @@ class Module
      * @param ModuleManager $m Module manager
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function init(ModuleManager $m)
     {
     }
@@ -72,9 +71,8 @@ class Module
      * @param MvcEvent $e Event
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function onBootstrap(MvcEvent $e)
     {
     }

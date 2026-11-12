@@ -61,9 +61,8 @@ class JsIcons extends AbstractJsStrings
      * @param string $key  JSON object key
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function mapValue($icon, string $key): string
     {
         return ($this->iconHelper)($icon);

@@ -1,0 +1,15 @@
+# PHPMD configuration, see https://phpmd.org/documentation/creating-a-ruleset.html
+name: 'PHPMD rules for VuFind'
+description: 'PHPMD rules for VuFind'
+rules:
+  - ref: rulesets/codesize.xml
+  #- ref: rulesets/controversial.xml
+  - ref: rulesets/design.xml
+    exclude:
+      - EvalExpression
+  - ref: rulesets/naming.xml
+    exclude:
+      - LongVariable
+      - ShortVariable
+      - ShortMethodName
+  - ref: rulesets/unusedcode.xml

@@ -29,6 +29,8 @@
 
 namespace VuFind\ILS\Driver;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
 use Stringable;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\TranslatableString;
@@ -45,9 +47,8 @@ use function is_callable;
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 abstract class AbstractBase implements DriverInterface
 {
     /**

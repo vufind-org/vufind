@@ -299,9 +299,8 @@ class VoyagerRestful extends Voyager implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         return $this->config[$function] ?? [];
@@ -419,9 +418,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $holdingsRow The holdings row to analyze.
      *
      * @return bool Whether an item is holdable
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function isILLRequestAllowed($holdingsRow)
     {
         return true;
@@ -677,9 +675,8 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $pickResponse = [];
@@ -775,9 +772,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return $this->defaultPickUpLocation;
@@ -796,9 +792,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return false|string      The default request group for the patron or false if
      * the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         return $this->defaultRequestGroup;
@@ -843,9 +838,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array False if request groups not in use or an array of
      * associative arrays with id and name keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestGroups($bibId, $patron, $holdDetails = null)
     {
         if (!$this->requestGroupsEnabled) {
@@ -2137,9 +2131,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if (!$this->allowCancelingAvailableRequests && $holdDetails['available']) {
@@ -2644,9 +2637,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         $details
@@ -2947,9 +2939,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool|array False if request not allowed, or an array of
      * locations.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
         if (!isset($this->config['ILLRequests'])) {
@@ -3270,9 +3261,8 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelILLRequestDetails($details, $patron)
     {
         $details = ($details['institution_dbkey'] ?? '')
@@ -3423,9 +3413,8 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Special case: change password is only available if properly configured.

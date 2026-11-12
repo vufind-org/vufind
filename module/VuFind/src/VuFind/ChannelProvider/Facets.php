@@ -153,9 +153,8 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,

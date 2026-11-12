@@ -197,7 +197,7 @@
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
     <exec executable="${srcdir}/vendor/bin/phpmd" passthru="true">
-      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml ${phpmd_cache_params}" />
+      <arg line="analyze ${srcdir}/module --format=xml --ruleset ${srcdir}/tests/phpmd.yml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile-xml ${builddir}/reports/phpmd.xml ${phpmd_cache_params}" />
     </exec>
   </target>
 

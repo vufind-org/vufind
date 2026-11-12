@@ -198,9 +198,8 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      * @param array    $hierarchicalFacetsSortOptions Hierarchical facet sort options (if any)
      *
      * @return array Sorted facets, with selected values flagged.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function processAdvancedFacets(
         array $facetList,
         ?Results $searchObject = null,

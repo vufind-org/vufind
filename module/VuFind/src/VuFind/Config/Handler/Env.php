@@ -52,9 +52,8 @@ class Env extends AbstractBase
      * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
         // This handler primarily exists to provide handleInclude functionality (see below), but if used to load a

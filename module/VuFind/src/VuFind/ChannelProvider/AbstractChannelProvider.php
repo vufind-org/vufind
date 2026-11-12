@@ -73,9 +73,8 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      * @param HttpRequest $request Current HTTP request
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function configureSearchParams(Params $params, HttpRequest $request): void
     {
         // No action necessary by default.
@@ -124,9 +123,8 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      * @param array $options Options
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function setOptions(array $options)
     {
         // No options required by default

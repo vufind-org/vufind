@@ -787,9 +787,8 @@ class Folio extends AbstractAPI implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         $key = match ($function) {
@@ -1352,9 +1351,8 @@ class Folio extends AbstractAPI implements
      *
      * @return array An associative array with the keys: total, holdings, electronic_holdings
      * @throws ILSException if there is an issue with a FOLIO response or the instance is not found
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($bibId, ?array $patron = null, array $options = [])
     {
         // NOTE: getHoldings() always returns something for a bibId, unless the instance is not found.
@@ -2049,9 +2047,8 @@ class Folio extends AbstractAPI implements
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickupLocations($patron, $holdInfo = null)
     {
         if ('Delivery' == ($holdInfo['requestGroupId'] ?? null)) {
@@ -2153,9 +2150,8 @@ class Folio extends AbstractAPI implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if ('Delivery' == ($holdDetails['requestGroupId'] ?? null)) {
@@ -2180,9 +2176,8 @@ class Folio extends AbstractAPI implements
      *
      * @return array  False if request groups not in use or an array of
      * associative arrays with id and name keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestGroups(
         $bibId = null,
         $patron = null,
@@ -2716,9 +2711,8 @@ class Folio extends AbstractAPI implements
      * @param array $patron Patron information from patronLogin
      *
      * @return string request ID for this request
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($hold, $patron = [])
     {
         return $hold['reqnum'];
@@ -3186,9 +3180,8 @@ class Folio extends AbstractAPI implements
      * @param array $patron The patron array with username and password
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getProxyingUsers(array $patron): array
     {
         return $this->loadProxyUserData($patron, 'userId', 'proxyUserId');
@@ -3204,9 +3197,8 @@ class Folio extends AbstractAPI implements
      * @param array $patron The patron array with username and password
      *
      * @return array|bool An array of block messages or false if there are no blocks
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRequestBlocks($patron)
     {
         return false;
@@ -3223,9 +3215,8 @@ class Folio extends AbstractAPI implements
      * @param string $bibID The record id to retrieve the info for
      *
      * @return array An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($bibID)
     {
         return [];
@@ -3241,9 +3232,8 @@ class Folio extends AbstractAPI implements
      * @param array $params Parameters
      *
      * @return array Array of the patron's transactions on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getMyTransactionHistory($patron, $params)
     {
         return[];

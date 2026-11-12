@@ -184,9 +184,8 @@ class AutowiringFactory implements FactoryInterface
      * @param ?array              $autowireArgs        Autowire attribute arguments
      *
      * @return mixed
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function resolveService(
         ContainerInterface $container,
         ReflectionParameter $reflectionParameter,

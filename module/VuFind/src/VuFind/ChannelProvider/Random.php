@@ -112,9 +112,8 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,
@@ -133,9 +132,8 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         $params = $results->getParams();
