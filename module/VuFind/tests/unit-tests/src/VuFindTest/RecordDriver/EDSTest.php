@@ -918,7 +918,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $json = $this->getJsonFixture('eds/valid-eds-record.json');
         unset($json['RecordInfo']['BibRecord']['BibEntity']['PhysicalDescription']['Pagination']);
         $driver->setRawData($json);
-        $this->assertEquals('', $driver->getPageCount());
+        $this->assertSame('', $driver->getPageCount());
 
         // Find it in Items
         $json['Items'][] =
