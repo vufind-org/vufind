@@ -43,9 +43,9 @@ class RecordMissing extends NotFound implements SeverityLevelInterface
     /**
      * Get the logging severity level for this exception.
      *
-     * @return int
+     * @return string
      */
-    public function getSeverityLevel()
+    public function getSeverityLevel(): string
     {
         return \Psr\Log\LogLevel::DEBUG;
     }

@@ -65,7 +65,7 @@ class DynamicRouteCommand extends AbstractRouteCommand
             )->addArgument(
                 'controller',
                 InputArgument::REQUIRED,
-                'the controller name (used in URL), e.g. MyResearch'
+                'the controller name (used in URL), e.g. Account'
             )->addArgument(
                 'action',
                 InputArgument::REQUIRED,

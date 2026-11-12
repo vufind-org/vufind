@@ -78,8 +78,6 @@ class AutowiringFactory implements FactoryInterface
      * @param ?array             $options       Options (unused)
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,

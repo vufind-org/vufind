@@ -669,6 +669,19 @@ class Upgrade implements LoggerAwareInterface
             unset($newConfig['LDAP']['port']);
         }
 
+        // If obsolete image captcha settings are present, warn the user about their removal.
+        $captcha = $newConfig['Captcha'] ?? [];
+        if (
+            isset($captcha['image_fontSize'])
+            || isset($captcha['image_dotNoiseLevel'])
+            || isset($captcha['image_lineNoiseLevel'])
+        ) {
+            $this->addWarning(
+                'The image captcha settings in the [Captcha] section of config.ini have changed. Please review and'
+                . ' adjust as required.'
+            );
+        }
+
         // Update citation format settings
         if ($citationFormats = $newConfig['Record']['citation_formats'] ?? null) {
             if (!($newConfig['Citation']['formats'] ?? null)) {
@@ -904,6 +917,10 @@ class Upgrade implements LoggerAwareInterface
 
         if (!str_contains($newBaseConfig['General']['default_view'], '_')) {
             $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
+        }
+
+        if (($newBaseConfig['General']['show_restricted_view_warning'] ?? '') == '1') {
+            $newBaseConfig['General']['show_restricted_view_warning'] = 'result_list_top,record_view';
         }
 
         // Move several settings to RecordDataFormatter/EDS

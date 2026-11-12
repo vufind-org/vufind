@@ -79,9 +79,9 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     {
         $container = $this->getMockContainer();
         $this->addConfigRelatedServicesToContainer($container);
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         VuFind::setServiceLocator($container);
-        $this->assertEquals($config, VuFind::getConfig());
+        $this->assertEquals($config, VuFind::getConfigArray());
     }
 
     /**

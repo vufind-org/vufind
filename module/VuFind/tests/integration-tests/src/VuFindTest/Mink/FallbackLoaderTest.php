@@ -137,11 +137,17 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
             // of time if a click failed to register; however, we shouldn't wait for too
             // short of a time, or else a slow response can break the test by causing a
             // double form submission.
-            $this->findCss($page, $commentSelector, 1500);
+            $this->assertSameWithTimeout(
+                $comment,
+                fn () => $this->findCssAndGetText($page, $commentSelector)
+            );
         } catch (\Exception $e) {
             $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
+            $this->assertSameWithTimeout(
+                $comment,
+                fn () => $this->findCssAndGetText($page, $commentSelector)
+            );
         }
-        $this->assertSame($comment, $this->findCssAndGetText($page, $commentSelector));
     }
 
     /**

@@ -36,7 +36,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Crypt\PasswordHasher;
@@ -67,7 +66,6 @@ class PerformSecurityFixAction extends AbstractInstallAction
     /**
      * Constructor.
      *
-     * @param CacheManager             $cacheManager     Cache manager
      * @param Connection               $ilsConnection    ILS connection
      * @param SearchService            $searchService    Search service
      * @param PathResolver             $pathResolver     Path resolver
@@ -82,7 +80,6 @@ class PerformSecurityFixAction extends AbstractInstallAction
      * @param ILSAuthenticator         $ilsAuthenticator ILS authenticator
      */
     public function __construct(
-        CacheManager $cacheManager,
         Connection $ilsConnection,
         SearchService $searchService,
         PathResolver $pathResolver,
@@ -101,17 +98,16 @@ class PerformSecurityFixAction extends AbstractInstallAction
         protected ILSAuthenticator $ilsAuthenticator,
     ) {
         parent::__construct(
-            $cacheManager,
-            $ilsConnection,
-            $searchService,
             $pathResolver,
             $configManager,
+            $userService,
+            $userCardService,
+            $config,
+            $ilsConnection,
+            $searchService,
             $serverUrlHelper,
             $httpService,
             $tagService,
-            $userService,
-            $userCardService,
-            $config
         );
     }
 

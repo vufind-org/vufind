@@ -31,7 +31,6 @@ namespace VuFindTest\Sitemap\Plugin;
 
 use Laminas\Router\RouteStackInterface;
 use VuFind\Sitemap\Plugin\ContentPages;
-use VuFind\Sitemap\Plugin\ContentPagesFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\ThemeInfo;
 
@@ -48,6 +47,7 @@ use function func_get_args;
  */
 class ContentPagesTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutowireTrait;
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
@@ -144,8 +144,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         $this->container
             ->set(ThemeInfo::class, $themeInfo ?? $this->getMockThemeInfo());
         // Build the object:
-        $factory = new ContentPagesFactory();
-        return $factory($this->container, ContentPages::class);
+        return $this->getAutowiredObject(ContentPages::class, $this->container);
     }
 
     /**

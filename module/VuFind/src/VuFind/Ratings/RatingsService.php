@@ -32,6 +32,7 @@ namespace VuFind\Ratings;
 use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Ratings service.
@@ -58,6 +59,7 @@ class RatingsService
      * @param ResourcePopulator       $resourcePopulator Resource populator
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RatingsServiceInterface $dbService,
         protected ResourcePopulator $resourcePopulator
     ) {
