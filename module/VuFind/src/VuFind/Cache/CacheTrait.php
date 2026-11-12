@@ -75,11 +75,12 @@ trait CacheTrait
      *
      * Data is cached for up to $this->cacheLifetime.
      *
-     * @param string $key Cache entry key
+     * @param string $key            Cache entry key
+     * @param int    $maxAgeOverride Use instead of lifetime to invalidate the cache
      *
      * @return mixed|null Cached entry or null if not cached or expired
      */
-    protected function getCachedData($key)
+    protected function getCachedData($key, $maxAgeOverride = null)
     {
         // No cache object, no cached results!
         if (null === $this->cache) {
@@ -90,12 +91,15 @@ trait CacheTrait
         $item = $this->cache->getItem($fullKey);
         if (null !== $item) {
             // Return value if still valid:
-            $lifetime = $item['lifetime'] ?? $this->cacheLifetime;
+            $trueLifetime = $item['lifetime'] ?? $this->cacheLifetime;
+            $lifetime = $maxAgeOverride ?? $trueLifetime;
             if (time() - $item['time'] <= $lifetime) {
                 return $item['entry'];
             }
-            // Clear expired item from cache:
-            $this->cache->removeItem($fullKey);
+            // Only remove if it actually exceeded its true lifetime
+            if (time() - $item['time'] > $trueLifetime) {
+                $this->cache->removeItem($fullKey);
+            }
         }
         return null;
     }

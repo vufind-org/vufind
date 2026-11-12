@@ -718,8 +718,12 @@ class EDS extends DefaultRecord
             if ($loadDirectly) {
                 return $thumbnail;
             } else {
+                $lifetime = $this->recordConfig['Cover']['cacheLifetime'] ?? 3600;
+                // Refresh the cache if the existing entry is older than half its lifetime
+                // (guaranteeing at least half of the cache life for the cover loader)
+                $maxAge = (int)($lifetime / 2);
                 $cacheKey = "vfcover-{$size}-{$this->getUniqueID()}";
-                $cache = $this->getCachedData($cacheKey);
+                $cache = $this->getCachedData($cacheKey, $maxAge);
                 // Only update and save if the cached value is missing or different
                 if ($cache === null || $cache !== $thumbnail) {
                     $this->putCachedData($cacheKey, $thumbnail);
