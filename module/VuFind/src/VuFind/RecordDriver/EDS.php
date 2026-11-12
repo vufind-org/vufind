@@ -30,6 +30,8 @@
 namespace VuFind\RecordDriver;
 
 use Laminas\Cache\Storage\StorageInterface;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function floatval;
@@ -69,15 +71,24 @@ class EDS extends DefaultRecord
     /**
      * Constructor.
      *
-     * @param ?array           $mainConfig VuFind main configuration (omit for built-in defaults)
-     * @param StorageInterface $cache      Cache
+     * @param ?ConfigManagerInterface $configManager Configuration manager
+     * @param ?StorageInterface       $cache         Cache
      */
     public function __construct(
-        $mainConfig = null,
-        StorageInterface $cache = null,
+        ?ConfigManagerInterface $configManager = null,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        ?StorageInterface $cache = null,
     ) {
-        $this->setCacheStorage($cache);
-        parent::__construct($mainConfig);
+        if ($cache) {
+            $this->setCacheStorage($cache);
+        }
+        // Determine which record config to load based on the class name
+        // i.e. EDS -> EDS.ini, EPF -> EPF.ini
+        $parts = explode('\\', static::class);
+        $configName = array_pop($parts);
+        $recordConfig = $configManager?->getConfigArray($configName);
+        $mainConfig = $configManager?->getConfigArray('config');
+        parent::__construct($mainConfig, $recordConfig);
     }
 
     /**
@@ -715,7 +726,8 @@ class EDS extends DefaultRecord
         if ($thumbnail) {
             // Determine if we are using the cover loader method or direct load
             $loadDirectly = $this->recordConfig['Cover']['loadDirectly'] ?? true;
-            if ($loadDirectly) {
+            $edsCoverLoader = str_contains('EDS', ($this->mainConfig['Content']['coverimages'] ?? ''));
+            if ($loadDirectly || !$edsCoverLoader) {
                 return $thumbnail;
             } else {
                 $lifetime = $this->recordConfig['Cover']['cacheLifetime'] ?? 3600;
@@ -726,7 +738,7 @@ class EDS extends DefaultRecord
                 $cache = $this->getCachedData($cacheKey, $maxAge);
                 // Only update and save if the cached value is missing or different
                 if ($cache === null || $cache !== $thumbnail) {
-                    $this->putCachedData($cacheKey, $thumbnail);
+                    $this->putCachedData($cacheKey, $thumbnail, $lifetime);
                 }
                 return [
                     'recordid' => $this->getUniqueID(),

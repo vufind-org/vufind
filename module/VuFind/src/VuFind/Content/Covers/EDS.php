@@ -30,6 +30,7 @@
 namespace VuFind\Content\Covers;
 
 use Laminas\Cache\Storage\StorageInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * EDS cover content loader.
@@ -50,8 +51,10 @@ class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareI
      *
      * @param StorageInterface $cache Cache
      */
-    public function __construct(StorageInterface $cache)
-    {
+    public function __construct(
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        StorageInterface $cache
+    ) {
         $this->supportsRecordid = true;
         $this->setCacheStorage($cache);
     }

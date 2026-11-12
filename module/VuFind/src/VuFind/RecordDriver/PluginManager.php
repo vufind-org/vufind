@@ -91,9 +91,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        EDS::class => EDSFactory::class,
         EIT::class => NameBasedConfigFactory::class,
-        EPF::class => EDSFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
