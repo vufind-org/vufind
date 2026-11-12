@@ -30,7 +30,6 @@
 namespace VuFindTheme;
 
 use Laminas\Stdlib\RequestInterface as Request;
-use Psr\Container\ContainerInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\View\GlobalsContainer;
 
@@ -57,14 +56,14 @@ class ColorSchemeManager
     /**
      * Constructor.
      *
-     * @param array              $config         Theme configuration
-     * @param ContainerInterface $serviceManager Top-level service container
-     * @param CookieManager      $cookieManager  Cookie manager
-     * @param string             $currentTheme   Current theme
+     * @param array            $config           Theme configuration
+     * @param GlobalsContainer $globalsContainer Global data container
+     * @param CookieManager    $cookieManager    Cookie manager
+     * @param string           $currentTheme     Current theme
      */
     public function __construct(
         protected array $config,
-        protected ContainerInterface $serviceManager,
+        protected GlobalsContainer $globalsContainer,
         protected CookieManager $cookieManager,
         protected string $currentTheme,
     ) {
@@ -122,10 +121,8 @@ class ColorSchemeManager
         // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
             // Store view options in globals:
-            $this->serviceManager->get(GlobalsContainer::class)['selectedColorScheme']
-                = $selectedColorScheme;
-            $this->serviceManager->get(GlobalsContainer::class)['colorSchemeOptions']
-                = $this->getColorSchemeOptions();
+            $this->globalsContainer['selectedColorScheme'] = $selectedColorScheme;
+            $this->globalsContainer['colorSchemeOptions'] = $this->getColorSchemeOptions();
         }
     }
 
