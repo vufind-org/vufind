@@ -461,8 +461,7 @@ VuFind.register("channels", function Channels() {
 
   /**
    * Set up all channels in a specified container
-   *
-   * @param {Element} container
+   * @param {Element} container Container to search for channels
    */
   function initChannelsInContainer(container) {
     for (const channelEl of container.querySelectorAll(".channel")) {
@@ -478,7 +477,7 @@ VuFind.register("channels", function Channels() {
     initChannelsInContainer(document);
 
     // Tab initialization listener
-    VuFind.listen("record-tab-init", function (event) {
+    VuFind.listen("record-tab-init", function channelInitCallback (event) {
       initChannelsInContainer(event.container);
     });
 
