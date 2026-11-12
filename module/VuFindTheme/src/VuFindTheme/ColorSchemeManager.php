@@ -30,6 +30,7 @@
 namespace VuFindTheme;
 
 use Laminas\Stdlib\RequestInterface as Request;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Cookie\CookieManager;
 use VuFind\View\GlobalsContainer;
 
@@ -46,6 +47,8 @@ use function in_array;
  */
 class ColorSchemeManager
 {
+    use ExplodeSettingTrait;
+
     /**
      * Supported color schemes for the current theme.
      *
@@ -69,7 +72,7 @@ class ColorSchemeManager
     ) {
         $rawSupportedColorSchemes = $config['supported_color_schemes'][$currentTheme]
             ?? $config['supported_color_schemes']['*'] ?? '';
-        $this->supportedColorSchemes = explode(',', $rawSupportedColorSchemes);
+        $this->supportedColorSchemes = $this->explodeListSetting($rawSupportedColorSchemes);
     }
 
     /**
