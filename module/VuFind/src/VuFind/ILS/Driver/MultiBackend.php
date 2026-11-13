@@ -807,6 +807,7 @@ class MultiBackend extends AbstractMultiDriver
         $params = [
             $this->stripIdPrefixes($id, $source, ['id']),
             $patron,
+            $illDetails,
         ];
         return $this->callMethodIfSupported(
             $source,
