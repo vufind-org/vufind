@@ -30,9 +30,11 @@
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
 use VuFindSearch\Command\RetrieveBatchCommand;
@@ -113,6 +115,20 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
     protected $source;
 
     /**
+     * Page of results to retrieve.
+     *
+     * @var int
+     */
+    protected $page = 0;
+
+    /**
+     * Page size for retrieved results.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
      * Constructor.
      *
      * @param \VuFindSearch\Service $search  Search service
@@ -147,6 +163,22 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
         $this->setBatchSizeFromOptions($options);
+        $this->limit = $this->batchSize;
+    }
+
+    /**
+     * Hook to configure search parameters before executing search.
+     *
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
+     *
+     * @return void
+     */
+    public function configureSearchParams(Params $params, HttpRequest $request): void
+    {
+        // Add pagination params
+        $this->page = (int)$request->getQuery('page', 1) - 1; // alphabrowse is index 0
+        $this->limit = (int)$request->getQuery('limit', $this->batchSize);
     }
 
     /**
@@ -276,7 +308,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             ),
             'providerId' => $this->providerId,
             'links' => [],
-            'limit' => $this->batchSize,
+            'limit' => $this->limit,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -292,8 +324,9 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 $this->browseIndex,
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
-                0,
-                $this->batchSize,
+                // Pagination
+                $this->page,
+                $this->limit,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
