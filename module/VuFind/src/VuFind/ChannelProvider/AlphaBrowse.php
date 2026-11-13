@@ -30,9 +30,11 @@
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
 use VuFindSearch\Command\RetrieveBatchCommand;
@@ -113,6 +115,20 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
     protected $source;
 
     /**
+     * Page of results to retrieve.
+     *
+     * @var int
+     */
+    protected $page = 1;
+
+    /**
+     * Page size for retrieved results.
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
      * Constructor.
      *
      * @param \VuFindSearch\Service $search  Search service
@@ -147,6 +163,25 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
         $this->setBatchSizeFromOptions($options);
+    }
+
+    /**
+     * Hook to configure search parameters before executing search.
+     *
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
+     *
+     * @return void
+     */
+    public function configureSearchParams(Params $params, HttpRequest $request): void
+    {
+        // Add pagination params
+        $this->page = intval($request->getQuery('page', 1));
+        $this->limit = intval($request->getQuery('limit', $this->batchSize));
+        $params->setPage($this->page);
+        if ($this->limit) {
+            $params->setLimit(min($this->limit, $this->maxBatchSize));
+        }
     }
 
     /**
