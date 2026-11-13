@@ -1,0 +1,16 @@
+<?php $accessSummary = $current['accessSummary'] ?? ''; ?>
+<?php if ($accessDetails = ($current['accessDetails'] ?? [])): ?>
+  <details class="access-details">
+    <summary>Access Terms<?php if ($accessSummary): ?>: <?= $accessSummary ?><?php endif; ?></summary>
+    <table class="table table-striped">
+      <?php foreach ($accessDetails as $accessDetail): ?>
+        <tr>
+          <th><?= $accessDetail['label'] ?></th>
+          <td><?= $accessDetail['text'] ?></td>
+        </tr>
+      <?php endforeach; ?>
+    </table>
+  </details>
+<?php elseif ($accessSummary): ?>
+  <p class="access-details">Access Terms: <?= $accessSummary ?></p>
+<?php endif; ?>
