@@ -131,7 +131,7 @@
         "phpunit/php-code-coverage": "^11",
         "phpunit/phpcov": "^10",
         "phpunit/phpunit": "11.5.56",
-        "pietercolpaert/hardf": "0.6.2",
+        "pietercolpaert/hardf": "0.6.3",
         "rector/rector": "2.8.3",
         "squizlabs/php_codesniffer": "4.0.4"
     },
