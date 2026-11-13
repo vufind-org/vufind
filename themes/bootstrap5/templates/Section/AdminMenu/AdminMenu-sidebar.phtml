@@ -1,0 +1,13 @@
+<div class="<?=$this->layoutClass('sidebar')?>" role="navigation">
+  <?=$this->component('hide-offcanvas-button')?>
+  <?php foreach ($this->menu as $menuGroup): ?>
+    <?=$this->component('menu-group', [
+      'menuGroup' => $menuGroup,
+      'idPrefix' => $this->idPrefix ?? null,
+      'iconMethodObject' => $this->{\VuFind\View\Helper\Root\Section::SECTION_PLUGIN_KEY} ?? null,
+      'active' => $this->active ?? null,
+      'requestUri' => $this->requestUri ?? null,
+      'activeItemParentPath' => $this->activeItemParentPath ?? null,
+    ])?>
+  <?php endforeach ?>
+</div>

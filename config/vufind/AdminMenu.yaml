@@ -4,6 +4,12 @@
 #
 # The format of this configuration is as follows:
 #
+# Array keys for every group are:
+#   - label: text shown as group header, will be translated - required
+#   - id: html id for the group - required
+#   - class: class for the list of items
+#   - MenuItems: items shown in the menu - required
+#
 # Array keys for every menu item could be:
 #   - name: name of an item, used to add an 'active' CSS class on the menu item's
 #     <a> tag when the name matches the page template name
@@ -22,40 +28,51 @@
 # "@parent_yaml": false entry at the very top of your local configuration file.
 
 Admin:
+  label: 'VuFind Administration'
+  id: admin-menu-header
   MenuItems:
     - name: home
       label: Home
       route: admin
+      icon: home
 
     - name: socialstats
       label: Social Statistics
       route: admin/social
+      icon: statistics
 
     - name: config
       label: Configuration
       route: admin/config
+      icon: config
 
     - name: maintenance
       label: System Maintenance
       route: admin/maintenance
+      icon: maintenance
 
     - name: tags
       label: Tag Maintenance
       route: admin/tags
+      icon: tags
 
     - name: feedback
       label: Feedback Management
       route: admin/feedback
+      icon: feedback
 
     - name: overdrive
       label: od_admin_menu
       route: admin/overdrive
+      icon: overdrive
       checkMethod: checkShowOverdrive
 
     - name: payment
       label: Online Payment
       route: admin/payment
+      icon: payment
 
     - name: notices
       label: Notices
       route: admin/notices
+      icon: notification

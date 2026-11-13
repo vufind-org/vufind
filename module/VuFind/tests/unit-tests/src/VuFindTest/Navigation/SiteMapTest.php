@@ -80,7 +80,7 @@ class SiteMapTest extends AbstractSectionTestCase
      */
     public function testSectionKeySpecifyingSiteMap()
     {
-        $this->expectExceptionMessage('Specifying SiteMap plugin sections is not possible');
+        $this->expectExceptionMessage('Specifying VuFind\Navigation\SiteMap plugin sections is not possible');
         $container = $this->getContainerWithSectionRelatedServices();
         $config = [
             'SiteMap' => [

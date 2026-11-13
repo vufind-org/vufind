@@ -114,9 +114,9 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => isset($list) ? 'list' . $list->getId() : 'favorites'])?>
-  <?php foreach ($this->results->getRecommendations('side') as $current): ?>
-    <?=$this->recommend($current)?>
-  <?php endforeach; ?>
-</div>
+<?php ob_start(); ?>
+<?php foreach ($this->results->getRecommendations('side') as $current): ?>
+  <?=$this->recommend($current)?>
+<?php endforeach; ?>
+<?php $sidebarEndHtml = ob_get_clean(); ?>
+<?=$this->section('AccountMenu')->render(['active' => isset($list) ? 'list' . $list->getId() : 'favorites', 'sidebarEndHtml' => $sidebarEndHtml], \VuFind\Section\PageRegion::Sidebar)?>

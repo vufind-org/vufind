@@ -11,8 +11,10 @@ $gray-lighter:           color.adjust($gray-base, $lightness: 93.5%) !default; /
 // Cookie consent dialog should have a z-index low enough to stay below dropdowns and modals
 $zindex-cookie-consent: ($zindex-dropdown - 10) !default;
 
-$myresearch-menu-ul-margin-bottom:  0 !default;
-$myresearch-menu-ul-padding-left:   0 !default;
+$myresearch-menu-ul-margin-bottom:  0 !default; // For legacy compatibility
+$myresearch-menu-ul-padding-left:   0 !default; // For legacy compatibility
+$sidebar-menu-ul-margin-bottom:     $myresearch-menu-ul-margin-bottom !default;
+$sidebar-menu-ul-padding-left:      $myresearch-menu-ul-padding-left  !default;
 
 $nav-link-hover-bg:       $gray-lighter !default;
 
@@ -52,3 +54,7 @@ $home-facet-list-column-overflow: clip !default; // Defines what's to be done if
 $home-facet-list-left-padding: 0 !default; // Overwrites the default left padding for uls (2rem)
 $home-facet-list-list-style: none !default; // Removes list style bullets from <li>
 $home-facet-list-right-padding: 1rem !default; // Adds greater visual separation
+
+// Global sidebar
+$global-sidebar-width: 300px !default;
+$global-sidebar-zindex: ($zindex-cookie-consent - 10) !default;

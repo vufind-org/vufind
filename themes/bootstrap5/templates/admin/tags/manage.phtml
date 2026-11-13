@@ -1,6 +1,11 @@
-<?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Maintenance')]);?>
+<?=
+  $this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Maintenance')]);
+  $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar();
+?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->render('admin/tags/menu.phtml', ['active' => 'manage'])?>
+  <?php if ($adminMenu->hasMenuTabs()): ?>
+    <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
+  <?php endif; ?>
 
   <h3><?=$this->transEsc('Manage Tags')?></h3>
 
@@ -71,6 +76,6 @@
   <?php endif;?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
-</div>
+<?php if ($hasSidebar): ?>
+  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?php endif; ?>

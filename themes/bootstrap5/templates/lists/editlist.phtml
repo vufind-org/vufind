@@ -60,7 +60,5 @@
 </form>
 <?php if ($this->auth()->getIdentity() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   </div>
-  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => empty($listId) ? 'editlist/NEW' : 'list' . $listId])?>
-  </div>
+  <?=$this->section('AccountMenu')->render(['active' => empty($listId) ? 'editlist/NEW' : 'list' . $listId], \VuFind\Section\PageRegion::Sidebar)?>
 <?php endif; ?>

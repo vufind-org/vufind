@@ -30,6 +30,9 @@
 namespace VuFindTest\Unit;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Application;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Router\RouteMatch;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
@@ -95,15 +98,17 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string $userLocale      User locale (optional)
      * @param array  $fallbackLocales Fallback locale(s) (optional)
+     * @param bool   $adminRoute      Is admin route? (optional)
      *
      * @return MockContainer
      */
     protected function getContainerWithSectionRelatedServices(
         string $userLocale = 'en',
-        array $fallbackLocales = ['en', 'fi']
+        array $fallbackLocales = ['en', 'fi'],
+        bool $adminRoute = false
     ): MockContainer {
         $container = new MockContainer($this);
-        $this->addSectionRelatedServicesToContainer($container, $userLocale, $fallbackLocales);
+        $this->addSectionRelatedServicesToContainer($container, $userLocale, $fallbackLocales, $adminRoute);
         return $container;
     }
 
@@ -113,14 +118,29 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * @param MockContainer $container       Mock container
      * @param string        $userLocale      User locale (optional)
      * @param array         $fallbackLocales Fallback locale(s) (optional)
+     * @param bool          $adminRoute      Admin route?
      *
      * @return void
      */
     protected function addSectionRelatedServicesToContainer(
         MockContainer $container,
         string $userLocale = 'en',
-        array $fallbackLocales = ['en', 'fi']
+        array $fallbackLocales = ['en', 'fi'],
+        bool $adminRoute = false
     ): void {
+        $mockRequest = $this->createMock(Request::class);
+        $container->set('Request', $mockRequest);
+        $mockRouteMatch = $this->createMock(RouteMatch::class);
+        $mockRouteMatch->method('getParam')
+            ->with('admin_route')
+            ->willReturn($adminRoute);
+        $mockMvcEvent = $this->createMock(MvcEvent::class);
+        $mockMvcEvent->method('getRouteMatch')
+            ->willReturn($mockRouteMatch);
+        $mockApplication = $this->createMock(Application::class);
+        $mockApplication->method('getMvcEvent')
+            ->willReturn($mockMvcEvent);
+        $container->set('Application', $mockApplication);
         $this->mockConfigFiles['Sections'] = $this->getDefaultConfig('Sections');
         $container->set(ConfigManagerInterface::class, $this->getMockConfigManager(
             fn () => $this->mockConfigFiles

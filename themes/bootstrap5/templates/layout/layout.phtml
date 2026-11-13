@@ -142,28 +142,40 @@
       }
 
       $this->assetManager()->appendScriptString(implode("\n", $appendScripts));
+
+      if ($hasGlobalSidebar = ($globalSidebar = $this->section('GlobalSidebar'))->hasGlobalSidebar()) {
+        $this->assetManager()->appendScriptLink('global_sidebar.js');
+      }
     ?>
     <?=$this->assetManager()->outputHeaderAssets()?>
   </head>
   <body class="template-dir-<?=$globals['templateDir']?> template-name-<?=$globals['templateName']?> <?=$this->layoutClass('offcanvas-row')?><?php if ($globals['rtl']): ?> rtl<?php endif; ?>">
     <?=$this->cookieConsent()->render('bottom')?>
-    <header class="hidden-print">
-      <?php if (isset($globals['srmessage'])): // message for benefit of screen-reader users ?>
-        <span class="visually-hidden" role="heading" aria-level="1"><?=$globals['srmessage'] ?></span>
-      <?php endif; ?>
-      <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-      <?=$this->render('header.phtml')?>
-    </header>
-    <?=$this->breadcrumbs()->render()?>
-    <div role="main" class="main">
-      <div id="content" class="container">
-        <?php if (!($globals['disableDefaultNotices'] ?? false)): ?>
-          <?=$this->notices()->renderNoticesForPosition('default')?>
-        <?php endif; ?>
-        <?=$this->layout()->content ?>
+    <?php if (isset($globals['srmessage'])): // message for benefit of screen-reader users ?>
+      <span class="visually-hidden" role="heading" aria-level="1"><?=$globals['srmessage'] ?></span>
+    <?php endif; ?>
+    <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+    <?php if ($hasGlobalSidebar): ?>
+      <div id="global-sidebar-container">
+      <?=$globalSidebar->render(pageRegion: \VuFind\Section\PageRegion::GlobalSidebar)?>
+      <div id="main-canvas">
+    <?php endif; ?>
+      <header class="hidden-print">
+        <?=$this->render('header.phtml')?>
+      </header>
+      <?=$this->breadcrumbs()->render()?>
+      <div role="main" class="main">
+        <div id="content" class="container">
+          <?php if (!($globals['disableDefaultNotices'] ?? false)): ?>
+            <?=$this->notices()->renderNoticesForPosition('default')?>
+          <?php endif; ?>
+          <?=$this->layout()->content ?>
+        </div>
       </div>
-    </div>
-    <?=$this->render('footer.phtml')?>
+      <?=$this->render('footer.phtml')?>
+    <?php if ($hasGlobalSidebar): ?>
+      </div>
+    <?php endif; ?>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
