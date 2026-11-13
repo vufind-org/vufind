@@ -30,6 +30,9 @@
 
 namespace VuFind\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Model for EPF records.
  *
@@ -42,6 +45,24 @@ namespace VuFind\RecordDriver;
  */
 class EPF extends EDS
 {
+    /**
+     * Constructor.
+     *
+     * @param ?array            $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array            $recordConfig Record-specific configuration file
+     * @param ?StorageInterface $cache        Cache
+     */
+    public function __construct(
+        #[Autowire(config: 'config')]
+        ?array $mainConfig = null,
+        #[Autowire(config: 'EPF')]
+        ?array $recordConfig = null,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        ?StorageInterface $cache = null,
+    ) {
+        parent::__construct($mainConfig, $recordConfig, $cache);
+    }
+
     /**
      * Return the unique identifier of this record within the EPF.
      *

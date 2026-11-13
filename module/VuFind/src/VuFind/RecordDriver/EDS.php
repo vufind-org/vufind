@@ -30,7 +30,6 @@
 namespace VuFind\RecordDriver;
 
 use Laminas\Cache\Storage\StorageInterface;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
@@ -71,23 +70,21 @@ class EDS extends DefaultRecord
     /**
      * Constructor.
      *
-     * @param ?ConfigManagerInterface $configManager Configuration manager
-     * @param ?StorageInterface       $cache         Cache
+     * @param ?array            $mainConfig   VuFind main configuration (omit for built-in defaults)
+     * @param ?array            $recordConfig Record-specific configuration file
+     * @param ?StorageInterface $cache        Cache
      */
     public function __construct(
-        ?ConfigManagerInterface $configManager = null,
+        #[Autowire(config: 'config')]
+        ?array $mainConfig = null,
+        #[Autowire(config: 'EDS')]
+        ?array $recordConfig = null,
         #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
         ?StorageInterface $cache = null,
     ) {
         if ($cache) {
             $this->setCacheStorage($cache);
         }
-        // Determine which record config to load based on the class name
-        // i.e. EDS -> EDS.ini, EPF -> EPF.ini
-        $parts = explode('\\', static::class);
-        $configName = array_pop($parts);
-        $recordConfig = $configManager?->getConfigArray($configName);
-        $mainConfig = $configManager?->getConfigArray('config');
         parent::__construct($mainConfig, $recordConfig);
     }
 

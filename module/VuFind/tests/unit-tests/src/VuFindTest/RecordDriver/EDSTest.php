@@ -32,7 +32,6 @@
 namespace VuFindTest\RecordDriver;
 
 use Laminas\Cache\Storage\StorageInterface;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
@@ -165,20 +164,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createMock(StorageInterface::class);
         $driverConfig = $config ?? $this->defaultDriverConfig;
 
-        $configManager = $this->createMock(ConfigManagerInterface::class);
-        $configManager->method('getConfigArray')
-            ->willReturnCallback(function (string $configName) use ($driverConfig): array {
-                // Return $driverConfig for EDS, and an empty array for 'config'
-                return $configName === 'config' ? [] : $driverConfig;
-            });
-
         if (!empty($mockedMethods)) {
             $record = $this->getMockBuilder(EDS::class)
-                ->setConstructorArgs([$configManager, $cache])
+                ->setConstructorArgs([null, $driverConfig, $cache])
                 ->onlyMethods($mockedMethods)
                 ->getMock();
         } else {
-            $record = new EDS($configManager, $cache);
+            $record = new EDS(null, $driverConfig, $cache);
         }
 
         if (null !== $test) {
