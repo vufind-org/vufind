@@ -35,6 +35,7 @@ use Generator;
 use PHPUnit\Framework\ExpectationFailedException;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
+use function array_slice;
 use function count;
 
 /**
@@ -540,5 +541,42 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Add more results and confirm they loaded:
         $this->clickCss($page, '.channel-load-more-btn');
         $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
+
+    /**
+     * Test loading the alphabrowse channel in the Similar Items tab.
+     *
+     * @return void
+     */
+    public function testAlphabrowseInSimilarItemsTab(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'source.Solr' => ['recordTab' => ['alphabrowse']],
+                    'provider.alphabrowse' => ['itemsPerRow' => 6, 'rowsPerPage' => 1, 'maxBatchSize' => 6],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Record/25a443d1-541f-4784-b11f-905e43e6e415');
+        $page = $session->getPage();
+        // No channel entries before opening tab:
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Switch to tab:
+        $this->clickCss($page, '.record-tab.channels a');
+        $this->waitForPageLoad($page);
+        // There should be one row of results:
+        $selector = 'li.channel-item:not(.hidden-batch-item) a.channel-item-title';
+        $row1 = $page->findAll('css', $selector);
+        $getUrls = fn ($entry) => $entry->getAttribute('href');
+        $row1Urls = array_map($getUrls, $row1);
+        $this->assertCount(6, $row1Urls);
+        // Add more results and confirm they loaded:
+        $this->clickCss($page, '.channel-load-more-btn');
+        $row2 = $page->findAll('css', $selector);
+        $row2Urls = array_slice(array_map($getUrls, $row2), 6);
+        $this->assertCount(6, $row2Urls);
+        $this->assertSame([], array_intersect($row1Urls, $row2Urls), 'Rows should be all different');
     }
 }
