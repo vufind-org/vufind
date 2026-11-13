@@ -177,8 +177,8 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
     public function configureSearchParams(Params $params, HttpRequest $request): void
     {
         // Add pagination params
-        $this->page = intval($request->getQuery('page', 1)) - 1; // alphabrowse is index 0
-        $this->limit = intval($request->getQuery('limit', $this->batchSize));
+        $this->page = (int)$request->getQuery('page', 1) - 1; // alphabrowse is index 0
+        $this->limit = (int)$request->getQuery('limit', $this->batchSize);
     }
 
     /**
