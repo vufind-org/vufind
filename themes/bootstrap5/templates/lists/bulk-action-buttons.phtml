@@ -39,8 +39,22 @@
           )
         ?>
       <?php endif; ?>
-      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
-      <?php if (count($exportOptions) > 0): ?>
+      <?php if (
+        ($this->config()->get('config')->toArray()['Citation']['list_bulk'] ?? false)
+        && ($this->config()->get('config')->toArray()['Citation']['formats'] ?? true)
+      ): ?>
+        <?=
+          $this->bulkAction()->button(
+              'cite',
+              'cite',
+              'Cite this',
+              [
+                'title' => $this->translate('bulk_cite_myresearch'),
+              ],
+          )
+        ?>
+      <?php endif; ?>
+      <?php if (count($this->export()->getActiveFormats('bulk')) > 0): ?>
         <?=
           $this->bulkAction()->button(
               'export',

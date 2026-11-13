@@ -682,6 +682,14 @@ class Upgrade implements LoggerAwareInterface
             );
         }
 
+        // Update citation format settings
+        if ($citationFormats = $newConfig['Record']['citation_formats'] ?? null) {
+            if (!($newConfig['Citation']['formats'] ?? null)) {
+                $newConfig['Citation']['formats'] = $citationFormats;
+            }
+            unset($newConfig['Record']['citation_formats']);
+        }
+
         $this->applyOldSettings('RecordDataFormatter/DefaultRecord');
         if ($subjectLimit = $newConfig['Record']['subjectLimit'] ?? null) {
             unset($newConfig['Record']['subjectLimit']);
