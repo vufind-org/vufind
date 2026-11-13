@@ -198,7 +198,8 @@ class UrlQueryHelper
      */
     protected function getDefault($key)
     {
-        return $this->config['defaults'][$key] ?? null;
+        $default = $this->config['defaults'][$key] ?? null;
+        return is_callable($default) ? $default() : $default;
     }
 
     /**
