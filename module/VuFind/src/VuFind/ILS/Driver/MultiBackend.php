@@ -795,11 +795,12 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @param string $id     Record ID
      * @param array  $patron Patron
+     * @param array $illDetails Optional array. See $holdDetails on getILLPickupLibraries.
      *
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
      */
-    public function getILLPickupLibraries($id, $patron)
+    public function getILLPickupLibraries($id, $patron, $illDetails = [])
     {
         $source = $this->getSource($id);
         // Patron is not stripped so that the correct library can be determined
