@@ -206,7 +206,9 @@ class NoticeService extends AbstractDbService implements
         $this->setNoticeData($notice, $data);
         $this->persistEntity($notice);
 
-        $this->setTranslations($notice, $data['translations']);
+        if (isset($data['translations'])) {
+            $this->setTranslations($notice, $data['translations']);
+        }
 
         return $notice;
     }
