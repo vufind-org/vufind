@@ -178,10 +178,6 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
         // Add pagination params
         $this->page = intval($request->getQuery('page', 1));
         $this->limit = intval($request->getQuery('limit', $this->batchSize));
-        $params->setPage($this->page);
-        if ($this->limit) {
-            $params->setLimit(min($this->limit, $this->maxBatchSize));
-        }
     }
 
     /**
@@ -311,7 +307,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             ),
             'providerId' => $this->providerId,
             'links' => [],
-            'limit' => $this->batchSize,
+            'limit' => $this->limit,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -327,8 +323,9 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 $this->browseIndex,
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
-                0,
-                $this->batchSize,
+                // Pagination
+                $this->page,
+                $this->limit,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
