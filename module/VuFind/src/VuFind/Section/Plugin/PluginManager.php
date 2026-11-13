@@ -57,9 +57,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'accountMenu' => AccountMenu::class,
         'adminMenu' => AdminMenu::class,
         'footerMenu' => FooterMenu::class,
+        'globalSidebar' => GlobalSidebar::class,
         'headerBar' => HeaderBar::class,
         'siteMap' => SiteMap::class,
-        'globalSidebar' => GlobalSidebar::class,
         // Reserved for future plugins.
         // 'container' => Container::class,
         // 'tabs' => Tabs::class,
