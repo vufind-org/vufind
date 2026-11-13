@@ -77,7 +77,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     {
         $objs = parent::testLogging();
 
-        $this->callMethod($objs['driver'], 'getLocalId', ['bad']);
+        $this->callMethod($objs['driver'], 'mapVuFindIdToIlsId', ['bad', 'source']);
         $this->assertEquals(
             'VuFind\ILS\Driver\MultiBackend: '
             . "Could not find local id in 'bad'",
@@ -86,86 +86,36 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getSourceFromParams.
+     * Testing method for mapIlsIdsToVuFindIds.
      *
      * @return void
      */
-    public function testGetSourceFromParams()
-    {
-        $driver = $this->initDriver();
-
-        $drivers = ['d1' => 'Voyager', 'd2' => 'Demo'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        $result = $this->callMethod($driver, 'getSourceFromParams', ['']);
-        $this->assertEquals('', $result);
-
-        $result = $this->callMethod($driver, 'getSourceFromParams', ['d1.record2']);
-        $this->assertEquals('d1', $result);
-
-        $data = [
-            'id' => 'record1',
-            'cat_username' => 'record2',
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('', $result);
-
-        $data = [
-            'id' => 'record1',
-            'cat_username' => 'd1.record2',
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('d1', $result);
-
-        $data = [
-            'id' => 'd2.record1',
-            'cat_username' => 'record2',
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('d2', $result);
-
-        $data = [
-            'test' => 'true',
-            'patron' => [
-                'id' => 'd2.record1',
-                'cat_username' => 'record2',
-            ],
-        ];
-        $result = $this->callMethod($driver, 'getSourceFromParams', [$data]);
-        $this->assertEquals('d2', $result);
-    }
-
-    /**
-     * Testing method for addIdPrefixes.
-     *
-     * @return void
-     */
-    public function testAddIdPrefixes()
+    public function testMapIlsIdsToVuFindIds()
     {
         $driver = $this->initDriver();
         $source = 'source';
         $data = [];
 
-        $result = $this->callMethod($driver, 'addIdPrefixes', [$data, $source]);
+        $result = $this->callMethod($driver, 'mapIlsIdsToVuFindIds', [$data, $source]);
         $this->assertEquals($data, $result);
 
         $data = [
             'id' => 'record1',
-            'cat_username' => 'record2',
+            'item_id' => 'record2',
         ];
         $expected = [
             'id' => "$source.record1",
-            'cat_username' => "$source.record2",
+            'item_id' => "$source.record2",
         ];
-        $result = $this->callMethod($driver, 'addIdPrefixes', [$data, $source]);
+        $result = $this->callMethod($driver, 'mapIlsDetailsToVuFindDetails', [$data, $source]);
         $this->assertEquals($expected, $result);
 
         // Empty source must not add prefixes
         $expected = [
             'id' => 'record1',
-            'cat_username' => 'record2',
+            'item_id' => 'record2',
         ];
-        $result = $this->callMethod($driver, 'addIdPrefixes', [$data, '']);
+        $result = $this->callMethod($driver, 'mapIlsDetailsToVuFindDetails', [$data, '']);
         $this->assertEquals($expected, $result);
 
         $data = [
@@ -176,10 +126,10 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                     'id' => 'record3',
                     'cat_username' => 'record4',
                 ],
-                'cat_info' => 'record5',
+                'item_id' => 'record5',
                 'other' => 'something',
             ],
-            'cat_info' => 'record6',
+            'item_id' => 'record6',
         ];
         $expected = [
             'id' => "$source.record1",
@@ -189,15 +139,19 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                     'id' => "$source.record3",
                     'cat_username' => "$source.record4",
                 ],
-                'cat_info' => "$source.record5",
+                'item_id' => "$source.record5",
                 'other' => 'something',
             ],
-            'cat_info' => "$source.record6",
+            'item_id' => "$source.record6",
         ];
-        $modify = ['id', 'cat_username', 'cat_info'];
+        $modify = [
+            'id' => 'mapIlsRecordIdToVuFindRecordId',
+            'cat_username' => 'mapIlsCatUsernameToVuFindCatUsername',
+            'item_id' => 'mapIlsItemIdToVuFindItemId',
+        ];
         $result = $this->callMethod(
             $driver,
-            'addIdPrefixes',
+            'mapIlsIdsToVuFindIds',
             [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
@@ -205,50 +159,47 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         // Numeric keys are not considered
         $data = [
             'id' => 'record1',
-            'cat_username' => ['foo', 'bar'],
+            'item_id' => ['foo', 'bar'],
         ];
         $expected = [
             'id' => "$source.record1",
-            'cat_username' => ['foo', 'bar'],
+            'item_id' => ['foo', 'bar'],
         ];
         $result = $this->callMethod(
             $driver,
-            'addIdPrefixes',
+            'mapIlsDetailsToVuFindDetails',
             [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
     }
 
     /**
-     * Testing method for stripIdPrefixes.
+     * Testing method for mapVuFindIdsToIlsIds.
      *
      * @return void
      */
-    public function testStripIdPrefixes()
+    public function testMapVuFindIdsToIlsIds()
     {
         $driver = $this->initDriver();
         $source = 'source';
         $data = [];
 
-        $result
-            = $this->callMethod($driver, 'stripIdPrefixes', [$data, $source]);
+        $result = $this->callMethod($driver, 'mapVuFindIdsToIlsIds', [$data, $source]);
         $this->assertEquals($data, $result);
 
-        $data = "$source.record";
-        $result
-            = $this->callMethod($driver, 'stripIdPrefixes', [$data, $source]);
-        $this->assertEquals('record', $result);
+        $data = ['id' => "$source.record"];
+        $result = $this->callMethod($driver, 'mapVuFindIdsToIlsIds', [$data, $source]);
+        $this->assertEquals(['id' => 'record'], $result);
 
         $expected = [
             'id' => 'record1',
-            'cat_username' => 'record2',
+            'item_id' => 'record2',
         ];
         $data = [
             'id' => "$source.record1",
-            'cat_username' => "$source.record2",
+            'item_id' => "$source.record2",
         ];
-        $result
-            = $this->callMethod($driver, 'stripIdPrefixes', [$data, $source]);
+        $result = $this->callMethod($driver, 'mapVuFindDetailsToIlsDetails', [$data, $source]);
         $this->assertEquals($expected, $result);
 
         $expected = [
@@ -259,10 +210,10 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                     'id' => 'record3',
                     'cat_username' => 'record4',
                 ],
-                'cat_info' => 'record5',
+                'item_id' => 'record5',
                 'other' => "$source.something",
             ],
-            'cat_info' => 'record6',
+            'item_id' => 'record6',
         ];
         $data = [
             'id' => "$source.record1",
@@ -272,15 +223,19 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                     'id' => "$source.record3",
                     'cat_username' => "$source.record4",
                 ],
-                'cat_info' => "$source.record5",
+                'item_id' => "$source.record5",
                 'other' => "$source.something",
             ],
-            'cat_info' => "$source.record6",
+            'item_id' => "$source.record6",
         ];
-        $modify = ['id', 'cat_username', 'cat_info'];
+        $modify = [
+            'id' => 'mapVuFindRecordIdToIlsRecordId',
+            'cat_username' => 'mapVuFindCatUsernameToIlsCatUsername',
+            'item_id' => 'mapVuFindItemIdToIlsItemId',
+        ];
         $result = $this->callMethod(
             $driver,
-            'stripIdPrefixes',
+            'mapVuFindIdsToIlsIds',
             [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
@@ -296,7 +251,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         ];
         $result = $this->callMethod(
             $driver,
-            'stripIdPrefixes',
+            'mapVuFindIdsToIlsIds',
             [$data, $source]
         );
         $this->assertEquals($expected, $result);
@@ -670,15 +625,15 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * This method tests getLocalId.
+     * This method tests mapVuFindIdToIlsId.
      *
-     * @return mixed A MultiBackend instance.
+     * @return void
      */
-    public function testGetLocalId()
+    public function testMapVuFindIdToIlsId()
     {
         $driver = $this->initDriver();
         $term = 'source.local';
-        $return = $this->callMethod($driver, 'getLocalId', [$term]);
+        $return = $this->callMethod($driver, 'mapVuFindIdToIlsId', [$term, 'source']);
         $this->assertEquals('local', $return);
     }
 
@@ -706,7 +661,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
         $patronPrefixless = $this->callMethod(
             $driver,
-            'stripIdPrefixes',
+            'mapVuFindPatronToIlsPatron',
             [$patron, 'institution']
         );
         $ILS->expects($this->atLeastOnce())
@@ -2283,7 +2238,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $expected2 = ['config' => 'ok2'];
         $driver = $this->initSimpleMethodTest(
             $this->exactly(3),
-            $this->once(),
+            $this->exactly(2),
             'getConfig',
             [
                 $this->logicalOr(
@@ -2323,7 +2278,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $mockAuth = $this->getMockILSAuthenticator(null);
         $this->setProperty($driver, 'ilsAuth', $mockAuth);
         $result = $driver->getConfig('Holds');
-        $this->assertEquals([], $result);
+        $this->assertEquals($expected2, $result);
     }
 
     /**
@@ -2355,17 +2310,18 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
 
-        //Case: Instance to use is in parameters but does not have method
-        //Result: A return of false
+        //Case: Instance to use is in parameters but does not have method.
+        // Assuming method works if it is unknown.
+        //Result: A return of true
 
         $patron = [$this->getPatron('username', 'testing3')];
         $methodReturn = $driver->supportsMethod('fail', $patron);
-        $this->assertFalse($methodReturn);
+        $this->assertTrue($methodReturn);
 
         //Case: Instance to use is in parameters and has method
         //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getStatus', $patron);
+        $methodReturn = $driver->supportsMethod('getStatus', ['testing3.record']);
         $this->assertTrue($methodReturn);
 
         //Case: No parameters are given
