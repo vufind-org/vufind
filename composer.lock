@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10871ff088bfd872d66d71e41cfd4817",
+    "content-hash": "5100547229eb5a58e4fd9a1e93e0f3e3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -13288,26 +13288,26 @@
         },
         {
             "name": "pietercolpaert/hardf",
-            "version": "0.6.2",
+            "version": "0.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pietercolpaert/hardf.git",
-                "reference": "bc07d4dfd034c57bdbc50d20e86b36be19ec0ddb"
+                "reference": "aa1ea8bfd7548542e6859f95cbed4381b1e31402"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/bc07d4dfd034c57bdbc50d20e86b36be19ec0ddb",
-                "reference": "bc07d4dfd034c57bdbc50d20e86b36be19ec0ddb",
+                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/aa1ea8bfd7548542e6859f95cbed4381b1e31402",
+                "reference": "aa1ea8bfd7548542e6859f95cbed4381b1e31402",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1|^8.0"
+                "php": "^8.2"
             },
             "require-dev": {
                 "easyrdf/easyrdf": "^1.1",
-                "friendsofphp/php-cs-fixer": "*",
-                "phpstan/phpstan": "^2.2",
-                "phpunit/phpunit": "^7 || ^8 || ^9",
+                "friendsofphp/php-cs-fixer": "^3.95",
+                "phpstan/phpstan": "^2.3",
+                "phpunit/phpunit": "^11.5 || ^12.5",
                 "semsol/arc2": "^3.1"
             },
             "type": "library",
@@ -13349,7 +13349,7 @@
                 "issues": "https://github.com/pietercolpaert/hardf/issues",
                 "source": "https://github.com/pietercolpaert/hardf"
             },
-            "time": "2026-06-03T18:57:18+00:00"
+            "time": "2026-11-02T12:33:38+00:00"
         },
         {
             "name": "react/cache",
