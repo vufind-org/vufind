@@ -172,6 +172,10 @@ if [ $REGENERATE_SOLRJ_DIR -eq 1 ]
 then
   for file in $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/solr*.jar $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/http*.jar
   do
+    # Newer Solr versions (10 and later) no longer ship http*.jar files in the
+    # webapp, so an unmatched glob pattern would be passed through literally by
+    # the shell; only link files that actually exist.
+    [ -e "$file" ] || continue
     ln -s $file $SOLRJ_DIR/`basename "$file"`
   done
 fi
