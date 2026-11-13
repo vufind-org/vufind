@@ -168,6 +168,18 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
+     * Check which sessions expired based on an array of IDs.
+     *
+     * @param array $sessionIds Session IDs to check.
+     *
+     * @return array
+     */
+    public function expiredSessionIds(array $sessionIds): array
+    {
+        return $this->__call(__FUNCTION__, [$sessionIds]);
+    }
+
+    /**
      * Pass calls to non-existing methods to the wrapped Handler.
      *
      * @param string $name      Name of the method being called

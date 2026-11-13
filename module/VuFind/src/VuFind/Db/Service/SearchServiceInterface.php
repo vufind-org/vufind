@@ -41,7 +41,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways interface
  */
-interface SearchServiceInterface extends DbServiceInterface
+interface SearchServiceInterface extends SessionRelatedDataServiceInterface
 {
     /**
      * Create a search entity.
