@@ -176,7 +176,7 @@ class Section
         $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
-        $template ??= $this->template ?? $this->defaultTemplateDir . '/' . $this->key . '.phtml';
+        $template ??= $this->template ?? ($this->defaultTemplateDir . '/' . $this->key . '.phtml');
         if ($template && $this->viewResolver->resolve($template)) {
             return $this->viewRenderer->render($template, $mergedContext);
         }
