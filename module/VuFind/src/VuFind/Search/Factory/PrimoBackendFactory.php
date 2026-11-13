@@ -31,12 +31,12 @@ namespace VuFind\Search\Factory;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\ConnectorInterface;
 use VuFindSearch\Backend\Primo\QueryBuilder;
@@ -295,9 +295,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
             $permHandler = new PrimoPermissionHandler(
                 $this->primoConfig['Institutions']
             );
-            $permHandler->setAuthorizationService(
-                $this->getService(AuthorizationService::class)
-            );
+            $permHandler->setAuthorizationService($this->getService(AuthorizationServiceInterface::class));
             return $permHandler;
         }
 

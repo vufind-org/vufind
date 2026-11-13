@@ -31,14 +31,15 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Session\SessionManager;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
 use VuFind\Http\HttpStatus;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Service\AuthorizationServiceAwareInterface;
+use VuFind\Service\AuthorizationServiceAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -81,7 +82,9 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     public function __construct(
         protected SessionManager $sessionManager,
         protected ResultsManager $resultsManager,
+        #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SessionServiceInterface $sessionService,
         protected SearchService $searchService,
         protected Connection $ils
@@ -95,8 +98,6 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleRequest(ServerRequestInterface $request): array
     {

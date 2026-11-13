@@ -90,4 +90,16 @@ class RedirectHelper implements HelperInterface
         $url = $this->routeHelper->getUrlFromRoute($name, $routeParams, $queryParams);
         return $this->redirectToUrl($response, $url);
     }
+
+    /**
+     * Return a response that redirects to Account/Home with any further redirects disabled.
+     *
+     * @param ResponseInterface $response Response
+     *
+     * @return ResponseInterface
+     */
+    public function getNonRedirectingAccountHomeRedirect(ResponseInterface $response): ResponseInterface
+    {
+        return $this->redirectToRoute($response, 'account-home', queryParams: ['redirect' => 0]);
+    }
 }

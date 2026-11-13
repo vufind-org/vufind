@@ -45,22 +45,22 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string                      $class    class to construct
      * @param string                      $settings settings
-     * @param \Laminas\Stdlib\Parameters  $request  request
+     * @param array                       $request  request
      * @param \VuFind\Search\Solr\Results $results  results object
      *
-     * @return SideFacets
+     * @return \VuFind\Recommend\RecommendInterface
      */
     protected function getRecommend(
-        $class,
-        $settings = '',
-        $request = null,
-        $results = null
+        string $class,
+        string $settings = '',
+        array $request = null,
+        \VuFind\Search\Solr\Results $results = null
     ) {
         if (null === $results) {
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Laminas\Stdlib\Parameters([]);
+            $request = [];
         }
         $mod = new $class();
         $mod->setConfig($settings);

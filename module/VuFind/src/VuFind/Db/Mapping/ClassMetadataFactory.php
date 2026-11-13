@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Mapping;
 
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use ReflectionException;
@@ -86,7 +87,7 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      * @throws ReflectionException
      * @throws MappingException
      */
-    public function getMetadataFor(string $className)
+    public function getMetadataFor(string $className): ClassMetadata
     {
         return parent::getMetadataFor($this->resolveClassName($className));
     }
@@ -98,7 +99,7 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      *
      * @return bool
      */
-    public function hasMetadataFor(string $className)
+    public function hasMetadataFor(string $className): bool
     {
         return parent::hasMetadataFor($this->resolveClassName($className));
     }
@@ -113,7 +114,7 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      *
      * @return void
      */
-    public function setMetadataFor(string $className, ClassMetadata $class)
+    public function setMetadataFor(string $className, ClassMetadata $class): void
     {
         parent::setMetadataFor($this->resolveClassName($className), $class);
     }
@@ -135,11 +136,15 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
         $parent,
         $rootEntityFound,
         array $nonSuperclassParents
-    ) {
+    ): void {
         parent::doLoadMetadata($class, $parent, $rootEntityFound, $nonSuperclassParents);
 
         foreach ($class->associationMappings as &$mapping) {
-            $mapping['targetEntity'] = $this->resolveClassName($mapping['targetEntity']);
+            if ($mapping instanceof AssociationMapping) {
+                $mappingArray = $mapping->toArray();
+                $mappingArray['targetEntity'] = $this->resolveClassName($mapping['targetEntity']);
+                $mapping = ($mapping::class)::fromMappingArray($mappingArray);
+            }
         }
         unset($mapping);
         // VuFind doesn't use single table inheritance that would require discriminator mapping, but we handle this here

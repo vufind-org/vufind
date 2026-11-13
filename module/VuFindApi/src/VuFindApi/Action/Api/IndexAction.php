@@ -30,7 +30,6 @@
 namespace VuFindApi\Action\Api;
 
 use Exception;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ActionConfigManager;
@@ -38,6 +37,7 @@ use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Action\AbstractApiAction;
 use VuFindApi\Action\ApiInterface;
@@ -56,15 +56,15 @@ class IndexAction extends AbstractApiAction
     /**
      * Constructor.
      *
-     * @param AuthorizationService     $authorizationService     Authorization service
-     * @param DeveloperSettingsService $developerSettingsService Developer settings service
-     * @param array                    $config                   VuFind configuration
-     * @param array                    $appConfig                Application configuration
-     * @param ActionPluginManager      $actionPluginManager      Action plugin manager
-     * @param ActionConfigManager      $actionConfigManager      Action configuration manager
+     * @param AuthorizationServiceInterface $authorizationService     Authorization service
+     * @param DeveloperSettingsService      $developerSettingsService Developer settings service
+     * @param array                         $config                   VuFind configuration
+     * @param array                         $appConfig                Application configuration
+     * @param ActionPluginManager           $actionPluginManager      Action plugin manager
+     * @param ActionConfigManager           $actionConfigManager      Action configuration manager
      */
     public function __construct(
-        AuthorizationService $authorizationService,
+        AuthorizationServiceInterface $authorizationService,
         DeveloperSettingsService $developerSettingsService,
         #[Autowire(config: 'config')]
         array $config,

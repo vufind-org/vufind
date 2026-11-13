@@ -50,11 +50,31 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
+     * Test missing permission for Shibboleth logout notification.
+     *
+     * @return void
+     */
+    public function testMissingPermission(): void
+    {
+        // Try the GET method:
+        $result = $this->httpGet($this->getVuFindUrl() . '/soap/shiblogout');
+        $this->assertSame(403, $result->getStatusCode());
+
+        // Try the POST method:
+        $result = $this->httpPost(
+            $this->getVuFindUrl() . '/soap/shiblogout',
+            $this->getFixture('shibboleth/logout_notification.xml'),
+            'application/xml'
+        );
+        $this->assertSame(403, $result->getStatusCode());
+    }
+
+    /**
      * Test Shibboleth logout notification.
      *
      * @return void
      */
-    public function testLogoutNotification()
+    public function testLogoutNotification(): void
     {
         $this->changeConfigs(
             [

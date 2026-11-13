@@ -143,7 +143,8 @@ class FormAction extends AbstractTemplateRenderingAction
                     $templateParams['successMessage'] = $form->getSubmitResponse();
                     $template = 'feedback/response';
                 } else {
-                    $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('could_not_process_feedback');
+                    $failureResponse = $form->getSubmitFailureResponse();
+                    $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($failureResponse);
                 }
 
                 $handlers = $form->getSecondaryHandlers();

@@ -1,20 +1,20 @@
 <div class="form-group">
   <label class="form-label" for="account_firstname"><?=$this->transEsc('First Name')?>:</label>
-  <input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtmlAttr($this->request->get('firstname'))?>" class="form-control" autocomplete="given-name">
+  <input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtmlAttr($this->request['firstname'] ?? '')?>" class="form-control" autocomplete="given-name">
 </div>
 <div class="form-group">
   <label class="form-label" for="account_lastname"><?=$this->transEsc('Last Name')?>:</label>
-  <input id="account_lastname" type="text" name="lastname" value="<?=$this->escapeHtmlAttr($this->request->get('lastname'))?>" class="form-control" autocomplete="family-name">
+  <input id="account_lastname" type="text" name="lastname" value="<?=$this->escapeHtmlAttr($this->request['lastname'] ?? '')?>" class="form-control" autocomplete="family-name">
 </div>
 <div class="form-group">
   <label class="form-label" for="account_email"><?=$this->transEsc('Email Address')?>:</label>
-  <input id="account_email" type="email" name="email" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('email'))?>" class="form-control" autocomplete="email">
+  <input id="account_email" type="email" name="email" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request['email'] ?? '')?>" class="form-control" autocomplete="email">
 </div>
 <div class="form-group">
   <label class="form-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
   <?php
     $attrs = $this->htmlAttributes($this->usernamePolicy['inputAttrs'] ?? []);
-    $attrs->merge(['id' => 'account_username', 'type' => 'text', 'name' => 'username', 'value' => $this->request->get('username'), 'class' => 'form-control', 'autocomplete' => 'username']);
+    $attrs->merge(['id' => 'account_username', 'type' => 'text', 'name' => 'username', 'value' => $this->request['username'] ?? '', 'class' => 'form-control', 'autocomplete' => 'username']);
   ?>
   <input<?=$attrs?> required>
   <?php if ($this->usernamePolicy['hint']): ?>

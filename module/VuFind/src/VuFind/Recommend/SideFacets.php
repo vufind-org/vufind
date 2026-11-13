@@ -251,16 +251,16 @@ class SideFacets extends AbstractFacets
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         $mainFacets = $this->mainFacets;
         $checkboxFacets = $this->checkboxFacets;
-        if ($request != null && ($enabledFacets = $request->get('enabledFacets', null)) !== null) {
+        if ($request != null && ($enabledFacets = $request['enabledFacets'] ?? null) !== null) {
             $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
             $checkboxFacets = array_intersect_key($checkboxFacets, array_flip($enabledFacets));
         }

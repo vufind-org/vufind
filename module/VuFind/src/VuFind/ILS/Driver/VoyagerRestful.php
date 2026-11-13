@@ -37,6 +37,7 @@ use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Validator\EmailAddressValidator;
 
 use function count;
 use function in_array;
@@ -128,20 +129,6 @@ class VoyagerRestful extends Voyager implements
     protected $callSlipCheckLimit;
 
     /**
-     * Holds mode.
-     *
-     * @var string
-     */
-    protected $holdsMode;
-
-    /**
-     * Title-level holds mode.
-     *
-     * @var string
-     */
-    protected $titleHoldsMode;
-
-    /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew.
      *
@@ -226,17 +213,17 @@ class VoyagerRestful extends Voyager implements
      * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
+     * @param EmailAddressValidator  $emailValidator Email address validator
      * @param string                 $holdsMode      Holds mode setting
-     * @param string                 $titleHoldsMode Title holds mode setting
+     * @param string                 $titleHoldsMode Title-level holds mode setting
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $holdsMode = 'disabled',
-        $titleHoldsMode = 'disabled'
+        EmailAddressValidator $emailValidator,
+        protected string $holdsMode = 'disabled',
+        protected string $titleHoldsMode = 'disabled',
     ) {
-        parent::__construct($dateConverter);
-        $this->holdsMode = $holdsMode;
-        $this->titleHoldsMode = $titleHoldsMode;
+        parent::__construct($dateConverter, $emailValidator);
     }
 
     /**

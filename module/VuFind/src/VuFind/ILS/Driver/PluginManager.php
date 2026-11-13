@@ -89,7 +89,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         HorizonXMLAPI::class => DriverWithDateConverterFactory::class,
         Koha::class => DriverWithDateConverterFactory::class,
         KohaILSDI::class => DriverWithDateConverterFactory::class,
-        Voyager::class => DriverWithDateConverterFactory::class,
     ];
 
     /**
