@@ -2914,9 +2914,9 @@ class VoyagerRestful extends Voyager implements
      *
      * This is responsible for getting information on the possible pickup libraries
      *
-     * @param string $id     Record ID
-     * @param array  $patron Patron
-     * @param array $illDetails Optional array. See $holdDetails on getILLPickupLibraries.
+     * @param string $id         Record ID
+     * @param array  $patron     Patron
+     * @param array  $illDetails Optional array. See $holdDetails on getILLPickupLibraries.
      *
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
