@@ -162,8 +162,8 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
-        $this->limit = $options['batchSize'];
         $this->setBatchSizeFromOptions($options);
+        $this->limit = $this->batchSize;
     }
 
     /**
