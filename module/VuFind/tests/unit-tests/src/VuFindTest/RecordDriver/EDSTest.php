@@ -628,9 +628,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     public static function getThumbnailProvider(): \Iterator
     {
-        yield 'thumb is upscaled to small' => ['small'];
-        yield 'medium is used as-is' => ['medium'];
-        yield 'medium is upscaled to large' => ['large'];
+        yield 'small' => ['small'];
+        yield 'medium' => ['medium'];
+        yield 'large' => ['large'];
     }
 
     /**
