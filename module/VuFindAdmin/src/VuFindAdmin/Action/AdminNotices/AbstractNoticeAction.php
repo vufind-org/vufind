@@ -41,8 +41,8 @@ use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
 use VuFindAdmin\Action\Admin\AbstractAdminAction;
+use VuFindAdmin\Action\ContentActionTrait;
 
-use function count;
 use function in_array;
 
 /**
@@ -58,6 +58,7 @@ use function in_array;
 abstract class AbstractNoticeAction extends AbstractAdminAction implements LocaleSettingsAwareInterface
 {
     use LocaleSettingsAwareTrait;
+    use ContentActionTrait;
 
     /**
      * Constructor.
@@ -150,7 +151,7 @@ abstract class AbstractNoticeAction extends AbstractAdminAction implements Local
             $formData['activeContentType'] = $activeContentType;
         }
 
-        foreach ($this->getFormLanguages() as $language) {
+        foreach ($this->getFormLanguages($noticeFormConfig) as $language) {
             $formData['translations'][$language] = $notice['translations'][$language] ?? null;
         }
 
@@ -164,68 +165,6 @@ abstract class AbstractNoticeAction extends AbstractAdminAction implements Local
         }
 
         return $formData;
-    }
-
-    /**
-     * Determine which configured context matches the notice the best.
-     *
-     * @param array $notice   Notice data
-     * @param array $contexts Contexts
-     *
-     * @return ?string
-     */
-    protected function getBestMatchingContext(array $notice, array $contexts): ?string
-    {
-        $context = null;
-        $maxMatch = -1;
-        $maxMatchAdditionalConfigs = 0;
-        $noticeConfigMatchKeys = $this->createConfigMatchKeys($notice);
-        foreach ($contexts as $name => $currentContext) {
-            $contextConfigMatchKeys = $this->createConfigMatchKeys($currentContext ?? []);
-
-            $matchingConfigs = count(array_intersect(
-                $contextConfigMatchKeys,
-                $noticeConfigMatchKeys,
-            ));
-            $additionalConfigs = count(array_diff(
-                $contextConfigMatchKeys,
-                $noticeConfigMatchKeys
-            ));
-
-            // select preset that has most matching configs and as few additional configs as possible as decider
-            if (
-                $maxMatch < $matchingConfigs
-                || ($maxMatch === $matchingConfigs && $additionalConfigs < $maxMatchAdditionalConfigs)
-            ) {
-                $context = $name;
-                $maxMatch = $matchingConfigs;
-                $maxMatchAdditionalConfigs = $additionalConfigs;
-            }
-        }
-        return $context;
-    }
-
-    /**
-     * Create keys for context on which it can be compared to another one.
-     *
-     * @param array $context Context
-     *
-     * @return string[]
-     */
-    protected function createConfigMatchKeys(array $context): array
-    {
-        $configMatchKeys = array_map(
-            function ($condition) {
-                $values = $condition['values'] ?? [];
-                sort($values);
-                return 'cond_' . $condition['type'] . '_' . $condition['comparator'] . '_' . implode(',', $values);
-            },
-            $context['conditions'] ?? []
-        );
-        if ($position = $context['position'] ?? null) {
-            $configMatchKeys[] = 'pos_' . $position;
-        }
-        return $configMatchKeys;
     }
 
     /**
@@ -384,29 +323,5 @@ abstract class AbstractNoticeAction extends AbstractAdminAction implements Local
                 return preg_replace('/^(\d+:\d+).*/', '$1', $value);
         }
         return $value;
-    }
-
-    /**
-     * Get languages enabled for the form.
-     *
-     * @return array
-     */
-    public function getFormLanguages(): array
-    {
-        $defaultLanguages = $this->localeSettings->getEnabledLocales();
-        $config = $this->noticeManager->getNoticeConfig()['adminForm'] ?? [];
-        if (isset($config['languages'])) {
-            return array_filter(
-                $config['languages'],
-                fn ($language) => isset($defaultLanguages[$language])
-            );
-        }
-        unset($defaultLanguages['debug']);
-        // move default language into first position
-        $defaultLanguage = $this->localeSettings->getDefaultLocale();
-        unset($defaultLanguages[$defaultLanguage]);
-        $languages = array_keys($defaultLanguages);
-        array_unshift($languages, $defaultLanguage);
-        return $languages;
     }
 }

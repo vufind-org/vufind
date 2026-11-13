@@ -2,8 +2,7 @@
   if (isset($this->iconMethod) && !isset($this->icon)) {
     $this->icon = $this->sectionPlugin->{$this->iconMethod}();
   }
-
-  $url = $this->url ?: $this->url($this->route, $this->routeParams ?? []);
+  $url = $this->url;
 ?>
 <li>
   <a href="<?=$url?>" class="<?=$this->name?> nav-link icon-link<?=$this->active == $this->name ? ' active' : ''?>">

@@ -79,6 +79,7 @@ class AccountMenuFactory
             $container->get(\VuFind\Section\SectionServiceInterface::class),
             $configManager->getConfigArray('AccountMenu'),
             $configManager->getConfigArray('config'),
+            $container->get(\VuFind\Content\CustomLinkManager::class),
             $container->get(\VuFind\Config\AccountCapabilities::class),
             $container->get(\VuFind\Auth\Manager::class),
             $container->get(\VuFind\ILS\Connection::class),

@@ -34,6 +34,7 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Content\CustomLinkManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
@@ -62,6 +63,7 @@ class AccountMenu extends AbstractMenu
      * @param SectionServiceInterface $sectionService      Section service
      * @param array                   $sectionConfig       Section configuration
      * @param array                   $config              Main configuration
+     * @param CustomLinkManager       $customLinkManager   Custom link manager
      * @param AccountCapabilities     $accountCapabilities Account capabilities
      * @param Manager                 $authManager         Authentication manager
      * @param Connection              $ilsConnection       ILS connection
@@ -72,6 +74,7 @@ class AccountMenu extends AbstractMenu
         SectionServiceInterface $sectionService,
         array $sectionConfig,
         array $config,
+        CustomLinkManager $customLinkManager,
         protected AccountCapabilities $accountCapabilities,
         protected Manager $authManager,
         protected Connection $ilsConnection,
@@ -88,6 +91,7 @@ class AccountMenu extends AbstractMenu
             [
                 'label',
                 'MenuItems',
+                'CustomLinkPosition',
             ],
             self::GROUP_CONTEXT
         );
@@ -106,7 +110,7 @@ class AccountMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config, $customLinkManager);
     }
 
     /**
@@ -127,6 +131,15 @@ class AccountMenu extends AbstractMenu
         array $context = [],
         string $contextKey = self::DEFAULT_CONTEXT
     ): bool {
+        if ($contextKey === self::GROUP_CONTEXT) {
+            // Conditional requirement checks.
+            $diff = array_diff(['MenuItems', 'CustomLinkPosition'], [$setting]);
+            if (count($diff) === 1) {
+                // Setting is one of the two. If the other setting exists then
+                // this setting is optional.
+                return count(array_intersect($diff, array_keys($context))) === 0;
+            }
+        }
         if ($contextKey === self::ITEM_CONTEXT) {
             // Conditional requirement checks.
             $diff = array_diff(['route', 'url', 'template'], [$setting]);
@@ -168,6 +181,7 @@ class AccountMenu extends AbstractMenu
               label: Your Account
               id: acc-menu-acc-header
               class: account-menu
+              CustomLinkPosition: 'account_menu'
               MenuItems:
                 - name: favorites
                   label: saved_items

@@ -36,6 +36,7 @@ use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function call_user_func_array;
+use function is_array;
 use function is_callable;
 use function is_string;
 
@@ -95,13 +96,16 @@ class Section
      * @param Context                 $contextHelper  Context helper
      * @param RendererInterface       $viewRenderer   View renderer
      * @param ResolverInterface       $viewResolver   View resolver
+     * @param Url                     $urlHelper      URL helper
      */
     public function __construct(
         protected SectionServiceInterface $sectionService,
         #[Autowire(container: 'ViewHelperManager')]
         Context $contextHelper,
         RendererInterface $viewRenderer,
-        ResolverInterface $viewResolver
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $urlHelper,
     ) {
         $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
@@ -161,6 +165,7 @@ class Section
     public function render(array $context = []): string
     {
         $sectionContext = $this->section->getSectionContext();
+        $sectionContext = $this->replaceRoutesWithUrls($sectionContext);
         $mergedContext = array_merge($sectionContext, $context);
         $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
@@ -173,5 +178,27 @@ class Section
             $className = $this->section::class;
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
+    }
+
+    /**
+     * Replace routes with corresponding urls in items of a given context.
+     *
+     * @param array $context Context
+     *
+     * @return array
+     */
+    protected function replaceRoutesWithUrls(array $context): array
+    {
+        foreach ($context as $key => $value) {
+            if (is_array($value)) {
+                $context[$key] = $this->replaceRoutesWithUrls($value);
+            }
+        }
+        if ($route = $context['route'] ?? null) {
+            $context['url'] =  ($this->urlHelper)($route, $context['routeParams'] ?? []);
+            unset($context['route']);
+            unset($context['routeParams']);
+        }
+        return $context;
     }
 }

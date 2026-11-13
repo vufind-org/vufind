@@ -1,0 +1,13 @@
+<?php
+$headline = $this->contentPage['headline'] ?? '';
+$this->headTitle($headline);
+
+$this->breadcrumbs()->reset();
+$this->breadcrumbs()->add($headline);
+?>
+<h1><?=$this->escapeHtml($headline);?></h1>
+<p>
+  <?=$this->escapeHtml($this->contentPage['content'] ?? '')?>
+</p>
+
+

@@ -1,0 +1,28 @@
+# The following options configure the form for creating custom links and content pages in the admin module.
+adminForm:
+# Contexts available in admin form. A context specifies the position of a custom link.
+# The links that should be included in existing menus should have a position that is referenced
+# in the menu configs like HeaderBar.yaml as "CustomLinkPosition".
+# If only one context is specified it will automatically be used.
+  contexts:
+    header_left:
+    header_right:
+      position: "header_right"
+    account_menu:
+      position: "account_menu"
+    footer_left:
+      position: "footer_left"
+    footer_center:
+      position: "footer_center"
+    footer_right:
+      position: "footer_right"
+# Uncomment to override the default languages from config.ini [Languages]
+#  languages:
+#    - "de"
+#    - "en"
+# Available link types
+# url: Link with to a given URL
+# page: Link to a content page
+  types:
+    - url
+    - page

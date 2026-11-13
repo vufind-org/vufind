@@ -27,6 +27,16 @@ $config = [
                             ],
                         ],
                     ],
+                    'custom-links' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/CustomLinks[/:action][?custom_link_id=:custom_link_id]',
+                            'defaults' => [
+                                'controller' => 'AdminCustomLinks',
+                                'action'     => 'Home',
+                            ],
+                        ],
+                    ],
                     'feedback-details' => [
                         'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
@@ -155,6 +165,10 @@ $config = [
                     ],
                     [
                         'type' => 'prefix',
+                        'prefix' => 'admincustomlinks/',
+                    ],
+                    [
+                        'type' => 'prefix',
                         'prefix' => 'adminfeedback/',
                     ],
                     [
@@ -184,15 +198,6 @@ $config = [
                 ],
                 'accessPermission' => 'access.AdminModule',
             ],
-            'vufindadmin_notices' => [
-                'actionIds' => [
-                    [
-                        'type' => 'prefix',
-                        'prefix' => 'notices/',
-                    ],
-                ],
-                'accessPermission' => 'access.AdminModule',
-            ],
         ],
         'plugin_managers' => [
             'action' => [
@@ -212,6 +217,7 @@ $config = [
                 ],
                 'category_aliases' => [
                     'Adminconfig' => 'AdminConfig',
+                    'Admincustomlinks' => 'AdminCustomLinks',
                     'Adminfeedback' => 'AdminFeedback',
                     'Adminmaintenance' => 'AdminMaintenance',
                     'Adminnotices' => 'AdminNotices',
