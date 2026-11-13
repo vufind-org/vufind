@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\IdentifierLinker\PluginManager as LinkerPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Icon;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
@@ -93,7 +94,9 @@ class IdentifierLinksLookup extends AbstractBase
         protected TemplateRendererInterface $renderer,
         protected ServerUrlHelper $serverUrlHelper,
         protected RouteHelper $routeHelper,
+        #[Autowire(container: 'ViewHelperManager')]
         protected Icon $iconHelper,
+        #[Autowire(config: 'config')]
         array $config
     ) {
         parent::__construct(null);

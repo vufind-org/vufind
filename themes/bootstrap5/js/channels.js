@@ -460,13 +460,26 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
+   * Set up all channels in a specified container
+   * @param {Element} container Container to search for channels
+   */
+  function initChannelsInContainer(container) {
+    for (const channelEl of container.querySelectorAll(".channel")) {
+      channelInit(channelEl);
+    }
+  }
+
+  /**
    * Setup the channels module and events
    */
   function init() {
     // Initial manipulations
-    for (const channelEl of document.querySelectorAll(".channel")) {
-      channelInit(channelEl);
-    }
+    initChannelsInContainer(document);
+
+    // Tab initialization listener
+    VuFind.listen("record-tab-init", function channelInitCallback (event) {
+      initChannelsInContainer(event.container);
+    });
 
     // Global button listener
     document.addEventListener("click", function channelsClickHandler(event) {

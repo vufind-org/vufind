@@ -131,7 +131,10 @@
 
         <div class="channel-bottom-menu">
           <?php
-            $loadMoreRoot = $this->url('channels-home') . '?' .
+            $base = isset($this->driver)
+              ? $this->url('channels-record', [], ['query' => ['id' => $this->driver->getUniqueID(), 'source' => $this->driver->getSearchBackendIdentifier()]]) . '&'
+              : $this->url('channels-home') . '?';
+            $loadMoreRoot = $base .
               (empty($queryParams) ? '' : $queryParams . '&') .
               'layout=lightbox';
             $btnAttrs = [

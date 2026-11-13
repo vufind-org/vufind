@@ -35,6 +35,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Recommend\DateFacetTrait;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\Results;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -62,6 +63,7 @@ class GetVisData extends AbstractBase
      */
     public function __construct(
         SessionSettings $sessionSettings,
+        #[Autowire(container: \VuFind\Search\Results\PluginManager::class, service: 'Solr')]
         protected Results $results
     ) {
         parent::__construct($sessionSettings);
