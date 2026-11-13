@@ -327,7 +327,10 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             $templateParams = $setupCallback($templateParams);
         }
 
-        return $this->renderTemplate($this->request, $this->response, $templateParams);
+        $response = $this->renderTemplate($this->request, $this->response, $templateParams);
+
+        // Allow private caching so users can go back to their search with the back button
+        return $response->withHeader('Cache-Control', 'private, max-age=1800');
     }
 
     /**
