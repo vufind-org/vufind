@@ -65,7 +65,7 @@
 </script>
 <!-- End Matomo Code -->
 
-<form id="theme-form" popover="hint">
+<site-preferences theme-key="site-theme" font-key="site-font">
   <h2>Site Appearance</h2>
 
   <fieldset>
@@ -111,9 +111,7 @@
     </label>
   </fieldset>
 
-  <input type="submit" value="Save" popovertarget="theme-form" popovertargetaction="hide">
-</form>
+  <input type="submit" value="Save">
+</site-preferences>
 
-<button id="theme-picker" popovertarget="theme-form" popovertargetaction="toggle">Site Appearance</button>
-
-<script type="module" src="{{ site.baseurl }}/assets/js/site-preferences.js"></script>
+<script src="{{ site.baseurl }}/assets/js/site-preferences-element.js"></script>

@@ -39,10 +39,6 @@
 		color: colors.$text;
 		background-color: colors.$back;
 		accent-color: colors.$vibrant-mute;
-
-		@media (min-width: 1200px) {
-			font-size: 19px;
-		}
 	}
 
 	p,
@@ -585,64 +581,67 @@
 		}
 	}
 
-	#theme-picker {
-		position: fixed;
-		inset-inline-end: 1em;
-		inset-block-end: 1em;
-		padding-inline: 1em;
-		padding-block: 0.5em;
-		font-size: 12pt;
-		color: colors.$text;
-		background-color: colors.$ui;
-		border: 1px solid colors.$text;
-
-		&:hover,
-		&:focus {
-			background-color: colors.$ui-hover;
-		}
-	}
-
-	#theme-form {
-		padding-inline: 1em;
-		font-size: 1rem;
-		color: colors.$text;
-		background-color: colors.$soft;
-		border: 1px solid;
-		box-shadow: 0 4px 8px -2px #0003;
-
-		h2 {
-			font-size: 1.25rem;
-		}
-
-		fieldset {
-			display: flex;
-			gap: 1em;
-			margin: 0;
-			padding: 0;
-		}
-
-		label {
-			display: flex;
-			align-items: center;
-			gap: 0.5ch;
-			padding: 0.5em;
+	site-preferences {
+		button {
+			position: fixed;
+			inset-inline-end: 1em;
+			inset-block-end: 1em;
+			padding-inline: 1em;
+			padding-block: 0.5em;
+			font-size: 12pt;
+			color: colors.$text;
+			background-color: colors.$ui;
+			border: 1px solid colors.$text;
 
 			&:hover,
 			&:focus {
-				background-color: colors.$ui;
+				background-color: colors.$ui-hover;
 			}
 		}
 
-		[type="submit"] {
-			display: block;
-			width: 100%;
-			margin-block: 1em;
-			padding-inline: 1ch;
-			padding-block: 0.3em;
-		}
+		form {
+			margin: auto;
+			padding-inline: 1em;
+			font-size: 1rem;
+			color: colors.$text;
+			background-color: colors.$soft;
+			border: 1px solid;
+			box-shadow: 0 4px 8px -2px #0003;
 
-		&::backdrop {
-			background-color: rgb(0 0 0 / 0.5);
+			h2 {
+				font-size: 1.25rem;
+			}
+
+			fieldset {
+				display: flex;
+				gap: 1em;
+				margin: 0;
+				padding: 0;
+			}
+
+			label {
+				display: flex;
+				align-items: center;
+				gap: 0.5ch;
+				padding: 0.5em;
+
+				&:hover,
+				&:focus {
+					background-color: colors.$ui;
+				}
+			}
+
+			[type="submit"] {
+				display: block;
+				width: 100%;
+				margin-block: 1em;
+				padding-inline: 1ch;
+				padding-block: 0.3em;
+			}
+
+			&::backdrop {
+				background-color: rgb(0 0 0 / 0.5);
+			}
 		}
 	}
 }
