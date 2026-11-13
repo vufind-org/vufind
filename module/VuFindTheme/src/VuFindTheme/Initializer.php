@@ -90,6 +90,13 @@ class Initializer
     protected $cookieManager;
 
     /**
+     * ColorSchemeManager class name.
+     *
+     * @var string
+     */
+    protected string $colorSchemeManagerClass = ColorSchemeManager::class;
+
+    /**
      * A static flag used to determine if the theme has been initialized.
      *
      * @var bool
@@ -188,6 +195,9 @@ class Initializer
         if (isset($error)) {
             throw new \Exception($error->getMessage());
         }
+
+        // Initialize the color scheme
+        $this->setUpColorSchemes($currentTheme);
     }
 
     /**
@@ -462,5 +472,24 @@ class Initializer
                 );
             }
         }
+    }
+
+    /**
+     * Support method for init() -- set up color scheme once theme is known.
+     *
+     * @param string $currentTheme Theme name
+     *
+     * @return void
+     */
+    protected function setUpColorSchemes(string $currentTheme): void
+    {
+        $colorSchemeManager = new ($this->colorSchemeManagerClass)(
+            $this->config,
+            $this->serviceManager->get(GlobalsContainer::class),
+            $this->cookieManager,
+            $currentTheme
+        );
+        $selectedColorScheme = $colorSchemeManager->getSelectedColorScheme($this->event?->getRequest());
+        $colorSchemeManager->sendColorSchemeInfoToView($selectedColorScheme);
     }
 }

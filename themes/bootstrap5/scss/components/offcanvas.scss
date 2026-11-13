@@ -74,10 +74,21 @@ $offcanvas-offset: 80vw !default;  // Width of open menu
       width: $offcanvas-offset;
       padding: 1rem;
       overflow-y: auto;
-      background-color: #fff;
       transition: left .5s, right .5s;
 
       .search-sort { padding-bottom: 1rem; }
+    }
+    @include color-mode(light, true) {
+      .vufind-offcanvas .sidebar
+      {
+        background-color: #fff;
+      }
+    }
+    @include color-mode(dark, true) {
+      .vufind-offcanvas .sidebar
+      {
+        background-color: var(--bs-tertiary-bg);
+      }
     }
     .vufind-offcanvas.active {
       overflow-y: hidden;

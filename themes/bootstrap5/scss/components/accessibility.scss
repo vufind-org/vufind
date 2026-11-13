@@ -1,18 +1,34 @@
 /* ACCESSIBILITY IMPROVEMENTS */
 
+a {
+  text-decoration: underline;
+}
+@include color-mode(light, true) {
+  a:hover {
+    color: black;
+  }
+}
+@include color-mode(dark, true) {
+  a:hover {
+    color: white;
+  }
+}
+
 /* AAA Color Contrasts */
 $breadcrumb-color: #535353 !default;
 $breadcrumb-active-color: #444 !default;
 $state-danger-text: #8a211e !default;
 
 
-.alert-danger,
-.alert-danger a {
-  color: $state-danger-text;
-  .btn-danger {
-    color: white;
-  }
-  .btn-danger:hover {
+@include color-mode(light, true) {
+  .alert-danger,
+  .alert-danger a {
     color: $state-danger-text;
+    .btn-danger {
+      color: white;
+    }
+    .btn-danger:hover {
+      color: $state-danger-text;
+    }
   }
 }
