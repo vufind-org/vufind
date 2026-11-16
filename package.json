@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "clean-css": "^5.3.3",
-    "commander": "^15.0.0",
+    "commander": "^15.1.0",
     "nodemon": "^3.1.10",
     "sass-embedded": "^1.107.1"
   },
