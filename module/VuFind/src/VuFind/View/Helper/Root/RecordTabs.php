@@ -67,8 +67,8 @@ class RecordTabs
     /**
      * Transform record tabs to general tabs array.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
-     * @param array                             $tabs      Tabs
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param array                             $tabs   Tabs
      *
      * @return array
      */

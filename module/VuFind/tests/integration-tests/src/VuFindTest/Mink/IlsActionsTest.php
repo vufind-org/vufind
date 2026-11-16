@@ -457,7 +457,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelSelectedIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
-        $this->cancelSelectedProcedure($page, 'interlibrary loan requests');
+        $this->cancelSelectedProcedure($page);
     }
 
     /**
@@ -528,7 +528,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelSelectedStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
-        $this->cancelSelectedProcedure($page, 'storage retrieval requests');
+        $this->cancelSelectedProcedure($page);
     }
 
     /**
