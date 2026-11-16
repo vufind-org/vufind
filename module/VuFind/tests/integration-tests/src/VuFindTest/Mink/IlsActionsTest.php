@@ -181,7 +181,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test canceling a request with the "cancel selected" button.
      *
      * @param Element $page Page element.
-     * @param string  $type Request type being tested.
      *
      * @return void
      */
