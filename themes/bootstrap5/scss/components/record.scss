@@ -293,6 +293,15 @@ $tag-remove-badge-color:          #a94442 !default;
     font-weight: bold;
   }
 }
+@include color-mode(dark, true) {
+  .holdings-tab .holdings-table {
+    td {
+      .text-success {
+        color: lightgreen;
+      }
+    }
+  }
+}
 
 /* ------ OpenURL Links ------ */
 .openurls {

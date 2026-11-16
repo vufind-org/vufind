@@ -9,6 +9,10 @@ a {
   }
 }
 @include color-mode(dark, true) {
+  a {
+    /* Light enough to be WCAG AA compliant */
+    color: #8CA2BA;
+  }
   a:hover {
     color: white;
   }
