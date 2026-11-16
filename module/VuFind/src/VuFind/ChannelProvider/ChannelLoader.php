@@ -314,7 +314,7 @@ class ChannelLoader
         }
 
         // Return context array:
-        return $this->addConfigToContext(compact('driver', 'channels', 'token'));
+        return $this->addConfigToContext(compact('driver', 'channels', 'token', 'configSections'));
     }
 
     /**
