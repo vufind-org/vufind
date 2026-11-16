@@ -35,7 +35,6 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\ILS\Connection;
 use VuFind\ILS\Driver\MultiBackend;
 
 use function in_array;
@@ -121,7 +120,7 @@ class MultiILS extends ILS
             throw new AuthException('authentication_error_admin');
         }
 
-        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**
