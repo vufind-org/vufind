@@ -176,7 +176,7 @@ abstract class AbstractAPI extends AbstractBase implements
         }
 
         // Add params
-        if ($method == 'GET') {
+        if (in_array($method, ['GET', 'DELETE'])) {
             $client->setParameterGet($params);
         } else {
             if (is_string($params)) {
