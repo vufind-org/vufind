@@ -146,14 +146,15 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
 
-        $callback = function ($runner, $params, $searchId): void {
-            $options = $params->getOptions();
-            $options->disableHighlighting();
-            $options->spellcheckEnabled(false);
-            if ($lastLimit = $this->searchMemory->retrieveLastSetting($this->getSearchClassId(), 'limit')) {
-                $params->setLimit($lastLimit);
-            }
-        };
+        $callback = #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+            function ($runner, $params, $searchId): void {
+                $options = $params->getOptions();
+                $options->disableHighlighting();
+                $options->spellcheckEnabled(false);
+                if ($lastLimit = $this->searchMemory->retrieveLastSetting($this->getSearchClassId(), 'limit')) {
+                    $params->setLimit($lastLimit);
+                }
+            };
 
         $templateParams = $this->getSearchResultsTemplateParams($request, $this->getSearchClassId(), $callback);
         $templateParams['driver'] = $driver;
