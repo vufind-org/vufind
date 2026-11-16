@@ -91,7 +91,7 @@ class ChannelsController extends AbstractBase
         $activeChannel = $this->params()->fromQuery('channelProvider');
         $configSections = $this->params()->fromQuery('context');
         $token = $this->params()->fromQuery('channelToken');
-        // If an active channel is set, it could come from a record or a record tab; check both.
+        // If an active channel is set, it might come from a non-default config; check provided sections:
         $configSections = $activeChannel && $configSections ? explode(':', $configSections) : ['record'];
         $context = $this->loader->getRecordContext($recordId, $token, $activeChannel, $source, $configSections);
         return $this->createViewModel($context);
