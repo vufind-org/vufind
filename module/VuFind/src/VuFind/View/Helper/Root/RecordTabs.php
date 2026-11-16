@@ -73,7 +73,6 @@ class RecordTabs
      *
      * @return array
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getTabs(
         \VuFind\RecordDriver\AbstractBase $driver,
         array $tabs,
