@@ -177,7 +177,6 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
      *
      * @return array
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getURLs(AbstractRecord $record): array
     {
         return ($this->recordHelper)($record)->getLinkDetails();
