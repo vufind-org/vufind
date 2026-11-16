@@ -2211,6 +2211,7 @@ class Folio extends AbstractAPI implements
      *
      * @return false|string       The default request group for the patron.
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $requestPreference = $this->getRequestPreference($patron['id']);
