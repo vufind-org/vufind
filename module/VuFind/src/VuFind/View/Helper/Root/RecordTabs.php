@@ -69,14 +69,12 @@ class RecordTabs
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
      * @param array                             $tabs      Tabs
-     * @param string                            $activeTab Active tab
      *
      * @return array
      */
     public function getTabs(
         \VuFind\RecordDriver\AbstractBase $driver,
-        array $tabs,
-        string $activeTab
+        array $tabs
     ): array {
         $ajaxTabUrl = $this->recordLinker->getTabUrl($driver, 'AjaxTab');
         $backgroundTabs = $this->tabManager->getBackgroundTabNames($driver);
