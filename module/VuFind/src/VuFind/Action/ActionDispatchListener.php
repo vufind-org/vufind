@@ -88,6 +88,7 @@ class ActionDispatchListener
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function attach(EventManagerInterface $eventManager, int $priority = 1): void
     {
         // Attach with higher priority than default to override Laminas' default dispatch handler:

@@ -99,6 +99,7 @@ class FixSslCertsAction extends AbstractInstallAction
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function updateSslCertConfig($config, $try): void
     {
         // Reset old settings
