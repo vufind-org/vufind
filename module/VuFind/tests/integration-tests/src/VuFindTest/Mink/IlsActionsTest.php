@@ -185,7 +185,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function cancelSelectedProcedure(Element $page, string $type): void
+    protected function cancelSelectedProcedure(Element $page): void
     {
         // First make sure item is there before cancel is pushed:
         $this->assertSame(
