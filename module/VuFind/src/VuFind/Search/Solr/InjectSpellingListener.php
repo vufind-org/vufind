@@ -193,7 +193,7 @@ class InjectSpellingListener
                 if ($this->logger instanceof \VuFind\Log\ExtendedLoggerInterface) {
                     $this->logger->logException(
                         $e,
-                        new \Laminas\Stdlib\Parameters()
+                        []
                     );
                 }
             }

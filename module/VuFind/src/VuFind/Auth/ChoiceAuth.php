@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 use function call_user_func_array;
 use function func_get_args;
@@ -70,30 +72,18 @@ class ChoiceAuth extends AbstractBase
     protected $strategy;
 
     /**
-     * Plugin manager for obtaining other authentication objects.
-     *
-     * @var PluginManager
-     */
-    protected $manager;
-
-    /**
-     * Session container.
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
      * Constructor.
      *
-     * @param \Laminas\Session\Container $container Session container for retaining
-     * user choices.
+     * @param \Laminas\Session\Container $session Session container for retaining user choices.
+     * @param PluginManager              $manager Plugin manager for obtaining other authentication objects.
      */
-    public function __construct(\Laminas\Session\Container $container)
-    {
-        // Set up session container and load cached strategy (if found):
-        $this->session = $container;
-        $this->strategy = $this->session->auth_method ?? false;
+    public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'ChoiceAuth')]
+        protected \Laminas\Session\Container $session,
+        protected PluginManager $manager
+    ) {
+        // Load cached strategy (if found):
+        $this->strategy = $session->auth_method ?? false;
     }
 
     /**
@@ -250,9 +240,6 @@ class ChoiceAuth extends AbstractBase
      */
     public function getPluginManager()
     {
-        if (null === $this->manager) {
-            throw new \Exception('Plugin manager missing.');
-        }
         return $this->manager;
     }
 

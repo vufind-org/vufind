@@ -333,7 +333,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Set up user account:
@@ -370,7 +370,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Set up user account:
@@ -548,9 +548,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        // Go to user profile screen:
+        // Go to checkouts:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/CheckedOut');
+        $session->visit($this->getVuFindUrl() . '/Checkouts/List');
         $page = $session->getPage();
 
         // Log in

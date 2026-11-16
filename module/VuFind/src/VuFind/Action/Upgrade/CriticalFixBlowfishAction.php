@@ -81,7 +81,6 @@ class CriticalFixBlowfishAction extends AbstractUpgradeAction
         array $config,
         CookieManager $cookieManager,
         SessionManager $sessionManager,
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         EntityManager $entityManager,
         protected BlockCipher $blockCipher,
     ) {

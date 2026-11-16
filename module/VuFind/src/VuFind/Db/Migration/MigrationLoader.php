@@ -121,6 +121,11 @@ class MigrationLoader
      */
     public function splitSqlIntoStatements(string $sql): array
     {
-        return array_values(array_filter(array_map('trim', preg_split('/;\s*([\r\n]|$)/', $sql))));
+        // Strip out comments:
+        $noComments = preg_replace('/\\-\\-.*/', '', $sql);
+        // Split apart:
+        $parts = preg_split('/;\s*([\r\n]|$)/', $noComments);
+        // Trim, filter, and re-key:
+        return array_values(array_filter(array_map('trim', $parts)));
     }
 }

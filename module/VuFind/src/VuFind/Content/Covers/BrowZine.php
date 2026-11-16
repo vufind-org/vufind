@@ -29,6 +29,7 @@
 
 namespace VuFind\Content\Covers;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 use VuFindSearch\Service;
 
@@ -51,8 +52,15 @@ class BrowZine extends \VuFind\Content\AbstractCover
      * @param Service  $searchService Search service
      * @param string[] $ignoreList    Cover image URLs to ignore (we don't want to display third-party generic images)
      */
-    public function __construct(protected Service $searchService, protected array $ignoreList)
-    {
+    public function __construct(
+        protected Service $searchService,
+        #[Autowire(
+            config: 'BrowZine',
+            path: 'Covers/ignored_images',
+            default: ['https://assets.thirdiron.com/default-journal-cover.png']
+        )]
+        protected array $ignoreList
+    ) {
         $this->supportsIssn = true;
     }
 

@@ -56,15 +56,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        MoreByAuthorSolr::class => SimilarFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.

@@ -375,7 +375,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
                     'username' => $user->getUsername(),
                     'url' => $this->serverUrlHelper->getUrlForPath(
                         $this->getRouteHelper()->getUrlFromRoute(
-                            'myresearch-verify',
+                            'account-verify',
                             queryParams: [
                                 'hash' => $user->getVerifyHash(),
                                 'auth_method' => $method,

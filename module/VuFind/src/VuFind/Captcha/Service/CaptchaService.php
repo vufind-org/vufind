@@ -135,34 +135,27 @@ class CaptchaService implements TranslatorAwareInterface
         if (!$this->active()) {
             return true;
         }
-        $captchaPassed = false;
         $errorMessage = '';
 
         foreach ($this->captchas as $captcha) {
             try {
-                $captchaPassed = $captcha->verify($postParams, $queryParams);
-                if (!$captchaPassed) {
-                    $errorMessage = $captcha->getErrorMessage();
+                if ($captcha->verify($postParams, $queryParams)) {
+                    return true;
                 }
+                $errorMessage = $captcha->getErrorMessage();
             } catch (\Exception $e) {
-                $captchaPassed = false;
                 $errorMessage = $this->translate('captcha_technical_difficulties');
-            }
-
-            if ($captchaPassed) {
-                break;
             }
         }
 
-        if (!empty($errorMessage)) {
-            if ($this->errorMode == 'flash') {
+        if ($errorMessage) {
+            if ($this->errorMode === 'flash') {
                 $this->flashMessenger->addErrorMessage($errorMessage);
-            }
-            if ($this->errorMode == 'throw') {
+            } elseif ($this->errorMode === 'throw') {
                 throw new \Exception($errorMessage);
             }
         }
-        return $captchaPassed;
+        return false;
     }
 
     /**

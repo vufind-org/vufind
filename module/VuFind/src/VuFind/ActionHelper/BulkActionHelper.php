@@ -122,15 +122,14 @@ class BulkActionHelper implements HelperInterface
             return null;
         }
 
-        // If we entered the controller in the expected way (i.e. via the
-        // myresearchbulk action), we should have a source set in the followup
-        // memory. If that's missing for some reason, just forward to MyResearch.
+        // If we entered the action in the expected way (i.e. via MyResearchBulkAction), we should have a source set in
+        // the followup memory. If that's missing for some reason, just forward to Account home.
         $session = $this->getCartFollowupSession();
         if (isset($session->url)) {
             $target = $session->url;
             unset($session->url);
         } else {
-            $target = $this->routeHelper->getUrlFromRoute('myresearch-home');
+            $target = $this->routeHelper->getUrlFromRoute('account-home');
         }
         return $this->redirectHelper->redirectToUrl($response, $target);
     }

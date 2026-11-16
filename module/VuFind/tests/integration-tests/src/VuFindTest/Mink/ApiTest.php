@@ -238,7 +238,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->createAndLoginUser($page);
 
         // Go to profile page:
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $this->waitForPageLoad($page);
 
         // Now click the developer settings button:

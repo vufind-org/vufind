@@ -52,9 +52,9 @@
           <td class="search-schedule-header" data-label="<?=$this->transEscAttr('history_schedule')?>">
           <?php if (isset($this->schedule[$info->getSearchId()])): ?>
             <?php $schedule = $this->schedule[$info->getSearchId()]; ?>
-              <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
+              <form class="form-inline jumpMenuForm" action="<?= $this->url('searchhistory-savesearch')?>" method="get" name="schedule">
                 <select name="schedule" class="jumpMenu form-select" aria-haspopup="true" title="<?=$this->transEscAttr('history_schedule')?>">
-                  <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
+                  <?php foreach ($this->scheduleOptions as $scheduleValue => $scheduleLabel): ?>
                     <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($schedule == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
                   <?php endforeach; ?>
                 </select>
@@ -68,12 +68,12 @@
         <?php if ($saveSupported): ?>
           <td class="history_actions">
             <?php if ($this->showSaved): ?>
-              <a class="icon-link text-danger" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+              <a class="icon-link text-danger" href="<?=$this->url('searchhistory-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
                 <?=$this->icon('search-delete', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc('history_delete_link')?></span>
               </a>
             <?php else: ?>
-              <a class="icon-link" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+              <a class="icon-link" href="<?=$this->url('searchhistory-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history">
                 <?=$this->icon('search-save', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc('history_save_link')?></span>
               </a>

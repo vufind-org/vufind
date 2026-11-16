@@ -30,15 +30,12 @@
 namespace VuFindTest\Action\Install;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Install\AbstractInstallAction;
 use VuFind\ActionHelper\HelperInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Http\RouteHelper;
-use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Action\AbstractActionTestCase;
 use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
@@ -58,20 +55,6 @@ abstract class AbstractInstallActionTestCase extends AbstractActionTestCase
     use AutowireTrait;
     use ConfigRelatedServicesTrait;
     use ReflectionTrait;
-
-    /**
-     * Template name captured from the renderTemplate() call.
-     *
-     * @var ?string
-     */
-    protected ?string $capturedTemplate = null;
-
-    /**
-     * Template parameters captured from the renderTemplate() call.
-     *
-     * @var array
-     */
-    protected array $capturedTemplateParams = [];
 
     /**
      * Build an Install action with autowired dependencies and optional service overrides.
@@ -140,29 +123,5 @@ abstract class AbstractInstallActionTestCase extends AbstractActionTestCase
         $this->setProperty($action, 'config', $config);
         $this->initializeAction($action, $helpers, $routeHelper, $this->getCapturingRenderer());
         return $action;
-    }
-
-    /**
-     * Get a template renderer that captures the template name and parameters passed to renderTemplate() and returns the
-     * response unchanged.
-     *
-     * @return TemplateRendererInterface
-     */
-    protected function getCapturingRenderer(): TemplateRendererInterface
-    {
-        $renderer = $this->createMock(TemplateRendererInterface::class);
-        $renderer->method('renderTemplate')->willReturnCallback(
-            function (
-                ServerRequestInterface $request,
-                ResponseInterface $response,
-                ?string $template,
-                array $params
-            ): ResponseInterface {
-                $this->capturedTemplate = $template;
-                $this->capturedTemplateParams = $params;
-                return $response;
-            }
-        );
-        return $renderer;
     }
 }

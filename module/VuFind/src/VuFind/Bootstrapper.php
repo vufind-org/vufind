@@ -338,8 +338,8 @@ class Bootstrapper
                     // Console request does not include server,
                     // so use a dummy in that case.
                     $server = (PHP_SAPI == 'cli')
-                        ? new \Laminas\Stdlib\Parameters(['env' => 'console'])
-                        : $event->getRequest()->getServer();
+                        ? ['env' => 'console']
+                        : $event->getRequest()->getServer()->toArray();
                     if (!empty($exception)) {
                         $log->logException($exception, $server);
                     }

@@ -105,11 +105,6 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $doctrineCacheDir = $container
-            ->get('config')['caches']['doctrinemodule.cache.filesystem']['options']['cache_dir'];
-        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
-
         $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray($this->configName);
         $this->container = $container;
@@ -128,9 +123,6 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      */
     public function getConnection($overrideUser = null, $overridePass = null)
     {
-        // Make sure object cache is initialized; Doctrine needs it:
-        $this->container->get(\VuFind\Cache\Manager::class)->getCache('object');
-
         // Parse details from connection string if available, otherwise use
         // more granular config settings.
         if (isset($this->config['Database']['database'])) {
@@ -268,11 +260,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (empty($this->container)) {
             throw new \Exception('Container is missing!');
         }
-        $connection = DriverManager::getConnection(
-            $options
-        );
-
-        return $connection;
+        return DriverManager::getConnection($options);
     }
 
     /**

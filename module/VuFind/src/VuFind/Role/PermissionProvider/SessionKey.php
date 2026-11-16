@@ -30,6 +30,8 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Session\Container;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Session key permission provider.
@@ -51,6 +53,7 @@ class SessionKey implements PermissionProviderInterface
      * @param $session Session container
      */
     public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'SessionKey')]
         protected Container $session
     ) {
     }

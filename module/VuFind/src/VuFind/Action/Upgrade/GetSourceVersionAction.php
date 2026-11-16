@@ -86,7 +86,6 @@ class GetSourceVersionAction extends AbstractUpgradeAction
         array $config,
         CookieManager $cookieManager,
         SessionManager $sessionManager,
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         protected EntityManager $entityManager,
         protected MigrationManager $migrationManager,
     ) {

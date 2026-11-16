@@ -32,13 +32,13 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Marc\MarcReader;
+use VuFind\Validator\EmailAddressValidator;
 use Yajra\Pdo\Oci8;
 
 use function chr;
@@ -88,13 +88,6 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     protected $statusRankings = false;
 
     /**
-     * Date formatting object.
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateFormat;
-
-    /**
      * Whether to use holdings sort groups to sort holdings records.
      *
      * @var bool
@@ -111,11 +104,13 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     * @param \VuFind\Date\Converter $dateFormat     Date converter
+     * @param EmailAddressValidator  $emailValidator Email address validator
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter)
-    {
-        $this->dateFormat = $dateConverter;
+    public function __construct(
+        protected \VuFind\Date\Converter $dateFormat,
+        protected EmailAddressValidator $emailValidator,
+    ) {
     }
 
     /**
@@ -2051,9 +2046,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
                 if (!empty($row['PATRON_GROUP_NAME'])) {
                     $profile['group'] = $this->utf8Encode($row['PATRON_GROUP_NAME']);
                 }
-                $validator = new EmailAddressValidator();
                 $addr1 = $this->utf8Encode($row['ADDRESS_LINE1']);
-                if ($validator->isValid($addr1)) {
+                if ($this->emailValidator->isValid($addr1)) {
                     $profile['email'] = $addr1;
                 } elseif (!isset($profile['address1'])) {
                     if (!empty($addr1)) {

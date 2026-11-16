@@ -30,9 +30,9 @@
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Initializer\InitializerInterface;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Service\AuthorizationServiceAwareInterface;
+use VuFind\Service\AuthorizationServiceInterface;
 
 /**
  * VuFind Service Initializer.
@@ -106,7 +106,7 @@ class ServiceInitializer implements InitializerInterface
             $instance->setGuzzleService($sm->get(\VuFind\Http\GuzzleService::class));
         }
         if ($instance instanceof AuthorizationServiceAwareInterface) {
-            $instance->setAuthorizationService($sm->get(AuthorizationService::class));
+            $instance->setAuthorizationService($sm->get(AuthorizationServiceInterface::class));
         }
         if ($instance instanceof \VuFind\Http\CachingDownloaderAwareInterface) {
             $instance->setCachingDownloader($sm->get(\VuFind\Http\CachingDownloader::class));

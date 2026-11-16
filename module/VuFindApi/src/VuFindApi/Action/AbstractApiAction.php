@@ -30,13 +30,13 @@
 namespace VuFindApi\Action;
 
 use Exception;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -93,12 +93,12 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
     /**
      * Constructor.
      *
-     * @param AuthorizationService     $authorizationService     Authorization service
-     * @param DeveloperSettingsService $developerSettingsService Developer settings service
-     * @param array                    $config                   VuFind configuration
+     * @param AuthorizationServiceInterface $authorizationService     Authorization service
+     * @param DeveloperSettingsService      $developerSettingsService Developer settings service
+     * @param array                         $config                   VuFind configuration
      */
     public function __construct(
-        protected AuthorizationService $authorizationService,
+        protected AuthorizationServiceInterface $authorizationService,
         protected DeveloperSettingsService $developerSettingsService,
         #[Autowire(config: 'config')]
         protected array $config,

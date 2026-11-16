@@ -982,7 +982,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Remove comments, tags and ratings from user account menu
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/UserContent');
+        $session->visit($this->getVuFindUrl() . '/Account/UserContent');
         $page = $session->getPage();
         $this->findCss($page, '.usercontent-table');
         $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));

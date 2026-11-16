@@ -94,7 +94,6 @@ abstract class AbstractUpgradeAction extends AbstractInstallOrUpgradeAction
         array $config,
         CookieManager $cookieManager,
         SessionManager $sessionManager,
-        #[Autowire(service: 'doctrine.entitymanager.orm_vufind')]
         protected EntityManager $entityManager,
     ) {
         parent::__construct(

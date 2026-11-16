@@ -35,6 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Http\GuzzleService;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
@@ -153,7 +154,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      */
     protected function isAuthed(): bool
     {
-        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
+        return $this->getService(AuthorizationServiceInterface::class)
             ->isGranted('access.SummonExtendedResults');
     }
 

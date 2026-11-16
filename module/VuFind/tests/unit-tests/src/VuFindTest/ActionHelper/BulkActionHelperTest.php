@@ -261,24 +261,24 @@ class BulkActionHelperTest extends TestCase
     }
 
     /**
-     * Test that redirectToSource() falls back to the MyResearch home route when no session URL is present.
+     * Test that redirectToSource() falls back to the Account home route when no session URL is present.
      *
      * @return void
      */
-    public function testRedirectToSourceFallsBackToMyResearch(): void
+    public function testRedirectToSourceFallsBackToAccount(): void
     {
         $contextHelper = $this->createMock(ContextHelper::class);
         $contextHelper->method('inLightbox')->willReturn(false);
 
         $routeHelper = $this->createMock(RouteHelper::class);
         $routeHelper->expects($this->once())->method('getUrlFromRoute')
-            ->with('myresearch-home')
-            ->willReturn('http://localhost/myresearch');
+            ->with('account-home')
+            ->willReturn('http://localhost/account');
 
         $expectedResponse = new Response();
         $redirectHelper = $this->createMock(RedirectHelper::class);
         $redirectHelper->expects($this->once())->method('redirectToUrl')
-            ->with($this->isInstanceOf(ResponseInterface::class), 'http://localhost/myresearch')
+            ->with($this->isInstanceOf(ResponseInterface::class), 'http://localhost/account')
             ->willReturn($expectedResponse);
 
         $helper = $this->getHelper(compact('contextHelper', 'routeHelper', 'redirectHelper'));

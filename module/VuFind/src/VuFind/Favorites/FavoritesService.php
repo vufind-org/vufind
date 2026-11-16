@@ -31,7 +31,6 @@ namespace VuFind\Favorites;
 
 use DateTime;
 use Laminas\Session\Container;
-use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -49,11 +48,12 @@ use VuFind\Record\Cache as RecordCache;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 use VuFind\Tags\TagsService;
 
 use function count;
 use function func_get_args;
-use function intval;
 
 /**
  * Favorites service.
@@ -84,15 +84,21 @@ class FavoritesService implements TranslatorAwareInterface
      *                                                          state (optional)
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceServiceInterface $resourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserListServiceInterface $userListService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserResourceServiceInterface $userResourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserServiceInterface $userService,
         protected ResourcePopulator $resourcePopulator,
         protected TagsService $tagsService,
         protected RecordLoader $recordLoader,
         protected ?RecordCache $recordCache = null,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'List')]
         protected ?Container $session = null
     ) {
     }
@@ -203,7 +209,8 @@ class FavoritesService implements TranslatorAwareInterface
      */
     public function getListIdFromParams(array $params): ?int
     {
-        return intval($params['list'] ?? 'NEW') ?: null;
+        $list = $params['list'] ?? null;
+        return ($list === 'NEW' || !$list) ? null : (int)$list;
     }
 
     /**
@@ -454,7 +461,7 @@ class FavoritesService implements TranslatorAwareInterface
      *
      * @param UserListEntityInterface $list    List to update
      * @param ?UserEntityInterface    $user    Logged-in user (false if none)
-     * @param Parameters              $request Request to process
+     * @param array                   $request Request to process
      *
      * @return int ID of newly created row
      * @throws ListPermissionException
@@ -463,14 +470,14 @@ class FavoritesService implements TranslatorAwareInterface
     public function updateListFromRequest(
         UserListEntityInterface $list,
         ?UserEntityInterface $user,
-        Parameters $request
+        array $request
     ): int {
-        $list->setTitle($request->get('title'))
-            ->setDescription($request->get('desc'))
-            ->setPublic((bool)$request->get('public'));
+        $list->setTitle($request['title'] ?? '')
+            ->setDescription($request['desc'] ?? '')
+            ->setPublic((bool)($request['public'] ?? false));
         $this->saveListForUser($list, $user);
 
-        if (null !== ($tags = $request->get('tags'))) {
+        if (null !== ($tags = $request['tags'] ?? null)) {
             $this->resourceTagsService->destroyUserListLinks($list, $user);
             foreach ($this->tagsService->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);
