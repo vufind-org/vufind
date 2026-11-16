@@ -126,7 +126,6 @@ class ILS extends AbstractBase
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
         $loginMethod = $this->getILSLoginMethod();
-        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         return $this->handleLogin($username, $password, $loginMethod);
     }

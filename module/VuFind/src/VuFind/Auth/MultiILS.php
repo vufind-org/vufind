@@ -72,7 +72,6 @@ class MultiILS extends ILS
         $username = trim($request->getPost()->get('username', ''));
         $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
-        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         // We should have target either separately or already embedded into username
         if (!$target) {
@@ -106,7 +105,6 @@ class MultiILS extends ILS
         $password = trim($request->getPost()->get('password', ''));
         $target = trim($request->getPost()->get('target', ''));
         $loginMethod = $this->getILSLoginMethod($target);
-        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
         // We should have target either separately or already embedded into username
         if ($target) {
