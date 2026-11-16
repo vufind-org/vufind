@@ -67,7 +67,8 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 if (is_array($message)) {
                     $details = $message;
                     $expectedMessage = 'Exception/Detailed log. See context for levels.';
-                    $contextCheck = isset($context['vufind_log_details']) && $context['vufind_log_details'] === $details;
+                    $contextCheck = isset($context['vufind_log_details']) 
+                                        && $context['vufind_log_details'] === $details;
                 } else {
                     $contextCheck = isset($context['vufind_log_details']) && is_array($context['vufind_log_details']);
                     $details = $contextCheck ? $context['vufind_log_details'] : [];
