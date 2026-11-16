@@ -134,6 +134,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return User
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function userDetails($data, TokenCredentials $tokenCredentials)
     {
         return new User();
@@ -150,6 +151,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string|int
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function userUid($data, TokenCredentials $tokenCredentials)
     {
         return '';
@@ -166,6 +168,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string|null
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function userEmail($data, TokenCredentials $tokenCredentials)
     {
         return null;
@@ -182,6 +185,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string|null
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function userScreenName($data, TokenCredentials $tokenCredentials)
     {
         return null;

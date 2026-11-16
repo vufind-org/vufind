@@ -478,7 +478,7 @@ class Form extends \Laminas\Form\Form implements
                     $fieldValidators[] = [
                         'name' => Callback::class,
                         'options' => [
-                            'callback' => function ($value, $context) use ($el) {
+                            'callback' => function ($value) use ($el) {
                                 return
                                     !empty(
                                         array_intersect(

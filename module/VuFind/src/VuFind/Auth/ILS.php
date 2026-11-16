@@ -353,6 +353,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function handleLogin($username, $password, $loginMethod, $rememberMe)
     {
         if ($password == '') {
