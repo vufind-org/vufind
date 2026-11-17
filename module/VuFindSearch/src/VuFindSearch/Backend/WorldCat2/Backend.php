@@ -112,7 +112,6 @@ class Backend extends AbstractBackend
      * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
-
      */
     public function retrieve($id, ?ParamBag $params = null)
     {
