@@ -312,10 +312,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         );
         $holdings = current($recordsStatuses)['record'];
 
-        $ids = [];
-        foreach ($holdings as $holding) {
-            $ids[] = $holding['id'];
-        }
+        $ids = array_column($holdings, 'id');
 
         $this->assertEquals($expected, $ids);
     }
