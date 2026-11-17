@@ -310,7 +310,7 @@ class AssetManager
         $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
         if (!empty($details)) {
             $url = ($this->url)('home') . "themes/{$details['theme']}/" . $relPath;
-            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= str_contains($url, '?') ? '&_=' : '?_=';
             $url .= filemtime($details['path']);
             return $url;
         }
