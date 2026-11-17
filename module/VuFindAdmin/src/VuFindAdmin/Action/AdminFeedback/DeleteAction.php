@@ -31,7 +31,6 @@
 
 namespace VuFindAdmin\Action\AdminFeedback;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
