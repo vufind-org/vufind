@@ -154,7 +154,7 @@ class AdminMenu extends AbstractMenu
     public function getCurrentTabs(): array
     {
         if (!isset($this->currentTabs)) {
-            $this->currentTabs = ('admin/tags' === $this->routeMatch->getMatchedRouteName())
+            $this->currentTabs = ('admin/tags' === $this->routeMatch?->getMatchedRouteName())
                 ? [
                     'submenuItems' => [
                         [
@@ -187,7 +187,7 @@ class AdminMenu extends AbstractMenu
     {
         if (
             !isset($this->activeItemParentPath)
-            && 'admin/tags' === $this->routeMatch->getMatchedRouteName()
+            && 'admin/tags' === $this->routeMatch?->getMatchedRouteName()
             && in_array($this->routeMatch->getParam('action'), ['List', 'Manage'])
         ) {
             $this->activeItemParentPath = [$this->routeHelper->getUrlFromRoute('admin/tags')];

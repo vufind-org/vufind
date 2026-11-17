@@ -197,7 +197,7 @@ class AccountMenu extends AbstractMenu
             $tabForCurrentRouteFound = false;
             $tabs = $this->accountCapabilities->getUserContentTabs();
             foreach ($tabs as $tab => $title) {
-                if ("$tab-userlist" === $this->routeMatch->getMatchedRouteName()) {
+                if ("$tab-userlist" === $this->routeMatch?->getMatchedRouteName()) {
                     $tabForCurrentRouteFound = true;
                     break;
                 }
