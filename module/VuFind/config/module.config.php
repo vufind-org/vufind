@@ -287,6 +287,7 @@ $config = [
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
 
             // Override Laminas-i18n alias pointing to a deprecated interface:
+            // TODO: Remove after updating to laminas-servicemanager 4.5 or later.
             \Laminas\Translator\TranslatorInterface::class => null,
         ],
         'shared' => [
