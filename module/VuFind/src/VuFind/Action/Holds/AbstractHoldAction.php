@@ -137,7 +137,7 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
     protected function getPageOptions(array $patron): array
     {
         // Get paging setup:
-        $pageSize = $this->config['Catalog']['holds_page_size'] ?? 50;
+        $pageSize = (int)($this->config['Catalog']['holds_page_size'] ?? 50);
         return $this->getPaginationHelper()->getOptions(
             (int)$this->getQueryParam('page', 1),
             null,

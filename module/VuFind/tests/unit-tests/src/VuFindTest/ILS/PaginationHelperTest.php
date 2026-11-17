@@ -158,10 +158,8 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new PaginationHelper();
 
-        $functionConfig = false;
-
         // Typical first page
-        $result = $helper->getOptions(1, null, 50, $functionConfig);
+        $result = $helper->getOptions(1, null, 50, []);
         $this->assertFalse($result['ilsPaging']);
         $this->assertIsArray($result['ilsParams']);
         $this->assertEmpty($result['ilsParams']);
@@ -169,7 +167,7 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEmpty($result['sortList']);
 
         // Second page and sort
-        $result = $helper->getOptions(2, '+title', 50, $functionConfig);
+        $result = $helper->getOptions(2, '+title', 50, []);
         $this->assertFalse($result['ilsPaging']);
         $this->assertIsArray($result['ilsParams']);
         $this->assertEmpty($result['ilsParams']);
