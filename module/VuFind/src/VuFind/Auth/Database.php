@@ -377,7 +377,6 @@ class Database extends AbstractBase
      *
      * @return bool
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsPasswordRecovery(?string $target = null): bool
     {
@@ -456,7 +455,6 @@ class Database extends AbstractBase
      *
      * @return array
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPasswordPolicy(?string $target = null): array
     {
