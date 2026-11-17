@@ -157,7 +157,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
         $connector = new Connector(
             $this->createHttpClient(),
             $this->createAuthProvider($connectorOptions),
-            new Container('WorldCat2', $this->getService(\Laminas\Session\SessionManager::class)),
+            new Container('WorldCat2', $this->getService(\Laminas\Session\ManagerInterface::class)),
             $connectorOptions
         );
         $connector->setLogger($this->logger);

@@ -280,6 +280,8 @@ $config = [
             'VuFind\View\FlashMessenger\FlashMessengerInterface' => 'VuFind\View\FlashMessenger\FlashMessenger',
             'VuFind\View\Renderer\TemplateRendererInterface' => 'VuFind\View\Renderer\LaminasTemplateRenderer',
 
+            'Laminas\Session\ManagerInterface' => 'Laminas\Session\SessionManager',
+
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',

@@ -32,7 +32,7 @@
 namespace VuFind\Action\Upgrade;
 
 use Doctrine\ORM\EntityManager;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -68,7 +68,7 @@ class FixAnonymousTagsAction extends AbstractUpgradeAction
      * @param UserCardServiceInterface     $userCardService     User card database service
      * @param array                        $config              VuFind configuration
      * @param CookieManager                $cookieManager       Cookie manager
-     * @param SessionManager               $sessionManager      Session manager
+     * @param ManagerInterface             $sessionManager      Session manager
      * @param EntityManager                $entityManager       Entity manager
      * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
      */
@@ -82,7 +82,7 @@ class FixAnonymousTagsAction extends AbstractUpgradeAction
         #[Autowire(config: 'config')]
         array $config,
         CookieManager $cookieManager,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         EntityManager $entityManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService,

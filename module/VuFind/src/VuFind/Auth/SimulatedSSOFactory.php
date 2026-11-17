@@ -83,7 +83,7 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             $getUrl,
             $config,
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
-            $container->get(\Laminas\Session\SessionManager::class)
+            $container->get(\Laminas\Session\ManagerInterface::class)
         );
     }
 }

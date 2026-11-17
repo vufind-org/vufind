@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Feature;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Db\PersistenceManager;
@@ -123,7 +123,7 @@ trait LiveDatabaseTrait
         );
         $container->set(
             SessionContainerRegistry::class,
-            new SessionContainerRegistry($container->get(SessionManager::class))
+            new SessionContainerRegistry($container->get(ManagerInterface::class))
         );
     }
 

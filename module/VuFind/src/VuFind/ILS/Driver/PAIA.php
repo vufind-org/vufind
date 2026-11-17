@@ -97,7 +97,7 @@ class PAIA extends DAIA
     /**
      * SessionManager.
      *
-     * @var \Laminas\Session\SessionManager
+     * @var \Laminas\Session\ManagerInterface
      */
     protected $sessionManager;
 
@@ -149,12 +149,12 @@ class PAIA extends DAIA
     /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter          $converter      Date converter
-     * @param \Laminas\Session\SessionManager $sessionManager Session Manager
+     * @param \VuFind\Date\Converter            $converter      Date converter
+     * @param \Laminas\Session\ManagerInterface $sessionManager Session Manager
      */
     public function __construct(
         \VuFind\Date\Converter $converter,
-        \Laminas\Session\SessionManager $sessionManager
+        \Laminas\Session\ManagerInterface $sessionManager
     ) {
         parent::__construct($converter);
         $this->sessionManager = $sessionManager;

@@ -33,7 +33,7 @@ namespace VuFind\Action\Holds;
 
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\HandleIlsExceptionsTrait;
 use VuFind\Auth\Manager as AuthManager;
@@ -71,7 +71,7 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
      * Constructor.
      *
      * @param Connection        $ilsConnection     ILS connection
-     * @param SessionManager    $sessionManager    Session manager
+     * @param ManagerInterface  $sessionManager    Session manager
      * @param AuthManager       $authManager       Authentication manager
      * @param CsrfInterface     $csrf              CSRF validator
      * @param AuditEventService $auditEventService Audit event service
@@ -79,7 +79,7 @@ abstract class AbstractHoldAction extends AbstractTemplateRenderingAction
      */
     public function __construct(
         protected Connection $ilsConnection,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected AuthManager $authManager,
         protected CsrfInterface $csrf,
         protected AuditEventService $auditEventService,

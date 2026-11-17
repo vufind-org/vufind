@@ -30,11 +30,13 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\Request;
+use Laminas\Session\ManagerInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use OTPHP\HOTP;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
 
@@ -65,18 +67,18 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Constructor.
      *
-     * @param \Laminas\Session\SessionManager $sessionManager  Session Manager
-     * @param CsrfInterface                   $csrf            CSRF Validator
-     * @param \VuFind\Mailer\Mailer           $mailer          Mailer
-     * @param PhpRenderer                     $viewRenderer    View Renderer
-     * @param UserIpReader                    $userIpReader    User IP address reader
-     * @param array                           $config          Configuration
-     * @param AuthHashServiceInterface        $authHashService AuthHash database service
+     * @param ManagerInterface         $sessionManager  Session Manager
+     * @param CsrfInterface            $csrf            CSRF Validator
+     * @param Mailer                   $mailer          Mailer
+     * @param PhpRenderer              $viewRenderer    View Renderer
+     * @param UserIpReader             $userIpReader    User IP address reader
+     * @param array                    $config          Configuration
+     * @param AuthHashServiceInterface $authHashService AuthHash database service
      */
     public function __construct(
-        protected \Laminas\Session\SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected CsrfInterface $csrf,
-        protected \VuFind\Mailer\Mailer $mailer,
+        protected Mailer $mailer,
         protected PhpRenderer $viewRenderer,
         protected UserIpReader $userIpReader,
         protected array $config,
