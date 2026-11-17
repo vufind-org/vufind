@@ -32,6 +32,7 @@ namespace VuFindTest\ActionHelper;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use Laminas\Session\Container;
+use Laminas\Session\ManagerInterface;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -80,9 +81,9 @@ class BulkActionHelperTest extends TestCase
     /**
      * Get a real session manager for use in tests.
      *
-     * @return SessionManager
+     * @return ManagerInterface
      */
-    protected function getSessionManager(): SessionManager
+    protected function getSessionManager(): ManagerInterface
     {
         return new SessionManager();
     }

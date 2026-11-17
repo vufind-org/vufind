@@ -30,7 +30,7 @@
 namespace VuFind\Action\Zotero;
 
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\ContextHelper;
@@ -57,14 +57,14 @@ abstract class AbstractZoteroAction extends AbstractTemplateRenderingAction impl
     /**
      * Constructor.
      *
-     * @param SessionManager $sessionManager   Session manager
-     * @param AuthManager    $authManager      Authentication manager
-     * @param ZoteroService  $zoteroService    Zotero service
-     * @param Container      $sessionContainer Session container
+     * @param ManagerInterface $sessionManager   Session manager
+     * @param AuthManager      $authManager      Authentication manager
+     * @param ZoteroService    $zoteroService    Zotero service
+     * @param Container        $sessionContainer Session container
      */
     #[Autowire]
     public function __construct(
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected AuthManager $authManager,
         protected ZoteroService $zoteroService,
         #[Autowire(container: SessionContainerRegistry::class, service: 'zotero')]

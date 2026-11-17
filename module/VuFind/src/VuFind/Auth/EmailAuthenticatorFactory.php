@@ -68,7 +68,7 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\Laminas\Session\ManagerInterface::class),
             $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),

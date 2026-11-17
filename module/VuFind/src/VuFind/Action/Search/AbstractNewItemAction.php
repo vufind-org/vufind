@@ -31,7 +31,7 @@
 
 namespace VuFind\Action\Search;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
@@ -40,9 +40,7 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Record\Router as RecordRouter;
-use VuFind\Search\Base\Results;
 use VuFind\Search\FacetCache\PluginManager as FacetCachePluginManager;
-use VuFind\Search\History;
 use VuFind\Search\History as SearchHistory;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\NewItemsHelper;
@@ -80,7 +78,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param SessionManager             $sessionManager             Session manager
+     * @param ManagerInterface           $sessionManager             Session manager
      * @param SearchServiceInterface     $searchService              Search service
      * @param AuthManager                $authManager                Authentication manager
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -102,7 +100,7 @@ abstract class AbstractNewItemAction extends AbstractSearchAndResultsFacetingAct
         BlockLoader $blockLoader,
         ConfigManager $configManager,
         RecordRouter $recordRouter,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         SearchServiceInterface $searchService,
         AuthManager $authManager,

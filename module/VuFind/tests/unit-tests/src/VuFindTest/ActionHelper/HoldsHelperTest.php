@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFindTest\ActionHelper;
 
+use Laminas\Session\ManagerInterface;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
 use VuFind\ActionHelper\HoldsHelper;
@@ -56,7 +57,7 @@ class HoldsHelperTest extends TestCase
      */
     public function testValidateIds(): void
     {
-        $plugin = $this->getAutowiredObject(HoldsHelper::class, [SessionManager::class => new SessionManager()]);
+        $plugin = $this->getAutowiredObject(HoldsHelper::class, [ManagerInterface::class => new SessionManager()]);
         $plugin->rememberValidId('1');
         $plugin->rememberValidId('2');
         $this->assertTrue($plugin->validateIds(['1', '2']));
