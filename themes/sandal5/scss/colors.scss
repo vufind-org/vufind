@@ -55,5 +55,9 @@ $pagination-hover-bg:       #eee;
 $nav-link-hover-bg:         $header-light;
 
 $focus-ring-color:          $gold;
+// Gold stands out on the header, but only has a contrast of 1.7:1 on the white
+// page, so add a dark outer ring which is visible there.
+$focus-ring-box-shadow:     0 0 0 .25rem $focus-ring-color, 0 0 0 calc(.25rem + 2px) $dark-gray;
+$form-select-focus-box-shadow: $focus-ring-box-shadow;
 
 $code-color:                $dark-pink;

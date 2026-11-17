@@ -21,6 +21,11 @@ $warning-border-subtle:     color.adjust($warning-bg-subtle, $hue: -10deg, $ligh
 $danger-bg-subtle:          #f2dede !default;
 $danger-border-subtle:      color.adjust($danger-bg-subtle, $hue: -10deg, $lightness: -5%) !default;
 
+// Bootstrap's focus ring uses the primary color with an opacity of 25%, which only
+// has a contrast of 1.5:1 on a white page; WCAG 2.2 (1.4.11) asks for 3:1. This
+// also applies to form controls, which take their focus colors from the ring.
+$focus-ring-opacity:        .75 !default;
+
 $input-border-color:        #888 !default;
 $form-select-border-color:  #888 !default;
 

@@ -153,11 +153,13 @@ a:hover .login-dropdown-caret {
   padding-left: 0;
   padding-right: 0;
   font-size: $reduced-font-size;
-  color: $gray;
+  // $gray only has a contrast of 3.1:1 on the breadcrumb bar.
+  color: $mid-gray;
   background-color: transparent;
   border-radius: 0;
 }
-.breadcrumb a { color: $link-color; }
+// $link-color only has a contrast of 4:1 on the breadcrumb bar.
+.breadcrumb a { color: $link-color-hover; }
 .breadcrumb .active { color: $black; }
 .breadcrumb .active a { color: #37474F; } /* Material Blue Grey 800 */
 .breadcrumb .active a:hover { color: $link-color-hover; } /* Material Blue Grey 900 */

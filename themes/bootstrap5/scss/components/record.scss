@@ -323,6 +323,8 @@ $tag-remove-badge-color:          #a94442 !default;
   }
 }
 
+$rating-unselected-color: #949494 !default;
+
 .star-rating {
   /* Use display:inline-flex to prevent whitespace issues. Alternatively, you can put all the children of .rating-group on a single line. */
   display: inline-flex;
@@ -369,9 +371,10 @@ $tag-remove-badge-color:          #a94442 !default;
     color: $warning;
   }
 
-  /* If any input is checked, make its following siblings grey */
+  /* If any input is checked, make its following siblings grey (the stars are
+     clickable, so the grey needs a contrast of 3:1 on white) */
   .rating__input:checked ~ .rating__label .rating__icon--star {
-    color: #ddd;
+    color: $rating-unselected-color;
   }
 
   /* Make all stars highlight on rating group hover */
@@ -384,7 +387,7 @@ $tag-remove-badge-color:          #a94442 !default;
     /* Make hovered input's following siblings grey on hover */
     .rating__input:hover ~ .rating__label .rating__icon--star,
     .rating__input:hover ~ .rating__label--half .rating__icon--star {
-      color: #ddd;
+      color: $rating-unselected-color;
     }
   }
 }

@@ -362,7 +362,9 @@ body.rtl .dropdown-menu {
     color: $gray-darker;
   }
 }
-.browse-item:hover { background-color: $nav-link-hover-bg; }
+// Not for the active item: its light text would be unreadable on the light hover
+// background. :where() keeps the specificity of the selector unchanged.
+.browse-item:where(:not(.active)):hover { background-color: $nav-link-hover-bg; }
 .browse-item:last-child { border-bottom: 1px solid $list-group-border-color; }
 
 .browse-item.with-badge {
@@ -507,7 +509,8 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
         background-color: $gray-lighter;
       }
       &.account-info {
-        color: var(--#{$prefix}success);
+        // $success itself only has a contrast of 4.1:1 on its subtle background.
+        color: shade-color($success, 15%);
         background-color: var(--#{$prefix}success-bg-subtle);
       }
       &.account-warning {
