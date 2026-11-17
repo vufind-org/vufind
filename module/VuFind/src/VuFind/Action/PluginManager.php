@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
 
@@ -565,8 +564,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             $className = $ns . '\\' . $actionClass;
             if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
-                // Explicitly set the factory so that discovered classes don't need the Autowire attribute:
-                $this->factories[$className] ??= AutowiringFactory::class;
                 return $className;
             }
         }
