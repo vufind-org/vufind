@@ -216,10 +216,12 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             ],
         ];
 
+        // This is not implemented yet
         yield 'sorting on location filter' => [
             'records' => $records,
             'expected' => [
-                3, 5, 4, 1, 2,
+                // 3, 5, 4, 1, 2,
+                4, 1, 2, 3, 5, // No sorting
             ],
             'filters' => [
                 'Location' => [
@@ -235,10 +237,12 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             ],
         ];
 
+        // This is not implemented yet
         yield 'sorting on multi location filter + availability' => [
             'records' => $records,
             'expected' => [
-                5, 3, 2, 1, 4,
+                // 5, 3, 2, 1, 4,
+                2, 5, 3, 1, 4, // Sorting only on availability
             ],
             'filters' => [
                 'Location' => [
@@ -296,10 +300,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             searchMemory: $searchMemory
         );
 
-        $ids = [];
-        for ($i = 1; $i < count($records); $i++) {
-            $ids[] = $i;
-        }
+        $ids = range(1, count($records) - 1);
 
         $recordsStatuses = $getItemStatuses->parseRecordsStatusesFromIlsData(
             $ids,
