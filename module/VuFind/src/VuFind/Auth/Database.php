@@ -376,7 +376,6 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
-     *
      */
     public function supportsPasswordRecovery(?string $target = null): bool
     {

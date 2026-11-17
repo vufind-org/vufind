@@ -64,7 +64,6 @@ class KeepAlive extends AbstractBase
      * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
-     *
      */
     public function handleRequest(ServerRequestInterface $request): array
     {
