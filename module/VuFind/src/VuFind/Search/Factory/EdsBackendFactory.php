@@ -130,7 +130,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
-            $this->getService(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\ManagerInterface::class)
         );
         $backend = new Backend(
             $connector,

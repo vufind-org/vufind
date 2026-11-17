@@ -30,7 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Laminas\View\Renderer\RendererInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -122,7 +122,7 @@ class Manager implements LoggerAwareInterface
      * @param array                           $config            VuFind configuration
      * @param UserServiceInterface            $userService       User database service
      * @param UserSessionPersistenceInterface $userSession       User session persistence service
-     * @param SessionManager                  $sessionManager    Session manager
+     * @param ManagerInterface                $sessionManager    Session manager
      * @param PluginManager                   $pluginManager     Authentication plugin manager
      * @param CookieManager                   $cookieManager     Cookie manager
      * @param CsrfInterface                   $csrf              CSRF validator
@@ -135,7 +135,7 @@ class Manager implements LoggerAwareInterface
         protected array $config,
         protected UserServiceInterface $userService,
         protected UserSessionPersistenceInterface $userSession,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected PluginManager $pluginManager,
         protected CookieManager $cookieManager,
         protected CsrfInterface $csrf,

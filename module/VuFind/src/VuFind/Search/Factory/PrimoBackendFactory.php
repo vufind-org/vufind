@@ -215,7 +215,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
 
         $session = new \Laminas\Session\Container(
             'Primo',
-            $this->getService(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\ManagerInterface::class)
         );
 
         // Create connector:

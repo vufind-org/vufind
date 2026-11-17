@@ -43,18 +43,18 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module.
      *
-     * @param string                      $class    class to construct
-     * @param string                      $settings settings
-     * @param array                       $request  request
-     * @param \VuFind\Search\Solr\Results $results  results object
+     * @param string                       $class    class to construct
+     * @param string                       $settings settings
+     * @param ?array                       $request  request
+     * @param ?\VuFind\Search\Solr\Results $results  results object
      *
      * @return \VuFind\Recommend\RecommendInterface
      */
     protected function getRecommend(
         string $class,
         string $settings = '',
-        array $request = null,
-        \VuFind\Search\Solr\Results $results = null
+        ?array $request = null,
+        ?\VuFind\Search\Solr\Results $results = null
     ) {
         if (null === $results) {
             $results = $this->getMockResults();

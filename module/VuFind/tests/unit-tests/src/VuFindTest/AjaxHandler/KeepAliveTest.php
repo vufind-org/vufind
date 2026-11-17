@@ -29,7 +29,7 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\AjaxHandler\KeepAlive;
 
 /**
@@ -50,7 +50,7 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      */
     public function testResponse()
     {
-        $sm = $this->container->createMock(SessionManager::class, ['getId']);
+        $sm = $this->container->createMock(ManagerInterface::class);
         $sm->expects($this->once())->method('getId');
         $handler = new KeepAlive($sm);
         $this->assertEquals([true], $handler->handleRequest($this->getRequest()));

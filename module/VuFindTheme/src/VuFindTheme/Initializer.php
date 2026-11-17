@@ -36,6 +36,8 @@ use Psr\Container\ContainerInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\View\GlobalsContainer;
 
+use function is_callable;
+
 /**
  * VuFind Theme Initializer.
  *
@@ -434,16 +436,13 @@ class Initializer
         }
 
         if (!empty($pathStack)) {
-            try {
-                $translator = $this->serviceManager
-                    ->get(\Laminas\Mvc\I18n\Translator::class);
-                $pm = $translator->getPluginManager();
-                $pm->get('ExtendedIni')->addToPathStack($pathStack);
-            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
-                // This exception likely indicates that translation is disabled,
-                // so we can't proceed.
+            $translator = $this->serviceManager->get(\Laminas\Translator\TranslatorInterface::class);
+            if (!is_callable([$translator, 'getPluginManager'])) {
+                // Translation is disabled, or translator is not compatible with Laminas\I18n\Translator\Translator.
                 return;
             }
+            $pm = $translator->getPluginManager();
+            $pm->get('ExtendedIni')->addToPathStack($pathStack);
 
             // Override the default cache with a theme-specific cache to avoid
             // key collisions in a multi-theme environment.

@@ -32,7 +32,7 @@
 namespace VuFind\Action\SearchHistory;
 
 use Exception;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\AccountCapabilities;
@@ -68,7 +68,7 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
      * @param array                      $config                     VuFind configuration
      * @param AuthManager                $authManager                Authentication manager
      * @param AuditEventServiceInterface $auditEventService          Audit event service
-     * @param SessionManager             $sessionManager             Session manager
+     * @param ManagerInterface           $sessionManager             Session manager
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
      * @param Memory                     $searchMemory               Search memory
      * @param History                    $searchHistory              Search history
@@ -84,7 +84,7 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
         protected AuthManager $authManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected AccountCapabilities $accountCapabilities,
         protected Memory $searchMemory,
         protected History $searchHistory,
