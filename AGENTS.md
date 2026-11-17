@@ -2,8 +2,9 @@
 
 This file provides guidance to AI coding agents when working with code in this repository.
 
-VuFind® is a PHP (>= 8.2) library discovery layer built on Laminas MVC, Doctrine ORM and Apache Solr, with a
-Bootstrap 5 / SCSS / plain JavaScript front end. The default branch is `dev`. The project has an
+VuFind® is a PHP library discovery layer built on Laminas components, Doctrine ORM and Apache Solr, with a
+Bootstrap 5 / SCSS / plain JavaScript front end. `composer.json` is the authoritative source for the
+supported PHP version and the dependencies. The default branch is `dev`. The project has an
 [AI policy](https://vufind.org/wiki/ai_policy) and
 [coding standards](https://vufind.org/wiki/development:coding_standards) that contributions must follow.
 A substantial AI contribution must be declared in the commit message, using a trailer of the form
@@ -88,7 +89,8 @@ and `tests/`:
 - `VuFindTheme` – theme inheritance, template resolution, asset pipeline.
 - `VuFindSearch` – backend-agnostic search abstraction (no dependency on the `VuFind` module).
 - `VuFind` – the application itself; almost all code lives here.
-- `VuFindAdmin`, `VuFindApi` – admin UI and REST API (Swagger).
+- `VuFindAdmin` – admin UI.
+- `VuFindApi` – REST API (Swagger).
 - `VuFindConsole` – CLI commands; only loaded under CLI outside the `testing` environment.
 - `VuFindDevTools` – only loaded when `VUFIND_ENV` is `development` or `testing`.
 - `VuFindLocalTemplate` – skeleton copied by the installer to create a site-specific local module.
@@ -135,11 +137,12 @@ factories are the older style. `ServiceInitializer` injects dependencies for `*A
 
 ### Request handling: Actions, not controllers
 
-`dev` has replaced Laminas controllers with PSR-7 **action classes**. `VuFind\Action\ActionDispatchListener`
-intercepts the MVC dispatch event, maps the matched route's `controller`/`action` parameters to a
-lowercase id `category/action`, and fetches the handler from `VuFind\Action\PluginManager`:
+Requests are handled by PSR-7 **action classes**, not by controllers. The matched route's
+`controller`/`action` parameters are mapped to a lowercase id `category/action`, and the handler is
+fetched from `VuFind\Action\PluginManager`:
 
-- `module/VuFind/src/VuFind/Action/<Category>/<Name>Action.php` is auto-discovered and autowired.
+- `module/VuFind/src/VuFind/Action/<Category>/<Name>Action.php` is auto-discovered. A constructor
+  with parameters needs the `#[Autowire]` attribute or a factory registered in the plugin manager.
 - Explicit aliases in the plugin manager reuse one class for several ids
   (e.g. `eds/home` → `Search\HomeAction`).
 - Actions implement `action(ServerRequestInterface, ResponseInterface): ResponseInterface`, typically by
@@ -209,7 +212,8 @@ from JavaScript via `VuFind.translate('key')` must be registered on the PHP side
 - Native functions used in namespaced code must be imported (`use function count;`), imports ordered
   class / function / const.
 - PHPStan (level 1) and Rector (dead-code, code-quality and PHPUnit sets, dry-run) must pass.
-- The lowest supported PHP version is 8.2 (`composer.json` `config.platform.php`); CI runs 8.2–8.5.
+- Code must run on the lowest supported PHP version (`config.platform.php` in `composer.json`) and on
+  every version of the CI matrix (`.github/workflows/ci.yaml`).
 - Core code must stay overridable: resolve classes through the service/plugin managers and declare
   members `protected`, never `private` (the code base has no private members), since sites customise
   VuFind by extending classes in local modules.
