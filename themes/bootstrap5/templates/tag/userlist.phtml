@@ -4,8 +4,7 @@
     ->add($this->translate('Tags'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
-
-  $accountMenu = $this->section('AccountMenu');
+  $tabs = $this->accountCapabilities()->getUserContentTabs();
 ?>
 <?=$this->component('show-account-menu-button')?>
 
@@ -18,7 +17,7 @@
         'level' => 1,
     ])
   ?>
-  <?=$accountMenu->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
+  <?=$this->section('AccountMenu')->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
   <h2><?=$this->transEsc('Your Tags')?></h2>
   <?php if (count($this->tags) !== 0): ?>
     <nav class="search-header hidden-print">
@@ -100,4 +99,4 @@
   <?=$this->paginationControl($this->tags, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 
-<?=$accountMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?=$this->section('AccountMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>

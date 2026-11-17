@@ -4,14 +4,13 @@
     ->add($this->translate('Ratings'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
-
-  $accountMenu = $this->section('AccountMenu');
+  $tabs = $this->accountCapabilities()->getUserContentTabs();
 ?>
 
 <?php $this->headTitle($this->translate('Ratings'));?>
 <?=$this->component('show-account-menu-button')?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$accountMenu->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
+  <?=$this->section('AccountMenu')->render(pageRegion: \VuFind\Section\PageRegion::MenuTabs)?>
   <h2><?=$this->transEsc('Your Ratings')?></h2>
   <?php if (count($this->ratings) !== 0): ?>
     <nav class="search-header hidden-print">
@@ -99,4 +98,4 @@
   <?=$this->paginationControl($this->ratings, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
 </div>
 
-<?=$accountMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+<?=$this->section('AccountMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>

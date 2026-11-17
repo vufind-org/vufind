@@ -1,4 +1,4 @@
-<?php $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar(); ?>
+<?php $hasSidebar = $this->section('AdminMenu')->hasSidebar(); ?>
 <div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
   <?=$this->component('page-title', ['title' => $this->translate('Feedback Management'), 'headTitle' => $this->translate('VuFind Administration - Feedback Management')]);?>
 
@@ -119,7 +119,7 @@
 </div>
 
 <?php if ($hasSidebar): ?>
-  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+  <?=$this->section('AdminMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
 <?php endif; ?>
 
 <?php

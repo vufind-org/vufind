@@ -5,7 +5,7 @@
     ->add($this->translate('Notices'), $this->url('admin/notices'))
     ->add($this->translate('Add'), active: true);
 
-  $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar();
+  $hasSidebar = $this->section('AdminMenu')->hasSidebar();
 ?>
 
 <div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
@@ -15,5 +15,5 @@
 </div>
 
 <?php if ($hasSidebar): ?>
-  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+  <?=$this->section('AdminMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
 <?php endif; ?>

@@ -4,7 +4,7 @@
   $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
     ->add($this->translate('Notices'), active: true);
 
-  $hasSidebar = ($adminMenu = $this->section('AdminMenu'))->hasSidebar();
+  $hasSidebar = $this->section('AdminMenu')->hasSidebar();
 ?>
 
 <div class="<?=$this->layoutClass('mainbody', $hasSidebar)?><?= !$hasSidebar ? ' solo' : '' ?>">
@@ -77,5 +77,5 @@
 </div>
 
 <?php if ($hasSidebar): ?>
-  <?=$adminMenu->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
+  <?=$this->section('AdminMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
 <?php endif; ?>

@@ -143,7 +143,7 @@
 
       $this->assetManager()->appendScriptString(implode("\n", $appendScripts));
 
-      if ($hasGlobalSidebar = ($globalSidebar = $this->section('GlobalSidebar'))->hasGlobalSidebar()) {
+      if ($hasGlobalSidebar = $this->section('GlobalSidebar')->hasGlobalSidebar()) {
         $this->assetManager()->appendScriptLink('global_sidebar.js');
       }
     ?>
@@ -157,7 +157,7 @@
     <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
     <?php if ($hasGlobalSidebar): ?>
       <div id="global-sidebar-container">
-      <?=$globalSidebar->render(pageRegion: \VuFind\Section\PageRegion::GlobalSidebar)?>
+      <?=$this->section('GlobalSidebar')->render(pageRegion: \VuFind\Section\PageRegion::GlobalSidebar)?>
       <div id="main-canvas">
     <?php endif; ?>
       <header class="hidden-print">
