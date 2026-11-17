@@ -142,6 +142,7 @@
               'class' => 'channel-load-more-btn btn btn-default',
               'data-href' => $loadMoreRoot .
                 '&channelProvider=' . urlencode($channel['providerId']) .
+                '&context=' . urlencode(implode(':', (array)($this->configSections ?? []))) .
                 '&page=2&limit=' . urlencode($channel['config']['batchSize']),
             ];
             if (isset($channel['token'])) {
