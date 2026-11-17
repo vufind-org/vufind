@@ -49,8 +49,6 @@ class AbstractTopLevelServiceFactory extends AbstractPluginFactory
      * @param string             $requestedName Name of service
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {

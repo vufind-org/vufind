@@ -677,8 +677,6 @@ class SierraRest extends AbstractBase implements
      *
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {

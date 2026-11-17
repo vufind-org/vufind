@@ -1602,8 +1602,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @throws ILSException
      * @return array An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

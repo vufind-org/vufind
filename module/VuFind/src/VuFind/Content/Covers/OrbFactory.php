@@ -59,7 +59,6 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * creating a service.
      * @throws ContainerException if any other error occurs
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,

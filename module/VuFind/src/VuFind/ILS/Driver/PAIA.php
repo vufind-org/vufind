@@ -1944,8 +1944,6 @@ class PAIA extends DAIA
      * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {

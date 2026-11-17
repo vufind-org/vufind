@@ -326,8 +326,6 @@ class Primo extends DefaultRecord
      * @param string $format Export format
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)
     {

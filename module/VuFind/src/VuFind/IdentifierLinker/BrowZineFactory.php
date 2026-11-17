@@ -96,7 +96,6 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
