@@ -39,9 +39,6 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusManager;
 use VuFind\ILS\Logic\Holds;
-use VuFind\Search\Base\Params;
-use VuFind\Search\Base\Results;
-use VuFind\Search\Memory;
 use VuFind\Session\Settings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Unit\AjaxHandlerTestCase;
@@ -70,7 +67,6 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
      * @param ?AvailabilityStatusManager $availabilityStatusManager AvailabilityStatusManager
      * @param ?GetThisLoader             $getThis                   GetThisLoader
      * @param ?RouteHelper               $routeHelper               RouteHelper
-     * @param ?Memory                    $searchMemory              SearchMemory
      *
      * @return GetItemStatuses
      * @throws Exception
