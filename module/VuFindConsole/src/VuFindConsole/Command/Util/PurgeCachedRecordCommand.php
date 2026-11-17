@@ -95,7 +95,6 @@ class PurgeCachedRecordCommand extends Command
      *
      * @return int 0 for success
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

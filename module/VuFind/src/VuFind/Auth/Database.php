@@ -453,7 +453,6 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return array
-     *
      */
     public function getPasswordPolicy(?string $target = null): array
     {
