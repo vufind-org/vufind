@@ -91,7 +91,7 @@ class ActionDispatchListener
     public function attach(EventManagerInterface $eventManager, int $priority = 1): void
     {
         // Attach with higher priority than default to override Laminas' default dispatch handler:
-        $eventManager->attach(MvcEvent::EVENT_DISPATCH, [$this, 'onDispatch'], 2);
+        $eventManager->attach(MvcEvent::EVENT_DISPATCH, [$this, 'onDispatch'], $priority + 1);
     }
 
     /**

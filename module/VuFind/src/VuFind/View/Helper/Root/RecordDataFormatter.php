@@ -345,6 +345,7 @@ class RecordDataFormatter
         // Collect the results:
         $results = [];
         $input = $callback($data, $options, $this->driver) ?? [];
+        $input = $this->addMissingAltDataLines($input, $options);
         $multiPositions = array_filter(array_map(function ($line) {
             return $line['options']['multiPos'] ?? null;
         }, $input));
@@ -377,6 +378,37 @@ class RecordDataFormatter
             }
         }
         return $results;
+    }
+
+    /**
+     * Add a line for any line options that use multiAltDataMethod but do not
+     * match a line returned by the multiFunction callback, so that the alternate
+     * data method can still supply a value.
+     *
+     * @param array $input   Lines returned by the multiFunction callback
+     * @param array $options Rendering options.
+     *
+     * @return array
+     */
+    protected function addMissingAltDataLines(array $input, array $options): array
+    {
+        foreach ($options['lineOptions'] ?? [] as $key => $valueOptions) {
+            foreach ($valueOptions as $value => $lineOptions) {
+                if (!isset($lineOptions['multiAltDataMethod'])) {
+                    continue;
+                }
+                foreach ($input as $line) {
+                    if (($line[$key] ?? null) == $value) {
+                        continue 2;
+                    }
+                }
+                $input[] = [
+                    $key => $value,
+                    'label' => $lineOptions['multiAltLabel'] ?? $value,
+                ];
+            }
+        }
+        return $input;
     }
 
     /**

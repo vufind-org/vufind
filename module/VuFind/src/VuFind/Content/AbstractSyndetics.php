@@ -30,6 +30,7 @@
 namespace VuFind\Content;
 
 use DOMDocument;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base for Syndetics content loader plug-ins.
@@ -47,8 +48,10 @@ abstract class AbstractSyndetics extends AbstractBase
      *
      * @param int $timeout HTTP timeout for API calls (in seconds)
      */
-    public function __construct(protected int $timeout = 10)
-    {
+    public function __construct(
+        #[Autowire(config: 'config', path: 'Syndetics/timeout', default: 10)]
+        protected int $timeout = 10
+    ) {
     }
 
     /**

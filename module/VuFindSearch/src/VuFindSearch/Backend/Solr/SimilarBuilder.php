@@ -67,6 +67,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     protected $useHandler = false;
 
     /**
+     * Whether to use qt=morelikethis instead of direct handler path (for
+     * legacy Solr instances that don't support /morelikethis directly).
+     *
+     * @var bool
+     */
+    protected $useQtParam = false;
+
+    /**
      * MoreLikeThis Handler parameters.
      *
      * @var string
@@ -101,6 +109,9 @@ class SimilarBuilder implements SimilarBuilderInterface
                 $this->useHandler = true;
                 $this->handlerParams = $mlt['params'] ?? '';
             }
+            if ($mlt['useQtParam'] ?? false) {
+                $this->useQtParam = true;
+            }
             if (isset($mlt['count'])) {
                 $this->count = $mlt['count'];
             }
@@ -108,6 +119,16 @@ class SimilarBuilder implements SimilarBuilderInterface
     }
 
     /// Public API
+
+    /**
+     * Whether to use qt=morelikethis instead of direct handler path.
+     *
+     * @return bool
+     */
+    public function usesQtParam(): bool
+    {
+        return $this->useQtParam;
+    }
 
     /**
      * Return SOLR search parameters based on a record Id and params.
@@ -131,6 +152,9 @@ class SimilarBuilder implements SimilarBuilderInterface
                 'q',
                 sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
+            if ($this->useQtParam) {
+                $params->set('qt', 'morelikethis');
+            }
         }
         if (null === $params->get('rows')) {
             $params->set('rows', $this->count);
