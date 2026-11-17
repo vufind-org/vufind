@@ -65,7 +65,6 @@ class KeepAlive extends AbstractBase
      *
      * @return array [response data, HTTP status code]
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleRequest(ServerRequestInterface $request): array
     {
