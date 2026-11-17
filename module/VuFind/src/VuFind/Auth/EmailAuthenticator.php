@@ -82,7 +82,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     public function __construct(
         protected ManagerInterface $sessionManager,
         protected RandomHash $randomHash,
-        protected \VuFind\Mailer\Mailer $mailer,
+        protected Mailer $mailer,
         protected TemplateRendererInterface $templateRenderer,
         protected ServerUrlHelper $serverUrlHelper,
         protected RouteHelper $routeHelper,
