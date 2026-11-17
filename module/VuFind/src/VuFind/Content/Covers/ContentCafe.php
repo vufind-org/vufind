@@ -62,7 +62,7 @@ class ContentCafe extends \VuFind\Content\AbstractCover
      * @param array $config Configuration
      */
     public function __construct(
-        #[Autowire(config: 'config', path: 'Contentcafe', default:[])]
+        #[Autowire(config: 'config', path: 'Contentcafe', default: [])]
         array $config
     ) {
         $this->password = $config['pw'];
