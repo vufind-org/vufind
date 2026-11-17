@@ -188,9 +188,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param OutputInterface $output Output object
      *
      * @return int 0 for success
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;

@@ -80,6 +80,7 @@ class ConfigCommand extends Command
      *
      * @return int 0 for success
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {

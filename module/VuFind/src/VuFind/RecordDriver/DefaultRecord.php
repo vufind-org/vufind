@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\ExcessivePublicCount;
 use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
@@ -47,9 +49,8 @@ use function strlen;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
- *
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
+#[SuppressWarnings(ExcessivePublicCount::class)]
 class DefaultRecord extends AbstractBase
 {
     /**
@@ -590,9 +591,8 @@ class DefaultRecord extends AbstractBase
      * @param string $field Field name
      *
      * @return mixed        Caption if found, false if none available.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getSnippetCaption($field)
     {
         // Not supported by default.
@@ -1518,9 +1518,8 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed An associative array of hierarchy trees on success
      * (id => title), false if no hierarchies found
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHierarchyTrees($hierarchyID = false)
     {
         // Unsupported by default:
