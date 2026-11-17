@@ -145,8 +145,7 @@ class PaginationHelper
     /**
      * Build a paginator with the paging options and ILS results if necessary.
      *
-     * @param array $pageOptions Paging options and parameters (returned by the
-     * getOptions method)
+     * @param array $pageOptions Paging options and parameters (returned by the getOptions method)
      * @param int   $count       Result count
      * @param array $records     Result records
      *
