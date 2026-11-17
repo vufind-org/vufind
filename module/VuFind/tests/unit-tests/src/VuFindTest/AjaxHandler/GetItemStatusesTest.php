@@ -33,7 +33,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\AjaxHandler\GetItemStatuses;
-use VuFind\Config\Config;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\Http\RouteHelper;
 use VuFind\ILS\Connection;
@@ -96,7 +95,6 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             $availabilityStatusManager ?? $this->createStub(AvailabilityStatusManager::class),
             $getThis,
             $routeHelper ?? $this->createStub(RouteHelper::class),
-            $searchMemory ?? $this->createStub(Memory::class)
         );
     }
 
