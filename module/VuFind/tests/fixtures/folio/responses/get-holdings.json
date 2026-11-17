@@ -87,35 +87,35 @@
                     "series": [],
                     "identifiers": [
                         {
-                        "value": "83008960",
-                        "identifierTypeId": "cdd8efb7-10fb-4b95-9677-9119a96f8fdd"
+                            "value": "83008960",
+                            "identifierTypeId": "cdd8efb7-10fb-4b95-9677-9119a96f8fdd"
                         }
                     ],
                     "contributors": [
                         {
-                        "name": "Asimov, Isaac, 1920-1992",
-                        "contributorTypeId": "5432c72d-cc8f-4549-95b5-9dcb4e3895d6",
-                        "contributorTypeText": "Contributor",
-                        "contributorNameTypeId": "faa2386c-7d3b-4a81-9573-9e43ece4388e",
-                        "primary": true
+                            "name": "Asimov, Isaac, 1920-1992",
+                            "contributorTypeId": "5432c72d-cc8f-4549-95b5-9dcb4e3895d6",
+                            "contributorTypeText": "Contributor",
+                            "contributorNameTypeId": "faa2386c-7d3b-4a81-9573-9e43ece4388e",
+                            "primary": true
                         }
                     ],
                     "subjects": [],
                     "classifications": [
                         {
-                        "classificationNumber": "PS3551.S5 R6 1983",
-                        "classificationTypeId": "c698eb52-9c18-4b3c-b578-38ea1fccb064"
+                            "classificationNumber": "PS3551.S5 R6 1983",
+                            "classificationTypeId": "c698eb52-9c18-4b3c-b578-38ea1fccb064"
                         },
                         {
-                        "classificationNumber": "813.54",
-                        "classificationTypeId": "765a3445-f0c3-4fba-aef4-b492aae3755c"
+                            "classificationNumber": "813.54",
+                            "classificationTypeId": "765a3445-f0c3-4fba-aef4-b492aae3755c"
                         }
                     ],
                     "publication": [
                         {
-                        "publisher": "Doubleday",
-                        "place": "Garden City, N.Y",
-                        "dateOfPublication": "1983"
+                            "publisher": "Doubleday",
+                            "place": "Garden City, N.Y",
+                            "dateOfPublication": "1983"
                         }
                     ],
                     "publicationFrequency": [],
@@ -521,11 +521,154 @@
     },
     {
         "expectedMethod": "GET",
+        "expectedPath": "\/inventory\/items\/393c1119-d9b8-4f69-bb44-4a44dbe16c3e",
+        "expectedParams": {},
+        "body": {
+            "loantypes": [
+                {
+                    "id": "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
         "expectedPath": "\/loan-types",
         "expectedParams": {
             "offset": 0,
             "limit": 1000
         },
+        "body": {
+            "loantypes": [
+                {
+                    "id": "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/loans",
+        "expectedParams": {
+            "query": "itemId==393c1119-d9b8-4f69-bb44-4a44dbe16c3e AND status.name==Open",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "loantypes": [
+                {
+                    "id": "3258389f-ed1a-406f-8627-97a78d832003",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/loans",
+        "expectedParams": {
+            "query": "itemId==itemid AND status.name==Open",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "loantypes": [
+                {
+                    "id": "3258389f-ed1a-406f-8627-97a78d832003",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/loan-types",
+        "expectedParams": {
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "loantypes": [
+                {
+                    "id": "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/inventory\/items\/3258389f-ed1a-406f-8627-97a78d832003",
+        "expectedParams": {},
+        "body": {
+            "loantypes": [
+                {
+                    "id": "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/inventory\/items\/itemid",
+        "expectedParams": {},
         "body": {
             "loantypes": [
                 {
