@@ -209,8 +209,10 @@ class ChannelLoader
     protected function getChannelProviders($source, $configSection, $activeId = null)
     {
         $providerIds = $this->config["source.$source"][$configSection] ?? [];
-        $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
-            ? [$activeId] : $providerIds;
+        // If an active ID is set, find that ID or return nothing; otherwise, return all available providers.
+        $finalIds = !empty($activeId)
+            ? (in_array($activeId, $providerIds) ? [$activeId] : [])
+            : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
     }
 
@@ -328,7 +330,7 @@ class ChannelLoader
         }
 
         // Return context array:
-        return $this->addConfigToContext(compact('driver', 'channels', 'token'));
+        return $this->addConfigToContext(compact('driver', 'channels', 'token', 'configSections'));
     }
 
     /**
