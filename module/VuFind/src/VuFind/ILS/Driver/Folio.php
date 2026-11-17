@@ -3182,7 +3182,6 @@ class Folio extends AbstractAPI implements
      * @param array $patron The patron array with username and password
      *
      * @return array
-     *
      */
     public function getProxyingUsers(array $patron): array
     {

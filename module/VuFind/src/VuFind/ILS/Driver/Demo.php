@@ -750,7 +750,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
-     *
      */
     protected function getSimulatedStatus($id, ?array $patron = null)
     {
@@ -1162,7 +1161,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's fines on success.
-     *
      */
     public function getMyFines($patron)
     {
