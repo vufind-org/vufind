@@ -286,9 +286,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         $holdLogic->method('getSuppressedLocations')->willReturn([]);
         $availabilityStatusManager = $this->createMock(AvailabilityStatusManager::class);
         $availabilityStatusManager->method('combine')->willReturnCallback(
-            function (array $record): array {
-                return $record[0];
-            }
+            fn (array $record): array => $record[0]
         );
 
         $getItemStatuses = $this->getHandler(
