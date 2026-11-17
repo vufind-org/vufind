@@ -389,7 +389,7 @@ class AssetPipeline implements LoggerAwareInterface
             );
             $url = ($this->urlHelper)('home') . 'themes/' . $details['theme']
                 . '/' . $type . '/' . $path;
-            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= str_contains($url, '?') ? '&_=' : '?_=';
             $url .= filemtime($details['path']);
             return $url;
         }
