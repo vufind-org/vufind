@@ -750,8 +750,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getSimulatedStatus($id, ?array $patron = null)
     {
@@ -1163,8 +1161,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's fines on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
     {
@@ -1246,8 +1242,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $params Parameters
      *
      * @return mixed        Array of the patron's holds on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron, $params = [])
     {
@@ -1277,8 +1271,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyStorageRetrievalRequests($patron)
     {
@@ -1299,8 +1291,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyILLRequests($patron)
     {
@@ -1433,8 +1423,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $params Parameters
      *
      * @return mixed        Array of the patron's transactions on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($patron, $params = [])
     {
@@ -1558,8 +1546,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $params Parameters
      *
      * @return mixed        Array of the patron's historic transactions on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactionHistory($patron, $params)
     {

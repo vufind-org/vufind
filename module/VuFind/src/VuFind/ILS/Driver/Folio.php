@@ -2049,8 +2049,6 @@ class Folio extends AbstractAPI implements
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickupLocations($patron, $holdInfo = null)
     {
@@ -2153,8 +2151,6 @@ class Folio extends AbstractAPI implements
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -3186,8 +3182,6 @@ class Folio extends AbstractAPI implements
      * @param array $patron The patron array with username and password
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getProxyingUsers(array $patron): array
     {

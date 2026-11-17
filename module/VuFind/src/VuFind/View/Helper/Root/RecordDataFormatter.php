@@ -526,8 +526,6 @@ class RecordDataFormatter
      * @param array $options Rendering options.
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderSimple(mixed $data, array $options): string
     {

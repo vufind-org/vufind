@@ -448,8 +448,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
@@ -595,8 +593,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {

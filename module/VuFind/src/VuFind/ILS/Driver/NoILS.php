@@ -268,8 +268,6 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param string $id The record id to retrieve the holdings for
      *
      * @return bool True if holdings exist, False if they do not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function hasHoldings($id)
     {
