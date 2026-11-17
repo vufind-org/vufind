@@ -29,6 +29,7 @@
 
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\SimilarCommand;
 
 /**
@@ -50,20 +51,13 @@ class Similar implements RelatedInterface
     protected $results;
 
     /**
-     * Search service.
-     *
-     * @var \VuFindSearch\Service
-     */
-    protected $searchService;
-
-    /**
      * Constructor.
      *
-     * @param \VuFindSearch\Service $search Search service
+     * @param \VuFindSearch\Service $searchService Search service
      */
-    public function __construct(\VuFindSearch\Service $search)
+    #[Autowire]
+    public function __construct(protected \VuFindSearch\Service $searchService)
     {
-        $this->searchService = $search;
     }
 
     /**

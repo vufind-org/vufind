@@ -32,6 +32,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
@@ -52,13 +53,6 @@ class ServerParam implements
     \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-
-    /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
 
     /**
      * Aliases for server param names (default: none).
@@ -86,9 +80,10 @@ class ServerParam implements
      *
      * @param Request $request Request object
      */
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        protected Request $request
+    ) {
     }
 
     /**

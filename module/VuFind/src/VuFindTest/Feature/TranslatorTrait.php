@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Feature;
 
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\Translator;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -57,9 +57,7 @@ trait TranslatorTrait
         $translator->expects($this->any())->method('translate')->willReturnCallback(
             fn ($str, $domain) => $translations[$domain][$str] ?? $str
         );
-        $translator->expects($this->any())->method('__call')->willReturnCallback(
-            fn ($method) => $method === 'getLocale' ? $locale : null
-        );
+        $translator->expects($this->any())->method('getLocale')->willReturn($locale);
         return $translator;
     }
 }

@@ -64,7 +64,7 @@ const path = require("node:path");
 
 const CleanCSS = require("clean-css");
 const { program } = require("commander");
-const sass = require("sass");
+const sass = require("sass-embedded");
 
 // Support functions
 
@@ -204,7 +204,15 @@ program
   .option("-M, --no-minify", "do not minify CSS with clean-css (faster compilation)")
   .option(
     "-S, --no-sourcemaps",
-    "do not generate sourcemaps (faster compilation)"
+    "do not generate source maps (faster compilation)"
+  )
+  .option(
+    "-P, --no-sourcemap-standard-path",
+    "use system path for source maps instead of standard path"
+  )
+  .option(
+    "-A, --no-asynch",
+    "do not run compilation asynchronously (might be faster when compiling single themes)"
   )
   .option("--temp <path>",
     "Override temporary file location",
@@ -223,10 +231,24 @@ const DO_MINIFY = Boolean(CLI_OPTIONS.minify);
 // i.e., npm run build:scss -- --no-sourcemaps
 const DO_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemaps);
 
+// use standard VuFind path (/usr/local/vufind) in sourcemaps, unless
+// told not to with --no-sourcemap-standard-path (-P).
+// Always use standard path when building CSS for pull-requests.
+const USE_STANDARD_PATH_IN_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemapStandardPath);
+
+// runs asynchronously, unless told not to with --no-asynch (-A)
+// running synchronously might be faster when only compiling single themes
+const RUN_ASYNC = Boolean(CLI_OPTIONS.asynch);
+
 console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly)}`);
 console.log(`MINIFY: ${String(DO_MINIFY)}`);
 console.log(`SOURCEMAPS: ${String(DO_SOURCEMAPS)}`);
+console.log(`SOURCEMAPS-STANDARD-PATH: ${String(USE_STANDARD_PATH_IN_SOURCEMAPS)}`);
+console.log(`ASYNC: ${String(RUN_ASYNC)}`);
 
+const totalCompileStart = performance.now();
+const themeCompileStarts = {};
+let completedThemes = 0;
 
 /**
  * Determine whether two files are identical
@@ -266,32 +288,15 @@ function filesAreIdentical(aPath, bPath) {
 }
 
 /**
- * Compile a theme.
+ * Handle the compilation of a theme.
  * @param {string} themeName Name of theme to compile
+ * @param {string} compiled  Result of compilation
  * @returns {void}
  */
-function compileTheme(themeName) {
-  const start = performance.now();
+function handleCompiledTheme(themeName, compiled) {
   console.log(`\n${heading(themeName)}`);
 
   console.log("- compiling SCSS to CSS");
-
-  // Inspired by bootstrap5 compilation, but adjusted for project needs.
-  // @link https://github.com/twbs/bootstrap/blob/main/package.json
-  // sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/
-  const compiled = sass.compile(
-    themePath(themeName, `scss/${CLI_OPTIONS.entry}`),
-    {
-      style: "expanded",
-      sourceMap: DO_SOURCEMAPS,
-      embedSources: true,
-      // needed due to limitations of Bootstrap 5 as of June, 2026:
-      quietDeps: true,
-      silenceDeprecations: ['import'],
-      // no equivalent for no-error-css
-      loadPaths: getLoadPaths(themeName),
-    }
-  );
 
   let cssContent = compiled.css;
   let sourceMapContent = DO_SOURCEMAPS ? JSON.stringify(compiled.sourceMap) : null;
@@ -328,6 +333,9 @@ function compileTheme(themeName) {
     if (!CLI_OPTIONS.checkOnly) {
       console.log(`- writing source map to theme/${themeName}/css/${sourceMapName}`);
       const sourceMapPath = themePath(themeName, `css/${sourceMapName}`);
+      if (USE_STANDARD_PATH_IN_SOURCEMAPS) {
+        sourceMapContent = sourceMapContent.replaceAll('file://' + process.env.VUFIND_HOME, 'file:///usr/local/vufind');
+      }
       fs.writeFileSync(sourceMapPath, sourceMapContent, "utf8");
     }
   }
@@ -357,7 +365,51 @@ function compileTheme(themeName) {
     fs.writeFileSync(outCSSPath, cssContent, "utf8");
   }
 
-  console.log(`- done (${Math.ceil(performance.now() - start).toLocaleString()}ms)`);
+  console.log(`- done (${Math.ceil(performance.now() - themeCompileStarts[themeName]).toLocaleString()}ms)`);
+
+  completedThemes++;
+
+  if (completedThemes >= CLI_OPTIONS.themes.length) {
+    console.log(`\nCompleted all themes (${Math.ceil(performance.now() - totalCompileStart).toLocaleString()}ms)`);
+  }
+}
+
+/**
+ * Compile a theme.
+ * @param {string} themeName Name of theme to compile
+ * @returns {void}
+ */
+function compileTheme(themeName) {
+  themeCompileStarts[themeName] = performance.now();
+
+  // Inspired by bootstrap5 compilation, but adjusted for project needs.
+  // @link https://github.com/twbs/bootstrap/blob/main/package.json
+  // sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/
+
+  const filePath = themePath(themeName, `scss/${CLI_OPTIONS.entry}`);
+  const compileOptions = {
+    style: "expanded",
+    sourceMap: DO_SOURCEMAPS,
+    embedSources: true,
+    // needed due to limitations of Bootstrap 5 as of June, 2026:
+    quietDeps: true,
+    silenceDeprecations: ['import'],
+    // no equivalent for no-error-css
+    loadPaths: getLoadPaths(themeName),
+  };
+
+  if (RUN_ASYNC) {
+    sass.compileAsync(
+      filePath,
+      compileOptions
+    ).then(compiled => handleCompiledTheme(themeName, compiled))
+  } else {
+    const compiled = sass.compile(
+      filePath,
+      compileOptions
+    );
+    handleCompiledTheme(themeName, compiled);
+  }
 }
 
 // Main

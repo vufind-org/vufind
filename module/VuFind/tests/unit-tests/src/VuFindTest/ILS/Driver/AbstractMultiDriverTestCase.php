@@ -34,6 +34,7 @@ namespace VuFindTest\ILS\Driver;
 
 use RuntimeException;
 use VuFind\ILS\Driver\AbstractMultiDriver;
+use VuFind\Validator\EmailAddressValidator;
 
 use function call_user_func_array;
 use function count;
@@ -291,14 +292,14 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             $mock = $this
                 ->getMockBuilder(__NAMESPACE__ . '\\MultiDriverTest\\' . $type . 'NoSupportMock')
                 ->onlyMethods($methods)
-                ->setConstructorArgs([new \VuFind\Date\Converter()])
+                ->setConstructorArgs([new \VuFind\Date\Converter(), new EmailAddressValidator()])
                 ->getMock();
         } elseif ($type == 'Demo') {
             $mock = $this->getMockDemoDriver();
         } else {
             $class = __NAMESPACE__ . '\\MultiDriverTest\\' . $type . 'Mock';
             $mock = $this->getMockBuilder($class)
-                ->setConstructorArgs([new \VuFind\Date\Converter()])
+                ->setConstructorArgs([new \VuFind\Date\Converter(), new EmailAddressValidator()])
                 ->getMock();
         }
         if ($methods && in_array('init', $methods)) {

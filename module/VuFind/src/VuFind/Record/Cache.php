@@ -34,6 +34,7 @@ namespace VuFind\Record;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Record Cache.
@@ -69,7 +70,9 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      */
     public function __construct(
         protected RecordFactory $recordFactoryManager,
+        #[Autowire(config: 'RecordCache')]
         protected array $cacheConfig,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected RecordServiceInterface $recordService
     ) {
         $this->setContext(Cache::CONTEXT_DEFAULT);

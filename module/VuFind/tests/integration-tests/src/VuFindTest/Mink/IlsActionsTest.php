@@ -181,11 +181,10 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test canceling a request with the "cancel selected" button.
      *
      * @param Element $page Page element.
-     * @param string  $type Request type being tested.
      *
      * @return void
      */
-    protected function cancelSelectedProcedure(Element $page, string $type): void
+    protected function cancelSelectedProcedure(Element $page): void
     {
         // First make sure item is there before cancel is pushed:
         $this->assertSame(
@@ -332,7 +331,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Set up user account:
@@ -369,7 +368,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Set up user account:
@@ -458,7 +457,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelSelectedIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
-        $this->cancelSelectedProcedure($page, 'interlibrary loan requests');
+        $this->cancelSelectedProcedure($page);
     }
 
     /**
@@ -529,7 +528,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelSelectedStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
-        $this->cancelSelectedProcedure($page, 'storage retrieval requests');
+        $this->cancelSelectedProcedure($page);
     }
 
     /**
@@ -547,9 +546,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        // Go to user profile screen:
+        // Go to checkouts:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/CheckedOut');
+        $session->visit($this->getVuFindUrl() . '/Checkouts/List');
         $page = $session->getPage();
 
         // Log in

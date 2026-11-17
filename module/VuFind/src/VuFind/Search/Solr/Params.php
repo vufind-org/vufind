@@ -30,7 +30,6 @@
 
 namespace VuFind\Search\Solr;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\BadConfig;
 use VuFindSearch\ParamBag;
@@ -337,15 +336,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(Parameters $request): void
+    protected function initSearch(array $request): void
     {
         // Special case -- did we get a list of IDs instead of a standard query?
-        $ids = $request->get('overrideIds', null);
+        $ids = $request['overrideIds'] ?? null;
         if (is_array($ids)) {
             $this->setQueryIDs($ids);
         } else {
@@ -484,17 +483,17 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(Parameters $request): void
+    protected function initFilters(array $request): void
     {
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
         parent::initFilters($request);
-        switch ($request->get('illustration', -1)) {
+        switch ($request['illustration'] ?? -1) {
             case 1:
                 $this->addFilter('illustrated:Illustrated');
                 break;

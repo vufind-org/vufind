@@ -29,6 +29,8 @@
 
 namespace VuFind\Content;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 
 /**
@@ -87,10 +89,15 @@ class ObalkyKnihService implements
     /**
      * Constructor.
      *
-     * @param array $config Configuration for service
+     * @param array                                    $config       Configuration for service
+     * @param ?\Laminas\Cache\Storage\StorageInterface $cacheStorage Cache storage
      */
-    public function __construct(array $config)
-    {
+    public function __construct(
+        #[Autowire(config: 'obalkyknih', path: 'ObalkyKnih', default: [])]
+        array $config,
+        #[Autowire(container: \VuFind\Cache\Manager::class, service: 'object')]
+        ?\Laminas\Cache\Storage\StorageInterface $cacheStorage = null
+    ) {
         if (
             !isset($config['base_url']) || count($config['base_url']) < 1
             || !isset($config['books_endpoint'])
@@ -111,6 +118,10 @@ class ObalkyKnihService implements
         }
         $this->checkServersAvailability
             = $config['checkServersAvailability'] ?? false;
+
+        if ($cacheStorage) {
+            $this->setCacheStorage($cacheStorage);
+        }
     }
 
     /**

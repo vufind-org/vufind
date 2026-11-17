@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,13 +24,12 @@
  * @category VuFind
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
 namespace VuFind\Captcha;
-
-use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * ReCaptcha CAPTCHA.
@@ -37,37 +37,26 @@ use Laminas\Mvc\Controller\Plugin\Params;
  * @category VuFind
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ReCaptcha extends AbstractBase
 {
     /**
-     * ReCaptcha Service.
-     *
-     * @var \VuFind\Service\ReCaptcha
-     */
-    protected $recaptcha;
-
-    /**
-     * Language.
-     *
-     * @var string
-     */
-    protected $language;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Service\ReCaptcha $recaptcha ReCaptcha Service
-     * @param string                    $language  Translator locale
+     * @param string               $siteKey   Site key
+     * @param string               $language  Language
+     * @param array                $options   ReCaptcha options
+     * @param \ReCaptcha\ReCaptcha $reCaptcha ReCaptcha Service
      */
     public function __construct(
-        \VuFind\Service\ReCaptcha $recaptcha,
-        string $language
+        protected string $siteKey,
+        protected string $language,
+        protected array $options,
+        protected \ReCaptcha\ReCaptcha $reCaptcha,
     ) {
-        $this->recaptcha = $recaptcha;
-        $this->language = $language;
     }
 
     /**
@@ -82,13 +71,23 @@ class ReCaptcha extends AbstractBase
     }
 
     /**
-     * Generate HTML depending on CAPTCHA type.
+     * Get ReCaptcha site key.
      *
      * @return string
      */
-    public function getHtml(): string
+    public function getSiteKey(): string
     {
-        return $this->recaptcha->getHtml();
+        return $this->siteKey;
+    }
+
+    /**
+     * Get ReCaptcha options.
+     *
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 
     /**
@@ -104,6 +103,6 @@ class ReCaptcha extends AbstractBase
     public function verify(array $postParams, array $queryParams): bool
     {
         $responseField = $postParams['g-recaptcha-response'] ?? null;
-        return $this->recaptcha->verify($responseField)->isValid();
+        return $responseField && $this->reCaptcha->verify($responseField)->isSuccess();
     }
 }

@@ -40,6 +40,7 @@ use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\DuplicateKeyException;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Validator\EmailAddressValidator;
 
 use function in_array;
 use function is_object;
@@ -81,11 +82,14 @@ class Database extends AbstractBase
     /**
      * Constructor.
      *
-     * @param ?PasswordHasher $hasher Password hash service (null to create one)
+     * @param EmailAddressValidator $emailValidator Email address validator
+     * @param ?PasswordHasher       $hasher         Password hash service (null to create one)
      */
     #[Autowire]
-    public function __construct(?PasswordHasher $hasher = null)
-    {
+    public function __construct(
+        protected EmailAddressValidator $emailValidator,
+        ?PasswordHasher $hasher = null,
+    ) {
         $this->hasher = $hasher ?? new PasswordHasher();
     }
 
@@ -499,8 +503,7 @@ class Database extends AbstractBase
     protected function validateParams(array $params, UserServiceInterface $userService): void
     {
         // Invalid Email Check
-        $validator = new \Laminas\Validator\EmailAddress();
-        if (!$validator->isValid($params['email'])) {
+        if (!$this->emailValidator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }
 

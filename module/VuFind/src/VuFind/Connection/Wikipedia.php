@@ -33,6 +33,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function count;
 use function is_array;
+use function json_decode;
 use function strlen;
 
 /**
@@ -109,12 +110,12 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Get information from Wikipedia API
         $uri = 'https://' . $this->lang . '.wikipedia.org/w/api.php' .
-               '?action=query&prop=revisions&rvprop=content&format=php' .
+               '?action=query&prop=revisions&rvprop=content&format=json' .
                '&list=allpages&titles=' . urlencode($author);
 
         $response = $this->client->setUri($uri)->setMethod('GET')->send();
         if ($response->isSuccess()) {
-            return $this->parseWikipedia(unserialize($response->getBody()));
+            return $this->parseWikipedia(json_decode($response->getBody(), true));
         }
         return null;
     }
@@ -483,7 +484,7 @@ class Wikipedia implements TranslatorAwareInterface
     {
         $imageUrl = null;
         $url = "https://{$this->lang}.wikipedia.org/w/api.php" .
-               '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=php' .
+               '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=json' .
                '&titles=Image:' . urlencode($imageName);
 
         try {
@@ -496,7 +497,7 @@ class Wikipedia implements TranslatorAwareInterface
         }
 
         if ($response = $result->getBody()) {
-            if ($imageinfo = unserialize($response)) {
+            if ($imageinfo = json_decode($response, true)) {
                 if (
                     isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
                 ) {

@@ -97,7 +97,7 @@ class PAIA extends DAIA
     /**
      * SessionManager.
      *
-     * @var \Laminas\Session\SessionManager
+     * @var \Laminas\Session\ManagerInterface
      */
     protected $sessionManager;
 
@@ -149,12 +149,12 @@ class PAIA extends DAIA
     /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter          $converter      Date converter
-     * @param \Laminas\Session\SessionManager $sessionManager Session Manager
+     * @param \VuFind\Date\Converter            $converter      Date converter
+     * @param \Laminas\Session\ManagerInterface $sessionManager Session Manager
      */
     public function __construct(
         \VuFind\Date\Converter $converter,
-        \Laminas\Session\SessionManager $sessionManager
+        \Laminas\Session\ManagerInterface $sessionManager
     ) {
         parent::__construct($converter);
         $this->sessionManager = $sessionManager;
@@ -877,9 +877,9 @@ class PAIA extends DAIA
     }
 
     /**
-     * This method returns a string to use as the input form value for renewing
-     * each hold item. (optional, but required if you implement the
-     * renewMyItems method) Not supported prior to VuFind 1.2.
+     * Get Renew Details.
+     *
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails One of the individual item arrays returned by
      *                               the getMyTransactions method

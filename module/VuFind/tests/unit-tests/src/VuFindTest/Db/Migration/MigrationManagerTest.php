@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Db\Migration;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Connection;
 use VuFind\Db\Migration\MigrationLoader;
@@ -56,7 +57,8 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
     protected function getMockConnection(): MockObject&Connection
     {
         $mockConnection = $this->createMock(Connection::class);
-        $mockConnection->expects($this->once())->method('getDatabasePlatform')->willReturn(new \stdClass());
+        $mockPlatform = $this->createMock(AbstractPlatform::class);
+        $mockConnection->expects($this->once())->method('getDatabasePlatform')->willReturn($mockPlatform);
         return $mockConnection;
     }
 

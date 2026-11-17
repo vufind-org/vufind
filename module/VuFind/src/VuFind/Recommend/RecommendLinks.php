@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * RecommendLinks Recommendations Module.
  *
@@ -54,6 +56,7 @@ class RecommendLinks implements RecommendInterface
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
+    #[Autowire]
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
     }
@@ -87,12 +90,12 @@ class RecommendLinks implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // No action needed.
     }

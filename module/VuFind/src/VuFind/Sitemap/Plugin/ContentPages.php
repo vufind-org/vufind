@@ -30,6 +30,7 @@
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\Router\RouteStackInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeInfo;
 use Webmozart\Glob\Glob;
 
@@ -94,6 +95,7 @@ class ContentPages extends AbstractGeneratorPlugin
     public function __construct(
         protected ThemeInfo $themeInfo,
         protected RouteStackInterface $router,
+        #[Autowire(config: 'config')]
         protected array $config
     ) {
     }

@@ -16,10 +16,7 @@ namespace VuFindTest;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\Regex\Regex;
-use VuFind\Regex\RegexFactory;
-use VuFindTest\Container\MockContainer;
 
 /**
  * Regex Test Class.
@@ -84,28 +81,5 @@ class RegexTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The regex named "regex_name2" does not exist in the config.');
         $this->assertFalse($regex->matches('regex_name2', 'whole pattern'));
-    }
-
-    /**
-     * Test the Regex factory.
-     *
-     * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface&\Throwable
-     */
-    public function testFactory(): void
-    {
-        $cm = $this->createMock(ConfigManagerInterface::class);
-        $cm->expects($this->once())->method('getConfigArray')->willReturn(['regex' => ['/pattern/i']]);
-
-        $container = $this->createMock(MockContainer::class);
-        $container->expects($this->once())->method('get')->with(ConfigManagerInterface::class)->willReturn($cm);
-
-        $factory = new RegexFactory();
-        $regex = $factory($container, Regex::class);
-        $this->assertInstanceOf(Regex::class, $regex);
-
-        $this->assertTrue($regex->matches('regex', 'string with pattern'));
-        $this->assertFalse($regex->matches('regex', 'string without p a t t e r n'));
     }
 }

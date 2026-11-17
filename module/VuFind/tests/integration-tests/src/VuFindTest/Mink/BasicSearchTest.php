@@ -78,7 +78,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testOutOfBoundsPage()
     {
         $session = $this->getMinkSession();
-        $baseUrl = $this->getVuFindUrl() . '/Search/Results?lookfor=id:testbug1';
+        $baseUrl = $this->getVuFindUrl() . '/Search/Results?lookfor=' . urlencode('id:testbug1');
         $session->visit($baseUrl . '&page=1000');
         $this->assertEquals($baseUrl . '&page=1', $session->getCurrentUrl());
         $page = $session->getPage();

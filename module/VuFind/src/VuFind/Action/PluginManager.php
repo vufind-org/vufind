@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
 
@@ -57,11 +56,43 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'account/cataloglogin' => Account\CatalogLoginAction::class,
+        'account/changeemail' => Account\ChangeEmailAction::class,
+        'account/changepassword' => Account\ChangePasswordAction::class,
+        'account/completelogin' => Account\CompleteLoginAction::class,
+        'account/createaccount' => Account\CreateAccountAction::class,
+        'account/deleteaccount' => Account\DeleteAccountAction::class,
+        'account/deletelogintoken' => Account\DeleteLoginTokenAction::class,
+        'account/deleteuserlogintokens' => Account\DeleteUserLoginTokensAction::class,
+        'account/emailnotverified' => Account\EmailNotVerifiedAction::class,
+        'account/newpassword' => Account\NewPasswordAction::class,
+        'account/resetpassword' => Account\ResetPasswordAction::class,
+        'account/usercontent' => Account\UserContentAction::class,
+        'account/userlogin' => Account\UserLoginAction::class,
+        'account/verifyemail' => Account\VerifyEmailAction::class,
+        'account/verifyotp' => Account\VerifyOtpAction::class,
+        'account/verifyrecoveryotp' => Account\VerifyRecoveryOtpAction::class,
+
         'ajax/json' => Ajax\JsonAction::class,
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
 
-        'author/facetlist' => Author\FacetListAction::class,
+        // author/home, author/results and author/search have custom implementations that are autodiscovered
+        'author/facetlist' => Search\FacetListAction::class,
+
+        // authority/home has a custom implementation that is autodiscovered
+        'authority/search' => Search\ResultsAction::class,
+
+        'blender/advanced' => Search\AdvancedAction::class,
+        'blender/home' => Search\HomeAction::class,
+        'blender/results' => Search\ResultsAction::class,
+
+        'blender2/advanced' => Search\AdvancedAction::class,
+        'blender2/home' => Search\HomeAction::class,
+        'blender2/results' => Search\ResultsAction::class,
+
+        'browzine/home' => Search\HomeAction::class,
+        'browzine/search' => Search\ResultsAction::class,
 
         'cart/doexport' => Cart\DoExportAction::class,
         'cart/myresearchbulk' => Cart\MyResearchBulkAction::class,
@@ -82,6 +113,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'developersettings/displaysettings' => DeveloperSettings\DisplaySettingsAction::class,
         'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
 
+        // eds/advanced has a custom implementation that is autodiscovered
+        'eds/home' => Search\HomeAction::class,
+        'eds/search' => Search\ResultsAction::class,
+
         'edsrecord/addtag' => Record\AddTagAction::class,
         'edsrecord/deletetag' => Record\DeleteTagAction::class,
         'edsrecord/ajaxtab' => Record\AjaxTabAction::class,
@@ -99,6 +134,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'edsrecord/save' => Record\SaveAction::class,
         'edsrecord/sms' => Record\SmsAction::class,
 
+        'eit/advanced' => Search\AdvancedAction::class,
+        'eit/home' => Search\HomeAction::class,
+        'eit/search' => Search\ResultsAction::class,
+
         'eitrecord/addtag' => Record\AddTagAction::class,
         'eitrecord/deletetag' => Record\DeleteTagAction::class,
         'eitrecord/ajaxtab' => Record\AjaxTabAction::class,
@@ -112,6 +151,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eitrecord/rdf' => Record\RdfAction::class,
         'eitrecord/save' => Record\SaveAction::class,
         'eitrecord/sms' => Record\SmsAction::class,
+
+        'epf/home' => Search\HomeAction::class,
+        'epf/search' => Search\ResultsAction::class,
 
         'epfrecord/addtag' => Record\AddTagAction::class,
         'epfrecord/deletetag' => Record\DeleteTagAction::class,
@@ -145,11 +187,39 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'install/performsecurityfix' => Install\PerformSecurityFixAction::class,
         'install/fixsslcerts' => Install\FixSslCertsAction::class,
 
+        'libguides/home' => Search\HomeAction::class,
+        'libguides/results' => Search\ResultsAction::class,
+
+        'libguidesaz/home' => Search\HomeAction::class,
+        'libguidesaz/results' => Search\ResultsAction::class,
+
+        'librarycards/connectcard' => LibraryCards\ConnectCardAction::class,
+        'librarycards/connectcardlogin' => LibraryCards\ConnectCardLoginAction::class,
+        'librarycards/deletecard' => LibraryCards\DeleteCardAction::class,
+        'librarycards/editcard' => LibraryCards\EditCardAction::class,
+        'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
+        'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
+
+        'lists/allitems' => Lists\AllItemsAction::class,
+        'lists/deleteitems' => Lists\DeleteItemsAction::class,
+        'lists/deletelist' => Lists\DeleteListAction::class,
+        'lists/edititem' => Lists\EditItemAction::class,
+        'lists/editlist' => Lists\EditListAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
-        'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
-
         'oai/authserver' => Oai\AuthServerAction::class,
+
+        'overdrive/getstatus' => Overdrive\GetStatusAction::class,
+
+        'pazpar2/home' => Search\HomeAction::class,
+        'pazpar2/search' => Search\ResultsAction::class,
+
+        'primo/advanced' => Search\AdvancedAction::class,
+        'primo/citedby' => Primo\CitedByAction::class,
+        // primo/cites has a custom implementation that is autodiscovered
+        'primo/home' => Search\HomeAction::class,
+        'primo/search' => Search\ResultsAction::class,
 
         'oauth2/userinfo' => OAuth2\UserInfoAction::class,
         'oauth2/wellknownconfiguration' => OAuth2\WellKnownConfigurationAction::class,
@@ -167,6 +237,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'primorecord/rdf' => Record\RdfAction::class,
         'primorecord/save' => Record\SaveAction::class,
         'primorecord/sms' => Record\SmsAction::class,
+
+        'proquestfsg/home' => Search\HomeAction::class,
+        'proquestfsg/results' => Search\ResultsAction::class,
+        'proquestfsg/search' => Search\ResultsAction::class,
 
         'proquestfsgrecord/addtag' => Record\AddTagAction::class,
         'proquestfsgrecord/deletetag' => Record\DeleteTagAction::class,
@@ -192,6 +266,22 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'record/illrequest' => Record\IllRequestAction::class,
         'record/storageretrievalrequest' => Record\StorageRetrievalRequestAction::class,
 
+        'search/collectionfacetlist' => Search\FacetListAction::class,
+        'search/editmemory' => Search\EditMemoryAction::class,
+        'search/facetlist' => Search\FacetListAction::class,
+        'search/newitem' => Search\NewItemAction::class,
+        'search/newitemresults' => Search\NewItemResultsAction::class,
+        'search/opensearch' => Search\OpenSearchAction::class,
+        'search/reservesfacetlist' => Search\FacetListAction::class,
+        'search/reservesresults' => Search\ReservesResultsAction::class,
+        'search/reservessearch' => Search\ReservesSearchAction::class,
+
+        'search2/advanced' => Search\AdvancedAction::class,
+        'search2/facetlist' => Search\FacetListAction::class,
+        'search2/home' => Search\HomeAction::class,
+        'search2/results' => Search\ResultsAction::class,
+        'search2/versions' => Search\VersionsAction::class,
+
         'search2collection/home' => Collection\HomeAction::class,
         // At least hierarchy tree links use the collection AjaxTab route:
         'search2collection/ajaxtab' => Record\AjaxTabAction::class,
@@ -201,6 +291,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/ajaxtab' => Record\AjaxTabAction::class,
         'search2record/cite' => Record\CiteAction::class,
         'search2record/email' => Record\EmailAction::class,
+        'search2record/explain' => Record\ExplainAction::class,
         'search2record/export' => Record\ExportAction::class,
         'search2record/hold' => Record\HoldAction::class,
         'search2record/home' => Record\HomeAction::class,
@@ -209,6 +300,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/rdf' => Record\RdfAction::class,
         'search2record/save' => Record\SaveAction::class,
         'search2record/sms' => Record\SmsAction::class,
+
+        'searchhistory/savesearch' => SearchHistory\SaveSearchAction::class,
+        'searchhistory/schedulesearch' => SearchHistory\ScheduleSearchAction::class,
+        'searchhistory/unsubscribesearch' => SearchHistory\UnsubscribeSearchAction::class,
+
+        // summon/advanced has a custom implementation that is autodiscovered
+        'summon/home' => Search\HomeAction::class,
+        'summon/search' => Search\ResultsAction::class,
 
         'summonrecord/addtag' => Record\AddTagAction::class,
         'summonrecord/deletetag' => Record\DeleteTagAction::class,
@@ -224,6 +323,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summonrecord/save' => Record\SaveAction::class,
         'summonrecord/sms' => Record\SmsAction::class,
 
+        'tags/home' => Search\ResultsAction::class,
+
+        'web/facetlist' => Search\FacetListAction::class,
+        'web/home' => Search\HomeAction::class,
+        // web/results has a custom implementation that is autodiscovered
+
         // Legacy WorldcatRecord actions:
         'worldcatrecord/addtag' => Record\AddTagAction::class,
         'worldcatrecord/deletetag' => Record\DeleteTagAction::class,
@@ -238,6 +343,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'worldcatrecord/rdf' => Record\RdfAction::class,
         'worldcatrecord/save' => Record\SaveAction::class,
         'worldcatrecord/sms' => Record\SmsAction::class,
+
+        'worldcat2/advanced' => Search\AdvancedAction::class,
+        'worldcat2/home' => Search\HomeAction::class,
+        'worldcat2/search' => Search\ResultsAction::class,
 
         'worldcat2record/addtag' => Record\AddTagAction::class,
         'worldcat2record/deletetag' => Record\DeleteTagAction::class,
@@ -255,6 +364,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'tag/deletetags' => Tag\DeleteTagsAction::class,
         'tag/userlist' => Tag\UserListAction::class,
+
+        'upgrade/criticalfixblowfish' => Upgrade\CriticalFixBlowfishAction::class,
+        'upgrade/criticalfixinsecuredatabase' => Upgrade\CriticalFixInsecureDatabaseAction::class,
+        'upgrade/fixanonymoustags' => Upgrade\FixAnonymousTagsAction::class,
+        'upgrade/fixconfig' => Upgrade\FixConfigAction::class,
+        'upgrade/fixdatabase' => Upgrade\FixDatabaseAction::class,
+        'upgrade/fixduplicatetags' => Upgrade\FixDuplicateTagsAction::class,
+        'upgrade/fixmetadata' => Upgrade\FixMetadataAction::class,
+        'upgrade/getdbcredentials' => Upgrade\GetDbCredentialsAction::class,
+        'upgrade/getsourceversion' => Upgrade\GetSourceVersionAction::class,
+        'upgrade/showsql' => Upgrade\ShowSqlAction::class,
+
+        'zotero/authcallback' => Zotero\AuthCallbackAction::class,
     ];
 
     /**
@@ -267,9 +389,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
-        'Myresearch' => 'MyResearch',
+        'Illrequests' => 'IllRequests',
+        'Librarycards' => 'LibraryCards',
         'Oauth2' => 'OAuth2',
+        'Qrcode' => 'QRCode',
+        'Searchhistory' => 'SearchHistory',
+        'Shibbolethlogoutnotification' => 'ShibbolethLogoutNotification',
         'Shortlink' => 'ShortLink',
+        'Simulatedsso' => 'SimulatedSSO',
+        'Sitemap' => 'SiteMap',
+        'Storageretrievalrequests' => 'StorageRetrievalRequests',
+        'Worldcat' => 'WorldCat',
     ];
 
     /**
@@ -309,9 +439,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // These objects are not meant to be shared -- every time we retrieve one, we are building a brand new object.
         $this->sharedByDefault = false;
 
+        parent::__construct($configOrContainerInstance, $v3config);
         $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
-        parent::__construct($configOrContainerInstance, $v3config);
     }
 
     /**
@@ -434,8 +564,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             $className = $ns . '\\' . $actionClass;
             if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
-                // Explicitly set the factory so that discovered classes don't need the Autowire attribute:
-                $this->factories[$className] ??= AutowiringFactory::class;
                 return $className;
             }
         }

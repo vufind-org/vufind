@@ -37,7 +37,6 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\DbBuilder;
@@ -66,49 +65,46 @@ class FixDatabaseAction extends AbstractInstallAction
     /**
      * Constructor.
      *
-     * @param CacheManager             $cacheManager    Cache manager
-     * @param Connection               $ilsConnection   ILS connection
-     * @param SearchService            $searchService   Search service
      * @param PathResolver             $pathResolver    Path resolver
      * @param ConfigManagerInterface   $configManager   Config manager
-     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
-     * @param HttpService              $httpService     HTTP service
-     * @param TagServiceInterface      $tagService      Tags database service
      * @param UserServiceInterface     $userService     User database service
      * @param UserCardServiceInterface $userCardService User card database service
      * @param array                    $config          VuFind configuration
+     * @param Connection               $ilsConnection   ILS connection
+     * @param SearchService            $searchService   Search service
+     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
+     * @param HttpService              $httpService     HTTP service
+     * @param TagServiceInterface      $tagService      Tags database service
      * @param DbBuilder                $dbBuilder       Database builder
      */
     public function __construct(
-        CacheManager $cacheManager,
-        Connection $ilsConnection,
-        SearchService $searchService,
         PathResolver $pathResolver,
         ConfigManagerInterface $configManager,
-        ServerUrlHelper $serverUrlHelper,
-        HttpService $httpService,
-        #[Autowire(container: DbServicePluginManager::class)]
-        TagServiceInterface $tagService,
         #[Autowire(container: DbServicePluginManager::class)]
         UserServiceInterface $userService,
         #[Autowire(container: DbServicePluginManager::class)]
         UserCardServiceInterface $userCardService,
         #[Autowire(config: 'config')]
         array $config,
+        Connection $ilsConnection,
+        SearchService $searchService,
+        ServerUrlHelper $serverUrlHelper,
+        HttpService $httpService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        TagServiceInterface $tagService,
         protected DbBuilder $dbBuilder,
     ) {
         parent::__construct(
-            $cacheManager,
-            $ilsConnection,
-            $searchService,
             $pathResolver,
             $configManager,
-            $serverUrlHelper,
-            $httpService,
-            $tagService,
             $userService,
             $userCardService,
-            $config
+            $config,
+            $ilsConnection,
+            $searchService,
+            $serverUrlHelper,
+            $httpService,
+            $tagService
         );
     }
 

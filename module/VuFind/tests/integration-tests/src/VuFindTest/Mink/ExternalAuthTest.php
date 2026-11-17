@@ -132,7 +132,7 @@ final class ExternalAuthTest extends \VuFindTest\Integration\MinkTestCase
         bool $missingPermission = false
     ): void {
         // Bogus login URL, but it doesn't matter since the page won't handle the authorization response:
-        $ezproxyUrl = $this->getVuFindUrl() . '/MyResearch';
+        $ezproxyUrl = $this->getVuFindUrl() . '/Account';
 
         $configs = [
             'config' => $this->getConfigIniOverrides($anonymousTicket, $hashMethod, $ezproxyUrl),

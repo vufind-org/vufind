@@ -57,7 +57,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     protected function getMockConnectionWithQuote(): MockObject&Connection
     {
         $mockConnection = $this->createMock(Connection::class);
-        $mockConnection->expects($this->once())->method('quote')->willReturnCallback(fn ($str) => "'$str'");
+        $mockConnection->expects($this->once())->method('quote')
+            ->willReturnCallback(fn (string $str): string => "'$str'");
         return $mockConnection;
     }
 

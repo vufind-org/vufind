@@ -126,9 +126,8 @@ class ILS extends AbstractBase
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
         $loginMethod = $this->getILSLoginMethod();
-        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
 
-        return $this->handleLogin($username, $password, $loginMethod, $rememberMe);
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**
@@ -349,12 +348,11 @@ class ILS extends AbstractBase
      * @param string $username    User name
      * @param string $password    Password
      * @param string $loginMethod Login method
-     * @param bool   $rememberMe  Whether to remember the login
      *
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function handleLogin($username, $password, $loginMethod, $rememberMe)
+    protected function handleLogin($username, $password, $loginMethod)
     {
         if ($password == '') {
             throw new AuthException('authentication_error_blank');

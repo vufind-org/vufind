@@ -34,6 +34,7 @@ use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Exception\ConfigException;
 use VuFind\Exception\FileAccess as FileAccessException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 
@@ -54,6 +55,7 @@ class Dir extends AbstractBase
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,

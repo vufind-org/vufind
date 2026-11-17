@@ -61,9 +61,7 @@ abstract class AbstractPluginManager extends Base
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
-        $this->addInitializer(
-            \VuFind\ServiceManager\ServiceInitializer::class
-        );
+        $this->addInitializer(\VuFind\ServiceManager\ServiceInitializer::class);
     }
 
     /**

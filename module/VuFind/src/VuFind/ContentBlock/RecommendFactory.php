@@ -70,7 +70,7 @@ class RecommendFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         return new $requestedName(
             $container->get(\VuFind\Search\Params\PluginManager::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
-            $container->get('Request')->getQuery()
+            $container->get('Request')->getQuery()->toArray()
         );
     }
 }

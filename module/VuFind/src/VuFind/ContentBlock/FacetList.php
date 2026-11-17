@@ -32,6 +32,7 @@ namespace VuFind\ContentBlock;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 
@@ -68,6 +69,7 @@ class FacetList implements ContentBlockInterface
      * @param FacetCacheManager      $facetCacheManager Facet cache plugin manager
      * @param ConfigManagerInterface $configManager     Configuration manager
      */
+    #[Autowire]
     public function __construct(
         protected FacetCacheManager $facetCacheManager,
         protected ConfigManagerInterface $configManager

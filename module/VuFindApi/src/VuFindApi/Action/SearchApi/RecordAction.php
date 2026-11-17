@@ -31,7 +31,6 @@
 namespace VuFindApi\Action\SearchApi;
 
 use Exception;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\ConfigManager;
@@ -39,6 +38,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ResumptionToken\ResumptionTokenTrait;
 use VuFind\Search\Options\PluginManager as SearchOptionsPluginManager;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -69,16 +69,16 @@ class RecordAction extends AbstractApiSearchAndRecordAction
     /**
      * Constructor.
      *
-     * @param AuthorizationService       $authorizationService       Authorization service
-     * @param DeveloperSettingsService   $developerSettingsService   Developer settings service
-     * @param array                      $config                     VuFind configuration
-     * @param RecordFormatter            $recordFormatter            Record formatter
-     * @param ConfigManager              $configManager              Configuration manager
-     * @param SearchOptionsPluginManager $searchOptionsPluginManager Search options plugin manager
-     * @param RecordLoader               $recordLoader               Record loader
+     * @param AuthorizationServiceInterface $authorizationService       Authorization service
+     * @param DeveloperSettingsService      $developerSettingsService   Developer settings service
+     * @param array                         $config                     VuFind configuration
+     * @param RecordFormatter               $recordFormatter            Record formatter
+     * @param ConfigManager                 $configManager              Configuration manager
+     * @param SearchOptionsPluginManager    $searchOptionsPluginManager Search options plugin manager
+     * @param RecordLoader                  $recordLoader               Record loader
      */
     public function __construct(
-        AuthorizationService $authorizationService,
+        AuthorizationServiceInterface $authorizationService,
         DeveloperSettingsService $developerSettingsService,
         #[Autowire(config: 'config')]
         array $config,

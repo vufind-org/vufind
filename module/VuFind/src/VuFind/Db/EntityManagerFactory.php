@@ -31,12 +31,22 @@ namespace VuFind\Db;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
-use DoctrineModule\Service\AbstractFactory;
-use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
+use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
+use Laminas\Cache\Storage\Adapter\BlackHole;
+use Laminas\Cache\Storage\Adapter\Filesystem;
+use Laminas\Cache\Storage\Capabilities;
+use Laminas\Cache\Storage\PostEvent;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use stdClass;
+use VuFind\Db\Mapping\ClassMetadataFactory;
 use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
-
-use function assert;
 
 /**
  * Entity manager factory.
@@ -50,8 +60,15 @@ use function assert;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EntityManagerFactory extends AbstractFactory
+class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    /**
+     * Cache storage.
+     *
+     * @var ?StorageInterface
+     */
+    protected ?StorageInterface $cacheStorage = null;
+
     /**
      * Create an object.
      *
@@ -70,13 +87,25 @@ class EntityManagerFactory extends AbstractFactory
      */
     public function __invoke(ContainerInterface $container, $requestedName, array|null $options = null)
     {
-        $options = $this->getOptions($container, 'entitymanager');
-        assert($options instanceof DoctrineORMModuleEntityManager);
-        $connection = $container->get($options->getConnection());
-        $config = $container->get($options->getConfiguration());
+        $connection = $container->get(Connection::class);
+        $paths = [
+            __DIR__ . '/Entity',
+        ];
+
+        $isDevMode = APPLICATION_ENV == 'development';
+        $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode, cache: $this->getCache($container));
+        $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
+        $config->setProxyDir(LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies');
+        $config->setProxyNamespace('DoctrineProxies');
+        $config->setAutoGenerateProxyClasses(
+            $isDevMode ? ProxyFactory::AUTOGENERATE_ALWAYS : ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
+        );
+        if (PHP_VERSION_ID >= 80400) {
+            $config->enableNativeLazyObjects(true);
+        }
         $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
-        $entityManager = new EntityManager($connection, $config, $connection->getEventManager());
+        $entityManager = new EntityManager($connection, $config);
 
         // Add entity mappings to class metadata factory:
         $metadataFactory = $entityManager->getMetadataFactory();
@@ -94,12 +123,52 @@ class EntityManagerFactory extends AbstractFactory
     }
 
     /**
-     * Get the class name of the options associated with this factory.
+     * Cache adapter post capabilities check handler that adds fake TTL support.
      *
-     * @return string
+     * @param PostEvent $event Event
+     *
+     * @return void
      */
-    public function getOptionsClass(): string
+    public function cacheCapabilitiesHandler(PostEvent $event): void
     {
-        return DoctrineORMModuleEntityManager::class;
+        if ($event->getStorage() !== $this->cacheStorage) {
+            return;
+        }
+        $oldCapabilities = $event->getResult();
+        $newCapabilities = new Capabilities(
+            $event->getStorage(),
+            new stdClass(),
+            ['staticTtl' => true],
+            $oldCapabilities
+        );
+        $event->setResult($newCapabilities);
+    }
+
+    /**
+     * Get cache adapter.
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return CacheItemPoolInterface
+     */
+    protected function getCache(ContainerInterface $container): CacheItemPoolInterface
+    {
+        if ('cli' === PHP_SAPI) {
+            return new CacheItemPoolDecorator(new BlackHole());
+        }
+
+        $this->cacheStorage = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
+
+        // Cache item pool decorator requires static TTL support that file system cache does not provide. Doctrine
+        // doesn't need it, so fake the support:
+        if ($this->cacheStorage instanceof Filesystem) {
+            $eventManager = $this->cacheStorage->getEventManager();
+            $eventManager->attach('getCapabilities.post', [$this, 'cacheCapabilitiesHandler']);
+            $cache = new CacheItemPoolDecorator($this->cacheStorage);
+            $eventManager->detach([$this, 'cacheCapabilitiesHandler']);
+        } else {
+            $cache = new CacheItemPoolDecorator($this->cacheStorage);
+        }
+        return $cache;
     }
 }

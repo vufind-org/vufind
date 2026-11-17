@@ -29,9 +29,9 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Autocomplete\Suggester;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -51,6 +51,7 @@ class GetACSuggestions extends AbstractBase
      * @param SessionSettings $ss        Session settings
      * @param Suggester       $suggester Autocomplete suggester
      */
+    #[Autowire]
     public function __construct(SessionSettings $ss, protected Suggester $suggester)
     {
         parent::__construct($ss);
@@ -66,7 +67,7 @@ class GetACSuggestions extends AbstractBase
     public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $query = new Parameters($request->getQueryParams());
+        $query = $request->getQueryParams();
         $suggestions = $this->suggester->getSuggestions($query);
         return $this->formatResponse(compact('suggestions'));
     }
