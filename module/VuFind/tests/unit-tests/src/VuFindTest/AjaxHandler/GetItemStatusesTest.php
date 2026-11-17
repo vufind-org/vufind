@@ -84,7 +84,6 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         ?AvailabilityStatusManager $availabilityStatusManager = null,
         ?GetThisLoader $getThis = null,
         ?RouteHelper $routeHelper = null,
-        ?Memory $searchMemory = null,
     ): GetItemStatuses {
         return new GetItemStatuses(
             $settings ?? $this->createStub(Settings::class),
@@ -277,13 +276,6 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         array $filters,
         array $config
     ): void {
-
-        $params = $this->createMock(Params::class);
-        $params->method('getFilterList')->willReturn($filters);
-        $results = $this->createMock(Results::class);
-        $results->method('getParams')->willReturn($params);
-        $searchMemory = $this->createMock(Memory::class);
-        $searchMemory->method('getCurrentSearch')->willReturn($results);
         $holdLogic = $this->createMock(Holds::class);
         $holdLogic->method('getSuppressedLocations')->willReturn([]);
         $availabilityStatusManager = $this->createMock(AvailabilityStatusManager::class);
@@ -295,7 +287,6 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
             $config,
             holdLogic: $holdLogic,
             availabilityStatusManager: $availabilityStatusManager,
-            searchMemory: $searchMemory
         );
 
         $ids = range(1, count($records) - 1);
