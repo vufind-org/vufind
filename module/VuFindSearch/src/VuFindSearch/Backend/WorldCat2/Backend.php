@@ -112,7 +112,7 @@ class Backend extends AbstractBackend
      * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
-     * 
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function retrieve($id, ?ParamBag $params = null)
