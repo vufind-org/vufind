@@ -135,9 +135,9 @@ a parent class's factory. Prefer constructor property promotion with autowiring 
 factories are the older style. `ServiceInitializer` injects dependencies for `*AwareInterface`s
 (logger, translator, DB services, ...).
 
-### Request handling: Actions, not controllers
+### Request handling: Actions
 
-Requests are handled by PSR-7 **action classes**, not by controllers. The matched route's
+Requests are handled by PSR-7 **action classes**. The matched route's
 `controller`/`action` parameters are mapped to a lowercase id `category/action`, and the handler is
 fetched from `VuFind\Action\PluginManager`:
 
@@ -147,7 +147,7 @@ fetched from `VuFind\Action\PluginManager`:
   (e.g. `eds/home` → `Search\HomeAction`).
 - Actions implement `action(ServerRequestInterface, ResponseInterface): ResponseInterface`, typically by
   extending `AbstractTemplateRenderingAction`, and use services from `VuFind\ActionHelper` (redirect,
-  forward, login, flash messages, ...) instead of controller plugins.
+  forward, login, flash messages, ...).
 - Per-action settings (search backend id, access permission, default tab, ...) are not hard-coded but
   applied from `vufind.action_config` in `module.config.php`; legacy URLs are mapped in
   `vufind.action_redirects`.
