@@ -306,6 +306,7 @@ class ChannelLoader
         // Collect details:
         $channels = [];
         foreach ($providers as $provider) {
+            $provider->applyPaginationFromRequest($this->request);
             $channels = array_merge(
                 $channels,
                 $provider->getFromRecord($driver, $token)
