@@ -427,6 +427,111 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testCommonFields.
+     *
+     * @return \Iterator
+     */
+    public static function commonFieldsProvider(): \Iterator
+    {
+        // Fields automatically appended to forms that don't define them:
+        $senderAndSubmitFields = [
+            [
+                'type' => 'text',
+                'name' => 'name',
+                'group' => '__sender__',
+                'label' => 'feedback_name',
+            ],
+            [
+                'type' => 'email',
+                'name' => 'email',
+                'group' => '__sender__',
+                'label' => 'feedback_email',
+                'autocomplete' => 'email',
+            ],
+            [
+                'type' => 'submit',
+                'name' => 'submitButton',
+                'label' => 'Send',
+            ],
+        ];
+        yield 'inherit, override, and ignore common fields' => [
+            'TestCommonFields',
+            [
+                [
+                    'type' => 'textarea',
+                    'name' => 'common_message',
+                    'required' => true,
+                    'label' => 'Comments',
+                    'settings' => ['rows' => 8],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'common_topic',
+                    'required' => false,
+                    'label' => 'Overridden Topic',
+                    'settings' => [
+                        'placeholder' => 'Common placeholder',
+                        'size' => 50,
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'label' => 'Phone Number',
+                    'settings' => [],
+                ],
+                ...$senderAndSubmitFields,
+            ],
+        ];
+        yield 'field settings replace common settings' => [
+            'TestCommonFieldsSettingsOverride',
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'common_topic',
+                    'required' => true,
+                    'label' => 'Topic',
+                    'settings' => [
+                        'placeholder' => 'Override placeholder',
+                    ],
+                ],
+                ...$senderAndSubmitFields,
+            ],
+        ];
+    }
+
+    /**
+     * Test that commonFields definitions are applied to form fields.
+     *
+     * @param string $formId   Form identifier
+     * @param array  $expected Expected form element config
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('commonFieldsProvider')]
+    public function testCommonFields(string $formId, array $expected): void
+    {
+        $form = $this->getMockTestForm($formId);
+        $this->assertEquals($expected, $form->getFormElementConfig());
+    }
+
+    /**
+     * Test that validation respects inherited and overridden commonFields settings.
+     *
+     * @return void
+     */
+    public function testCommonFieldsValidation(): void
+    {
+        $form = $this->getMockTestForm('TestCommonFields');
+        // Both fields are required in commonFields, but the form overrides
+        // common_topic to be optional:
+        $form->setData(['common_topic' => 'foo']);
+        $this->assertFalse($form->isValid());
+        $form->setData(['common_message' => 'Hello']);
+        $this->assertTrue($form->isValid());
+    }
+
+    /**
      * Test element options (select, radio, checkbox).
      *
      * @return void
