@@ -32,6 +32,8 @@
 
 namespace VuFind\ILS;
 
+use Laminas\Paginator\Paginator;
+
 use function in_array;
 
 /**
@@ -146,9 +148,9 @@ class PaginationHelper
      * @param int   $count       Result count
      * @param array $records     Result records
      *
-     * @return false|\Laminas\Paginator\Paginator
+     * @return ?Paginator
      */
-    public function getPaginator($pageOptions, $count, $records)
+    public function getPaginator(array $pageOptions, int $count, array $records): ?Paginator
     {
         $limit = (int)$pageOptions['limit'];
         $page = (int)$pageOptions['page'];
@@ -160,7 +162,7 @@ class PaginationHelper
         } elseif ($limit > 0 && $limit < $count) {
             $adapter = new \Laminas\Paginator\Adapter\ArrayAdapter($records);
         } else {
-            return false;
+            return null;
         }
         $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
