@@ -81,7 +81,7 @@ class DbBuilder
     ): array {
         $create = 'CREATE DATABASE ' . $newName;
         // Special case: PostgreSQL:
-        if ($driver == 'pgsql') {
+        if ($driver === 'pgsql') {
             $escape = 'ALTER DATABASE ' . $newName
                 . " SET bytea_output='escape'";
             $cuser = 'CREATE USER ' . $newUser
@@ -114,7 +114,7 @@ class DbBuilder
     {
         $postCommands = [];
         // Special case: PostgreSQL requires extra steps:
-        if ($driver == 'pgsql') {
+        if ($driver === 'pgsql') {
             $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
                 . "SCHEMA public TO {$newUser}";
             $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
@@ -183,7 +183,7 @@ class DbBuilder
         ?string $dbName = null
     ): Connection {
         // We need a default database name to use to establish a connection:
-        $dbName ??= ($driver == 'pgsql') ? 'template1' : 'mysql';
+        $dbName ??= ($driver === 'pgsql') ? 'template1' : 'mysql';
         return $this->dbFactory->getConnectionFromOptions(
             [
                 'driver' => $this->dbFactory->getDriverName($driver),

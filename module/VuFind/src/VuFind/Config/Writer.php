@@ -288,7 +288,7 @@ class Writer
             // We just want to use "[]" if this is a standard array with consecutive
             // keys; however, if we have non-numeric keys or out-of-order keys, we
             // want to retain those values as-is.
-            $subKey = (is_int($key2) && $key2 == $expectedKey)
+            $subKey = (is_int($key2) && $key2 === $expectedKey)
                 ? ''
                 : (is_int($key2) ? $key2 : "'{$key2}'");    // quote string keys
             $content .= $this->buildContentLine("{$key}[{$subKey}]", $subValue);

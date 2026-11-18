@@ -325,7 +325,7 @@ class PathResolver
         $dirContent = is_dir($path) ? scandir($path) : [];
         $result = [];
         foreach ($dirContent as $item) {
-            if ($item == '.' || $item == '..') {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
             $itemPath = $path . DIRECTORY_SEPARATOR . $item;

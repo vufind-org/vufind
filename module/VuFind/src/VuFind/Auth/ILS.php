@@ -453,7 +453,7 @@ class ILS extends AbstractBase
     protected function validatePasswordUpdate($params, ?string $target = null)
     {
         // Needs a password
-        if (trim($params['password']) == '') {
+        if (trim($params['password']) === '') {
             throw new AuthException('Password cannot be blank');
         }
         // Passwords don't match

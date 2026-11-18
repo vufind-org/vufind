@@ -1023,7 +1023,7 @@ class MultiBackend extends AbstractMultiDriver
      */
     public function supportsMethod(string $method, array $params)
     {
-        if ($method == 'getLoginDrivers' || $method == 'getDefaultLoginDriver') {
+        if ($method === 'getLoginDrivers' || $method === 'getDefaultLoginDriver') {
             return true;
         }
 
@@ -1250,7 +1250,7 @@ class MultiBackend extends AbstractMultiDriver
                 if (
                     (!is_array($data)
                     || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
-                    && strncmp("$source.", $value, $prefixLen) == 0
+                    && strncmp("$source.", $value, $prefixLen) === 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);
                 }

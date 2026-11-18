@@ -2666,7 +2666,7 @@ class SierraRest extends AbstractBase implements
             if (isset($item['fixedFields'][static::ITEM_OPAC_MESSAGE_FIELD])) {
                 $opacMsg = $item['fixedFields'][static::ITEM_OPAC_MESSAGE_FIELD];
                 $trimmedMsg = trim($opacMsg['value']);
-                if (strlen($trimmedMsg) && $trimmedMsg != '-') {
+                if (strlen($trimmedMsg) && $trimmedMsg !== '-') {
                     $notes[] = $this->translateOpacMessage(
                         trim($opacMsg['value'])
                     );
@@ -3161,7 +3161,7 @@ class SierraRest extends AbstractBase implements
             );
             if (
                 !empty($result['blockInfo'])
-                && trim($result['blockInfo']['code']) != '-'
+                && trim($result['blockInfo']['code']) !== '-'
             ) {
                 $code = trim($result['blockInfo']['code']);
                 $blockReason = [$this->patronBlockMappings[$code] ?? $code];
@@ -3187,7 +3187,7 @@ class SierraRest extends AbstractBase implements
             $a['locationDisplay'],
             $b['locationDisplay']
         );
-        if ($result == 0) {
+        if ($result === 0) {
             $result = $a['locationID'] - $b['locationID'];
         }
         return $result;
