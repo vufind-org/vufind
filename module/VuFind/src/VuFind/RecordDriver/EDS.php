@@ -1396,6 +1396,6 @@ class EDS extends DefaultRecord
                     : $this->recurseIntoRecordInfo($data[$key], $path);
             }
         }
-        return count($values) == 1 ? $values[0] : $values;
+        return count($values) === 1 ? $values[0] : $values;
     }
 }

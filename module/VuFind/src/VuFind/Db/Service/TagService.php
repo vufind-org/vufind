@@ -295,9 +295,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         }
 
         $dql .= 'GROUP BY t.id, t.tag ';
-        if ($sort == 'count') {
+        if ($sort === 'count') {
             $dql .= 'ORDER BY cnt DESC, LOWER(t.tag) ';
-        } elseif ($sort == 'tag') {
+        } elseif ($sort === 'tag') {
             $dql .= 'ORDER BY LOWER(t.tag) ';
         }
         $query = $this->entityManager->createQuery($dql);

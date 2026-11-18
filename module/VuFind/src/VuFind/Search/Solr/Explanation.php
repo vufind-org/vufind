@@ -498,7 +498,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         $res = [];
         while (!empty($lines) && $this->getLevel(end($lines)) > $level) {
             $line = array_pop($lines);
-            if ($this->getLevel($line) == $level + 1) {
+            if ($this->getLevel($line) === $level + 1) {
                 $res[] = $line;
             }
         }

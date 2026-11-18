@@ -447,7 +447,7 @@ class Loader extends \VuFind\ImageLoader
             $ids['isbn'] = $this->isbns[0];
             $ids['isbns'] = $this->isbns;
         }
-        if ($this->issn && strlen($this->issn) == 8) {
+        if ($this->issn && strlen($this->issn) === 8) {
             $ids['issn'] = $this->issn;
         }
         if ($this->oclc && strlen($this->oclc) > 0) {
@@ -547,7 +547,7 @@ class Loader extends \VuFind\ImageLoader
             // include a special case for jpg vs. jpeg:
             $format = substr($iconFile, -3);
             $this->contentType
-                = 'image/' . ($format == 'jpg' ? 'jpeg' : $format);
+                = 'image/' . ($format === 'jpg' ? 'jpeg' : $format);
             $this->image = file_get_contents($iconFile);
             return true;
         }
@@ -600,7 +600,7 @@ class Loader extends \VuFind\ImageLoader
         }
 
         // Conversion needed -- do some normalization for non-JPEG images:
-        if ($type != IMAGETYPE_JPEG) {
+        if ($type !== IMAGETYPE_JPEG) {
             // We no longer need the temp file:
             @unlink($tempFile);
             return $this->convertNonJpeg($image, $finalFile);

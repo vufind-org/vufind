@@ -547,7 +547,7 @@ class Folio extends AbstractAPI implements
      */
     protected function getByBatch($ids, $idField, $responseKey, $endpoint, $querySuffix = '')
     {
-        if (count($ids) == 0) {
+        if (count($ids) === 0) {
             return;
         }
         $idToKey = fn ($id) => $endpoint . '[' . $idField . '=' . $id . ']';
@@ -599,7 +599,7 @@ class Folio extends AbstractAPI implements
      */
     protected function getHoldingsByInstanceIds(array $instanceIds)
     {
-        if (count($instanceIds) == 0) {
+        if (count($instanceIds) === 0) {
             return [];
         }
         $holdings = [];
@@ -628,13 +628,13 @@ class Folio extends AbstractAPI implements
      */
     protected function getItemsByHoldingIds(array $holdingsIds)
     {
-        if (count($holdingsIds) == 0) {
+        if (count($holdingsIds) === 0) {
             return [];
         }
         $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
         $querySuffix = empty($folioItemSort) ? '' : ' sortby ' . $folioItemSort;
-        if (count($holdingsIds) == 1) {
+        if (count($holdingsIds) === 1) {
             // /inventory/items-by-holdings-id returns bound-with items too (but it only takes one holdingsRecordId)
             foreach (
                 $this->getByBatch(
@@ -732,7 +732,7 @@ class Folio extends AbstractAPI implements
         ) {
             $instances[] = $instance;
         }
-        if (count($instances) != count($bibIds)) {
+        if (count($instances) !== count($bibIds)) {
             throw new ILSException('An instance was not found, bibIds=' . implode(',', $bibIds));
         }
         return $instances;
@@ -829,7 +829,7 @@ class Folio extends AbstractAPI implements
         $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
 
         // Exclude checking by regex match
-        if (trim(strtolower($mode)) == 'regex') {
+        if (trim(strtolower($mode)) === 'regex') {
             foreach ($excludeLocs as $pattern) {
                 $match = @preg_match($pattern, $locationName);
                 // Invalid regex, skip this pattern
@@ -1299,7 +1299,7 @@ class Folio extends AbstractAPI implements
             // If there are no item records on this holding, we're going to create a fake one,
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
-            if ($number == 0 && $showHoldingsNoItems) {
+            if ($number === 0 && $showHoldingsNoItems) {
                 $nextBatch[] = $this->buildHoldingsNoItemsData($bibId, $holdingDetails, $holding);
             }
             $items = array_merge(
@@ -1389,7 +1389,7 @@ class Folio extends AbstractAPI implements
         }
         $holdings = $this->getHoldingsByInstanceIds($instanceIds);
         $holdingIds = array_map(fn ($holding) => $holding->id, $holdings);
-        $folioItems = count($holdings) == 0 ? [] : $this->getItemsByHoldingIds($holdingIds);
+        $folioItems = count($holdings) === 0 ? [] : $this->getItemsByHoldingIds($holdingIds);
         $results = [];
         foreach ($bibIds as $bibId) {
             $instanceId = $bibIdToInstanceId[$bibId];
@@ -2156,7 +2156,7 @@ class Folio extends AbstractAPI implements
     {
         if ('Delivery' == ($holdDetails['requestGroupId'] ?? null)) {
             $deliveryPickupLocations = $this->getPickupLocations($patron, $holdDetails);
-            if (count($deliveryPickupLocations) == 1) {
+            if (count($deliveryPickupLocations) === 1) {
                 return $deliveryPickupLocations[0]['locationDisplay'];
             }
         }

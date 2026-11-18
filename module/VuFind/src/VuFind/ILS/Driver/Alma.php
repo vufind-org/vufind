@@ -1242,7 +1242,7 @@ class Alma extends AbstractBase implements
                 //$loan['volume'] = ;
                 $loan['publication_year'] = (string)$itemLoan->publication_year;
                 $loan['renewable']
-                    = strtolower((string)$itemLoan->renewable) == 'true';
+                    = strtolower((string)$itemLoan->renewable) === 'true';
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
@@ -1407,7 +1407,7 @@ class Alma extends AbstractBase implements
      */
     public function getConfig(string $function, array $params = []): array
     {
-        if ($function == 'patronLogin') {
+        if ($function === 'patronLogin') {
             return [
                 'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind',
             ];

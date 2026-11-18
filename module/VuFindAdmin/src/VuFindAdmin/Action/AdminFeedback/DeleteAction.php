@@ -118,7 +118,7 @@ class DeleteAction extends AbstractAdminAction implements TranslatorAwareInterfa
             return $this->confirmDelete($request, $response, $ids, $originUrl, $newUrl);
         }
         $delete = $this->feedbackService->deleteByIdArray($ids);
-        if (0 == $delete) {
+        if (0 === $delete) {
             $flashMessagesHelper->addErrorMessage('feedback_delete_failure');
             return $redirectHelper->redirectToUrl($response, $originUrl);
         }

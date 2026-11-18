@@ -260,10 +260,10 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
             $charset = 'utf-8';
             $jsonOptions |= JSON_UNESCAPED_UNICODE;
         }
-        if ($this->outputMode == 'json') {
+        if ($this->outputMode === 'json') {
             $contentType = 'application/json';
             $response->getBody()->write(json_encode($output, $jsonOptions));
-        } elseif ($this->outputMode == 'jsonp') {
+        } elseif ($this->outputMode === 'jsonp') {
             $contentType = 'application/javascript';
             $response->getBody()->write($this->jsonpCallback . '(' . json_encode($output, $jsonOptions) . ');');
         } else {

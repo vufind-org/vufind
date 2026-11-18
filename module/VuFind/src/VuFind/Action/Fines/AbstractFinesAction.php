@@ -177,7 +177,7 @@ abstract class AbstractFinesAction extends AbstractTemplateRenderingAction imple
         $templateParams['payableOnline'] = $paymentDetails['amount'];
         $templateParams['payableTotal'] = $paymentDetails['amount'] + $templateParams['serviceFee'];
         $templateParams['payableOnlineCnt'] = count($paymentDetails['fines']);
-        $templateParams['nonPayableFines'] = count($fines) != count($paymentDetails['fines']);
+        $templateParams['nonPayableFines'] = count($fines) !== count($paymentDetails['fines']);
         $templateParams['registerPayment'] = false;
         $templateParams['selectFees'] = $selectFees;
         $templateParams['selectedIds'] = $selectedIds;

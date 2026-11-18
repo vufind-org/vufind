@@ -1343,7 +1343,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function assertLightboxWarning(Element $page, string $message): void
     {
         $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || strlen(trim($warning->getText())) == 0) {
+        if (!$warning || strlen(trim($warning->getText())) === 0) {
             $warning = $this->findCss($page, '.modal-body .alert-danger');
         }
         $this->assertEquals($message, $warning->getText());

@@ -434,7 +434,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
         $auth = (string)$response->security->auth;
 
-        if ($auth == 'true') {
+        if ($auth === 'true') {
             return $session;
         }
 

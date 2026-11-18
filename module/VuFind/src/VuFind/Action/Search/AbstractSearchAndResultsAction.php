@@ -790,7 +790,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         if (
             $jumpto
             && ($this->configManager->getConfigArray('config')['Record']['jump_to_single_search_result'] ?? false)
-            && $results->getResultTotal() == 1
+            && $results->getResultTotal() === 1
             && $recordList = $results->getResults()
         ) {
             return $this->getRedirectForRecord(
@@ -880,7 +880,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         }
 
         // Fail if this is not the right type of search:
-        if ($savedSearch->getParams()->getSearchType() != 'advanced') {
+        if ($savedSearch->getParams()->getSearchType() !== 'advanced') {
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {

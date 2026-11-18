@@ -100,7 +100,7 @@ class CaptchaService implements TranslatorAwareInterface
         $this->captchas = $captchas;
         if ($captchas && null !== ($forms = $config['Captcha']['forms'] ?? null)) {
             $this->active = true;
-            $this->domains = '*' == trim($forms)
+            $this->domains = '*' === trim($forms)
                 ? true
                 : $this->explodeListSetting($forms);
         }
