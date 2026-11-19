@@ -143,6 +143,6 @@ trait BatchTrait
     {
         // Add pagination params
         $this->page = (int)($request->getQuery('page', 1));
-        $this->limit = (int)($request->getQuery('limit', $this->batchSize));
+        $this->limit = min((int)($request->getQuery('limit', $this->batchSize)), $this->maxBatchSize);
     }
 }

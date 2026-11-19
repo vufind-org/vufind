@@ -87,7 +87,6 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         array $options = []
     ) {
         $this->setOptions($options);
-        $this->limit = $this->batchSize;
     }
 
     /**
@@ -121,9 +120,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         }
 
         $params->setPage($this->page);
-        if ($this->limit) {
-            $params->setLimit(min($this->limit, $this->maxBatchSize));
-        }
+        $params->setLimit($this->limit ?? $this->batchSize);
     }
 
     /**
@@ -280,9 +277,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         // Add pagination
         $pagedParams = $newResults->getParams();
         $pagedParams->setPage($this->page);
-        if ($this->limit) {
-            $pagedParams->setLimit(min($this->limit, $this->maxBatchSize));
-        }
+        $pagedParams->setLimit($this->limit ?? $this->batchSize);
         $newResults->setParams($pagedParams);
 
         // Run the search and convert the results into a channel:

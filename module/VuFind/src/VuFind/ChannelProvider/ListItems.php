@@ -274,7 +274,8 @@ class ListItems extends AbstractChannelProvider
             return $retVal;
         }
         $results = $this->resultsManager->get('Favorites');
-        $results->getParams()->initFromRequest(new Parameters(['id' => $list->getId()]));
+        $results->getParams()->initFromRequest(new Parameters(['id' => $list->getId(), 'page' => $this->page]));
+        $results->getParams()->setLimit($this->limit ?? $this->batchSize);
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',
