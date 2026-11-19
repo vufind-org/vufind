@@ -80,6 +80,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return EDS
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
         $record = new EDS(null, $this->defaultDriverConfigPEF);

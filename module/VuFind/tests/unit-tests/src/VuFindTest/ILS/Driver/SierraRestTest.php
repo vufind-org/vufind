@@ -306,6 +306,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return MockObject&SierraRest
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function createDriver(
         ?Converter $dateConverter = null,
         ?callable $sessionFactory = null,

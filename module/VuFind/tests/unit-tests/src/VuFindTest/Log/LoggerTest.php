@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Log;
 
-use VuFind\Log\Logger;
-
 use function count;
 use function is_array;
 
@@ -50,6 +48,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testLogException()
     {
         $callback = #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
