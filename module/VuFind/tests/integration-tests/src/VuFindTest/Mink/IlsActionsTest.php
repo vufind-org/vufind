@@ -226,6 +226,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function cancelAllProcedure(Element $page, string $type): void
     {
         // First make sure item is there before cancel is pushed:
