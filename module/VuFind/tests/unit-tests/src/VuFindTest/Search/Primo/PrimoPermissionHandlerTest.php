@@ -834,7 +834,6 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return bool
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function handlerMemberAuthNotSuccessfullCallback($param): bool
     {
         return false;
@@ -874,7 +873,6 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return bool
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function handlerDefaultAuthNotSuccessfullCallback($param): bool
     {
         return false;
@@ -923,7 +921,6 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return bool
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function handlerIsNotAMemberCallback($param): bool
     {
         return false;

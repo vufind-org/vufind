@@ -129,7 +129,6 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function setUp(): void
     {
         $this->config = parse_ini_file(

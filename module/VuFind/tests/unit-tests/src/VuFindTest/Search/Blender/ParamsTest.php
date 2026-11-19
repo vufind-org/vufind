@@ -1096,7 +1096,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Params
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getParams($config = null, $mappings = null): Params
     {
         $mockConfigManager = $this->createMock(ConfigManagerInterface::class);

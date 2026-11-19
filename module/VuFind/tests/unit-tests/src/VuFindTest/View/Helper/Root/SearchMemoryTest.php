@@ -73,7 +73,6 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&Params
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getMockSolrParams(array $requestArray = []): MockObject&Params
     {
         $solrOptions = $this->createMock(Options::class);

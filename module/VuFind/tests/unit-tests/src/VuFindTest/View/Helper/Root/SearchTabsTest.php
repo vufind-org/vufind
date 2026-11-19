@@ -255,7 +255,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      *
      * @return SearchTabs
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getHelper(
         array $filters,
         int $filtersCalls,

@@ -364,7 +364,6 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      *
      * @return string
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getCatUsernameHash(string $username): string
     {
         return hash(
