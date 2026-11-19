@@ -61,7 +61,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     {
         yield [
             [],
-            2,
             [],
             1,
             '',
@@ -71,7 +70,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'first' => 'foo',
                 'second' => 'bar',
             ],
-            1,
             [
                 'last' => ['foo'],
             ],
@@ -81,7 +79,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         ];
         yield [
             [],
-            1,
             [
                 'last' => ['foo'],
             ],
@@ -94,7 +91,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      * Test getCurrentHiddenFilterParams method.
      *
      * @param array  $currentFilters   Current hidden filters
-     * @param int    $filtersCalls     Number of expected calls to get filters
      * @param array  $lastFilters      Hidden filters for last search
      * @param int    $lastFiltersCalls Number of expected calls to get last filters
      * @param string $expected         Expected results
@@ -104,7 +100,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('getCurrentHiddenFilterParamsProvider')]
     public function testGetCurrentHiddenFilterParams(
         array $currentFilters,
-        int $filtersCalls,
         array $lastFilters,
         int $lastFiltersCalls,
         string $expected
