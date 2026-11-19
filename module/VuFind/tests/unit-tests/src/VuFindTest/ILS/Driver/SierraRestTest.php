@@ -303,7 +303,6 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param ?Converter $dateConverter  Date converter
      * @param ?callable  $sessionFactory Session factory function
      * @param array      $requestMap     Make request responses map
-     * $sessionFactory = fn () => $this->createMock(Container::class);
      *
      * @return MockObject&SierraRest
      */
