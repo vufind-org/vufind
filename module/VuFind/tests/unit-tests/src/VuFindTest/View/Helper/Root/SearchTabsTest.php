@@ -111,7 +111,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     ): void {
         $helper = $this->getHelper(
             $currentFilters,
-            $filtersCalls,
             $lastFilters,
             $lastFiltersCalls
         );
@@ -135,21 +134,18 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper(
             [],
-            0,
             [],
             0,
             [
                 'Solr' => 'Local Index',
                 'Solr:filtered' => 'Local Journals',
             ],
-            4,
             [
                 'Solr:filtered' => [
                     'building:"main"',
                     'format:"journal"',
                 ],
-            ],
-            4
+            ]
         );
 
         $expected = [
@@ -203,14 +199,12 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper(
             [],
-            0,
             [],
             0,
             [
                 'Solr' => 'Local Index',
                 'Dolr' => 'Local Index',
             ],
-            4,
             [
                 'Solr' => [
                     'building:"main"',
@@ -219,8 +213,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'Dolr' => [
                     'building:"dolr"',
                 ],
-            ],
-            4
+            ]
         );
 
         $this->assertEquals(
@@ -257,13 +250,10 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper(
         array $filters,
-        int $filtersCalls,
         array $lastFilters,
         int $lastFiltersCalls,
         array $tabConfig = [],
-        int $tabConfigCalls = 0,
         array $tabFilterConfig = [],
-        int $tabFilterConfigCalls = 0
     ): SearchTabs {
         $searchService = $this->createMock(SearchService::class);
         $recordLoader = $this->createMock(Loader::class);
