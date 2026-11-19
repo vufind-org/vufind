@@ -567,7 +567,6 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Get 12 results all at once:
         $session->visit($channelUrl . '&page=1&limit=12');
-
         $page = $session->getPage();
         $all12 = $page->findAll('css', $selector);
         $all12Urls = array_map($getUrls, $all12);
