@@ -116,13 +116,11 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function configureSearchParams(Params $params, HttpRequest $request): void
     {
+        $this->applyPaginationFromRequest($request);
         foreach ($this->fields as $field => $desc) {
             $params->addFacet($field, $desc);
         }
 
-        // Add pagination params
-        $this->page = intval($request->getQuery('page', 1));
-        $this->limit = intval($request->getQuery('limit', $this->batchSize));
         $params->setPage($this->page);
         if ($this->limit) {
             $params->setLimit(min($this->limit, $this->maxBatchSize));
