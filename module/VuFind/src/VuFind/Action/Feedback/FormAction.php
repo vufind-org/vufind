@@ -65,10 +65,10 @@ class FormAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager              $authManager    Authentication manager
-     * @param Form                     $form           Form
-     * @param protected CaptchaService $captchaService Captcha service
-     * @param array                    $config         VuFind configuration
+     * @param AuthManager    $authManager    Authentication manager
+     * @param Form           $form           Form
+     * @param CaptchaService $captchaService Captcha service
+     * @param array          $config         VuFind configuration
      */
     public function __construct(
         protected AuthManager $authManager,
