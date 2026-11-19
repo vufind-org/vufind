@@ -237,14 +237,11 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a SearchTabs helper.
      *
-     * @param array $filters              Current filters
-     * @param int   $filtersCalls         Number of expected calls to get filters
-     * @param array $lastFilters          Last filters
-     * @param int   $lastFiltersCalls     Number of expected calls to get last filters
-     * @param array $tabConfig            Tab configuration
-     * @param int   $tabConfigCalls       Number of expected calls to get tab config
-     * @param array $tabFilterConfig      Tab filter configuration
-     * @param int   $tabFilterConfigCalls Number of expected calls to get tab filter config
+     * @param array $filters          Current filters
+     * @param array $lastFilters      Last filters
+     * @param int   $lastFiltersCalls Number of expected calls to get last filters
+     * @param array $tabConfig        Tab configuration
+     * @param array $tabFilterConfig  Tab filter configuration
      *
      * @return SearchTabs
      */

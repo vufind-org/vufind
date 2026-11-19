@@ -304,6 +304,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param ?callable  $sessionFactory Session factory function
      * @param array      $requestMap     Make request responses map
      * $sessionFactory = fn () => $this->createMock(Container::class);
+     *
      * @return MockObject&SierraRest
      */
     protected function createDriver(

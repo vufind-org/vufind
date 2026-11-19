@@ -29,7 +29,6 @@
 
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordDriver\EDS;
 use VuFind\RecordTab\HoldingsILS;
 
 /**
