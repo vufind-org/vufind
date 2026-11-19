@@ -294,7 +294,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
                 // Pagination
-                $this->page - 1,
+                $this->page - 1, // adjust for zero-based pagination
                 $limit,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
