@@ -222,11 +222,10 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test canceling a request with the "cancel all" button.
      *
      * @param Element $page Page element.
-     * @param string  $type Request type being tested.
      *
      * @return void
      */
-    protected function cancelAllProcedure(Element $page, string $type): void
+    protected function cancelAllProcedure(Element $page): void
     {
         // First make sure item is there before cancel is pushed:
         $this->assertSame(
@@ -445,7 +444,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelAllIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
-        $this->cancelAllProcedure($page, 'interlibrary loan requests');
+        $this->cancelAllProcedure($page);
     }
 
     /**
@@ -516,7 +515,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelAllStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
-        $this->cancelAllProcedure($page, 'storage retrieval requests');
+        $this->cancelAllProcedure($page);
     }
 
     /**
