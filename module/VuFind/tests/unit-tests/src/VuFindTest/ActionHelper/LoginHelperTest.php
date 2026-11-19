@@ -701,6 +701,7 @@ class LoginHelperTest extends TestCase
      *
      * @return MockObject&ForwardHelper
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getForwardHelper(?string $expectedRoute): ForwardHelper
     {
         $forwardHelper = $this->createMock(ForwardHelper::class);

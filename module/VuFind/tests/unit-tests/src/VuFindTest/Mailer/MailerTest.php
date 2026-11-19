@@ -413,6 +413,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testSendLink()
     {
         $renderer = $this->createMock(TemplateRendererInterface::class);
