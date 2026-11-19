@@ -312,7 +312,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         array $requestMap = [],
     ): MockObject&SierraRest {
         $dateConverter ??= new \VuFind\Date\Converter();
-        $sessionFactory ??= fn ($namespace) => $this->createMock(Container::class);
+        $sessionFactory ??= fn () => $this->createMock(Container::class);
         $driver = $this->getMockBuilder(SierraRest::class)->setConstructorArgs([$dateConverter, $sessionFactory])
             ->onlyMethods(['makeRequest'])->getMock();
         $driver->method('makeRequest')->willReturnMap($requestMap);
