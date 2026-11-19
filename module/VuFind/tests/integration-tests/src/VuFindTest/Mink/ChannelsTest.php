@@ -544,39 +544,46 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test loading the alphabrowse channel in the Similar Items tab.
+     * Test pagination of the AlphaBrowse channel.
      *
      * @return void
      */
-    public function testAlphabrowseInSimilarItemsTab(): void
+    public function testAlphabrowsePagination(): void
     {
         $this->changeConfigs(
             [
                 'channels' => [
-                    'source.Solr' => ['recordTab' => ['alphabrowse']],
-                    'provider.alphabrowse' => ['itemsPerRow' => 6, 'rowsPerPage' => 1, 'maxBatchSize' => 6],
+                    'source.Solr' => ['record' => ['alphabrowse']],
                 ],
             ]
         );
+        $channelUrl = $this->getVuFindUrl()
+            . '/Channels/Record?id=0000183626-0&source=Solr&layout=lightbox&channelProvider=alphabrowse';
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Record/25a443d1-541f-4784-b11f-905e43e6e415');
-        $page = $session->getPage();
-        // No channel entries before opening tab:
-        $this->assertCount(0, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
-        // Switch to tab:
-        $this->clickCss($page, '.record-tab.channels a');
-        $this->waitForPageLoad($page);
-        // There should be one row of results:
-        $selector = 'li.channel-item:not(.hidden-batch-item) a.channel-item-title';
-        $row1 = $page->findAll('css', $selector);
+
+        // Set up some helpful variables for use below:
+        $selector = 'a.channel-item-title';
         $getUrls = fn ($entry) => $entry->getAttribute('href');
-        $row1Urls = array_map($getUrls, $row1);
-        $this->assertCount(6, $row1Urls);
-        // Add more results and confirm they loaded:
-        $this->clickCss($page, '.channel-load-more-btn');
-        $row2 = $page->findAll('css', $selector);
-        $row2Urls = array_slice(array_map($getUrls, $row2), 6);
-        $this->assertCount(6, $row2Urls);
-        $this->assertSame([], array_intersect($row1Urls, $row2Urls), 'Rows should be all different');
+
+        // Get 12 results all at once:
+        $session->visit($channelUrl . '&page=1&limit=12');
+
+        $page = $session->getPage();
+        $all12 = $page->findAll('css', $selector);
+        $all12Urls = array_map($getUrls, $all12);
+        $this->assertCount(12, $all12Urls);
+
+        // Now grab two pages of 6, and make sure everything is consistent:
+        $session->visit($channelUrl . '&page=1&limit=6');
+        $page = $session->getPage();
+        $firstSix = $page->findAll('css', $selector);
+        $firstSixUrls = array_map($getUrls, $firstSix);
+        $this->assertSame(array_slice($all12Urls, 0, 6), $firstSixUrls);
+
+        $session->visit($channelUrl . '&page=2&limit=6');
+        $page = $session->getPage();
+        $nextSix = $page->findAll('css', $selector);
+        $nextSixUrls = array_map($getUrls, $nextSix);
+        $this->assertSame(array_slice($all12Urls, 6), $nextSixUrls);
     }
 }
