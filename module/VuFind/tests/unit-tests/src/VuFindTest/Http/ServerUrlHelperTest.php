@@ -130,6 +130,19 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test setServerContext.
+     *
+     * @return void
+     */
+    public function testSetServerContext(): void
+    {
+        $helper = $this->getServerUrlHelper([]);
+        $this->assertSame('http://', $helper->getBaseUrl());
+        $helper->setServerContext(['HTTP_HOST' => 'localhost']);
+        $this->assertSame('http://localhost', $helper->getBaseUrl());
+    }
+
+    /**
      * Return an instance of ServerUrlHelper.
      *
      * @param array $serverContext Server context (like the $_SERVER superglobal)

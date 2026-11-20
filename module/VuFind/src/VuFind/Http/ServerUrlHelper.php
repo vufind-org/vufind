@@ -88,13 +88,26 @@ class ServerUrlHelper
     }
 
     /**
+     * Set server context.
+     *
+     * @param array $context New server context
+     *
+     * @return static
+     */
+    public function setServerContext(array $context): static
+    {
+        $this->serverContext = $context;
+        return $this;
+    }
+
+    /**
      * Return the base URL of the current host.
      *
      * @return string
      */
     public function getBaseUrl(): string
     {
-        return $this->getScheme() . '://' . $this->getHost();
+        return $this->getScheme() . '://' . ($this->getHost() ?? '');
     }
 
     /**
