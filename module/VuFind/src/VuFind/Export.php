@@ -348,7 +348,7 @@ class Export
             foreach ($formatSettings as $format => $allowedContexts) {
                 if (
                     str_contains($allowedContexts, $context)
-                    || ($context == 'record' && $allowedContexts == 1)
+                    || ($context === 'record' && $allowedContexts == 1)
                 ) {
                     $active[] = $format;
                 }
@@ -356,7 +356,7 @@ class Export
 
             // for legacy settings [BulkExport]
             if (
-                $context == 'bulk'
+                $context === 'bulk'
                 && ($this->mainConfig['BulkExport']['enabled'] ?? false)
                 && $bulkOptions = $this->mainConfig['BulkExport']['options'] ?? null
             ) {

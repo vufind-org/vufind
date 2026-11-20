@@ -162,7 +162,7 @@ class DedupeCommand extends Command
 
         $last = '';
         while ($tmp = fgets($inHandle)) {
-            if ($tmp != $last) {
+            if ($tmp !== $last) {
                 $this->writeToOutputFile($outHandle, $tmp);
             }
             $last = $tmp;

@@ -541,8 +541,8 @@ class SideFacets extends AbstractFacets
                     $itemValue == $value
                     || ($truncate
                     && preg_match('/^' . preg_quote($value, '/') . '/', $item['value']))
-                    || ($item['value'] == 'true' && $value == '1')
-                    || ($item['value'] == 'false' && $value == '0')
+                    || ($item['value'] == 'true' && $value === '1')
+                    || ($item['value'] == 'false' && $value === '0')
                 ) {
                     $count += $item['count'];
                 }

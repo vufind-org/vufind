@@ -178,7 +178,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
         // If we found other statuses or if we failed to find "Not Charged,"
         // the item is not available!
-        $available = (count($otherStatuses) == 0 && $notCharged);
+        $available = (count($otherStatuses) === 0 && $notCharged);
         return ['available' => $available, 'otherStatuses' => $otherStatuses];
     }
 
@@ -377,7 +377,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
             // If we found any information, break out of the foreach loop;
             // we don't need to try any more queries.
-            if (count($data) == 0) {
+            if (count($data) === 0) {
                 $data[$id] = [
                     'id' => $id,
                     'status' => $prestados,

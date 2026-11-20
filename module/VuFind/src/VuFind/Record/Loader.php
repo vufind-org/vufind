@@ -140,7 +140,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
                     $fallbackRecords = [];
                 }
 
-                if (count($fallbackRecords) == 1) {
+                if (count($fallbackRecords) === 1) {
                     return $fallbackRecords[0];
                 }
             }

@@ -224,7 +224,7 @@ class HomeAction extends AbstractAccountAction
         }
         if ($e instanceof AuthEmailNotVerifiedException) {
             $this->sendFirstVerificationEmail($e->getUser());
-            if ($msg == 'authentication_error_email_not_verified_html') {
+            if ($msg === 'authentication_error_email_not_verified_html') {
                 $this->userVerificationContainer->user = $e->getUser()->getUsername();
                 $url = $this->routeHelper
                     ->getUrlFromRoute('account-emailnotverified', queryParams: ['reverify' => 'true']);
@@ -239,7 +239,7 @@ class HomeAction extends AbstractAccountAction
         // If a Shibboleth-style login has failed and the user just logged out, we need to override the error message
         // with a more relevant one:
         if (
-            $msg == 'authentication_error_admin'
+            $msg === 'authentication_error_admin'
             && $this->authManager->userHasLoggedOut()
             && $this->authManager->hasSessionInitiator()
         ) {

@@ -483,7 +483,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $holding[] = $temp;
         }
 
-        return (count($holding) != 0 && $patron['id'] != null)
+        return (count($holding) !== 0 && $patron['id'] != null)
             ? $this->checkHoldAllowed($patron['id'], $holding) : $holding;
     }
 
@@ -691,7 +691,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $end_time = $start_string = null;
 
         // Handle empty patterns
-        if (count($data) == 0) {
+        if (count($data) === 0) {
             return '';
         }
 
@@ -992,7 +992,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($holdings_marc as $row) {
             if (
                 $row['SUBFIELD_DATA'] != null
-                && trim($row['SUBFIELD_DATA']) != ''
+                && trim($row['SUBFIELD_DATA']) !== ''
             ) {
                 $data_set[$row['FIELD_SEQUENCE']][] = [
                     'tag'  => trim($row['FIELD_TAG']),
@@ -1132,7 +1132,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($hresult as $row) {
             if (
                 $row['SUBFIELD_DATA'] != null
-                && trim($row['SUBFIELD_DATA']) != ''
+                && trim($row['SUBFIELD_DATA']) !== ''
             ) {
                 $data_set[$row['ID'] . '_' . $row['FIELD_SEQUENCE']][] = [
                     'id'   => trim($row['ID']),

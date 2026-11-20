@@ -566,7 +566,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
             // true to the metadata)
             $callback = function ($issn) use ($item) {
-                return strlen($issn) != 8
+                return strlen($issn) !== 8
                     || !in_array(
                         substr($issn, 0, 4) . '-' . substr($issn, 4),
                         $item['issn']

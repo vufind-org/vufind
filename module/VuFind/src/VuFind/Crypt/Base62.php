@@ -71,13 +71,13 @@ class Base62
         }
 
         $base62Number = '';
-        while ($binaryNumber != 0) {
+        while ($binaryNumber !== 0) {
             $base62Number = self::BASE62_ALPHABET[$binaryNumber % self::BASE62_BASE]
                 . $base62Number;
             $binaryNumber = intdiv($binaryNumber, self::BASE62_BASE);
         }
 
-        return ($base62Number == '') ? '0' : $base62Number;
+        return ($base62Number === '') ? '0' : $base62Number;
     }
 
     /**

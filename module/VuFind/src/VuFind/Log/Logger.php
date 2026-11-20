@@ -57,6 +57,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * Is debug logging enabled?
      *
      * @var bool
+     *
+     * @deprecated Deprecated since 11.1 and will be removed without replacement in 12.0
      */
     protected bool $debugNeeded = false;
 
@@ -271,6 +273,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * @param bool $newState New state (omit to leave current state unchanged)
      *
      * @return bool
+     *
+     * @deprecated Deprecated since 11.1 and will be removed without replacement in 12.0
      */
     public function debugNeeded($newState = null)
     {

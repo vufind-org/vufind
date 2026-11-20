@@ -75,14 +75,9 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('getBaseUrlProvider')]
     public function testGetBaseUrl(string $https, string $host, string $expected): void
     {
-        $helper = $this->getServerUrlHelper();
-        $serverBackup = $this->backupAndSetServerFields($https, $host);
-        try {
-            $results = $helper->getBaseUrl();
-            $this->assertSame($expected, $results);
-        } finally {
-            $this->restoreServerFields($serverBackup);
-        }
+        $helper = $this->getServerUrlHelper(['HTTPS' => $https, 'HTTP_HOST' => $host]);
+        $results = $helper->getBaseUrl();
+        $this->assertSame($expected, $results);
     }
 
     /**
@@ -111,14 +106,9 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('urlsWithPathsProvider')]
     public function testGetCurrentUrl(string $https, string $host, string $currentPath, string $expected): void
     {
-        $helper = $this->getServerUrlHelper();
-        $serverBackup = $this->backupAndSetServerFields($https, $host, $currentPath);
-        try {
-            $results = $helper->getCurrentUrl();
-            $this->assertSame($expected, $results);
-        } finally {
-            $this->restoreServerFields($serverBackup);
-        }
+        $helper = $this->getServerUrlHelper(['HTTPS' => $https, 'HTTP_HOST' => $host, 'REQUEST_URI' => $currentPath]);
+        $results = $helper->getCurrentUrl();
+        $this->assertSame($expected, $results);
     }
 
     /**
@@ -134,65 +124,33 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('urlsWithPathsProvider')]
     public function testGetUrlForPath(string $https, string $host, string $path, string $expected): void
     {
-        $helper = $this->getServerUrlHelper();
-        $serverBackup = $this->backupAndSetServerFields($https, $host);
-        try {
-            $results = $helper->getUrlForPath($path);
-            $this->assertSame($expected, $results);
-        } finally {
-            $this->restoreServerFields($serverBackup);
-        }
+        $helper = $this->getServerUrlHelper(['HTTPS' => $https, 'HTTP_HOST' => $host]);
+        $results = $helper->getUrlForPath($path);
+        $this->assertSame($expected, $results);
     }
 
     /**
-     * Backup the specified $_SERVER fields to $serverBackup and write the given
-     * temporary values.
-     *
-     * @param string $https      $_SERVER['HTTPS'] value to use during tests
-     * @param string $host       $_SERVER['HTTP_HOST'] value to use during tests
-     * @param string $requestUri $_SERVER['REQUEST_URI'] value to use during tests
-     *
-     * @return array Backup of these fields
-     */
-    protected function backupAndSetServerFields(
-        string $https,
-        string $host,
-        string $requestUri = '/vufind/current-page'
-    ): array {
-        $serverBackup = array_map(fn ($field) => $_SERVER[$field] ?? null, $this->serverBackupFields);
-
-        $_SERVER['HTTPS'] = $https;
-        $_SERVER['HTTP_HOST'] = $host;
-        $_SERVER['REQUEST_URI'] = $requestUri;
-
-        return $serverBackup;
-    }
-
-    /**
-     * Restore the specified fields into $_SERVER.
-     *
-     * @param array $serverBackup Original values to restore
+     * Test setServerContext.
      *
      * @return void
      */
-    protected function restoreServerFields(array $serverBackup): void
+    public function testSetServerContext(): void
     {
-        foreach ($this->serverBackupFields as $field) {
-            if ($backupValue = ($serverBackup[$field] ?? null)) {
-                $_SERVER[$field] = $backupValue;
-            } else {
-                unset($_SERVER[$field]);
-            }
-        }
+        $helper = $this->getServerUrlHelper([]);
+        $this->assertSame('http://', $helper->getBaseUrl());
+        $helper->setServerContext(['HTTP_HOST' => 'localhost']);
+        $this->assertSame('http://localhost', $helper->getBaseUrl());
     }
 
     /**
      * Return an instance of ServerUrlHelper.
      *
+     * @param array $serverContext Server context (like the $_SERVER superglobal)
+     *
      * @return ServerUrlHelper
      */
-    protected function getServerUrlHelper(): ServerUrlHelper
+    protected function getServerUrlHelper(array $serverContext): ServerUrlHelper
     {
-        return new ServerUrlHelper(false);
+        return new ServerUrlHelper(false, $serverContext);
     }
 }

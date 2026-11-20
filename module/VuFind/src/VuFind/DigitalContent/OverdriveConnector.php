@@ -1106,7 +1106,7 @@ class OverdriveConnector implements
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
                 if (
-                    strtolower($checkout->reserveId) == strtolower(
+                    strtolower($checkout->reserveId) === strtolower(
                         $overDriveId
                     )
                 ) {
@@ -1138,7 +1138,7 @@ class OverdriveConnector implements
         if ($result->status) {
             $holds = $result->data;
             foreach ($holds as $hold) {
-                if (strtolower($hold->reserveId) == strtolower($overDriveId)) {
+                if (strtolower($hold->reserveId) === strtolower($overDriveId)) {
                     return $hold;
                 }
             }

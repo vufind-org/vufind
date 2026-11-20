@@ -240,7 +240,7 @@ class Citation implements TranslatorAwareInterface
                 // If we have exactly two parts, we should trim any trailing
                 // punctuation from the second part (this reduces the odds of
                 // accidentally trimming a "Jr." or "Sr."):
-                if (count($parts) == 2) {
+                if (count($parts) === 2) {
                     $parts[1] = rtrim($parts[1], '.');
                 }
                 // Put the parts back together; eliminate stray commas:
@@ -604,7 +604,7 @@ class Citation implements TranslatorAwareInterface
     {
         // Fix abbreviated letters.
         if (
-            strlen($str) == 1
+            strlen($str) === 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -782,7 +782,7 @@ class Citation implements TranslatorAwareInterface
                 // Do not abbreviate corporate authors:
                 $author = in_array($author, $this->details['corporateAuthors'])
                     ? $author : $this->abbreviateName($author);
-                if (($i + 1 == $authorCount) && ($i > 0)) { // Last
+                if (($i + 1 === $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
                     $authorStr .= $ellipsis ? ' ' : '& ';
@@ -798,7 +798,7 @@ class Citation implements TranslatorAwareInterface
                     // any commas yet, we can skip the comma. Otherwise, add one to
                     // the list. Useful for two-item lists including corporate
                     // authors as the first entry.
-                    $skipComma = ($i + 2 == $authorCount)
+                    $skipComma = ($i + 2 === $authorCount)
                         && (!str_contains($authorStr . $author, ','));
                     $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
@@ -907,7 +907,7 @@ class Citation implements TranslatorAwareInterface
             } else {
                 foreach ($this->details['authors'] as $rawAuthor) {
                     $author = $this->formatPrimaryMLAAuthor($rawAuthor);
-                    if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
+                    if (($i + 1 === count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where

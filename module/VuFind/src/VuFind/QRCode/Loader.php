@@ -169,7 +169,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function fetchQRCode($text, $size, $margin, $level)
     {
-        if (strlen(trim($text)) == 0) {
+        if (strlen(trim($text)) === 0) {
             return false;
         }
 
