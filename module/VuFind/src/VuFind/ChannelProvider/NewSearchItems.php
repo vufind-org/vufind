@@ -151,11 +151,16 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
         $params->addHiddenFilter($this->newItems->getSolrFilter($this->maxAge));
         $params->setSort($this->sort, true);
         $query = $params->getQuery();
+        if (!method_exists($params, 'getBackendParameters')) {
+            throw new \Exception($params::class . ' does not support getBackendParameters()!');
+        }
         $paramBag = $params->getBackendParameters();
+        $limit = $this->limit ?? $this->batchSize;
         $command = new SearchCommand(
             $params->getSearchClassId(),
             $query,
-            limit: $this->batchSize,
+            offset: ($this->page - 1) * $limit,
+            limit: $limit,
             params: $paramBag
         );
         $result = $this->searchService->invoke($command)->getResult()->getRecords();
