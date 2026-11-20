@@ -188,7 +188,7 @@ class Innovative extends AbstractBase implements
 
                 // If this is the first row, it is the header row and has the column
                 // names
-                if ($count == 1) {
+                if ($count === 1) {
                     $keys[$i] = $cols[$i];
                 } elseif ($count > 1) { // not the first row, has holding info
                     //look for location column

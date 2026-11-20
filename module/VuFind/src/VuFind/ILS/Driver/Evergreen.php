@@ -417,7 +417,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $due_date = $this->formatDate($row['due_date']);
                 $_due_time = new \DateTime($row['due_date']);
-                if ($_due_time->format('H:i:s') == '23:59:59') {
+                if ($_due_time->format('H:i:s') === '23:59:59') {
                     $dueTime = ''; // don't display due time for non-hourly loans
                 } else {
                     $dueTime = $this->dateConverter->convertToDisplayTime(

@@ -296,7 +296,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                     array_filter(
                         explode(',', $row['@@sql_mode']),
                         function ($mode) {
-                            return $mode != 'ONLY_FULL_GROUP_BY';
+                            return $mode !== 'ONLY_FULL_GROUP_BY';
                         }
                     )
                 );
@@ -383,7 +383,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     protected function getField($contents, $default = 'Unknown')
     {
-        if ((string)$contents != '') {
+        if ((string)$contents !== '') {
             return (string)$contents;
         } else {
             return $default;
@@ -754,7 +754,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
         $rsp = $this->makeRequest($rqString . $dateString);
 
-        if ($rsp->{'code'} == 'IllegalParameter' && $dateString != '') {
+        if ($rsp->{'code'} == 'IllegalParameter' && $dateString !== '') {
             // In older versions of Koha, the date parameters were named differently
             // and even never implemented, so if we got IllegalParameter, we know
             // the Koha version is before 20.05 and could retry without expiry_date

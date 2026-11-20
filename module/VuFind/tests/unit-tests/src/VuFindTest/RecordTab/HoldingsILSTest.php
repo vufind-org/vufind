@@ -29,7 +29,6 @@
 
 namespace VuFindTest\RecordTab;
 
-use VuFind\RecordDriver\EDS;
 use VuFind\RecordTab\HoldingsILS;
 
 /**
@@ -68,27 +67,6 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
             ],
         ],
     ];
-
-    /**
-     * Generate a new Eds driver to return responses set in a json fixture.
-     *
-     * Overwrites $this->driver
-     * Uses session cache
-     *
-     * @param ?string $test   Name of test fixture to load
-     * @param ?array  $config Driver configuration (null to use default)
-     *
-     * @return EDS
-     */
-    protected function getDriver(?string $test = null, ?array $config = null): EDS
-    {
-        $record = new EDS(null, $this->defaultDriverConfigPEF);
-        if (null !== $test) {
-            $json = $this->getJsonFixture('eds/' . $test . '.json');
-            $record->setRawData($json);
-        }
-        return $record;
-    }
 
     /**
      * Test getUniqueCallNumbers.

@@ -332,7 +332,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
 
         // If we found other statuses or if we failed to find "Not Charged,"
         // the item is not available!
-        $available = (count($otherStatuses) == 0 && $notCharged);
+        $available = (count($otherStatuses) === 0 && $notCharged);
 
         return ['available' => $available, 'otherStatuses' => $otherStatuses];
     }
@@ -1301,7 +1301,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
                     : null;
 
                 if (
-                    (null !== $primary && ($primary == $compareLogin
+                    (null !== $primary && ($primary === $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
                     || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)

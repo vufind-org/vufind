@@ -1334,7 +1334,7 @@ class PAIA extends DAIA
                             $filterCounter++;
                         }
                     }
-                    if ($filterCounter == count($filter)) {
+                    if ($filterCounter === count($filter)) {
                         $filteredItems[] = $doc;
                     }
                 }
@@ -1374,7 +1374,7 @@ class PAIA extends DAIA
     protected function paiaParseUserDetails($patron, $user_response)
     {
         $username = trim($user_response['name']);
-        if (count(explode(',', $username)) == 2) {
+        if (count(explode(',', $username)) === 2) {
             $nameArr = explode(',', $username);
             $firstname = $nameArr[1];
             $lastname = $nameArr[0];

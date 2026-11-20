@@ -266,7 +266,7 @@ class Unicorn extends AbstractBase implements
             preg_match('/\^MN([0-9][0-9][0-9])/', $result, $matches);
             if (isset($matches[1])) {
                 $status = $matches[1];
-                if ($status == '214') {
+                if ($status === '214') {
                     $results[$chargeKey]['success'] = true;
                 } else {
                     $results[$chargeKey]['success'] = false;
@@ -464,7 +464,7 @@ class Unicorn extends AbstractBase implements
         preg_match('/\^MN([0-9][0-9][0-9])/', $response, $matches);
         if (isset($matches[1])) {
             $status = $matches[1];
-            if ($status == '209') {
+            if ($status === '209') {
                 return ['success' => true];
             } else {
                 return [
@@ -505,7 +505,7 @@ class Unicorn extends AbstractBase implements
 
         [$last, $first] = $this->getLastAndFirstName($name);
 
-        if ($expiry != '0') {
+        if ($expiry !== '0') {
             $expiry = $this->parseDateTime(trim($expiry));
         }
         $expired = ($expiry == '0') ? false : $expiry < time();
@@ -665,7 +665,7 @@ class Unicorn extends AbstractBase implements
             $items[] = [
                 'id' => $catkey,
                 'reqnum' => $holdkey,
-                'available' => $available == 'Y',
+                'available' => $available === 'Y',
                 'expire' => $this->formatDateTime($date_expires),
                 'create' => $this->formatDateTime($date_created),
                 'type' => $type,
@@ -819,7 +819,7 @@ class Unicorn extends AbstractBase implements
                 'charge_key' => $charge_key,
                 'item_id' => $charge_key,
                 'callnum' => $callnum,
-                'dueStatus' => $overdue == 'Y' ? 'overdue' : '',
+                'dueStatus' => $overdue === 'Y' ? 'overdue' : '',
             ];
         }
 
@@ -855,7 +855,7 @@ class Unicorn extends AbstractBase implements
 
         foreach ($course_lines as $course) {
             [$id, $code, $name] = explode('|', $course);
-            $name = ($code == $name) ? $name : $code . ' - ' . $name;
+            $name = ($code === $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
         $this->getSorter()->asort($courses);
@@ -1057,7 +1057,7 @@ class Unicorn extends AbstractBase implements
             'number' => $itemkey3, // copy number
             'duedate' => $this->formatDateTime($duedate),
             'callnumber' => $callnum,
-            'reserve' => ($reserve == '0') ? 'N' : 'Y',
+            'reserve' => ($reserve === '0') ? 'N' : 'Y',
             'location_code' => $location_code,
             'location' => $location,
             'home_location_code' => $location_code,

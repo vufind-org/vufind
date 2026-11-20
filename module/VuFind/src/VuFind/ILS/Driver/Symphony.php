@@ -469,7 +469,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         // the use of something other than catkeys as record IDs).
         $invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT);
         if (count($invalid) > 0) {
-            $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
+            $titleIDs = count($invalid) === 1 ? 'titleID' : 'titleIDs';
             $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
             throw new ILSException($msg);
         }
@@ -497,7 +497,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
         // If only one library is being exclusively included,
         // filtering can be done within Web Services.
-        if (count($this->config['LibraryFilter']['include_only']) == 1) {
+        if (count($this->config['LibraryFilter']['include_only']) === 1) {
             $params['libraryFilter']
                 = $this->config['LibraryFilter']['include_only'][0];
         }
@@ -623,7 +623,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
+                    if (count($this->config['LibraryFilter']['include_only']) !== 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -1211,9 +1211,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $zip         = $addressInfo[2]->addressValue;
             $phone       = $addressInfo[3]->addressValue;
 
-            if (strcmp($userProfileGroupField, 'GROUP_ID') == 0) {
+            if (strcmp($userProfileGroupField, 'GROUP_ID') === 0) {
                 $group = $result->patronInfo->groupID;
-            } elseif (strcmp($userProfileGroupField, 'USER_PROFILE_ID') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'USER_PROFILE_ID') === 0) {
                 $group = $this->makeRequest(
                     'security',
                     'lookupSessionInfo',
@@ -1223,9 +1223,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         'password' => $patron['cat_password'],
                     ]
                 )->userProfileID;
-            } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') === 0) {
                 $group = $result->patronInfo->patronLibraryID;
-            } elseif (strcmp($userProfileGroupField, 'DEPARTMENT') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'DEPARTMENT') === 0) {
                 $group = $result->patronInfo->department;
             } else {
                 $group = null;

@@ -237,7 +237,7 @@ class ResourceContainer
     protected function addJsStringEntry($jsEntry)
     {
         $parts = $this->parseSetting($jsEntry);
-        if (count($parts) == 1) {
+        if (count($parts) === 1) {
             $jsEntry = ['file' => $jsEntry];
         } else {
             $jsEntry = [

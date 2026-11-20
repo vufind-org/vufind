@@ -197,7 +197,7 @@ class AuthorityRecommend implements RecommendInterface
         $normalize = function ($str) {
             return trim(strtolower(preg_replace('/\W/', '', $str)));
         };
-        return $normalize($a) == $normalize($b);
+        return $normalize($a) === $normalize($b);
     }
 
     /**

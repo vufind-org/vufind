@@ -321,7 +321,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
 
         // Make it more likely we have a single service than many:
-        $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
+        $count = rand(1, 5) === 1 ? rand(1, count($services)) : 1;
         $keys = (array)array_rand($services, $count);
         $fakeServices = [];
 
@@ -615,7 +615,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
             // Inject a random identifier of some sort:
             $currentItem += $this->getRandomItemIdentifier();
-            if ($i == 2 || rand() % 5 == 1) {
+            if ($i === 2 || rand() % 5 === 1) {
                 // Mimic an ILL request
                 $currentItem['id'] = "ill_request_$i";
                 $currentItem['title'] = "ILL Hold Title $i";
@@ -641,7 +641,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 } else {
                     $currentItem['available'] = true;
                     $currentItem['in_transit'] = false;
-                    if (rand() % 3 != 1) {
+                    if (rand() % 3 !== 1) {
                         $lastDate = strtotime('now + 3 days');
                         $currentItem['last_pickup_date'] = $this->dateConverter
                             ->convertToDisplayDate('U', $lastDate);
@@ -657,9 +657,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 }
             } else {
                 $status = rand() % 5;
-                $currentItem['available'] = $status == 1;
-                $currentItem['canceled'] = $status == 2;
-                $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
+                $currentItem['available'] = $status === 1;
+                $currentItem['canceled'] = $status === 2;
+                $currentItem['processed'] = ($status === 1 || rand(1, 3) === 3)
                     ? $this->dateConverter->convertToDisplayDate('U', time())
                     : '';
                 if ($requestType == 'ILLRequests') {
@@ -667,7 +667,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     if (
                         !$currentItem['available']
                         && !$currentItem['canceled']
-                        && $transit == 1
+                        && $transit === 1
                     ) {
                         $currentItem['in_transit'] = $location;
                     } else {
@@ -1136,7 +1136,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $fine['payableOnline'] = $this->fineIsPayable($fine);
 
             // Some fines will have no id or title:
-            if (rand() % 3 != 1) {
+            if (rand() % 3 !== 1) {
                 if ($this->useRecordIds) {
                     [$fine['id'], $fine['title']]
                         = $this->getRandomBibIdAndTitle();
@@ -1390,7 +1390,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'item_id' => $i,
                 'renewable' => $renew < $renewLimit,
             ];
-            if ($i == 2 || rand() % 5 == 1) {
+            if ($i === 2 || rand() % 5 === 1) {
                 // Mimic an ILL loan
                 $transList[$i] += [
                     'id'      => "ill_institution_$i",
@@ -2190,7 +2190,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ($this->isFailing(__METHOD__, 10)) {
             return [
                 'valid' => false,
-                'status' => rand() % 3 != 0
+                'status' => rand() % 3 !== 0
                     ? 'hold_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
@@ -2314,7 +2314,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!$this->storageRetrievalRequests || $this->isFailing(__METHOD__, 10)) {
             return [
                 'valid' => false,
-                'status' => rand() % 3 != 0
+                'status' => rand() % 3 !== 0
                     ? 'storage_retrieval_request_error_blocked'
                     : 'Demonstrating a custom failure',
             ];
@@ -2415,7 +2415,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'location' => $details['pickUpLocation'],
             'expire'   => $this->dateConverter->convertToDisplayDate('U', $expire),
             'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
-            'processed' => rand() % 3 == 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
+            'processed' => rand() % 3 === 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
             'reqnum'   => sprintf('%06d', $nextId),
             'item_id'  => $nextId,
         ];
@@ -2443,7 +2443,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!$this->ILLRequests || $this->isFailing(__METHOD__, 10)) {
             return [
                 'valid' => false,
-                'status' => rand() % 3 != 0
+                'status' => rand() % 3 !== 0
                     ? 'ill_request_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
@@ -2549,7 +2549,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'location' => $pickupLocation,
             'expire'   => $this->dateConverter->convertToDisplayDate('U', $expire),
             'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
-            'processed' => rand() % 3 == 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
+            'processed' => rand() % 3 === 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
             'reqnum'   => sprintf('%06d', $nextId),
             'item_id'  => $nextId,
         ];
@@ -2819,7 +2819,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getConfig(string $function, array $params = []): array
     {
         $this->checkIntermittentFailure();
-        if ($function == 'Holds') {
+        if ($function === 'Holds') {
             return $this->config['Holds']
                 ?? [
                     'HMACKeys' => 'id:item_id:level',
@@ -2828,13 +2828,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'defaultRequiredDate' => 'driver:0:2:0',
                 ];
         }
-        if ($function == 'Holdings') {
+        if ($function === 'Holdings') {
             return [
                 'itemLimit' => $this->config['Holdings']['itemLimit'] ?? null,
             ];
         }
         if (
-            $function == 'StorageRetrievalRequests'
+            $function === 'StorageRetrievalRequests'
             && $this->storageRetrievalRequests
         ) {
             return [
@@ -2844,7 +2844,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     . ' with some <span style="color: red">styling</span>.',
             ];
         }
-        if ($function == 'ILLRequests' && $this->ILLRequests) {
+        if ($function === 'ILLRequests' && $this->ILLRequests) {
             return [
                 'enabled' => true,
                 'HMACKeys' => 'number',
@@ -2855,11 +2855,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     . ' with some <span style="color: red">styling</span>.',
             ];
         }
-        if ($function == 'changePassword') {
+        if ($function === 'changePassword') {
             return $this->config['changePassword']
                 ?? ['minLength' => 4, 'maxLength' => 20];
         }
-        if ($function == 'getMyTransactionHistory') {
+        if ($function === 'getMyTransactionHistory') {
             if (empty($this->config['TransactionHistory']['enabled'])) {
                 return [];
             }
@@ -2904,7 +2904,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'max_results' => $this->config['Holds']['max_page_size'] ?? 100,
             ];
         }
-        if ($function == 'patronLogin') {
+        if ($function === 'patronLogin') {
             return [
                 'loginMethod'
                     => $this->config['Catalog']['loginMethod'] ?? 'password',
@@ -2914,7 +2914,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $config = $this->config['PasswordRecovery'] ?? [];
             return ($config['enabled'] ?? false) ? $config : [];
         }
-        if ($function == 'OnlinePayment') {
+        if ($function === 'OnlinePayment') {
             return $this->config['OnlinePayment'] ?? [];
         }
 

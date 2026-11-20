@@ -152,7 +152,7 @@ class IdentifierLinker
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return $context == 'results';
+        return $context === 'results';
     }
 
     /**

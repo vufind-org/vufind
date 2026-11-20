@@ -76,7 +76,7 @@ trait SecureDatabaseTrait
             try {
                 $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
                 $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
-                $status = (count($userRows) + count($cardRows) == 0);
+                $status = (count($userRows) + count($cardRows) === 0);
             } catch (\Exception $e) {
                 // Any exception means we have a problem!
                 $status = false;
