@@ -40,6 +40,7 @@ use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\Response\PublicationDetails;
+use VuFind\RecordDriver\SolrDefault;
 use VuFind\Tags\TagsService;
 use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\RecordDataFormatter;
