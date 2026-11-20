@@ -51,8 +51,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
     #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testLogException()
     {
-        $callback = #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
-            function ($level, $message, $context = []): bool {
+        $callback = function ($level, $message, $context = []): bool {
                 $expectedContext = <<<CONTEXT
                     Server Context:
                     Array
