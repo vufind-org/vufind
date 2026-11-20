@@ -76,10 +76,10 @@ class BackendTest extends TestCase
         $back->setIdentifier('test');
         $coll = $back->retrieve('foobar');
         $this->assertCount(1, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('690250223', $rec->id);
     }
 
@@ -112,10 +112,10 @@ class BackendTest extends TestCase
         $back->setIdentifier('test');
         $coll = $back->retrieveBatch(['12345', '125456', '234547']);
         $this->assertCount(3, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('12345', $rec->id);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
@@ -161,10 +161,10 @@ class BackendTest extends TestCase
         $back->setIdentifier('test');
         $coll = $back->similar('704640');
         $this->assertCount(5, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('704635', $rec->id);
     }
 
@@ -472,7 +472,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->setIdentifier('foo');
-        $this->assertEquals('foo', $back->getIdentifier());
+        $this->assertSame('foo', $back->getIdentifier());
     }
 
     /**

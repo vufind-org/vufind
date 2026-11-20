@@ -78,18 +78,18 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $coll = $back->search(new Query('foobar'), 0, 3);
         $this->assertCount(3, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('3264', $rec->getUniqueID());
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
         $this->assertEquals('845', $recs[1]->getUniqueID());
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('1398', $recs[2]->getUniqueID());
-        $this->assertEquals(81, $coll->getTotal());
-        $this->assertEquals(0, $coll->getOffset());
+        $this->assertSame(81, $coll->getTotal());
+        $this->assertSame(0, $coll->getOffset());
     }
 
     /**

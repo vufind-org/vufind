@@ -217,8 +217,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->with('testuser', 'testpass')
             ->willReturn($response);
         $user = $this->getAuth($driver)->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->getUsername());
-        $this->assertEquals('user@test.com', $user->getEmail());
+        $this->assertSame('testuser', $user->getUsername());
+        $this->assertSame('user@test.com', $user->getEmail());
     }
 
     /**
@@ -328,8 +328,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->willReturn(['success' => true]);
         $patron = ['cat_username' => 'testuser'];
         $user = $this->getAuth($driver, $patron)->updatePassword($request);
-        $this->assertEquals('testuser', $user->getUsername());
-        $this->assertEquals('newpass', $user->getRawCatPassword());
+        $this->assertSame('testuser', $user->getUsername());
+        $this->assertSame('newpass', $user->getRawCatPassword());
     }
 
     /**
@@ -355,7 +355,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $auth->setConfig($config);
         $user = $auth->updatePassword($request);
         $this->assertEquals('1234', $user->getUsername());
-        $this->assertEquals('newpass', $user->getRawCatPassword());
+        $this->assertSame('newpass', $user->getRawCatPassword());
     }
 
     /**

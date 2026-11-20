@@ -172,7 +172,7 @@ class QueryBuilder implements QueryBuilderInterface
 
                     // If a boost was added, we don't want to highlight based on
                     // the boost query, so we should use the non-boosted version:
-                    if ($highlight && $oldString != $string) {
+                    if ($highlight && $oldString !== $string) {
                         $newParams->set('hl.q', $oldString);
                     }
                 }

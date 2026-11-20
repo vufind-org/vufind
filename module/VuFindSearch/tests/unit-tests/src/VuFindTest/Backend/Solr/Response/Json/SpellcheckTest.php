@@ -124,6 +124,6 @@ class SpellcheckTest extends TestCase
     public function testGetQuery(): void
     {
         $s = new Spellcheck([], 'test');
-        $this->assertEquals('test', $s->getQuery());
+        $this->assertSame('test', $s->getQuery());
     }
 }

@@ -85,7 +85,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl('/Upgrade'));
         $page = $session->getPage();
         // Confirm that the source version defaults to the current version.
-        $this->assertEquals(
+        $this->assertSame(
             Version::getBuildVersion(),
             $this->findCssAndGetValue($page, 'input[name="sourceversion"]')
         );

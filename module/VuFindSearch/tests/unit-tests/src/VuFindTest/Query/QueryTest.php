@@ -78,15 +78,15 @@ class QueryTest extends TestCase
         $q = new Query('test query we<(ird and/or');
         $q->replaceTerm('we<(ird', 'we>(ird');
         $q->replaceTerm('and/or', 'and-or');
-        $this->assertEquals('test query we>(ird and-or', $q->getString());
+        $this->assertSame('test query we>(ird and-or', $q->getString());
 
         $q = new Query('test query we<(ird and/or');
         $q->replaceTerm('and', 'not');
-        $this->assertEquals('test query we<(ird not/or', $q->getString());
+        $this->assertSame('test query we<(ird not/or', $q->getString());
 
         $q = new Query('th\bbbt');
         $q->replaceTerm('th\bbbt', 'that');
-        $this->assertEquals('that', $q->getString());
+        $this->assertSame('that', $q->getString());
     }
 
     /**
@@ -99,7 +99,7 @@ class QueryTest extends TestCase
     {
         $q = new Query('this, that');
         $q->replaceTerm('this,', 'the other,');
-        $this->assertEquals('the other, that', $q->getString());
+        $this->assertSame('the other, that', $q->getString());
     }
 
     /**
@@ -117,13 +117,13 @@ class QueryTest extends TestCase
             '((color code) OR (color codes))',
             $normalizer
         );
-        $this->assertEquals('((color code) OR (color codes))', $q->getString());
+        $this->assertSame('((color code) OR (color codes))', $q->getString());
         $q->replaceTerm(
             'color code',
             '((color code) OR (color coded))',
             $normalizer
         );
-        $this->assertEquals(
+        $this->assertSame(
             '((((color code) OR (color coded))) OR (color codes))',
             $q->getString()
         );
@@ -140,12 +140,12 @@ class QueryTest extends TestCase
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $this->assertFalse($q->containsTerm('test'));
         $this->assertTrue($q->containsTerm('test', $normalizer));
-        $this->assertEquals(
+        $this->assertSame(
             'this is a test of things',
             $q->getString($normalizer)
         );
         $q->replaceTerm('test', 'mess', $normalizer);
-        $this->assertEquals('this is a mess of things', $q->getString());
+        $this->assertSame('this is a mess of things', $q->getString());
 
         // Test UNICODE characters ("composers" in Northern Sámi):
         $q = new Query('šuokŋadahkkit');
@@ -162,7 +162,7 @@ class QueryTest extends TestCase
     {
         $q = new Query('foo', 'bar');
         $q->setHandler('baz');
-        $this->assertEquals('baz', $q->getHandler());
+        $this->assertSame('baz', $q->getHandler());
     }
 
     /**
@@ -174,6 +174,6 @@ class QueryTest extends TestCase
     {
         $q = new Query('foo', 'bar');
         $q->setOperator('baz');
-        $this->assertEquals('baz', $q->getOperator());
+        $this->assertSame('baz', $q->getOperator());
     }
 }

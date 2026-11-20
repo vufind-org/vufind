@@ -59,7 +59,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     public function testRecordUrl(): void
     {
         $recordLinker = $this->getRecordLinker();
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo?sid=-123',
             $recordLinker->getUrl('Solr|foo')
         );
@@ -73,11 +73,11 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     public function testPercentEscaping(): void
     {
         $recordLinker = $this->getRecordLinker();
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo%252fbar?sid=-123',
             $recordLinker->getUrl('Solr|foo%2fbar')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo%252fbar?checkRoute=1&sid=-123',
             $recordLinker->getTabUrl('Solr|foo%2fbar', null, ['checkRoute' => 1])
         );
@@ -91,7 +91,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     public function testMultiQueryParams(): void
     {
         $recordLinker = $this->getRecordLinker();
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo?param1=1&param2=2&sid=-123',
             $recordLinker->getTabUrl('Solr|foo', null, ['param1' => 1, 'param2' => 2])
         );
@@ -105,19 +105,19 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     public function testGetActionUrl(): void
     {
         $recordLinker = $this->getRecordLinker();
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo/Description?sid=-123',
             $recordLinker->getActionUrl('Solr|foo', 'Description')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo/Description?sid=-123&param1=someValue',
             $recordLinker->getActionUrl('Solr|foo', 'Description', ['param1' => 'someValue'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo/Description?sid=-123#anchor1',
             $recordLinker->getActionUrl('Solr|foo', 'Description', [], 'anchor1')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo/Description?sid=-123&param1=someValue#anchor1',
             $recordLinker->getActionUrl('Solr|foo', 'Description', ['param1' => 'someValue'], 'anchor1')
         );
@@ -173,17 +173,17 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->exactly(2))
             ->method('getSearchId')
             ->willReturn(234);
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo?sid=234',
             $recordLinker($results)->getUrl('Solr|foo')
         );
         $recordLinker(null);
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo?sid=234',
             $recordLinker->getUrl('Solr|foo')
         );
         $recordLinker->resetStoredResults();
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo?sid=-123',
             $recordLinker->getUrl('Solr|foo')
         );
@@ -192,7 +192,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $results2->expects($this->once())
             ->method('getSearchId')
             ->willReturn(345);
-        $this->assertEquals(
+        $this->assertSame(
             '/Record/foo?sid=345',
             $recordLinker($results2)->getUrl('Solr|foo')
         );

@@ -180,7 +180,7 @@ class SearchTabsHelper
         $firstTab = null;
         foreach (array_keys($this->tabConfig) as $key) {
             $class = $this->extractClassName($key);
-            if ($class == $searchClassId) {
+            if ($class === $searchClassId) {
                 if (null === $firstTab) {
                     $firstTab = $key;
                 }

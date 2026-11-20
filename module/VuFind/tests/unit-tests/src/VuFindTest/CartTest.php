@@ -131,7 +131,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testMaxSize(): void
     {
         $cart = $this->getCart(50);
-        $this->assertEquals(50, $cart->getMaxSize());
+        $this->assertSame(50, $cart->getMaxSize());
     }
 
     /**
@@ -243,7 +243,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
             ->willReturn('success');
         $cart = $this->getCart();
         $cart->addItem('Solr|a');
-        $this->assertEquals('success', $cart->getRecordDetails());
+        $this->assertSame('success', $cart->getRecordDetails());
     }
 
     /**

@@ -70,9 +70,9 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['c1', 'c3', 'd1'], $obj->getCallNumbers());
         $this->assertEquals(['Author, Test (1800-)'], $obj->getPrimaryAuthors());
         $this->assertEquals(['eng', 'ger'], $obj->getLanguages());
-        $this->assertEquals('The Foo: Bar! /', $obj->getTitle());
-        $this->assertEquals('The Foo:', $obj->getShortTitle());
-        $this->assertEquals('Bar! /', $obj->getSubtitle());
+        $this->assertSame('The Foo: Bar! /', $obj->getTitle());
+        $this->assertSame('The Foo:', $obj->getShortTitle());
+        $this->assertSame('Bar! /', $obj->getSubtitle());
         $this
             ->assertEquals(['Publisher,', 'The Publishers,'], $obj->getPublishers());
         $this->assertEquals(['2020', '2020'], $obj->getPublicationDates());
@@ -82,7 +82,7 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([], $obj->getSecondaryAuthors());
         $this->assertEquals(['New Journal'], $obj->getNewerTitles());
         $this->assertEquals(['Old Journal'], $obj->getPreviousTitles());
-        $this->assertEquals('2nd ed.', $obj->getEdition());
+        $this->assertSame('2nd ed.', $obj->getEdition());
         $this->assertEquals(
             ['1 book : colored, 28 cm 1 cd'],
             $obj->getPhysicalDescriptions()

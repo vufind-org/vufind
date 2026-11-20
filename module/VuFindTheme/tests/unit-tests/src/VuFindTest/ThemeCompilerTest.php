@@ -91,7 +91,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         $result = $compiler->compile('child', 'compiled');
 
         // Did the compiler report success?
-        $this->assertEquals('', $compiler->getLastError());
+        $this->assertSame('', $compiler->getLastError());
         $this->assertTrue($result);
 
         // Was the target directory created with the expected files?
@@ -146,7 +146,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         $result = $compiler->compile('mixin_user', 'compiled');
 
         // Did the compiler report success?
-        $this->assertEquals('', $compiler->getLastError());
+        $this->assertSame('', $compiler->getLastError());
         $this->assertTrue($result);
 
         // Was the target directory created with the expected files?
@@ -205,7 +205,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         // Now confirm that by default, we're not allowed to recompile it on
         // top of itself...
         $this->assertFalse($compiler->compile('child', 'compiled'));
-        $this->assertEquals(
+        $this->assertSame(
             "Cannot overwrite {$this->targetPath} without --force switch!",
             $compiler->getLastError()
         );

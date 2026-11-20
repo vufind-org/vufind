@@ -925,12 +925,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Query::class, $primoQuery);
         $this->assertInstanceOf(Query::class, $edsQuery);
 
-        $this->assertEquals('foo', $solrQuery->getString());
-        $this->assertEquals('AllFields', $solrQuery->getHandler());
-        $this->assertEquals('foo', $primoQuery->getString());
-        $this->assertEquals('AllFields', $primoQuery->getHandler());
-        $this->assertEquals('foo', $edsQuery->getString());
-        $this->assertEquals('AllFields', $edsQuery->getHandler());
+        $this->assertSame('foo', $solrQuery->getString());
+        $this->assertSame('AllFields', $solrQuery->getHandler());
+        $this->assertSame('foo', $primoQuery->getString());
+        $this->assertSame('AllFields', $primoQuery->getHandler());
+        $this->assertSame('foo', $edsQuery->getString());
+        $this->assertSame('AllFields', $edsQuery->getHandler());
 
         $params->setBasicSearch('foo', 'Title');
         $backendParams = $params->getBackendParameters();
@@ -1003,12 +1003,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Query::class, $primoQuery);
         $this->assertInstanceOf(Query::class, $edsQuery);
 
-        $this->assertEquals('foo', $solrQuery->getString());
-        $this->assertEquals('Title', $solrQuery->getHandler());
-        $this->assertEquals('foo', $primoQuery->getString());
-        $this->assertEquals('Title', $primoQuery->getHandler());
-        $this->assertEquals('foo', $edsQuery->getString());
-        $this->assertEquals('TI', $edsQuery->getHandler());
+        $this->assertSame('foo', $solrQuery->getString());
+        $this->assertSame('Title', $solrQuery->getHandler());
+        $this->assertSame('foo', $primoQuery->getString());
+        $this->assertSame('Title', $primoQuery->getHandler());
+        $this->assertSame('foo', $edsQuery->getString());
+        $this->assertSame('TI', $edsQuery->getHandler());
 
         // Test empty request:
         $params = $this->getParams();

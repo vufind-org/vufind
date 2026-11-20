@@ -114,7 +114,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     public function testProcessGroupNonXML(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             "a\nb\nc\n",
             $this->getExport()->processGroup('foo', ["a\n", "b\n", "c\n"])
         );
@@ -245,7 +245,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
             . '&configtest={encodedConfig|config|this|default}';
         $exportConfig = ['foo' => ['redirectUrl' => $template]];
         $export = $this->getExport($mainConfig, $exportConfig);
-        $this->assertEquals(
+        $this->assertSame(
             'http://result?src=http%3A%2F%2Fcallback&fallbacktest=default&configtest=that%3Dtrue',
             $export->getRedirectUrl('foo', 'http://callback')
         );
@@ -264,9 +264,9 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         ];
         $export = $this->getExport([], $config);
         // test "use section label as default"
-        $this->assertEquals('foo', $export->getLabelForFormat('foo'));
+        $this->assertSame('foo', $export->getLabelForFormat('foo'));
         // test "override with label setting"
-        $this->assertEquals('baz', $export->getLabelForFormat('bar'));
+        $this->assertSame('baz', $export->getLabelForFormat('bar'));
     }
 
     /**
@@ -277,7 +277,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     public function testGetBulkExportType(): void
     {
         // We should get 'link' as the default if nothing is configured:
-        $this->assertEquals(
+        $this->assertSame(
             'link',
             $this->getExport()->getBulkExportType('foo')
         );
@@ -287,8 +287,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $mainConfig = ['BulkExport' => ['defaultType' => 'download']];
         $exportConfig = ['foo' => ['bulkExportType' => 'post']];
         $export = $this->getExport($mainConfig, $exportConfig);
-        $this->assertEquals('post', $export->getBulkExportType('foo'));
-        $this->assertEquals('download', $export->getBulkExportType('bar'));
+        $this->assertSame('post', $export->getBulkExportType('foo'));
+        $this->assertSame('download', $export->getBulkExportType('bar'));
     }
 
     /**
@@ -308,7 +308,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
             ->willReturn('http://localhost/cart/doExport');
         $renderer = $this->createMock(PhpRenderer::class);
         $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
-        $this->assertEquals(
+        $this->assertSame(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
             $this->getExport(renderer: $renderer)->getBulkUrl('foo', [1, 2, 3])
         );
@@ -324,9 +324,9 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $exportConfig = ['foo' => ['postField' => 'postField']];
         $export = $this->getExport([], $exportConfig);
         // Test configured method:
-        $this->assertEquals('postField', $export->getPostField('foo'));
+        $this->assertSame('postField', $export->getPostField('foo'));
         // Test default:
-        $this->assertEquals('ImportData', $export->getPostField('bar'));
+        $this->assertSame('ImportData', $export->getPostField('bar'));
     }
 
     /**
@@ -339,9 +339,9 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         $exportConfig = ['foo' => ['targetWindow' => 'window']];
         $export = $this->getExport([], $exportConfig);
         // Test configured method:
-        $this->assertEquals('window', $export->getTargetWindow('foo'));
+        $this->assertSame('window', $export->getTargetWindow('foo'));
         // Test default:
-        $this->assertEquals('barMain', $export->getTargetWindow('bar'));
+        $this->assertSame('barMain', $export->getTargetWindow('bar'));
     }
 
     /**

@@ -94,7 +94,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     public function testParent(): void
     {
         $helper = $this->getHelper(['parent', 'child']);
-        $this->assertEquals(
+        $this->assertSame(
             "{$this->fixturePath}/parent/templates/everything.phtml",
             $helper('everything.phtml')
         );
@@ -110,7 +110,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper(['parent', 'child']);
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertEquals(
+            $this->assertSame(
                 "{$this->fixturePath}/parent/templates/foo/bar/child.phtml",
                 $helper('foo/bar/child.phtml')
             );
@@ -125,7 +125,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     public function testSkip(): void
     {
         $helper = $this->getHelper(['parent', 'noop', 'skip', 'child']);
-        $this->assertEquals(
+        $this->assertSame(
             "{$this->fixturePath}/parent/templates/everything.phtml",
             $helper('everything.phtml')
         );

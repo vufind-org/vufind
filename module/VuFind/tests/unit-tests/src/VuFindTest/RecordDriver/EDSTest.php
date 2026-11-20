@@ -188,7 +188,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetUniqueID(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('edsgob,edsgob.14707011', $driver->getUniqueID());
+        $this->assertSame('edsgob,edsgob.14707011', $driver->getUniqueID());
     }
 
     /**
@@ -199,7 +199,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetShortTitle(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('METAPHOR IN PRACTICE', $driver->getShortTitle());
+        $this->assertSame('METAPHOR IN PRACTICE', $driver->getShortTitle());
     }
 
     /**
@@ -210,7 +210,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetShortTitleWhenNoTitle(): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
-        $this->assertEquals('', $driver->getShortTitle());
+        $this->assertSame('', $driver->getShortTitle());
     }
 
     /**
@@ -221,7 +221,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetSubtitle(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.', $driver->getSubtitle());
+        $this->assertSame('A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.', $driver->getSubtitle());
     }
 
     /**
@@ -232,7 +232,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetSubtitleWhenNoTitle(): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
-        $this->assertEquals('', $driver->getSubtitle());
+        $this->assertSame('', $driver->getSubtitle());
     }
 
     /**
@@ -254,7 +254,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetAccessLevel(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('', $driver->getAccessLevel());
+        $this->assertSame('', $driver->getAccessLevel());
     }
 
     /**
@@ -276,7 +276,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetItemsAuthors(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
             $driver->getItemsAuthors()
         );
@@ -332,7 +332,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetDbLabel(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('GOBI E-books', $driver->getDbLabel());
+        $this->assertSame('GOBI E-books', $driver->getDbLabel());
     }
 
     /**
@@ -343,7 +343,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetHTMLFullText(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('This is some wonderful full text', $driver->getHTMLFullText());
+        $this->assertSame('This is some wonderful full text', $driver->getHTMLFullText());
     }
 
     /**
@@ -491,7 +491,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetPLink(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('plink-unittest/edsgob.14707011', $driver->getPLink());
+        $this->assertSame('plink-unittest/edsgob.14707011', $driver->getPLink());
     }
 
     /**
@@ -502,7 +502,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetPubType(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('eBook', $driver->getPubType());
+        $this->assertSame('eBook', $driver->getPubType());
     }
 
     /**
@@ -513,7 +513,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetPubTypeId(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('ebook', $driver->getPubTypeId());
+        $this->assertSame('ebook', $driver->getPubTypeId());
     }
 
     /**
@@ -568,7 +568,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetPdfLink(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('pdf ebook url test', $driver->getPdfLink());
+        $this->assertSame('pdf ebook url test', $driver->getPdfLink());
     }
 
     /**
@@ -590,7 +590,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetEpubLink(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('epub url test', $driver->getEpubLink());
+        $this->assertSame('epub url test', $driver->getEpubLink());
     }
 
     /**
@@ -601,7 +601,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetLinkedFullTextLink(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('linked full text url test', $driver->getLinkedFullTextLink());
+        $this->assertSame('linked full text url test', $driver->getLinkedFullTextLink());
     }
 
     /**
@@ -763,7 +763,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetItemsTitle(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals(
+        $this->assertSame(
             'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
             $driver->getItemsTitle()
         );
@@ -777,7 +777,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetTitle(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals(
+        $this->assertSame(
             'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
             $driver->getTitle()
         );
@@ -802,7 +802,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetItemsTitleSource(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('unit test source', $driver->getItemsTitleSource());
+        $this->assertSame('unit test source', $driver->getItemsTitleSource());
     }
 
     /**
@@ -913,7 +913,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetContainerTitleNoContainer(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('', $driver->getContainerTitle());
+        $this->assertSame('', $driver->getContainerTitle());
     }
 
     /**
@@ -924,7 +924,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetContainerTitle(): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
-        $this->assertEquals('A really cool collection', $driver->getContainerTitle());
+        $this->assertSame('A really cool collection', $driver->getContainerTitle());
     }
 
     /**
@@ -935,7 +935,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetContainerIssueWhenEmpty(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('', $driver->getContainerIssue());
+        $this->assertSame('', $driver->getContainerIssue());
     }
 
     /**
@@ -957,7 +957,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetContainerVolumeWhenEmpty(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('', $driver->getContainerVolume());
+        $this->assertSame('', $driver->getContainerVolume());
     }
 
     /**
@@ -1012,7 +1012,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetContainerEndPageNoData(): void
     {
         $driver = $this->getDriver('no-container-end-page');
-        $this->assertEquals('', $driver->getContainerEndPage());
+        $this->assertSame('', $driver->getContainerEndPage());
     }
 
     /**
@@ -1183,7 +1183,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         // define what to expect
         $actual = $driver->getHTMLFullText();
         $expected = $this->getFixture('eds/eds_mathml_table.html');
-        $this->assertEquals($expected, $actual);
+        $this->assertSame($expected, $actual);
     }
 
     /**
@@ -1194,7 +1194,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetUniqueIDOverrideForRequestForNormalRecord(): void
     {
         $driver = $this->getDriver('valid-eds-record', $this->defaultDriverConfigPEF);
-        $this->assertEquals('edsgob,edsgob.14707011', $driver->getUniqueIDOverrideForRequest());
+        $this->assertSame('edsgob,edsgob.14707011', $driver->getUniqueIDOverrideForRequest());
     }
 
     /**
@@ -1205,7 +1205,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetUniqueIDOverrideForRequestForCatalogRecord(): void
     {
         $driver = $this->getDriver('catalog_record_patron_empowerment', $this->defaultDriverConfigPEF);
-        $this->assertEquals('976cbaf6-fb02-48a2-8f82-a19203769b52', $driver->getUniqueIDOverrideForRequest());
+        $this->assertSame('976cbaf6-fb02-48a2-8f82-a19203769b52', $driver->getUniqueIDOverrideForRequest());
     }
 
     /**
@@ -1282,7 +1282,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetHighlightedTitle(): void
     {
         $driver = $this->getDriver('eds-highlighting');
-        $this->assertEquals(
+        $this->assertSame(
             '{{{{START_HILITE}}}}highlighted part{{{{END_HILITE}}}} of text. '
             . 'Also {{{{START_HILITE}}}}more highlights{{{{END_HILITE}}}}',
             $driver->getHighlightedTitle()

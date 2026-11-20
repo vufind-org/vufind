@@ -51,7 +51,7 @@ class NoneTest extends \PHPUnit\Framework\TestCase
     {
         $none = new None();
         $url = 'http://foo';
-        $this->assertEquals($url, $none->shorten($url));
+        $this->assertSame($url, $none->shorten($url));
     }
 
     /**

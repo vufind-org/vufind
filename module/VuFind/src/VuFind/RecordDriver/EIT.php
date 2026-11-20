@@ -475,7 +475,7 @@ class EIT extends DefaultRecord
                 $str .= '; ';
             }
             $end = $this->getContainerEndPage();
-            if ($start == $end) {
+            if ($start === $end) {
                 $str .= $this->translate('citation_singlepage_abbrev')
                     . ' ' . $start;
             } else {

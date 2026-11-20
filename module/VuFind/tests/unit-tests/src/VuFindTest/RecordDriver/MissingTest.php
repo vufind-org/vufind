@@ -59,7 +59,7 @@ class MissingTest extends \PHPUnit\Framework\TestCase
     {
         $missing = new Missing();
         $missing->setExtraDetail('ils_details', ['title' => 'fake title']);
-        $this->assertEquals('fake title', $missing->getShortTitle());
+        $this->assertSame('fake title', $missing->getShortTitle());
     }
 
     /**
@@ -95,6 +95,6 @@ class MissingTest extends \PHPUnit\Framework\TestCase
         $missing = new Missing();
         $missing->setRawData(['id' => 'foo']);
         $missing->setDbServiceManager($mockManager);
-        $this->assertEquals($expectedTitle, $missing->getShortTitle());
+        $this->assertSame($expectedTitle, $missing->getShortTitle());
     }
 }

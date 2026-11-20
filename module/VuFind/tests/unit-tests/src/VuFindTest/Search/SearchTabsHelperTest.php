@@ -151,9 +151,9 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getSearchTabsHelper();
 
-        $this->assertEquals('Solr', $helper->extractClassName('Solr'));
-        $this->assertEquals('Solr', $helper->extractClassName('Solr:foo'));
-        $this->assertEquals('Primo', $helper->extractClassName('Primo:foo:bar'));
+        $this->assertSame('Solr', $helper->extractClassName('Solr'));
+        $this->assertSame('Solr', $helper->extractClassName('Solr:foo'));
+        $this->assertSame('Primo', $helper->extractClassName('Primo:foo:bar'));
     }
 
     /**
@@ -237,7 +237,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $mockResults = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockResults->method('get')
             ->willReturnCallback(
-                function (string $backend) use ($mockSolr, $mockPrimo) {
+                function (string $backend) use ($mockSolr, $mockPrimo): mixed {
                     switch ($backend) {
                         case 'Solr':
                             return $mockSolr;

@@ -87,7 +87,7 @@ class DatabaseTest extends TestCase
         $service->expects($this->once())->method('persistEntity')->with($entity);
         $service->expects($this->once())->method('commitTransaction');
         $db = $this->getShortener($service);
-        $this->assertEquals('http://foo/short/a1e7812e2', $db->shorten('http://foo/bar'));
+        $this->assertSame('http://foo/short/a1e7812e2', $db->shorten('http://foo/bar'));
     }
 
     /**
@@ -109,7 +109,7 @@ class DatabaseTest extends TestCase
         $service->expects($this->once())->method('createAndPersistEntityForPath')->with('/bar')->willReturn($entity);
         $service->expects($this->once())->method('persistEntity')->with($entity);
         $db = $this->getShortener($service, 'base62');
-        $this->assertEquals('http://foo/short/1', $db->shorten('http://foo/bar'));
+        $this->assertSame('http://foo/short/1', $db->shorten('http://foo/bar'));
     }
 
     /**
@@ -127,7 +127,7 @@ class DatabaseTest extends TestCase
         $service = $this->createMock(ShortlinksServiceInterface::class);
         $service->expects($this->once())->method('getShortLinkByHash')->with($hash)->willReturn($entity);
         $db = $this->getShortener($service);
-        $this->assertEquals('http://foo/bar', $db->resolve($hash));
+        $this->assertSame('http://foo/bar', $db->resolve($hash));
     }
 
     /**

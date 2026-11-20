@@ -70,6 +70,6 @@ class SitemapIndexTest extends \PHPUnit\Framework\TestCase
               </sitemap>
             </sitemapindex>
             XML;
-        $this->assertEquals($expected, $sm->toString());
+        $this->assertSame($expected, $sm->toString());
     }
 }

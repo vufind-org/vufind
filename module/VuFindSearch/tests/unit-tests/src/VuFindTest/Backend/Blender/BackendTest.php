@@ -650,7 +650,7 @@ class BackendTest extends TestCase
         $params = $this->getSearchParams([]);
         $result = $backend->search(new Query(), 0, 0, $params);
         $this->assertEquals([], $result->getErrors());
-        $this->assertEquals($expectedSolr + $expectedEDS, $result->getTotal());
+        $this->assertSame($expectedSolr + $expectedEDS, $result->getTotal());
 
         $facets = $result->getFacets();
         $this->assertIsArray($facets);
@@ -699,7 +699,7 @@ class BackendTest extends TestCase
             ],
             $result->getErrors()
         );
-        $this->assertEquals(240, $result->getTotal());
+        $this->assertSame(240, $result->getTotal());
 
         $records = $result->getRecords();
         $this->assertIsArray($records);
@@ -998,7 +998,7 @@ class BackendTest extends TestCase
         $remaining = $collection->initBlended([], 20, 7, 20);
         $this->assertIsArray($remaining);
         $this->assertEmpty($remaining);
-        $this->assertEquals(20, $collection->getTotal());
+        $this->assertSame(20, $collection->getTotal());
     }
 
     /**

@@ -87,9 +87,9 @@ class TitleHolds
     {
         // Get Holdings Data
         $mode = $this->catalog->getTitleHoldsMode();
-        if ($mode == 'disabled') {
+        if ($mode === 'disabled') {
             return false;
-        } elseif ($mode == 'driver') {
+        } elseif ($mode === 'driver') {
             try {
                 $patron = $this->ilsAuth->storedCatalogLogin();
                 if (!$patron) {

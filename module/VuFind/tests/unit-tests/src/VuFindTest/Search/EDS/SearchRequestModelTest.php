@@ -65,7 +65,7 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
             'highlight' => 'n',
         ], $model->convertToQueryStringParameterArray());
 
-        $this->assertEquals(
+        $this->assertSame(
             '{
     "SearchCriteria": {
         "FacetFilters": [
@@ -121,7 +121,7 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
             'highlight' => 'n',
         ], $model->convertToQueryStringParameterArray());
 
-        $this->assertEquals(
+        $this->assertSame(
             '{
     "SearchCriteria": {
         "FacetFilters": [
@@ -179,7 +179,7 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
             ],
         ], $model->convertToQueryStringParameterArray());
 
-        $this->assertEquals(
+        $this->assertSame(
             '{
     "SearchCriteria": {
         "Limiters": [

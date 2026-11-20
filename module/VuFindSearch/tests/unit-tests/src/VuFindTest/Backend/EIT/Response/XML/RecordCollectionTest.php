@@ -51,8 +51,8 @@ class RecordCollectionTest extends TestCase
     public function testDefaults(): void
     {
         $rc = new RecordCollection([]);
-        $this->assertEquals(0, $rc->getTotal());
-        $this->assertEquals(0, $rc->getOffset());
+        $this->assertSame(0, $rc->getTotal());
+        $this->assertSame(0, $rc->getOffset());
         $this->assertEquals([], $rc->getFacets());
     }
 
@@ -64,7 +64,7 @@ class RecordCollectionTest extends TestCase
     public function testNonDefaults(): void
     {
         $rc = new RecordCollection(['total' => 5, 'offset' => 2]);
-        $this->assertEquals(5, $rc->getTotal());
-        $this->assertEquals(2, $rc->getOffset());
+        $this->assertSame(5, $rc->getTotal());
+        $this->assertSame(2, $rc->getOffset());
     }
 }

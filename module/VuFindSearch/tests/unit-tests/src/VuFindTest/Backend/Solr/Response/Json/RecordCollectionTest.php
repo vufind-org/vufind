@@ -54,13 +54,13 @@ class RecordCollectionTest extends TestCase
     {
         $coll = new RecordCollection([]);
         $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
-        $this->assertEquals(0, $coll->getTotal());
+        $this->assertSame(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
         $this->assertIsArray($coll->getPivotFacets());
         $this->assertEquals([], $coll->getGroups());
         $this->assertEquals([], $coll->getHighlighting());
-        $this->assertEquals(0, $coll->getOffset());
+        $this->assertSame(0, $coll->getOffset());
     }
 
     /**
@@ -73,13 +73,13 @@ class RecordCollectionTest extends TestCase
     {
         $coll = new RecordCollection(['response' => null]);
         $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
-        $this->assertEquals(0, $coll->getTotal());
+        $this->assertSame(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
         $this->assertIsArray($coll->getPivotFacets());
         $this->assertEquals([], $coll->getGroups());
         $this->assertEquals([], $coll->getHighlighting());
-        $this->assertEquals(0, $coll->getOffset());
+        $this->assertSame(0, $coll->getOffset());
     }
 
     /**
@@ -119,10 +119,10 @@ class RecordCollectionTest extends TestCase
             ],
         ];
         $coll = new RecordCollection($input);
-        $this->assertEquals('foo', $coll->getSpellcheck()->getQuery());
+        $this->assertSame('foo', $coll->getSpellcheck()->getQuery());
         unset($input['responseHeader']['params']['spellcheck.q']);
         $coll = new RecordCollection($input);
-        $this->assertEquals('bar', $coll->getSpellcheck()->getQuery());
+        $this->assertSame('bar', $coll->getSpellcheck()->getQuery());
     }
 
     /**

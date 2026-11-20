@@ -422,7 +422,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     $this->translatePolicyID('LOCN', $result['current location']) :
                     $home_loc;
 
-                $available = (empty($curr_loc) || $curr_loc == $home_loc)
+                $available = (empty($curr_loc) || $curr_loc === $home_loc)
                     || $result['circulate flag'] == 'Y';
                 $callnumber = $result['call number'];
                 $location   = $library . ' - ' . ($available && !empty($curr_loc)

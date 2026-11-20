@@ -106,7 +106,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testMissingTemplateWithoutException(): void
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
-        $this->assertEquals(
+        $this->assertSame(
             '',
             $record->renderTemplate('foo', [], false)
         );
@@ -130,7 +130,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getViewRenderer()->expects($this->once())->method('render')
             ->with($tpl)
             ->willReturn('success');
-        $this->assertEquals('success', $record->getCollectionBriefRecord());
+        $this->assertSame('success', $record->getCollectionBriefRecord());
     }
 
     /**
@@ -142,7 +142,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/export-foo.phtml');
-        $this->assertEquals('success', $record->getExport('foo'));
+        $this->assertSame('success', $record->getExport('foo'));
     }
 
     /**
@@ -164,7 +164,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $context
         );
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/format-class.phtml');
-        $this->assertEquals('success', $record->getFormatClass('foo'));
+        $this->assertSame('success', $record->getFormatClass('foo'));
     }
 
     /**
@@ -176,7 +176,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/format-list.phtml');
-        $this->assertEquals('success', $record->getFormatList());
+        $this->assertSame('success', $record->getFormatList());
     }
 
     /**
@@ -188,7 +188,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/toolbar.phtml');
-        $this->assertEquals('success', $record->getToolbar());
+        $this->assertSame('success', $record->getToolbar());
     }
 
     /**
@@ -200,7 +200,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/collection-info.phtml');
-        $this->assertEquals('success', $record->getCollectionMetadata());
+        $this->assertSame('success', $record->getCollectionMetadata());
     }
 
     /**
@@ -212,7 +212,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/result-foo.phtml');
-        $this->assertEquals('success', $record->getSearchResult('foo'));
+        $this->assertSame('success', $record->getSearchResult('foo'));
     }
 
     /**
@@ -258,7 +258,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getViewRenderer()->expects($this->once())->method('render')
             ->with($tpl)
             ->willReturn('success');
-        $this->assertEquals('success', $record->getListEntry(null, $user, $recordNumber));
+        $this->assertSame('success', $record->getListEntry(null, $user, $recordNumber));
     }
 
     /**
@@ -314,7 +314,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getViewRenderer()->method('render')
             ->with($this->logicalOr($this->equalTo($tpl1), $this->equalTo($tpl2)))
             ->willReturnCallback($callback);
-        $this->assertEquals('success1success2', $record->getPreviews());
+        $this->assertSame('success1success2', $record->getPreviews());
     }
 
     /**
@@ -377,7 +377,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml', $linkUrl);
-        $this->assertEquals($expected, $record->getLink('bar', 'foo'));
+        $this->assertSame($expected, $record->getLink('bar', 'foo'));
     }
 
     /**
@@ -426,8 +426,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = $this->getRecord($driver, [], $context);
 
         // We run the test twice to ensure that checkbox incrementing works properly:
-        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
-        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
+        $this->assertSame('success', $record->getCheckbox('bar', 'foo', 1));
+        $this->assertSame('success', $record->getCheckbox('bar', 'foo', 2));
     }
 
     /**
@@ -476,8 +476,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = $this->getRecord($driver, [], $context);
 
         // We run the test twice to ensure that checkbox incrementing works properly:
-        $this->assertEquals('success', $record->getCheckbox(formAttr: 'foo', number: 1));
-        $this->assertEquals('success', $record->getCheckbox('', 'foo', 2));
+        $this->assertSame('success', $record->getCheckbox(formAttr: 'foo', number: 1));
+        $this->assertSame('success', $record->getCheckbox('', 'foo', 2));
     }
 
     /**
@@ -499,20 +499,20 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         );
 
         // no result set identifier but with prefix
-        $this->assertEquals(
+        $this->assertSame(
             "{$contextPrefix}-000105196",
             $record->getUniqueHtmlElementId($contextPrefix)
         );
 
         // with result set identifier but no prefix
         $driver->setResultSetIdentifier($randomIdentifier);
-        $this->assertEquals(
+        $this->assertSame(
             "{$randomIdentifier}-000105196",
             $record->getUniqueHtmlElementId()
         );
 
         // with result set identifier and with prefix
-        $this->assertEquals(
+        $this->assertSame(
             "{$contextPrefix}-{$randomIdentifier}-000105196",
             $record->getUniqueHtmlElementId($contextPrefix)
         );
@@ -537,7 +537,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getViewRenderer()->expects($this->once())->method('render')
             ->with('RecordTab/description.phtml')
             ->willReturn('success');
-        $this->assertEquals('success', $record->getTab($tab));
+        $this->assertSame('success', $record->getTab($tab));
     }
 
     /**

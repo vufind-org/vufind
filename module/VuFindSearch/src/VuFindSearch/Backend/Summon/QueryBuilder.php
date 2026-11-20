@@ -166,7 +166,7 @@ class QueryBuilder
 
         // Prepend the index name, unless it's the special "AllFields"
         // index:
-        return ($index != 'AllFields') ? "{$index}:($lookfor)" : $lookfor;
+        return ($index !== 'AllFields') ? "{$index}:($lookfor)" : $lookfor;
     }
 
     /**

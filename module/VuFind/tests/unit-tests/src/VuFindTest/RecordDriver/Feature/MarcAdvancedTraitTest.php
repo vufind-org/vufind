@@ -112,8 +112,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['Summary.'], $obj->getSummary());
         $this->assertEquals(['Data in UTF-8'], $obj->getSystemDetails());
         $this->assertEquals(['Developers'], $obj->getTargetAudienceNotes());
-        $this->assertEquals('2. Return', $obj->getTitleSection());
-        $this->assertEquals('Test Author.', $obj->getTitleStatement());
+        $this->assertSame('2. Return', $obj->getTitleSection());
+        $this->assertSame('Test Author.', $obj->getTitleStatement());
         $this->assertEquals(
             ['Zoolandia -- City.', 'Funland -- Funtown.'],
             $obj->getHierarchicalPlaceNames()

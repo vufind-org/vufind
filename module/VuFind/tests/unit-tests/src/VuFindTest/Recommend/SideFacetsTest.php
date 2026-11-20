@@ -126,7 +126,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFacetOperator(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'AND',
             $this->getSideFacets()->getFacetOperator('format')
         ); // default
@@ -144,7 +144,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             getConfigArrayExpect: $this->once()
         );
         $sf = $this->getSideFacets($configManager);
-        $this->assertEquals('OR', $sf->getFacetOperator('format'));
+        $this->assertSame('OR', $sf->getFacetOperator('format'));
     }
 
     /**

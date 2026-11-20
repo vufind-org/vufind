@@ -73,7 +73,7 @@ class QueryGroupTest extends TestCase
     public function testGetAllTerms(): void
     {
         $q = $this->getSampleQueryGroup();
-        $this->assertEquals('test query multi word query', $q->getAllTerms());
+        $this->assertSame('test query multi word query', $q->getAllTerms());
     }
 
     /**
@@ -85,7 +85,7 @@ class QueryGroupTest extends TestCase
     {
         $q = $this->getSampleQueryGroup();
         $q->replaceTerm('query', 'question');
-        $this->assertEquals('test question multi word question', $q->getAllTerms());
+        $this->assertSame('test question multi word question', $q->getAllTerms());
     }
 
     /**
@@ -99,11 +99,11 @@ class QueryGroupTest extends TestCase
         // Without normalization we only replace the accented instance of "query":
         $q = $this->getSampleQueryGroupWithWeirdCharacters();
         $q->replaceTerm('quéry', 'quéstion');
-        $this->assertEquals('tést quéstion multi WORD query', $q->getAllTerms());
+        $this->assertSame('tést quéstion multi WORD query', $q->getAllTerms());
         // With normalization, we replace both instances of "query":
         $q = $this->getSampleQueryGroupWithWeirdCharacters();
         $q->replaceTerm('quéry', 'quéstion', $normalizer);
-        $this->assertEquals('test quéstion multi word quéstion', $q->getAllTerms());
+        $this->assertSame('test quéstion multi word quéstion', $q->getAllTerms());
     }
 
     /**
@@ -117,10 +117,10 @@ class QueryGroupTest extends TestCase
         $qClone = clone $q;
         $q->replaceTerm('query', 'question');
         $qClone->setOperator('AND');
-        $this->assertEquals('test question multi word question', $q->getAllTerms());
-        $this->assertEquals('OR', $q->getOperator());
-        $this->assertEquals('test query multi word query', $qClone->getAllTerms());
-        $this->assertEquals('AND', $qClone->getOperator());
+        $this->assertSame('test question multi word question', $q->getAllTerms());
+        $this->assertSame('OR', $q->getOperator());
+        $this->assertSame('test query multi word query', $qClone->getAllTerms());
+        $this->assertSame('AND', $qClone->getOperator());
     }
 
     /**
@@ -132,7 +132,7 @@ class QueryGroupTest extends TestCase
     {
         $q = $this->getSampleQueryGroup();
         $q->setReducedHandler('foo');
-        $this->assertEquals('foo', $q->getReducedHandler());
+        $this->assertSame('foo', $q->getReducedHandler());
         $q->unsetReducedHandler();
         $this->assertEquals(null, $q->getReducedHandler());
     }

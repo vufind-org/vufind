@@ -63,17 +63,17 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="https&#x3A;&#x2F;&#x2F;vufind.org">text</a>',
             $helper('text', 'https://vufind.org')
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="&#x2F;Record&#x2F;id">text</a>',
             $helper('text', false, ['href' => '/Record/id'])
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="&#x23;anchor">text</a>',
             $helper('text', '#anchor', ['href' => 'default'])
         );
@@ -88,9 +88,9 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals('<span>text</span>', $helper('text', null, ''));
-        $this->assertEquals('<span>text</span>', $helper('text', '', ''));
-        $this->assertEquals('<span>text</span>', $helper('text', false, []));
+        $this->assertSame('<span>text</span>', $helper('text', null, ''));
+        $this->assertSame('<span>text</span>', $helper('text', '', ''));
+        $this->assertSame('<span>text</span>', $helper('text', false, []));
     }
 
     /**
@@ -102,41 +102,41 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals(
+        $this->assertSame(
             '<a class="btn" id="login" href="&#x23;">text</a>',
             $helper('text', '#', ['class' => 'btn', 'id' => 'login'])
         );
 
         // Skip href
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="&#x23;" class="btn" id="login">text</a>',
             $helper('text', null, ['href' => '#', 'class' => 'btn', 'id' => 'login'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="&#x23;" class="btn" id="login">text</a>',
             $helper('text', false, ['href' => '#', 'class' => 'btn', 'id' => 'login'])
         );
 
         // String
-        $this->assertEquals(
+        $this->assertSame(
             '<a class="btn" href="&#x23;">text</a>',
             $helper('text', '#', 'btn')
         );
 
         // No href but attributes
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="btn">text</span>',
             $helper('text', null, 'btn') // class only
         );
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="btn">text</span>',
             $helper('text', null, ['class' => 'btn'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="btn">text</span>',
             $helper('text', null, ['class' => 'btn'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="btn">text</span>',
             $helper('text', false, ['class' => 'btn'])
         );
@@ -152,13 +152,13 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         $helper = $this->getHelper();
 
         // Test standard output of recordLink helper:
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="&#x2F;Record&#x2F;foo">recordLink</a>',
             $helper('recordLink', '/Record/foo')
         );
 
         // Confirm that attributes and HTML contents are escaped
-        $this->assertEquals(
+        $this->assertSame(
             '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">'
                 . 'contains &lt;b&gt;bold&lt;/b&gt;</a>',
             $helper(
@@ -169,7 +169,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         );
 
         // Confirm that HTML is NOT escaped when asked politely
-        $this->assertEquals(
+        $this->assertSame(
             '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">'
                 . 'contains <b>bold</b></a>',
             $helper(
@@ -190,12 +190,12 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="&#x2F;Record&#x2F;foo">recordLink</a>',
             $helper('recordLink', '/Record/foo', null, null)
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             '<a href="https&#x3A;&#x2F;&#x2F;super.safe&#x3F;url&#x3D;&#x2F;Record&#x2F;foo">recordLink</a>',
             $helper('recordLink', '/Record/foo', null, ['proxyUrl' => 'https://super.safe?url='])
         );

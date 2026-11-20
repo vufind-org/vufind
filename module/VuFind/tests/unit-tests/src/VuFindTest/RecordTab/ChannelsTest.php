@@ -73,9 +73,9 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
     public function testGetDescription(): void
     {
         // Default case:
-        $this->assertEquals('Channels', $this->getChannels()->getDescription());
+        $this->assertSame('Channels', $this->getChannels()->getDescription());
         // Custom case:
-        $this->assertEquals('Custom', $this->getChannels(['label' => 'Custom'])->getDescription());
+        $this->assertSame('Custom', $this->getChannels(['label' => 'Custom'])->getDescription());
     }
 
     /**

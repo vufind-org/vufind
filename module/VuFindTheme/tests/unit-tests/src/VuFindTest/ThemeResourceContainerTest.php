@@ -245,7 +245,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
     {
         $container = new ResourceContainer();
         $container->setEncoding('fake');
-        $this->assertEquals('fake', $container->getEncoding());
+        $this->assertSame('fake', $container->getEncoding());
     }
 
     /**
@@ -269,7 +269,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
     {
         $container = new ResourceContainer();
         $container->setGenerator('fake');
-        $this->assertEquals('fake', $container->getGenerator());
+        $this->assertSame('fake', $container->getGenerator());
     }
 
     /**

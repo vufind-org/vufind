@@ -51,12 +51,12 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
     {
         $coverage = 'name=Dehradun; westlimit=77.8884; southlimit=30.2259; '
             . 'eastlimit=78.2234; northlimit=30.4511';
-        $this->assertEquals('Dehradun', VuFindGeo::getLabelFromCoverage($coverage));
-        $this->assertEquals(
+        $this->assertSame('Dehradun', VuFindGeo::getLabelFromCoverage($coverage));
+        $this->assertSame(
             '77.8884 78.2234 30.4511 30.2259',
             VuFindGeo::getDisplayCoordinatesFromCoverage($coverage)
         );
-        $this->assertEquals(
+        $this->assertSame(
             'ENVELOPE(77.8884,78.2234,30.4511,30.2259)',
             VuFindGeo::getAllCoordinatesFromCoverage($coverage)
         );

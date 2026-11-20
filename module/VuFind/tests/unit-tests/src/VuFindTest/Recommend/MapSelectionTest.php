@@ -86,7 +86,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetGeoField(): void
     {
-        $this->assertEquals('long_lat', $this->getMapSelection()->getGeoField());
+        $this->assertSame('long_lat', $this->getMapSelection()->getGeoField());
     }
 
     /**
@@ -96,7 +96,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetHeight(): void
     {
-        $this->assertEquals(320, $this->getMapSelection()->getHeight());
+        $this->assertSame(320, $this->getMapSelection()->getHeight());
     }
 
     /**

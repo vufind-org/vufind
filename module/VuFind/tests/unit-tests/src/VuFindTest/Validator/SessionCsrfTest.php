@@ -51,11 +51,11 @@ class SessionCsrfTest extends \PHPUnit\Framework\TestCase
     public function testCounting(): void
     {
         $csrf = new SessionCsrf(['session' => new Container('csrftest1')]);
-        $this->assertEquals(0, $csrf->getTokenCount());
+        $this->assertSame(0, $csrf->getTokenCount());
         $csrf->getHash();
-        $this->assertEquals(1, $csrf->getTokenCount());
+        $this->assertSame(1, $csrf->getTokenCount());
         $csrf->getHash(true);
-        $this->assertEquals(2, $csrf->getTokenCount());
+        $this->assertSame(2, $csrf->getTokenCount());
     }
 
     /**
@@ -68,13 +68,13 @@ class SessionCsrfTest extends \PHPUnit\Framework\TestCase
         $csrf = new SessionCsrf(['session' => new Container('csrftest2')]);
         // Try trimming an empty list:
         $csrf->trimTokenList(5);
-        $this->assertEquals(0, $csrf->getTokenCount());
+        $this->assertSame(0, $csrf->getTokenCount());
 
         // Now populate the list:
         $firstToken = $csrf->getHash();
         $secondToken = $csrf->getHash(true);
         $thirdToken = $csrf->getHash(true);
-        $this->assertEquals(3, $csrf->getTokenCount());
+        $this->assertSame(3, $csrf->getTokenCount());
 
         // All tokens are valid now!
         $this->assertTrue($csrf->isValid($firstToken));
@@ -83,7 +83,7 @@ class SessionCsrfTest extends \PHPUnit\Framework\TestCase
 
         // Trim the list down to one:
         $csrf->trimTokenList(1);
-        $this->assertEquals(1, $csrf->getTokenCount());
+        $this->assertSame(1, $csrf->getTokenCount());
 
         // Now only the latest token is valid:
         $this->assertFalse($csrf->isValid($firstToken));

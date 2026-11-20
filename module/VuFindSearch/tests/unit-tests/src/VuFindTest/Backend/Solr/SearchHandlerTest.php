@@ -52,7 +52,7 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
-        $this->assertEquals(
+        $this->assertSame(
             '(_query_:"{!dismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'100%\\\'}foobar")',
             $hndl->createSimpleQueryString('foobar')
         );
@@ -67,7 +67,7 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['QueryFields' => ['id' => [['or', '~']]]];
         $hndl = new SearchHandler($spec);
-        $this->assertEquals(
+        $this->assertSame(
             '(id:("escaped\"quote" OR not OR quoted OR "basic phrase"))',
             $hndl->createSimpleQueryString('"escaped\"quote" not quoted "basic phrase"')
         );
@@ -101,7 +101,7 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec, 'edismax');
-        $this->assertEquals(
+        $this->assertSame(
             '(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'0%\\\'}foobar")',
             $hndl->createSimpleQueryString('foobar')
         );
@@ -143,7 +143,7 @@ class SearchHandlerTest extends TestCase
         ];
 
         $hndl = new SearchHandler($spec);
-        $this->assertEquals(
+        $this->assertSame(
             '(callnumber:(ABC123)^1000 OR callnumber:(^ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(^ABC123*))',
             $hndl->createSimpleQueryString('abc"123*')
         );
@@ -168,7 +168,7 @@ class SearchHandlerTest extends TestCase
         ];
 
         $hndl = new SearchHandler($spec);
-        $this->assertEquals(
+        $this->assertSame(
             'ABC123',
             $hndl->preprocessQueryString('abc"123*')
         );

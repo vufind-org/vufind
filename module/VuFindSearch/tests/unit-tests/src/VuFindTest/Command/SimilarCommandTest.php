@@ -92,9 +92,9 @@ class SimilarCommandTest extends TestCase
     {
         $backendId = 'bar';
         $command = $this->getCommand();
-        $this->assertEquals($backendId, $command->getTargetIdentifier());
+        $this->assertSame($backendId, $command->getTargetIdentifier());
         $command->setTargetIdentifier($backendId . '2');
-        $this->assertEquals($backendId . '2', $command->getTargetIdentifier());
+        $this->assertSame($backendId . '2', $command->getTargetIdentifier());
     }
 
     /**

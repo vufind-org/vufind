@@ -95,9 +95,9 @@ class SearchCommandTest extends TestCase
     public function testSearchOffset(): void
     {
         $command = $this->getCommand();
-        $this->assertEquals(0, $command->getOffset());
+        $this->assertSame(0, $command->getOffset());
         $command->setOffset(20);
-        $this->assertEquals(20, $command->getOffset());
+        $this->assertSame(20, $command->getOffset());
     }
 
     /**
@@ -108,9 +108,9 @@ class SearchCommandTest extends TestCase
     public function testSearchLimit(): void
     {
         $command = $this->getCommand();
-        $this->assertEquals(1, $command->getLimit());
+        $this->assertSame(1, $command->getLimit());
         $command->setLimit(2);
-        $this->assertEquals(2, $command->getLimit());
+        $this->assertSame(2, $command->getLimit());
     }
 
     /**
@@ -152,9 +152,9 @@ class SearchCommandTest extends TestCase
     {
         $backendId = 'bar';
         $command = $this->getCommand();
-        $this->assertEquals($backendId, $command->getTargetIdentifier());
+        $this->assertSame($backendId, $command->getTargetIdentifier());
         $command->setTargetIdentifier($backendId . '2');
-        $this->assertEquals($backendId . '2', $command->getTargetIdentifier());
+        $this->assertSame($backendId . '2', $command->getTargetIdentifier());
     }
 
     /**

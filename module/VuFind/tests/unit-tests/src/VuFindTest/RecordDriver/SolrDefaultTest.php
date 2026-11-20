@@ -55,7 +55,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     public function testBookOpenURL(): void
     {
         $driver = $this->getDriver();
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture('openurl/book'),
             $driver->getOpenUrl()
         );
@@ -88,7 +88,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'container_start_page' => '12',
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture('openurl/article'),
             $driver->getOpenUrl()
         );
@@ -106,7 +106,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'issn' => ['1234-5678'],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture('openurl/journal'),
             $driver->getOpenUrl()
         );
@@ -124,7 +124,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'isbn' => [],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture('openurl/unknown'),
             $driver->getOpenUrl()
         );
@@ -141,7 +141,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'format' => ['Thingie'],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture('openurl/unknown-isbn'),
             $driver->getOpenUrl()
         );
@@ -159,7 +159,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'issn' => ['1234-5678'],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture('openurl/unknown-isbn-issn'),
             $driver->getOpenUrl()
         );
@@ -184,7 +184,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetContainerRecordID(): void
     {
-        $this->assertEquals('', $this->getDriver()->getContainerRecordID());
+        $this->assertSame('', $this->getDriver()->getContainerRecordID());
     }
 
     /**
@@ -194,7 +194,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetChildRecordCount(): void
     {
-        $this->assertEquals(0, $this->getDriver()->getChildRecordCount());
+        $this->assertSame(0, $this->getDriver()->getChildRecordCount());
     }
 
     /**
@@ -204,7 +204,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetHighlightedTitle(): void
     {
-        $this->assertEquals('', $this->getDriver()->getHighlightedTitle());
+        $this->assertSame('', $this->getDriver()->getHighlightedTitle());
     }
 
     /**

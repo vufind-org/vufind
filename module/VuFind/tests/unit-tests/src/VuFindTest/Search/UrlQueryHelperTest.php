@@ -69,13 +69,13 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     {
         // Test basic getters
         $helper = $this->getHelper();
-        $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
+        $this->assertSame('?foo=bar&amp;lookfor=search', $helper->getParams());
         $this->assertSame('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
             ['foo' => 'bar', 'lookfor' => 'search'],
             $helper->getParamArray()
         );
-        $this->assertEquals(
+        $this->assertSame(
             '<input type="hidden" name="foo" value="bar">',
             $helper->asHiddenFields(['lookfor' => '/.*/'])
         );
@@ -93,18 +93,18 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         // Test setDefaultParameters and disabling escaping. Note that, because
         // the "foo" parameter is already set in the original request, adding a
         // default does NOT override the existing value.
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&lookfor=search',
             $helper->setDefaultParameter('foo', 'baz', false)->getParams(false)
         );
         // Now let's add a default parameter that was NOT part of the incoming
         // request... we DO want this to get added to the query:
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&lookfor=search&xyzzy=true',
             $helper->setDefaultParameter('xyzzy', 'true', false)->getParams(false)
         );
         // Finally, let's force an override of an existing parameter:
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=baz&lookfor=search&xyzzy=true',
             $helper->setDefaultParameter('foo', 'baz', true)->getParams(false)
         );
@@ -127,10 +127,10 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(false, $helper->isQuerySuppressed());
         $helper->setSuppressQuery(true);
         $this->assertEquals(true, $helper->isQuerySuppressed());
-        $this->assertEquals('?foo=bar', $helper->getParams());
+        $this->assertSame('?foo=bar', $helper->getParams());
         $helper->setSuppressQuery(false);
         $this->assertEquals(false, $helper->isQuerySuppressed());
-        $this->assertEquals('?foo=bar&lookfor=search', $helper->getParams(false));
+        $this->assertSame('?foo=bar&lookfor=search', $helper->getParams(false));
     }
 
     /**
@@ -141,11 +141,11 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     public function testReplacingQueryTerms(): void
     {
         $helper = $this->getHelper();
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&amp;lookfor=srch',
             $helper->replaceTerm('search', 'srch')->getParams()
         );
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&amp;lookfor=srch',
             $helper->setSearchTerms('srch')->getParams()
         );
@@ -160,19 +160,19 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
         $faceted = $helper->addFacet('f', '1')->addFilter('f:2');
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&lookfor=search&filter%5B%5D=f%3A%221%22&filter%5B%5D=f%3A2',
             $faceted->getParams(false)
         );
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&lookfor=search&filter%5B%5D=f%3A%221%22',
             $faceted->removeFacet('f', '2')->getParams(false)
         );
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&lookfor=search&filter%5B%5D=f%3A2',
             $faceted->removeFilter('f:1')->getParams(false)
         );
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&lookfor=search',
             $faceted->removeAllFilters()->getParams(false)
         );
@@ -186,7 +186,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     public function testStackingSetters(): void
     {
         $helper = $this->getHelper();
-        $this->assertEquals(
+        $this->assertSame(
             '?foo=bar&sort=title&view=grid&lookfor=search&type=x&limit=50&page=3',
             $helper->setSort('title')->setViewParam('grid')->setHandler('x')
                 ->setLimit('50')->setPage('3')->getParams(false)
@@ -202,7 +202,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     {
         $q = unserialize($this->getFixture('searches/advanced/query'));
         $helper = new UrlQueryHelper([], $q);
-        $this->assertEquals(
+        $this->assertSame(
             '?join=OR&bool0%5B%5D=AND&lookfor0%5B%5D=oranges&lookfor0%5B%5D=bananas'
             . '&lookfor0%5B%5D=pears&type0%5B%5D=CallNumber&type0%5B%5D=toc'
             . '&type0%5B%5D=ISN&bool1%5B%5D=OR&lookfor1%5B%5D=cars'
@@ -230,7 +230,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         $params->setPage(5);
         $params->setView('grid');
         $helper = $factory->fromParams($params);
-        $this->assertEquals(
+        $this->assertSame(
             '?limit=100&view=grid&page=5&lookfor=foo&type=bar',
             $helper->getParams(false)
         );

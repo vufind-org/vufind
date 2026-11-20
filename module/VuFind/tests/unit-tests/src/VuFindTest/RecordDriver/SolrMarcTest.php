@@ -97,7 +97,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($fixture['response']['docs'][0]);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Vico, Giambattista, 1668-1744.',
             $record->getPrimaryAuthor()
         );

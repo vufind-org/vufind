@@ -534,7 +534,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
             'ILLRequest'   => 'auto',
             'addILLRequestLink' => $patron ? 'check' : false,
-            'services'     => $status == 'Available' ? $this->getFakeServices() : [],
+            'services'     => $status === 'Available' ? $this->getFakeServices() : [],
         ];
 
         switch (rand(1, 5)) {

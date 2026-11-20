@@ -182,9 +182,9 @@ class Holds
 
         $mode = $this->catalog->getHoldsMode();
 
-        if ($mode == 'disabled') {
+        if ($mode === 'disabled') {
             $holdings = $this->standardHoldings($result);
-        } elseif ($mode == 'driver') {
+        } elseif ($mode === 'driver') {
             $holdings = $this->driverHoldings($result, $config, !empty($blocks), $linkOverrides);
         } else {
             $holdings = $this->generateHoldings($result, $mode, $config, $linkOverrides);

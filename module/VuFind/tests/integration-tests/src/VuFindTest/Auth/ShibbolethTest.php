@@ -319,8 +319,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     public function testLogin(): void
     {
         $user = $this->getAuthObject()->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->getUsername());
-        $this->assertEquals('user@test.com', $user->getEmail());
+        $this->assertSame('testuser', $user->getUsername());
+        $this->assertSame('user@test.com', $user->getEmail());
     }
 
     /**
@@ -332,8 +332,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user1, false));
-        $this->assertEquals('example1.testuser1', $user->getCatUsername());
-        $this->assertEquals('testuser1', $user->getUsername());
+        $this->assertSame('example1.testuser1', $user->getCatUsername());
+        $this->assertSame('testuser1', $user->getUsername());
     }
 
     /**
@@ -345,8 +345,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user2, false));
-        $this->assertEquals('example2.12345', $user->getCatUsername());
-        $this->assertEquals('testuser2', $user->getUsername());
+        $this->assertSame('example2.12345', $user->getCatUsername());
+        $this->assertSame('testuser2', $user->getUsername());
     }
 
     /**
@@ -370,8 +370,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig(), true, false)
             ->authenticate($this->getLoginRequest($this->proxyUser, true));
-        $this->assertEquals('example1.testuser3', $user->getCatUsername());
-        $this->assertEquals('testuser3', $user->getUsername());
+        $this->assertSame('example1.testuser3', $user->getCatUsername());
+        $this->assertSame('testuser3', $user->getUsername());
     }
 
     /**

@@ -450,7 +450,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
 
         $explanation->performRequest($recordId);
 
-        $this->assertEquals('harry potter', $explanation->getLookfor());
+        $this->assertSame('harry potter', $explanation->getLookfor());
         $this->assertEquals(424332884, $explanation->getRecordId());
 
         $this->assertEquals(10, $explanation->getMaxScore());
@@ -458,9 +458,9 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $this->assertEqualsWithDelta(200575.50390625, $explanation->getBaseScore(), PHP_FLOAT_EPSILON);
         $this->assertEquals(null, $explanation->getBoost());
         $this->assertEquals(null, $explanation->getCoord());
-        $this->assertEquals(-1, $explanation->getMaxFields());
+        $this->assertSame(-1, $explanation->getMaxFields());
         $this->assertEquals(0, $explanation->getMinPercentage());
-        $this->assertEquals(2, $explanation->getDecimalPlaces());
+        $this->assertSame(2, $explanation->getDecimalPlaces());
     }
 
     /**
@@ -577,7 +577,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
 
         $explanation->performRequest($recordId);
 
-        $this->assertEquals(3, $explanation->getMaxFields());
+        $this->assertSame(3, $explanation->getMaxFields());
         $this->assertCount(9, $explanation->getExplanationForRest());
         $this->assertCount(3, $explanation->getExplanation());
     }
@@ -613,7 +613,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             $config
         );
         $explanation->performRequest($recordId);
-        $this->assertEquals($recordId, $explanation->getRecordId());
+        $this->assertSame($recordId, $explanation->getRecordId());
         $this->assertCount(12, $explanation->getExplanation());
     }
 

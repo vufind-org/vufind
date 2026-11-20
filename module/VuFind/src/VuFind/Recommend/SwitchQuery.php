@@ -234,7 +234,7 @@ class SwitchQuery implements RecommendInterface
 
         // Try to capitalize booleans, return new query if a change is found:
         $newQuery = $lh->capitalizeBooleans($query);
-        return ($query == $newQuery) ? false : $newQuery;
+        return ($query === $newQuery) ? false : $newQuery;
     }
 
     /**

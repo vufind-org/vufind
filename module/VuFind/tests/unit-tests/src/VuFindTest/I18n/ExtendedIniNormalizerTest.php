@@ -119,7 +119,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
         $reader = new ExtendedIniReader();
         $normalizer = new ExtendedIniNormalizer();
 
-        $this->assertEquals(
+        $this->assertSame(
             "$value\n",
             $normalizer->formatAsString($reader->getTextDomain([$value]))
         );
@@ -134,7 +134,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
     {
         $reader = new ExtendedIniReader();
         $normalizer = new ExtendedIniNormalizer();
-        $this->assertEquals(
+        $this->assertSame(
             "_21_21_21_21 = \"bar\"\n_28_29_3F_21 = \"foo\"\n",
             $normalizer->formatAsString($reader->getTextDomain(['()?! = foo', '!!!! = bar']))
         );

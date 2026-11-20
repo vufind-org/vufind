@@ -82,9 +82,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     public function testThemeSetting(): void
     {
         $ti = $this->getThemeInfo();
-        $this->assertEquals('parent', $ti->getTheme()); // default
+        $this->assertSame('parent', $ti->getTheme()); // default
         $ti->setTheme('child');
-        $this->assertEquals('child', $ti->getTheme());
+        $this->assertSame('child', $ti->getTheme());
     }
 
     /**

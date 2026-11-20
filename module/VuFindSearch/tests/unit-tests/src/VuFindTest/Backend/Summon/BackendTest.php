@@ -78,10 +78,10 @@ class BackendTest extends TestCase
         $back->setIdentifier('test');
         $coll = $back->retrieve('FETCH-gale_primary_3281657081');
         $this->assertCount(1, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-gale_primary_3281657081', $rec->ID[0]);
     }
 
@@ -106,10 +106,10 @@ class BackendTest extends TestCase
         $back->setIdentifier('test');
         $coll = $back->retrieveBatch(range(1, 60)); // not using real IDs here
         $this->assertCount(60, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-gale_primary_3281657083', $rec->ID[0]);
         $recs = $coll->getRecords();
         $rec  = $recs[59];
@@ -151,20 +151,20 @@ class BackendTest extends TestCase
         $back->setIdentifier('test');
         $coll = $back->search(new Query('foobar'), 0, 3);
         $this->assertCount(3, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-proquest_dll_23240310011', $rec->ID[0]);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
         $this->assertEquals('FETCH-proquest_dll_19947616111', $recs[1]->ID[0]);
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('FETCH-britannica_eb_129163132475image1', $recs[2]->ID[0]);
-        $this->assertEquals(545, $coll->getTotal());
+        $this->assertSame(545, $coll->getTotal());
         $facets = $coll->getFacets();
         $this->assertEquals('Language', $facets[0]['displayName']);
-        $this->assertEquals(0, $coll->getOffset());
+        $this->assertSame(0, $coll->getOffset());
         $this->assertEquals([], $coll->getSpellcheck());
         $this->assertEquals([], $coll->getBestBets());
         $this->assertEquals([], $coll->getDatabaseRecommendations());

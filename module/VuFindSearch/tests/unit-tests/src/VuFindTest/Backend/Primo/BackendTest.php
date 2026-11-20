@@ -66,10 +66,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $coll = $back->retrieve('crossref10.5755/j01.ss.71.1.377');
         $this->assertCount(1, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('crossref10.5755/j01.ss.71.1.377', $rec->recordid);
     }
 
@@ -90,22 +90,22 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $coll = $back->search(new Query('Test, Test', 'Author'), 0, 3);
         $this->assertCount(3, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertEquals('crossref10.5755/j01.ss.71.1.377', $rec->recordid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
         $this->assertEquals('crossref10.5755/j01.ss.71.2.533', $recs[1]->recordid);
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('crossref10.5755/j01.ss.71.2.544', $recs[2]->recordid);
-        $this->assertEquals(5706, $coll->getTotal());
+        $this->assertSame(5706, $coll->getTotal());
         $facets = $coll->getFacets();
         $this->assertCount(9, $facets);
         $this->assertCount(19, $facets['jtitle']);
         $this->assertEquals(16, $facets['jtitle']['Remedial and Special Education']);
-        $this->assertEquals(0, $coll->getOffset());
+        $this->assertSame(0, $coll->getOffset());
     }
 
     /**

@@ -1302,7 +1302,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
 
                 if (
                     (null !== $primary && ($primary === $compareLogin
-                    || $primary == $this->sanitizePIN($compareLogin)))
+                    || $primary === $this->sanitizePIN($compareLogin)))
                     || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)
                 ) {

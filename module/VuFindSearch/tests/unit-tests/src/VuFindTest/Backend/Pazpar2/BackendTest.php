@@ -89,10 +89,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $back->setIdentifier('test');
         $coll = $back->search(new Query('foobar'), 0, 20);
         $this->assertCount(20, $coll);
-        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $this->assertSame('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
-        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertSame('test', $rec->getSourceIdentifier());
         $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
@@ -100,7 +100,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             'content: author navalani k author gidwani n n title a practical guide to colon classification medium book',
             (string)$recs[19]->getXML()->recid
         );
-        $this->assertEquals(54, $coll->getTotal());
+        $this->assertSame(54, $coll->getTotal());
     }
 
     /**

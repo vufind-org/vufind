@@ -68,7 +68,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         );
         $obj->setTranslator($translator);
         $obj->getDescription();
-        $this->assertEquals("Count:$count", $obj->getDescription());
+        $this->assertSame("Count:$count", $obj->getDescription());
     }
 
     /**

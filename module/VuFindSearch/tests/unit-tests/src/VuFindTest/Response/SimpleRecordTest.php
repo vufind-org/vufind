@@ -51,7 +51,7 @@ class SimpleRecordTest extends TestCase
     public function testDefaultSourceId(): void
     {
         $record = new SimpleRecord([]);
-        $this->assertEquals(DEFAULT_SEARCH_BACKEND, $record->getSourceIdentifier());
+        $this->assertSame(DEFAULT_SEARCH_BACKEND, $record->getSourceIdentifier());
     }
 
     /**
@@ -63,7 +63,7 @@ class SimpleRecordTest extends TestCase
     {
         $record = new SimpleRecord([]);
         $record->setSourceIdentifier('foo');
-        $this->assertEquals('foo', $record->getSourceIdentifier());
+        $this->assertSame('foo', $record->getSourceIdentifier());
     }
 
     /**

@@ -64,7 +64,7 @@ class RestConnectorTest extends TestCase
      */
     public function testInstitutionCode(): void
     {
-        $this->assertEquals('fakeinst', $this->createConnector()->getInstitutionCode());
+        $this->assertSame('fakeinst', $this->createConnector()->getInstitutionCode());
     }
 
     /**

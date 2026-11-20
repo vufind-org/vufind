@@ -115,7 +115,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
         $consortialVuFind = $this->buildConsortialVuFind($config);
 
         $moreResultsUrl = $consortialVuFind->getMoreResultsUrl();
-        $this->assertEquals('https://some.url/Search/Results?lookfor=civil+war', $moreResultsUrl);
+        $this->assertSame('https://some.url/Search/Results?lookfor=civil+war', $moreResultsUrl);
     }
 
     /**

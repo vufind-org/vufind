@@ -2314,7 +2314,7 @@ class VoyagerRestful extends Voyager implements
                 $isLocal = $this->isLocalInst(
                     (string)$institution->attributes()->id
                 );
-                if ($local != $isLocal) {
+                if ($local !== $isLocal) {
                     continue;
                 }
 

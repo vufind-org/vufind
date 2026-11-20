@@ -446,7 +446,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testLocaleWithoutTranslator(): void
     {
         $translate = new Translate();
-        $this->assertEquals('foo', $translate->getTranslatorLocale('foo'));
+        $this->assertSame('foo', $translate->getTranslatorLocale('foo'));
     }
 
     /**
@@ -458,7 +458,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     {
         $translate = new Translate();
         $translate->setTranslator($this->getMockTranslator([], 'foo'));
-        $this->assertEquals('foo', $translate->getTranslatorLocale());
+        $this->assertSame('foo', $translate->getTranslatorLocale());
     }
 
     /**

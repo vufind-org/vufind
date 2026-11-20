@@ -53,9 +53,9 @@ class PublicationDetailsTest extends \PHPUnit\Framework\TestCase
     public function testGetters(): void
     {
         $pd = new PublicationDetails('a', 'b', 'c');
-        $this->assertEquals('a', $pd->getPlace());
-        $this->assertEquals('b', $pd->getName());
-        $this->assertEquals('c', $pd->getDate());
+        $this->assertSame('a', $pd->getPlace());
+        $this->assertSame('b', $pd->getName());
+        $this->assertSame('c', $pd->getDate());
     }
 
     /**
@@ -66,21 +66,21 @@ class PublicationDetailsTest extends \PHPUnit\Framework\TestCase
     public function testToString(): void
     {
         $pd = new PublicationDetails('a', 'b', 'c');
-        $this->assertEquals('a b c', $pd->__toString());
+        $this->assertSame('a b c', $pd->__toString());
 
         $pd = new PublicationDetails('a', ' ', 'c');
-        $this->assertEquals('a c', $pd->__toString());
+        $this->assertSame('a c', $pd->__toString());
 
         $pd = new PublicationDetails('a', ' ', ' ');
-        $this->assertEquals('a', $pd->__toString());
+        $this->assertSame('a', $pd->__toString());
 
         $pd = new PublicationDetails(' ', 'b', ' ');
-        $this->assertEquals('b', $pd->__toString());
+        $this->assertSame('b', $pd->__toString());
 
         $pd = new PublicationDetails(' ', ' ', 'c');
-        $this->assertEquals('c', $pd->__toString());
+        $this->assertSame('c', $pd->__toString());
 
         $pd = new PublicationDetails(' a ', ' b ', ' c ');
-        $this->assertEquals('a b c', $pd->__toString());
+        $this->assertSame('a b c', $pd->__toString());
     }
 }

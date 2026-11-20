@@ -2221,7 +2221,7 @@ class SierraRest extends AbstractBase implements
         }
 
         $locale = $this->getTranslatorLocale();
-        if ($locale != 'en') {
+        if ($locale !== 'en') {
             $locale .= ', en;q=0.8';
         }
         $headers->addHeaderLine('Accept-Language', $locale);
@@ -3059,7 +3059,7 @@ class SierraRest extends AbstractBase implements
                     break;
             }
         }
-        if ($status == $this->mapStatusCode('-')) {
+        if ($status === $this->mapStatusCode('-')) {
             // Check for checkin date
             $today = $this->dateConverter->convertToDisplayDate('U', time());
             if (isset($item['fixedFields'][static::ITEM_CHECKIN_DATE_FIELD])) {

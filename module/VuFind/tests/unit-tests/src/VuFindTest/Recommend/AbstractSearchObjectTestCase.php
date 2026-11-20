@@ -99,7 +99,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
     {
         $recommend = $this->getRecommend();
         $recommend->setConfig('');
-        $this->assertEquals($this->getExpectedDefaultHeading(), $recommend->getHeading());
+        $this->assertSame($this->getExpectedDefaultHeading(), $recommend->getHeading());
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
     {
         $recommend = $this->getRecommend();
         $recommend->setConfig('lookfor:10:Custom Heading Text');
-        $this->assertEquals('Custom Heading Text', $recommend->getHeading());
+        $this->assertSame('Custom Heading Text', $recommend->getHeading());
     }
 
     /**

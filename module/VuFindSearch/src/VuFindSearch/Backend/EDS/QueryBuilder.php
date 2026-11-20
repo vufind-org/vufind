@@ -93,7 +93,7 @@ class QueryBuilder
     protected function queryToEdsQuery(Query $query, string $operator = 'AND'): array
     {
         $expression = $query->getString();
-        $fieldCode = ($query->getHandler() == 'AllFields')
+        $fieldCode = ($query->getHandler() === 'AllFields')
             ? '' : $query->getHandler();  //fieldcode
         // Special case: default search
         if (empty($fieldCode) && empty($expression)) {

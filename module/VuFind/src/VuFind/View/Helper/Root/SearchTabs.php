@@ -122,7 +122,7 @@ class SearchTabs implements LoggerAwareInterface
             $permissionName = $allPermissions[$key] ?? null;
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
-            $selected = $class == $activeSearchClass
+            $selected = $class === $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
             try {
                 if ($type === 'basic') {

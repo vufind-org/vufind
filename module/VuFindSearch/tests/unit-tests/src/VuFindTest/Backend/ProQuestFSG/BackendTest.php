@@ -69,7 +69,7 @@ class BackendTest extends TestCase
             20
         );
         $this->assertCount(2, $collection);
-        $this->assertEquals('ProQuestFSG', $collection->getSourceIdentifier());
+        $this->assertSame('ProQuestFSG', $collection->getSourceIdentifier());
         $this->assertEquals(
             'ProQuestFSG',
             $collection->getRecords()[0]->getSourceIdentifier()
@@ -92,7 +92,7 @@ class BackendTest extends TestCase
             '2811962947'
         );
         $this->assertCount(1, $collection);
-        $this->assertEquals('ProQuestFSG', $collection->getSourceIdentifier());
+        $this->assertSame('ProQuestFSG', $collection->getSourceIdentifier());
         $this->assertEquals(
             'ProQuestFSG',
             $collection->getRecords()[0]->getSourceIdentifier()

@@ -54,7 +54,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getSolrResults($this->getMockParams());
         $results->getParams()->expects($this->once())->method('getDisplayQuery')->willReturn('foo');
         $csf = $this->getSideFacets($results, '::facets:true');
-        $this->assertEquals('foo', $csf->getKeywordFilter());
+        $this->assertSame('foo', $csf->getKeywordFilter());
         $this->assertTrue($csf->keywordFilterEnabled());
     }
 

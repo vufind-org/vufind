@@ -104,7 +104,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripBadChars(): void
     {
-        $this->assertEquals('f oo', VuFind::stripBadChars('f' . chr(8) . 'oo'));
+        $this->assertSame('f oo', VuFind::stripBadChars('f' . chr(8) . 'oo'));
     }
 
     /**
@@ -114,7 +114,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      */
     public function testMapString(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'CD',
             VuFind::mapString('SoundDisc', 'format_map.properties')
         );
@@ -127,9 +127,9 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripArticles(): void
     {
-        $this->assertEquals('title', VuFind::stripArticles('The Title'));
-        $this->assertEquals('title', VuFind::stripArticles('A Title'));
-        $this->assertEquals('odd title', VuFind::stripArticles('An Odd Title'));
+        $this->assertSame('title', VuFind::stripArticles('The Title'));
+        $this->assertSame('title', VuFind::stripArticles('A Title'));
+        $this->assertSame('odd title', VuFind::stripArticles('An Odd Title'));
     }
 
     /**
@@ -143,7 +143,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
         $node = new \DOMElement('bar', 'foo');
         $doc->appendChild($node);
         $expected = '<?xml version="1.0"?>' . "\n<bar>foo</bar>\n";
-        $this->assertEquals($expected, VuFind::xmlAsText([$node]));
+        $this->assertSame($expected, VuFind::xmlAsText([$node]));
     }
 
     /**
@@ -158,7 +158,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
         $doc->appendChild($node);
         $node->appendChild(new \DOMElement('xyzzy', 'baz'));
         $expected = '<?xml version="1.0"?>' . "\n<bar>foo</bar>\n";
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             VuFind::removeTagAndReturnXMLasText([$node], 'xyzzy')
         );
@@ -189,7 +189,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
         $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
-        $this->assertEquals(
+        $this->assertSame(
             'a.b.c',
             VuFind::implode('.', array_map($domify, ['a', 'b', 'c']))
         );

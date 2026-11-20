@@ -54,7 +54,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $fixture = 'configs/defaultgenerator/config.ini';
         $test = new Writer($this->getFixtureDir() . $fixture);
-        $this->assertEquals(
+        $this->assertSame(
             $this->getFixture($fixture),
             $test->getContent()
         );
@@ -87,7 +87,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             . "key1             = \"val1\"\t; key inline\n"
             . "key2             = \"val2\"\n; the end\n";
         $test = new Writer('fake.ini', $cfg, $comments);
-        $this->assertEquals($target, $test->getContent());
+        $this->assertSame($target, $test->getContent());
     }
 
     /**
@@ -99,7 +99,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $cfg = "[test]\nkey1=val1\n";
         $test = new Writer('fake.ini', $cfg);
-        $this->assertEquals($cfg, $test->getContent());
+        $this->assertSame($cfg, $test->getContent());
     }
 
     /**
@@ -113,7 +113,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest[]           = \"val1\"\n"
             . "test[]           = \"val2\"\n\n";
-        $this->assertEquals($expected, $test->getContent());
+        $this->assertSame($expected, $test->getContent());
     }
 
     /**
@@ -128,7 +128,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest[6]          = \"val1\"\n"
             . "test[8]          = \"val2\"\n\n";
-        $this->assertEquals($expected, $test->getContent());
+        $this->assertSame($expected, $test->getContent());
     }
 
     /**
@@ -144,7 +144,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest['key1']     = \"val1\"\n"
             . "test['key2']     = \"val2\"\n\n";
-        $this->assertEquals($expected, $test->getContent());
+        $this->assertSame($expected, $test->getContent());
     }
 
     /**
@@ -237,7 +237,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         $test = new Writer('fake.ini', ['general' => ['foo' => 'bar', 'foofoofoofoofoofo' => 'baz']]);
         $expected = "[general]\nfoo              = \"bar\"\nfoofoofoofoofoofo = \"baz\"\n";
-        $this->assertEquals($expected, $test->getContent());
+        $this->assertSame($expected, $test->getContent());
     }
 
     /**

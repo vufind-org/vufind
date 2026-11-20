@@ -217,7 +217,7 @@ class SearchHandler
      */
     public function hasExtendedDismax(): bool
     {
-        return $this->hasDismax() && ('edismax' == $this->getDismaxHandler());
+        return $this->hasDismax() && ('edismax' === $this->getDismaxHandler());
     }
 
     /**

@@ -1370,7 +1370,7 @@ class EDS extends DefaultRecord
      */
     protected function extractEbscoDataFromRecordInfo(string $path): array
     {
-        return (array)$this->recurseIntoRecordInfo(
+        return $this->recurseIntoRecordInfo(
             $this->fields['RecordInfo'] ?? [],
             explode('/', $path)
         );

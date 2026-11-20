@@ -201,7 +201,7 @@ class LDAP extends AbstractBase
         // settings can be excluded in order to skip this step.
         $user = $this->getSetting('bind_username');
         $pass = $this->getSetting('bind_password');
-        if ($user != '' && $pass != '') {
+        if ($user !== '' && $pass !== '') {
             $this->debug("binding as $user");
             $ldapBind = @ldap_bind($connection, $user, $pass);
             if (!$ldapBind) {

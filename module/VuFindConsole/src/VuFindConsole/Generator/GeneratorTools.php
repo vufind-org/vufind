@@ -302,7 +302,7 @@ class GeneratorTools
             ['path' => $aliasPath, 'setting' => $class],
         ];
         // Add extra lowercase alias if necessary:
-        if (strtolower($shortName) != $shortName) {
+        if (strtolower($shortName) !== $shortName) {
             $lowerAliasPath = array_merge(
                 $configPath,
                 ['aliases', strtolower($shortName)]

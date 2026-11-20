@@ -81,7 +81,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     public function testDefaultLoadingForContentType(): void
     {
         $loader = $this->getLoader();
-        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertSame('image/gif', $loader->getContentType());
         $this->assertSame(64, strlen($loader->getImage()));
     }
 
@@ -96,7 +96,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader();
         $this->assertSame(64, strlen($loader->getImage()));
-        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertSame('image/gif', $loader->getContentType());
     }
 
     /**
@@ -108,7 +108,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
-        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertSame('image/gif', $loader->getContentType());
         $this->assertSame(368, strlen($loader->getImage()));
     }
 
@@ -124,7 +124,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
         $this->assertSame(368, strlen($loader->getImage()));
-        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertSame('image/gif', $loader->getContentType());
     }
 
     /**

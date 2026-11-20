@@ -680,7 +680,7 @@ class Options extends AbstractEDSOptions
         // If translation doesn't change the label, we don't want to
         // display the non-human-readable version so we should instead
         // return the EDS-provided English default.
-        return ($label == $this->translate($label))
+        return ($label === $this->translate($label))
             ? $default : $label;
     }
 

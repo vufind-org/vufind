@@ -70,7 +70,7 @@ class SitemapTest extends \PHPUnit\Framework\TestCase
             </url>
             </urlset>
             XML;
-        $this->assertEquals($expected, $sm->toString());
+        $this->assertSame($expected, $sm->toString());
     }
 
     /**

@@ -55,7 +55,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
         $results->getParams()->expects($this->once())->method('getFacetSettings')
             ->willReturn(['limit' => 50]);
         $fc = $this->getFacetCloud($results);
-        $this->assertEquals(49, $fc->getFacetLimit());
+        $this->assertSame(49, $fc->getFacetLimit());
     }
 
     /**

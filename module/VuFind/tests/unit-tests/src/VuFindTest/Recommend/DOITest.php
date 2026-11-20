@@ -78,8 +78,8 @@ class DOITest extends \PHPUnit\Framework\TestCase
     public function testExactDoiQuery(): void
     {
         $doi = $this->getDOI($this->getMockResults('10.1109/CC.2018.8485472'));
-        $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
-        $this->assertEquals('http://doi/10.1109%2FCC.2018.8485472', $doi->getURL());
+        $this->assertSame('10.1109/CC.2018.8485472', $doi->getDOI());
+        $this->assertSame('http://doi/10.1109%2FCC.2018.8485472', $doi->getURL());
         $this->assertTrue($doi->isFullMatch());
         $this->assertTrue($doi->redirectFullMatch());
     }
@@ -92,8 +92,8 @@ class DOITest extends \PHPUnit\Framework\TestCase
     public function testNonExactDoiQuery(): void
     {
         $doi = $this->getDOI($this->getMockResults('Yes 10.1109/CC.2018.8485472'));
-        $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
-        $this->assertEquals('http://doi/10.1109%2FCC.2018.8485472', $doi->getURL());
+        $this->assertSame('10.1109/CC.2018.8485472', $doi->getDOI());
+        $this->assertSame('http://doi/10.1109%2FCC.2018.8485472', $doi->getURL());
         $this->assertFalse($doi->isFullMatch());
         $this->assertTrue($doi->redirectFullMatch());
     }
@@ -118,10 +118,10 @@ class DOITest extends \PHPUnit\Framework\TestCase
                 $this->getMockResults('Yes 10.1109/CC.2018.8485472'),
                 $url . ':' . $config
             );
-            $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
-            $this->assertEquals($url . '10.1109%2FCC.2018.8485472', $doi->getURL());
+            $this->assertSame('10.1109/CC.2018.8485472', $doi->getDOI());
+            $this->assertSame($url . '10.1109%2FCC.2018.8485472', $doi->getURL());
             $this->assertFalse($doi->isFullMatch());
-            $this->assertEquals($expected, $doi->redirectFullMatch());
+            $this->assertSame($expected, $doi->redirectFullMatch());
         }
     }
 

@@ -54,7 +54,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(null, $mem->retrieveSearch());
         $url = 'http://test';
         $mem->rememberSearch($url, -123);
-        $this->assertEquals($url, $mem->retrieveSearch());
+        $this->assertSame($url, $mem->retrieveSearch());
     }
 
     /**
@@ -67,7 +67,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
         $mem = $this->getMemory();
         $url = 'http://test';
         $mem->rememberSearch($url, -123);
-        $this->assertEquals($url, $mem->retrieveSearch());
+        $this->assertSame($url, $mem->retrieveSearch());
         $mem->forgetSearch();
         $this->assertEquals(null, $mem->retrieveSearch());
     }
@@ -94,10 +94,10 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
         $mem = $this->getMemory();
         $url = 'http://test';
         $mem->rememberSearch($url, -123);
-        $this->assertEquals($url, $mem->retrieveSearch());
+        $this->assertSame($url, $mem->retrieveSearch());
         $mem->disable();
         $mem->rememberSearch('http://ignoreme', -124);
-        $this->assertEquals($url, $mem->retrieveSearch());
+        $this->assertSame($url, $mem->retrieveSearch());
     }
 
     /**

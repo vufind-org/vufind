@@ -100,7 +100,7 @@ class ExternalSearchTest extends \PHPUnit\Framework\TestCase
         $rec->process(
             $this->createMock(\VuFind\Search\Solr\Results::class)
         );
-        $this->assertEquals($label, $rec->getLinkText());
-        $this->assertEquals($expectedUrl, $rec->getUrl());
+        $this->assertSame($label, $rec->getLinkText());
+        $this->assertSame($expectedUrl, $rec->getUrl());
     }
 }

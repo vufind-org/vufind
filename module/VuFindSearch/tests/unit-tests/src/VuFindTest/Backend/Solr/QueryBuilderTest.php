@@ -171,7 +171,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $before = $q->getString();
         $response = $qb->build($q);
         // Make sure the query builder had no side effects on the query object:
-        $this->assertEquals($before, $q->getString());
+        $this->assertSame($before, $q->getString());
         $processedQ = $response->get('q');
         $this->assertEquals($basicOutput, $processedQ[0]);
     }

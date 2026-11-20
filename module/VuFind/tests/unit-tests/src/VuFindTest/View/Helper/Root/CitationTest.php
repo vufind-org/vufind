@@ -419,9 +419,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
     {
         $data = self::citationsProvider()->current();
         $cb = $this->getHelper($data['raw']);
-        $this->assertEquals('', $cb->getCitation(''));
-        $this->assertEquals('', $cb->getCitation('Citation'));
-        $this->assertEquals('', $cb->getCitation('SupportedCitationFormats'));
-        $this->assertEquals('', $cb->getCitation('badgarbage'));
+        $this->assertSame('', $cb->getCitation(''));
+        $this->assertSame('', $cb->getCitation('Citation'));
+        $this->assertSame('', $cb->getCitation('SupportedCitationFormats'));
+        $this->assertSame('', $cb->getCitation('badgarbage'));
     }
 }

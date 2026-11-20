@@ -61,13 +61,13 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
             $params,
             'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
-        $this->assertEquals('1.2.3.4', $reader1->getUserIp());
+        $this->assertSame('1.2.3.4', $reader1->getUserIp());
         // Test appropriate behavior with forwarding configured to ignore Real-IP:
         $reader2 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:last');
-        $this->assertEquals('5.6.7.8', $reader2->getUserIp());
+        $this->assertSame('5.6.7.8', $reader2->getUserIp());
         // Test appropriate behavior with forwarding disabled:
         $reader3 = new UserIpReader($params, false);
-        $this->assertEquals('127.0.0.1', $reader3->getUserIp());
+        $this->assertSame('127.0.0.1', $reader3->getUserIp());
     }
 
     /**
@@ -86,21 +86,21 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
             $rules,
             ['1.2.3.4']
         );
-        $this->assertEquals('9.10.11.12', $reader1->getUserIp());
+        $this->assertSame('9.10.11.12', $reader1->getUserIp());
         // Test appropriate behavior with two filtered addresses:
         $reader2 = new UserIpReader(
             $params,
             $rules,
             ['1.2.3.4', '9.10.11.12']
         );
-        $this->assertEquals('5.6.7.8', $reader2->getUserIp());
+        $this->assertSame('5.6.7.8', $reader2->getUserIp());
         // Test appropriate behavior with three filtered addresses:
         $reader3 = new UserIpReader(
             $params,
             $rules,
             ['1.2.3.4', '5.6.7.8', '9.10.11.12']
         );
-        $this->assertEquals('127.0.0.1', $reader3->getUserIp());
+        $this->assertSame('127.0.0.1', $reader3->getUserIp());
     }
 
     /**
@@ -149,7 +149,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
             'HTTP_X_FORWARDED_FOR:single',
             ['1.2.3.4', '9.10.11.12']
         );
-        $this->assertEquals('5.6.7.8', $reader->getUserIp());
+        $this->assertSame('5.6.7.8', $reader->getUserIp());
     }
 
     /**
@@ -167,16 +167,16 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
 
         // Test appropriate behavior with "first" selector:
         $reader1 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:first');
-        $this->assertEquals('5.6.7.8', $reader1->getUserIp());
+        $this->assertSame('5.6.7.8', $reader1->getUserIp());
         // Test appropriate behavior with "last" selector:
         $reader2 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:last');
-        $this->assertEquals('9.10.11.12', $reader2->getUserIp());
+        $this->assertSame('9.10.11.12', $reader2->getUserIp());
         // Test appropriate behavior with "single" selector:
         $reader3 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:single');
-        $this->assertEquals('127.0.0.1', $reader3->getUserIp());
+        $this->assertSame('127.0.0.1', $reader3->getUserIp());
         // Test that "single" selector is default behavior:
         $reader4 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR');
-        $this->assertEquals('127.0.0.1', $reader4->getUserIp());
+        $this->assertSame('127.0.0.1', $reader4->getUserIp());
     }
 
     /**
@@ -195,9 +195,9 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
             $params,
             'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
         );
-        $this->assertEquals('127.0.0.1', $reader1->getUserIp());
+        $this->assertSame('127.0.0.1', $reader1->getUserIp());
         // Test appropriate behavior with forwarding disabled:
         $reader2 = new UserIpReader($params, false);
-        $this->assertEquals('127.0.0.1', $reader2->getUserIp());
+        $this->assertSame('127.0.0.1', $reader2->getUserIp());
     }
 }

@@ -191,11 +191,11 @@ class ConnectorTest extends TestCase
         $conn->setCache($cache);
 
         $resp = $conn->retrieve('id');
-        $this->assertEquals($expectedBody, $resp);
+        $this->assertSame($expectedBody, $resp);
         $resp = $conn->retrieve('id');
-        $this->assertEquals($expectedBody, $resp);
+        $this->assertSame($expectedBody, $resp);
         $resp = $conn->retrieve('id');
-        $this->assertEquals('foo', $resp);
+        $this->assertSame('foo', $resp);
 
         // Make sure that write() doesn't access the cache.
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
@@ -224,9 +224,9 @@ class ConnectorTest extends TestCase
             },
             $key
         );
-        $this->assertEquals($url, $conn->getUrl());
+        $this->assertSame($url, $conn->getUrl());
         $this->assertEquals($map, $conn->getMap());
-        $this->assertEquals($key, $conn->getUniqueKey());
+        $this->assertSame($key, $conn->getUniqueKey());
     }
 
     /**

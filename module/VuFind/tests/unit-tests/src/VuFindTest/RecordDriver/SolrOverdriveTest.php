@@ -71,7 +71,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
         );
-        $this->assertEquals('lc123', $driver->getOverdriveID());
+        $this->assertSame('lc123', $driver->getOverdriveID());
     }
 
     /**
@@ -86,7 +86,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['id' => 'LC345']
         );
-        $this->assertEquals('lc345', $driver->getOverdriveID());
+        $this->assertSame('lc345', $driver->getOverdriveID());
     }
 
     /**
@@ -100,9 +100,9 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver(null, null, $connector);
         // Confirm that we use short title when available, title otherwise:
         $driver->setRawData(['title' => 'title : full', 'title_short' => 'title']);
-        $this->assertEquals('title', $driver->getBreadcrumb());
+        $this->assertSame('title', $driver->getBreadcrumb());
         $driver->setRawData(['title' => 'title : full']);
-        $this->assertEquals('title : full', $driver->getBreadcrumb());
+        $this->assertSame('title : full', $driver->getBreadcrumb());
     }
 
     /**
@@ -139,7 +139,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
         );
-        $this->assertEquals('2. Return', $driver->getTitleSection());
+        $this->assertSame('2. Return', $driver->getTitleSection());
     }
 
     /**

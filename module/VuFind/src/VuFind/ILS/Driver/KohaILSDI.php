@@ -1012,7 +1012,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                     ((null == $rowItem['CALLNO']) || ($rowItem['DOCTYPE'] == 'PE'))
                         ? '' : $rowItem['CALLNO'],
                 'duedate'      => ($onTransfer || $waiting)
-                    ? '' : (string)$duedate_formatted,
+                    ? '' : $duedate_formatted,
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
                 'number'       =>
@@ -1248,7 +1248,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 ),
                 'position' => $this->getField($hold->{'priority'}),
                 'title' => $this->getField($hold->{'title'}),
-                'available' => ($this->getField($hold->{'found'}) == 'W'),
+                'available' => ($this->getField($hold->{'found'}) === 'W'),
                 'reserve_id' => $this->getField($hold->{'reserve_id'}),
             ];
         }
@@ -1509,7 +1509,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             $requestTimes[] = $end - $start;
             $renewable = false;
             foreach ($rsp2->{'AvailableFor'} ?? [] as $service) {
-                if ($this->getField((string)$service) == 'loan renewal') {
+                if ($this->getField((string)$service) === 'loan renewal') {
                     $renewable = true;
                 }
             }

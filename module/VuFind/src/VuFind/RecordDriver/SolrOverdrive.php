@@ -351,7 +351,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     } else {
                         $idToCheck = $checkout->reserveId;
                     }
-                    if (strtolower($idToCheck) == $overdriveID) {
+                    if (strtolower($idToCheck) === $overdriveID) {
                         $checkedout = true;
                         $result->status = true;
                         $result->data[] = $checkout;
@@ -384,7 +384,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             if ($result->status) {
                 $holds = $result->data;
                 foreach ($holds as $hold) {
-                    if (strtolower($hold->reserveId) == $overDriveId) {
+                    if (strtolower($hold->reserveId) === $overDriveId) {
                         return $hold;
                     }
                 }

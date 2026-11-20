@@ -92,7 +92,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         );
         $helper = $this->getHelper($url);
         $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 2];
-        $this->assertEquals('foo', $helper->getUrl('title', $item));
+        $this->assertSame('foo', $helper->getUrl('title', $item));
     }
 
     /**
@@ -113,7 +113,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         );
         $helper = $this->getHelper($url);
         $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 1];
-        $this->assertEquals('foo', $helper->getUrl('title', $item));
+        $this->assertSame('foo', $helper->getUrl('title', $item));
     }
 
     /**
@@ -132,7 +132,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         );
         $helper = $this->getHelper($url);
         $item = ['heading' => '"xyzzy"', 'sort_key' => '"xyzzy"', 'count' => 100];
-        $this->assertEquals('foo', $helper->getUrl('title', $item));
+        $this->assertSame('foo', $helper->getUrl('title', $item));
     }
 
     /**
@@ -151,6 +151,6 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         );
         $helper = $this->getHelper($url, ['bypass_default_filters' => false]);
         $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 100];
-        $this->assertEquals('foo', $helper->getUrl('title', $item));
+        $this->assertSame('foo', $helper->getUrl('title', $item));
     }
 }

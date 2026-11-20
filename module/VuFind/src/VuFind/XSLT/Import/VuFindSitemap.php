@@ -243,7 +243,7 @@ class VuFindSitemap extends VuFind
     protected static function getDocumentFieldArray(string $url): array
     {
         $parser = static::getParser();
-        if ($parser == 'None') {
+        if ($parser === 'None') {
             return [];
         }
 

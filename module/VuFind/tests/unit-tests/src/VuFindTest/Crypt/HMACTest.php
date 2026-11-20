@@ -50,7 +50,7 @@ class HMACTest extends \PHPUnit\Framework\TestCase
     public function testHash(): void
     {
         $hmac = new HMAC('secret');
-        $this->assertEquals(
+        $this->assertSame(
             '330891b9db42bdf6aeb558a35e2a1780',
             $hmac->generate(['foo'], ['foo' => 'bar'])
         );

@@ -253,7 +253,7 @@ class Unicorn extends AbstractBase implements
         $response = $this->querySirsi($params);
 
         // process the API response
-        if ($response == 'invalid_login') {
+        if ($response === 'invalid_login') {
             return ['blocks' => ['authentication_error_admin']];
         }
 
@@ -454,7 +454,7 @@ class Unicorn extends AbstractBase implements
         $response = $this->querySirsi($params);
 
         // process the API response
-        if ($response == 'invalid_login') {
+        if ($response === 'invalid_login') {
             return [
               'success' => false,
               'sysMessage' => 'authentication_error_admin'];
@@ -720,7 +720,7 @@ class Unicorn extends AbstractBase implements
         $response = $this->querySirsi($params);
 
         // process response
-        if (empty($response) || $response == 'invalid_login') {
+        if (empty($response) || $response === 'invalid_login') {
             return false;
         }
 

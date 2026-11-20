@@ -394,7 +394,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // the full parameter expected by placeHold() but should contain the
         // necessary details for determining eligibility.
         if (
-            $this->getHoldsMode() != 'none'
+            $this->getHoldsMode() !== 'none'
             && $this->checkCapability('placeHold', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {

@@ -62,7 +62,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
     public function testGetBreadcrumb(): void
     {
         $driver = $this->getDriver();
-        $this->assertEquals('', $driver->getBreadcrumb());
+        $this->assertSame('', $driver->getBreadcrumb());
     }
 
     /**

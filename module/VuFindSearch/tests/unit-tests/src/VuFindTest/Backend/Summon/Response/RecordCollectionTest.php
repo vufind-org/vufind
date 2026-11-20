@@ -51,8 +51,8 @@ class RecordCollectionTest extends TestCase
     public function testDefaults(): void
     {
         $rc = new RecordCollection([]);
-        $this->assertEquals(0, $rc->getTotal());
-        $this->assertEquals(0, $rc->getOffset());
+        $this->assertSame(0, $rc->getTotal());
+        $this->assertSame(0, $rc->getOffset());
         $this->assertEquals([], $rc->getFacets());
         $this->assertEquals([], $rc->getSpellcheck());
         $this->assertEquals([], $rc->getBestBets());

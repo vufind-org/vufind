@@ -90,7 +90,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     public function testExists(): void
     {
         $helper = $this->getHelper();
-        $this->assertEquals(
+        $this->assertSame(
             "{$this->fixturePath}/parent/templates/everything.phtml",
             $helper('everything.phtml', 'parent')
         );

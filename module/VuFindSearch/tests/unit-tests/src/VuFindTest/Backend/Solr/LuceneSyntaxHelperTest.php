@@ -91,7 +91,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     public function testCapitalizeBooleans(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper();
-        $this->assertEquals($expected, $lh->capitalizeBooleans($input));
+        $this->assertSame($expected, $lh->capitalizeBooleans($input));
     }
 
     /**
@@ -125,23 +125,23 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     {
         $lh = new LuceneSyntaxHelper();
         $in = 'this or that and the other not everything else (not me)';
-        $this->assertEquals(
+        $this->assertSame(
             'this OR that AND the other NOT everything else (NOT me)',
             $lh->capitalizeBooleans($in, ['AND', 'OR', 'NOT'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             'this OR that and the other NOT everything else (NOT me)',
             $lh->capitalizeBooleans($in, ['OR', 'NOT'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             'this or that and the other NOT everything else (NOT me)',
             $lh->capitalizeBooleans($in, ['NOT'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             'this or that AND the other not everything else (not me)',
             $lh->capitalizeBooleans($in, ['AND'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             'this OR that and the other not everything else (not me)',
             $lh->capitalizeBooleans($in, ['OR'])
         );
@@ -268,7 +268,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     public function testCapitalizeRanges(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper();
-        $this->assertEquals($expected, $lh->capitalizeRanges($input));
+        $this->assertSame($expected, $lh->capitalizeRanges($input));
     }
 
     /**
@@ -346,7 +346,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     {
         $lh = new LuceneSyntaxHelper(false, false);
         $this->assertFalse($lh->hasCaseSensitiveRanges());
-        $this->assertEquals(
+        $this->assertSame(
             'a:([b TO c] OR [B TO C])',
             $lh->normalizeSearchString('a:[b to c]')
         );
@@ -382,7 +382,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     public function testColonNormalization(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             $lh->normalizeSearchString($input)
         );
@@ -428,7 +428,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     public function testExtractSearchTerms(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
-        $this->assertEquals($expected, $lh->extractSearchTerms($input));
+        $this->assertSame($expected, $lh->extractSearchTerms($input));
     }
 
     /**
@@ -502,7 +502,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     public function testUnquotedNormalization(string $input, string $expected)
     {
         $lh = new LuceneSyntaxHelper(false, false);
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             $lh->normalizeSearchString($input)
         );

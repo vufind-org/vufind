@@ -117,7 +117,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getPermissionHelper($mockPdmMessage);
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
-        $this->assertEquals('dl_translatable_test', $displayBlock);
+        $this->assertSame('dl_translatable_test', $displayBlock);
     }
 
     /**

@@ -53,7 +53,7 @@ class VersionTest extends \PHPUnit\Framework\TestCase
     public function testDefaultDir(): void
     {
         // If we don't pass in a directory, we'll get the APPLICATION_PATH
-        $this->assertEquals(
+        $this->assertSame(
             Version::getBuildVersion(),
             Version::getBuildVersion(realpath(APPLICATION_PATH))
         );
