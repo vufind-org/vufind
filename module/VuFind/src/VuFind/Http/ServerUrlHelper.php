@@ -254,8 +254,8 @@ class ServerUrlHelper
 
                 // At this point, we have a SERVER_PORT that differs from the Host header, indicating we likely have a
                 // port-forwarding situation. As such, we'll set the host and port from the matched values.
-                $this->setPort((int)$matches['port']);
-                $this->setHost($matches['host']);
+                $this->setPort((int)$matches['port'])
+                    ->setHost($matches['host']);
                 return;
             }
 
