@@ -14,7 +14,7 @@
   $offlineMode = $this->ils()->getOfflineMode();
 
   // We should show the account menu unless it's been switched off or we're in the lightbox:
-  $showMenu = ($this->showMenu ?? false) && !$this->inLightbox;
+  $showMenu = ($this->showMenu ?? false) && !$this->globals()['inLightbox'];
 
   // Set page title and heading.
   $heading = $this->component('page-title', [
@@ -26,7 +26,7 @@
   $loginSettings = $this->config()->getILSLoginSettings();
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
-  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+  <?=$this->context($this)->renderInContext('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php elseif (!$this->auth()->getManager()->allowsUserIlsLogin()): ?>
   <?= $heading ?>
   <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>

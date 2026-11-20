@@ -9,35 +9,36 @@
     }
     if ($results) {
       $params = $results->getParams();
-      $this->searchClassId = $params->getSearchClassId();
+      $searchClassId = $params->getSearchClassId();
     } else {
       $params = null;
-      $this->searchClassId ??= $this->config()->getArray('config')['Site']['defaultSearchBackend']
+      $searchClassId = $this->searchClassId
+        ?? $this->config()->getArray('config')['Site']['defaultSearchBackend']
         ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
-    if (isset($params) && $this->searchClassId === $params->getSearchClassId() && !$params->isSpecializedSearch()) {
+    if (isset($params) && $searchClassId === $params->getSearchClassId() && !$params->isSpecializedSearch()) {
       $hiddenFilters = $params->getHiddenFilters();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
       $options = $params->getOptions();
     } else {
-      $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
-      $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
-      $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
-      $options = $this->searchOptions($this->searchClassId);
+      $hiddenFilters = $this->searchTabs()->getHiddenFilters($searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
+      $lastSort = $this->searchMemory()->getLastSort($searchClassId);
+      $lastLimit = $this->searchMemory()->getLastLimit($searchClassId);
+      $options = $this->searchOptions($searchClassId);
     }
     // Override search class ID with searchbox-specific settings, if necessary:
     $overrideSearchClassId = $options->getSearchBoxSearchClassId();
-    if ($overrideSearchClassId !== $this->searchClassId) {
-      $this->searchClassId = $overrideSearchClassId;
+    if ($overrideSearchClassId !== $searchClassId) {
+      $searchClassId = $overrideSearchClassId;
       $options = $this->searchOptions($overrideSearchClassId);
     }
 
     // Load search actions and settings (if any):
     $keyboardLayouts = $this->searchbox()->getKeyboardLayouts();
     $handlers = $this->searchbox()->getHandlers(
-        $this->searchClassId,
+        $searchClassId,
         $this->searchIndex ?? null,
         $hiddenFilters
     );
@@ -47,7 +48,7 @@
     $advSearch = $options->getAdvancedSearchAction();
 
     if (!isset($this->filterList) || !isset($this->checkboxFilters)) {
-        $params ??= $this->searchMemory()->getLastSearchParams($this->searchClassId);
+        $params ??= $this->searchMemory()->getLastSearchParams($searchClassId);
         $filterList = $params->getFilterList(true);
         $checkboxFilters = $params->getCheckboxFacets();
     } else {
@@ -58,7 +59,7 @@
     $retainFilters = $this->retainFilters ?? $options->getRetainFilterSetting();
     $showFilters = $filterDetails && ($results && !$fromSearchMemory || $retainFilters);
 ?>
-<?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
+<?php $tabConfig = $this->searchTabs()->getTabConfig($searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
   <div class="navbar-form">
     <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => false]); ?>
@@ -77,7 +78,7 @@
               'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
               'filterList' => $showFilters ? $filterList : [],
               'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-              'searchClassId' => $this->searchClassId,
+              'searchClassId' => $searchClassId,
               'searchType' => $this->searchType,
               'fromSearchMemory' => $fromSearchMemory,
             ]
@@ -102,17 +103,17 @@
           'value' => $this->lookfor,
           'aria-label' => $this->translate('search_terms'),
         ];
-        if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
+        if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $searchClassId)) {
           $searchboxAttributes['placeholder'] = $this->translate($placeholder);
         }
-        if ($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
-          $searchboxAttributes['class'] .= " autocomplete searcher:{$this->searchClassId}"
-            . ($this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '');
-          $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
-          if ($this->searchbox()->autocompleteApplyActiveFilters($this->searchClassId)) {
+        if ($this->searchbox()->autocompleteEnabled($searchClassId)) {
+          $searchboxAttributes['class'] .= " autocomplete searcher:$searchClassId"
+            . ($this->searchbox()->autocompleteAutoSubmit($searchClassId) ? ' ac-auto-submit' : '');
+          $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($searchClassId);
+          if ($this->searchbox()->autocompleteApplyActiveFilters($searchClassId)) {
             $searchboxAttributes['data-autocomplete-apply-active-filters'] = 'true';
           }
-          $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
+          $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($searchClassId);
         }
         if ($this->focusOnLoad) {
           $searchboxAttributes['data-focus-on-load'] = true;
@@ -225,7 +226,7 @@
       <?php
         /* Show hidden field for active search class when in combined handler mode. */
         if ($this->searchbox()->combinedHandlersActive()) {
-          echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '">';
+          echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($searchClassId) . '">';
         }
         /* Load hidden limit preference from Session */
         if (!empty($lastLimit) && $lastLimit !== $options->getDefaultLimit()) {
@@ -247,7 +248,7 @@
             'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
             'filterList' => $showFilters ? $filterList : [],
             'checkboxFilters' => $showFilters ? $checkboxFilters : [],
-            'searchClassId' => $this->searchClassId,
+            'searchClassId' => $searchClassId,
             'searchType' => $this->searchType,
             'fromSearchMemory' => $fromSearchMemory,
           ]

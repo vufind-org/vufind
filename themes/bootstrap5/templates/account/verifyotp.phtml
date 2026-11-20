@@ -10,10 +10,10 @@
     $offlineMode = $this->ils()->getOfflineMode();
 
     // We should show the account menu unless it's been switched off or we're in the lightbox:
-    $showMenu = ($this->showMenu ?? true) && !$this->inLightbox;
+    $showMenu = ($this->showMenu ?? true) && !$this->globals()['inLightbox'];
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
-  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+  <?=$this->context($this)->renderInContext('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php else: ?>
   <div class="<?=$showMenu ? $this->layoutClass('mainbody') : ''?>">
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>

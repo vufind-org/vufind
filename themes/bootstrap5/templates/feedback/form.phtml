@@ -11,7 +11,7 @@
   $helpPreHtml = isset($help['pre']) ? $form->getDisplayString($help['pre'], false) : null;
   $helpPostHtml = isset($help['post']) ? $form->getDisplayString($help['post'], false) : null;
 ?>
-<?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
+<?php if (!$this->globals()['inLightbox']): ?><div class="feedback-content"><?php endif; ?>
 <?php if ($title): ?>
   <?=$this->component('page-title', ['title' => $title, 'level' => 1])?>
 <?php endif; ?>
@@ -103,4 +103,4 @@
   </div>
   <?php endforeach ?>
 </form>
-<?php if (!$this->inLightbox): ?></div><?php endif; ?>
+<?php if (!$this->globals()['inLightbox']): ?></div><?php endif; ?>

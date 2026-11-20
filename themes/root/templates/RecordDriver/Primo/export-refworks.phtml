@@ -59,4 +59,4 @@ case 'Website':
 
 $this->slot('refworks-formats')->set([$refworksFormat]);
 // Use the default template, but override the formats:
-echo $this->render('RecordDriver/AbstractBase/export-refworks.phtml');
+echo $this->context($this)->renderInContext('RecordDriver/AbstractBase/export-refworks.phtml');
