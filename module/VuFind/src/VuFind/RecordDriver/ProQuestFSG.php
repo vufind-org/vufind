@@ -65,7 +65,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return void
      */
-    public function setRawData($data)
+    public function setRawData(mixed $data)
     {
         // Ensure that $driver->setRawData($driver->getRawData()) doesn't blow up:
         if (isset($data['fullrecord'])) {

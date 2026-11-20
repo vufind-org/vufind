@@ -80,7 +80,7 @@ trait RecordTrait
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier($identifier)
+    public function setSourceIdentifier(string $identifier)
     {
         $this->setSourceIdentifiers($identifier, $identifier);
     }
@@ -94,7 +94,7 @@ trait RecordTrait
      *
      * @return void
      */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '')
+    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = '')
     {
         $this->sourceIdentifier = $recordSourceId;
         $this->searchBackendIdentifier = $searchBackendId ?: $recordSourceId;

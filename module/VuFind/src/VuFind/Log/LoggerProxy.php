@@ -189,7 +189,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return void
      */
-    public function log($level, Stringable|string $message, array $context = []): void
+    public function log(mixed $level, Stringable|string $message, array $context = []): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }
@@ -217,7 +217,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return mixed Varies by method
      */
-    public function __call($methodName, $params)
+    public function __call(string $methodName, array $params)
     {
         return call_user_func_array([$this->getLogger(), $methodName], $params);
     }

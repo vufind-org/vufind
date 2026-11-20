@@ -64,7 +64,7 @@ class Container
      * @param string         $groupName Prefix to use for cookie values.
      * @param ?CookieManager $manager   Cookie manager.
      */
-    public function __construct($groupName, ?CookieManager $manager = null)
+    public function __construct(string $groupName, ?CookieManager $manager = null)
     {
         $this->groupName = $groupName;
         $this->manager = $manager ?? new CookieManager($_COOKIE);
@@ -94,7 +94,7 @@ class Container
      *
      * @return void
      */
-    public function & __get($var)
+    public function & __get(string $var)
     {
         $val = $this->manager->get($this->groupName . $var);
         return $val;
@@ -109,7 +109,7 @@ class Container
      *
      * @return void
      */
-    public function __set($var, $value)
+    public function __set(string $var, string $value)
     {
         $this->manager->set($this->groupName . $var, $value);
     }
@@ -122,7 +122,7 @@ class Container
      *
      * @return bool
      */
-    public function __isset($var)
+    public function __isset(string $var)
     {
         return null !== $this->manager->get($this->groupName . $var);
     }
@@ -135,7 +135,7 @@ class Container
      *
      * @return void
      */
-    public function __unset($var)
+    public function __unset(string $var)
     {
         $this->manager->clear($this->groupName . $var);
     }

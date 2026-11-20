@@ -47,7 +47,7 @@ interface ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig($settings);
+    public function setConfig(string $settings);
 
     /**
      * Return context variables used for rendering the block's template.

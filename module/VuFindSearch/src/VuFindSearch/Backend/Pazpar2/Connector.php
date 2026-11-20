@@ -77,7 +77,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @param Client $client   An HTTP client object
      * @param bool   $autoInit Should we auto-initialize the Pazpar2 connection?
      */
-    public function __construct($base, Client $client, $autoInit = false)
+    public function __construct(string $base, Client $client, bool $autoInit = false)
     {
         $this->base = $base;
         if (empty($this->base)) {
@@ -117,7 +117,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return SimpleXMLElement Response
      */
-    protected function query($command, ?ParamBag $data = null)
+    protected function query(string $command, ?ParamBag $data = null)
     {
         // If we don't have a session as long as we're not being explicit
         if (!$this->session && $command !== 'init') {
@@ -207,7 +207,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return associative array of XML data
      */
-    public function record($id)
+    public function record(string $id)
     {
         return $this->query('record', new ParamBag(['id' => $id]));
     }
@@ -254,7 +254,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool Success/failure status
      */
-    public function settings($settings = false)
+    public function settings(string $settings = false)
     {
         if ($settings === false) {
             return false;
@@ -314,7 +314,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array Associative array of XML data
      */
-    public function bytarget($id)
+    public function bytarget(string $id)
     {
         return $this->query('bytarget', new ParamBag(['id' => $id]));
     }

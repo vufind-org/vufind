@@ -148,7 +148,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connector
      */
-    protected function getConnector($client, $config = [])
+    protected function getConnector(Client $client, array $config = [])
     {
         $connector = new Connector($client, $config);
         return $connector;

@@ -78,7 +78,7 @@ class PageLocator
      * @param string                 $language        Current language
      * @param string                 $defaultLanguage Main configuration
      */
-    public function __construct($themeInfo, $language, $defaultLanguage)
+    public function __construct(\VuFindTheme\ThemeInfo $themeInfo, string $language, string $defaultLanguage)
     {
         $this->themeInfo = $themeInfo;
         $this->language = $language;
@@ -174,9 +174,9 @@ class PageLocator
      * matchType (see getTemplateOptionsFromPattern)
      */
     public function determineTemplateAndRenderer(
-        $pathPrefix,
-        $pageName,
-        $pattern = null
+        string $pathPrefix,
+        string $pageName,
+        string $pattern = null
     ) {
         if ($pattern === null) {
             $pattern = '%pathPrefix%/%pageName%{_%language%}';

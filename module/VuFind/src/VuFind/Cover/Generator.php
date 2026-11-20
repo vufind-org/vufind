@@ -113,7 +113,7 @@ class Generator
      *
      * @return void
      */
-    public function setOptions($rawSettings)
+    public function setOptions(array $rawSettings)
     {
         // Merge incoming settings with defaults:
         $settings = $rawSettings + $this->defaultSettings;
@@ -184,7 +184,7 @@ class Generator
      *
      * @return string contents of image file
      */
-    public function generate($title, $author, $callnumber = null)
+    public function generate(string $title, string $author, string $callnumber = null)
     {
         $details = compact('title', 'author', 'callnumber');
 
@@ -231,7 +231,7 @@ class Generator
      *
      * @return string file path
      */
-    protected function fontPath($font)
+    protected function fontPath(string $font)
     {
         // Check all supported image formats:
         $filenames = ['css/font/' . $font];

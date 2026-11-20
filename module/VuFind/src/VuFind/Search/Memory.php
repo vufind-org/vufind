@@ -112,7 +112,7 @@ class Memory
      *
      * @return void
      */
-    public function rememberLastSettings($context, $params)
+    public function rememberLastSettings(string $context, array $params)
     {
         if (!$this->active) {
             return;
@@ -159,7 +159,7 @@ class Memory
      *
      * @return void
      */
-    public function rememberSearch($url, $id = null)
+    public function rememberSearch(string $url, int $id = null)
     {
         // Do nothing if disabled.
         if (!$this->active) {
@@ -187,7 +187,7 @@ class Memory
      *
      * @return mixed
      */
-    public function retrieveLastSetting($context, $setting, $default = null)
+    public function retrieveLastSetting(string $context, string $setting, mixed $default = null)
     {
         return $this->session->{"params|$context|$setting"} ?? $default;
     }

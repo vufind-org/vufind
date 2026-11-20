@@ -157,7 +157,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @throws RuntimeException Undefined function handler
      */
-    public function getHandler($function)
+    public function getHandler(string $function)
     {
         if (!isset($this->handlers[$function])) {
             if (!$this->fallback) {
@@ -177,7 +177,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return array Query invariants
      */
-    public function getInvariants($function)
+    public function getInvariants(string $function)
     {
         $handler = $this->getHandler($function);
         return $this->getParameters($handler, 'invariants');
@@ -190,7 +190,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return array Query defaults
      */
-    public function getDefaults($function)
+    public function getDefaults(string $function)
     {
         $handler = $this->getHandler($function);
         return $this->getParameters($handler, 'defaults');
@@ -203,7 +203,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return array Query appends
      */
-    public function getAppends($function)
+    public function getAppends(string $function)
     {
         $handler = $this->getHandler($function);
         return $this->getParameters($handler, 'appends');
@@ -220,7 +220,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return void
      */
-    public function addParameter($handler, $type, $name, $value)
+    public function addParameter(string $handler, string $type, string $name, string $value)
     {
         $this->getParameters($handler, $type)->add($name, $value);
     }
@@ -235,7 +235,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return void
      */
-    public function setParameters($handler, $type, array $parameters)
+    public function setParameters(string $handler, string $type, array $parameters)
     {
         if (!in_array($type, ['invariants', 'appends', 'defaults'])) {
             throw new InvalidArgumentException(
@@ -256,7 +256,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @throws InvalidArgumentException Invalid parameter key
      */
-    public function getParameters($handler, $type)
+    public function getParameters(string $handler, string $type)
     {
         // Create ParamBag if not already present; this also handles validation
         // of the $type parameter.

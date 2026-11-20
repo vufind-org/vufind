@@ -109,7 +109,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         $base = $this->fields['subjects'] ?? [];
         $callback = function ($str) use ($extended) {
@@ -227,7 +227,7 @@ class Primo extends DefaultRecord
      *
      * @return string|array|bool
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         $params = ['size' => $size];
 

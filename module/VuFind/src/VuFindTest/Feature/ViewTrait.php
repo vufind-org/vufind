@@ -95,7 +95,7 @@ trait ViewTrait
      *
      * @return PhpRenderer
      */
-    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap5')
+    protected function getPhpRenderer(array $plugins = [], string $theme = 'bootstrap5')
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
@@ -127,7 +127,7 @@ trait ViewTrait
      *
      * @return string
      */
-    protected function getPathForTheme($theme)
+    protected function getPathForTheme(string $theme)
     {
         return APPLICATION_PATH . '/themes/' . $theme . '/templates';
     }

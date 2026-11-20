@@ -122,7 +122,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $params = explode(':', $settings);
         for ($i = 0; $i < count($params); $i += 2) {
@@ -167,7 +167,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return array
      */
-    protected function performSearch($params)
+    protected function performSearch(array $params)
     {
         // Initialise and process search (ignore Solr errors -- no reason to fail
         // just because search syntax is not compatible with Authority core):
@@ -192,7 +192,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return bool
      */
-    protected function fuzzyCompare($a, $b)
+    protected function fuzzyCompare(string $a, string $b)
     {
         $normalize = function ($str) {
             return trim(strtolower(preg_replace('/\W/', '', $str)));
@@ -261,7 +261,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return bool
      */
-    protected function isModeActive($mode)
+    protected function isModeActive(string $mode)
     {
         return $this->mode === '*' || str_contains($this->mode, $mode);
     }
@@ -275,7 +275,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->results = $results;
 

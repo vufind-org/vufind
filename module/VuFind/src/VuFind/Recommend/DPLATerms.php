@@ -108,7 +108,7 @@ class DPLATerms implements RecommendInterface
      * @param string     $apiKey API key
      * @param HttpClient $client VuFind HTTP client
      */
-    public function __construct($apiKey, HttpClient $client)
+    public function __construct(string $apiKey, HttpClient $client)
     {
         $this->apiKey = $apiKey;
         $this->client = $client;
@@ -121,7 +121,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $this->collapsed = filter_var($settings, FILTER_VALIDATE_BOOLEAN);
     }
@@ -154,7 +154,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->searchObject = $results;
     }
@@ -215,7 +215,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return array
      */
-    protected function processResults($response)
+    protected function processResults(string $response)
     {
         $body = json_decode($response);
         $results = [];

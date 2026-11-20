@@ -313,7 +313,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $sql = $sqlStmt = $row = '';
         $id = 0;
@@ -359,7 +359,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $sql = $sqlStmt = $row = '';
         $id = 0;
@@ -398,7 +398,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $id = 0;
         $sql = $sqlStmt = $row = '';
@@ -438,7 +438,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $id = 0;
         $transactionLst = [];
@@ -475,7 +475,7 @@ class Koha extends AbstractBase
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks($patron)
+    public function getAccountBlocks(array $patron)
     {
         $blocks = [];
 
@@ -522,7 +522,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactionHistory($patron, $params)
+    public function getMyTransactionHistory(array $patron, array $params)
     {
         $id = 0;
         $historicLoans = [];
@@ -619,7 +619,7 @@ class Koha extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         return $this->getHolding($id);
     }
@@ -635,7 +635,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array       An array of getStatus() return values on success.
      */
-    public function getStatuses($idLst)
+    public function getStatuses(array $idLst)
     {
         $statusLst = [];
         foreach ($idLst as $id) {
@@ -671,7 +671,7 @@ class Koha extends AbstractBase
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         $row = '';
 
@@ -743,7 +743,7 @@ class Koha extends AbstractBase
      *
      * @return string
      */
-    public function displayDate($date)
+    public function displayDate(string $date)
     {
         if (empty($date)) {
             return '';
@@ -765,7 +765,7 @@ class Koha extends AbstractBase
      *
      * @return string
      */
-    public function displayDateTime($date)
+    public function displayDateTime(string $date)
     {
         if (empty($date)) {
             return '';

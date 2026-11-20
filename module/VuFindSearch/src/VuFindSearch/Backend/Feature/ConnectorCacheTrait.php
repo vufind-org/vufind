@@ -108,7 +108,7 @@ trait ConnectorCacheTrait
      *
      * @return void
      */
-    protected function putCachedData(string $key, $response): void
+    protected function putCachedData(string $key, mixed $response): void
     {
         try {
             $this->cache->setItem($key, $response);

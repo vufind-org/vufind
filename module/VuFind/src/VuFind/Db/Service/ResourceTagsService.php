@@ -266,8 +266,8 @@ class ResourceTagsService extends AbstractDbService implements
         int|array|null $resourceId,
         UserEntityInterface|int $userOrId,
         int|array|null $tagId = null,
-        $extraWhere = [],
-        $extraParams = [],
+        array $extraWhere = [],
+        array $extraParams = [],
     ) {
         $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt ';
 

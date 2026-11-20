@@ -216,7 +216,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null, $ipAddr = '127.0.0.1')
+    protected function createConnector(string $fixture = null, string $ipAddr = '127.0.0.1')
     {
         $adapter = new TestAdapter();
         if ($fixture) {

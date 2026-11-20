@@ -51,7 +51,7 @@ class SolrCN extends Solr
      *
      * @return void
      */
-    public function setConfig($params)
+    public function setConfig(string $params)
     {
         // Ignore incoming configuration and force CallNumber settings.
         parent::setConfig('CallNumber');

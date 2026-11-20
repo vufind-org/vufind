@@ -65,7 +65,7 @@ class DateTime
      *
      * @return string|bool
      */
-    public function extractYear($date)
+    public function extractYear(string $date)
     {
         try {
             return $this->converter->convertFromDisplayDate('Y', $date);
@@ -101,7 +101,7 @@ class DateTime
      *
      * @return mixed
      */
-    public function __call($methodName, $params)
+    public function __call(string $methodName, array $params)
     {
         return call_user_func_array([$this->converter, $methodName], $params);
     }

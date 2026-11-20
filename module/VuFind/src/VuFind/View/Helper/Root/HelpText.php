@@ -80,7 +80,7 @@ class HelpText
      *
      * @return string|bool
      */
-    public function render($name, $context = [])
+    public function render(string $name, array $context = [])
     {
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.

@@ -510,7 +510,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&Request
      */
-    protected function getRequest($post = []): MockObject&Request
+    protected function getRequest(array $post = []): MockObject&Request
     {
         $post = new Parameters($post);
         $request = $this->getMockBuilder(Request::class)

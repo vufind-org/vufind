@@ -52,7 +52,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getFakeFacetData($includeOr = false)
+    protected function getFakeFacetData(bool $includeOr = false)
     {
         $data = [
             'foo' => [
@@ -120,7 +120,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getFakeHierarchicalFacetData($request, $includeOr = false)
+    protected function getFakeHierarchicalFacetData(array $request, bool $includeOr = false)
     {
         $data = [
             'hierarchical_foo' => [
@@ -191,7 +191,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Results
      */
-    protected function getFakeResults($request, $facetData)
+    protected function getFakeResults(array $request, array $facetData)
     {
         $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);

@@ -99,10 +99,10 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     protected function checkShibboleth(
-        $headers,
-        $options,
-        $expectedResult,
-        $config = []
+        array $headers,
+        mixed $options,
+        array $expectedResult,
+        array $config = []
     ) {
         $request = new \Laminas\Http\PhpEnvironment\Request();
         $request->setServer(new \Laminas\Stdlib\Parameters($headers));

@@ -124,7 +124,7 @@ class Service
      *
      * @throws Exception\RuntimeException Unable to resolve backend
      */
-    protected function resolve($backendId, $args)
+    protected function resolve(string $backendId, array|ArrayAccess $args)
     {
         if (!isset($this->backends[$backendId])) {
             $response = $this->getEventManager()->triggerUntil(
@@ -166,7 +166,7 @@ class Service
      *
      * @return void
      */
-    public function triggerError($target, $args)
+    public function triggerError(mixed $target, array $args)
     {
         $this->getEventManager()->trigger(self::EVENT_ERROR, $target, $args);
     }
@@ -180,7 +180,7 @@ class Service
      *
      * @return void
      */
-    protected function triggerPre($target, $args)
+    protected function triggerPre(mixed $target, array $args)
     {
         $this->getEventManager()->trigger(self::EVENT_PRE, $target, $args);
     }
@@ -194,7 +194,7 @@ class Service
      *
      * @return void
      */
-    protected function triggerPost($target, $args)
+    protected function triggerPost(mixed $target, array $args)
     {
         $this->getEventManager()->trigger(self::EVENT_POST, $target, $args);
     }

@@ -102,7 +102,7 @@ class Sample extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         return [
             [
@@ -129,7 +129,7 @@ class Sample extends AbstractBase
      *
      * @return mixed     An array of getStatus() return values on success.
      */
-    public function getStatuses($ids)
+    public function getStatuses(array $ids)
     {
         $items = [];
         foreach ($ids as $id) {

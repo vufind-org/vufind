@@ -81,7 +81,7 @@ class Config
      *
      * @deprecated Use getArray().
      */
-    public function get($config)
+    public function get(string $config)
     {
         return $this->configManager->getConfigObject($config);
     }
@@ -93,7 +93,7 @@ class Config
      *
      * @return array
      */
-    public function getArray($config): array
+    public function getArray(string $config): array
     {
         return $this->configManager->getConfigArray($config);
     }
@@ -191,7 +191,7 @@ class Config
      *
      * @return string
      */
-    public function dateTimeFormat($separator = ' '): string
+    public function dateTimeFormat(string $separator = ' '): string
     {
         return $this->dateFormat() . $separator . $this->timeFormat();
     }

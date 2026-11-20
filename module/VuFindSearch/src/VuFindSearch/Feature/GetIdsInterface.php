@@ -56,8 +56,8 @@ interface GetIdsInterface
      */
     public function getIds(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     );
 }

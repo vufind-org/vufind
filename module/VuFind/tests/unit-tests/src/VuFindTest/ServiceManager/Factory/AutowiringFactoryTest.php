@@ -161,7 +161,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
              *
              * @return void
              */
-            public function offsetSet($offset, $value): void
+            public function offsetSet(mixed $offset, mixed $value): void
             {
             }
 
@@ -172,7 +172,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
              *
              * @return bool
              */
-            public function offsetExists($offset): bool
+            public function offsetExists(mixed $offset): bool
             {
                 return isset($this->values[$offset]);
             }
@@ -184,7 +184,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
              *
              * @return void
              */
-            public function offsetUnset($offset): void
+            public function offsetUnset(mixed $offset): void
             {
             }
 
@@ -195,7 +195,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
              *
              * @return mixed
              */
-            public function offsetGet($offset): mixed
+            public function offsetGet(mixed $offset): mixed
             {
                 return $this->values[$offset] ?? null;
             }

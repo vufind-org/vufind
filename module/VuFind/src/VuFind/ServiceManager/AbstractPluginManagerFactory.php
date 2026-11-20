@@ -53,7 +53,7 @@ class AbstractPluginManagerFactory implements FactoryInterface
      *
      * @return string
      */
-    public function getConfigKey($requestedName)
+    public function getConfigKey(string $requestedName)
     {
         // Extract namespace of plugin manager (chop off leading top-level
         // namespace -- e.g. VuFind -- and trailing PluginManager class).
@@ -78,7 +78,7 @@ class AbstractPluginManagerFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

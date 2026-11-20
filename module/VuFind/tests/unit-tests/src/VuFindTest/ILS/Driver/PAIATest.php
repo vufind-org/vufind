@@ -607,7 +607,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function getHttpService($fixture = null)
+    protected function getHttpService(string $fixture = null)
     {
         $adapter = new TestAdapter();
         if ($fixture) {
@@ -630,7 +630,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null)
+    protected function createConnector(string $fixture = null)
     {
         $service = $this->getHttpService($fixture);
         $conn = new PAIA(
@@ -650,7 +650,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createMockConnector($fixture = null)
+    protected function createMockConnector(string $fixture = null)
     {
         $service = $this->getHttpService($fixture);
         $dateConverter = new \VuFind\Date\Converter();

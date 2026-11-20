@@ -121,7 +121,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(Request $request)
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
@@ -192,7 +192,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword($request)
+    public function updatePassword(Request $request)
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
@@ -276,7 +276,7 @@ class ILS extends AbstractBase
      *
      * @return string
      */
-    public function getILSLoginMethod($target = '')
+    public function getILSLoginMethod(string $target = '')
     {
         $config = $this->getCatalog()->checkFunction(
             'patronLogin',
@@ -351,7 +351,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function handleLogin($username, $password, $loginMethod)
+    protected function handleLogin(string $username, string $password, string $loginMethod)
     {
         if ($password == '') {
             throw new AuthException('authentication_error_blank');
@@ -399,7 +399,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function processILSUser($info)
+    protected function processILSUser(array $info)
     {
         // Figure out which field of the response to use as an identifier; fail
         // if the expected field is missing or empty:
@@ -449,7 +449,7 @@ class ILS extends AbstractBase
      *
      * @return void
      */
-    protected function validatePasswordUpdate($params, ?string $target = null)
+    protected function validatePasswordUpdate(array $params, ?string $target = null)
     {
         // Needs a password
         if (trim($params['password']) === '') {

@@ -68,7 +68,7 @@ class ImportXslCommand extends Command
      * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Importer $importer, $name = null)
+    public function __construct(Importer $importer, ?string $name = null)
     {
         $this->importer = $importer;
         parent::__construct($name);

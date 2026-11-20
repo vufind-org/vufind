@@ -75,7 +75,7 @@ class Innovative extends AbstractBase implements
      *
      * @return string
      */
-    protected function sendRequest($url)
+    protected function sendRequest(string $url)
     {
         // Make the NCIP request:
         try {
@@ -101,7 +101,7 @@ class Innovative extends AbstractBase implements
      *
      * @return string
      */
-    protected function prepID($id)
+    protected function prepID(string $id)
     {
         // Get the ID format from config (default to use_full_id if unset):
         if (
@@ -129,7 +129,7 @@ class Innovative extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         // Strip ID
         $id_ = $this->prepID($id);
@@ -250,7 +250,7 @@ class Innovative extends AbstractBase implements
      * @throws ILSException
      * @return array     An array of getStatus() return values on success.
      */
-    public function getStatuses($ids)
+    public function getStatuses(array $ids)
     {
         $items = [];
         $count = 0;
@@ -337,7 +337,7 @@ class Innovative extends AbstractBase implements
      * @throws ILSException
      * @return array          Array of the patron's profile data on success.
      */
-    public function getMyProfile($userinfo)
+    public function getMyProfile(array $userinfo)
     {
         return $userinfo;
     }
@@ -354,7 +354,7 @@ class Innovative extends AbstractBase implements
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         // TODO: if username is a barcode, test to make sure it fits proper format
         // Avoid situation where string value false would evaluate to true

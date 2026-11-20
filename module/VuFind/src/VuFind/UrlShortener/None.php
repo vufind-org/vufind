@@ -47,7 +47,7 @@ class None implements UrlShortenerInterface
      *
      * @return string
      */
-    public function shorten($url)
+    public function shorten(string $url)
     {
         return $url;
     }
@@ -61,7 +61,7 @@ class None implements UrlShortenerInterface
      * @return string
      * @throws \Exception because this class is not meant to resolve shortlinks.
      */
-    public function resolve($id)
+    public function resolve(string $id)
     {
         throw new \Exception('UrlShortener None is unable to resolve shortlinks.');
     }

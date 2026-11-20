@@ -52,7 +52,7 @@ class SitemapIndex extends AbstractFile
      *
      * @param string $lastmod Last modification date of sitemaps.
      */
-    public function __construct($lastmod = null)
+    public function __construct(string $lastmod = null)
     {
         $this->lastmod = empty($lastmod) ? date('Y-m-d') : $lastmod;
         $this->topTag = 'sitemapindex';
@@ -65,7 +65,7 @@ class SitemapIndex extends AbstractFile
      *
      * @return string XML fragment
      */
-    protected function getEntry($url)
+    protected function getEntry(string $url)
     {
         $loc = htmlspecialchars($url);
         $lastmod = htmlspecialchars($this->lastmod);

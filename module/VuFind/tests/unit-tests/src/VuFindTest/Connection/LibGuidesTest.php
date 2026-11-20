@@ -150,7 +150,7 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
      *
      * @return HttpClient
      */
-    protected function getClient($fixture): HttpClient
+    protected function getClient(string $fixture): HttpClient
     {
         $adapter = new TestAdapter();
         $adapter->addResponse($this->getFixture('libguides/api/token'));

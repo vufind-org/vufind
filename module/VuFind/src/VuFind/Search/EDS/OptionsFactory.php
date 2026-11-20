@@ -61,7 +61,7 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

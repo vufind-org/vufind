@@ -214,7 +214,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&Importer
      */
-    protected function getMockImporter($methods = []): MockObject&Importer
+    protected function getMockImporter(array $methods = []): MockObject&Importer
     {
         $builder = $this->getMockBuilder(Importer::class)
             ->disableOriginalConstructor();
@@ -231,7 +231,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&Writer
      */
-    protected function getMockSolrWriter($methods = []): MockObject&Writer
+    protected function getMockSolrWriter(array $methods = []): MockObject&Writer
     {
         $builder = $this->getMockBuilder(Writer::class)
             ->disableOriginalConstructor();

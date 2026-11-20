@@ -150,7 +150,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connector
      */
-    protected function getConnector($fixture = null)
+    protected function getConnector(string $fixture = null)
     {
         $adapter = new TestAdapter();
         if ($fixture) {

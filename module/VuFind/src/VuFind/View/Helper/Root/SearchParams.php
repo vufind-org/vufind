@@ -61,7 +61,7 @@ class SearchParams
      *
      * @return \VuFind\Search\Base\Options
      */
-    public function __invoke($type = 'Solr')
+    public function __invoke(string $type = 'Solr')
     {
         return $this->manager->get($type);
     }

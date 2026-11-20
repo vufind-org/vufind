@@ -84,7 +84,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getExpectedParsedLinks($filterSet = false): array
+    protected function getExpectedParsedLinks(bool $filterSet = false): array
     {
         $testResult = [
             [
@@ -219,7 +219,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null, $options = [])
+    protected function createConnector(string $fixture = null, array $options = [])
     {
         $adapter = new TestAdapter();
         if ($fixture) {

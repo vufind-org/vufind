@@ -135,8 +135,8 @@ class SearchServiceTest extends TestCase
      * @return object
      */
     protected function createMockBackend(
-        $class = \VuFindSearch\Backend\BackendInterface::class,
-        $identifier = 'foo'
+        string $class = \VuFindSearch\Backend\BackendInterface::class,
+        string $identifier = 'foo'
     ) {
         $backend = $this->createMock($class);
         $backend->method('getIdentifier')->willReturn($identifier);

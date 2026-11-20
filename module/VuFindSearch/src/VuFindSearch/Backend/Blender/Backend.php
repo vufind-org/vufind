@@ -120,8 +120,8 @@ class Backend extends AbstractBackend
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $mergedCollection = $this->createRecordCollection();
@@ -342,7 +342,7 @@ class Backend extends AbstractBackend
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         throw new \Exception('Blender does not support retrieve');
     }

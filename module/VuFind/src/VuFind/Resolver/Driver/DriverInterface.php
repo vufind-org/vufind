@@ -55,7 +55,7 @@ interface DriverInterface
      *
      * @return string         raw XML returned by resolver
      */
-    public function fetchLinks($openURL);
+    public function fetchLinks(string $openURL);
 
     /**
      * Parse Links.
@@ -67,7 +67,7 @@ interface DriverInterface
      *
      * @return array         Array of values
      */
-    public function parseLinks($xmlstr);
+    public function parseLinks(string $xmlstr);
 
     /**
      * Get Resolver Url.
@@ -78,7 +78,7 @@ interface DriverInterface
      *
      * @return string Returns resolver specific url
      */
-    public function getResolverUrl($openURL);
+    public function getResolverUrl(string $openURL);
 
     /**
      * This controls whether a "More options" link will be shown below the fetched

@@ -683,7 +683,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    protected function runRefineExceptionCall($msg): void
+    protected function runRefineExceptionCall(string $msg): void
     {
         $conn = $this->getConnectorMock(['query']);
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
@@ -703,7 +703,7 @@ class BackendTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture): Response
+    protected function loadResponse(string $fixture): Response
     {
         return Response::fromString(
             $this->getFixture("solr/response/$fixture", 'VuFindSearch')
@@ -718,7 +718,7 @@ class BackendTest extends TestCase
      *
      * @return MockObject&Connector
      */
-    protected function getConnectorMock(array $mock = [], $client = null): MockObject&Connector
+    protected function getConnectorMock(array $mock = [], HttpClient $client = null): MockObject&Connector
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)

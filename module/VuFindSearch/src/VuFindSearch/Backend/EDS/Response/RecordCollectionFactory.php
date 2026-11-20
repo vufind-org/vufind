@@ -70,7 +70,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return void
      */
-    public function __construct($recordFactory = null, $collectionClass = null)
+    public function __construct(callable $recordFactory = null, string $collectionClass = null)
     {
         if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
@@ -86,7 +86,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return RecordCollection
      */
-    public function factory($response)
+    public function factory(array $response)
     {
         if (!is_array($response)) {
             throw new InvalidArgumentException(

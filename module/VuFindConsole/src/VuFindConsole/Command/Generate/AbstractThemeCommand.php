@@ -74,7 +74,7 @@ abstract class AbstractThemeCommand extends Command
      * @param string|null        $name      The name of the command; passing null
      * means it must be set in configure()
      */
-    public function __construct(GeneratorInterface $generator, $name = null)
+    public function __construct(GeneratorInterface $generator, ?string $name = null)
     {
         $this->generator = $generator;
         parent::__construct($name);
@@ -105,7 +105,7 @@ abstract class AbstractThemeCommand extends Command
      *
      * @return bool
      */
-    protected function generate($name)
+    protected function generate(string $name)
     {
         return $this->generator->generate($name);
     }

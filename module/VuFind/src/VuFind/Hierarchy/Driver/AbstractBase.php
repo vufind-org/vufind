@@ -73,7 +73,7 @@ abstract class AbstractBase
         protected array $config,
         protected DataManager $dataManager,
         protected RendererManager $rendererManager,
-        $options = []
+        array $options = []
     ) {
         if (isset($options['enabled'])) {
             $this->enabled = (bool)$options['enabled'];

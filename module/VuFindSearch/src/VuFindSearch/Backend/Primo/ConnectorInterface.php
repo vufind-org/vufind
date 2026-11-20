@@ -83,7 +83,7 @@ interface ConnectorInterface
      *
      * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
      */
-    public function query($institution, $terms, $params = null);
+    public function query(string $institution, array $terms, array $params = null);
 
     /**
      * Retrieves a document specified by the ID.
@@ -95,7 +95,7 @@ interface ConnectorInterface
      * @throws \Exception
      * @return array             An array of query results
      */
-    public function getRecord(string $recordId, $inst_code = null, $onCampus = false);
+    public function getRecord(string $recordId, ?string $inst_code = null, bool $onCampus = false);
 
     /**
      * Get the institution code based on user IP. If user is coming from

@@ -64,7 +64,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      *
      * @return Server
      */
-    protected function getServer($config = []): Server
+    protected function getServer(array $config = []): Server
     {
         // Force an email into the configuration if missing; this is required by the
         // server.

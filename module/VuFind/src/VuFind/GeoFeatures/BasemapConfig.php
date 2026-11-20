@@ -76,7 +76,7 @@ class BasemapConfig extends AbstractConfig
      *
      * @return array
      */
-    public function getBasemap($origin)
+    public function getBasemap(string $origin)
     {
         $options = [];
         if ($origin == 'MapSelection') {

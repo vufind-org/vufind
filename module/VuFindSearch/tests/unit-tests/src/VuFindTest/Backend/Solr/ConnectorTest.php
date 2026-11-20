@@ -303,7 +303,7 @@ class ConnectorTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null, $client = null)
+    protected function createConnector(string $fixture = null, HttpClient $client = null)
     {
         if ($fixture) {
             $this->response
@@ -329,7 +329,7 @@ class ConnectorTest extends TestCase
      *
      * @return Connector
      */
-    protected function getConnectorMock(array $mock = [], $client = null)
+    protected function getConnectorMock(array $mock = [], HttpClient $client = null)
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)

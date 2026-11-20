@@ -103,7 +103,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return void
      */
-    public function revokeAuthCode($tokenId): void
+    public function revokeAuthCode(string $tokenId): void
     {
         $this->revoke($tokenId);
     }
@@ -115,7 +115,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return bool Return true if this code has been revoked
      */
-    public function isAuthCodeRevoked($tokenId): bool
+    public function isAuthCodeRevoked(string $tokenId): bool
     {
         return $this->isRevoked($tokenId);
     }

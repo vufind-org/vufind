@@ -70,7 +70,7 @@ class Unpaywall implements
      *
      * @throws \Exception
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         if (!isset($config['unpaywall_email'])) {
             throw new \Exception(
@@ -129,7 +129,7 @@ class Unpaywall implements
      *
      * @return null|string
      */
-    protected function callApi($doi)
+    protected function callApi(string $doi)
     {
         $url = $this->apiUrl . '/' . urlencode($doi) . '?'
             . http_build_query(['email' => $this->email]);

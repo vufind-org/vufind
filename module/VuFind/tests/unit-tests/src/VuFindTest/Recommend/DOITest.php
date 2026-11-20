@@ -133,7 +133,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return DOI
      */
-    protected function getDOI($results = null, $settings = 'http://doi/')
+    protected function getDOI(\VuFind\Search\Solr\Results $results = null, string $settings = 'http://doi/')
     {
         if (null === $results) {
             $results = $this->getMockResults();
@@ -153,7 +153,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults($query = '', $type = 'basic')
+    protected function getMockResults(string $query = '', string $type = 'basic')
     {
         $params = $this->getMockParams($query, $type);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
@@ -169,7 +169,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams($query = '', $type = 'basic')
+    protected function getMockParams(string $query = '', string $type = 'basic')
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->method('getDisplayQuery')->willReturn($query);

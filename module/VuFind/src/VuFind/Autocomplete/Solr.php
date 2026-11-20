@@ -130,7 +130,7 @@ class Solr implements AutocompleteInterface
      *
      * @return void
      */
-    public function setConfig($params)
+    public function setConfig(string $params)
     {
         // Save the basic parameters:
         $params = explode(':', $params);
@@ -166,7 +166,7 @@ class Solr implements AutocompleteInterface
      *
      * @return void
      */
-    public function addFilters($filters)
+    public function addFilters(array $filters)
     {
         $this->filters += $filters;
     }
@@ -240,7 +240,7 @@ class Solr implements AutocompleteInterface
      *
      * @return array        The suggestions for the provided query
      */
-    public function getSuggestions($query)
+    public function getSuggestions(string $query)
     {
         $results = null;
         if (!is_object($this->searchObject)) {
@@ -282,7 +282,7 @@ class Solr implements AutocompleteInterface
      *
      * @return array
      */
-    protected function getSuggestionsFromSearch($searchResults, $query, $exact)
+    protected function getSuggestionsFromSearch(array $searchResults, string $query, bool $exact)
     {
         $results = [];
         foreach ($searchResults as $object) {
@@ -315,7 +315,7 @@ class Solr implements AutocompleteInterface
      * @return bool|string        String to use as recommendation, or false if
      * no appropriate value was found.
      */
-    protected function pickBestMatch($value, $query, $exact)
+    protected function pickBestMatch(array|string $value, string $query, bool $exact)
     {
         // By default, assume no match:
         $bestMatch = false;
@@ -354,7 +354,7 @@ class Solr implements AutocompleteInterface
      *
      * @return void
      */
-    protected function setDisplayField($new)
+    protected function setDisplayField(array $new)
     {
         $this->displayField = $new;
     }
@@ -366,7 +366,7 @@ class Solr implements AutocompleteInterface
      *
      * @return void
      */
-    protected function setSortField($new)
+    protected function setSortField(string $new)
     {
         $this->sortField = $new;
     }
@@ -392,7 +392,7 @@ class Solr implements AutocompleteInterface
      *
      * @return bool
      */
-    protected function matchQueryTerms($data, $query)
+    protected function matchQueryTerms(string $data, string $query)
     {
         $terms = preg_split("/\s+/", $query);
         foreach ($terms as $term) {

@@ -54,7 +54,7 @@ class AbstractBase implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $this->config = $settings;
     }

@@ -173,7 +173,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return Connection
      */
-    public function setHoldConfig($settings)
+    public function setHoldConfig(\VuFind\ILS\HoldSettings $settings)
     {
         $this->holdsMode = $settings->getHoldsMode();
         $this->titleHoldsMode = $settings->getTitleHoldsMode();
@@ -288,7 +288,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @throws \Exception
      * @return object
      */
-    public function getDriver($init = true)
+    public function getDriver(bool $init = true)
     {
         if (null === $this->driver) {
             $this->setDriver($this->driverManager->get($this->config['driver']));
@@ -313,7 +313,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function setDriver(DriverInterface $driver, $initialized = false)
+    public function setDriver(DriverInterface $driver, bool $initialized = false)
     {
         $this->driverInitialized = $initialized;
         $this->driver = $driver;
@@ -839,7 +839,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return string Language-specific help text
      */
-    protected function getHelpText($helpText)
+    protected function getHelpText(string|array $helpText)
     {
         if (is_array($helpText)) {
             $lang = $this->getTranslatorLocale();
@@ -860,7 +860,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return mixed The result of the checkRequestIsValid function if it
      * exists, true if it does not
      */
-    public function checkRequestIsValid($id, $data, $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron)
     {
         try {
             $params = [$id, $data, $patron];
@@ -891,7 +891,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return mixed The result of the checkStorageRetrievalRequestIsValid
      * function if it exists, false if it does not
      */
-    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron)
     {
         try {
             $check = $this->checkCapability(
@@ -928,7 +928,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return mixed The result of the checkILLRequestIsValid
      * function if it exists, false if it does not
      */
-    public function checkILLRequestIsValid($id, $data, $patron)
+    public function checkILLRequestIsValid(string $id, array $data, array $patron)
     {
         try {
             $params = [$id, $data, $patron];
@@ -973,7 +973,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return string|bool "ils-offline" for systems where the main ILS is offline,
      * "ils-none" for systems which do not use an ILS, false for online systems.
      */
-    public function getOfflineMode($healthCheck = false)
+    public function getOfflineMode(bool $healthCheck = false)
     {
         // If we have NoILS failover configured, force driver initialization so
         // we can know we are checking the offline mode against the correct driver.
@@ -1017,7 +1017,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return bool true on success, false on failure
      */
-    public function hasHoldings($id)
+    public function hasHoldings(string $id)
     {
         // Graceful degradation -- return true if no method supported.
         try {
@@ -1063,7 +1063,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return bool
      * @throws ILSException
      */
-    public function checkCapability($method, $params = [], $throw = false)
+    public function checkCapability(string $method, array $params = [], bool $throw = false)
     {
         try {
             // If we have NoILS failover disabled, we can check capabilities of
@@ -1136,7 +1136,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return mixed        Array of the patron's transactions
      */
-    public function getMyTransactions($patron, $params = [])
+    public function getMyTransactions(array $patron, array $params = [])
     {
         $result = $this->__call('getMyTransactions', [$patron, $params]);
 
@@ -1161,7 +1161,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return mixed        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron, $params = [])
+    public function getMyHolds(array $patron, array $params = [])
     {
         $result = $this->__call('getMyHolds', [$patron, $params]);
 
@@ -1187,7 +1187,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return array Array with holding data
      */
-    public function getHolding($id, $patron = null, $options = [])
+    public function getHolding(string $id, array $patron = null, array $options = [])
     {
         // Get pagination options for holdings tab:
         $params = compact('id', 'patron');
@@ -1244,7 +1244,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return array Array with holding data
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $status = $this->__call('getStatus', [$id]);
 
@@ -1261,7 +1261,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return array Array with holding data
      */
-    public function getStatuses($ids)
+    public function getStatuses(string $ids)
     {
         $statuses = $this->__call('getStatuses', [$ids]);
 
@@ -1304,7 +1304,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @throws ILSException
      * @return mixed             Varies by method (false if undefined method)
      */
-    public function callIlsWithFailover($methodName, $params)
+    public function callIlsWithFailover(string $methodName, array $params)
     {
         try {
             if ($this->checkCapability($methodName, $params)) {
@@ -1467,7 +1467,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function clearSessionCacheIfRequired($methodName): void
+    protected function clearSessionCacheIfRequired(string $methodName): void
     {
         if ($this->sessionCache && in_array($methodName, $this->sessionCacheInvalidatingMethods)) {
             $this->sessionCache->exchangeArray([]);
@@ -1482,7 +1482,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return ?array
      */
-    protected function getCacheSettings($methodName, $params): ?array
+    protected function getCacheSettings(string $methodName, array $params): ?array
     {
         $lifeTime = (int)($this->cacheLifeTime[$methodName] ?? $this->cacheLifeTime['*'] ?? 0);
         $storage = $this->cacheStorage[$methodName] ?? null;
@@ -1507,7 +1507,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @throws ILSException
      * @return mixed             Varies by method (false if undefined method)
      */
-    public function __call($methodName, $params)
+    public function __call(string $methodName, array $params)
     {
         $cacheSettings = $this->getCacheSettings($methodName, $params);
         // Note: The actual data is cached in an array so that we can differentiate

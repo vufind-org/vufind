@@ -95,9 +95,9 @@ trait HttpRequestTrait
      * @return ResponseInterface
      */
     protected function httpGet(
-        $url,
+        string $url,
         array $params = [],
-        $timeout = null,
+        float $timeout = null,
         array $headers = []
     ): ResponseInterface {
         return $this->getHttpService()->get(
@@ -120,10 +120,10 @@ trait HttpRequestTrait
      * @return ResponseInterface
      */
     protected function httpPost(
-        $url,
-        $body = null,
-        $type = 'application/octet-stream',
-        $timeout = null,
+        string $url,
+        mixed $body = null,
+        string $type = 'application/octet-stream',
+        float $timeout = null,
         array $headers = []
     ): ResponseInterface {
         return $this->getHttpService()->post(

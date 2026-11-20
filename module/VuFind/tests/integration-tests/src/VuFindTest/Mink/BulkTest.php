@@ -83,7 +83,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericBulkTest($extraConfig = []): Element
+    protected function setUpGenericBulkTest(array $extraConfig = []): Element
     {
         $extraConfig['config']['Site'] = ['showBulkOptions' => true];
         $extraConfig['config']['Mail'] = ['testOnly' => 1];
@@ -121,7 +121,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
+    protected function checkForLimitExceededMessage(Element $page, int $count, int $limit): void
     {
         $this->assertSame(
             'Selection of ' . $count . ' items exceeds the limit of '

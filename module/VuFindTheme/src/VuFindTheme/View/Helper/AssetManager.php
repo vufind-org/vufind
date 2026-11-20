@@ -325,7 +325,7 @@ class AssetManager
      *
      * @return string
      */
-    protected function outputScriptAssets($position): string
+    protected function outputScriptAssets(mixed $position): string
     {
         $output = [];
         $processedScripts = $this->pipeline->process($this->scripts[$position], 'js');

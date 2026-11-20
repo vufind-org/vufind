@@ -73,7 +73,7 @@ class VuFindSitemapTest extends \PHPUnit\Framework\TestCase
              *
              * @return array
              */
-            protected static function getTikaFields($htmlFile)
+            protected static function getTikaFields(string $htmlFile)
             {
                 return [
                     'title' => 'The Fake Title',

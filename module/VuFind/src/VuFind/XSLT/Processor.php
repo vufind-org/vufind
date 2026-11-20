@@ -51,7 +51,7 @@ class Processor
      * @return string
      * @throws \Exception
      */
-    protected static function findXslt($xslt)
+    protected static function findXslt(string $xslt)
     {
         $paths = [
             LOCAL_OVERRIDE_DIR . '/xsl/',
@@ -75,7 +75,7 @@ class Processor
      *
      * @return string      Transformed XML
      */
-    public static function process($xslt, $xml, $params = [])
+    public static function process(string $xslt, string $xml, string $params = [])
     {
         $style = new DOMDocument();
         $style->load(static::findXslt($xslt));

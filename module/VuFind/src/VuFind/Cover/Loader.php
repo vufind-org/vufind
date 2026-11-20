@@ -195,7 +195,7 @@ class Loader extends \VuFind\ImageLoader
         ApiManager $manager,
         \VuFindTheme\ThemeInfo $theme,
         \VuFindHttp\HttpService $httpService,
-        $baseDir = null
+        string $baseDir = null
     ) {
         $this->setThemeInfo($theme);
         $this->configuredFailImage = $config['Content']['noCoverAvailableImage'] ?? null;
@@ -277,7 +277,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getImageSettingsFromLegacyArgs($args)
+    protected function getImageSettingsFromLegacyArgs(array $args)
     {
         return [
             'isbn' => $args[0],
@@ -299,7 +299,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    protected function storeSanitizedSettings($settings)
+    protected function storeSanitizedSettings(array $settings)
     {
         $settings = array_merge($this->getDefaultSettings(), $settings);
         $this->isbns = array_map(
@@ -339,7 +339,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    public function loadImage($settings = [])
+    public function loadImage(array $settings = [])
     {
         // reset to normal
         $this->hasLoadedUnavailable = false;
@@ -403,7 +403,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return string
      */
-    protected function determineLocalFile($ids)
+    protected function determineLocalFile(array $ids)
     {
         // We should check whether we have cached images for the 13- or 10-digit
         // ISBNs. If no file exists, we'll favor the 10-digit number if
@@ -519,7 +519,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return string      Cache path
      */
-    protected function getCachePath($size, $id, $extension = 'jpg')
+    protected function getCachePath(string $size, string $id, string $extension = 'jpg')
     {
         return $this->baseDir . '/' . $size . '/' . $id . '.' . $extension;
     }
@@ -565,7 +565,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool             Did we succeed?
      */
-    protected function convertNonJpeg($imageData, $jpeg)
+    protected function convertNonJpeg(string $imageData, string $jpeg)
     {
         // We can't proceed if we don't have image conversion functions:
         if (!is_callable('imagecreatefromstring')) {
@@ -589,7 +589,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool
      */
-    protected function validateAndMoveTempFile($image, $tempFile, $finalFile)
+    protected function validateAndMoveTempFile(string $image, string $tempFile, string $finalFile)
     {
         [$width, $height, $type] = @getimagesize($tempFile);
 
@@ -620,7 +620,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool         True if image loaded, false on failure.
      */
-    protected function processImageURLForSource($url, $allowCache, $source)
+    protected function processImageURLForSource(string $url, bool $allowCache, string $source)
     {
         // If caching is allowed at the source level, let's see if it's locally
         // configured....
@@ -651,7 +651,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool         True if image loaded, false on failure.
      */
-    protected function processImageURL($url, $cache = true)
+    protected function processImageURL(string $url, string $cache = true)
     {
         // Check to see if url is a file path
         if (str_starts_with($url, 'file://')) {
@@ -771,7 +771,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    public function getIdentifiersForSettings($settings)
+    public function getIdentifiersForSettings(array $settings)
     {
         $this->storeSanitizedSettings($settings);
         return $this->getIdentifiers();

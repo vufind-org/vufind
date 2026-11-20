@@ -63,7 +63,7 @@ class UnicornFactory extends DriverWithDateConverterFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $driver = parent::__invoke($container, $requestedName);

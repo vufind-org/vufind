@@ -222,7 +222,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return array A patron array.
      */
-    protected function getPatron($username, $instance = null)
+    protected function getPatron(string $username, string $instance = null)
     {
         $cat_username = $instance ? $instance . '.' . $username : $username;
         return [
@@ -248,7 +248,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return object The Mock Service Manager created.
      */
-    protected function getMockSM($times = null, $driver = 'Voyager', $return = null)
+    protected function getMockSM(object $times = null, object $driver = 'Voyager', mixed $return = null)
     {
         $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($times ?? $this->any())
@@ -286,7 +286,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\AbstractBase
      */
-    protected function getMockILS($type, $methods = null)
+    protected function getMockILS(string $type, array $methods = null)
     {
         if ($methods && in_array('supportsMethod', $methods)) {
             $mock = $this
@@ -318,7 +318,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed A MultiBackend instance.
      */
-    abstract protected function initDriver($constructorArgs = [], $drivers = [], $driversConfigPath = null);
+    abstract protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null);
 
     /**
      * Method to get a raw Multi Driver instance.
@@ -327,7 +327,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed A Multi Driver instance.
      */
-    abstract protected function getDriver($constructorArgs = []);
+    abstract protected function getDriver(array $constructorArgs = []);
 
     /**
      * Create a Multi Driver for the given ILS drivers.
@@ -339,7 +339,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return AbstractMultiDriver
      */
-    protected function getMultiDriverForDrivers($drivers, $count = null)
+    protected function getMultiDriverForDrivers(array $drivers, mixed $count = null)
     {
         $driverMap = [];
         $driverNameMap = [];

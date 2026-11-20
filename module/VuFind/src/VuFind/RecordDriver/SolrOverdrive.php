@@ -455,7 +455,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return string|array|bool
      * @throws \Exception
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         $coverMap = [
             'large' => 'cover300Wide',
@@ -519,7 +519,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         if (!$this->config) {
             return [];

@@ -258,7 +258,7 @@ interface TagServiceInterface extends DbServiceInterface
     public function getListTags(
         UserListEntityInterface|int $listOrId,
         UserEntityInterface|int|null $userOrId = null,
-        $caseSensitive = false
+        bool $caseSensitive = false
     ): array;
 
     /**

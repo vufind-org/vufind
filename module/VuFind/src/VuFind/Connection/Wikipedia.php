@@ -87,7 +87,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setLanguage($lang)
+    public function setLanguage(string $lang)
     {
         $this->lang = substr($lang, 0, 2); // strip off regional suffixes
     }
@@ -100,7 +100,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return ?array
      */
-    public function get($author)
+    public function get(string $author)
     {
         // Don't retrieve the same page multiple times; this indicates a loop
         // that needs to be broken!
@@ -128,7 +128,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return bool
      */
-    protected function alreadyRetrieved($author)
+    protected function alreadyRetrieved(string $author)
     {
         if (isset($this->pagesRetrieved[$author])) {
             return true;
@@ -144,7 +144,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return array Array with two values values: image name and image caption
      */
-    protected function extractImageFromInfoBox($infoboxStr)
+    protected function extractImageFromInfoBox(string $infoboxStr)
     {
         $imageName = $imageCaption = null;
 
@@ -194,7 +194,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function extractInfoBox($body)
+    protected function extractInfoBox(array $body)
     {
         // We are looking for the infobox inside "{{...}}"
         //   It may contain nested blocks too, thus the recursion
@@ -223,7 +223,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function extractImageFromBody($body)
+    protected function extractImageFromBody(array $body)
     {
         $imageName = $imageCaption = null;
         // The tag marking image files will vary depending on API language:
@@ -253,7 +253,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function stripImageAndFileLinks($body)
+    protected function stripImageAndFileLinks(string $body)
     {
         // Remove unwanted image/file links
         // Nested brackets make this annoying: We can't add 'File' or 'Image' as
@@ -293,7 +293,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function sanitizeWikipediaBody($body)
+    protected function sanitizeWikipediaBody(string $body)
     {
         // Cull our content back to everything before the first heading
         $body = trim(substr($body, 0, strpos($body, '==')));
@@ -359,7 +359,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function checkForRedirect($body)
+    protected function checkForRedirect(array $body)
     {
         $name = $redirectTo = $page = null;
 
@@ -396,7 +396,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function extractBodyText($body, $infoboxStr)
+    protected function extractBodyText(array $body, string $infoboxStr)
     {
         if ($infoboxStr) {
             // Start of the infobox
@@ -421,7 +421,7 @@ class Wikipedia implements TranslatorAwareInterface
      * @return array
      * @author Rushikesh Katikar <rushikesh.katikar@gmail.com>
      */
-    protected function parseWikipedia($rawBody)
+    protected function parseWikipedia(array $rawBody)
     {
         $imageName = null;
         $imageCaption = null;
@@ -480,7 +480,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return mixed            URL on success, false on failure
      */
-    protected function getWikipediaImageURL($imageName)
+    protected function getWikipediaImageURL(string $imageName)
     {
         $imageUrl = null;
         $url = "https://{$this->lang}.wikipedia.org/w/api.php" .

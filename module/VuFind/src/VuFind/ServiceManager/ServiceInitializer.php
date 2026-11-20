@@ -83,7 +83,7 @@ class ServiceInitializer implements InitializerInterface
      *
      * @return object
      */
-    public function __invoke(ContainerInterface $sm, $instance)
+    public function __invoke(ContainerInterface $sm, object $instance)
     {
         if ($instance instanceof \VuFind\Db\Service\DbServiceAwareInterface) {
             $instance->setDbServiceManager(

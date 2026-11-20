@@ -61,9 +61,9 @@ class DeepPagingException extends RuntimeException
      * @return void
      */
     public function __construct(
-        $message,
-        $code,
-        $legalPage = 0,
+        string $message,
+        int $code,
+        int $legalPage = 0,
         ?Exception $prev = null
     ) {
         parent::__construct($message, $code, $prev);

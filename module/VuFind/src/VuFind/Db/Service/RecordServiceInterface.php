@@ -73,7 +73,7 @@ interface RecordServiceInterface extends DbServiceInterface
      *
      * @return RecordEntityInterface
      */
-    public function updateRecord(string $id, string $source, $rawData): RecordEntityInterface;
+    public function updateRecord(string $id, string $source, mixed $rawData): RecordEntityInterface;
 
     /**
      * Clean up orphaned entries (i.e. entries that are not in favorites anymore).

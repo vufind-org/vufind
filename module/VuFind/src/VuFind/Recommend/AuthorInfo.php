@@ -100,7 +100,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $parts = explode(':', $settings);
         if (
@@ -153,7 +153,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->searchObject = $results;
     }
@@ -190,7 +190,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string
      */
-    protected function normalizeName($author)
+    protected function normalizeName(string $author)
     {
         // remove dates
         $author = preg_replace('/[0-9]+-[0-9]*/', '', $author);
@@ -216,7 +216,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string|bool
      */
-    protected function getWikipediaNameFromViaf($lccn)
+    protected function getWikipediaNameFromViaf(string $lccn)
     {
         $param = urlencode("LC|$lccn");
         $url = "http://viaf.org/viaf/sourceID/{$param}/justlinks.json";
@@ -235,7 +235,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string
      */
-    protected function normalizeNameWithViaf($author)
+    protected function normalizeNameWithViaf(string $author)
     {
         // Do authority search:
         $auth = $this->resultsManager->get('SolrAuth');

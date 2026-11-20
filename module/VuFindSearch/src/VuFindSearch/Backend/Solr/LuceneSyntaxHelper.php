@@ -93,7 +93,7 @@ class LuceneSyntaxHelper
      * @param bool|string $csBools  Case sensitive Booleans setting
      * @param bool        $csRanges Case sensitive ranges setting
      */
-    public function __construct($csBools = true, $csRanges = true)
+    public function __construct(bool|string $csBools = true, bool $csRanges = true)
     {
         $this->caseSensitiveBooleans = $csBools;
         $this->caseSensitiveRanges = $csRanges;
@@ -108,7 +108,7 @@ class LuceneSyntaxHelper
      *
      * @return bool
      */
-    public function containsBooleans($searchString)
+    public function containsBooleans(string $searchString)
     {
         // Build a regular expression to detect booleans -- AND/OR/NOT surrounded
         // by whitespace, or NOT leading the query and followed by whitespace.
@@ -125,7 +125,7 @@ class LuceneSyntaxHelper
      *
      * @return bool
      */
-    public function containsRanges($searchString)
+    public function containsRanges(string $searchString)
     {
         $rangeReg = self::SOLR_RANGE_RE;
         if (!$this->caseSensitiveRanges) {
@@ -141,7 +141,7 @@ class LuceneSyntaxHelper
      *
      * @return bool
      */
-    public function containsAdvancedLuceneSyntax($searchString)
+    public function containsAdvancedLuceneSyntax(string $searchString)
     {
         // Check for various conditions that flag an advanced Lucene query:
         if ($searchString == '*:*') {
@@ -185,7 +185,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    public function normalizeSearchString($searchString)
+    public function normalizeSearchString(string $searchString)
     {
         $searchString = $this->prepareForLuceneSyntax($searchString);
 
@@ -208,7 +208,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    public function capitalizeCaseInsensitiveBooleans($string)
+    public function capitalizeCaseInsensitiveBooleans(string $string)
     {
         return $this->capitalizeBooleans($string, $this->getBoolsToCap());
     }
@@ -221,7 +221,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    public function capitalizeBooleans($string, $bools = ['AND', 'OR', 'NOT'])
+    public function capitalizeBooleans(string $string, array $bools = ['AND', 'OR', 'NOT'])
     {
         // Short-circuit if no Booleans were selected:
         if (empty($bools)) {
@@ -257,7 +257,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    public function capitalizeRanges($string)
+    public function capitalizeRanges(string $string)
     {
         // Load the "inside quotes" lookahead so we can use it to prevent
         // switching case of ranges inside quotes, since that can cause
@@ -279,7 +279,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    public function extractSearchTerms($query)
+    public function extractSearchTerms(string $query)
     {
         $result = [];
         $collected = '';
@@ -372,7 +372,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    protected function normalizeWildcards($input)
+    protected function normalizeWildcards(string $input)
     {
         // Ensure wildcards are not at beginning of input
         return str_starts_with($input, '*') || str_starts_with($input, '?')
@@ -388,7 +388,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    protected function normalizeParens($input)
+    protected function normalizeParens(string $input)
     {
         $start = $this->countNonQuoted('(', $input);
         $end = $this->countNonQuoted(')', $input);
@@ -402,7 +402,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    protected function normalizeBoosts($input)
+    protected function normalizeBoosts(string $input)
     {
         // Ensure ^ is used properly
         //   Better: Remove all ^ if not followed by digits
@@ -423,7 +423,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    protected function normalizeBracesAndBrackets($input)
+    protected function normalizeBracesAndBrackets(string $input)
     {
         // Remove unwanted brackets/braces that are not part of range queries.
         // This is a bit of a shell game -- first we replace valid brackets and
@@ -461,7 +461,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    protected function normalizeUnquotedText($input)
+    protected function normalizeUnquotedText(string $input)
     {
         // Freestanding hyphens, pluses and slashes can cause problems:
         $lookahead = self::$insideQuotes;
@@ -504,7 +504,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      */
-    protected function normalizeColons($input)
+    protected function normalizeColons(string $input)
     {
         $lookahead = self::$insideQuotes;
         $input = preg_replace('/:+/', ':', $input);
@@ -524,7 +524,7 @@ class LuceneSyntaxHelper
      *
      * @todo Check if it is safe to assume $input to be an UTF-8 encoded string.
      */
-    protected function prepareForLuceneSyntax($input)
+    protected function prepareForLuceneSyntax(string $input)
     {
         // If the user has entered a lone BOOLEAN operator, convert it to lowercase
         // so it is treated as a word (otherwise it will trigger a fatal error):
@@ -603,7 +603,7 @@ class LuceneSyntaxHelper
      *
      * @todo Check possible problem with umlauts/non-ASCII word characters
      */
-    protected function capitalizeRangesCallback($match)
+    protected function capitalizeRangesCallback(array $match)
     {
         // Extract the relevant parts of the expression:
         $open = $match[1];         // opening symbol

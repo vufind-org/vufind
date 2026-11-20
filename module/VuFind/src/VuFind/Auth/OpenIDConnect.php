@@ -244,7 +244,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request): UserEntityInterface
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $code = $request->getQuery()->get('code');
 

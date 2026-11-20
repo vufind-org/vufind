@@ -61,7 +61,7 @@ class JopFactory extends DriverWithHttpClientFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $options = [$container->get(\VuFind\Net\UserIpReader::class)];

@@ -158,7 +158,7 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      *
      * @return string
      */
-    abstract protected function extractIdsFromResponse($response);
+    abstract protected function extractIdsFromResponse(array $response);
 
     /**
      * Recently returned channel contents are always the same; this does not

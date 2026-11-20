@@ -86,7 +86,7 @@ class File extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId): string
+    public function read(string $sessId): string
     {
         $sessFile = $this->path . '/sess_' . $sessId;
         if (!file_exists($sessFile)) {
@@ -110,7 +110,7 @@ class File extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId): bool
+    public function destroy(string $sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);
@@ -131,7 +131,7 @@ class File extends AbstractBase
      *
      * @return int|false
      */
-    public function gc($maxlifetime): int|false
+    public function gc(int $maxlifetime): int|false
     {
         $count = 0;
         foreach (glob($this->path . '/sess_*') as $filename) {
@@ -151,7 +151,7 @@ class File extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data): bool
+    protected function saveSession(string $sessId, string $data): bool
     {
         $sessFile = $this->path . '/sess_' . $sessId;
         if ($handle = fopen($sessFile, 'w')) {

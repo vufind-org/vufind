@@ -148,7 +148,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
      *
      * @return Results
      */
-    protected function getFacetResults(ServerRequestInterface $request, $index, $loc)
+    protected function getFacetResults(ServerRequestInterface $request, string $index, string $loc)
     {
         $setupCallback = function ($runner, $params, $searchId) use ($index, $loc): void {
             $listener = new RecommendListener(
@@ -201,9 +201,9 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
      */
     protected function formatFacets(
         ServerRequestInterface $request,
-        $context,
+        array $context,
         SideFacets $recommend,
-        $facets,
+        array $facets,
         Results $results
     ) {
         $response = [];

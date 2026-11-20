@@ -82,7 +82,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
      *
      * @return bool
      */
-    protected function writeToDisk($filename, $content)
+    protected function writeToDisk(string $filename, string $content)
     {
         return file_put_contents($filename, $content);
     }

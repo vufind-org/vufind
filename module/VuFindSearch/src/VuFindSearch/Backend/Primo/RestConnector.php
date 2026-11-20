@@ -193,7 +193,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
      *
      * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
      */
-    public function query($institution, $terms, $params = null)
+    public function query(string $institution, array $terms, array $params = null)
     {
         // defaults for params
         $args = [
@@ -228,7 +228,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
      * @throws \Exception
      * @return array             An array of query results
      */
-    public function getRecord(string $recordId, $inst_code = null, $onCampus = false)
+    public function getRecord(string $recordId, ?string $inst_code = null, bool $onCampus = false)
     {
         if ('' === $recordId) {
             return self::$emptyQueryResponse;
@@ -279,7 +279,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
      * @throws \Exception
      * @return array       An array of query results
      */
-    protected function performSearch($terms, $args)
+    protected function performSearch(array $terms, array $args)
     {
         // we have to build a querystring because I think adding them
         //   incrementally is implemented as a dictionary, but we are allowed
@@ -681,7 +681,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    protected function processDescription($description)
+    protected function processDescription(string $description)
     {
         // Sometimes the entire article is in the description, so just take a chunk
         // from the beginning.

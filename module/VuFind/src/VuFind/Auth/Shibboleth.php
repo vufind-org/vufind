@@ -163,7 +163,7 @@ class Shibboleth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(Request $request)
     {
         // validate config before authentication
         $this->validateConfig();
@@ -305,7 +305,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    public function connectLibraryCard($request, $connectingUser)
+    public function connectLibraryCard(Request $request, UserEntityInterface $connectingUser)
     {
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
@@ -345,7 +345,7 @@ class Shibboleth extends AbstractBase
      * @return array      Only username and attribute-related values
      * @throws AuthException
      */
-    protected function getRequiredAttributes($config)
+    protected function getRequiredAttributes(array $config)
     {
         // Special case -- store username as-is to establish return array:
         $sortedUserAttributes = [];
@@ -375,7 +375,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    protected function storeShibbolethSession($request)
+    protected function storeShibbolethSession(Request $request)
     {
         if (!isset($this->shibSessionId)) {
             return;
@@ -400,7 +400,7 @@ class Shibboleth extends AbstractBase
      *
      * @return string entityId of IdP
      */
-    protected function getCurrentEntityId($request)
+    protected function getCurrentEntityId(Request $request)
     {
         return $this->getAttribute($request, $this->shibIdentityProvider) ?? '';
     }
@@ -413,7 +413,7 @@ class Shibboleth extends AbstractBase
      *
      * @return ?string attribute value
      */
-    protected function getAttribute($request, $attribute): ?string
+    protected function getAttribute(Request $request, string $attribute): ?string
     {
         if ($this->useHeaders) {
             $header = $request->getHeader($attribute);

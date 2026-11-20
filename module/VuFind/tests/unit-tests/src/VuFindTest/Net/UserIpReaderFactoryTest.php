@@ -54,7 +54,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindTest\Container\MockContainer
      */
-    protected function getContainer($config = [], $server = ['server' => true]): \VuFindTest\Container\MockContainer
+    protected function getContainer(array $config = [], array $server = ['server' => true]): \VuFindTest\Container\MockContainer
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(

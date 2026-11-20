@@ -52,7 +52,7 @@ class HMAC
      *
      * @param string $key Hash key
      */
-    public function __construct($key)
+    public function __construct(string $key)
     {
         $this->hashKey = $key;
     }
@@ -65,7 +65,7 @@ class HMAC
      *
      * @return string A hash_hmac string using md5
      */
-    public function generate($keysToHash, $keyValueArray)
+    public function generate(array $keysToHash, array $keyValueArray)
     {
         $str = '';
         foreach ($keysToHash as $key) {

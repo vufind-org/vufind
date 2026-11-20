@@ -64,7 +64,7 @@ class GetSaveStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

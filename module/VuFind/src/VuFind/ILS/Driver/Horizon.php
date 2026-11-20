@@ -121,7 +121,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array               An string query string
      */
-    protected function buildSqlFromArray($sql)
+    protected function buildSqlFromArray(array $sql)
     {
         $modifier = isset($sql['modifier']) ? $sql['modifier'] . ' ' : '';
 
@@ -151,7 +151,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array
      */
-    protected function parseStatus($status)
+    protected function parseStatus(string $status)
     {
         $duedate = null;
         $statuses = $this->config['Statuses'][$status] ?? null;
@@ -227,7 +227,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getHoldingSQL($id)
+    protected function getHoldingSQL(array $id)
     {
         // Query holding information based on id field defined in
         // import/marc.properties
@@ -380,7 +380,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array Keyed data
      */
-    protected function processStatusRow($id, $row)
+    protected function processStatusRow(string $id, array $row)
     {
         $item_status  = $row['STATUS_CODE']; //get the item status code
         $statusValues = $this->parseStatus($item_status);
@@ -409,7 +409,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *               id, availability (boolean), status, location, reserve, and
      *               callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $idList = [$id];
         $status = $this->getStatuses($idList);
@@ -423,7 +423,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getStatusesSQL($idList)
+    protected function getStatusesSQL(array $idList)
     {
         // Query holding information based on id field defined in
         // import/marc.properties
@@ -468,7 +468,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses($idList)
+    public function getStatuses(array $idList)
     {
         // Make sure we only give Horizon integers
         $callback = function ($i) {
@@ -509,7 +509,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         return [];
     }
@@ -526,7 +526,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @return ?array          Associative array of patron info on successful login,
      * ILSException on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         $sql = 'select name_reconstructed as FULLNAME, ' .
             'email_address as EMAIL ' .
@@ -566,7 +566,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getHoldsSQL($patron)
+    protected function getHoldsSQL(array $patron)
     {
         // Expressions
         $sqlExpressions = [
@@ -636,7 +636,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws DateException
      * @return array Keyed data
      */
-    protected function processHoldsRow($row)
+    protected function processHoldsRow(array $row)
     {
         if ($row['STATUS'] != 6) {
             $position  = ($row['STATUS'] != 1) ? $row['POSITION'] : false;
@@ -698,7 +698,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $holdList = [];
         $sqlArray = $this->getHoldsSQL($patron);
@@ -732,7 +732,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $sql = '   select bu.amount as AMOUNT ' .
                '        , coalesce( ' .
@@ -830,7 +830,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @return array        Array of the patron's profile data on success,
      * throw ILSException if none found
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $sql = 'select name_reconstructed as FULLNAME, address1 as ADDRESS1, ' .
             'city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE ' .
@@ -874,7 +874,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getTransactionSQL($patron)
+    protected function getTransactionSQL(array $patron)
     {
         // Expressions
         $sqlExpressions = [
@@ -937,7 +937,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws DateException
      * @return array Keyed data for display by template files
      */
-    protected function processTransactionsRow($row)
+    protected function processTransactionsRow(array $row)
     {
         $dueStatus = false;
         $dueDate = $row['DUEDATE'] ?? null;
@@ -987,7 +987,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $transList = [];
         $sqlArray  = $this->getTransactionSQL($patron);
@@ -1017,7 +1017,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @return bool True or False the required version is the same or higher.
      */
-    protected function checkHzVersion($hzVersionRequired)
+    protected function checkHzVersion(string $hzVersionRequired)
     {
         $checkHzVersionSQL = 'select database_revision from matham';
 

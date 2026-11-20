@@ -445,7 +445,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @deprecated Use code-based authentication instead
      */
-    public function processEmailLoginHash($hash)
+    public function processEmailLoginHash(string $hash)
     {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
@@ -471,7 +471,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return void
      */
-    protected function updateUser($catUsername, $catPassword, $patron)
+    protected function updateUser(string $catUsername, string $catPassword, array $patron)
     {
         $user = $this->getAuthManager()->getUserObject();
         if ($user) {

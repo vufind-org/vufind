@@ -81,7 +81,7 @@ class ClientEntity implements ClientEntityInterface
      *
      * @return void
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }

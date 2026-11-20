@@ -79,14 +79,14 @@ class OpenLibrary
      * @return array
      */
     public function getSubjects(
-        $subject,
-        $publishedIn,
-        $subjectTypes,
-        $ebooks = true,
-        $details = false,
-        $limit = 5,
-        $offset = null,
-        $publicFullText = true
+        string $subject,
+        string $publishedIn,
+        array $subjectTypes,
+        bool $ebooks = true,
+        bool $details = false,
+        int $limit = 5,
+        int $offset = null,
+        bool $publicFullText = true
     ) {
         // empty array to hold the result
         $result = [];
@@ -131,7 +131,7 @@ class OpenLibrary
      *
      * @return array
      */
-    protected function processSubjectsApi($url, $limit, $publicFullText)
+    protected function processSubjectsApi(string $url, int $limit, bool $publicFullText)
     {
         // empty array to hold the result
         $result = [];
@@ -181,7 +181,7 @@ class OpenLibrary
      *
      * @return string
      */
-    protected function normaliseSubjectString($subject)
+    protected function normaliseSubjectString(string $subject)
     {
         // Normalise search term
         $subject = str_replace(['"', ',', '/'], '', $subject);

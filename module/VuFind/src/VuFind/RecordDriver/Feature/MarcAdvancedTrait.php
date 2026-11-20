@@ -118,7 +118,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         if (($this->mainConfig['Record']['marcSubjectHeadingsSort'] ?? '') === 'numerical') {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
@@ -526,7 +526,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    protected function getSeriesFromMARC($fieldInfo)
+    protected function getSeriesFromMARC(array $fieldInfo)
     {
         $matches = [];
 
@@ -757,7 +757,7 @@ trait MarcAdvancedTrait
      *
      * @return string
      */
-    protected function getRecordLinkNote($field)
+    protected function getRecordLinkNote(array $field)
     {
         // If set, use relationship information from subfield i
         if ($subfieldI = $this->getSubfield($field, 'i')) {
@@ -800,7 +800,7 @@ trait MarcAdvancedTrait
      * @return array|bool  Array on success, boolean false if no valid link could be
      * found in the data.
      */
-    protected function getFieldData($field)
+    protected function getFieldData(array $field)
     {
         // Make sure that there is a t field to be displayed:
         if (!($title = $this->getSubfield($field, 't'))) {
@@ -883,7 +883,7 @@ trait MarcAdvancedTrait
      *
      * @return string|bool    ID on success, false on failure
      */
-    protected function getIdFromLinkingField($idField, $prefix = null, $raw = false)
+    protected function getIdFromLinkingField(string $idField, string $prefix = null, bool $raw = false)
     {
         if (preg_match('/\(([^)]+)\)(.+)/', $idField, $matches)) {
             // If prefix matches, return ID:
@@ -908,7 +908,7 @@ trait MarcAdvancedTrait
      *
      * @return string|bool
      */
-    protected function extractSingleMarcDetail($currentField, $details)
+    protected function extractSingleMarcDetail(array $currentField, array $details)
     {
         // Simplest case -- "msg" mode (just return a configured message):
         if ($details['mode'] === 'msg') {
@@ -942,7 +942,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getFormattedMarcDetails($defaultField, $data)
+    public function getFormattedMarcDetails(string $defaultField, array $data)
     {
         // First, parse the instructions into a more useful format, so we know
         // which fields we're going to have to look up.
@@ -996,7 +996,7 @@ trait MarcAdvancedTrait
      *
      * @return mixed XML, or false if format unsupported.
      */
-    public function getXML($format, $baseUrl = null, $linker = null)
+    public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null)
     {
         // Special case for MARC:
         if ($format == 'marc21') {
@@ -1171,7 +1171,7 @@ trait MarcAdvancedTrait
      *
      * @return bool
      */
-    protected function checkIndicatorFilter($marc_data, $indFilter): bool
+    protected function checkIndicatorFilter(array $marc_data, array $indFilter): bool
     {
         foreach (range(1, 2) as $indNum) {
             if (isset($indFilter[$indNum])) {
@@ -1192,7 +1192,7 @@ trait MarcAdvancedTrait
      *
      * @return bool
      */
-    protected function checkIndicatorFilters($marc_data, $indData): bool
+    protected function checkIndicatorFilters(array $marc_data, array $indData): bool
     {
         foreach ($indData as $indFilter) {
             if ($this->checkIndicatorFilter($marc_data, $indFilter)) {

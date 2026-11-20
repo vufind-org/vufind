@@ -85,7 +85,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getLastSearchLink($link, $prefix = '', $suffix = '')
+    public function getLastSearchLink(string $link, string $prefix = '', string $suffix = '')
     {
         if ($url = $this->getLastSearchUrl()) {
             return $prefix . '<a href="' . ($this->escapeHtml)($url) . '">' . $link . '</a>' . $suffix;
@@ -143,7 +143,7 @@ class SearchMemory
      *
      * @return array
      */
-    public function getLastHiddenFilters($context)
+    public function getLastHiddenFilters(string $context)
     {
         return $this->memory->retrieveLastSetting($context, 'hiddenFilters', []);
     }
@@ -155,7 +155,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getLastLimit($context)
+    public function getLastLimit(string $context)
     {
         return $this->memory->retrieveLastSetting($context, 'limit');
     }
@@ -167,7 +167,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getLastSort($context)
+    public function getLastSort(string $context)
     {
         return $this->memory->retrieveLastSetting($context, 'sort');
     }
@@ -181,7 +181,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getEditLink($searchClassId, $action, $value)
+    public function getEditLink(string $searchClassId, string $action, mixed $value)
     {
         $query = compact('searchClassId') + [$action => $value];
         return ($this->url)('search-editmemory', [], compact('query'));
@@ -194,7 +194,7 @@ class SearchMemory
      *
      * @return \VuFind\Search\Base\Params
      */
-    public function getLastSearchParams($searchClassId)
+    public function getLastSearchParams(string $searchClassId)
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';

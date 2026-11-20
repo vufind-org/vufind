@@ -51,7 +51,7 @@ class Database extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId): string
+    public function read(string $sessId): string
     {
         // Try to read the session, but destroy it if it has expired:
         try {
@@ -70,7 +70,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId): bool
+    public function destroy(string $sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);
@@ -89,7 +89,7 @@ class Database extends AbstractBase
      *
      * @return int|false
      */
-    public function gc($sessMaxLifetime): int|false
+    public function gc(int $sessMaxLifetime): int|false
     {
         return $this->getSessionService()->garbageCollect($sessMaxLifetime);
     }
@@ -102,7 +102,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data): bool
+    protected function saveSession(string $sessId, string $data): bool
     {
         return $this->getSessionService()->writeSession($sessId, $data);
     }

@@ -55,7 +55,7 @@ class ActionInitializer implements InitializerInterface
      *
      * @return object
      */
-    public function __invoke(ContainerInterface $container, $instance)
+    public function __invoke(ContainerInterface $container, object $instance)
     {
         if ($instance instanceof ActionInterface) {
             $instance->setRouteHelper($container->get(RouteHelper::class))

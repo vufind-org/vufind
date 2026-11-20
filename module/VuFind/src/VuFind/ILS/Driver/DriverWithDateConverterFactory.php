@@ -62,7 +62,7 @@ class DriverWithDateConverterFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         // Set up the driver with the date converter (and any extra parameters

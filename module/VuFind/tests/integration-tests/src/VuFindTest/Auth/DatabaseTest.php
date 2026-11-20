@@ -109,7 +109,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getRequest($post)
+    protected function getRequest(array $post)
     {
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
@@ -124,7 +124,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getAccountCreationRequest($overrides = [])
+    protected function getAccountCreationRequest(array $overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
@@ -142,7 +142,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass',

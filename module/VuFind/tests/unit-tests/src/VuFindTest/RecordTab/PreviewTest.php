@@ -109,7 +109,7 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
      *
      * @return Preview
      */
-    protected function getPreview($active = false)
+    protected function getPreview(bool $active = false)
     {
         return new Preview($active);
     }

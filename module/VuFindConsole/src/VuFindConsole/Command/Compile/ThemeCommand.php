@@ -66,7 +66,7 @@ class ThemeCommand extends Command
      * @param string|null   $name     The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(ThemeCompiler $compiler, $name = null)
+    public function __construct(ThemeCompiler $compiler, ?string $name = null)
     {
         $this->compiler = $compiler;
         parent::__construct($name);

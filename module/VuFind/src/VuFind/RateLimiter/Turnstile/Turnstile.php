@@ -69,7 +69,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return bool Whether or not the challenge is allowed
      */
-    public function isChallengeAllowed($event)
+    public function isChallengeAllowed(MvcEvent $event)
     {
         $routeMatch = $event->getRouteMatch();
         $controller = $routeMatch?->getParam('controller') ?? '??';
@@ -85,7 +85,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return bool Whether validation was successful
      */
-    public function validateToken($token)
+    public function validateToken(string $token)
     {
         // Call the Turnstile verify API to validate the token
         $secretKey = $this->config['Turnstile']['secretKey'];
@@ -123,7 +123,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return bool Whether validation was successful
      */
-    public function validateAndCacheResult($token, $policyId, $clientIp)
+    public function validateAndCacheResult(string $token, string $policyId, string $clientIp)
     {
         $success = $this->validateToken($token);
         $this->setResult($policyId, $clientIp, $success);
@@ -139,7 +139,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      * @return ?bool Null if there is no prior result, or if Turnstile is disabled;
      *               otherwise a boolean representing the Turnstile result.
      */
-    public function checkPriorResult($policyId, $clientIp)
+    public function checkPriorResult(string $policyId, string $clientIp)
     {
         if (!($this->config['Policies'][$policyId]['turnstileRateLimiterSettings'] ?? false)) {
             return null;
@@ -157,7 +157,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function setResult($policyId, $clientIp, $success)
+    public function setResult(string $policyId, string $clientIp, bool $success)
     {
         $cacheKey = $this->getCacheKey($policyId, $clientIp);
         $this->turnstileCache->setItem($cacheKey, $success);
@@ -171,7 +171,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return string The cache key
      */
-    protected function getCacheKey($policyId, $clientIp)
+    protected function getCacheKey(string $policyId, string $clientIp)
     {
         $key = $policyId . '--' . $clientIp;
         $key = str_replace('.', '-', $key);

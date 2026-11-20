@@ -151,7 +151,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier($identifier)
+    public function setSourceIdentifier(string $identifier)
     {
         $this->source = $identifier;
         foreach ($this->records as $record) {
@@ -168,7 +168,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '')
+    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = '')
     {
         $this->source = $searchBackendId ?: $recordSourceId;
         foreach ($this->records as $record) {
@@ -215,7 +215,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function add(RecordInterface $record, $checkExisting = true)
+    public function add(RecordInterface $record, bool $checkExisting = true)
     {
         if (!$checkExisting || !$this->has($record)) {
             $this->records[$this->pointer] = $record;

@@ -100,5 +100,5 @@ interface ChannelProviderInterface
      *
      * @return void
      */
-    public function setProviderId($id);
+    public function setProviderId(string $id);
 }

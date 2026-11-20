@@ -247,10 +247,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      * @return \VuFind\RecordDriver\SolrDefault
      */
     protected function getMockDriver(
-        $openUrl = 'fake-data',
-        $class = \VuFind\RecordDriver\SolrDefault::class,
-        $formats = ['ElectronicArticle', 'Article'],
-        $issn = '1234-5678'
+        string $openUrl = 'fake-data',
+        string $class = \VuFind\RecordDriver\SolrDefault::class,
+        array $formats = ['ElectronicArticle', 'Article'],
+        string $issn = '1234-5678'
     ) {
         $driver = $this->createMock($class);
         $driver->method('getOpenUrl')->willReturn($openUrl);
@@ -268,7 +268,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return OpenURL
      */
-    protected function getOpenUrl($rules = null, $config = [], $mockContext = null)
+    protected function getOpenUrl(array $rules = null, array $config = [], object $mockContext = null)
     {
         if (null === $rules) {
             $rules = $this->getJsonFixture('openurlrules/defaults.json');

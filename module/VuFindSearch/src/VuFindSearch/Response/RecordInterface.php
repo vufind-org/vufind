@@ -51,7 +51,7 @@ interface RecordInterface
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier($identifier);
+    public function setSourceIdentifier(string $identifier);
 
     /**
      * Set the source backend identifiers.
@@ -62,7 +62,7 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setSourceIdentifiers($recordSourceId, $searchBackendId = '');
+    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = '');
 
     /**
      * Return the source backend identifier.

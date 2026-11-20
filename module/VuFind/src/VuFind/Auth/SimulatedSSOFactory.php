@@ -61,7 +61,7 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

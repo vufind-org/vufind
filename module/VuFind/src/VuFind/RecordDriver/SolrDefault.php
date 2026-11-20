@@ -185,7 +185,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return void
      */
-    public function setHighlightDetails($details)
+    public function setHighlightDetails(array $details)
     {
         $this->highlightDetails = $details;
     }
@@ -209,7 +209,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return mixed        Caption if found, false if none available.
      */
-    public function getSnippetCaption($field)
+    public function getSnippetCaption(string $field)
     {
         return $this->snippetCaptions[$field] ?? false;
     }

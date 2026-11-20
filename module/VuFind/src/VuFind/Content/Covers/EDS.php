@@ -66,7 +66,7 @@ class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareI
      *
      * @return string The determined key
      */
-    protected function getCacheKey($key = '')
+    protected function getCacheKey(string $key = '')
     {
         return 'EDS_Shared_' . md5($key);
     }
@@ -82,7 +82,7 @@ class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareI
      *
      * @return bool
      */
-    public function supports($ids)
+    public function supports(array $ids)
     {
         return isset($ids['recordid'])
             && ($ids['source'] ?? null) === 'EDS';
@@ -99,7 +99,7 @@ class EDS extends \VuFind\Content\AbstractCover implements \Psr\Log\LoggerAwareI
      *
      * @return string|bool   URL of the image or false if unavailable
      */
-    public function getUrl($key, $size, $ids)
+    public function getUrl(string $key, string $size, array $ids)
     {
         $recordId = $ids['recordid'] ?? '';
         $cacheKey = "vfcover-{$size}-{$recordId}";

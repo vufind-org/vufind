@@ -156,7 +156,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return CsvReader
      */
-    protected function getReader($fixture = 'reserves.csv')
+    protected function getReader(string $fixture = 'reserves.csv')
     {
         return new CsvReader($this->getFixtureDir() . "reserves/$fixture");
     }

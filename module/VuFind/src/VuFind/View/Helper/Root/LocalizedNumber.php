@@ -81,7 +81,7 @@ class LocalizedNumber
      *
      * @return string
      */
-    public function __invoke($number, $decimals = 0, $escapeHtml = true): string
+    public function __invoke(int|float $number, int $decimals = 0, bool $escapeHtml = true): string
     {
         $decimalPoint = ($this->translate)(
             'number_decimal_point',

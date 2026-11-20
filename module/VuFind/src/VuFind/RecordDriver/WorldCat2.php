@@ -470,7 +470,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         // Get all the unique subject strings:
         $values = array_unique(

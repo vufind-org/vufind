@@ -62,7 +62,7 @@ class Loader
      * @param AbstractPluginManager $loader    Plugin loader for content
      * @param string                $providers Provider information
      */
-    public function __construct(AbstractPluginManager $loader, $providers = '')
+    public function __construct(AbstractPluginManager $loader, string $providers = '')
     {
         $this->loader = $loader;
         $this->providers = $providers;
@@ -75,7 +75,7 @@ class Loader
      *
      * @return \VuFindCode\ISBN|bool
      */
-    protected function getIsbnObject($isbn)
+    protected function getIsbnObject(string $isbn)
     {
         // We can't proceed without an ISBN:
         return (empty($isbn))
@@ -89,7 +89,7 @@ class Loader
      *
      * @return array
      */
-    public function loadByIsbn($isbn)
+    public function loadByIsbn(string $isbn)
     {
         $results = [];
         if (!($isbnObj = $this->getIsbnObject($isbn))) {

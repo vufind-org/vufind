@@ -56,7 +56,7 @@ class CollectionSideFacets extends SideFacets
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         parent::setConfig($settings);
 

@@ -140,7 +140,7 @@ abstract class AbstractExpireCommand extends Command
      *
      * @return string
      */
-    protected function getTimestampedMessage($msg)
+    protected function getTimestampedMessage(string $msg)
     {
         return '[' . date('Y-m-d H:i:s') . '] ' . $msg;
     }

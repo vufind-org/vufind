@@ -97,7 +97,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier($identifier);
+    public function setSourceIdentifier(string $identifier);
 
     /**
      * Set the source backend identifiers.
@@ -108,7 +108,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function setSourceIdentifiers($identifier, $searchBackendId = '');
+    public function setSourceIdentifiers(string $identifier, string $searchBackendId = '');
 
     /**
      * Return the source backend identifier.

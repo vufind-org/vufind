@@ -58,11 +58,11 @@ class Translate implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @return string
      */
     public function __invoke(
-        $str,
-        $tokens = [],
-        $default = null,
-        $useIcuFormatter = false,
-        $fallbackDomains = []
+        string|object|array $str,
+        array $tokens = [],
+        string $default = null,
+        bool $useIcuFormatter = false,
+        array $fallbackDomains = []
     ) {
         return $this->translate($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
     }

@@ -128,7 +128,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockCommand(
         ?ExtendedIniNormalizer $normalizer = null,
         ?ExtendedIniReader $reader = null,
-        $languageDir = null,
+        string $languageDir = null,
         array $methods = ['addLineToFile']
     ) {
         return $this->getMockBuilder(AddUsingTemplateCommand::class)
@@ -149,7 +149,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniNormalizer
      */
-    protected function getMockNormalizer($methods = [])
+    protected function getMockNormalizer(array $methods = [])
     {
         $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor();
@@ -166,7 +166,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniReader
      */
-    protected function getMockReader($methods = [])
+    protected function getMockReader(array $methods = [])
     {
         $builder = $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor();

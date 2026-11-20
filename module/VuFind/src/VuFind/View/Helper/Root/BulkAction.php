@@ -80,7 +80,7 @@ class BulkAction
      *
      * @return string
      */
-    public function button($action, $icon, $content, $attributes = [])
+    public function button(string $action, string $icon, string $content, array $attributes = [])
     {
         $limit = $this->getBulkActionLimit($action);
         if ($limit == 0) {

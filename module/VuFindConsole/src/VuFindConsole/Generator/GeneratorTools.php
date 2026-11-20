@@ -79,7 +79,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getPluginManagerForNamespace($classParts, $namespace)
+    protected function getPluginManagerForNamespace(array $classParts, string $namespace)
     {
         $classParts[0] = $namespace;
         $classParts[count($classParts) - 1] = 'PluginManager';
@@ -114,7 +114,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getPluginManagerFromExplodedClassName($classParts)
+    protected function getPluginManagerFromExplodedClassName(array $classParts)
     {
         $pmClass = $this->getPluginManagerForNamespace($classParts, 'VuFind');
         // Special cases: no such service; use framework core services instead:
@@ -144,7 +144,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getShortNameFromExplodedClassName($classParts)
+    protected function getShortNameFromExplodedClassName(array $classParts)
     {
         $shortName = array_pop($classParts);
         // Special case: controllers use shortened aliases
@@ -162,7 +162,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getExpectedInterfaceFromPluginManager($pm)
+    protected function getExpectedInterfaceFromPluginManager(ContainerInterface $pm)
     {
         // Special case: controllers
         if ($pm instanceof \Laminas\Mvc\Controller\ControllerManager) {
@@ -192,7 +192,7 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getConfigPathForClass($class)
+    protected function getConfigPathForClass(string $class)
     {
         // Special case: controller
         if ($class === \Laminas\Mvc\Controller\ControllerManager::class) {
@@ -220,9 +220,9 @@ class GeneratorTools
      * @return ContainerInterface
      */
     protected function getPluginManagerForClassParts(
-        $container,
-        $classParts,
-        $topLevelService
+        ContainerInterface $container,
+        array $classParts,
+        bool $topLevelService
     ) {
         // Special case -- short-circuit for top-level service:
         if ($topLevelService) {
@@ -254,9 +254,9 @@ class GeneratorTools
      */
     public function createPlugin(
         ContainerInterface $container,
-        $class,
-        $factory = null,
-        $topLevelService = false
+        string $class,
+        string $factory = null,
+        bool $topLevelService = false
     ) {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
@@ -322,7 +322,7 @@ class GeneratorTools
      *
      * @return void
      */
-    protected function generateFactory($factory, $module)
+    protected function generateFactory(string $factory, string $module)
     {
         $this->createClassInModule(
             $factory,
@@ -376,9 +376,9 @@ class GeneratorTools
      */
     public function extendClass(
         ContainerInterface $container,
-        $class,
-        $target,
-        $extendFactory = false
+        string $class,
+        string $target,
+        bool $extendFactory = false
     ) {
         // Set things up differently depending on whether this is a top-level
         // service or a class in a plugin manager.
@@ -493,7 +493,7 @@ class GeneratorTools
      */
     protected function getDelegatorsFromContainer(
         ContainerInterface $container,
-        $class
+        string $class
     ) {
         $delegators = $this->getAllDelegatorsFromContainer($container);
         return $delegators[$class] ?? [];
@@ -510,7 +510,7 @@ class GeneratorTools
      */
     protected function getPluginManagerContainingClass(
         ContainerInterface $container,
-        $class
+        string $class
     ) {
         $factories = $this->getAllFactoriesFromContainer($container);
         foreach (array_keys($factories) as $service) {
@@ -533,7 +533,7 @@ class GeneratorTools
      * @return bool
      * @throws \Exception
      */
-    public function extendService($source, $target)
+    public function extendService(string $source, string $target)
     {
         $parts = explode('/', $source);
         $partCount = count($parts);
@@ -580,7 +580,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    protected function cloneFactory($factory, $module)
+    protected function cloneFactory(mixed $factory, string $module)
     {
         if ($factory === AutowiringFactory::class) {
             $this->writeln('WARNING: you are extending AutowiringFactory, which is not recommended.');
@@ -662,8 +662,8 @@ class GeneratorTools
      */
     protected function updateFactory(
         MethodGenerator $method,
-        $ns,
-        $module
+        string $ns,
+        string $module
     ) {
         $body = $method->getBody();
         $regex = '/new\s+([\w\\\\]*)\s*\(/m';
@@ -696,7 +696,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    protected function generateLocalClassName($class, $module)
+    protected function generateLocalClassName(string $class, string $module)
     {
         // Determine the name of the new class by exploding the old class and
         // replacing the namespace:
@@ -722,11 +722,11 @@ class GeneratorTools
      * @throws \Exception
      */
     protected function createClassInModule(
-        $class,
-        $module,
-        $parent = null,
+        string $class,
+        string $module,
+        string $parent = null,
         array $interfaces = [],
-        $callback = null
+        callable $callback = null
     ) {
         $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
         if (is_callable($callback)) {
@@ -748,9 +748,9 @@ class GeneratorTools
      */
     protected function writeClass(
         ClassGenerator $classGenerator,
-        $module,
-        $allowOverwrite = false,
-        $skipBackup = false
+        string $module,
+        bool $allowOverwrite = false,
+        bool $skipBackup = false
     ) {
         // Use the class name parts from the previous step to determine a path
         // and filename, then create the new path.
@@ -796,7 +796,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    protected function createSubclassInModule($class, $module)
+    protected function createSubclassInModule(string $class, string $module)
     {
         // Normalize leading backslashes; in some contexts we will
         // have them and in others we may not.
@@ -815,7 +815,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function createTree($path)
+    protected function createTree(array $path)
     {
         $fullPath = APPLICATION_PATH;
         foreach ($path as $part) {
@@ -839,7 +839,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    public function backUpFile($filename)
+    public function backUpFile(string $filename)
     {
         $backup = $filename . '.' . time() . '.bak';
         if (!copy($filename, $backup)) {
@@ -857,7 +857,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    public function getModuleConfigPath($module)
+    public function getModuleConfigPath(string $module)
     {
         $configPath = APPLICATION_PATH . "/module/$module/config/module.config.php";
         if (!file_exists($configPath)) {
@@ -875,7 +875,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    public function writeModuleConfig($configPath, $config)
+    public function writeModuleConfig(string $configPath, string $config)
     {
         $generator = new FileGenerator();
         $generator->setBody('return ' . var_export($config, true) . ';');
@@ -896,7 +896,7 @@ class GeneratorTools
      */
     protected function applySettingToConfig(
         array $path,
-        $setting,
+        string|array $setting,
         array &$config
     ) {
         $current = & $config;
@@ -962,7 +962,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function writeNewConfig($path, $setting, $module, $backup = true)
+    protected function writeNewConfig(array $path, string|array $setting, string $module, bool $backup = true)
     {
         $this->writeNewConfigs([compact('path', 'setting')], $module, $backup);
     }

@@ -49,7 +49,7 @@ class SolidBackground extends AbstractBackgroundLayer
      *
      * @return void
      */
-    public function render($im, $details, $settings)
+    public function render($im, array $details, object $settings)
     {
         // Fill solid color
         $seed = $this->createSeed($details['title'], $details['callnumber']);

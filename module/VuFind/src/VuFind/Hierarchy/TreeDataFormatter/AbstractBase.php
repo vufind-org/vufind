@@ -93,7 +93,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param bool $validateHierarchySequences Throw an exception if hierarchy parent and sequence data is out of sync?
      */
-    public function __construct($validateHierarchySequences = true)
+    public function __construct(bool $validateHierarchySequences = true)
     {
         $this->validateHierarchySequences = $validateHierarchySequences;
     }
@@ -108,7 +108,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return void
      */
-    public function setRawData($topNode, $childMap, $sort = false, $cType = 'All')
+    public function setRawData(object $topNode, array $childMap, bool $sort = false, string $cType = 'All')
     {
         $this->topNode = $topNode;
         $this->childMap = $childMap;
@@ -141,7 +141,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array
      */
-    protected function getHierarchyPositionsInParents($fields)
+    protected function getHierarchyPositionsInParents(object $fields)
     {
         $retVal = [];
         if (
@@ -174,7 +174,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return Array
      */
-    protected function getTitlesInHierarchy($fields)
+    protected function getTitlesInHierarchy(object $fields)
     {
         $retVal = [];
         if (
@@ -202,7 +202,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return bool
      */
-    protected function isCollection($fields)
+    protected function isCollection(object $fields)
     {
         // Check config setting for what constitutes a collection
         switch ($this->collectionType) {
@@ -226,7 +226,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return string
      */
-    protected function pickTitle($record, $parentID)
+    protected function pickTitle(object $record, string $parentID)
     {
         if (null !== $parentID) {
             $titles = $this->getTitlesInHierarchy($record);
@@ -247,7 +247,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array
      */
-    protected function sortNodes($array)
+    protected function sortNodes(array $array)
     {
         // Sort arrays based on first element
         $sorter = function ($a, $b) {

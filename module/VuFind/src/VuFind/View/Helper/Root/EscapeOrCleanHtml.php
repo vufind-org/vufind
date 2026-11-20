@@ -104,7 +104,7 @@ class EscapeOrCleanHtml
      *
      * @return string
      */
-    protected function escape($value)
+    protected function escape(string $value)
     {
         return $this->escaper->escapeHtml($value);
     }

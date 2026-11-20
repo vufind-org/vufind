@@ -68,7 +68,7 @@ class RenderArray
      *
      * @return string
      */
-    public function __invoke($tpl, $arr, $rows)
+    public function __invoke(string $tpl, array $arr, array $rows)
     {
         $html = '';
         foreach ($rows as $label => $key) {

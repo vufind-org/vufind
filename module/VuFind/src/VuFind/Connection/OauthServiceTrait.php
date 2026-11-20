@@ -70,9 +70,9 @@ trait OauthServiceTrait
      * @link https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
      */
     public function authenticateWithClientCredentials(
-        $oauthUrl,
-        $clientId,
-        $clientSecret
+        string $oauthUrl,
+        string $clientId,
+        string $clientSecret
     ) {
         $this->oauthServiceTraitDebug('connecting to API');
         $tokenData = $this->tokenData;
@@ -141,7 +141,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function oauthServiceTraitDebug($msg)
+    protected function oauthServiceTraitDebug(string $msg)
     {
         $this->oauthServiceTraitLog('debug', $msg);
     }
@@ -153,7 +153,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function oauthServiceTraitError($msg)
+    protected function oauthServiceTraitError(string $msg)
     {
         $this->oauthServiceTraitLog('err', $msg);
     }
@@ -166,7 +166,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function oauthServiceTraitLog($level, $msg)
+    protected function oauthServiceTraitLog(string $level, string $msg)
     {
         if (method_exists($this, 'log')) {
             $this->log(...func_get_args());

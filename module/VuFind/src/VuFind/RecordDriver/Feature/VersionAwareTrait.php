@@ -101,7 +101,7 @@ trait VersionAwareTrait
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function getVersions($includeSelf = false, $count = 20, $offset = 0)
+    public function getVersions(bool $includeSelf = false, int $count = 20, int $offset = 0)
     {
         if (null === $this->searchService || !($keys = $this->getWorkKeys())) {
             return false;

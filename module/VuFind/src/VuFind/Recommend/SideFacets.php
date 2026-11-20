@@ -167,7 +167,7 @@ class SideFacets extends AbstractFacets
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Parse the additional settings:
         $settings = explode(':', $settings);
@@ -419,7 +419,7 @@ class SideFacets extends AbstractFacets
      *
      * @return int
      */
-    public function getShowMoreSetting($facetName, $default = 6)
+    public function getShowMoreSetting(string $facetName, int $default = 6)
     {
         // Look for either facet-specific configuration or else a configured
         // default. If neither is found, initialize return value to null.
@@ -441,7 +441,7 @@ class SideFacets extends AbstractFacets
      *
      * @return int
      */
-    public function getShowInLightboxSetting($facetName)
+    public function getShowInLightboxSetting(string $facetName)
     {
         // Look for either facet-specific configuration or else a configured
         // default.
@@ -462,7 +462,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array Array of from/to value arrays keyed by field.
      */
-    protected function getRangeFacets($property)
+    protected function getRangeFacets(string $property)
     {
         $filters = $this->results->getParams()->getRawFilters();
         $result = [];

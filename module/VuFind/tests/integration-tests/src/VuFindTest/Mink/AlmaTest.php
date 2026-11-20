@@ -191,10 +191,10 @@ class AlmaTest extends \VuFindTest\Integration\MinkTestCase
      * @return ResponseInterface
      */
     protected function httpPostWithSignature(
-        $url,
-        $body = null,
-        $type = 'application/octet-stream',
-        $timeout = null,
+        string $url,
+        mixed $body = null,
+        string $type = 'application/octet-stream',
+        float $timeout = null,
         array $headers = []
     ): ResponseInterface {
         $headers['X-Exl-Signature'] = base64_encode(

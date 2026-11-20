@@ -83,7 +83,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object
      */
-    public function getAccess($refresh = false)
+    public function getAccess(bool $refresh = false)
     {
         return (object)[
             'status' => true,
@@ -102,7 +102,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @link https://developer.overdrive.com/apis/library-availability-new
      */
-    public function getAvailability($overDriveId)
+    public function getAvailability(string $overDriveId)
     {
         return new \stdClass();
     }
@@ -118,7 +118,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object|bool see getAvailability
      */
-    public function getAvailabilityBulk($overDriveIds = [])
+    public function getAvailabilityBulk(array $overDriveIds = [])
     {
         $data = [];
         $statuses = ['od_code_resource_not_found', 'od_code_login_for_avail'];
@@ -171,7 +171,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object $result Results of the call.
      */
-    public function doOverdriveCheckout($overDriveId)
+    public function doOverdriveCheckout(string $overDriveId)
     {
         return null;
     }
@@ -184,7 +184,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function placeOverDriveHold($overDriveId, $email)
+    public function placeOverDriveHold(string $overDriveId, string $email)
     {
         return new \stdClass();
     }
@@ -197,7 +197,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function updateOverDriveHold($overDriveId, $email)
+    public function updateOverDriveHold(string $overDriveId, string $email)
     {
         return (object)[
             'status' => true,
@@ -218,7 +218,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function suspendHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
+    public function suspendHold(string $overDriveId, string $email, string $suspensionType = 'indefinite', int $numberOfDays = 7)
     {
         return (object)[
             'status' => true,
@@ -239,7 +239,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function editSuspendedHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
+    public function editSuspendedHold(string $overDriveId, string $email, string $suspensionType = 'indefinite', int $numberOfDays = 7)
     {
         return (object)[
             'status' => true,
@@ -257,7 +257,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function deleteHoldSuspension($overDriveId)
+    public function deleteHoldSuspension(string $overDriveId)
     {
         return (object)[
             'status' => true,
@@ -275,7 +275,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function cancelHold($overDriveId)
+    public function cancelHold(string $overDriveId)
     {
         return new \stdClass();
     }
@@ -288,7 +288,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object|bool Object with result
      */
-    public function returnResource($resourceID)
+    public function returnResource(string $resourceID)
     {
         return new \stdClass();
     }
@@ -315,7 +315,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return array<string>
      */
-    public function getPermanentLinks($overDriveIds = [])
+    public function getPermanentLinks(array $overDriveIds = [])
     {
         return [];
     }
@@ -330,7 +330,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object results of metadata fetch
      */
-    public function getMagazineIssues($overDriveId = false, $checkouts = false, $limit = 100, $offset = 0)
+    public function getMagazineIssues(string $overDriveId = false, bool $checkouts = false, int $limit = 100, int $offset = 0)
     {
         return (object)[
             'status' => true,
@@ -347,7 +347,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return array results of metadata fetch
      */
-    public function getMetadata($overDriveIds = [])
+    public function getMetadata(array $overDriveIds = [])
     {
         return [];
     }
@@ -361,7 +361,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return array initial array with results of metadata attached as "metadata" property
      */
-    public function getMetadataForTitles($overDriveTitles = [])
+    public function getMetadataForTitles(array $overDriveTitles = [])
     {
         return [];
     }
@@ -379,7 +379,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      * the checkout is not in the current list of checkouts for the current
      * user.
      */
-    public function getCheckout($overDriveId, $refresh = true)
+    public function getCheckout(string $overDriveId, bool $refresh = true)
     {
         return false;
     }
@@ -397,7 +397,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      * the checkout is not in the current list of checkouts for the current
      * user.
      */
-    public function getHold($overDriveId, $refresh = true)
+    public function getHold(string $overDriveId, bool $refresh = true)
     {
         return false;
     }
@@ -409,7 +409,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object Results of the call
      */
-    public function getCheckouts($refresh = true)
+    public function getCheckouts(bool $refresh = true)
     {
         return (object)[
             'status' => true,
@@ -430,7 +430,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Results of the call
      */
-    public function getHolds($refresh = true)
+    public function getHolds(bool $refresh = true)
     {
         return (object)[
             'status' => true,

@@ -131,10 +131,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return obj
      */
     protected function makeRequest(
-        $api_query,
-        $http_method = 'GET',
-        $patronpassword = '',
-        $json = false
+        string $api_query,
+        string $http_method = 'GET',
+        string $patronpassword = '',
+        bool $json = false
     ) {
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
@@ -193,7 +193,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string
      */
-    public function formatJSONTime($jsontime)
+    public function formatJSONTime(string $jsontime)
     {
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
         if (count($matches) > 0) {
@@ -212,7 +212,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string
      */
-    public function encodeJSONTime($date)
+    public function encodeJSONTime(string $date)
     {
         // auth has to be in GMT, otherwise use config-level TZ
         //$site_config_TZ = date_default_timezone_get();
@@ -233,7 +233,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return mixed                Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $holds = [];
         $response = $this->makeRequest(
@@ -276,7 +276,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $holding = [];
         $response = $this->makeRequest("bib/$id/holdings");
@@ -328,7 +328,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return mixed         An array of getStatus() return values on success.
      */
-    public function getStatuses($ids)
+    public function getStatuses(array $ids)
     {
         $items = [];
         $count = 0;
@@ -385,7 +385,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         // what do workstation & userid really mean in this context?
         $workstationid = '1';
@@ -524,7 +524,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return mixed         An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         return [];
     }
@@ -557,7 +557,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         // username == barcode
         $response = $this->makeRequest("patron/$username", 'GET', "$password");
@@ -581,7 +581,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $fineList = [];
 
@@ -619,7 +619,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         // firstname, lastname, address1, address2, zip, phone, group
         $response = $this->makeRequest(
@@ -646,7 +646,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return mixed Array of associative arrays of the patron's transactions on
      * success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         // duedate, id, barcode, renew (count), request (pending count),
         // volume (vol number), publication_year, renewable, message, title, item_id
@@ -686,7 +686,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems($renewDetails)
+    public function renewMyItems(array $renewDetails)
     {
         $renew_ids = $renewDetails['details'];
         $patron = $renewDetails['patron'];
@@ -746,7 +746,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails($checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails)
     {
         $renewDetails = $checkOutDetails['item_id'];
         return $renewDetails;
@@ -763,7 +763,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array An array of data on each request including whether or not it
      * was successful and a system message (if available)
      */
-    public function cancelHolds($cancelDetails)
+    public function cancelHolds(array $cancelDetails)
     {
         $hold_ids = $cancelDetails['details'];
         $patron = $cancelDetails['patron'];
@@ -821,7 +821,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return mixed Array of the patron's checkouts on success.
      */
-    public function getCheckoutHistory($patron)
+    public function getCheckoutHistory(array $patron)
     {
         // get number of pages, only get most recent max 200 items (last 2 pages)
         // TODO: use real pagination, not just recent items.
@@ -884,7 +884,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string count of holds
      */
-    public function getHoldCount($id)
+    public function getHoldCount(array $id)
     {
         $response = $this->makeRequest("bib/$id");
         $holdings_response_array = $response->BibGetRows;
@@ -913,7 +913,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array An array of data on each request including whether or not it
      * was successful and a system message (if available)
      */
-    public function suspendHolds($suspendDetails)
+    public function suspendHolds(array $suspendDetails)
     {
         $hold_ids = $suspendDetails['details'];
         $patron = $suspendDetails['patron'];
@@ -963,7 +963,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return string Data for use in a form field (just request id is all Polaris
      * needs)
      */
-    public function getSuspendHoldDetails($holdDetails)
+    public function getSuspendHoldDetails(array $holdDetails)
     {
         return $holdDetails['reqnum'];
     }
@@ -980,7 +980,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array An array of data on each request including whether or not it
      * was successful and a system message (if available)
      */
-    public function reactivateHolds($reactivateDetails)
+    public function reactivateHolds(array $reactivateDetails)
     {
         $hold_ids = $reactivateDetails['details'];
         $patron = $reactivateDetails['patron'];

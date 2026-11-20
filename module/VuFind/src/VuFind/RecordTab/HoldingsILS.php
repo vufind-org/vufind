@@ -113,7 +113,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    protected function getSimpleUniqueCallNumbers($items)
+    protected function getSimpleUniqueCallNumbers(array $items)
     {
         $callNos = [];
         foreach ($items as $item) {
@@ -135,7 +135,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    public function getUniqueCallNumbers($items, $fullDetails = false)
+    public function getUniqueCallNumbers(array $items, bool $fullDetails = false)
     {
         if (!$fullDetails) {
             return $this->getSimpleUniqueCallNumbers($items);
@@ -197,7 +197,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return ?\Laminas\Paginator\Paginator (or null, if paginator is not needed/unsupported)
      */
-    public function getPaginator($totalItemCount, $page, $itemLimit)
+    public function getPaginator(int $totalItemCount, int $page, int $itemLimit)
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
         if (!$itemLimit || $totalItemCount <= $itemLimit) {

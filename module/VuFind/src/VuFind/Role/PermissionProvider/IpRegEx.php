@@ -65,7 +65,7 @@ class IpRegEx implements PermissionProviderInterface
      *
      * @return array
      */
-    public function getPermissions($options)
+    public function getPermissions(mixed $options)
     {
         // Check if any regex matches....
         $ipAddr = $this->userIpReader->getUserIp();

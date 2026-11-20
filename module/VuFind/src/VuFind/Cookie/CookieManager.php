@@ -107,13 +107,13 @@ class CookieManager
      * @param string  $sameSite    Default SameSite attribute (default = 'Lax')
      */
     public function __construct(
-        $cookies,
-        $path = '/',
-        $domain = null,
-        $secure = false,
-        $sessionName = null,
-        $httpOnly = true,
-        $sameSite = 'Lax'
+        array $cookies,
+        string $path = '/',
+        string $domain = null,
+        bool $secure = false,
+        ?string $sessionName = null,
+        bool $httpOnly = true,
+        string $sameSite = 'Lax'
     ) {
         $this->cookies = $cookies;
         $this->path = $path;
@@ -210,14 +210,14 @@ class CookieManager
      * @return bool
      */
     public function proxySetCookie(
-        $key,
-        $value,
-        $expire,
-        $path,
-        $domain,
-        $secure,
-        $httpOnly,
-        $sameSite
+        string $key,
+        mixed $value,
+        int $expire,
+        string $path,
+        string $domain,
+        bool $secure,
+        bool $httpOnly,
+        string $sameSite
     ) {
         // Special case: in CLI -- don't actually write headers!
         if ('cli' === PHP_SAPI) {
@@ -249,11 +249,11 @@ class CookieManager
      * @return bool
      */
     public function setGlobalCookie(
-        $key,
-        $value,
-        $expire,
-        $httpOnly = null,
-        $sameSite = null
+        string $key,
+        mixed $value,
+        int $expire,
+        ?bool $httpOnly = null,
+        string $sameSite = null
     ) {
         if (null === $httpOnly) {
             $httpOnly = $this->httpOnly;
@@ -307,11 +307,11 @@ class CookieManager
      * @return bool
      */
     public function set(
-        $key,
-        $value,
-        $expire = 0,
-        $httpOnly = null,
-        $sameSite = null
+        string $key,
+        mixed $value,
+        int $expire = 0,
+        ?bool $httpOnly = null,
+        string $sameSite = null
     ) {
         $success = $this
             ->setGlobalCookie($key, $value, $expire, $httpOnly, $sameSite);
@@ -328,7 +328,7 @@ class CookieManager
      *
      * @return bool
      */
-    public function clear($key)
+    public function clear(string $key)
     {
         $value = $this->get($key);
         if (is_array($value)) {
@@ -350,7 +350,7 @@ class CookieManager
      *
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         return $this->cookies[$key] ?? null;
     }

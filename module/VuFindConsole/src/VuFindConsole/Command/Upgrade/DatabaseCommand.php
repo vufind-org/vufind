@@ -72,7 +72,7 @@ class DatabaseCommand extends Command
         protected Closure $migrationManagerFactory,
         protected ConnectionFactory $connectionFactory,
         protected CacheManager $cacheManager,
-        $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
     }

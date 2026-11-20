@@ -123,7 +123,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools($methods = [])
+    protected function getMockGeneratorTools(array $methods = [])
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()

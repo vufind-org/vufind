@@ -76,7 +76,7 @@ class Translator
      *
      * @param array $configArray Aleph configuration
      */
-    public function __construct($configArray)
+    public function __construct(array $configArray)
     {
         $this->charset = $configArray['util']['charset'];
         $this->table15 = $this->parsetable(
@@ -101,7 +101,7 @@ class Translator
      *
      * @return array
      */
-    public function parsetable($file, $callback)
+    public function parsetable(string $file, string $callback)
     {
         $result = [];
         $file_handle = fopen($file, 'r, ccs=UTF-8');
@@ -137,7 +137,7 @@ class Translator
      *
      * @return string
      */
-    public function tab40Translate($collection, $sublib)
+    public function tab40Translate(string $collection, string $sublib)
     {
         $findme = $collection . '|' . $sublib;
         $desc = $this->table40[$findme];
@@ -155,7 +155,7 @@ class Translator
      *
      * @return string
      */
-    public function tabSubLibraryTranslate($sl)
+    public function tabSubLibraryTranslate(string $sl)
     {
         return $this->table_sub_library[$sl];
     }
@@ -169,7 +169,7 @@ class Translator
      *
      * @return string
      */
-    public function tab15Translate($slc, $isc, $ipsc)
+    public function tab15Translate(string $slc, string $isc, string $ipsc)
     {
         $tab15 = $this->tabSubLibraryTranslate($slc);
         if ($tab15 == null) {
@@ -194,7 +194,7 @@ class Translator
      *
      * @return void
      */
-    public static function tab15Callback($matches, &$tab15, $charset)
+    public static function tab15Callback(array $matches, array &$tab15, string $charset)
     {
         $lib = $matches[1];
         $no1 = $matches[2];
@@ -222,7 +222,7 @@ class Translator
      *
      * @return void
      */
-    public static function tab40Callback($matches, &$tab40, $charset)
+    public static function tab40Callback(array $matches, array &$tab40, string $charset)
     {
         $code = trim($matches[1]);
         $sub = trim($matches[2]);
@@ -242,9 +242,9 @@ class Translator
      * @return void
      */
     public static function tabSubLibraryCallback(
-        $matches,
-        &$tab_sub_library,
-        $charset
+        array $matches,
+        array &$tab_sub_library,
+        string $charset
     ) {
         $sublib = trim($matches[1]);
         $desc = trim(iconv($charset, 'UTF-8', $matches[5]));
@@ -259,7 +259,7 @@ class Translator
      *
      * @return string
      */
-    public static function regexp($string)
+    public static function regexp(string $string)
     {
         $string = preg_replace('/\\-/', ')\\s(', $string);
         $string = preg_replace('/!/', '.', $string);

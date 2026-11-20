@@ -85,7 +85,7 @@ class OpenUrl
      *
      * @return object
      */
-    public function __invoke($driver, $area)
+    public function __invoke(\VuFind\RecordDriver $driver, string $area)
     {
         $this->recordDriver = $driver;
         $this->area = $area;
@@ -101,7 +101,7 @@ class OpenUrl
      *
      * @return void
      */
-    protected function addImageBasedParams($imagebased, &$params)
+    protected function addImageBasedParams(bool $imagebased, array &$params)
     {
         $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
         $params['openUrlImageBasedSrc'] = null;
@@ -147,7 +147,7 @@ class OpenUrl
      *
      * @return string
      */
-    public function renderTemplate($imagebased = null)
+    public function renderTemplate(bool $imagebased = null)
     {
         if (isset($this->config['url'])) {
             // Trim off any parameters (for legacy compatibility -- default config
@@ -314,7 +314,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkExcludedRecordsRules($resolverDriverRules)
+    protected function checkExcludedRecordsRules(array $resolverDriverRules)
     {
         if (isset($resolverDriverRules['exclude'])) {
             // No exclusion rules mean no exclusions -- return false
@@ -332,7 +332,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkSupportedRecordsRules($resolverDriverRules)
+    protected function checkSupportedRecordsRules(array $resolverDriverRules)
     {
         if (isset($resolverDriverRules['include'])) {
             // No inclusion rules mean include everything -- return true
@@ -349,7 +349,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function hasNonEmptyValue($in)
+    protected function hasNonEmptyValue(array $in)
     {
         foreach ($in as $current) {
             if (!empty($current)) {
@@ -366,7 +366,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkMethodRules($rules)
+    protected function checkMethodRules(array $rules)
     {
         $ruleMatchCounter = 0;
         foreach ($rules as $key => $value) {
@@ -414,7 +414,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkRules($ruleset)
+    protected function checkRules(array $ruleset)
     {
         // check each rule - first rule-match
         foreach ($ruleset as $rule) {

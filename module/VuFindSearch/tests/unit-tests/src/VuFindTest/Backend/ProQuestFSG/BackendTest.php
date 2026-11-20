@@ -121,7 +121,7 @@ class BackendTest extends TestCase
      *
      * @return Connector
      */
-    protected function getConnector($responseFixtureName): MockObject&Connector
+    protected function getConnector(string $responseFixtureName): MockObject&Connector
     {
         $fixture = $this->getFixture($responseFixtureName);
         $response = json_decode($fixture, true);

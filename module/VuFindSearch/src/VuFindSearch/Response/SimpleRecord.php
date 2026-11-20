@@ -54,7 +54,7 @@ class SimpleRecord implements RecordInterface
      *
      * @param array $fields Raw data
      */
-    public function __construct($fields)
+    public function __construct(array $fields)
     {
         $this->fields = $fields;
         $this->setSourceIdentifiers(DEFAULT_SEARCH_BACKEND);
@@ -67,7 +67,7 @@ class SimpleRecord implements RecordInterface
      *
      * @return mixed
      */
-    public function get($field)
+    public function get(string $field)
     {
         return $this->fields[$field] ?? null;
     }

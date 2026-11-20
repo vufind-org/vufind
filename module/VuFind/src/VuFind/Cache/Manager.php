@@ -214,7 +214,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      * @return StorageInterface
      * @throws NotFoundException
      */
-    public function getCache($name, $namespace = null)
+    public function getCache(string $name, ?string $namespace = null)
     {
         $this->ensureFileCache($name);
         $namespace ??= $name;
@@ -241,7 +241,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function getCacheDir($allowCliOverride = true)
+    public function getCacheDir(bool $allowCliOverride = true)
     {
         if (isset($this->defaults['cache_dir'])) {
             // Handle legacy configuration: cache_dir setting in config.ini is obsolete
@@ -334,7 +334,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function addDownloaderCache($downloaderName, $opts = [])
+    public function addDownloaderCache(string $downloaderName, array $opts = [])
     {
         $cacheName = 'downloader-' . $downloaderName;
         $this->createFileCache(
@@ -353,7 +353,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function addLanguageCacheForTheme($themeName)
+    public function addLanguageCacheForTheme(string $themeName)
     {
         $cacheName = 'languages-' . $themeName;
         $this->createFileCache(
@@ -396,7 +396,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function createNoCache($cacheName)
+    protected function createNoCache(string $cacheName)
     {
         $this->cacheSettings[$cacheName] = [
             'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
@@ -412,7 +412,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
+    public function ensureCacheDirectoryExists(string $dirName, array $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
 
@@ -443,7 +443,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    protected function createFileCache(string $cacheName, string $dirName, array $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
         if ($opts['disabled'] ?? false) {

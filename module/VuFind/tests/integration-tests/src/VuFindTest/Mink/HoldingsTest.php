@@ -417,7 +417,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      * @return array
      */
     protected function getDemoIniOverrides(
-        $availability,
+        mixed $availability,
         string $statusMsg,
         bool $addExtraItems = false,
         int $failureProbability = 0

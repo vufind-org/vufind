@@ -63,7 +63,7 @@ class GetRecordTagsFactory implements \Laminas\ServiceManager\Factory\FactoryInt
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

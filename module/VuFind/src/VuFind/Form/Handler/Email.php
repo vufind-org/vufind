@@ -152,14 +152,14 @@ class Email implements HandlerInterface, LoggerAwareInterface
      * @return bool
      */
     protected function sendEmail(
-        $recipientName,
-        $recipientEmail,
-        $senderName,
-        $senderEmail,
-        $replyToName,
-        $replyToEmail,
-        $emailSubject,
-        $emailMessage
+        ?string $recipientName,
+        string $recipientEmail,
+        string $senderName,
+        string $senderEmail,
+        string $replyToName,
+        string $replyToEmail,
+        string $emailSubject,
+        string $emailMessage
     ): bool {
         try {
             $this->mailer->send(

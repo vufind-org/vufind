@@ -62,7 +62,7 @@ class ExpireLoginTokensCommandFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);

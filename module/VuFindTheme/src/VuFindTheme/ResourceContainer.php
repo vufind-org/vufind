@@ -88,7 +88,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function addCss($css)
+    public function addCss(array|string $css)
     {
         if ((!is_array($css) && !is_a($css, 'Traversable')) || isset($css['file'])) {
             $this->addCssEntry($css);
@@ -111,7 +111,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function addJs($js)
+    public function addJs(array|string $js)
     {
         if ((!is_array($js) && !is_a($js, 'Traversable')) || isset($js['file'])) {
             $this->addJsEntry($js);
@@ -134,7 +134,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addCssEntry($cssEntry)
+    protected function addCssEntry(string|array $cssEntry)
     {
         if (!is_array($cssEntry)) {
             $this->addCssStringEntry($cssEntry);
@@ -150,7 +150,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addCssStringEntry($cssEntry)
+    protected function addCssStringEntry(string $cssEntry)
     {
         $parts = $this->parseSetting($cssEntry);
         // Special case for media with parentheses
@@ -178,7 +178,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addCssArrayEntry($cssEntry)
+    protected function addCssArrayEntry(array $cssEntry)
     {
         if (isset($cssEntry['priority']) && isset($cssEntry['load_after'])) {
             throw new \Exception(
@@ -218,7 +218,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addJsEntry($jsEntry)
+    protected function addJsEntry(string|array $jsEntry)
     {
         if (!is_array($jsEntry)) {
             $this->addJsStringEntry($jsEntry);
@@ -234,7 +234,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addJsStringEntry($jsEntry)
+    protected function addJsStringEntry(string $jsEntry)
     {
         $parts = $this->parseSetting($jsEntry);
         if (count($parts) === 1) {
@@ -255,7 +255,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addJsArrayEntry($jsEntry)
+    protected function addJsArrayEntry(array $jsEntry)
     {
         if (!isset($jsEntry['position'])) {
             $jsEntry['position'] = 'header';
@@ -299,7 +299,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function removeEntry($entry, &$array)
+    protected function removeEntry(array $entry, array &$array)
     {
         foreach (array_keys($array) as $i) {
             if (($array[$i]['file'] ?? '') === ($entry['file'] ?? null)) {
@@ -318,7 +318,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function insertEntry($entry, &$array)
+    protected function insertEntry(array $entry, array &$array)
     {
         if (isset($entry['priority']) || isset($entry['load_after'])) {
             foreach (array_keys($array) as $i) {
@@ -391,7 +391,7 @@ class ResourceContainer
      *
      * @return array
      */
-    public function parseSetting($current)
+    public function parseSetting(string $current)
     {
         // TODO: replace this method with a deprecation warning when all configs
         // have been converted to arrays
@@ -414,7 +414,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function setEncoding($e)
+    public function setEncoding(string $e)
     {
         $this->encoding = $e;
     }
@@ -436,7 +436,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function setFavicon($favicon)
+    public function setFavicon(string|array $favicon)
     {
         $this->favicon = $favicon;
     }
@@ -458,7 +458,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function setGenerator($generator)
+    public function setGenerator(string $generator)
     {
         $this->generator = $generator;
     }
@@ -480,7 +480,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function removeCSS($file)
+    protected function removeCSS(string $file)
     {
         [$name, ] = explode('.', $file);
         $name .= '.css';

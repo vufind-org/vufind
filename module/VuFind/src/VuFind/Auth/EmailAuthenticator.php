@@ -111,14 +111,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @deprecated Use code-based authentication instead
      */
     public function sendAuthenticationLink(
-        $email,
-        $data,
-        $urlParams,
-        $linkRoute = 'account-home',
-        $routeParams = [],
-        $subject = 'email_login_subject',
-        $template = 'Email/login-link.phtml',
-        $templateParams = []
+        string $email,
+        array $data,
+        array $urlParams,
+        string $linkRoute = 'account-home',
+        array $routeParams = [],
+        string $subject = 'email_login_subject',
+        string $template = 'Email/login-link.phtml',
+        array $templateParams = []
     ) {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;
@@ -170,7 +170,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * @deprecated Use code-based authentication instead
      */
-    public function authenticate($hash)
+    public function authenticate(string $hash)
     {
         $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL, false);
         if (!$row) {
@@ -238,7 +238,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         array $data,
         string $subject = 'email_login_subject',
         string $template = 'Email/login-code.phtml',
-        $templateParams = []
+        array $templateParams = []
     ): int {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;

@@ -96,7 +96,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @param string     $baseUrl            API base URL (optional)
      * @param bool       $displayDescription Optionally load & display the description of each resource
      */
-    public function __construct($iid, $client, $apiVersion = 1, $baseUrl = null, $displayDescription = false)
+    public function __construct(string $iid, HttpClient $client, float $apiVersion = 1, string $baseUrl = null, bool $displayDescription = false)
     {
         $this->apiVersion = $apiVersion;
         if (empty($baseUrl)) {
@@ -125,7 +125,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws \Exception
      * @return array             An array of query results
      */
-    public function query(array $params, $offset = 0, $limit = 20, $returnErr = true)
+    public function query(array $params, int $offset = 0, int $limit = 20, bool $returnErr = true)
     {
         $args = $this->prepareParams($params);
 
@@ -160,7 +160,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @return object    The parsed data
      * @throws \Exception
      */
-    protected function call($qs, $method = 'GET')
+    protected function call(string $qs, string $method = 'GET')
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
@@ -187,7 +187,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array      The processed response
      */
-    protected function process($data)
+    protected function process(array $data)
     {
         // make sure data exists
         if (strlen($data) === 0) {

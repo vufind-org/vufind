@@ -92,7 +92,7 @@ class UrlQueryHelper
         array $urlParams,
         AbstractQuery $query,
         array $options = [],
-        $regenerateQueryParams = true
+        bool $regenerateQueryParams = true
     ) {
         $this->config = $options;
         $this->urlParams = $urlParams;
@@ -196,7 +196,7 @@ class UrlQueryHelper
      *
      * @return mixed
      */
-    protected function getDefault($key)
+    protected function getDefault(string $key)
     {
         return $this->config['defaults'][$key] ?? null;
     }
@@ -212,7 +212,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setDefaultParameter($name, $value, $forceOverride = false)
+    public function setDefaultParameter(string $name, string $value, bool $forceOverride = false)
     {
         // Add the new default to the configuration, and apply it to the query
         // if no existing value has already been set in this position (or if an
@@ -253,7 +253,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setSuppressQuery($suppress)
+    public function setSuppressQuery(bool $suppress)
     {
         $this->config['suppressQuery'] = $suppress;
         $this->regenerateSearchQueryParams();
@@ -302,7 +302,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function replaceTerm($from, $to, $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null)
     {
         $query = clone $this->queryObject;
         $query->replaceTerm($from, $to, $normalizer);
@@ -337,7 +337,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function addFacet($field, $value, $operator = 'AND')
+    public function addFacet(string $field, string $value, string $operator = 'AND')
     {
         // Facets are just a special case of filters:
         return $this->addFilter($this->formatFilterString($field, $value, $operator));
@@ -350,7 +350,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function addFilter($filter)
+    public function addFilter(string $filter)
     {
         $params = $this->urlParams;
 
@@ -401,7 +401,7 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public function getParams($escape = true)
+    public function getParams(bool $escape = true)
     {
         return '?' . static::buildQueryString($this->urlParams, $escape);
     }
@@ -413,7 +413,7 @@ class UrlQueryHelper
      *
      * @return array         Array with elements 0 = field, 1 = value.
      */
-    protected function parseFilter($filter)
+    protected function parseFilter(string $filter)
     {
         // Simplistic explode/trim behavior if no callback is provided:
         if (
@@ -435,7 +435,7 @@ class UrlQueryHelper
      *
      * @return array
      */
-    protected function getAliasesForFacetField($field)
+    protected function getAliasesForFacetField(string $field)
     {
         // If no callback is provided, aliases are unsupported:
         if (
@@ -459,7 +459,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function removeFacet($field, $value, $operator = 'AND')
+    public function removeFacet(string $field, string $value, string $operator = 'AND')
     {
         $params = $this->urlParams;
 
@@ -505,7 +505,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function removeFilter($filter)
+    public function removeFilter(string $filter)
     {
         // Treat this as a special case of removeFacet:
         [$field, $value] = $this->parseFilter($filter);
@@ -519,7 +519,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setPage($p)
+    public function setPage(string $p)
     {
         return $this->updateQueryString('page', $p, 1);
     }
@@ -532,7 +532,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setSort($s)
+    public function setSort(string $s)
     {
         return $this->updateQueryString(
             'sort',
@@ -550,7 +550,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setHandler($handler)
+    public function setHandler(string $handler)
     {
         $query = clone $this->queryObject;
         // We can only set the handler on basic queries:
@@ -571,7 +571,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setViewParam($v)
+    public function setViewParam(string $v)
     {
         // Because of the way view settings are stored in the session, we always
         // want an explicit value here (hence null rather than default view in
@@ -587,7 +587,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setLimit($l)
+    public function setLimit(string $l)
     {
         return $this->updateQueryString(
             'limit',
@@ -621,7 +621,7 @@ class UrlQueryHelper
      *
      * @return UrlQueryHelper
      */
-    public function setSearchTerms($lookfor)
+    public function setSearchTerms(string $lookfor)
     {
         $query = new Query($lookfor);
         return new static($this->urlParams, $query, $this->config);
@@ -635,7 +635,7 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public function asHiddenFields($filter = [])
+    public function asHiddenFields(array $filter = [])
     {
         $retVal = '';
         foreach ($this->urlParams as $paramName => $paramValue) {
@@ -669,7 +669,7 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public static function buildQueryString($a, $escape = true)
+    public static function buildQueryString(array $a, bool $escape = true)
     {
         $parts = [];
         foreach ($a as $key => $value) {
@@ -695,7 +695,7 @@ class UrlQueryHelper
      *
      * @return bool
      */
-    protected function filtered($field, $value, $filter)
+    protected function filtered(string $field, string $value, array $filter)
     {
         return isset($filter[$field]) && preg_match($filter[$field], $value);
     }
@@ -712,10 +712,10 @@ class UrlQueryHelper
      * @return UrlQueryHelper
      */
     protected function updateQueryString(
-        $field,
-        $value,
-        $default = null,
-        $clearPage = false
+        string $field,
+        string $value,
+        string $default = null,
+        bool $clearPage = false
     ) {
         $params = $this->urlParams;
         if (null === $value || $value === $default) {

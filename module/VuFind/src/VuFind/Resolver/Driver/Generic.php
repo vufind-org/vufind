@@ -49,7 +49,7 @@ class Generic extends AbstractBase
      *
      * @return string         raw data returned by resolver
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         return '';
     }
@@ -64,7 +64,7 @@ class Generic extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks($url)
+    public function parseLinks(string $url)
     {
         return [];
     }

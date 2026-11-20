@@ -65,7 +65,7 @@ class SitemapCommand extends Command
      * @param string|null $name      The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Generator $generator, $name = null)
+    public function __construct(Generator $generator, ?string $name = null)
     {
         $this->generator = $generator;
         parent::__construct($name);

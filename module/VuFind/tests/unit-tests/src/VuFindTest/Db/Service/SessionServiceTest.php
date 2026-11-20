@@ -56,7 +56,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager&MockObject
      */
-    protected function getPluginManager($setExpectation = false): PluginManager&MockObject
+    protected function getPluginManager(bool $setExpectation = false): PluginManager&MockObject
     {
         $pluginManager = $this->createMock(PluginManager::class);
         if ($setExpectation) {

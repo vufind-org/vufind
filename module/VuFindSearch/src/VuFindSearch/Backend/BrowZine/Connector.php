@@ -81,7 +81,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @param string     $token  API access token
      * @param string     $id     Library ID number
      */
-    public function __construct(HttpClient $client, $token, $id)
+    public function __construct(HttpClient $client, string $token, string $id)
     {
         $this->client = $client;
         $this->token = $token;
@@ -96,7 +96,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return mixed
      */
-    public function lookupDoi($doi, $includeJournal = false)
+    public function lookupDoi(string $doi, bool $includeJournal = false)
     {
         // Documentation says URL encoding of DOI is not necessary.
         return $this->request(
@@ -112,7 +112,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return mixed
      */
-    public function lookupIssns($issns)
+    public function lookupIssns(string|array $issns)
     {
         $processCallback = fn ($issn) => str_replace('-', '', $issn);
         $processedIssns = array_map($processCallback, (array)$issns);
@@ -126,7 +126,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return mixed
      */
-    public function search($query)
+    public function search(string $query)
     {
         return $this->request('search', compact('query'));
     }
@@ -138,7 +138,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    protected function getUri($path)
+    protected function getUri(string $path)
     {
         return $this->base . 'libraries/' . $this->libraryId . '/' . $path;
     }
@@ -151,7 +151,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return mixed
      */
-    protected function request($path, $params = [])
+    protected function request(string $path, array $params = [])
     {
         $params['access_token'] = $this->token;
         $uri = $this->getUri($path);

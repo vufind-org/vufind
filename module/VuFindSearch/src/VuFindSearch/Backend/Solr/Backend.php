@@ -114,7 +114,7 @@ class Backend extends AbstractBackend implements
      *
      * @return void
      */
-    public function setPageSize($pageSize)
+    public function setPageSize(int $pageSize)
     {
         $this->pageSize = $pageSize;
     }
@@ -131,8 +131,8 @@ class Backend extends AbstractBackend implements
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         if ($query instanceof WorkKeysQuery) {
@@ -157,8 +157,8 @@ class Backend extends AbstractBackend implements
      */
     public function rawJsonSearch(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -204,8 +204,8 @@ class Backend extends AbstractBackend implements
      */
     public function getIds(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -238,7 +238,7 @@ class Backend extends AbstractBackend implements
      */
     public function random(
         AbstractQuery $query,
-        $limit,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -259,7 +259,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -278,7 +278,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    public function retrieveBatch($ids, ?ParamBag $params = null)
+    public function retrieveBatch(array $ids, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
 
@@ -319,7 +319,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    public function similar($id, ?ParamBag $params = null)
+    public function similar(string $id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -398,12 +398,12 @@ class Backend extends AbstractBackend implements
      * @return array
      */
     public function alphabeticBrowse(
-        $source,
-        $from,
-        $page,
-        $limit = 20,
-        $params = null,
-        $offsetDelta = 0
+        string $source,
+        string $from,
+        int $page,
+        int $limit = 20,
+        ParamBag $params = null,
+        int $offsetDelta = 0
     ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -541,7 +541,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection($json)
+    protected function createRecordCollection(string $json)
     {
         return $this->getRecordCollectionFactory()
             ->factory($this->deserialize($json));
@@ -556,7 +556,7 @@ class Backend extends AbstractBackend implements
      *
      * @throws BackendException Deserialization error
      */
-    protected function deserialize($json)
+    protected function deserialize(string $json)
     {
         $response = json_decode($json, true);
         $error    = json_last_error();

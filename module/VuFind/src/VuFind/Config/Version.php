@@ -52,7 +52,7 @@ class Version
      * @throws \Exception
      * @return string
      */
-    public static function getBuildVersion($dir = '')
+    public static function getBuildVersion(string $dir = '')
     {
         static $cachedVersions = [];
 

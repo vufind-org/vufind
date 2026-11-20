@@ -100,7 +100,7 @@ class BackendManager
      * @throws UnexpectedValueException Retrieved backend does not implement
      * BackendInterface
      */
-    public function get($name)
+    public function get(string $name)
     {
         $backend = $this->registry->get($name);
         if (!is_object($backend)) {
@@ -130,7 +130,7 @@ class BackendManager
      *
      * @return bool
      */
-    public function has($name)
+    public function has(string $name)
     {
         return $this->registry->has($name);
     }

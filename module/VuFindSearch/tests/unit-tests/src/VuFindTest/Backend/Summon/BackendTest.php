@@ -244,7 +244,7 @@ class BackendTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse(string $fixture)
     {
         return unserialize(
             $this->getFixture("summon/response/$fixture", 'VuFindSearch')

@@ -95,7 +95,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runTestModeTest($options = []): void
+    protected function runTestModeTest(array $options = []): void
     {
         $importer = $this->getImporter();
         $result = $importer->save(

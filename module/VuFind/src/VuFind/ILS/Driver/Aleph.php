@@ -358,7 +358,7 @@ class Aleph extends AbstractBase implements
      *
      * @return \SimpleXMLElement
      */
-    protected function doXRequest($op, $params, $auth = false)
+    protected function doXRequest(string $op, array $params, bool $auth = false)
     {
         if (!$this->xserver_enabled) {
             throw new \Exception(
@@ -399,10 +399,10 @@ class Aleph extends AbstractBase implements
      * @return \SimpleXMLElement
      */
     protected function doRestDLFRequest(
-        $path_elements,
-        $params = null,
-        $method = 'GET',
-        $body = null
+        array $path_elements,
+        array $params = null,
+        string $method = 'GET',
+        string $body = null
     ) {
         $path = implode('/', $path_elements);
         if ($this->dlfbaseurl === null) {
@@ -446,7 +446,7 @@ class Aleph extends AbstractBase implements
      *
      * @return string
      */
-    protected function appendQueryString($url, $params)
+    protected function appendQueryString(string $url, array $params)
     {
         $sep = (!str_contains($url, '?')) ? '?' : '&';
         if ($params != null) {
@@ -467,7 +467,7 @@ class Aleph extends AbstractBase implements
      *
      * @return \SimpleXMLElement
      */
-    protected function doHTTPRequest($url, $method = 'GET', $body = null)
+    protected function doHTTPRequest(string $url, string $method = 'GET', string $body = null)
     {
         if ($this->debug_enabled) {
             $this->debug("URL: '$url'");
@@ -512,7 +512,7 @@ class Aleph extends AbstractBase implements
      *
      * @return array
      */
-    protected function parseId($id)
+    protected function parseId(string $id)
     {
         $result = null;
         if (str_contains($id, self::RECORD_ID_BASE_SEPARATOR)) {
@@ -544,7 +544,7 @@ class Aleph extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $statuses = $this->getHolding($id);
         foreach ($statuses as &$status) {
@@ -580,7 +580,7 @@ class Aleph extends AbstractBase implements
      * i  Number of loans (for ranking/sorting)
      * j  Collection code
      */
-    public function getStatusesX($bib, $ids)
+    public function getStatusesX(string $bib, array $ids)
     {
         $doc_nums = '';
         $sep = '';
@@ -632,7 +632,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses($idList)
+    public function getStatuses(array $idList)
     {
         if (!$this->xserver_enabled) {
             if (!$this->quick_availability) {
@@ -791,7 +791,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array      Array of the patron's historic loans on success.
      */
-    public function getMyTransactionHistory($user, $params = null)
+    public function getMyTransactionHistory(array $user, array $params = null)
     {
         return $this->getMyTransactions($user, $params, true);
     }
@@ -810,7 +810,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($user, $params = [], $history = false)
+    public function getMyTransactions(array $user, array $params = [], bool $history = false)
     {
         $userId = $user['id'];
 
@@ -905,7 +905,7 @@ class Aleph extends AbstractBase implements
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails($details)
+    public function getRenewDetails(array $details)
     {
         return $details['item_id'];
     }
@@ -921,7 +921,7 @@ class Aleph extends AbstractBase implements
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems($details)
+    public function renewMyItems(array $details)
     {
         $patron = $details['patron'];
         $result = [];
@@ -959,7 +959,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array      Array of the patron's holds on success.
      */
-    public function getMyHolds($user)
+    public function getMyHolds(array $user)
     {
         $userId = $user['id'];
         $holdList = [];
@@ -1050,7 +1050,7 @@ class Aleph extends AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds($details)
+    public function cancelHolds(array $details)
     {
         $patron = $details['patron'];
         $patronId = $patron['id'];
@@ -1090,7 +1090,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return mixed      Array of the patron's fines on success.
      */
-    public function getMyFines($user)
+    public function getMyFines(array $user)
     {
         $finesList = [];
 
@@ -1145,7 +1145,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array      Array of the patron's profile data on success.
      */
-    public function getMyProfile($user)
+    public function getMyProfile(array $user)
     {
         $profile = $this->xserver_enabled ? $this->getMyProfileX($user) : $this->getMyProfileDLF($user);
         $profile['cat_username'] ??= $user['id'];
@@ -1160,7 +1160,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array      Array of the patron's profile data on success.
      */
-    public function getMyProfileX($user)
+    public function getMyProfileX(array $user)
     {
         if (!isset($user['college'])) {
             $user['college'] = $this->useradm;
@@ -1204,7 +1204,7 @@ class Aleph extends AbstractBase implements
      * @throws ILSException
      * @return array      Array of the patron's profile data on success.
      */
-    public function getMyProfileDLF($user)
+    public function getMyProfileDLF(array $user)
     {
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
@@ -1260,7 +1260,7 @@ class Aleph extends AbstractBase implements
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($user, $password)
+    public function patronLogin(string $user, string $password)
     {
         if ($password == null) {
             $temp = ['id' => $user];
@@ -1320,7 +1320,7 @@ class Aleph extends AbstractBase implements
      *
      * @return array
      */
-    public function getHoldingInfoForItem($patronId, $id, $group)
+    public function getHoldingInfoForItem(string $patronId, string $id, string $group)
     {
         [$bib, $sys_no] = $this->parseId($id);
         $resource = $bib . $sys_no;
@@ -1363,7 +1363,7 @@ class Aleph extends AbstractBase implements
      *
      * @return int|null
      */
-    public function getHoldDefaultRequiredDate($patron, $holdInfo)
+    public function getHoldDefaultRequiredDate(array $patron, array $holdInfo)
     {
         $details = [];
         if ($holdInfo != null) {
@@ -1400,7 +1400,7 @@ class Aleph extends AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($details)
+    public function placeHold(array $details)
     {
         [$bib, $sys_no] = $this->parseId($details['id']);
         $recordId = $bib . $sys_no;
@@ -1469,7 +1469,7 @@ class Aleph extends AbstractBase implements
      *
      * @return string|null
      */
-    public function barcodeToID($bar)
+    public function barcodeToID(string $bar)
     {
         if (!$this->xserver_enabled) {
             return null;
@@ -1511,7 +1511,7 @@ class Aleph extends AbstractBase implements
      *
      * @return string
      */
-    public function parseDate($date)
+    public function parseDate(string $date)
     {
         if ($date == null || $date == '') {
             return '';
@@ -1602,7 +1602,7 @@ class Aleph extends AbstractBase implements
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
      */
-    public function getPickUpLocations($patron, $holdInfo = null)
+    public function getPickUpLocations(array $patron, array $holdInfo = null)
     {
         $pickupLocations = [];
         if ($holdInfo != null) {
@@ -1642,7 +1642,7 @@ class Aleph extends AbstractBase implements
      *
      * @return string       The default pickup location for the patron.
      */
-    public function getDefaultPickUpLocation($patron, $holdInfo = null)
+    public function getDefaultPickUpLocation(array $patron, array $holdInfo = null)
     {
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(

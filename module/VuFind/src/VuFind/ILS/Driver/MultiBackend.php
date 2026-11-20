@@ -149,7 +149,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $source = $this->getSource($id);
         if ($driver = $this->getDriver($source)) {
@@ -172,7 +172,7 @@ class MultiBackend extends AbstractMultiDriver
      * @throws ILSException
      * @return array     An array of getStatus() return values on success.
      */
-    public function getStatuses($ids)
+    public function getStatuses(array $ids)
     {
         // Group records by source and request statuses from the drivers
         $grouped = [];
@@ -274,7 +274,7 @@ class MultiBackend extends AbstractMultiDriver
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         $source = $this->getSource($id);
         if ($driver = $this->getDriver($source)) {
@@ -368,7 +368,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return mixed An array of associative arrays representing reserve items
      */
-    public function findReserves($course, $inst, $dept)
+    public function findReserves(string $course, string $inst, string $dept)
     {
         if ($driver = $this->getDriver($this->defaultDriver)) {
             return $this->addIdPrefixes(
@@ -389,7 +389,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return mixed Array of the patron's profile data
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -412,7 +412,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return mixed      Array of the patron's holds
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         $holds = $this->callMethodIfSupported(
@@ -434,7 +434,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return mixed      Array of the patron's holds
      */
-    public function getMyStorageRetrievalRequests($patron)
+    public function getMyStorageRetrievalRequests(array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -464,7 +464,7 @@ class MultiBackend extends AbstractMultiDriver
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkRequestIsValid($id, $data, $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron)
     {
         if (!isset($patron['cat_username'])) {
             return false;
@@ -496,7 +496,7 @@ class MultiBackend extends AbstractMultiDriver
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -534,7 +534,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
      */
-    public function getPickUpLocations($patron = false, $holdDetails = null)
+    public function getPickUpLocations(array $patron = false, array $holdDetails = null)
     {
         $source = $this->getSource(
             $patron['cat_username'] ?? $holdDetails['id'] ?? $holdDetails['item_id']
@@ -574,7 +574,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return string A location ID
      */
-    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    public function getDefaultPickUpLocation(array $patron = false, array $holdDetails = null)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -607,7 +607,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return array  An array of associative arrays with requestGroupId and
      * name keys
      */
-    public function getRequestGroups($id, $patron, $holdDetails = null)
+    public function getRequestGroups(int $id, array $patron, array $holdDetails = null)
     {
         // Get source from patron as that will work also with the Demo driver:
         $source = $this->getSource($patron['cat_username']);
@@ -644,7 +644,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return false|string       The default request group for the patron.
      */
-    public function getDefaultRequestGroup($patron, $holdDetails = null)
+    public function getDefaultRequestGroup(array $patron, ?array $holdDetails = null)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -679,7 +679,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         $source = $this->getSource($holdDetails['patron']['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -708,7 +708,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return string Data for use in a form field
      */
-    public function getCancelHoldDetails($hold, $patron = [])
+    public function getCancelHoldDetails(array $hold, array $patron = [])
     {
         $source = $this->getSource(
             $patron['cat_username'] ?? $hold['id'] ?? $hold['item_id'] ?? ''
@@ -735,7 +735,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeStorageRetrievalRequest($details)
+    public function placeStorageRetrievalRequest(array $details)
     {
         $source = $this->getSource($details['patron']['cat_username']);
         $driver = $this->getDriver($source);
@@ -769,7 +769,7 @@ class MultiBackend extends AbstractMultiDriver
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkILLRequestIsValid($id, $data, $patron)
+    public function checkILLRequestIsValid(string $id, array $data, array $patron)
     {
         $source = $this->getSource($id);
         // Patron is not stripped so that the correct library can be determined
@@ -798,7 +798,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
      */
-    public function getILLPickupLibraries($id, $patron)
+    public function getILLPickupLibraries(string $id, array $patron)
     {
         $source = $this->getSource($id);
         // Patron is not stripped so that the correct library can be determined
@@ -828,7 +828,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return bool|array False if request not allowed, or an array of
      * locations.
      */
-    public function getILLPickupLocations($id, $pickupLib, $patron)
+    public function getILLPickupLocations(string $id, string $pickupLib, array $patron)
     {
         $source = $this->getSource($id);
         // Patron is not stripped so that the correct library can be determined
@@ -858,7 +858,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeILLRequest($details)
+    public function placeILLRequest(array $details)
     {
         $source = $this->getSource($details['id']);
         // Patron is not stripped so that the correct library can be determined
@@ -881,7 +881,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return mixed      Array of the patron's ILL requests
      */
-    public function getMyILLRequests($patron)
+    public function getMyILLRequests(array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -910,7 +910,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getRequestBlocks($patron)
+    public function getRequestBlocks(array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -933,7 +933,7 @@ class MultiBackend extends AbstractMultiDriver
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks($patron)
+    public function getAccountBlocks(array $patron)
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
@@ -1050,7 +1050,7 @@ class MultiBackend extends AbstractMultiDriver
      * @throws ILSException
      * @return mixed             Varies by method
      */
-    public function __call($methodName, $params)
+    public function __call(string $methodName, array $params)
     {
         return $this->callMethodIfSupported(null, $methodName, $params);
     }
@@ -1062,7 +1062,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return string  Local ID
      */
-    protected function getLocalId($id)
+    protected function getLocalId(string $id)
     {
         $pos = strpos($id, '.');
         if ($pos > 0) {
@@ -1079,7 +1079,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return string Source
      */
-    protected function getSource($id)
+    protected function getSource(string $id)
     {
         $pos = strpos($id, '.');
         if ($pos > 0) {
@@ -1117,8 +1117,8 @@ class MultiBackend extends AbstractMultiDriver
      * @return string Source id or empty string if not found
      */
     protected function getSourceFromParams(
-        $params,
-        $allowedKeys = [0, 'id', 'cat_username']
+        array $params,
+        array $allowedKeys = [0, 'id', 'cat_username']
     ) {
         if (!is_array($params)) {
             if (is_string($params)) {
@@ -1151,7 +1151,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return mixed On success a driver object, otherwise null.
      */
-    protected function getDriver($source)
+    protected function getDriver(string $source)
     {
         if (!$source) {
             // Check for default driver
@@ -1176,9 +1176,9 @@ class MultiBackend extends AbstractMultiDriver
      *                   empty/null
      */
     protected function addIdPrefixes(
-        $data,
-        $source,
-        $modifyFields = ['id', 'cat_username']
+        mixed $data,
+        string $source,
+        array $modifyFields = ['id', 'cat_username']
     ) {
         if (empty($source) || empty($data) || !is_array($data)) {
             return $data;
@@ -1220,10 +1220,10 @@ class MultiBackend extends AbstractMultiDriver
      *                   empty/null
      */
     protected function stripIdPrefixes(
-        $data,
-        $source,
-        $modifyFields = ['id', 'cat_username'],
-        $ignoreFields = []
+        mixed $data,
+        string $source,
+        array $modifyFields = ['id', 'cat_username'],
+        array $ignoreFields = []
     ) {
         if (!isset($data) || empty($data)) {
             return $data;

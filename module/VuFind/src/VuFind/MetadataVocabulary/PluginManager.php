@@ -51,7 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *                                         to the parent constructor.
      */
     public function __construct(
-        $configOrContainerInstance = null,
+        mixed $configOrContainerInstance = null,
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);

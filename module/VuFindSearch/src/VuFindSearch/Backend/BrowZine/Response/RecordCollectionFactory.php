@@ -57,7 +57,7 @@ class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordC
      *
      * @return array
      */
-    protected function getDocumentListFromResponse($response): array
+    protected function getDocumentListFromResponse(array $response): array
     {
         return $response['data'];
     }

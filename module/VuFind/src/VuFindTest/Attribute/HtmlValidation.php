@@ -55,7 +55,7 @@ class HtmlValidation
      *
      * @param bool $useValidation Should HTML validation be applied to this test?
      */
-    public function __construct($useValidation = true)
+    public function __construct(bool $useValidation = true)
     {
         $this->useValidation = $useValidation;
     }

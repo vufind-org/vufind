@@ -97,7 +97,7 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
      *
      * @return DynamicRoleProvider
      */
-    protected function getDynamicRoleProvider($pluginManager = null, $config = [])
+    protected function getDynamicRoleProvider(PluginManager $pluginManager = null, array $config = [])
     {
         if (null === $pluginManager) {
             $pluginManager = $this->getFakePluginManager();

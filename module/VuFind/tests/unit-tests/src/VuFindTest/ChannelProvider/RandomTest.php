@@ -131,7 +131,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredCoverRouterMock($recordDriver)
+    protected function getConfiguredCoverRouterMock(mixed $recordDriver)
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
@@ -148,7 +148,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredRecordRouterMock($recordDriver)
+    protected function getConfiguredRecordRouterMock(mixed $recordDriver)
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
@@ -167,9 +167,9 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      * @return callable
      */
     protected function getCommandChecker(
-        $args = [],
-        $class = \VuFindSearch\Command\RandomCommand::class,
-        $target = 'Solr'
+        array $args = [],
+        string $class = \VuFindSearch\Command\RandomCommand::class,
+        string $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
             $this->assertSame($command::class, $class);
@@ -189,7 +189,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredParamsMock($query, $paramBag)
+    protected function getConfiguredParamsMock(\VuFindSearch\Query\Query $query, \VuFindSearch\ParamBag $paramBag)
     {
         // Use Solr instead of Base to ensure we can mock getBackendParameters:
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);

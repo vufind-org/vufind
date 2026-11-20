@@ -141,7 +141,7 @@ class NewGenLib extends AbstractBase
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $MyFines = [];
         $pid = $patron['cat_username'];
@@ -209,7 +209,7 @@ class NewGenLib extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $holds = [];
         $PatId = $patron['cat_username'];
@@ -303,7 +303,7 @@ class NewGenLib extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $catusr = $patron['cat_username'];
         $catpswd = $patron['cat_password'];
@@ -345,7 +345,7 @@ class NewGenLib extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $transactions = [];
         $PatId = $patron['cat_username'];
@@ -401,7 +401,7 @@ class NewGenLib extends AbstractBase
      * @return mixed           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($RecordID)
+    public function getStatus(string $RecordID)
     {
         $status = $this->getItemStatus($RecordID);
         if (!is_array($status)) {
@@ -427,7 +427,7 @@ class NewGenLib extends AbstractBase
      * @throws ILSException
      * @return array              An array of getStatus() return values on success.
      */
-    public function getStatuses($StatusResult)
+    public function getStatuses(array $StatusResult)
     {
         $status = [];
         foreach ($StatusResult as $id) {
@@ -448,7 +448,7 @@ class NewGenLib extends AbstractBase
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         //SQL Statement
         $sql = 'select p.patron_id as patron_id, p.library_id as library_id, ' .
@@ -504,7 +504,7 @@ class NewGenLib extends AbstractBase
      *
      * @return array
      */
-    protected function getItemStatus($RecordID)
+    protected function getItemStatus(string $RecordID)
     {
         $StatusResult = [];
         $pieces = explode('_', $RecordID);

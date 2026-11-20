@@ -167,7 +167,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Only change settings from current values if they are defined in $settings or .ini
 
@@ -247,7 +247,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->results = $results;
     }

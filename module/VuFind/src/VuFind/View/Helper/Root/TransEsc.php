@@ -73,11 +73,11 @@ class TransEsc
      * @return string
      */
     public function __invoke(
-        $str,
-        $tokens = [],
-        $default = null,
-        $useIcuFormatter = false,
-        $fallbackDomains = []
+        string|object|array $str,
+        array $tokens = [],
+        string $default = null,
+        bool $useIcuFormatter = false,
+        array $fallbackDomains = []
     ) {
         $translated = ($this->translate)($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
         return ($this->escapeHtml)($translated);

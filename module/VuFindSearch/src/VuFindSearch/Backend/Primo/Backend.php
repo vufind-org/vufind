@@ -93,8 +93,8 @@ class Backend extends AbstractBackend
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
@@ -133,7 +133,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
         $onCampus = $onCampus ? $onCampus[0] : false;
@@ -217,7 +217,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection($records)
+    protected function createRecordCollection(array $records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }

@@ -84,7 +84,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function getTranslatorLocale($default = 'en')
+    public function getTranslatorLocale(string $default = 'en')
     {
         return null !== $this->translator
             && is_callable([$this->translator, 'getLocale'])
@@ -131,11 +131,11 @@ trait TranslatorAwareTrait
      * @return string
      */
     public function translate(
-        $target,
-        $tokens = [],
-        $default = null,
-        $useIcuFormatter = false,
-        $fallbackDomains = []
+        string|object|array $target,
+        array $tokens = [],
+        string $default = null,
+        bool $useIcuFormatter = false,
+        array $fallbackDomains = []
     ) {
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
@@ -204,12 +204,12 @@ trait TranslatorAwareTrait
      * @return string
      */
     public function translateWithPrefix(
-        $prefix,
-        $target,
-        $tokens = [],
-        $default = null,
-        $useIcuFormatter = false,
-        $fallbackDomains = []
+        string $prefix,
+        string|object|array $target,
+        array $tokens = [],
+        string $default = null,
+        bool $useIcuFormatter = false,
+        array $fallbackDomains = []
     ) {
         if (is_string($target)) {
             if (null === $default) {
@@ -234,11 +234,11 @@ trait TranslatorAwareTrait
      * @return string
      */
     protected function translateString(
-        $rawStr,
-        $tokens = [],
-        $default = null,
-        $domain = 'default',
-        $useIcuFormatter = false
+        string $rawStr,
+        array $tokens = [],
+        string $default = null,
+        string $domain = 'default',
+        bool $useIcuFormatter = false
     ) {
         if (null === $this->translator) {
             $msg = $str = $rawStr;
@@ -279,7 +279,7 @@ trait TranslatorAwareTrait
      *
      * @return array
      */
-    protected function extractTextDomain($target)
+    protected function extractTextDomain(string|object|array $target)
     {
         $parts = is_array($target) ? $target : explode('::', $target, 2);
         if (count($parts) < 1 || count($parts) > 2) {

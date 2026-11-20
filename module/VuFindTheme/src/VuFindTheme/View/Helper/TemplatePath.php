@@ -82,7 +82,7 @@ class TemplatePath
      * @return string path, null if image not found
      * @throws \Exception if no file exists at path
      */
-    public function __invoke($template, $targetTheme)
+    public function __invoke(string $template, string $targetTheme)
     {
         $path = $this->pathPre . $targetTheme . $this->pathPost . $template;
         if (!file_exists($path)) {

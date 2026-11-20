@@ -144,7 +144,7 @@ class Generator
      *
      * @return callable|null Current verbose callback (null if disabled)
      */
-    public function setVerbose($newMode = null)
+    public function setVerbose(?callable $newMode = null)
     {
         if (null !== $newMode) {
             $this->verbose = $newMode;
@@ -159,7 +159,7 @@ class Generator
      *
      * @return void
      */
-    protected function verboseMsg($msg)
+    protected function verboseMsg(string $msg)
     {
         if (is_callable($this->verbose)) {
             call_user_func($this->verbose, $msg);
@@ -173,7 +173,7 @@ class Generator
      *
      * @return string Current or new base url
      */
-    public function setBaseUrl($newUrl = null)
+    public function setBaseUrl(string $newUrl = null)
     {
         if (null !== $newUrl) {
             $this->baseUrl = $newUrl;
@@ -188,7 +188,7 @@ class Generator
      *
      * @return string Current or new base sitemap url
      */
-    public function setBaseSitemapUrl($newUrl = null)
+    public function setBaseSitemapUrl(string $newUrl = null)
     {
         if (null !== $newUrl) {
             $this->baseSitemapUrl = $newUrl;
@@ -401,7 +401,7 @@ class Generator
      *
      * @return string
      */
-    protected function getFilenameForPage($page, $includePath = true)
+    protected function getFilenameForPage(int|string $page, bool $includePath = true)
     {
         return ($includePath ? $this->fileLocation . '/' : '')
             . $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';

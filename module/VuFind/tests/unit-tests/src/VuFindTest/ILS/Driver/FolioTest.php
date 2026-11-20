@@ -104,7 +104,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function mockMakeRequest(
         string $method = 'GET',
         string $path = '/',
-        $params = [],
+        string|array $params = [],
         array $headers = []
     ): Response {
         // Run preRequest

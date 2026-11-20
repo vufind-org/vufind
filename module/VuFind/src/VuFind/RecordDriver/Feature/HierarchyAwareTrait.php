@@ -221,7 +221,7 @@ trait HierarchyAwareTrait
      * @return mixed An associative array of hierarchy trees on success
      * (id => title), false if no hierarchies found
      */
-    public function getHierarchyTrees($hierarchyID = false)
+    public function getHierarchyTrees(string $hierarchyID = false)
     {
         $hierarchyDriver = $this->getHierarchyDriver();
         if ($hierarchyDriver && $hierarchyDriver->showTree()) {

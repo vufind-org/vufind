@@ -523,7 +523,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return Mailer
      */
-    protected function getMailer($callback = null, ?TemplateRendererInterface $renderer = null)
+    protected function getMailer(?callable $callback = null, ?TemplateRendererInterface $renderer = null)
     {
         $transport = $this->createMock(MailerInterface::class);
         if ($callback) {

@@ -61,7 +61,7 @@ class AbstractIlsAndUserActionFactory implements \Laminas\ServiceManager\Factory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         return new $requestedName(

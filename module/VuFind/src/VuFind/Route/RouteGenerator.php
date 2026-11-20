@@ -79,7 +79,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addDynamicRoute(&$config, $routeName, $controller, $action)
+    public function addDynamicRoute(array &$config, string $routeName, string $controller, string $action)
     {
         [$actionName] = explode('/', $action, 2);
         $config['router']['routes'][$routeName] = [
@@ -107,7 +107,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addDynamicRoutes(&$config, $routes)
+    public function addDynamicRoutes(array &$config, array $routes)
     {
         // Build library card routes
         foreach ($routes as $controller => $controllerRoutes) {
@@ -125,7 +125,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addNonTabRecordAction(&$config, $action)
+    public function addNonTabRecordAction(array &$config, string $action)
     {
         self::$nonTabRecordActions[$action] = $action;
         foreach (self::$recordRoutes as $recordRoute) {
@@ -145,7 +145,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addNonTabRecordActions(&$config, $actions)
+    public function addNonTabRecordActions(array &$config, array $actions)
     {
         foreach ($actions as $action) {
             $this->addNonTabRecordAction($config, $action);
@@ -161,7 +161,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addRecordRoute(&$config, $routeBase, $controller)
+    public function addRecordRoute(array &$config, string $routeBase, string $controller)
     {
         // catch-all "tab" route:
         $config['router']['routes'][$routeBase] = [
@@ -214,7 +214,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addRecordRoutes(&$config, $routes)
+    public function addRecordRoutes(array &$config, array $routes)
     {
         foreach ($routes as $routeBase => $controller) {
             $this->addRecordRoute($config, $routeBase, $controller);
@@ -229,7 +229,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addStaticRoute(&$config, $route)
+    public function addStaticRoute(array &$config, string $route)
     {
         [$controller, $action] = explode('/', $route);
         $routeName = str_replace('/', '-', strtolower($route));
@@ -253,7 +253,7 @@ class RouteGenerator
      *
      * @return void
      */
-    public function addStaticRoutes(&$config, $routes)
+    public function addStaticRoutes(array &$config, array $routes)
     {
         foreach ($routes as $route) {
             $this->addStaticRoute($config, $route);

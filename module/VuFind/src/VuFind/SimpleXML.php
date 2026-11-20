@@ -51,7 +51,7 @@ class SimpleXML
      *
      * @return void
      */
-    public static function appendElement($parent, $child)
+    public static function appendElement(SimpleXMLElement $parent, SimpleXMLElement|string $child)
     {
         $xml = $child instanceof SimpleXMLElement
             ? $child->asXML() : $child;

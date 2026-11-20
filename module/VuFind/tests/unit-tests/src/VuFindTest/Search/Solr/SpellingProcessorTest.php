@@ -492,7 +492,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runSpellingTest($testNum, $expected, $config = [])
+    protected function runSpellingTest(int $testNum, array $expected, array $config = [])
     {
         $spelling = $this->unserializeFixture('spell' . $testNum);
         $query = $this->unserializeFixture('query' . $testNum);
@@ -571,7 +571,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function unserializeFixture($file)
+    protected function unserializeFixture(string $file)
     {
         return unserialize($this->getFixture("spell/$file"));
     }

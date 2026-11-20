@@ -66,7 +66,7 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

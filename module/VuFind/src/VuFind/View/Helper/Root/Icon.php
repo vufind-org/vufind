@@ -105,7 +105,7 @@ class Icon
      *
      * @return array
      */
-    protected function mapIcon(string $name, $aliasTrail = []): array
+    protected function mapIcon(string $name, array $aliasTrail = []): array
     {
         $rtl = $this->rtl ? '-rtl' : '';
         $icon = $this->iconMap[$name . $rtl] ?? $this->iconMap[$name] ?? $name;
@@ -166,7 +166,7 @@ class Icon
      *
      * @return string
      */
-    protected function cacheKey(string $name, $attrs = []): string
+    protected function cacheKey(string $name, array $attrs = []): string
     {
         if (empty($attrs)) {
             return $name;
@@ -183,7 +183,7 @@ class Icon
      *
      * @return string
      */
-    public function __invoke(string $name, $attrs = []): string
+    public function __invoke(string $name, array|string $attrs = []): string
     {
         // Class name shortcut
         if (is_string($attrs)) {

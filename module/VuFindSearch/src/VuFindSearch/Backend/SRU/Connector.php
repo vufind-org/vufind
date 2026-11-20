@@ -88,7 +88,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @param string               $host   The URL of the SRU Server
      * @param \Laminas\Http\Client $client An HTTP client object
      */
-    public function __construct($host, \Laminas\Http\Client $client)
+    public function __construct(string $host, \Laminas\Http\Client $client)
     {
         // Initialize properties needed for HTTP connection:
         $this->host = $host;
@@ -104,7 +104,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array         An array of query results
      */
-    public function getMoreLikeThis($record, $id, $max = 5)
+    public function getMoreLikeThis(array $record, string $id, int $max = 5)
     {
         // More Like This Query
         $query = 'title="' . $record['245']['a'] . '" ' .
@@ -131,7 +131,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string          XML response
      */
-    public function scan($clause, $pos = null, $maxTerms = null)
+    public function scan(string $clause, int $pos = null, int $maxTerms = null)
     {
         $options = ['operation' => 'scan',
                          'scanClause' => $clause];
@@ -158,12 +158,12 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @return array          An array of query results
      */
     public function sruSearch(
-        $query,
-        $start = 1,
-        $limit = null,
-        $sortBy = null,
-        $schema = 'marcxml',
-        $process = true
+        string $query,
+        string $start = 1,
+        string $limit = null,
+        string $sortBy = null,
+        string $schema = 'marcxml',
+        bool $process = true
     ) {
         $this->debug('Query: ' . $query);
 
@@ -190,7 +190,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws BackendException
      * @return void
      */
-    public function checkForHttpError($result)
+    public function checkForHttpError(\Laminas\Http\Response $result)
     {
         if (!$result->isSuccess()) {
             throw HttpErrorException::createFromResponse($result);
@@ -206,7 +206,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws BackendException
      * @return void
      */
-    public function checkForSRUDiagnosticsError($resultBody)
+    public function checkForSRUDiagnosticsError(string $resultBody)
     {
         if (str_contains($resultBody, 'info:srw/diagnostic')) {
             $xmlDoc = simplexml_load_string($resultBody);
@@ -226,7 +226,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string|SimpleXMLElement The response from the XServer
      */
-    protected function call($method = 'GET', $path = '', $params = null, $process = true)
+    protected function call(string $method = 'GET', string $path = '', array $params = null, bool $process = true)
     {
         $queryString = '';
         if ($params) {
@@ -285,7 +285,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string|SimpleXMLElement
      */
-    protected function process($response)
+    protected function process(string $response)
     {
         // Send back either the raw XML or a SimpleXML object, as requested:
         $result = XSLTProcessor::process('sru-convert-simple.xsl', $response);

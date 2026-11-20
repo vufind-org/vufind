@@ -73,7 +73,7 @@ class CachingProxy
      * @param ?string $cache        Base directory for cache (null to disable caching)
      * @param array   $allowedHosts Array of regular expressions for hosts to cache
      */
-    public function __construct(Client $client, $cache, array $allowedHosts = [])
+    public function __construct(Client $client, ?string $cache, array $allowedHosts = [])
     {
         $this->client = $client;
         $this->cache = $cache;
@@ -87,7 +87,7 @@ class CachingProxy
      *
      * @return Response
      */
-    public function fetch($url)
+    public function fetch(string $url)
     {
         $file = $this->getCacheFile($url);
         $cacheAllowed = $this->cache && $this->hasLegalHost($url);
@@ -107,7 +107,7 @@ class CachingProxy
      *
      * @return bool|Response
      */
-    protected function fetchCache($file)
+    protected function fetchCache(string $file)
     {
         return file_exists($file)
             ? unserialize(file_get_contents($file))
@@ -122,7 +122,7 @@ class CachingProxy
      *
      * @return void
      */
-    protected function setCache($file, Response $response)
+    protected function setCache(string $file, Response $response)
     {
         if (!$this->cache) {
             return; // don't write if cache is disabled
@@ -143,7 +143,7 @@ class CachingProxy
      *
      * @return bool
      */
-    protected function hasLegalHost($url)
+    protected function hasLegalHost(string $url)
     {
         $host = parse_url($url, PHP_URL_HOST);
         foreach ($this->allowedHosts as $current) {
@@ -162,7 +162,7 @@ class CachingProxy
      * @return string
      * @throws \Exception
      */
-    protected function getCacheFile($url)
+    protected function getCacheFile(string $url)
     {
         if (!$this->cache) {
             throw new \Exception('Unexpected call to getCacheFile -- cache is disabled.');

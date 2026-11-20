@@ -255,7 +255,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      *
      * @return void
      */
-    public function deleteUserLoginTokens($userId)
+    public function deleteUserLoginTokens(int $userId)
     {
         $userTokens = $this->loginTokenService->getByUser($userId, false);
         $handler = $this->sessionManager->getSaveHandler();

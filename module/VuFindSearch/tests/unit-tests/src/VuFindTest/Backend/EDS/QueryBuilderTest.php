@@ -52,7 +52,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return array
      */
-    protected function decodeResponse($response)
+    protected function decodeResponse(array $response)
     {
         foreach ($response as $i => $raw) {
             $response[$i] = json_decode($raw, true);

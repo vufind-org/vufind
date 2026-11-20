@@ -70,7 +70,7 @@ class Orb extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingD
      * @param string $apiUser API key for Orb
      * @param string $apiKey  API key for Orb
      */
-    public function __construct($url, $apiUser, $apiKey)
+    public function __construct(string $url, string $apiUser, string $apiKey)
     {
         $this->url = $url;
         $this->apiUser = $apiUser;

@@ -123,7 +123,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @return string raw response returned by resolver
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         // Make the call to resolver and load results
         $url = $this->getResolverUrl($openURL);
@@ -141,7 +141,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array Array of values
      */
-    public function parseLinks($response)
+    public function parseLinks(string $response)
     {
         try {
             $json = json_decode($response, true, flags: JSON_THROW_ON_ERROR);

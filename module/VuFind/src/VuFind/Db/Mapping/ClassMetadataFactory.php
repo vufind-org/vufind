@@ -132,9 +132,9 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      * @return void
      */
     protected function doLoadMetadata(
-        $class,
-        $parent,
-        $rootEntityFound,
+        ClassMetadata $class,
+        ?ClassMetadata $parent,
+        bool $rootEntityFound,
         array $nonSuperclassParents
     ): void {
         parent::doLoadMetadata($class, $parent, $rootEntityFound, $nonSuperclassParents);

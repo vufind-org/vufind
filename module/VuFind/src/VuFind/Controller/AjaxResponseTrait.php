@@ -65,7 +65,7 @@ trait AjaxResponseTrait
      * @return string
      * @throws \Exception
      */
-    protected function formatContent($type, $data, $httpCode)
+    protected function formatContent(string $type, mixed $data, int $httpCode)
     {
         switch ($type) {
             case 'application/javascript':
@@ -91,7 +91,7 @@ trait AjaxResponseTrait
      * @return \Laminas\Http\Response
      * @throws \Exception
      */
-    protected function getAjaxResponse($type, $data, $httpCode = null)
+    protected function getAjaxResponse(string $type, mixed $data, int $httpCode = null)
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
@@ -113,7 +113,7 @@ trait AjaxResponseTrait
      *
      * @return \Laminas\Http\Response
      */
-    protected function getExceptionResponse($type, \Exception $e)
+    protected function getExceptionResponse(string $type, \Exception $e)
     {
         $debugMsg = ('development' == APPLICATION_ENV)
             ? ': ' . $e->getMessage() : '';
@@ -132,7 +132,7 @@ trait AjaxResponseTrait
      *
      * @return \Laminas\Http\Response
      */
-    protected function callAjaxMethod($method, $type = 'application/json')
+    protected function callAjaxMethod(string $method, string $type = 'application/json')
     {
         // Check the AJAX handler plugin manager for the method.
         if (!$this->ajaxManager) {

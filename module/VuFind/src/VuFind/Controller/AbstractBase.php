@@ -164,7 +164,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    public function setAccessPermission($ap)
+    public function setAccessPermission(string|bool $ap)
     {
         $this->accessPermission = empty($ap) ? false : $ap;
     }
@@ -210,7 +210,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return ViewModel
      */
-    protected function createViewModel($params = null)
+    protected function createViewModel(array $params = null)
     {
         if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
@@ -236,7 +236,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return ViewModel
      */
-    protected function createEmailViewModel($params = null, $defaultSubject = null)
+    protected function createEmailViewModel(array $params = null, string $defaultSubject = null)
     {
         // Build view:
         $view = $this->createViewModel($params);
@@ -348,7 +348,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return mixed
      */
-    public function forceLogin($msg = null, $extras = [], $forward = true)
+    public function forceLogin(string $msg = null, array $extras = [], bool $forward = true)
     {
         // Set default message if necessary.
         if (null === $msg) {
@@ -480,7 +480,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @deprecated Use AbstractBase::getConfigArray
      */
-    public function getConfig($id = 'config')
+    public function getConfig(string $id = 'config')
     {
         return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
     }
@@ -559,7 +559,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    public function getServerUrl($route = true)
+    public function getServerUrl(bool|string $route = true)
     {
         $serverHelper = $this->getViewRenderer()->plugin('serverurl');
         return $serverHelper(
@@ -577,7 +577,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return mixed
      */
-    public function forwardTo($controller, $action, $params = [])
+    public function forwardTo(string $controller, string $action, array $params = [])
     {
         // Check for action first before forwarding to a controller:
         $event = clone $this->getEvent();
@@ -613,8 +613,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @return bool
      */
     protected function formWasSubmitted(
-        $submitElements = null,
-        $useCaptcha = false
+        string|array|null $submitElements = null,
+        bool $useCaptcha = false
     ) {
         $buttonFound = false;
         // Use of 'submit' as an input name was deprecated in release 10.0, but the
@@ -663,11 +663,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @return mixed
      */
     public function confirm(
-        $title,
-        $yesTarget,
-        $noTarget,
-        $messages = [],
-        $extras = []
+        string $title,
+        string $yesTarget,
+        string $noTarget,
+        string|array $messages = [],
+        array $extras = []
     ) {
         return $this->forwardTo(
             'Confirm',
@@ -816,7 +816,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    protected function normalizeUrlForComparison($url)
+    protected function normalizeUrlForComparison(string $url)
     {
         $parts = explode('://', $url, 2);
         return trim(end($parts), '/');
@@ -841,7 +841,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    protected function getAndClearFollowupUrl($checkRedirect = false)
+    protected function getAndClearFollowupUrl(bool $checkRedirect = false)
     {
         if ($url = $this->getService(FollowupHelper::class)->retrieveAndClear('url')) {
             $lightboxParent = $this->getService(FollowupHelper::class)->retrieveAndClear('lightboxParent');
@@ -907,7 +907,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    protected function getILSLoginMethod($target = '')
+    protected function getILSLoginMethod(string $target = '')
     {
         $config = $this->getILS()->checkFunction(
             'patronLogin',

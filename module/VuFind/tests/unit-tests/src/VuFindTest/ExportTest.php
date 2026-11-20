@@ -351,7 +351,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getFakeMARCXML($id)
+    protected function getFakeMARCXML(string $id)
     {
         return '<collection xmlns="http://www.loc.gov/MARC21/slim"><record><id>'
             . $id . '</id></record></collection>';
@@ -366,7 +366,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return Export
      */
-    protected function getExport($main = [], $export = [], $renderer = null)
+    protected function getExport(array $main = [], array $export = [], ?PhpRenderer $renderer = null)
     {
         return new Export($main, $export, $renderer ?? $this->createStub(PhpRenderer::class));
     }

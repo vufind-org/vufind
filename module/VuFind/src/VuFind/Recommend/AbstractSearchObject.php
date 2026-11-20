@@ -108,7 +108,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $settings = explode(':', $settings);
         $this->requestParam = empty($settings[0]) ? 'lookfor' : $settings[0];
@@ -192,7 +192,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         // No action needed.
     }

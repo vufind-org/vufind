@@ -60,7 +60,7 @@ class Summon extends AbstractFallbackLoader
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    protected function fetchSingleRecord($id)
+    protected function fetchSingleRecord(string $id)
     {
         $resource = $this->resourceService->getResourceByRecordId($id, 'Summon');
         if ($resource && ($extra = json_decode($resource->getExtraMetadata(), true))) {

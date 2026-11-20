@@ -146,7 +146,7 @@ abstract class AbstractCover
      *
      * @return bool
      */
-    public function supports($ids)
+    public function supports(array $ids)
     {
         return
             ($this->supportsIsbn && isset($ids['isbn']))
@@ -170,7 +170,7 @@ abstract class AbstractCover
      *
      * @return string|bool
      */
-    abstract public function getUrl($key, $size, $ids);
+    abstract public function getUrl(string $key, string $size, array $ids);
 
     /**
      * Get cover metadata for a particular API key and set of IDs (or empty array).

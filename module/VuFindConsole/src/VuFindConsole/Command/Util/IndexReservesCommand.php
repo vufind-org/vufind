@@ -137,10 +137,10 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      * @return UpdateDocument
      */
     protected function buildReservesIndex(
-        $instructors,
-        $courses,
-        $departments,
-        $reserves
+        array $instructors,
+        array $courses,
+        array $departments,
+        array $reserves
     ) {
         $index = [];
         foreach ($reserves as $record) {
@@ -236,7 +236,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      * @return CsvReader
      */
     protected function getCsvReader(
-        $files,
+        array|string $files,
         string $delimiter,
         string $template
     ): CsvReader {

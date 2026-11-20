@@ -85,7 +85,7 @@ class Oracle
      * @param string $password Password for connection
      * @param string $tns      TNS specification for connection
      */
-    public function __construct($username, $password, $tns)
+    public function __construct(string $username, string $password, string $tns)
     {
         $this->clearError();
         $tmp = error_reporting(1);
@@ -128,7 +128,7 @@ class Oracle
      *
      * @return mixed      SQL resource on success, boolean false otherwise.
      */
-    public function prepare($sql)
+    public function prepare(string $sql)
     {
         if ($parsed = @oci_parse($this->dbHandle, $sql)) {
             return $parsed;
@@ -161,7 +161,7 @@ class Oracle
      *
      * @return int
      */
-    protected function getDataTypeConstant($data_type)
+    protected function getDataTypeConstant(string $data_type)
     {
         switch ($data_type) {
             case 'integer':
@@ -203,10 +203,10 @@ class Oracle
      */
     public function bindParam(
         $parsed,
-        $place_holder,
-        $data,
-        $data_type = 'string',
-        $length = -1
+        string $place_holder,
+        string $data,
+        string $data_type = 'string',
+        int $length = -1
     ) {
         $success = @oci_bind_by_name(
             $parsed,
@@ -244,10 +244,10 @@ class Oracle
      */
     public function returnParam(
         $parsed,
-        $place_holder,
-        &$data,
-        $data_type = 'string',
-        $length = -1
+        string $place_holder,
+        string &$data,
+        string $data_type = 'string',
+        int $length = -1
     ) {
         $success = @oci_bind_by_name(
             $parsed,
@@ -337,7 +337,7 @@ class Oracle
      *
      * @return array|bool    Results on success, false on error.
      */
-    public function simpleSelect($sql, $fields = [])
+    public function simpleSelect(string $sql, array $fields = [])
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
@@ -364,7 +364,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleDelete($table, $fields = [])
+    public function simpleDelete(string $table, array $fields = [])
     {
         $types   = [];
         $data    = [];
@@ -413,7 +413,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleInsert($table, $fields = [])
+    public function simpleInsert(string $table, array $fields = [])
     {
         $types   = [];
         $data    = [];
@@ -471,7 +471,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleSql($sql, $fields = [])
+    public function simpleSql(string $sql, array $fields = [])
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
@@ -511,7 +511,7 @@ class Oracle
      *
      * @return void
      */
-    protected function handleError($type, $error, $sql = '')
+    protected function handleError(string $type, string $error, string $sql = '')
     {
         // All we are doing at the moment is storing it
         $this->lastError       = $error;

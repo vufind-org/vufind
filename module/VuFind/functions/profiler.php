@@ -36,7 +36,7 @@
  *
  * @return void
  */
-function enableVuFindProfiling($profilerBaseUrl)
+function enableVuFindProfiling(string $profilerBaseUrl)
 {
     $profilerEnableFunc = false;
     $profilerDisableFunc = false;

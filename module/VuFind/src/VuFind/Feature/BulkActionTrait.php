@@ -90,7 +90,7 @@ trait BulkActionTrait
      *
      * @return int
      */
-    public function getBulkActionLimit($action)
+    public function getBulkActionLimit(string $action)
     {
         if ($action == 'export') {
             $formats = $this->export->getActiveFormats('bulk');
@@ -109,7 +109,7 @@ trait BulkActionTrait
      *
      * @return int
      */
-    public function getExportActionLimit($format)
+    public function getExportActionLimit(string $format)
     {
         $bulkActionConfig = $this->getBulkActionConfig()['BulkActions'] ?? [];
         return $this->getBulkActionExportConfig()[$format]['limit']

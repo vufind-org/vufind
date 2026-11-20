@@ -81,7 +81,7 @@ class BrowZine extends DefaultRecord
      *
      * @return string|array|bool
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         if (isset($this->fields['coverImageUrl'])) {
             return $this->fields['coverImageUrl'];

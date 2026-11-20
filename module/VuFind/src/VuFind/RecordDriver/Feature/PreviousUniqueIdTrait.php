@@ -65,7 +65,7 @@ trait PreviousUniqueIdTrait
      *
      * @return void
      */
-    public function setPreviousUniqueId($id)
+    public function setPreviousUniqueId(string $id)
     {
         $this->previousUniqueId = $id;
     }

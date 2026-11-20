@@ -78,7 +78,7 @@ class StartPageTest extends \PHPUnit\Framework\TestCase
              *
              * @return void
              */
-            public function __invoke($msg)
+            public function __invoke(string $msg)
             {
                 $this->messages[] = $msg;
             }

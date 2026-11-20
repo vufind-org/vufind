@@ -104,7 +104,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setMaxQueryTime($time)
+    public function setMaxQueryTime(int $time)
     {
         $this->maxQueryTime = $time;
     }
@@ -116,7 +116,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setSearchProgressTarget($progress)
+    public function setSearchProgressTarget(float $progress)
     {
         $this->progressTarget = $progress;
     }
@@ -133,8 +133,8 @@ class Backend extends AbstractBackend
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
@@ -184,7 +184,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         $response   = $this->connector->record($id);
         $collection = $this->createRecordCollection([$response], 1);

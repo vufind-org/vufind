@@ -74,7 +74,7 @@ class PostHandler extends AbstractProcessingHandler
      *
      * @return void
      */
-    public function setContentType($type)
+    public function setContentType(int $type)
     {
         $this->contentType = $type;
     }
@@ -86,7 +86,7 @@ class PostHandler extends AbstractProcessingHandler
      *
      * @return string
      */
-    protected function getBody($event)
+    protected function getBody(array $event)
     {
         return json_encode(
             ['message' => $event['message'] . PHP_EOL]

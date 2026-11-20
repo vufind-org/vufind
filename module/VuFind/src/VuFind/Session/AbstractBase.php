@@ -138,7 +138,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    public function destroy($sessId): bool
+    public function destroy(string $sessId): bool
     {
         $this->getDbService(SearchServiceInterface::class)->destroySession($sessId);
         $this->getDbService(ExternalSessionServiceInterface::class)->destroySession($sessId);
@@ -178,7 +178,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    public function write($sessId, $data): bool
+    public function write(string $sessId, string $data): bool
     {
         if ($this->writesDisabled) {
             return true;
@@ -194,5 +194,5 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    abstract protected function saveSession($sessId, $data): bool;
+    abstract protected function saveSession(string $sessId, string $data): bool;
 }

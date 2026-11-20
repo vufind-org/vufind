@@ -118,7 +118,7 @@ abstract class AbstractBase
      * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
-    abstract public function getTreeList($hierarchyID = false);
+    abstract public function getTreeList(string $hierarchyID = false);
 
     /**
      * Render the Hierarchy Tree.
@@ -147,9 +147,9 @@ abstract class AbstractBase
      * @return string A hierarchy title
      */
     public function getHierarchyName(
-        $hierarchyID,
-        $inHierarchies,
-        $inHierarchiesTitle
+        string $hierarchyID,
+        array $inHierarchies,
+        array $inHierarchiesTitle
     ) {
         $keys = array_flip($inHierarchies);
         $key = $keys[$hierarchyID];

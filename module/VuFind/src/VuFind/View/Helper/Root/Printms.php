@@ -49,7 +49,7 @@ class Printms
      *
      * @return string   Human-readable representation
      */
-    public function __invoke($ms)
+    public function __invoke(float $ms)
     {
         // If we can't do the math, don't bother formatting the value:
         if (!is_numeric($ms)) {

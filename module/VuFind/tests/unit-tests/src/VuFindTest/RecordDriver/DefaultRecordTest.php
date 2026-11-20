@@ -587,7 +587,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], ?array $mainConfig = null)
+    protected function getDriver(array $overrides = [], ?array $mainConfig = null)
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

@@ -116,7 +116,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return Response
      */
-    protected function getMockResponse($body, $status = 200): Response
+    protected function getMockResponse(string $body, int $status = 200): Response
     {
         $response = $this->createMock(Response::class);
         $response->method('getBody')->willReturn($body);

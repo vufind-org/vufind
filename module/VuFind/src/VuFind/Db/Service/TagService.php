@@ -577,7 +577,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
     public function getListTags(
         UserListEntityInterface|int $listOrId,
         UserEntityInterface|int|null $userOrId = null,
-        $caseSensitive = false
+        bool $caseSensitive = false
     ): array {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);

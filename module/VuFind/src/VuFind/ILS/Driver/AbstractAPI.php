@@ -64,7 +64,7 @@ abstract class AbstractAPI extends AbstractBase implements
      *
      * @return array
      */
-    protected function preRequest(\Laminas\Http\Headers $headers, $params)
+    protected function preRequest(\Laminas\Http\Headers $headers, array $params)
     {
         return [$headers, $params];
     }
@@ -80,7 +80,7 @@ abstract class AbstractAPI extends AbstractBase implements
      *
      * @return void
      */
-    protected function debugRequest($method, $path, $params, $req_headers)
+    protected function debugRequest(string $method, string $path, array $params, \Laminas\Http\Headers $req_headers)
     {
         $logParams = [];
         $logHeaders = [];
@@ -106,7 +106,7 @@ abstract class AbstractAPI extends AbstractBase implements
      *
      * @return bool
      */
-    protected function failureCodeIsAllowed(int $code, $allowedFailureCodes): bool
+    protected function failureCodeIsAllowed(int $code, bool|array|string $allowedFailureCodes): bool
     {
         if ($allowedFailureCodes === true) {    // "allow everything" case
             return true;
@@ -151,13 +151,13 @@ abstract class AbstractAPI extends AbstractBase implements
      * @throws ILSException
      */
     public function makeRequest(
-        $method = 'GET',
-        $path = '/',
-        $params = [],
-        $headers = [],
-        $allowedFailureCodes = [],
-        $debugParams = null,
-        $attemptNumber = 1
+        string $method = 'GET',
+        string $path = '/',
+        string|array $params = [],
+        array $headers = [],
+        bool|array|string $allowedFailureCodes = [],
+        string|array $debugParams = null,
+        int $attemptNumber = 1
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -250,7 +250,7 @@ abstract class AbstractAPI extends AbstractBase implements
      * @throws BadConfig if base url excluded
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(array $config)
     {
         parent::setConfig($config);
         // Base URL required for API drivers

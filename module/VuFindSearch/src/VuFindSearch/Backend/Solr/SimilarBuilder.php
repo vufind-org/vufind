@@ -98,7 +98,7 @@ class SimilarBuilder implements SimilarBuilderInterface
      */
     public function __construct(
         ?array $searchConfig = null,
-        $uniqueKey = 'id'
+        string $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
         if (isset($searchConfig['MoreLikeThis'])) {

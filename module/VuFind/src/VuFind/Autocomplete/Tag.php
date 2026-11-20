@@ -63,7 +63,7 @@ class Tag implements AutocompleteInterface
      *
      * @return array        The suggestions for the provided query
      */
-    public function getSuggestions($query)
+    public function getSuggestions(string $query)
     {
         $tagList = [];
         $tags = $this->tagsService->getNonListTagsFuzzilyMatchingString($query);
@@ -81,7 +81,7 @@ class Tag implements AutocompleteInterface
      *
      * @return void
      */
-    public function setConfig($params)
+    public function setConfig(string $params)
     {
         // Ignore all parameters
     }

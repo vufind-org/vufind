@@ -135,7 +135,7 @@ abstract class AbstractBase implements AjaxHandlerInterface
      *
      * @return array
      */
-    protected function formatResponse($response, $httpCode = null)
+    protected function formatResponse(mixed $response, int $httpCode = null)
     {
         $arr = [$response];
         if ($httpCode !== null) {

@@ -184,7 +184,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDriver
      */
-    protected function getTestRecord($rawData = []): RecordDriver
+    protected function getTestRecord(array $rawData = []): RecordDriver
     {
         $driver = new RecordDriver();
         $driver->setRawData($rawData);

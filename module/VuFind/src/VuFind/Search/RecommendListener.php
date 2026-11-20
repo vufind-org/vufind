@@ -83,7 +83,7 @@ class RecommendListener
      * @param int           $searchId      The ID of the search for which this
      * listener should respond
      */
-    public function __construct(PluginManager $pluginManager, $searchId)
+    public function __construct(PluginManager $pluginManager, int $searchId)
     {
         $this->pluginManager = $pluginManager;
         $this->searchId = $searchId;
@@ -117,7 +117,7 @@ class RecommendListener
      *
      * @return void
      */
-    public function setConfig($config)
+    public function setConfig(array $config)
     {
         $this->config = $config;
     }

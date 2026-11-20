@@ -65,7 +65,7 @@ class ImageLink
      *
      * @return string path, null if image not found
      */
-    public function __invoke($image)
+    public function __invoke(string $image)
     {
         // If this is an absolute path, return it as-is:
         if (!$this->isRelativePath($image)) {

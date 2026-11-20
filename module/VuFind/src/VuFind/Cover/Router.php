@@ -78,9 +78,9 @@ class Router implements \Psr\Log\LoggerAwareInterface
      */
     public function getUrl(
         RecordDriver $driver,
-        $size = 'small',
-        $resolveDynamic = true,
-        $testLoadImage = false
+        string $size = 'small',
+        bool $resolveDynamic = true,
+        bool $testLoadImage = false
     ) {
         $metadata = $this->getMetadata(
             $driver,
@@ -112,10 +112,10 @@ class Router implements \Psr\Log\LoggerAwareInterface
      */
     public function getMetadata(
         RecordDriver $driver,
-        $size = 'small',
-        $resolveDynamic = true,
-        $testLoadImage = false,
-        $ajax = false
+        string $size = 'small',
+        bool $resolveDynamic = true,
+        bool $testLoadImage = false,
+        bool $ajax = false
     ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);

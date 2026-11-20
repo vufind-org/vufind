@@ -299,8 +299,8 @@ class MakeTag
     public function __invoke(
         string $tagName,
         string $contents,
-        $attrs = [],
-        $options = []
+        string|array $attrs = [],
+        array $options = []
     ) {
         // $attrs not an object, interpret as class name
         if (!is_array($attrs)) {
@@ -384,8 +384,8 @@ class MakeTag
     protected function compileTag(
         string $tagName,
         string $contents,
-        $attrs = [],
-        $options = []
+        array $attrs = [],
+        array $options = []
     ) {
         $this->verifyTagName($tagName);
 

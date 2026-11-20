@@ -90,7 +90,7 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $this->rawParams = $settings;
     }

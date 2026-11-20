@@ -70,7 +70,7 @@ class ContentBlock
      *
      * @return string
      */
-    public function __invoke($block)
+    public function __invoke(\VuFind\ContentBlock\ContentBlockInterface $block)
     {
         $template = 'ContentBlock/%s.phtml';
         $className = $block::class;

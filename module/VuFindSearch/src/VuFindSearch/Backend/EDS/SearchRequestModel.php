@@ -170,7 +170,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return string
      */
-    protected function formatDateLimiter($filter)
+    protected function formatDateLimiter(string $filter)
     {
         // PublicationDate:[xxxx TO xxxx]
         $dates = substr($filter, 17);
@@ -197,7 +197,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function setParameters($parameters = [])
+    public function setParameters(array $parameters = [])
     {
         foreach ($parameters as $key => $values) {
             switch ($key) {
@@ -468,7 +468,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return bool
      */
-    public static function isParameterIndexed($value)
+    public static function isParameterIndexed(string $value)
     {
         // Indexed parameter names end with '-x'
         return str_ends_with($value, '-x');
@@ -482,7 +482,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return string
      */
-    public static function getIndexedParameterName($value)
+    public static function getIndexedParameterName(string $value)
     {
         // Indexed parameter names end with '-x'
         return substr($value, 0, -2);
@@ -495,7 +495,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addAction($action)
+    public function addAction(string $action)
     {
         $this->actions[] = $action;
     }
@@ -507,7 +507,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addQuery($query)
+    public function addQuery(string $query)
     {
         $this->query[] = $query;
     }
@@ -519,7 +519,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addLimiter($limiter)
+    public function addLimiter(string $limiter)
     {
         [$field, $value] = explode(':', $limiter);
         if (!array_key_exists($field, $this->limiters)) {
@@ -535,7 +535,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addExpander($expander)
+    public function addExpander(string $expander)
     {
         $this->expanders[] = $expander;
     }
@@ -547,7 +547,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return void
      */
-    public function addFilter($facetFilter)
+    public function addFilter(string $facetFilter)
     {
         $filterComponents = explode(':', $facetFilter, 3);
         if (count($filterComponents) < 3) {
@@ -575,7 +575,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return string       The value with special characters escaped
      */
-    public static function escapeSpecialCharacters($value)
+    public static function escapeSpecialCharacters(string $value)
     {
         return addcslashes($value, ':,');
     }
@@ -587,7 +587,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return string       The value with special characters escaped
      */
-    public static function escapeSpecialCharactersForActions($value)
+    public static function escapeSpecialCharactersForActions(string $value)
     {
         return addcslashes($value, ':,()');
     }
@@ -599,7 +599,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return mixed
      */
-    public function __get($property)
+    public function __get(string $property)
     {
         if (property_exists($this, $property)) {
             return $this->$property;
@@ -614,7 +614,7 @@ class SearchRequestModel implements LoggerAwareInterface
      *
      * @return SearchRequestModel
      */
-    public function __set($property, $value)
+    public function __set(string $property, mixed $value)
     {
         if (property_exists($this, $property)) {
             $this->$property = $value;

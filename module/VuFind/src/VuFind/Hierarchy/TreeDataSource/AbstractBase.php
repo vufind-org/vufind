@@ -123,7 +123,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    abstract public function getJSON($id, $options = []);
+    abstract public function getJSON(string $id, array $options = []);
 
     /**
      * Get XML for the specified hierarchy ID.
@@ -133,7 +133,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    abstract public function getXML($id, $options = []);
+    abstract public function getXML(string $id, array $options = []);
 
     /**
      * Does this data source support the specified hierarchy ID?
@@ -142,5 +142,5 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    abstract public function supports($id);
+    abstract public function supports(string $id);
 }

@@ -70,7 +70,7 @@ class VuFind
      *
      * @return void
      */
-    public static function setServiceLocator($serviceLocator)
+    public static function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
         static::$serviceLocator = $serviceLocator;
     }
@@ -94,7 +94,7 @@ class VuFind
      * @return     \VuFind\Config\Config
      * @deprecated Use getConfigArray()
      */
-    public static function getConfig($config = 'config')
+    public static function getConfig(string $config = 'config')
     {
         return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($config);
     }
@@ -106,7 +106,7 @@ class VuFind
      *
      * @return array
      */
-    public static function getConfigArray($config = 'config')
+    public static function getConfigArray(string $config = 'config')
     {
         return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($config);
     }
@@ -120,7 +120,7 @@ class VuFind
      *
      * @return string      First index date/time.
      */
-    public static function getFirstIndexed($core, $id, $date)
+    public static function getFirstIndexed(string $core, string $id, string $date)
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
@@ -136,7 +136,7 @@ class VuFind
      *
      * @return string      Latest index date/time.
      */
-    public static function getLastIndexed($core, $id, $date)
+    public static function getLastIndexed(string $core, string $id, string $date)
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
@@ -150,7 +150,7 @@ class VuFind
      *
      * @return string     file contents.
      */
-    public static function harvestTextFile($url)
+    public static function harvestTextFile(string $url)
     {
         // Skip blank URLs:
         if (empty($url)) {
@@ -199,7 +199,7 @@ class VuFind
      *
      * @return string     Text contents of URL
      */
-    public static function harvestWithParser($url)
+    public static function harvestWithParser(string $url)
     {
         $parser = static::getParser();
         switch (strtolower($parser)) {
@@ -223,9 +223,9 @@ class VuFind
      * @return string        command to be executed
      */
     public static function getApertureCommand(
-        $input,
-        $output,
-        $method = 'webcrawler'
+        string $input,
+        string $output,
+        string $method = 'webcrawler'
     ) {
         // get the path to our sh/bat from the config
         $settings = static::getConfigArray('fulltext');
@@ -249,7 +249,7 @@ class VuFind
      *
      * @return string
      */
-    public static function stripBadChars($in)
+    public static function stripBadChars(string $in)
     {
         $badChars = '/[^\\x0009\\x000A\\x000D\\x0020-\\xD7FF\\xE000-\\xFFFD]/';
         return preg_replace($badChars, ' ', $in);
@@ -266,7 +266,7 @@ class VuFind
      *
      * @return string        text contents of file.
      */
-    public static function harvestWithAperture($url, $method = 'webcrawler')
+    public static function harvestWithAperture(string $url, string $method = 'webcrawler')
     {
         // Build a filename for temporary XML storage:
         $xmlFile = tempnam('/tmp', 'apt');
@@ -306,7 +306,7 @@ class VuFind
      *
      * @return array         Parameters for proc_open command
      */
-    public static function getTikaCommand($input, $output, $arg)
+    public static function getTikaCommand(string $input, string $output, string $arg)
     {
         $settings = static::getConfigArray('fulltext');
         if (!isset($settings['Tika']['path'])) {
@@ -336,7 +336,7 @@ class VuFind
      *
      * @return string     text contents of file.
      */
-    public static function harvestWithTika($url, $arg = '--text')
+    public static function harvestWithTika(string $url, string $arg = '--text')
     {
         // Build a filename for temporary XML storage:
         $outputFile = tempnam('/tmp', 'tika');
@@ -367,7 +367,7 @@ class VuFind
      *
      * @return string          mapped text.
      */
-    public static function mapString($in, $filename)
+    public static function mapString(string $in, string $filename)
     {
         // Load the translation map and send back the appropriate value. Note
         // that PHP's parse_ini_file() function is not compatible with SolrMarc's
@@ -392,7 +392,7 @@ class VuFind
      *
      * @return string    article-stripped text.
      */
-    public static function stripArticles($in)
+    public static function stripArticles(string $in)
     {
         static $articles = ['a', 'an', 'the'];
 
@@ -549,7 +549,7 @@ class VuFind
      *
      * @return string   XML as string
      */
-    public static function xmlAsText($in)
+    public static function xmlAsText(array $in)
     {
         // Start building return value:
         $text = '';
@@ -578,7 +578,7 @@ class VuFind
      *
      * @return string     XML as string
      */
-    public static function removeTagAndReturnXMLasText($in, $tag)
+    public static function removeTagAndReturnXMLasText(array $in, string $tag)
     {
         foreach ((array)$in as $current) {
             $matches = $current->getElementsByTagName($tag);
@@ -598,7 +598,7 @@ class VuFind
      *
      * @return DOMDocument
      */
-    public static function explode($delimiter, $string)
+    public static function explode(string $delimiter, string $string)
     {
         $parts = explode($delimiter, $string);
         $dom = new DOMDocument('1.0', 'utf-8');
@@ -617,7 +617,7 @@ class VuFind
      *
      * @return string
      */
-    public static function implode($glue, $pieces)
+    public static function implode(string $glue, array $pieces)
     {
         $mapper = function ($dom) {
             return trim($dom->textContent);
@@ -635,7 +635,7 @@ class VuFind
      *
      * @return string
      */
-    public static function extractBestDateOrRange($input, $strict = false)
+    public static function extractBestDateOrRange(array $input, bool $strict = false)
     {
         $fallback = null;
         foreach ($input as $current) {
@@ -663,7 +663,7 @@ class VuFind
      *
      * @return string
      */
-    public static function extractEarliestYear($input)
+    public static function extractEarliestYear(array $input)
     {
         $goodMatch = $adequateMatch = '';
         foreach ($input as $current) {
@@ -741,7 +741,7 @@ class VuFind
      *
      * @return DOMDocument
      */
-    public static function invertNames($input): DOMDocument
+    public static function invertNames(array $input): DOMDocument
     {
         $dom = new DOMDocument('1.0', 'utf-8');
         foreach ($input as $name) {

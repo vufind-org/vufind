@@ -88,9 +88,9 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      * @return \VuFind\RecordDriver\AbstractBase
      */
     public function load(
-        $id,
-        $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateMissing = false,
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        bool $tolerateMissing = false,
         ?ParamBag $params = null
     ) {
         if (null !== $id && '' !== $id) {
@@ -171,9 +171,9 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      * @return array
      */
     public function loadBatchForSource(
-        $ids,
-        $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateBackendExceptions = false,
+        array $ids,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        bool $tolerateBackendExceptions = false,
         ?ParamBag $params = null
     ) {
         $list = new Checklist($ids);
@@ -264,7 +264,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      *
      * @return \VuFind\RecordDriver\Missing
      */
-    protected function buildMissingRecord($details)
+    protected function buildMissingRecord(array $details)
     {
         $fields = $details['extra_fields'] ?? [];
         $fields['id'] = $details['id'];
@@ -294,9 +294,9 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      * @return array     Array of record drivers
      */
     public function loadBatch(
-        $ids,
-        $tolerateBackendExceptions = false,
-        $params = []
+        array $ids,
+        bool $tolerateBackendExceptions = false,
+        array $params = []
     ) {
         // Create a SourceAndIdList object to help sort the IDs by source:
         $list = new SourceAndIdList($ids);
@@ -340,7 +340,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function setCacheContext($context)
+    public function setCacheContext(string $context)
     {
         if (null !== $this->recordCache) {
             $this->recordCache->setContext($context);

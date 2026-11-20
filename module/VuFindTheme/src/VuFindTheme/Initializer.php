@@ -120,7 +120,7 @@ class Initializer
      * @param MvcEvent|ContainerInterface $eventOrContainer Laminas MVC Event object
      * OR service container object
      */
-    public function __construct(protected array $config, $eventOrContainer)
+    public function __construct(protected array $config, MvcEvent|ContainerInterface $eventOrContainer)
     {
         if ($eventOrContainer instanceof MvcEvent) {
             $this->event = $eventOrContainer;
@@ -340,7 +340,7 @@ class Initializer
      *
      * @return void
      */
-    protected function setUpThemeViewHelpers($helpers)
+    protected function setUpThemeViewHelpers(array $helpers)
     {
         // Grab the helper loader from the view manager:
         $loader = $this->serviceManager->get('ViewHelperManager');
@@ -357,7 +357,7 @@ class Initializer
      *
      * @return void
      */
-    protected function setUpThemes($themes)
+    protected function setUpThemes(array $themes)
     {
         $templatePathStack = [];
 
@@ -424,7 +424,7 @@ class Initializer
      *
      * @return void
      */
-    protected function updateTranslator($themes)
+    protected function updateTranslator(array $themes)
     {
         $theme = null;
         $pathStack = [];

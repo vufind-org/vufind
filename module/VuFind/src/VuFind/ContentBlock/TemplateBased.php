@@ -68,7 +68,7 @@ class TemplateBased implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $this->templateName = $settings;
     }
@@ -83,9 +83,9 @@ class TemplateBased implements ContentBlockInterface
      * @return array
      */
     public function getContext(
-        $pathPrefix = 'templates/ContentBlock/TemplateBased/',
-        $page = null,
-        $pattern = null
+        string $pathPrefix = 'templates/ContentBlock/TemplateBased/',
+        string $page = null,
+        string $pattern = null
     ) {
         $data = $this->pageLocator->determineTemplateAndRenderer(
             $pathPrefix,

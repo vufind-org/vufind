@@ -91,9 +91,9 @@ class Map extends AbstractBase
      */
     public function __construct(
         protected PathResolver $pathResolver,
-        $mapTabDisplay = false,
-        $basemapOptions = [],
-        $mapTabOptions = [],
+        bool $mapTabDisplay = false,
+        array $basemapOptions = [],
+        array $mapTabOptions = [],
     ) {
         if ($mapTabDisplay) {
             $this->mapTabDisplay = $mapTabDisplay;

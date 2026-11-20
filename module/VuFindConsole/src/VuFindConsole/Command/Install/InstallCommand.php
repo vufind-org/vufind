@@ -128,7 +128,7 @@ class InstallCommand extends Command
      * @param string|null $name The name of the command; passing null means it must
      * be set in configure()
      */
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
         $this->baseDir = str_replace(
             '\\',
@@ -215,7 +215,7 @@ class InstallCommand extends Command
      *
      * @return bool
      */
-    protected function writeFileToDisk($filename, $content)
+    protected function writeFileToDisk(string $filename, string $content)
     {
         return @file_put_contents($filename, $content);
     }
@@ -308,7 +308,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateBasePath($basePath, $allowEmpty = false)
+    protected function validateBasePath(string $basePath, bool $allowEmpty = false)
     {
         if ($allowEmpty && empty($basePath)) {
             return true;
@@ -326,7 +326,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateSolrPort($solrPort)
+    protected function validateSolrPort(string $solrPort)
     {
         if (is_numeric($solrPort)) {
             return true;
@@ -393,7 +393,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function initializeOverrideDir($dir)
+    protected function initializeOverrideDir(string $dir)
     {
         return $this->buildDirs(
             [
@@ -443,7 +443,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateModules($modules)
+    protected function validateModules(string $modules)
     {
         foreach (explode(',', $modules) as $module) {
             $result = $this->validateModule(trim($module));
@@ -461,7 +461,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateModule($module)
+    protected function validateModule(string $module)
     {
         $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
         $illegalModules = [
@@ -556,7 +556,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateHost($host)
+    protected function validateHost(string $host)
     {
         // From http://stackoverflow.com/questions/106179/
         //             regular-expression-to-match-hostname-or-ip-address
@@ -721,7 +721,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildUnixEnvironment($output)
+    protected function buildUnixEnvironment(OutputInterface $output)
     {
         $filename = $this->baseDir . '/env.sh';
         if (($msg = $this->backUpFile($output, $filename, 'Unix environment file')) !== true) {
@@ -743,7 +743,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildWindowsConfig($output)
+    protected function buildWindowsConfig(OutputInterface $output)
     {
         $filename = $this->baseDir . '/env.bat';
         if (($msg = $this->backUpFile($output, $filename, 'Windows environment file')) !== true) {
@@ -766,7 +766,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildImportConfig(OutputInterface $output, $filename)
+    protected function buildImportConfig(OutputInterface $output, string $filename)
     {
         $target = $this->overrideDir . '/import/' . $filename;
         if (($msg = $this->backUpFile($output, $target, 'import configuration')) !== true) {
@@ -796,7 +796,7 @@ class InstallCommand extends Command
      *
      * @return bool|string True on success, name of problem directory on failure
      */
-    protected function buildDirs($dirs)
+    protected function buildDirs(array $dirs)
     {
         foreach ($dirs as $dir) {
             if (!is_dir($dir) && !@mkdir($dir)) {

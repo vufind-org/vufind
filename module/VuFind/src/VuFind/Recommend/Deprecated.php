@@ -49,7 +49,7 @@ class Deprecated implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
     }
 
@@ -79,7 +79,7 @@ class Deprecated implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
     }
 }

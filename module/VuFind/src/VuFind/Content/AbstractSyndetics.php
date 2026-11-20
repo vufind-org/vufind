@@ -62,7 +62,7 @@ abstract class AbstractSyndetics extends AbstractBase
      * @return \Laminas\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient($url = null)
+    protected function getHttpClient(string $url = null)
     {
         $client = parent::getHttpClient($url);
         $client->setOptions(['timeout' => $this->timeout]);
@@ -79,7 +79,7 @@ abstract class AbstractSyndetics extends AbstractBase
      *
      * @return string
      */
-    protected function getIsbnUrl($isbn, $id, $file = 'index.xml', $type = 'rw12,h7')
+    protected function getIsbnUrl(string $isbn, string $id, string $file = 'index.xml', string $type = 'rw12,h7')
     {
         $url = 'https://www.syndetics.com/index.aspx?isbn=' . $isbn
             . '/' . $file . '&client=' . $id . '&type=' . $type;
@@ -94,7 +94,7 @@ abstract class AbstractSyndetics extends AbstractBase
      *
      * @return DOMDocument|bool Document on success, false on failure.
      */
-    protected function xmlToDOMDocument($xml)
+    protected function xmlToDOMDocument(string $xml)
     {
         $dom = new DOMDocument();
         return $dom->loadXML($xml) ? $dom : false;

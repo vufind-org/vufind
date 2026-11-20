@@ -90,8 +90,8 @@ abstract class HttpErrorException extends BackendException
      * @return void
      */
     public function __construct(
-        $message,
-        $code,
+        string $message,
+        int $code,
         Response $response,
         ?Exception $prev = null
     ) {

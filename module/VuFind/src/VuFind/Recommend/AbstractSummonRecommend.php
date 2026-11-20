@@ -80,7 +80,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Only one setting -- HTTP request field containing search terms (ignored
         // if $searchObject is Summon type).
@@ -115,7 +115,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         // If we received a Summon search object, we'll use that. If not, we need
         // to create a new Summon search object using the specified request

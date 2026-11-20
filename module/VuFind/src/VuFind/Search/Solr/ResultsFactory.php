@@ -61,7 +61,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $solr = parent::__invoke($container, $requestedName, $options);

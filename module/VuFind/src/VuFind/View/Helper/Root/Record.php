@@ -136,7 +136,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return Record
      */
-    public function __invoke($driver)
+    public function __invoke(\VuFind\RecordDriver\AbstractBase $driver)
     {
         $this->driver = $driver;
         return $this;
@@ -154,7 +154,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function renderTemplate($name, $context = null, $throw = true)
+    public function renderTemplate(string $name, array $context = null, bool $throw = true)
     {
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
@@ -217,7 +217,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string        Exported data
      */
-    public function getExport($format)
+    public function getExport(string $format)
     {
         $format = strtolower($format);
         return $this->renderTemplate('export-' . $format . '.phtml');
@@ -231,7 +231,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getFormatClass($format)
+    public function getFormatClass(string $format)
     {
         return $this->renderTemplate(
             'format-class.phtml',
@@ -269,7 +269,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getListEntry($list = null, $user = null, $recordNumber = null)
+    public function getListEntry(?UserListEntityInterface $list = null, ?UserEntityInterface $user = null, ?int $recordNumber = null)
     {
         // Get list of lists containing this entry
         $lists = null;
@@ -296,7 +296,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string[]
      */
-    public function getListNotes($list_id = null, $user_id = null)
+    public function getListNotes(int $list_id = null, int $user_id = null)
     {
         $data = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
             $this->driver->getUniqueID(),
@@ -444,7 +444,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getTitleHtml($maxLength = 180)
+    public function getTitleHtml(int $maxLength = 180)
     {
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
         $title = $this->driver->tryMethod('getTitle');
@@ -471,7 +471,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLink($type, $lookfor)
+    public function getLink(string $type, string $lookfor)
     {
         $link = $this->renderTemplate(
             'link-' . $type . '.phtml',
@@ -549,7 +549,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getSearchResult($view)
+    public function getSearchResult(string $view)
     {
         return $this->renderTemplate('result-' . $view . '.phtml');
     }
@@ -563,7 +563,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
+    public function getCheckbox(string $idPrefix = '', string $formAttr = false, int $number = null)
     {
         $context = compact('number') + [
             'id' => $this->getUniqueIdWithSourcePrefix(),
@@ -588,7 +588,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getCover($context, $default, $link = false)
+    public function getCover(string $context, string $default, string $link = false)
     {
         $details = $this->getCoverDetails($context, $default, $link);
         return $details['html'];
@@ -602,7 +602,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return bool
      */
-    protected function getPreviewCoverLinkSetting($context)
+    protected function getPreviewCoverLinkSetting(string $context)
     {
         static $previewContexts = false;
         if (false === $previewContexts) {
@@ -627,7 +627,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return array
      */
-    public function getCoverDetails($context, $default, $link = false)
+    public function getCoverDetails(string $context, string $default, string|array|bool $link = false)
     {
         $linkAttributes = is_string($link)
             ? ['href' => $link]
@@ -663,7 +663,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    protected function getCoverSize($context, $default = 'medium')
+    protected function getCoverSize(string $context, string $default = 'medium')
     {
         if (!($this->config['Content']['coversize'] ?? true)) {
             // covers disabled entirely
@@ -680,7 +680,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getThumbnailAlignment($context = 'result')
+    public function getThumbnailAlignment(string $context = 'result')
     {
         $configField = $context . 'ThumbnailsOnLeft';
         $left = $this->config['Site'][$configField] ?? true;
@@ -703,11 +703,11 @@ class Record implements DbServiceAwareInterface
      * @return string|bool
      */
     public function getQrCode(
-        $context,
-        $extra = [],
-        $level = 'L',
-        $size = 3,
-        $margin = 4
+        string $context,
+        array $extra = [],
+        string $level = 'L',
+        int $size = 3,
+        int $margin = 4
     ) {
         if (!isset($this->config['QRCode'])) {
             return false;
@@ -748,7 +748,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string|bool
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         // Find out whether or not AJAX covers are enabled; this will control
         // whether dynamic URLs are resolved immediately or deferred until later
@@ -781,7 +781,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return array
      */
-    public function getLinkDetails($openUrlActive = false)
+    public function getLinkDetails(bool $openUrlActive = false)
     {
         // See if there are any links available:
         $urls = $this->driver->tryMethod('getURLs');
@@ -844,7 +844,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return array
      */
-    protected function deduplicateLinks($links)
+    protected function deduplicateLinks(array $links)
     {
         return array_values(array_unique($links, SORT_REGULAR));
     }
@@ -856,7 +856,7 @@ class Record implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getUniqueHtmlElementId($idPrefix = '')
+    public function getUniqueHtmlElementId(string $idPrefix = '')
     {
         $resultSetId = $this->driver->getResultSetIdentifier() ?? '';
 

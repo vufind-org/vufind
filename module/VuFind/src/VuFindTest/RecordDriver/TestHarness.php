@@ -56,7 +56,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      *
      * @return mixed
      */
-    public function __call($method, $params)
+    public function __call(string $method, array $params)
     {
         if (str_starts_with($method, 'get')) {
             $index = substr($method, 3);

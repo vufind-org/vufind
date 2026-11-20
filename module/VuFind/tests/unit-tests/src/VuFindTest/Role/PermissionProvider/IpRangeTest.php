@@ -51,7 +51,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
      *
      * @return IpRange
      */
-    protected function getPermissionProvider($ipAddr, IpAddressUtils $utils): IpRange
+    protected function getPermissionProvider(string $ipAddr, IpAddressUtils $utils): IpRange
     {
         $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);

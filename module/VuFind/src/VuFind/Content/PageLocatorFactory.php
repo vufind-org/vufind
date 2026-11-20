@@ -62,7 +62,7 @@ class PageLocatorFactory implements \Laminas\ServiceManager\Factory\FactoryInter
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if ($options !== null) {

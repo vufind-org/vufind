@@ -99,7 +99,7 @@ class Permission extends AbstractPlugin implements
      *
      * @return bool
      */
-    public function isAuthorized($permission, $context = null)
+    public function isAuthorized(string $permission, mixed $context = null)
     {
         return $this->permissionManager->isAuthorized($permission, $context);
     }
@@ -117,9 +117,9 @@ class Permission extends AbstractPlugin implements
      * @return mixed
      */
     public function check(
-        $permission,
-        $defaultBehavior = null,
-        $passIfUndefined = false
+        string $permission,
+        string $defaultBehavior = null,
+        bool $passIfUndefined = false
     ) {
         // If no permission rule is defined and we're only checking defined
         // permissions, bail out now....

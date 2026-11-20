@@ -96,7 +96,7 @@ abstract class AbstractBase implements
      * @param ?array $mainConfig   VuFind main configuration (omit for built-in defaults)
      * @param ?array $recordConfig Record-specific configuration file (omit to use $mainConfig as $recordConfig)
      */
-    public function __construct($mainConfig = null, $recordConfig = null)
+    public function __construct(?array $mainConfig = null, ?array $recordConfig = null)
     {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig ?? $mainConfig;
@@ -113,7 +113,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function setRawData($data)
+    public function setRawData(mixed $data)
     {
         $this->fields = $data;
     }
@@ -238,7 +238,7 @@ abstract class AbstractBase implements
      *
      * @deprecated Use UserListServiceInterface::getListsContainingRecord()
      */
-    public function getContainingLists($user_id = null)
+    public function getContainingLists(int $user_id = null)
     {
         return $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
             $this->getUniqueID(),
@@ -295,7 +295,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function setExtraDetail($key, $val)
+    public function setExtraDetail(string $key, mixed $val)
     {
         $this->extraDetails[$key] = $val;
     }
@@ -343,7 +343,7 @@ abstract class AbstractBase implements
      *
      * @return mixed
      */
-    public function getExtraDetail($key)
+    public function getExtraDetail(string $key)
     {
         return $this->extraDetails[$key] ?? null;
     }
@@ -371,7 +371,7 @@ abstract class AbstractBase implements
      *
      * @return mixed
      */
-    public function tryMethod($method, $params = [], $default = null)
+    public function tryMethod(string $method, array $params = [], mixed $default = null)
     {
         return is_callable([$this, $method]) ? $this->$method(...$params) : $default;
     }

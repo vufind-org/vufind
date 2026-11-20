@@ -58,7 +58,7 @@ class Threesixtylink extends AbstractBase
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
+    public function __construct(string $baseUrl, \Laminas\Http\Client $httpClient)
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
@@ -73,7 +73,7 @@ class Threesixtylink extends AbstractBase
      *
      * @return string         raw XML returned by resolver
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         // Make the call to SerialsSolutions and load results
         $url = $this->baseUrl . (str_ends_with($this->baseUrl, '/') ? '' : '/') .
@@ -92,7 +92,7 @@ class Threesixtylink extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks($xmlstr)
+    public function parseLinks(string $xmlstr)
     {
         $records = []; // array to return
 

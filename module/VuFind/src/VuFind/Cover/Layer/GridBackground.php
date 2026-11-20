@@ -51,7 +51,7 @@ class GridBackground extends AbstractBackgroundLayer
      *
      * @return void
      */
-    public function render($im, $details, $settings)
+    public function render($im, array $details, object $settings)
     {
         // Generate a grid of colors as primary feature
         $seed = $this->createSeed($details['title'], $details['callnumber']);
@@ -67,7 +67,7 @@ class GridBackground extends AbstractBackgroundLayer
      *
      * @return string binary string describing a quarter of the pattern
      */
-    protected function createPattern($seed)
+    protected function createPattern(int $seed)
     {
         // Convert to binary
         $bc = decbin($seed);
@@ -100,7 +100,7 @@ class GridBackground extends AbstractBackgroundLayer
      *
      * @return void
      */
-    protected function renderGrid($im, $pattern, $color, $settings)
+    protected function renderGrid($im, string $pattern, int $color, object $settings)
     {
         imagefilledrectangle(
             $im,

@@ -320,8 +320,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      * @return MockObject&\VuFind\RecordDriver\AbstractBase
      */
     protected function getDriver(
-        $id = 'test',
-        $source = 'Solr'
+        string $id = 'test',
+        string $source = 'Solr'
     ): MockObject&\VuFind\RecordDriver\AbstractBase {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->method('getUniqueId')->willReturn($id);

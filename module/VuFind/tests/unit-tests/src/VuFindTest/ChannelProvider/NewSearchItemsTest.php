@@ -132,7 +132,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredCoverRouterMock($recordDriver)
+    protected function getConfiguredCoverRouterMock(mixed $recordDriver)
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
@@ -149,7 +149,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredRecordRouterMock($recordDriver)
+    protected function getConfiguredRecordRouterMock(mixed $recordDriver)
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
@@ -168,9 +168,9 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      * @return callable
      */
     protected function getCommandChecker(
-        $args = [],
-        $class = \VuFindSearch\Command\SearchCommand::class,
-        $target = 'Solr'
+        array $args = [],
+        string $class = \VuFindSearch\Command\SearchCommand::class,
+        string $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
             $this->assertSame($command::class, $class);
@@ -190,7 +190,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredParamsMock($query, $paramBag)
+    protected function getConfiguredParamsMock(\VuFindSearch\Query\Query $query, \VuFindSearch\ParamBag $paramBag)
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getQuery')->willReturn($query);

@@ -547,7 +547,7 @@ trait SearchFacetFilterTrait
      *
      * @return array Simple array of facets
      */
-    protected function flattenFacetHierarchy($facetList)
+    protected function flattenFacetHierarchy(array $facetList)
     {
         $results = [];
         foreach ($facetList as $facetItem) {

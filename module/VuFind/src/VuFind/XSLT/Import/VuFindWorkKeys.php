@@ -65,13 +65,13 @@ class VuFindWorkKeys
      * @return DOMDocument
      */
     public static function getWorkKeys(
-        $uniformTitles,
-        $titles,
-        $trimmedTitles,
-        $authors,
-        $includeRegEx = '',
-        $excludeRegEx = '',
-        $transliteratorRules = ''
+        Iterable $uniformTitles,
+        Iterable $titles,
+        Iterable $trimmedTitles,
+        Iterable $authors,
+        string $includeRegEx = '',
+        string $excludeRegEx = '',
+        string $transliteratorRules = ''
     ) {
         $transliterator = $transliteratorRules
             ? \Transliterator::createFromRules(
@@ -145,7 +145,7 @@ class VuFindWorkKeys
      *
      * @return string
      */
-    protected static function deDom($string): string
+    protected static function deDom(string|DOMElement $string): string
     {
         return $string->textContent ?? (string)$string;
     }
@@ -163,10 +163,10 @@ class VuFindWorkKeys
      * @return string
      */
     protected static function normalize(
-        $rawString,
-        $includeRegEx,
-        $excludeRegEx,
-        $transliterator
+        string|DOMElement $rawString,
+        string $includeRegEx,
+        string $excludeRegEx,
+        \Transliterator $transliterator
     ) {
         // Handle strings and/or DOM elements:
         $string = self::deDom($rawString);

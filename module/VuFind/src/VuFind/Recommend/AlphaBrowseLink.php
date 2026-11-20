@@ -64,7 +64,7 @@ class AlphaBrowseLink implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // so far there's just the one setting.
         $this->index = $settings;
@@ -96,7 +96,7 @@ class AlphaBrowseLink implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->query = $results->getParams()->getDisplayQuery();
     }

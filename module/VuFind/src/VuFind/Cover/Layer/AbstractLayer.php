@@ -74,7 +74,7 @@ abstract class AbstractLayer implements LayerInterface
      *
      * @return int|false allocated color
      */
-    protected function getColor($im, $color)
+    protected function getColor($im, string $color)
     {
         // Case one: named color found in map
         $key = strtolower($color);
@@ -102,7 +102,7 @@ abstract class AbstractLayer implements LayerInterface
      *
      * @return int
      */
-    protected function getHSBColor($im, $h, $s, $v)
+    protected function getHSBColor($im, int $h, int $s, int $v)
     {
         $s /= 256.0;
         if ($s === 0.0) {

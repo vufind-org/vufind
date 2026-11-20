@@ -63,7 +63,7 @@ class ParentTemplate
      * @return string path, null if image not found
      * @throws Exception if no file exists at path
      */
-    public function __invoke($template, $targetTheme = null)
+    public function __invoke(string $template, string $targetTheme = null)
     {
         $paths = $this->templatePathStack->getPaths();
 

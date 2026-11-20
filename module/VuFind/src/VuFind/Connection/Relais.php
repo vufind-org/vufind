@@ -77,7 +77,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      *
      * @return array
      */
-    protected function getOclcRequestData($oclc, $patron)
+    protected function getOclcRequestData(string $oclc, ?string $patron)
     {
         return [
             'PickupLocation' => $this->config['pickupLocation'] ?? null,
@@ -100,7 +100,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    protected function request($uri, $data)
+    protected function request(string $uri, array $data)
     {
         $this->client->resetParameters()
             ->setUri($uri)
@@ -126,7 +126,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      * @return mixed
      * @throws \Exception
      */
-    public function authenticatePatron($patron = null, $returnFullObject = false)
+    public function authenticatePatron(string $patron = null, bool $returnFullObject = false)
     {
         $uri = $this->config['authenticateurl'] ?? null;
         if (empty($uri)) {
@@ -147,7 +147,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      * @return string
      * @throws \Exception
      */
-    public function placeRequest($oclc, $auth, $patron = null)
+    public function placeRequest(string $oclc, string $auth, string $patron = null)
     {
         $uri = $this->config['addurl'] ?? null;
         if (empty($uri)) {
@@ -167,7 +167,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
      * @return string
      * @throws \Exception
      */
-    public function search($oclc, $auth, $patron = null)
+    public function search(string $oclc, string $auth, string $patron = null)
     {
         $uri = $this->config['availableurl'] ?? null;
         if (empty($uri)) {

@@ -215,7 +215,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function setUpGenericCartTest($extraConfigs = [], $inLightbox = true): DocumentElement
+    protected function setUpGenericCartTest(array $extraConfigs = [], bool $inLightbox = true): DocumentElement
     {
         // Activate the cart:
         $extraConfigs['config']['Site'] = ['showBookBag' => true];

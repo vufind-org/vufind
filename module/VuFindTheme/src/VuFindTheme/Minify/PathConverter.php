@@ -47,7 +47,7 @@ class PathConverter extends \MatthiasMullie\PathConverter\Converter
      *
      * @return string
      */
-    protected function normalize($path)
+    protected function normalize(string $path)
     {
         $path = parent::normalize($path);
 
@@ -69,7 +69,7 @@ class PathConverter extends \MatthiasMullie\PathConverter\Converter
      *
      * @return string The new relative path
      */
-    public function convert($path)
+    public function convert(string $path)
     {
         $path = $this->from . '/' . $path;
         $path = preg_replace('/.*?\/themes\//', '../themes/', $path);

@@ -220,7 +220,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver(array $overrides = [])
     {
         $record = new class () extends \VuFind\RecordDriver\SolrDefault {
             /**
@@ -281,7 +281,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              *
              * @return mixed
              */
-            public function __call($method, $args)
+            public function __call(mixed $method, mixed $args)
             {
                 switch ($method) {
                     case 'getFullTitle':
@@ -324,7 +324,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDataFormatter
      */
-    protected function getFormatter($additionalConfig = [], $additionalSpecs = [])
+    protected function getFormatter(array $additionalConfig = [], array $additionalSpecs = [])
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $recordDataFormatterConfig = array_merge($additionalConfig, [
@@ -416,7 +416,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findResult($needle, $haystack)
+    protected function findResult(string $needle, array $haystack)
     {
         foreach ($haystack as $current) {
             if ($current['label'] == $needle) {
@@ -433,7 +433,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getLabels($results)
+    protected function getLabels(array $results)
     {
         $callback = function ($c) {
             return $c['label'];
@@ -886,7 +886,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecs($driver, array $spec, $globalOptions = []): array
+    protected function getInvokedSpecs(SolrDefault $driver, array $spec, array $globalOptions = []): array
     {
         $formatter = ($this->getFormatter($globalOptions))($driver);
         return $formatter->getData($spec);
@@ -901,7 +901,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecs($driver, array $spec, $globalOptions = []): array
+    protected function getOldSpecs(SolrDefault $driver, array $spec, array $globalOptions = []): array
     {
         $formatter = $this->getFormatter($globalOptions);
         return $formatter->getData($driver, $spec);
@@ -915,7 +915,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecsWithGlobalOptions($driver, array $spec): array
+    protected function getInvokedSpecsWithGlobalOptions(SolrDefault $driver, array $spec): array
     {
         return $this->getInvokedSpecs($driver, $spec, $this->getGlobalTestConfig());
     }
@@ -928,7 +928,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecsWithGlobalOptions($driver, array $spec): array
+    protected function getOldSpecsWithGlobalOptions(SolrDefault $driver, array $spec): array
     {
         return $this->getOldSpecs($driver, $spec, $this->getGlobalTestConfig());
     }

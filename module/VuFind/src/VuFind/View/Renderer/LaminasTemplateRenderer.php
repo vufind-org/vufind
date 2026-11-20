@@ -294,7 +294,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      *
      * @return string
      */
-    protected function inflectName($name)
+    protected function inflectName(string $name)
     {
         foreach ($this->injectTemplateListener->getPrefixes() as $prefix) {
             if (str_starts_with($name, $prefix)) {

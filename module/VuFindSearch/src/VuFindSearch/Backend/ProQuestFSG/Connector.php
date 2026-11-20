@@ -85,7 +85,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id, ?ParamBag $params = null)
+    public function getRecord(string $id, ?ParamBag $params = null)
     {
         $params ??= new ParamBag();
         $params->set('query', "rec.identifier = \"{$id}\"");
@@ -101,7 +101,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      *
      * @return array
      */
-    public function search(ParamBag $params, $offset, $limit)
+    public function search(ParamBag $params, int $offset, int $limit)
     {
         // Constant params
         $params->set('operation', 'searchRetrieve');

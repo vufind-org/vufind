@@ -68,7 +68,7 @@ class NonTabRecordActionCommand extends AbstractCommand
     public function __construct(
         GeneratorTools $tools,
         array $mainConfig,
-        $name = null
+        ?string $name = null
     ) {
         $this->mainConfig = $mainConfig;
         parent::__construct($tools, $name);

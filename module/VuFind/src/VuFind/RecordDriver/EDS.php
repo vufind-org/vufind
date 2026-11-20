@@ -95,7 +95,7 @@ class EDS extends DefaultRecord
      *
      * @return string The determined key
      */
-    protected function getCacheKey($key = '')
+    protected function getCacheKey(string $key = '')
     {
         return 'EDS_Shared_' . md5($key);
     }
@@ -687,7 +687,7 @@ class EDS extends DefaultRecord
      *
      * @return string|array|bool
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         $thumbnail = null;
         // Create a ranked list of sizes so we can use "best available" when appropriate.
@@ -1022,7 +1022,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function getFilteredIdentifiers($filter)
+    protected function getFilteredIdentifiers(array $filter)
     {
         $raw = array_merge(
             $this->extractEbscoDataFromRecordInfo(
@@ -1089,7 +1089,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    protected function getFilteredNumbering($type)
+    protected function getFilteredNumbering(string $type)
     {
         $numbering = $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/*/BibEntity/Numbering'
@@ -1326,7 +1326,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function extractEbscoData($selectors)
+    protected function extractEbscoData(array $selectors)
     {
         $result = [];
         foreach ($selectors as $selector) {
@@ -1350,7 +1350,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function extractEbscoDataFromItems($label)
+    protected function extractEbscoDataFromItems(string $label)
     {
         $items = $this->getItem('Label', $label);
         $output = [];
@@ -1368,7 +1368,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function extractEbscoDataFromRecordInfo($path)
+    protected function extractEbscoDataFromRecordInfo(string $path)
     {
         return (array)$this->recurseIntoRecordInfo(
             $this->fields['RecordInfo'] ?? [],
@@ -1384,7 +1384,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function recurseIntoRecordInfo($data, $path)
+    protected function recurseIntoRecordInfo(array $data, array $path)
     {
         $nextField = array_shift($path);
         $keys = $nextField === '*' ? array_keys($data) : [$nextField];

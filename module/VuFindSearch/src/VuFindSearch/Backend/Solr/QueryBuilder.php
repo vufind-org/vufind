@@ -115,7 +115,7 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function __construct(
         array $specs = [],
-        $defaultDismaxHandler = 'dismax'
+        string $defaultDismaxHandler = 'dismax'
     ) {
         $this->defaultDismaxHandler = $defaultDismaxHandler;
         $this->setSpecs($specs);
@@ -349,7 +349,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function setFieldsToHighlight($list)
+    public function setFieldsToHighlight(string $list)
     {
         $this->fieldsToHighlight = $list;
         return $this;
@@ -363,7 +363,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function setCreateSpellingQuery($enable)
+    public function setCreateSpellingQuery(bool $enable)
     {
         $this->createSpellingQuery = $enable;
     }
@@ -429,7 +429,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler($handler, string $searchString)
+    protected function getSearchHandler(string $handler, string $searchString)
     {
         $handler = $handler ? strtolower($handler) : $handler;
         if ($handler) {
@@ -519,7 +519,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function createSearchString($string, ?SearchHandler $handler = null)
+    protected function createSearchString(string $string, ?SearchHandler $handler = null)
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
@@ -544,7 +544,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function fixTrailingQuestionMarks($string)
+    protected function fixTrailingQuestionMarks(string $string)
     {
         // Treat colon and whitespace as word separators -- in either case, we
         // should add parentheses for accuracy.
@@ -578,7 +578,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function getNormalizedQueryString($queryString)
+    protected function getNormalizedQueryString(string $queryString)
     {
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
@@ -596,7 +596,7 @@ class QueryBuilder implements QueryBuilderInterface
      * @return string
      */
     protected function createAdvancedInnerSearchString(
-        $string,
+        string $string,
         SearchHandler $handler
     ) {
         // Special case -- if the user wants all records but the current handler

@@ -48,9 +48,9 @@ class SolrWeb extends SolrDefault
      * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
-        $mainConfig = null,
-        $recordConfig = null,
-        $searchSettings = null
+        ?array $mainConfig = null,
+        ?array $recordConfig = null,
+        ?array $searchSettings = null
     ) {
         $this->preferredSnippetFields = ['description', 'fulltext'];
         parent::__construct($mainConfig, $recordConfig, $searchSettings);

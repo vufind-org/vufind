@@ -58,7 +58,7 @@ abstract class AbstractPluginManager extends Base
      * container, this value will be passed to the parent constructor.
      */
     public function __construct(
-        $configOrContainerInstance = null,
+        mixed $configOrContainerInstance = null,
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
@@ -76,7 +76,7 @@ abstract class AbstractPluginManager extends Base
      * @throws InvalidServiceException if invalid
      * @return void
      */
-    public function validate($plugin)
+    public function validate(mixed $plugin)
     {
         $expectedInterface = $this->getExpectedInterface();
         if (!$plugin instanceof $expectedInterface) {

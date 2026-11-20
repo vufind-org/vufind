@@ -1036,7 +1036,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @return void
      */
     protected function assertWithTimeout(
-        $expected,
+        mixed $expected,
         callable $callback,
         callable $compareFunc,
         callable $assertion,
@@ -1076,7 +1076,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @return void
      */
     protected function assertEqualsWithTimeout(
-        $expected,
+        mixed $expected,
         callable $callback,
         ?int $timeout = null
     ): void {
@@ -1101,7 +1101,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @return void
      */
     protected function assertSameWithTimeout(
-        $expected,
+        mixed $expected,
         callable $callback,
         ?int $timeout = null
     ): void {

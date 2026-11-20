@@ -64,11 +64,11 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      */
     public function __construct(
         protected PathResolver $pathResolver,
-        $client = null,
-        $harvestRoot = null,
+        Client $client = null,
+        string $harvestRoot = null,
         ?HarvesterFactory $factory = null,
-        $silent = false,
-        $name = null,
+        bool $silent = false,
+        ?string $name = null,
     ) {
         parent::__construct($client, $harvestRoot, $factory, $silent, $name);
     }

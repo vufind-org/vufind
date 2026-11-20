@@ -57,7 +57,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&Client
      */
-    protected function getMockClient($expectedUri, $body = '{ "foo": "bar" }', $status = 200): MockObject&Client
+    protected function getMockClient(string $expectedUri, string $body = '{ "foo": "bar" }', int $status = 200): MockObject&Client
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         $client->expects($this->once())->method('setUri')
@@ -79,7 +79,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&GenericProvider
      */
-    protected function getMockAuthProvider($token = 'fakeToken'): MockObject&GenericProvider
+    protected function getMockAuthProvider(string $token = 'fakeToken'): MockObject&GenericProvider
     {
         $token = $this->createMock(AccessTokenInterface::class);
         $token->method('getToken')->willReturn($token);

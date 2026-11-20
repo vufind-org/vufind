@@ -61,7 +61,7 @@ class AbstractContainerAwareCommandFactory extends AbstractCommandFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         return parent::__invoke(

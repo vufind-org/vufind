@@ -113,7 +113,7 @@ class ThemeInfo
      *
      * @return string
      */
-    protected function getMixinConfig($mixin)
+    protected function getMixinConfig(string $mixin)
     {
         return $this->baseDir . "/$mixin/mixin.config.php";
     }
@@ -125,7 +125,7 @@ class ThemeInfo
      *
      * @return string
      */
-    protected function getThemeConfig($theme)
+    protected function getThemeConfig(string $theme)
     {
         return $this->baseDir . "/$theme/theme.config.php";
     }
@@ -138,7 +138,7 @@ class ThemeInfo
      * @return void
      * @throws \Exception
      */
-    public function setTheme($theme)
+    public function setTheme(string $theme)
     {
         // If the configured theme setting is illegal, throw an exception without
         // making any changes.
@@ -170,7 +170,7 @@ class ThemeInfo
      *
      * @return void
      */
-    protected function loadThemeConfig($theme)
+    protected function loadThemeConfig(string $theme)
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
@@ -272,7 +272,7 @@ class ThemeInfo
      *
      * @return string|array|null
      */
-    public function findContainingTheme($relativePath, $returnType = false)
+    public function findContainingTheme(string|array $relativePath, string|bool $returnType = false)
     {
         $basePath = $this->getBaseDir();
         $allPaths = is_array($relativePath)
@@ -316,7 +316,7 @@ class ThemeInfo
      *
      * @return array
      */
-    public function findInThemes($relativePathPattern)
+    public function findInThemes(string|array $relativePathPattern)
     {
         $basePath = $this->getBaseDir();
         $allPaths = (array)$relativePathPattern;

@@ -79,7 +79,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Save the basic parameters:
         $this->settings = $settings;
@@ -112,7 +112,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->results = $results;
     }

@@ -86,7 +86,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setOverrideTitle($title)
+    public function setOverrideTitle(string $title)
     {
         $this->overrideTitle = $title;
     }
@@ -131,7 +131,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return Feed
      */
-    public function __invoke($results, $currentPath = null)
+    public function __invoke(\VuFind\Search\Base\Results $results, string $currentPath = null)
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
@@ -243,7 +243,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getDcDate($record)
+    protected function getDcDate(RecordDriver $record)
     {
         // See if we can extract a date that's pre-formatted in a DC-friendly way:
         $dates = (array)$record->tryMethod('getPublicationDates');
@@ -350,7 +350,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function addEntry($feed, $record)
+    protected function addEntry(Feed $feed, RecordDriver $record)
     {
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
@@ -388,7 +388,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return int|DateTime|null
      */
-    protected function getDateModified($record)
+    protected function getDateModified(RecordDriver $record)
     {
         // Best case -- "last indexed" date is available:
         $date = $record->tryMethod('getLastIndexed');

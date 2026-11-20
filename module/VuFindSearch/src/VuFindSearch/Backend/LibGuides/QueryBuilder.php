@@ -92,7 +92,7 @@ class QueryBuilder
      *
      * @return void
      */
-    public function setDefaultWidgetType($type)
+    public function setDefaultWidgetType(string $type)
     {
         $this->widgetType = $type;
     }

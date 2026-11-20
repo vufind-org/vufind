@@ -190,7 +190,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return LoginTokenManager
      */
-    protected function getLoginToken($cookieManager, $tokenTable, $userTable, $browscapOk)
+    protected function getLoginToken(CookieManager $cookieManager, LoginToken $tokenTable, UserServiceInterface $userTable, bool $browscapOk)
     {
         $config = [];
         $saveHandler = $this->createMock(SaveHandlerInterface::class);

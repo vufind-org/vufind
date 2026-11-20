@@ -56,7 +56,7 @@ class Utils
      * @return array|bool   Array with 'from' and 'to' values extracted from range
      * or false if the provided query is not a range.
      */
-    public static function parseRange($query)
+    public static function parseRange(string $query)
     {
         $regEx = '/\[([^\]]+)\s+TO\s+([^\]]+)\]/';
         if (!preg_match($regEx, $query, $matches)) {
@@ -74,7 +74,7 @@ class Utils
      *
      * @return string|null
      */
-    public static function sanitizeDate($date, $rangeEnd = false)
+    public static function sanitizeDate(string $date, bool $rangeEnd = false)
     {
         // Strip brackets; we'll assume guesses are correct.
         $date = str_replace(['[', ']'], '', $date);

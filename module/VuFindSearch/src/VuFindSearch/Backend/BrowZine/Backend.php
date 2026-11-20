@@ -95,8 +95,8 @@ class Backend extends AbstractBackend
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
@@ -137,7 +137,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         throw new \Exception('retrieve() not supported by BrowZine.');
     }
@@ -202,7 +202,7 @@ class Backend extends AbstractBackend
      *
      * @return mixed
      */
-    public function lookupDoi($doi, $includeJournal = false)
+    public function lookupDoi(string $doi, bool $includeJournal = false)
     {
         return $this->getConnector()->lookupDoi($doi, $includeJournal);
     }
@@ -214,7 +214,7 @@ class Backend extends AbstractBackend
      *
      * @return mixed
      */
-    public function lookupIssns($issns)
+    public function lookupIssns(string|array $issns)
     {
         return $this->getConnector()->lookupIssns($issns);
     }
@@ -228,7 +228,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection($records)
+    protected function createRecordCollection(array $records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }

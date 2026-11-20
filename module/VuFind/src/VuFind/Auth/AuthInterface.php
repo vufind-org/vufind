@@ -58,7 +58,7 @@ interface AuthInterface
      * @throws AuthException
      * @return void
      */
-    public function preLoginCheck($request);
+    public function preLoginCheck(Request $request);
 
     /**
      * Reset any internal status; this is essentially an event hook which most auth
@@ -84,7 +84,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function needsCsrfCheck($request);
+    public function needsCsrfCheck(Request $request);
 
     /**
      * Returns any authentication method this request should be delegated to.
@@ -122,7 +122,7 @@ interface AuthInterface
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request);
+    public function authenticate(Request $request);
 
     /**
      * Validate the credentials in the provided request, but do not change the state
@@ -134,7 +134,7 @@ interface AuthInterface
      * @throws AuthException
      * @return bool
      */
-    public function validateCredentials($request);
+    public function validateCredentials(Request $request);
 
     /**
      * Has the user's login expired?
@@ -151,7 +151,7 @@ interface AuthInterface
      * @throws AuthException
      * @return UserEntityInterface New user entity.
      */
-    public function create($request);
+    public function create(Request $request);
 
     /**
      * Update a user's password from the request.
@@ -161,7 +161,7 @@ interface AuthInterface
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword($request);
+    public function updatePassword(Request $request);
 
     /**
      * Check if session initiator is used.

@@ -146,7 +146,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&SearchService
      */
-    protected function getMockSearchService($expectedCommand, $result): MockObject&SearchService
+    protected function getMockSearchService(object $expectedCommand, mixed $result): MockObject&SearchService
     {
         $resultCommand = $this->createMock($expectedCommand::class);
         $resultCommand->expects($this->once())->method('getResult')->willReturn($result);
@@ -167,7 +167,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Writer
      */
-    protected function getWriter($expectedCommand, $result = 'TEST'): Writer
+    protected function getWriter(object $expectedCommand, mixed $result = 'TEST'): Writer
     {
         return new Writer(
             $this->getMockSearchService($expectedCommand, $result),

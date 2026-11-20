@@ -64,7 +64,7 @@ class DisplayLanguageOption
      *
      * @return string
      */
-    public function __invoke($str)
+    public function __invoke(string $str)
     {
         return ($this->escapeHtml)(
             $this->translator->translate($str, 'default', 'native')

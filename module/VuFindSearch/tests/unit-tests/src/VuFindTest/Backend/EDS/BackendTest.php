@@ -264,7 +264,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse(string $fixture)
     {
         return unserialize(
             $this->getFixture('eds/response/' . $fixture, 'VuFindSearch')
@@ -301,12 +301,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      * @return \VuFindSearch\Backend\EDS\Backend
      */
     protected function getBackend(
-        $connector,
-        $factory = null,
-        $cache = null,
-        $container = null,
-        $settings = [],
-        $mock = null
+        \VuFindSearch\Backend\EDS\Connector $connector,
+        \VuFindSearch\Response\RecordCollectionFactoryInterface $factory = null,
+        \Laminas\Cache\Storage\StorageInterface $cache = null,
+        \Laminas\Session\Container $container = null,
+        array $settings = [],
+        array $mock = null
     ) {
         if (null === $factory) {
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
@@ -357,7 +357,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getRCFactory($driverClass)
+    protected function getRCFactory(string $driverClass)
     {
         $callback = function ($data) use ($driverClass) {
             $driver = new $driverClass();

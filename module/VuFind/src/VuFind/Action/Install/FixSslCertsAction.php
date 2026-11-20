@@ -98,7 +98,7 @@ class FixSslCertsAction extends AbstractInstallAction
      *
      * @return void
      */
-    protected function updateSslCertConfig($config): void
+    protected function updateSslCertConfig(array $config): void
     {
         // Reset old settings
         $fixedConfig = [

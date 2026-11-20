@@ -295,7 +295,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory,
+        callable $sessionFactory,
         currencyFormatter $currencyFormatter
     ) {
         $this->dateConverter = $dateConverter;
@@ -392,7 +392,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getCacheKey($suffix = null)
+    protected function getCacheKey(?string $suffix = null)
     {
         return 'KohaRest-' . md5($this->config['Catalog']['host'] . $suffix);
     }
@@ -408,7 +408,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $holdings = $this->getItemStatusesForBiblio($id);
         return $holdings['holdings'];
@@ -424,7 +424,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return mixed     An array of getStatus() return values on success.
      */
-    public function getStatuses($ids)
+    public function getStatuses(array $ids)
     {
         $items = [];
         foreach ($ids as $id) {
@@ -548,7 +548,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
      */
-    public function findReserves($course, $inst, $dept)
+    public function findReserves(string $course, string $inst, string $dept)
     {
         $params = [];
         if ('' !== $course) {
@@ -667,7 +667,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getRequestBlocks($patron)
+    public function getRequestBlocks(array $patron)
     {
         return $this->getPatronBlocks($patron);
     }
@@ -680,7 +680,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks($patron)
+    public function getAccountBlocks(array $patron)
     {
         return $this->getPatronBlocks($patron);
     }
@@ -695,7 +695,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $result = $this->makeRequest(['v1', 'patrons', $patron['id']]);
 
@@ -736,7 +736,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron, $params = [])
+    public function getMyTransactions(array $patron, array $params = [])
     {
         return $this->getTransactions($patron, $params, false);
     }
@@ -748,7 +748,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails($checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails)
     {
         return $checkOutDetails['checkout_id'] . '|' . $checkOutDetails['item_id'];
     }
@@ -764,7 +764,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems($renewDetails)
+    public function renewMyItems(array $renewDetails)
     {
         $finalResult = ['details' => []];
 
@@ -808,7 +808,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactionHistory($patron, $params)
+    public function getMyTransactionHistory(array $patron, array $params)
     {
         return $this->getTransactions($patron, $params, true);
     }
@@ -863,7 +863,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $embedBiblios = Comparator::greaterThanOrEqualTo($this->kohaVersion, '23.11');
         $embedItems = Comparator::greaterThanOrEqualTo($this->kohaVersion, '25.11');
@@ -1012,7 +1012,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds($cancelDetails)
+    public function cancelHolds(array $cancelDetails)
     {
         $details = $cancelDetails['details'];
         $count = 0;
@@ -1202,7 +1202,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkRequestIsValid($id, $data, $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron)
     {
         if ($this->getPatronBlocks($patron)) {
             return false;
@@ -1269,7 +1269,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         $patron = $holdDetails['patron'];
         $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
@@ -1444,7 +1444,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array        Array of the patron's storage retrieval requests.
      */
-    public function getMyStorageRetrievalRequests($patron)
+    public function getMyStorageRetrievalRequests(array $patron)
     {
         $result = $this->makeRequest(
             [
@@ -1512,7 +1512,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelStorageRetrievalRequests($cancelDetails)
+    public function cancelStorageRetrievalRequests(array $cancelDetails)
     {
         $details = $cancelDetails['details'];
         $patron = $cancelDetails['patron'];
@@ -1559,7 +1559,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron)
     {
         if (
             !isset($this->config['StorageRetrievalRequests'])
@@ -1605,7 +1605,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeStorageRetrievalRequest($details)
+    public function placeStorageRetrievalRequest(array $details)
     {
         $patron = $details['patron'];
         $level = $details['level'] ?? 'copy';
@@ -1679,7 +1679,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         // TODO: Make this use X-Koha-Embed when the endpoint allows
         $result = $this->makeRequest(['v1', 'patrons', $patron['id'], 'account']);
@@ -1793,7 +1793,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function changePassword($details)
+    public function changePassword(array $details)
     {
         $patron = $details['patron'];
         $request = [
@@ -1826,7 +1826,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array Associative array of the results
      */
-    public function getPasswordRecoveryData($params)
+    public function getPasswordRecoveryData(array $params)
     {
         // We need a username and an email address to find the account:
         if (empty($params['cat_username'])) {
@@ -2038,7 +2038,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return \Laminas\Http\Client
      */
-    protected function createHttpClient($url)
+    protected function createHttpClient(string $url)
     {
         $client = $this->httpService->createClient($url);
 
@@ -2100,7 +2100,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return array
      * @throws ILSException
      */
-    protected function makeRequest($request)
+    protected function makeRequest(array $request)
     {
         // Set up the request
         $apiUrl = $this->config['Catalog']['host'] . '/';
@@ -2218,7 +2218,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getOAuth2Token($renew = false)
+    protected function getOAuth2Token(bool $renew = false)
     {
         $cacheKey = 'oauth';
 
@@ -2268,7 +2268,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * array of holding information each one with these keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    protected function getItemStatusesForBiblio($id, $patron = null, array $options = [])
+    protected function getItemStatusesForBiblio(string $id, array $patron = null, array $options = [])
     {
         // Prepare result array with default values. If no API result can be received
         // these will be returned.
@@ -2382,7 +2382,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array Status array and possible due date
      */
-    protected function getItemStatusCodes($item)
+    protected function getItemStatusCodes(array $item)
     {
         $statuses = [];
         if ($item['availability']['available']) {
@@ -2502,7 +2502,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return int
      */
-    protected function statusSortFunction($a, $b)
+    protected function statusSortFunction(array $a, array $b)
     {
         $result = $this->getSorter()->compare($a['location'], $b['location']);
 
@@ -2523,7 +2523,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool
      */
-    protected function itemHoldAllowed($item)
+    protected function itemHoldAllowed(array $item)
     {
         $unavail = $item['availability']['unavailabilities'] ?? [];
         return !isset($unavail['Hold::NotHoldable']);
@@ -2536,7 +2536,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool
      */
-    protected function itemArticleRequestAllowed($item)
+    protected function itemArticleRequestAllowed(array $item)
     {
         $unavail = $item['availability']['unavailabilities'] ?? [];
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
@@ -2555,7 +2555,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return string            The best status message to display.
      */
-    protected function pickStatus($statusArray)
+    protected function pickStatus(array $statusArray)
     {
         // Pick the first entry by default, then see if we can find a better match:
         $status = $statusArray[0];
@@ -2577,7 +2577,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return int
      */
-    protected function getStatusRanking($status)
+    protected function getStatusRanking(string $status)
     {
         return $this->statusRankings[$status] ?? 32000;
     }
@@ -2630,7 +2630,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getLibraryName($library)
+    protected function getLibraryName(string $library)
     {
         $libraries = $this->getLibraries();
         return $libraries[$library]['name'] ?? '';
@@ -2644,7 +2644,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @return mixed        A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    protected function getPatronBlocks($patron)
+    protected function getPatronBlocks(array $patron)
     {
         $patronId = $patron['id'];
         $cacheId = "blocks|$patronId";
@@ -2691,7 +2691,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array|null
      */
-    protected function getItem($id)
+    protected function getItem(int $id)
     {
         $cacheId = "items|$id";
         $item = $this->getCachedData($cacheId);
@@ -2710,7 +2710,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array|null
      */
-    protected function getBiblio($id)
+    protected function getBiblio(int $id)
     {
         static $cachedRecords = [];
         if (!isset($cachedRecords[$id])) {
@@ -2730,7 +2730,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return bool
      */
-    protected function pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)
+    protected function pickUpLocationIsValid(string $pickUpLocation, array $patron, array $holdDetails)
     {
         $pickUpLibs = $this->getPickUpLocations($patron, $holdDetails);
         foreach ($pickUpLibs as $location) {
@@ -2749,7 +2749,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return array
      */
-    protected function holdError($error, $ilsMsg = true)
+    protected function holdError(string $error, bool $ilsMsg = true)
     {
         switch ($error) {
             case 'Hold cannot be placed. Reason: tooManyReserves':
@@ -2780,7 +2780,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function mapRenewalBlockReason($reason, $itype)
+    protected function mapRenewalBlockReason(string $reason, string $itype)
     {
         return $this->config['ItemTypeRenewalBlockMappings'][$itype][$reason]
             ?? $this->renewalBlockMappings[$reason]
@@ -2794,7 +2794,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getItemLocationName($item)
+    protected function getItemLocationName(array $item)
     {
         switch ($this->locationField) {
             case 'shelving':
@@ -2826,7 +2826,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function translateLocation($location, $default = null)
+    protected function translateLocation(string $location, string $default = null)
     {
         if (empty($location)) {
             return $default ?? '';
@@ -2846,7 +2846,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getItemCallNumber($item)
+    protected function getItemCallNumber(array $item)
     {
         return $item['callnumber'];
     }
@@ -2858,7 +2858,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getHoldBlockReason($result)
+    protected function getHoldBlockReason(array $result)
     {
         if (!empty($result['availability']['unavailabilities'])) {
             foreach (
@@ -2896,7 +2896,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getSortParamValue($key, $default = '')
+    protected function getSortParamValue(string $key, string $default = '')
     {
         $params = [
             'checkout' => 'issuedate',
@@ -2915,7 +2915,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getBiblioTitle($biblio)
+    protected function getBiblioTitle(array $biblio)
     {
         $title = [];
         foreach (['title', 'subtitle', 'part_number', 'part_name'] as $field) {
@@ -2935,7 +2935,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function convertDate($date, $withTime = false)
+    protected function convertDate(string $date, bool $withTime = false)
     {
         if (!$date) {
             return '';
@@ -2958,7 +2958,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    protected function getTransactions($patron, $params, $checkedIn)
+    protected function getTransactions(array $patron, array $params, bool $checkedIn)
     {
         $pageSize = $params['limit'] ?? 50;
         $sort = $params['sort'] ?? '+due_date';
@@ -3072,7 +3072,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function getPatronBlockReason($reason, $details)
+    protected function getPatronBlockReason(string $reason, array $details)
     {
         $params = [];
         switch ($reason) {
@@ -3104,7 +3104,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @return string
      */
-    protected function formatMoney($amount)
+    protected function formatMoney(float $amount)
     {
         return $this->currencyFormatter->convertToDisplayFormat($amount);
     }

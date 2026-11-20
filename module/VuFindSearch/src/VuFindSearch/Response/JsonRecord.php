@@ -69,7 +69,7 @@ class JsonRecord implements RecordInterface
      *
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->fields[$name] ?? null;
     }

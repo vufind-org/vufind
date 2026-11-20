@@ -171,7 +171,7 @@ class ListItems extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildListChannels($channelToken)
+    protected function buildListChannels(string $channelToken)
     {
         $channels = [];
         $lists = $channelToken

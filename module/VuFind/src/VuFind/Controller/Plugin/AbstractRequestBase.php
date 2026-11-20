@@ -131,7 +131,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return void
      */
-    public function rememberValidId($id)
+    public function rememberValidId(string $id)
     {
         // The session container doesn't allow modification of entries (as of
         // 2012, anyway), so we have to do this in a roundabout way.
@@ -149,7 +149,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return bool
      */
-    public function validateIds($ids): bool
+    public function validateIds(array $ids): bool
     {
         return !(bool)array_diff($ids, $this->getValidIds());
     }
@@ -162,7 +162,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return bool|array
      */
-    public function validateRequest($linkData)
+    public function validateRequest(array $linkData)
     {
         $controller = $this->getController();
         $params = $controller->params();
@@ -208,7 +208,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return bool
      */
-    public function validatePickUpInput($pickup, $extraHoldFields, $pickUpLibs)
+    public function validatePickUpInput(string $pickup, array $extraHoldFields, array $pickUpLibs)
     {
         // Not having to care for pickUpLocation is equivalent to having a valid one.
         if (!in_array('pickUpLocation', $extraHoldFields)) {
@@ -227,7 +227,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return bool
      */
-    public function validatePickUpLocation($location, $pickUpLibs)
+    public function validatePickUpLocation(string $location, array $pickUpLibs)
     {
         foreach ($pickUpLibs as $lib) {
             if ($location == $lib['locationID']) {
@@ -249,9 +249,9 @@ abstract class AbstractRequestBase extends AbstractPlugin
      * @return bool
      */
     public function validateRequestGroupInput(
-        $gatheredDetails,
-        $extraHoldFields,
-        $requestGroups
+        array $gatheredDetails,
+        array $extraHoldFields,
+        array $requestGroups
     ) {
         // Not having to care for requestGroup is equivalent to having a valid one.
         if (!in_array('requestGroup', $extraHoldFields)) {
@@ -279,7 +279,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return bool
      */
-    public function validateRequestGroup($requestGroupId, $requestGroups)
+    public function validateRequestGroup(string $requestGroupId, array $requestGroups)
     {
         foreach ($requestGroups as $group) {
             if ($requestGroupId == $group['id']) {
@@ -303,10 +303,10 @@ abstract class AbstractRequestBase extends AbstractPlugin
      * @return int A timestamp representing the default required date
      */
     public function getDefaultRequiredDate(
-        $checkHolds,
-        $catalog = null,
-        $patron = null,
-        $holdInfo = null
+        array $checkHolds,
+        Connection $catalog = null,
+        array $patron = null,
+        array $holdInfo = null
     ) {
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
@@ -352,7 +352,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      *
      * @return int A timestamp representing the default required date
      */
-    protected function getDateFromArray($dateArray)
+    protected function getDateFromArray(array $dateArray)
     {
         if (!isset($dateArray[2])) {
             return 0;

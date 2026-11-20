@@ -110,7 +110,7 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function mockResponse($responseData)
+    protected function mockResponse(string|array|null $responseData)
     {
         $adapter = new TestAdapter();
         if (!empty($responseData)) {

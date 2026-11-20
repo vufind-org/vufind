@@ -93,7 +93,7 @@ trait LiveDatabaseTrait
      *
      * @return void
      */
-    protected function addDoctrineDependenciesToContainer($container): void
+    protected function addDoctrineDependenciesToContainer(object $container): void
     {
         $container->setAlias(
             \Doctrine\ORM\EntityManagerInterface::class,

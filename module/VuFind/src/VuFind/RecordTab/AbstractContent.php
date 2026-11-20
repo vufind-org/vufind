@@ -70,7 +70,7 @@ abstract class AbstractContent extends AbstractBase
      * @param bool    $hideIfEmpty Should we hide the tab if no content is found?
      * (Note that turning this on has performance implications).
      */
-    public function __construct(?Loader $loader = null, $hideIfEmpty = false)
+    public function __construct(?Loader $loader = null, bool $hideIfEmpty = false)
     {
         $this->loader = $loader;
         $this->hideIfEmpty = $hideIfEmpty;

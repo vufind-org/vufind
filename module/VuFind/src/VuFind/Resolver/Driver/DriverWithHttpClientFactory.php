@@ -61,7 +61,7 @@ class DriverWithHttpClientFactory extends AbstractBaseFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $client = $container->get(\VuFindHttp\HttpService::class)->createClient();

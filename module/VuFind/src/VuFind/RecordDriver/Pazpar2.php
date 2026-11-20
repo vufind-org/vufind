@@ -62,7 +62,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return void
      */
-    public function setRawData($data)
+    public function setRawData(mixed $data)
     {
         $this->pz2fields = $this->xmlToArray($data);
     }
@@ -74,7 +74,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return associative array of converted XML
      */
-    protected function xmlToArray($xml)
+    protected function xmlToArray(\SimpleXMLElement $xml)
     {
         $array = [];
         foreach ($xml as $key => $data) {

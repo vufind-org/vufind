@@ -89,8 +89,8 @@ abstract class AbstractCommand extends Command
     public function __construct(
         ?ExtendedIniNormalizer $normalizer = null,
         ?ExtendedIniReader $reader = null,
-        $languageDir = null,
-        $name = null
+        string $languageDir = null,
+        ?string $name = null
     ) {
         $this->normalizer = $normalizer ?? new ExtendedIniNormalizer();
         $this->reader = $reader ?? new ExtendedIniReader();
@@ -108,7 +108,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function addLineToFile($filename, $key, $value)
+    protected function addLineToFile(string $filename, string $key, string $value)
     {
         $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
@@ -125,7 +125,7 @@ abstract class AbstractCommand extends Command
      *
      * @return array [textdomain, key]
      */
-    protected function extractTextDomain($raw)
+    protected function extractTextDomain(string $raw)
     {
         $parts = explode('::', $raw, 2);
         return count($parts) > 1 ? $parts : ['default', $raw];
@@ -143,8 +143,8 @@ abstract class AbstractCommand extends Command
      */
     protected function getLangDir(
         OutputInterface $output,
-        $domain = 'default',
-        $createIfMissing = false
+        string $domain = 'default',
+        bool $createIfMissing = false
     ) {
         $subDir = $domain == 'default' ? '' : ('/' . $domain);
         $langDir = $this->languageDir . $subDir;
@@ -167,7 +167,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function createMissingFiles($path, $files)
+    protected function createMissingFiles(string $path, array $files)
     {
         foreach ($files as $file) {
             if (!file_exists($path . '/' . $file)) {
@@ -186,7 +186,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function processDirectory($dir, $callback, $statusCallback = false)
+    protected function processDirectory(object $dir, callable $callback, bool $statusCallback = false)
     {
         while ($file = $dir->read()) {
             // Only process .ini files, and ignore special case files:

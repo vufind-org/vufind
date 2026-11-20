@@ -215,7 +215,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
      *
      * @return Results The Results object
      */
-    protected function buildQueryResults($queryString, $facets = []): Results
+    protected function buildQueryResults(string $queryString, array $facets = []): Results
     {
         // Build query Params
         $queryParams = new Params(

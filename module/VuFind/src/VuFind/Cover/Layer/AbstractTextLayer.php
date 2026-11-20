@@ -49,7 +49,7 @@ abstract class AbstractTextLayer extends AbstractLayer
      *
      * @return int
      */
-    protected function textWidth($text, $font, $size)
+    protected function textWidth(string $text, string $font, string $size)
     {
         $p = imagettfbbox($size, 0, $font, $text);
         return $p[2] - $p[0];
@@ -64,7 +64,7 @@ abstract class AbstractTextLayer extends AbstractLayer
      *
      * @return int
      */
-    protected function textHeight($text, $font, $size)
+    protected function textHeight(string $text, string $font, string $size)
     {
         $p = imagettfbbox($size, 0, $font, $text);
         return $p[1] - $p[5];
@@ -87,14 +87,14 @@ abstract class AbstractTextLayer extends AbstractLayer
      */
     protected function drawText(
         $im,
-        $settings,
-        $text,
-        $y,
-        $font,
-        $fontSize,
-        $mcolor,
-        $scolor = false,
-        $align = null
+        object $settings,
+        string $text,
+        int $y,
+        string $font,
+        int $fontSize,
+        int $mcolor,
+        int $scolor = false,
+        string $align = null
     ) {
         // In case the text contains non-normalized UTF-8, fix that for proper
         // display:

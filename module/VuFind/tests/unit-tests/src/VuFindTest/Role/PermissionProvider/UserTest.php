@@ -115,7 +115,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function check($testuser, $options, $roles)
+    protected function check(string $testuser, array $options, array $roles)
     {
         $this->testuser
             = (isset($this->userValueMap[$testuser]))

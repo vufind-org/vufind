@@ -102,7 +102,7 @@ class Email extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
     {
         if (!$this->preAuthenticationData) {
             throw new AuthException('authentication_error_technical');
@@ -141,7 +141,7 @@ class Email extends AbstractBase
      *
      * @return bool
      */
-    public function needsCsrfCheck($request)
+    public function needsCsrfCheck(\Laminas\Http\PhpEnvironment\Request $request)
     {
         // Disable CSRF if we get a hash in the request
         return !(bool)$request->getQuery('hash');
@@ -155,7 +155,7 @@ class Email extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function processUser($info)
+    protected function processUser(array $info)
     {
         // Check to see if we already have an account for this user:
         if (!empty($info['id'])) {

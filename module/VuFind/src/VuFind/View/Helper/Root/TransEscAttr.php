@@ -76,11 +76,11 @@ class TransEscAttr
      * @return string
      */
     public function __invoke(
-        $str,
-        $tokens = [],
-        $default = null,
-        $useIcuFormatter = false,
-        $fallbackDomains = []
+        string|object|array $str,
+        array $tokens = [],
+        string $default = null,
+        bool $useIcuFormatter = false,
+        array $fallbackDomains = []
     ) {
         $escaper = $this->escapeHtmlAttr;
         $translator = $this->translate;

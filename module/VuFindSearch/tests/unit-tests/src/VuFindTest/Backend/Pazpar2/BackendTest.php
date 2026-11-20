@@ -138,7 +138,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse(string $fixture)
     {
         $xml = $this->getFixture("pazpar2/response/$fixture", 'VuFindSearch');
         return simplexml_load_string($xml);
@@ -167,7 +167,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getStatXml($progress)
+    protected function getStatXml(float $progress)
     {
         return '<?xml version="1.0" encoding="UTF-8"?><stat><progress>'
             . $progress . '</progress></stat>';

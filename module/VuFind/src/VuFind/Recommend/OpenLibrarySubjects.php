@@ -110,7 +110,7 @@ class OpenLibrarySubjects implements
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Parse out parameters:
         $params = explode(':', $settings);
@@ -170,7 +170,7 @@ class OpenLibrarySubjects implements
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         // Only proceed if we have a request parameter value
         if (!empty($this->subject)) {
@@ -206,7 +206,7 @@ class OpenLibrarySubjects implements
      *
      * @return string
      */
-    protected function getPublishedDates($field, $params, $request)
+    protected function getPublishedDates(string $field, \VuFind\Search\Params\Base $params, array $request)
     {
         $range = null;
         // Try to extract range details from request parameters or SearchObject:

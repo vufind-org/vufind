@@ -99,7 +99,7 @@ class MultiILS extends ILS
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));

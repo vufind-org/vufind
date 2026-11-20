@@ -63,7 +63,7 @@ class ClientRepository implements ClientRepositoryInterface
      *
      * @return ?ClientEntityInterface
      */
-    public function getClientEntity($clientIdentifier): ?ClientEntityInterface
+    public function getClientEntity(string $clientIdentifier): ?ClientEntityInterface
     {
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {
             return null;

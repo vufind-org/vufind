@@ -64,7 +64,7 @@ abstract class AbstractFile
      *
      * @return void
      */
-    public function addUrl($url)
+    public function addUrl(string|array $url)
     {
         $this->urls[] = $url;
     }
@@ -76,7 +76,7 @@ abstract class AbstractFile
      *
      * @return string XML fragment
      */
-    abstract protected function getEntry($url);
+    abstract protected function getEntry(string|array $url);
 
     /**
      * Get the map as a string.
@@ -117,7 +117,7 @@ abstract class AbstractFile
      *
      * @return bool
      */
-    public function write($file)
+    public function write(string $file)
     {
         // if a subfolder was specified that does not exist, make one
         $dirname = dirname($file);

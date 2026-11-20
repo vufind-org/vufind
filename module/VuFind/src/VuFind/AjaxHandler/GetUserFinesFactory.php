@@ -62,7 +62,7 @@ class GetUserFinesFactory extends AbstractIlsUserAndRendererActionFactory implem
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

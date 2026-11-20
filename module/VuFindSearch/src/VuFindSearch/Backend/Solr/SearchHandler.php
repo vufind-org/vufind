@@ -85,7 +85,7 @@ class SearchHandler
      *
      * @return void
      */
-    public function __construct(array $spec, $defaultDismaxHandler = 'dismax')
+    public function __construct(array $spec, string $defaultDismaxHandler = 'dismax')
     {
         foreach (self::$configKeys as $key) {
             $this->specs[$key] = $spec[$key] ?? [];
@@ -112,7 +112,7 @@ class SearchHandler
      *
      * @see \VuFind\Service\Solr\LuceneSyntaxHelper::containsAdvancedLuceneSyntax()
      */
-    public function createAdvancedQueryString($search)
+    public function createAdvancedQueryString(string $search)
     {
         return $this->createQueryString($search, true);
     }
@@ -126,7 +126,7 @@ class SearchHandler
      *
      * @see \VuFind\Service\Solr\SearchHandler::createAdvancedQueryString()
      */
-    public function createSimpleQueryString($search)
+    public function createSimpleQueryString(string $search)
     {
         return $this->createQueryString($search, false);
     }
@@ -138,7 +138,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function preprocessQueryString($search)
+    public function preprocessQueryString(string $search)
     {
         // Apply Dismax munging, if required:
         if ($this->hasDismax()) {
@@ -154,7 +154,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function createBoostQueryString($search)
+    public function createBoostQueryString(string $search)
     {
         $boostQuery = [];
         if ($this->hasDismax()) {
@@ -337,7 +337,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function dismaxSubquery($search)
+    protected function dismaxSubquery(string $search)
     {
         $dismaxParams = [];
         foreach ($this->specs['DismaxParams'] as $param) {
@@ -367,7 +367,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function mungeValues($search, $tokenize = true)
+    protected function mungeValues(string $search, bool $tokenize = true)
     {
         if ($tokenize) {
             $tokens = $this->tokenize($search);
@@ -422,7 +422,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function dismaxMunge($search)
+    protected function dismaxMunge(string $search)
     {
         foreach ($this->specs['DismaxMunge'] as $operation) {
             $search = $this->customMunge($search, $operation);
@@ -438,7 +438,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function customMunge($string, $operation)
+    protected function customMunge(string $string, array $operation)
     {
         switch ($operation[0]) {
             case 'append':
@@ -482,7 +482,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function createQueryString($search, $advanced = false)
+    protected function createQueryString(string $search, bool $advanced = false)
     {
         // If this is a basic query and we have Dismax settings (or if we have
         // Extended Dismax available), let's build a Dismax subquery to avoid
@@ -528,7 +528,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function munge(array $mungeRules, array $mungeValues, $joiner = 'OR')
+    protected function munge(array $mungeRules, array $mungeValues, string $joiner = 'OR')
     {
         $clauses = [];
         foreach ($mungeRules as $field => $clausearray) {
@@ -576,7 +576,7 @@ class SearchHandler
      *
      * @return array
      */
-    protected function tokenize($string)
+    protected function tokenize(string $string)
     {
         // First replace escaped quotes with a non-printable character that will
         // never be found in user input (ASCII 26, "substitute"). Next use a regex

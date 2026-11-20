@@ -52,7 +52,7 @@ class SerializableRecord implements SerializableRecordInterface
      *
      * @param array $fields Fields of record
      */
-    public function __construct($fields)
+    public function __construct(array $fields)
     {
         $this->fields = $fields;
     }

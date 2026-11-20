@@ -86,7 +86,7 @@ class FollowupHelper
      *
      * @return mixed
      */
-    public function retrieve(?string $key = null, $default = null)
+    public function retrieve(?string $key = null, mixed $default = null)
     {
         if (null === $key) {
             return $this->session;
@@ -102,7 +102,7 @@ class FollowupHelper
      *
      * @return mixed
      */
-    public function retrieveAndClear(string $key, $default = null)
+    public function retrieveAndClear(string $key, mixed $default = null)
     {
         $value = $this->retrieve($key, $default);
         $this->clear($key);

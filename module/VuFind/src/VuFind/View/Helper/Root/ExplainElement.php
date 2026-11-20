@@ -72,7 +72,7 @@ class ExplainElement
      *
      * @return array
      */
-    public function __invoke($explainElement, $decimalPlaces)
+    public function __invoke(array $explainElement, int $decimalPlaces)
     {
         $fieldName = $explainElement['fieldName'] ?? [];
         $fieldValue = $explainElement['fieldValue'] ?? [];

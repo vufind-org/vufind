@@ -57,7 +57,7 @@ abstract class AbstractSolrCommand extends Command
      * @param string|null $name The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Writer $solr, $name = null)
+    public function __construct(Writer $solr, ?string $name = null)
     {
         $this->solr = $solr;
         parent::__construct($name);

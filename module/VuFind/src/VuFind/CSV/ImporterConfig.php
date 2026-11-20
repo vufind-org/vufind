@@ -73,7 +73,7 @@ class ImporterConfig
      *
      * @param array $options Config options
      */
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         if (isset($options['batchSize']) && $options['batchSize'] > 0) {
             $this->batchSize = $options['batchSize'];

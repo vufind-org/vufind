@@ -151,7 +151,7 @@ class WorkKeysQuery extends AbstractQuery
      *
      * @return bool
      */
-    public function containsTerm($needle, $normalizer = null)
+    public function containsTerm(string $needle, callable $normalizer = null)
     {
         return false;
     }
@@ -176,7 +176,7 @@ class WorkKeysQuery extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm($from, $to, $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null)
     {
         // Not applicable
     }

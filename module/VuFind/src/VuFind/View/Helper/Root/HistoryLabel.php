@@ -63,7 +63,7 @@ class HistoryLabel
      *
      * @return string
      */
-    public function __invoke($class): string
+    public function __invoke(string $class): string
     {
         if (isset($this->config[$class])) {
             return ($this->translator)($this->config[$class]) . ':';

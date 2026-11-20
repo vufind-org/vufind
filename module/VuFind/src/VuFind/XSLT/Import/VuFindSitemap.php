@@ -52,7 +52,7 @@ class VuFindSitemap extends VuFind
      *
      * @return array
      */
-    protected static function getApertureFields($htmlFile)
+    protected static function getApertureFields(string $htmlFile)
     {
         $xmlFile = tempnam('/tmp', 'apt');
         $cmd = static::getApertureCommand($htmlFile, $xmlFile, 'filecrawler');
@@ -106,7 +106,7 @@ class VuFindSitemap extends VuFind
      *
      * @return array
      */
-    protected static function getTikaFields($htmlFile)
+    protected static function getTikaFields(string $htmlFile)
     {
         // Extract and decode the full text from the XML:
         $xml = static::harvestWithTika($htmlFile, '--xml');
@@ -153,7 +153,7 @@ class VuFindSitemap extends VuFind
      *
      * @return array
      */
-    protected static function getHtmlFields($html)
+    protected static function getHtmlFields(string $html)
     {
         // Extract the subjects from the HTML:
         preg_match_all(
@@ -203,7 +203,7 @@ class VuFindSitemap extends VuFind
      *
      * @return string
      */
-    public static function arrayToSolrXml($fields)
+    public static function arrayToSolrXml(array $fields)
     {
         $xml = '';
         foreach ($fields as $key => $value) {
@@ -227,7 +227,7 @@ class VuFindSitemap extends VuFind
      *
      * @return string     text contents of file.
      */
-    public static function getDocument($url)
+    public static function getDocument(string $url)
     {
         // Turn the array into XML:
         return static::arrayToSolrXml(static::getDocumentFieldArray($url));
@@ -240,7 +240,7 @@ class VuFindSitemap extends VuFind
      *
      * @return array
      */
-    protected static function getDocumentFieldArray($url)
+    protected static function getDocumentFieldArray(string $url)
     {
         $parser = static::getParser();
         if ($parser == 'None') {

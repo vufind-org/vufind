@@ -355,7 +355,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&FallbackLoader
      */
-    protected function getFallbackLoader($records): MockObject&FallbackLoader
+    protected function getFallbackLoader(array $records): MockObject&FallbackLoader
     {
         $fallbackPlugin = $this
             ->getMockBuilder(\VuFind\Record\FallbackLoader\Summon::class)

@@ -2412,12 +2412,12 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      * @return object MultiBackend driver
      */
     protected function initSimpleMethodTest(
-        $times1,
-        $times2,
-        $function,
-        $params,
-        $return1,
-        $return2
+        object $times1,
+        object $times2,
+        string $function,
+        array $params,
+        mixed $return1,
+        mixed $return2
     ) {
         $voyager = $this->getMockILS('Voyager', ['init', $function]);
         call_user_func_array(
@@ -2452,7 +2452,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A MultiBackend instance.
      */
-    protected function initDriver($constructorArgs = [], $drivers = [], $driversConfigPath = null)
+    protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null)
     {
         $driver = $this->getDriver($constructorArgs);
         $driver->setConfig(
@@ -2478,7 +2478,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A MultiBackend instance.
      */
-    protected function getDriver($constructorArgs = [])
+    protected function getDriver(array $constructorArgs = [])
     {
         $driver = new MultiBackend(
             $constructorArgs['configManager']
@@ -2498,7 +2498,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return \VuFind\Auth\ILSAuthenticator
      */
-    protected function getMockILSAuthenticator($userSource = '')
+    protected function getMockILSAuthenticator(string $userSource = '')
     {
         $mockAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         if ($userSource) {

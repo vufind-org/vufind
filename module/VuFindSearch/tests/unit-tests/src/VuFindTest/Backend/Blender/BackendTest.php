@@ -1009,7 +1009,7 @@ class BackendTest extends TestCase
      *
      * @return object
      */
-    protected function getBackendForFacetsAndErrors($facets, $errors)
+    protected function getBackendForFacetsAndErrors(array $facets, array $errors)
     {
         $collection = $this->createMock(SolrRecordCollection::class);
         $collection->expects($this->once())
@@ -1060,9 +1060,9 @@ class BackendTest extends TestCase
      * @return Backend
      */
     protected function getBackend(
-        $config = null,
-        $mappings = null,
-        $backends = []
+        array $config = null,
+        array $mappings = null,
+        array $backends = []
     ): Backend {
         if (!$backends) {
             $backends = [
@@ -1090,7 +1090,7 @@ class BackendTest extends TestCase
      * @return object
      */
     protected function getSolrConnector(
-        $fixture = null
+        string $fixture = null
     ) {
         $callback = function (
             $handler,
@@ -1148,7 +1148,7 @@ class BackendTest extends TestCase
      * @return \VuFindSearch\Backend\Solr\Backend
      */
     protected function getSolrBackend(
-        $fixture = null
+        string $fixture = null
     ): \VuFindSearch\Backend\Solr\Backend {
         $backend = new \VuFindSearch\Backend\Solr\Backend(
             $this->getSolrConnector($fixture)

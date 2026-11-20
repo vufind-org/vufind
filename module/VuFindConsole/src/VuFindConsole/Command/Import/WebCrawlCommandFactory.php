@@ -62,7 +62,7 @@ class WebCrawlCommandFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);

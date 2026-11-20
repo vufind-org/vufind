@@ -51,7 +51,7 @@ class DefaultText extends AbstractTextLayer
      *
      * @return void
      */
-    public function render($im, $details, $settings)
+    public function render($im, array $details, object $settings)
     {
         if (null !== $details['title']) {
             $lineHeight = $settings->height / 8;
@@ -72,7 +72,7 @@ class DefaultText extends AbstractTextLayer
      *
      * @return void
      */
-    protected function drawTitle($im, $settings, $title, $lineHeight)
+    protected function drawTitle($im, object $settings, string $title, int $lineHeight)
     {
         $titleFillColor = $this->getColor($im, $settings->titleFillColor);
         $titleBorderColor = $this->getColor($im, $settings->titleBorderColor);
@@ -147,7 +147,7 @@ class DefaultText extends AbstractTextLayer
      *
      * @return void
      */
-    protected function drawAuthor($im, $settings, $author)
+    protected function drawAuthor($im, object $settings, string $author)
     {
         $authorFillColor = $this->getColor($im, $settings->authorFillColor);
         $authorBorderColor = $this->getColor($im, $settings->authorBorderColor);

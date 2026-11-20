@@ -61,7 +61,7 @@ abstract class AbstractRouteCommand extends AbstractCommand
     public function __construct(
         GeneratorTools $tools,
         RouteGenerator $routeGen,
-        $name = null
+        ?string $name = null
     ) {
         $this->routeGenerator = $routeGen;
         parent::__construct($tools, $name);

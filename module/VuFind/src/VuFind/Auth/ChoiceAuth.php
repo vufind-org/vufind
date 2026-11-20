@@ -131,7 +131,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    public function preLoginCheck($request)
+    public function preLoginCheck(Request $request)
     {
         $this->setStrategyFromRequest($request);
     }
@@ -193,7 +193,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(Request $request)
     {
         try {
             return $this->proxyUserLoad($request, 'authenticate', func_get_args());
@@ -215,7 +215,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface New user entity.
      */
-    public function create($request)
+    public function create(Request $request)
     {
         return $this->proxyUserLoad($request, 'create', func_get_args());
     }
@@ -354,7 +354,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword($request)
+    public function updatePassword(Request $request)
     {
         // When a user is recovering a forgotten password, there may be an
         // auth method included in the request since we haven't set an active
@@ -399,7 +399,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return mixed
      */
-    protected function proxyAuthMethod($method, $params)
+    protected function proxyAuthMethod(string $method, array $params)
     {
         // If no strategy is found, we can't do anything -- return false.
         if (!$this->strategy) {
@@ -428,7 +428,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return mixed
      */
-    protected function proxyUserLoad($request, $method, $params)
+    protected function proxyUserLoad(Request $request, string $method, array $params)
     {
         $this->setStrategyFromRequest($request);
         $user = $this->proxyAuthMethod($method, $params);
@@ -447,7 +447,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return void
      */
-    protected function setStrategyFromRequest($request)
+    protected function setStrategyFromRequest(Request $request)
     {
         // Set new strategy; fall back to old one if there is a problem:
         $defaultStrategy = $this->strategy;
@@ -470,7 +470,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return void
      */
-    public function setStrategy($strategy)
+    public function setStrategy(string $strategy)
     {
         $this->strategy = $strategy;
         $this->session->auth_method = $strategy;
@@ -486,7 +486,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return bool
      */
-    public function validateCredentials($request)
+    public function validateCredentials(Request $request)
     {
         try {
             // In this instance we are checking credentials but do not wish to
@@ -506,7 +506,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return bool
      */
-    public function needsCsrfCheck($request)
+    public function needsCsrfCheck(Request $request)
     {
         if (!$this->strategy) {
             return true;

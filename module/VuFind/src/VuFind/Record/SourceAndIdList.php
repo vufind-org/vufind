@@ -67,7 +67,7 @@ class SourceAndIdList
      * belongs to the Solr schema; this is used to create a mock driver object if
      * the real data source is unavailable.
      */
-    public function __construct($ids)
+    public function __construct(array $ids)
     {
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed

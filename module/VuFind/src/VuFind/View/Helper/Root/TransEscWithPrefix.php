@@ -79,12 +79,12 @@ class TransEscWithPrefix implements TranslatorAwareInterface
      * @return string
      */
     public function __invoke(
-        $prefix,
-        $str,
-        $tokens = [],
-        $default = null,
-        $useIcuFormatter = false,
-        $fallbackDomains = []
+        string $prefix,
+        string|object|array $str,
+        array $tokens = [],
+        string $default = null,
+        bool $useIcuFormatter = false,
+        array $fallbackDomains = []
     ) {
         return ($this->escapeHtml)(
             $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter, $fallbackDomains)

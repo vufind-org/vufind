@@ -55,8 +55,8 @@ interface OauthServiceInterface
      * @link https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
      */
     public function authenticateWithClientCredentials(
-        $oauthUrl,
-        $clientId,
-        $clientSecret
+        string $oauthUrl,
+        string $clientId,
+        string $clientSecret
     );
 }

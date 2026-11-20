@@ -64,7 +64,7 @@ class Alma extends AbstractBase
      * @param array                $options    OpenURL Configuration (optional)
      */
     public function __construct(
-        $baseUrl,
+        string $baseUrl,
         \Laminas\Http\Client $httpClient,
         array $options = []
     ) {
@@ -86,7 +86,7 @@ class Alma extends AbstractBase
      *
      * @return string         Raw XML returned by resolver
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         // Make the call to Alma and load results
         $url = $this->getResolverUrl(
@@ -105,7 +105,7 @@ class Alma extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks($xmlstr)
+    public function parseLinks(string $xmlstr)
     {
         $records = []; // array to return
         try {
@@ -179,7 +179,7 @@ class Alma extends AbstractBase
      *
      * @return string
      */
-    protected function getKeyWithId(\SimpleXMLElement $service, $id)
+    protected function getKeyWithId(\SimpleXMLElement $service, string $id)
     {
         foreach ($service->keys->children() as $key) {
             if ((string)$key->attributes()->id === $id) {
@@ -197,7 +197,7 @@ class Alma extends AbstractBase
      *
      * @return string
      */
-    protected function mapServiceType($serviceType)
+    protected function mapServiceType(string $serviceType)
     {
         $map = [
             'getFullTxt' => 'getFullTxt',
@@ -217,7 +217,7 @@ class Alma extends AbstractBase
      *
      * @return string
      */
-    protected function cleanupText($str)
+    protected function cleanupText(string $str)
     {
         $str = trim(preg_replace('/<br\/?>/', ' ', $str));
         $str = strip_tags($str);

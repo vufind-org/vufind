@@ -51,7 +51,7 @@ class ThemeCompiler extends AbstractThemeUtility
      *
      * @return bool
      */
-    public function compile($source, $target, $forceOverwrite = false)
+    public function compile(string $source, string $target, bool $forceOverwrite = false)
     {
         // Validate input:
         try {
@@ -101,7 +101,7 @@ class ThemeCompiler extends AbstractThemeUtility
      *
      * @return bool
      */
-    public function removeTheme($theme)
+    public function removeTheme(string $theme)
     {
         return $this->deleteDir($this->info->getBaseDir() . '/' . $theme);
     }
@@ -114,7 +114,7 @@ class ThemeCompiler extends AbstractThemeUtility
      *
      * @return array
      */
-    protected function mergeConfig($src, $dest)
+    protected function mergeConfig(array $src, array $dest)
     {
         foreach ($src as $key => $value) {
             switch ($key) {

@@ -69,7 +69,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return void
      */
-    public function trimTokenList($limit)
+    public function trimTokenList(int $limit)
     {
         $session = $this->csrf->getSession();
         if ($limit < 1) {
@@ -102,7 +102,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return string
      */
-    public function getHash($regenerate = false)
+    public function getHash(bool $regenerate = false)
     {
         return $this->csrf->getHash($regenerate);
     }
@@ -114,7 +114,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return bool
      */
-    public function isValid($value)
+    public function isValid(mixed $value)
     {
         return $this->csrf->isValid($value);
     }

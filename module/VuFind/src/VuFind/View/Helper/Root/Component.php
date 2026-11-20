@@ -71,7 +71,7 @@ class Component
      *
      * @return string
      */
-    public function __invoke(string $name, $params = []): string
+    public function __invoke(string $name, array $params = []): string
     {
         // A counter that can be used to create element id's etc.
         static $invocation = 0;

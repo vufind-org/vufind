@@ -92,7 +92,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    public function loadQRCode($text, $rawParams = [])
+    public function loadQRCode(string $text, array $rawParams = [])
     {
         // Fill in defaults:
         $params = $rawParams + $this->defaultParams;
@@ -138,7 +138,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return ErrorCorrectionLevel
      */
-    protected function mapErrorLevel($level): ErrorCorrectionLevel
+    protected function mapErrorLevel(string $level): ErrorCorrectionLevel
     {
         switch (strtoupper(substr($level, 0, 1))) {
             case '3':
@@ -167,7 +167,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool True if image displayed, false on failure.
      */
-    protected function fetchQRCode($text, $size, $margin, $level)
+    protected function fetchQRCode(string $text, int $size, int $margin, ErrorCorrectionLevel $level)
     {
         if (strlen(trim($text)) === 0) {
             return false;

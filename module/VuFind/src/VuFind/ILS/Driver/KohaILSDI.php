@@ -330,7 +330,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return bool
      */
-    protected function tableExists($table)
+    protected function tableExists(string $table)
     {
         $cacheKey = "kohailsdi-tables-$table";
         $cachedValue = $this->getCachedData($cacheKey);
@@ -364,7 +364,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return string
      */
-    protected function getCacheKey($suffix = null)
+    protected function getCacheKey(?string $suffix = null)
     {
         return $this->getBaseCacheKey(
             md5($this->ilsBaseUrl) . $suffix
@@ -381,7 +381,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return string
      */
-    protected function getField($contents, $default = 'Unknown')
+    protected function getField(string $contents, string $default = 'Unknown')
     {
         if ((string)$contents !== '') {
             return (string)$contents;
@@ -401,7 +401,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return obj
      */
-    protected function makeRequest($api_query, $http_method = 'GET')
+    protected function makeRequest(string $api_query, string $http_method = 'GET')
     {
         //$url = $this->host . $this->api_path . $api_query;
 
@@ -465,7 +465,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return obj
      */
-    protected function makeIlsdiRequest($service, $params, $http_method = 'GET')
+    protected function makeIlsdiRequest(string $service, array $params, string $http_method = 'GET')
     {
         $start = microtime(true);
         $url = $this->ilsBaseUrl . '?service=' . $service;
@@ -692,7 +692,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
@@ -1063,7 +1063,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $id = 0;
         $transactionLst = [];
@@ -1183,7 +1183,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFinesILS($patron)
+    public function getMyFinesILS(array $patron)
     {
         $id = $patron['id'];
         $fineLst = [];
@@ -1223,7 +1223,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $id = $patron['id'];
         $holdLst = [];
@@ -1284,7 +1284,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds($cancelDetails)
+    public function cancelHolds(array $cancelDetails)
     {
         $retVal         = ['count' => 0, 'items' => []];
         $details        = $cancelDetails['details'];
@@ -1320,7 +1320,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $id = $patron['id'];
 
@@ -1357,7 +1357,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks($patron)
+    public function getAccountBlocks(array $patron)
     {
         $blocks = [];
 
@@ -1404,7 +1404,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactionHistory($patron, $params)
+    public function getMyTransactionHistory(array $patron, array $params)
     {
         $id = 0;
         $historicLoans = [];
@@ -1483,7 +1483,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $id = $patron['id'];
         $transactionLst = [];
@@ -1540,7 +1540,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails($checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails)
     {
         return $checkOutDetails['item_id'];
     }
@@ -1557,7 +1557,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return array An array of renewal information keyed by item ID
      */
-    public function renewMyItems($renewDetails)
+    public function renewMyItems(array $renewDetails)
     {
         $retVal         = ['blocks' => false, 'details' => []];
         $details        = $renewDetails['details'];
@@ -1635,7 +1635,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         return $this->getHolding($id);
     }
@@ -1651,7 +1651,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array       An array of getStatus() return values on success.
      */
-    public function getStatuses($idLst)
+    public function getStatuses(array $idLst)
     {
         $this->debug('IDs:' . implode(',', $idLst));
 
@@ -1794,7 +1794,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
      */
-    public function findReserves($course, $inst, $dept)
+    public function findReserves(string $course, string $inst, string $dept)
     {
         $reserveWhere = [];
         $bindParams = [];
@@ -1852,7 +1852,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         $request = 'LookupPatron&id=' . urlencode($username)
             . '&id_type=userid';
@@ -1898,7 +1898,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *      success - boolean, true if change was made
      *      status  - string, A status message - subject to translation
      */
-    public function changePassword($detail)
+    public function changePassword(array $detail)
     {
         $sql = 'UPDATE borrowers SET password = ? WHERE borrowernumber = ?';
         $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -1931,7 +1931,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return string
      */
-    public function displayDate($date)
+    public function displayDate(string $date)
     {
         if (empty($date)) {
             return '';
@@ -1956,7 +1956,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @return string
      */
-    public function displayDateTime($date)
+    public function displayDateTime(string $date)
     {
         if (empty($date)) {
             return '';

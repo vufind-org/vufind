@@ -169,7 +169,7 @@ class PAIA extends DAIA
      *
      * @return string
      */
-    protected function getCacheKey($suffix = null)
+    protected function getCacheKey(?string $suffix = null)
     {
         return $this->getBaseCacheKey(
             md5($this->baseUrl . $this->paiaURL) . $suffix
@@ -282,7 +282,7 @@ class PAIA extends DAIA
      *                           subject to translation)
      *                sysMessage A system supplied failure message
      */
-    public function cancelHolds($cancelDetails)
+    public function cancelHolds(array $cancelDetails)
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -367,7 +367,7 @@ class PAIA extends DAIA
      *
      * @return array An array with patron information.
      */
-    public function changePassword($details)
+    public function changePassword(array $details)
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -641,7 +641,7 @@ class PAIA extends DAIA
      *
      * @return mixed Array of the patron's fines on success
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -730,7 +730,7 @@ class PAIA extends DAIA
      *
      * @return mixed Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         // filters for getMyHolds are by default configuration:
         // status = 1 - reserved (the document is not accessible for the patron yet,
@@ -752,7 +752,7 @@ class PAIA extends DAIA
      *
      * @return array Array of the patron's profile data on success,
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         if (!is_array($patron)) {
             return [];
@@ -790,7 +790,7 @@ class PAIA extends DAIA
      *
      * @return string URI of usertype
      */
-    protected function getReadableGroupType($type)
+    protected function getReadableGroupType(string $type)
     {
         return $type;
     }
@@ -805,7 +805,7 @@ class PAIA extends DAIA
      *
      * @return array Array of the patron's transactions on success,
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         // filters for getMyTransactions are by default configuration:
         // status = 3 - held (the document is on loan by the patron)
@@ -826,7 +826,7 @@ class PAIA extends DAIA
      *
      * @return array Array of the patron's storage retrieval requests on success,
      */
-    public function getMyStorageRetrievalRequests($patron)
+    public function getMyStorageRetrievalRequests(array $patron)
     {
         // filters for getMyStorageRetrievalRequests are by default configuration:
         // status = 2 - ordered (the document is ordered by the patron)
@@ -877,7 +877,7 @@ class PAIA extends DAIA
      *                of this method will be used as part of the input to the
      *                renewMyItems method.
      */
-    public function getRenewDetails($checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails)
     {
         return $checkOutDetails['renew_details'];
     }
@@ -889,7 +889,7 @@ class PAIA extends DAIA
      *
      * @return String
      */
-    protected function getCallNumber($doc)
+    protected function getCallNumber(array $doc)
     {
         return $doc['label'] ?? null;
     }
@@ -907,7 +907,7 @@ class PAIA extends DAIA
      *
      * @throws ILSException
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         // check also for grantType as patron's password is never required when
         // grantType = client_credentials is configured
@@ -952,7 +952,7 @@ class PAIA extends DAIA
      * @throws AuthException
      * @throws ILSException
      */
-    protected function paiaHandleErrors($array)
+    protected function paiaHandleErrors(array $array)
     {
         // TODO: also have exception contain content of 'error' as for at least
         //       error code 403 two differing errors are possible
@@ -1040,7 +1040,7 @@ class PAIA extends DAIA
      *
      * @return mixed
      */
-    protected function enrichUserDetails($details, $password)
+    protected function enrichUserDetails(array $details, string $password)
     {
         $session = $this->getSession();
 
@@ -1062,7 +1062,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function getConfirmations($holdDetails)
+    protected function getConfirmations(array $holdDetails)
     {
         $confirmations = [];
         if (isset($holdDetails['pickUpLocation'])) {
@@ -1085,7 +1085,7 @@ class PAIA extends DAIA
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -1165,7 +1165,7 @@ class PAIA extends DAIA
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeStorageRetrievalRequest($details)
+    public function placeStorageRetrievalRequest(array $details)
     {
         // Making a storage retrieval request is the same in PAIA as placing a Hold
         return $this->placeHold($details);
@@ -1191,7 +1191,7 @@ class PAIA extends DAIA
      *                  item_id – The item id of the renewed item
      *                  sysMessage – A system supplied renewal message (optional)
      */
-    public function renewMyItems($details)
+    public function renewMyItems(array $details)
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -1286,7 +1286,7 @@ class PAIA extends DAIA
      *
      * @return string Describing PAIA service status
      */
-    protected function paiaStatusString($status)
+    protected function paiaStatusString(string $status)
     {
         return self::$statusStrings[$status] ?? '';
     }
@@ -1300,7 +1300,7 @@ class PAIA extends DAIA
      *
      * @return array|mixed Array of documents containing the given filter properties
      */
-    protected function paiaGetItems($patron, $filter = [])
+    protected function paiaGetItems(array $patron, array $filter = [])
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -1358,7 +1358,7 @@ class PAIA extends DAIA
      *
      * @return string $id
      */
-    protected function getAlternativeItemId($id)
+    protected function getAlternativeItemId(string $id)
     {
         return $id;
     }
@@ -1371,7 +1371,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function paiaParseUserDetails($patron, $user_response)
+    protected function paiaParseUserDetails(string $patron, array $user_response)
     {
         $username = trim($user_response['name']);
         if (count(explode(',', $username)) === 2) {
@@ -1414,7 +1414,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function mapPaiaItems($items, $mapping)
+    protected function mapPaiaItems(array $items, string $mapping)
     {
         if (is_callable([$this, $mapping])) {
             return $this->$mapping($items);
@@ -1432,7 +1432,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function getBasicDetails($doc)
+    protected function getBasicDetails(array $doc)
     {
         $result = [];
 
@@ -1513,7 +1513,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function myHoldsMapping($items)
+    protected function myHoldsMapping(array $items)
     {
         $results = [];
 
@@ -1544,7 +1544,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function myStorageRetrievalRequestsMapping($items)
+    protected function myStorageRetrievalRequestsMapping(array $items)
     {
         $results = [];
 
@@ -1564,7 +1564,7 @@ class PAIA extends DAIA
      *
      * @return array
      */
-    protected function myTransactionsMapping($items)
+    protected function myTransactionsMapping(array $items)
     {
         $results = [];
 
@@ -1646,7 +1646,7 @@ class PAIA extends DAIA
      * @return string POST response
      * @throws ILSException
      */
-    protected function paiaPostRequest($file, $data_to_send, $access_token = null)
+    protected function paiaPostRequest(string $file, string $data_to_send, string $access_token = null)
     {
         // json-encoding
         $postData = json_encode($data_to_send);
@@ -1684,7 +1684,7 @@ class PAIA extends DAIA
      * @return bool|string
      * @throws ILSException
      */
-    protected function paiaGetRequest($file, $access_token)
+    protected function paiaGetRequest(string $file, string $access_token)
     {
         $http_headers = [
             'Authorization' => 'Bearer ' . $access_token,
@@ -1715,7 +1715,7 @@ class PAIA extends DAIA
      * @return mixed
      * @throws \Exception
      */
-    protected function paiaParseJsonAsArray($file)
+    protected function paiaParseJsonAsArray(string $file)
     {
         $responseArray = json_decode($file, true);
 
@@ -1736,7 +1736,7 @@ class PAIA extends DAIA
      * @return array|mixed
      * @throws ILSException
      */
-    protected function paiaGetAsArray($file)
+    protected function paiaGetAsArray(string $file)
     {
         $responseJson = $this->paiaGetRequest(
             $file,
@@ -1755,7 +1755,7 @@ class PAIA extends DAIA
      * @return array|mixed
      * @throws ILSException
      */
-    protected function paiaPostAsArray($file, $data)
+    protected function paiaPostAsArray(string $file, array $data)
     {
         $responseJson = $this->paiaPostRequest(
             $file,
@@ -1776,7 +1776,7 @@ class PAIA extends DAIA
      * null on unsuccessful login, PEAR_Error on error.
      * @throws ILSException
      */
-    protected function paiaLogin($username, $password)
+    protected function paiaLogin(string $username, string $password)
     {
         // as PAIA supports two authentication methods (defined as grant_type:
         // password or client_credentials), check which one is configured
@@ -1890,7 +1890,7 @@ class PAIA extends DAIA
      * @return array
      * @throws ILSException
      */
-    protected function paiaGetUserDetails($patron)
+    protected function paiaGetUserDetails(array $patron)
     {
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
@@ -1915,7 +1915,7 @@ class PAIA extends DAIA
      *
      * @return bool
      */
-    protected function paiaCheckScope($scope)
+    protected function paiaCheckScope(string $scope)
     {
         return (!empty($scope) && is_array($this->getScope()))
             ? in_array($scope, $this->getScope()) : false;
@@ -1967,7 +1967,7 @@ class PAIA extends DAIA
      * @throws \Exception
      * @throws ILSException You are not entitled to read notifications
      */
-    protected function paiaGetSystemMessages($patron)
+    protected function paiaGetSystemMessages(array $patron)
     {
         // check if user has appropriate scope
         if (!$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)) {
@@ -2033,9 +2033,9 @@ class PAIA extends DAIA
      * @throws ILSException You are not entitled to read notifications
      */
     protected function paiaRemoveSystemMessage(
-        $patron,
-        $messageId,
-        $keepCache = false
+        array $patron,
+        string $messageId,
+        bool $keepCache = false
     ) {
         // check if user has appropriate scope
         if (!$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)) {
@@ -2076,7 +2076,7 @@ class PAIA extends DAIA
      * otherwise FALSE
      * @throws ILSException
      */
-    protected function paiaRemoveSystemMessages($patron, array $messageIds)
+    protected function paiaRemoveSystemMessages(array $patron, array $messageIds)
     {
         foreach ($messageIds as $messageId) {
             if (!$this->paiaRemoveSystemMessage($patron, $messageId, true)) {
@@ -2100,7 +2100,7 @@ class PAIA extends DAIA
      *
      * @return string
      */
-    protected function getPaiaNotificationsId($messageId)
+    protected function getPaiaNotificationsId(string $messageId)
     {
         return $messageId;
     }
@@ -2114,7 +2114,7 @@ class PAIA extends DAIA
      * @return bool|string
      * @throws ILSException
      */
-    protected function paiaDeleteRequest($file, $access_token = null)
+    protected function paiaDeleteRequest(string $file, string $access_token = null)
     {
         if (null === $access_token) {
             $access_token = $this->getSession()->access_token;

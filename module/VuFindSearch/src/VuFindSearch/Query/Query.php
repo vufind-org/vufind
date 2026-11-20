@@ -68,7 +68,7 @@ class Query extends AbstractQuery
      * @param string $handler  Name of search handler
      * @param string $operator Operator to apply to query string (null if n/a)
      */
-    public function __construct($string = '', $handler = null, $operator = null)
+    public function __construct(string $string = '', string $handler = null, string $operator = null)
     {
         $this->queryHandler = $handler ? $handler : null;
         $this->queryString  = $string;
@@ -83,7 +83,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getString($normalizer = null)
+    public function getString(callable $normalizer = null)
     {
         return $normalizer ? $normalizer($this->queryString) : $this->queryString;
     }
@@ -95,7 +95,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setString($string)
+    public function setString(string $string)
     {
         $this->queryString = $string;
     }
@@ -117,7 +117,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setHandler($handler)
+    public function setHandler(string $handler)
     {
         $this->queryHandler = $handler;
     }
@@ -139,7 +139,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setOperator($operator)
+    public function setOperator(string $operator)
     {
         $this->operator = $operator;
     }
@@ -154,7 +154,7 @@ class Query extends AbstractQuery
      *
      * @return bool
      */
-    public function containsTerm($needle, $normalizer = null)
+    public function containsTerm(string $needle, callable $normalizer = null)
     {
         // Escape characters with special meaning in regular expressions to avoid
         // errors:
@@ -183,7 +183,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm($from, $to, $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null)
     {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):

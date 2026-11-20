@@ -58,7 +58,7 @@ class AbstractResultsPassthrough implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // No settings used by default.
     }
@@ -90,7 +90,7 @@ class AbstractResultsPassthrough implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->results = $results;
     }

@@ -57,7 +57,7 @@ class FavoriteFacets extends SideFacets
      */
     public function __construct(
         \VuFind\Config\ConfigManagerInterface $configManager,
-        $tagSetting = 'enabled'
+        string $tagSetting = 'enabled'
     ) {
         parent::__construct($configManager);
         $this->tagSetting = $tagSetting;
@@ -70,7 +70,7 @@ class FavoriteFacets extends SideFacets
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Only display tags when enabled:
         $this->mainFacets = ($this->tagSetting !== 'disabled')

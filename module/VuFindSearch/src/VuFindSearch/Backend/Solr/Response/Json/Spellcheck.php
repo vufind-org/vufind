@@ -77,7 +77,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function __construct(array $spellcheck, $query)
+    public function __construct(array $spellcheck, string $query)
     {
         $this->terms = new ArrayObject();
         // Solr 6.4 and before use an array of arrays with two elements, while
@@ -203,7 +203,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @see http://www.php.net/manual/en/arrayobject.uksort.php
      */
-    public function compareTermLength($a, $b)
+    public function compareTermLength(string $a, string $b)
     {
         return strlen($b) - strlen($a);
     }

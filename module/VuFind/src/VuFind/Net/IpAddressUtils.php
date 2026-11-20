@@ -54,7 +54,7 @@ class IpAddressUtils
      * @return string|false Packed in_addr representation if successful, false
      * for invalid IP address
      */
-    public function normalizeIp($ip, $end = false)
+    public function normalizeIp(string $ip, bool $end = false)
     {
         // The check for AF_INET6 allows fallback to IPv4 only if necessary.
         // Hopefully that's not necessary.
@@ -107,7 +107,7 @@ class IpAddressUtils
      *
      * @return bool
      */
-    public function isInRange($ip, $ranges)
+    public function isInRange(string $ip, array $ranges)
     {
         $ip = $this->normalizeIp($ip);
         foreach ($ranges as $range) {
@@ -137,7 +137,7 @@ class IpAddressUtils
      *
      * @return string The possibly truncated IP address
      */
-    public function truncate($ip, $ipv4Octets = null, $ipv6Hextets = null)
+    public function truncate(string $ip, int $ipv4Octets = null, int $ipv6Hextets = null)
     {
         if (!str_contains($ip, ':') || !defined('AF_INET6')) {
             // IPv4 address

@@ -56,7 +56,7 @@ class ContentLoader
      *
      * @return array
      */
-    public function __invoke($isbn)
+    public function __invoke(string $isbn)
     {
         return $this->loader->loadByIsbn($isbn);
     }

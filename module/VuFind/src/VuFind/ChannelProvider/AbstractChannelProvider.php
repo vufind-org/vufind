@@ -112,7 +112,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      *
      * @return void
      */
-    public function setProviderId($id)
+    public function setProviderId(string $id)
     {
         $this->providerId = $id;
     }
@@ -137,7 +137,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      *
      * @return array
      */
-    protected function summarizeRecordDrivers($drivers)
+    protected function summarizeRecordDrivers(iterable $drivers)
     {
         $summary = [];
         foreach ($drivers as $current) {

@@ -245,7 +245,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getToken($filter, $title)
+    protected function getToken(string $filter, string $title)
     {
         return str_replace('|', ' ', $title)    // make sure delimiter not in title
             . '|' . $filter;
@@ -265,9 +265,9 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     protected function buildChannel(
         Results $results,
-        $filter,
-        $title,
-        $tokenOnly = false
+        string $filter,
+        string $title,
+        bool $tokenOnly = false
     ) {
         $retVal = [
             'title' => $title,
@@ -322,7 +322,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function buildChannelFromToken(Results $results, $token)
+    protected function buildChannelFromToken(Results $results, string $token)
     {
         $parts = explode('|', $token, 2);
         if (count($parts) < 2) {
@@ -344,9 +344,9 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     protected function buildChannelFromFacet(
         Results $results,
-        $field,
-        $value,
-        $tokenOnly = false
+        string $field,
+        array $value,
+        bool $tokenOnly = false
     ) {
         return $this->buildChannel(
             $results,

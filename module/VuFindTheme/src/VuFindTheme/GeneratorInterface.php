@@ -49,7 +49,7 @@ interface GeneratorInterface
      *
      * @return bool
      */
-    public function generate($name);
+    public function generate(string $name);
 
     /**
      * Get last error message.

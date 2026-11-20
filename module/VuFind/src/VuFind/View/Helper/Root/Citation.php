@@ -121,7 +121,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return static
      */
-    public function __invoke($driver)
+    public function __invoke(\VuFind\RecordDriver\AbstractBase $driver)
     {
         // Store the driver first, since we will need it for prepareAuthors checks.
         $this->driver = $driver;
@@ -200,7 +200,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function prepareAuthors($authors, $isCorporate = false)
+    protected function prepareAuthors(array $authors, bool $isCorporate = false)
     {
         $callables = [];
 
@@ -269,7 +269,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string        Formatted citation
      */
-    public function getCitation($format)
+    public function getCitation(string $format)
     {
         // Construct method name for requested format:
         $method = 'getCitation' . $format;
@@ -371,16 +371,16 @@ class Citation implements TranslatorAwareInterface
      * @return string
      */
     public function getCitationMLA(
-        $etAlThreshold = 2,
-        $volNumSeparator = ', no. ',
-        $numPrefix = ', ',
-        $volPrefix = 'vol. ',
-        $yearFormat = ', %s',
-        $pageNoSeparator = ',',
-        $includePubPlace = false,
-        $doiPrefix = 'https://doi.org/',
-        $labelPageRange = true,
-        $doiArticleComma = true
+        int $etAlThreshold = 2,
+        string $volNumSeparator = ', no. ',
+        string $numPrefix = ', ',
+        string $volPrefix = 'vol. ',
+        string $yearFormat = ', %s',
+        string $pageNoSeparator = ',',
+        bool $includePubPlace = false,
+        string $doiPrefix = 'https://doi.org/',
+        bool $labelPageRange = true,
+        bool $doiArticleComma = true
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
@@ -437,9 +437,9 @@ class Citation implements TranslatorAwareInterface
      * @return string
      */
     protected function getMLANumberAndDate(
-        $volNumSeparator = '.',
-        $volPrefix = '',
-        $yearFormat = ', %s'
+        string $volNumSeparator = '.',
+        string $volPrefix = '',
+        string $yearFormat = ', %s'
     ) {
         $vol = $this->driver->tryMethod('getContainerVolume');
         $num = $this->driver->tryMethod('getContainerIssue');
@@ -535,7 +535,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return bool       True if it's a name suffix.
      */
-    protected function isNameSuffix($str)
+    protected function isNameSuffix(string $str)
     {
         $str = $this->stripPunctuation($str);
 
@@ -556,7 +556,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return bool       True if it's a date range.
      */
-    protected function isDateRange($str)
+    protected function isDateRange(string $str)
     {
         $str = trim($str);
         return preg_match('/^([0-9]+)-([0-9]*)\.?$/', $str);
@@ -569,7 +569,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string      The abbreviated name.
      */
-    protected function abbreviateName($name)
+    protected function abbreviateName(string $name)
     {
         $parts = explode(', ', $this->cleanNameDates($name));
         $name = $parts[0];
@@ -600,7 +600,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function fixAbbreviatedNameLetters($str)
+    protected function fixAbbreviatedNameLetters(string $str)
     {
         // Fix abbreviated letters.
         if (
@@ -619,7 +619,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string     Cleaned name.
      */
-    protected function cleanNameDates($str)
+    protected function cleanNameDates(string $str)
     {
         $arr = explode(', ', $str);
         $name = $arr[0];
@@ -645,7 +645,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return bool          Does string end in punctuation?
      */
-    protected function isPunctuated($string)
+    protected function isPunctuated(string $string)
     {
         $punctuation = ['.', '?', '!'];
         return in_array(substr($string, -1), $punctuation);
@@ -658,7 +658,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string      Cleaned up text.
      */
-    protected function stripPunctuation($text)
+    protected function stripPunctuation(string $text)
     {
         $punctuation = ['.', ',', ':', ';', '/'];
         $text = trim($text);
@@ -675,7 +675,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string     Reversed name.
      */
-    protected function reverseName($str)
+    protected function reverseName(string $str)
     {
         $arr = explode(', ', $str);
 
@@ -698,7 +698,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string     Capitalized title.
      */
-    protected function capitalizeTitle($str)
+    protected function capitalizeTitle(string $str)
     {
         $words = explode(' ', $str);
         $newwords = [];
@@ -862,7 +862,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function formatPrimaryMLAAuthor($author)
+    protected function formatPrimaryMLAAuthor(string $author)
     {
         // Corporate authors should not be reformatted:
         return in_array($author, $this->details['corporateAuthors'])
@@ -877,7 +877,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function formatSecondaryMLAAuthor($author)
+    protected function formatSecondaryMLAAuthor(string $author)
     {
         // If there is no comma in the name, we don't need to reverse it and
         // should leave its punctuation alone (since it was adjusted earlier).
@@ -893,7 +893,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function getMLAAuthors($etAlThreshold = 2)
+    protected function getMLAAuthors(int $etAlThreshold = 2)
     {
         $authorStr = '';
         if (
@@ -937,7 +937,7 @@ class Citation implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getPublisher($includePubPlace = true)
+    protected function getPublisher(bool $includePubPlace = true)
     {
         $parts = [];
         if (

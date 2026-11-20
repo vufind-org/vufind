@@ -77,7 +77,7 @@ class ParamBag implements \Countable
      *
      * @return mixed|null Parameter value or NULL if not set
      */
-    public function get($name)
+    public function get(string $name)
     {
         return $this->params[$name] ?? null;
     }
@@ -99,7 +99,7 @@ class ParamBag implements \Countable
      *
      * @return bool
      */
-    public function hasParam($name)
+    public function hasParam(string $name)
     {
         return isset($this->params[$name]);
     }
@@ -112,7 +112,7 @@ class ParamBag implements \Countable
      *
      * @return bool
      */
-    public function contains($name, $value)
+    public function contains(string $name, string $value)
     {
         $haystack = $this->get($name);
         return is_array($haystack) && in_array($value, $haystack);
@@ -126,7 +126,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function set($name, $value)
+    public function set(string $name, string $value)
     {
         $this->params[$name] = is_array($value) ? $value : [$value];
     }
@@ -138,7 +138,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function remove($name)
+    public function remove(string $name)
     {
         if (isset($this->params[$name])) {
             unset($this->params[$name]);
@@ -154,7 +154,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function add($name, $value, $deduplicate = true)
+    public function add(string $name, mixed $value, bool $deduplicate = true)
     {
         if (!isset($this->params[$name])) {
             $this->params[$name] = [];

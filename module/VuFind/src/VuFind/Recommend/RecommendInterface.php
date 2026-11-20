@@ -57,7 +57,7 @@ interface RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings);
+    public function setConfig(string $settings);
 
     /**
      * Called before the Search Results object performs its main search
@@ -83,5 +83,5 @@ interface RecommendInterface
      *
      * @return void
      */
-    public function process($results);
+    public function process(\VuFind\Search\Base\Results $results);
 }

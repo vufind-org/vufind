@@ -157,7 +157,7 @@ class MultiAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $this->filterCredentials($request);
 
@@ -182,7 +182,7 @@ class MultiAuth extends AbstractBase
      *
      * @return void
      */
-    protected function filterCredentials($request)
+    protected function filterCredentials(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $this->username = $request->getPost()->get('username');
         $this->password = $request->getPost()->get('password');
@@ -206,7 +206,7 @@ class MultiAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    protected function authUser($request)
+    protected function authUser(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $exception = null;
         $manager = $this->getPluginManager();

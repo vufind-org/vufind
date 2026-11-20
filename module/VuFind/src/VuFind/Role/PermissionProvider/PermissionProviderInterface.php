@@ -48,5 +48,5 @@ interface PermissionProviderInterface
      *
      * @return array
      */
-    public function getPermissions($options);
+    public function getPermissions(mixed $options);
 }

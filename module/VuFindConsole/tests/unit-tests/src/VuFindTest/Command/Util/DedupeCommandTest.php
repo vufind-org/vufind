@@ -74,7 +74,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setSuccessfulExpectations($command, $output)
+    protected function setSuccessfulExpectations(DedupeCommand $command, string $output)
     {
         $fakeHandle = 7;    // arbitrary number for test purposes
         $command->expects($this->once())->method('openOutputFile')

@@ -81,11 +81,11 @@ class CartTest extends \PHPUnit\Framework\TestCase
      * @return CookieManager
      */
     protected function getMockCookieManager(
-        $cookies = [],
-        $path = '/',
-        $domain = null,
-        $secure = false,
-        $httpOnly = false
+        array $cookies = [],
+        string $path = '/',
+        string $domain = null,
+        bool $secure = false,
+        bool $httpOnly = false
     ) {
         return $this->getMockBuilder(\VuFind\Cookie\CookieManager::class)
             ->onlyMethods(['set'])
@@ -103,7 +103,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Cart
      */
-    protected function getCart($maxSize = 100, $active = true, $cookies = [])
+    protected function getCart(int $maxSize = 100, bool $active = true, array|CookieManager $cookies = [])
     {
         if (!($cookies instanceof CookieManager)) {
             $cookies = $this->getMockCookieManager($cookies);

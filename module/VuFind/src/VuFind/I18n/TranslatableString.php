@@ -68,7 +68,7 @@ class TranslatableString implements TranslatableStringInterface
      * @param string $displayString Translatable display string
      * @param bool   $translatable  Whether translation is allowed
      */
-    public function __construct($string, $displayString, $translatable = true)
+    public function __construct(string $string, string $displayString, bool $translatable = true)
     {
         $this->string = (string)$string;
         $this->displayString = $displayString;

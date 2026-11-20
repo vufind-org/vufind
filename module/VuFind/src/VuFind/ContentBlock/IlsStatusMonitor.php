@@ -54,7 +54,7 @@ class IlsStatusMonitor implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $this->target = empty($settings) ? $this->target : $settings;
     }

@@ -42,7 +42,7 @@ class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
      * @throws \VuFind\Exception\Auth
      * @return array shibboleth configuration
      */
-    public function getConfiguration($entityId)
+    public function getConfiguration(string $entityId)
     {
         return $this->config['Shibboleth'] ?? [];
     }

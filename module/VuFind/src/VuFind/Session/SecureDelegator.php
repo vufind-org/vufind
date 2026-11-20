@@ -104,7 +104,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return bool
      */
-    public function open($save_path, $name): bool
+    public function open(string $save_path, string $name): bool
     {
         $cookieName = "{$name}_KEY";
         $cipherKey = ($cookieValue = $this->cookieManager->get($cookieName))
@@ -127,7 +127,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return string|false
      */
-    public function read($session_id): string|false
+    public function read(string $session_id): string|false
     {
         $data = $this->handler->read($session_id);
         return $data ? ($this->cipher->decrypt($data) ?: '') : $data;
@@ -141,7 +141,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return bool
      */
-    public function write($session_id, $session_data): bool
+    public function write(string $session_id, string $session_data): bool
     {
         $data = $this->cipher->encrypt($session_data);
         return $this->handler->write($session_id, $data);
@@ -175,7 +175,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return mixed
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         return $this->handler->{$name}(...$arguments);
     }

@@ -64,7 +64,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return void
      */
-    public function __construct($total = 0, $offset = 0)
+    public function __construct(int $total = 0, int $offset = 0)
     {
         $this->total = $total;
         $this->offset = $offset;

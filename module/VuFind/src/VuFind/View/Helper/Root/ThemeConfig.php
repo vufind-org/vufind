@@ -65,7 +65,7 @@ class ThemeConfig
      *
      * @return mixed|null
      */
-    public function __invoke($path = [])
+    public function __invoke(string|array $path = [])
     {
         // Ensure path is an array
         $path = (array)$path;

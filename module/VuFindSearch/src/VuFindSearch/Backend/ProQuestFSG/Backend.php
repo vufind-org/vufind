@@ -94,8 +94,8 @@ class Backend extends AbstractBackend
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         $params ??= new ParamBag();
@@ -114,7 +114,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         $response   = $this->connector->getRecord($id, $params);
         $collection = $this->createRecordCollection($response);
@@ -161,7 +161,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection($records)
+    protected function createRecordCollection(array $records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }

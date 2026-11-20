@@ -65,7 +65,7 @@ class Demo extends \VuFind\Content\AbstractCover
      *
      * @return bool
      */
-    public function supports($ids)
+    public function supports(array $ids)
     {
         // We won't know what we need until we parse the path string; accept
         // everything at this stage:
@@ -82,7 +82,7 @@ class Demo extends \VuFind\Content\AbstractCover
      *
      * @return string|bool
      */
-    public function getUrl($key, $size, $ids)
+    public function getUrl(string $key, string $size, array $ids)
     {
         $cover = $this->getCover($ids);
         if ($path = $cover['file'] ?? null) {
@@ -127,7 +127,7 @@ class Demo extends \VuFind\Content\AbstractCover
      *
      * @return array
      */
-    protected function getCover($ids)
+    protected function getCover(array $ids)
     {
         $covers = $this->themeInfo->findInThemes('images/demo-cover-*');
         // selects either one of the available demo covers or no image

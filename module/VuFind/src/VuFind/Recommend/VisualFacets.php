@@ -66,7 +66,7 @@ class VisualFacets extends AbstractFacets
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Visual_Settings' : $settings[0];

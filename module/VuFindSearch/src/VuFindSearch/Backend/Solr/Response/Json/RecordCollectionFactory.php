@@ -70,8 +70,8 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      * @return void
      */
     public function __construct(
-        $recordFactory = null,
-        $collectionClass = RecordCollection::class
+        callable $recordFactory = null,
+        string $collectionClass = RecordCollection::class
     ) {
         if (null === $recordFactory) {
             $this->recordFactory = function ($data) {
@@ -90,7 +90,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return RecordCollection
      */
-    public function factory($response)
+    public function factory(array $response)
     {
         if (!is_array($response)) {
             throw new InvalidArgumentException(

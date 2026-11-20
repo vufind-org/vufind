@@ -47,7 +47,7 @@ class Summon
      *
      * @return string
      */
-    public function getEndnoteFormat($format)
+    public function getEndnoteFormat(string $format)
     {
         switch ($format) {
             case 'Journal Article':
@@ -72,7 +72,7 @@ class Summon
      *
      * @return string
      */
-    public function getRefWorksFormat($format)
+    public function getRefWorksFormat(string $format)
     {
         switch ($format) {
             case 'Book Chapter':

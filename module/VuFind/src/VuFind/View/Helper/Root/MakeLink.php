@@ -66,7 +66,7 @@ class MakeLink
      *
      * @return array (associative) Combined attributes by key
      */
-    protected function mergeAttributes($href, $attrs, $options)
+    protected function mergeAttributes(string $href, string|array $attrs, array $options)
     {
         // If $attrs is not an object, interpret as class name
         if (!is_array($attrs)) {
@@ -113,8 +113,8 @@ class MakeLink
     public function __invoke(
         string $contents,
         ?string $href = null,
-        $attrs = [],
-        $options = []
+        string|array $attrs = [],
+        array $options = []
     ) {
         $mergedAttrs = $this->mergeAttributes($href, $attrs, $options);
 

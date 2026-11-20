@@ -1633,7 +1633,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * @return void
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function mockResponse($fixture = null)
+    protected function mockResponse(string|array|null $fixture = null)
     {
         $adapter = new TestAdapter();
         if (!empty($fixture)) {
@@ -1659,7 +1659,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return HttpResponse Response object
      */
-    protected function loadResponse($filename)
+    protected function loadResponse(string $filename)
     {
         return HttpResponse::fromString(
             $this->getFixture("xcncip2/response/$filename")
@@ -1673,7 +1673,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    protected function configureDriver($config = null)
+    protected function configureDriver(?array $config = null)
     {
         $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $this->driver->setConfig(

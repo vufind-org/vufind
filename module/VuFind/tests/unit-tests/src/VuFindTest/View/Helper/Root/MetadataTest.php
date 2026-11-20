@@ -53,7 +53,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver($data)
+    protected function getDriver(array $data)
     {
         $driver = new TestHarness();
         $driver->setRawData($data);

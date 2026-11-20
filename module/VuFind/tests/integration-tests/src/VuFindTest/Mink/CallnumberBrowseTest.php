@@ -57,7 +57,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function changeCallnumberSettings($nos, $locs, $full = false)
+    protected function changeCallnumberSettings(string $nos, string $locs, bool $full = false)
     {
         $this->changeConfigs(
             [
@@ -82,7 +82,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkLink($link, $type)
+    protected function checkLink(\Behat\Mink\Element\Element $link, string $type)
     {
         $this->assertIsObject($link);
         $href = $link->getAttribute('href');
@@ -129,7 +129,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function activateAndTestLinks($type, $page, $expectLinks)
+    protected function activateAndTestLinks(string $type, \Behat\Mink\Element\Element $page, bool $expectLinks)
     {
         // Single callnumbers (Sample)
         $this->changeConfigs(
@@ -169,7 +169,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function validateSetting($nos = 'first', $locs = 'msg', $expectLinks = true, $full = false)
+    protected function validateSetting(string $nos = 'first', string $locs = 'msg', bool $expectLinks = true, bool $full = false)
     {
         $this->changeCallnumberSettings($nos, $locs, $full);
         $page = $this->performSearch('id:' . $this->id);

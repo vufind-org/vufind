@@ -191,7 +191,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return SwitchQuery
      */
-    protected function getSwitchQuery($results = null, $settings = '', $bm = null)
+    protected function getSwitchQuery(\VuFind\Search\Solr\Results $results = null, string $settings = '', BackendManager $bm = null)
     {
         $results ??= $this->getMockResults();
         $sq = new SwitchQuery(
@@ -211,7 +211,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return BackendManager
      */
-    protected function getMockBackendManager($csBools = true, $csRanges = true)
+    protected function getMockBackendManager(bool|string $csBools = true, bool $csRanges = true)
     {
         $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper($csBools, $csRanges);
         $queryBuilder = $this->createMock(\VuFindSearch\Backend\Solr\QueryBuilder::class);
@@ -232,7 +232,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults($query = '', $type = 'basic')
+    protected function getMockResults(string $query = '', string $type = 'basic')
     {
         $params = $this->getMockParams($query, $type);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
@@ -248,7 +248,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams($query = '', $type = 'basic')
+    protected function getMockParams(string $query = '', string $type = 'basic')
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->method('getDisplayQuery')->willReturn($query);

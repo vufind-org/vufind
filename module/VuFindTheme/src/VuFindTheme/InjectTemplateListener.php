@@ -78,7 +78,7 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
      *
      * @return string
      */
-    protected function inflectName($name)
+    protected function inflectName(string $name)
     {
         foreach ($this->prefixes as $prefix) {
             if (str_starts_with($name, $prefix)) {

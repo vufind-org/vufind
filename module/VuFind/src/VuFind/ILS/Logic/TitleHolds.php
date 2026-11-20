@@ -83,7 +83,7 @@ class TitleHolds
      *
      * @todo Indicate login failure or ILS connection failure somehow?
      */
-    public function getHold($id, array $linkOverrides = [])
+    public function getHold(string $id, array $linkOverrides = [])
     {
         // Get Holdings Data
         $mode = $this->catalog->getTitleHoldsMode();
@@ -117,7 +117,7 @@ class TitleHolds
      *
      * @return array
      */
-    protected function getHoldings($id)
+    protected function getHoldings(string $id)
     {
         // Cache results in a static array since the same holdings may be requested
         // multiple times during a run through the class:
@@ -138,7 +138,7 @@ class TitleHolds
      *
      * @return string
      */
-    protected function checkOverrideMode($id, $mode)
+    protected function checkOverrideMode(string $id, string $mode)
     {
         if ($this->config['Catalog']['allow_holds_override'] ?? false) {
             $holdings = $this->getHoldings($id);
@@ -169,7 +169,7 @@ class TitleHolds
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function driverHold($id, $patron, array $linkOverrides = [])
+    protected function driverHold(string $id, array $patron, array $linkOverrides = [])
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
@@ -202,7 +202,7 @@ class TitleHolds
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold($id, $type, $patron, array $linkOverrides = [])
+    protected function generateHold(string $id, string $type, array $patron, array $linkOverrides = [])
     {
         $any_available = false;
         $addlink = false;
@@ -257,7 +257,7 @@ class TitleHolds
      *
      * @return array          Details for generating URL
      */
-    protected function getHoldDetails($data, $HMACKeys, array $linkOverrides)
+    protected function getHoldDetails(array $data, array $HMACKeys, array $linkOverrides)
     {
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $data);

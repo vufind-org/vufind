@@ -77,7 +77,7 @@ class WebCrawlCommand extends Command
         protected Importer $importer,
         protected Writer $solr,
         protected array $config,
-        $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
     }
@@ -118,7 +118,7 @@ class WebCrawlCommand extends Command
      *
      * @return string     Filename of downloaded (and decompressed if needed) content
      */
-    protected function downloadFile($url)
+    protected function downloadFile(string $url)
     {
         $file = tempnam('/tmp', 'sitemap');
         $content = file_get_contents($url);
@@ -140,7 +140,7 @@ class WebCrawlCommand extends Command
      *
      * @return void
      */
-    protected function removeTempFile($file)
+    protected function removeTempFile(string $file)
     {
         unlink($file);
     }
@@ -286,10 +286,10 @@ class WebCrawlCommand extends Command
      */
     protected function harvestSitemap(
         OutputInterface $output,
-        $url,
-        $verbose = false,
-        $index = 'SolrWeb',
-        $testMode = false
+        string $url,
+        bool $verbose = false,
+        string $index = 'SolrWeb',
+        bool $testMode = false
     ) {
         // Date to use as a default "last modification" date in scenarios where we
         // don't care about cache invalidation.

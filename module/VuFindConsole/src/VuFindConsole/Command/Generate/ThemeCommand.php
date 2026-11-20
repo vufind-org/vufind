@@ -77,7 +77,7 @@ class ThemeCommand extends AbstractThemeCommand
      *
      * @return bool
      */
-    protected function generate($name)
+    protected function generate(string $name)
     {
         return parent::generate($name)
             && $this->generator->configure($this->config, $name);

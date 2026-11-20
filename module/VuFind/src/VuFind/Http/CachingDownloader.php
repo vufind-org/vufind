@@ -136,8 +136,8 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      * @return mixed
      */
     public function download(
-        $url,
-        $params = [],
+        string $url,
+        array $params = [],
         ?callable $decodeCallback = null
     ) {
         $cache = $this->getDownloaderCache();
@@ -191,7 +191,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      *
      * @return \stdClass|array
      */
-    public function downloadJson($url, $params = [], $associative = null)
+    public function downloadJson(string $url, array $params = [], ?bool $associative = null)
     {
         $decodeJson = function (ResponseInterface $response, string $url) use ($associative) {
             $body = $response->getBody()->getContents();

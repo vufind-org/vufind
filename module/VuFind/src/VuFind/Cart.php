@@ -103,7 +103,7 @@ class Cart
      *
      * @return bool
      */
-    public function contains($item)
+    public function contains(string $item)
     {
         return in_array($item, $this->items);
     }
@@ -127,7 +127,7 @@ class Cart
      * @return array       Associative array with two keys: success (bool) and
      * notAdded (array of IDs that were unable to be added to the cart)
      */
-    public function addItem($item)
+    public function addItem(string $item)
     {
         return $this->addItems([$item]);
     }
@@ -140,7 +140,7 @@ class Cart
      * @return array       Associative array with two keys: success (bool) and
      * notAdded (array of IDs that were unable to be added to the cart)
      */
-    public function addItems($items)
+    public function addItems(array $items)
     {
         $items = array_merge($this->items, $items);
 
@@ -161,7 +161,7 @@ class Cart
      *
      * @return void
      */
-    public function removeItems($items)
+    public function removeItems(array $items)
     {
         $results = [];
         foreach ($this->items as $id) {
@@ -230,7 +230,7 @@ class Cart
      *
      * @return void
      */
-    protected function init($cookies)
+    protected function init(array $cookies)
     {
         $items = null;
         if (isset($cookies[self::CART_COOKIE])) {

@@ -74,7 +74,7 @@ abstract class AbstractJsStrings
      *
      * @return string
      */
-    abstract protected function mapValue($str, string $key): string;
+    abstract protected function mapValue(string|array $str, string $key): string;
 
     /**
      * Add strings to the internal array.
@@ -83,7 +83,7 @@ abstract class AbstractJsStrings
      *
      * @return void
      */
-    public function addStrings($new)
+    public function addStrings(array $new)
     {
         foreach ($new as $k => $v) {
             $this->strings[$k] = $v;

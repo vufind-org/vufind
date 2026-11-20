@@ -63,7 +63,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
      *
      * @return void
      */
-    protected function initLookFor($params, $request, &$settings)
+    protected function initLookFor(\VuFind\Search\Base\Params $params, array $request, array &$settings)
     {
         // Collect the best possible search term(s):
         $this->lookfor = $request['lookfor'] ?? '';

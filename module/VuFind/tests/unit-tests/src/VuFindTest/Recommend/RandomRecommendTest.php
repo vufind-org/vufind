@@ -228,7 +228,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return Random
      */
-    protected function getConfiguredModule($recConfig): Random
+    protected function getConfiguredModule(string $recConfig): Random
     {
         $service = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
@@ -312,7 +312,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function unserializeFixture($file)
+    protected function unserializeFixture(string $file)
     {
         return unserialize($this->getFixture("searches/basic/$file"));
     }

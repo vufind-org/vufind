@@ -87,7 +87,7 @@ class LDAP extends AbstractBase
      *
      * @return string
      */
-    protected function getSetting($name)
+    protected function getSetting(string $name)
     {
         $config = $this->getConfig();
         $value = $config['LDAP'][$name] ?? '';
@@ -107,7 +107,7 @@ class LDAP extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
@@ -126,7 +126,7 @@ class LDAP extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    protected function checkLdap($username, $password)
+    protected function checkLdap(string $username, string $password)
     {
         // Establish a connection:
         $connection = $this->connect();
@@ -219,7 +219,7 @@ class LDAP extends AbstractBase
      *
      * @return array
      */
-    protected function findUsername($connection, $username)
+    protected function findUsername($connection, string $username)
     {
         $ldapFilter = $this->getSetting('username') . '=' . $username;
         $basedn = $this->getSetting('basedn');
@@ -242,7 +242,7 @@ class LDAP extends AbstractBase
      *
      * @return bool|array Array of user data on success, false otherwise
      */
-    protected function validateCredentialsInLdap($connection, $info, $password)
+    protected function validateCredentialsInLdap($connection, array $info, string $password)
     {
         // Validate the user credentials by attempting to bind to LDAP:
         $dn = $info[0]['dn'];
@@ -271,7 +271,7 @@ class LDAP extends AbstractBase
      *
      * @return UserEntityInterface Object representing logged-in user.
      */
-    protected function processLDAPUser($username, $data)
+    protected function processLDAPUser(string $username, array $data)
     {
         // Database fields that we may be able to load from LDAP:
         $fields = [

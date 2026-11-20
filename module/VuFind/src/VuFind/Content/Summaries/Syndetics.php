@@ -73,7 +73,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * @return array     Returns array with summary data.
      * @author John Jung <jej@uchicago.edu>
      */
-    public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
+    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj)
     {
         // Initialize return value:
         $summaries = [];

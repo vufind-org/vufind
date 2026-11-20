@@ -55,7 +55,7 @@ class LookupIssnsCommand extends \VuFindSearch\Command\CallMethodCommand
      * @param string          $backendId Search backend identifier
      * @param string|string[] $issns     ISSNs to look up
      */
-    public function __construct(string $backendId, $issns)
+    public function __construct(string $backendId, string|array $issns)
     {
         $this->issns = $issns;
         parent::__construct(

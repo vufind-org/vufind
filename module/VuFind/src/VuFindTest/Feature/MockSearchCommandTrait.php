@@ -55,9 +55,9 @@ trait MockSearchCommandTrait
      */
     protected function getMockSearchCommand(
         ?ParamBag $params = null,
-        $context = null,
+        mixed $context = null,
         string $backendId = 'foo',
-        $result = null
+        mixed $result = null
     ): Command {
         $command = $this->getMockBuilder(Command::class)
             ->disableOriginalConstructor()

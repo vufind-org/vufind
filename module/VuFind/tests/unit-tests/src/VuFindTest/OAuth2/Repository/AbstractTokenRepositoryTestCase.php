@@ -135,7 +135,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return MockObject
      */
-    protected function getPluginManager($setExpectation = false)
+    protected function getPluginManager(bool $setExpectation = false)
     {
         $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         if ($setExpectation) {

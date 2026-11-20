@@ -66,7 +66,7 @@ class MonitorCommandFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:

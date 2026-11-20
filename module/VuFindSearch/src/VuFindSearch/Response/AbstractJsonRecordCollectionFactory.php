@@ -70,7 +70,7 @@ abstract class AbstractJsonRecordCollectionFactory implements RecordCollectionFa
      *
      * @return void
      */
-    public function __construct($recordFactory = null, $collectionClass = null)
+    public function __construct(callable $recordFactory = null, string $collectionClass = null)
     {
         // Set default record factory if none provided:
         if (null === $recordFactory) {
@@ -91,7 +91,7 @@ abstract class AbstractJsonRecordCollectionFactory implements RecordCollectionFa
      *
      * @return RecordCollection
      */
-    public function factory($response)
+    public function factory(array $response)
     {
         if (!is_array($response)) {
             throw new InvalidArgumentException(
@@ -122,5 +122,5 @@ abstract class AbstractJsonRecordCollectionFactory implements RecordCollectionFa
      *
      * @return array
      */
-    abstract protected function getDocumentListFromResponse($response): array;
+    abstract protected function getDocumentListFromResponse(array $response): array;
 }

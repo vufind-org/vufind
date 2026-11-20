@@ -68,7 +68,7 @@ class History
      *
      * @return void
      */
-    public function purgeSearchHistory($userId = null)
+    public function purgeSearchHistory(int $userId = null)
     {
         $this->searchService->destroySession($this->sessionId, $userId);
     }
@@ -80,7 +80,7 @@ class History
      *
      * @return array
      */
-    public function getSearchHistory($userId = null)
+    public function getSearchHistory(int $userId = null)
     {
         // Retrieve search history
         $searchHistory = $this->searchService->getSearches($this->sessionId, $userId);

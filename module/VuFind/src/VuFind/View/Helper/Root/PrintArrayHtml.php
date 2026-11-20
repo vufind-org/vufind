@@ -67,7 +67,7 @@ class PrintArrayHtml
      *
      * @return string                   The formatted HTML for output
      */
-    public function __invoke($entry, $indentLevel = 0, $indentFirst = true)
+    public function __invoke(array|string $entry, int $indentLevel = 0, bool $indentFirst = true)
     {
         $html = '';
         if (is_array($entry)) {
@@ -115,7 +115,7 @@ class PrintArrayHtml
      *
      * @return bool
      */
-    protected function isArrayList($var)
+    protected function isArrayList(mixed $var)
     {
         if (!is_array($var)) {
             return false;
@@ -136,7 +136,7 @@ class PrintArrayHtml
      *
      * @return bool
      */
-    protected function isArrayFlat($var)
+    protected function isArrayFlat(mixed $var)
     {
         if (!is_array($var)) {
             return false;
@@ -157,7 +157,7 @@ class PrintArrayHtml
      *
      * @return bool
      */
-    protected function isSingleKeyList($var)
+    protected function isSingleKeyList(mixed $var)
     {
         return $this->isArrayList($var)
                && $this->isArrayFlat($var)

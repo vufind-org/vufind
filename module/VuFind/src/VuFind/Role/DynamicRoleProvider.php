@@ -83,7 +83,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @return Role
      */
-    protected function getRole($name)
+    protected function getRole(string $name)
     {
         // Retrieve permissions from providers if not already done:
         if (false === $this->roles) {
@@ -150,7 +150,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @return array
      */
-    protected function getRolesForSettings($settings)
+    protected function getRolesForSettings(array $settings)
     {
         // Extract require setting:
         if (isset($settings['require'])) {

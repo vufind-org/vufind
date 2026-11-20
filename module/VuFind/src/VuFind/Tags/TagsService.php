@@ -215,7 +215,7 @@ class TagsService
      *
      * @return void
      */
-    protected function fixDuplicateTag($tag, $caseSensitive)
+    protected function fixDuplicateTag(string $tag, bool $caseSensitive)
     {
         // Make sure this really is a duplicate.
         $result = $this->tagDbService->getTagsByText($tag, $caseSensitive);

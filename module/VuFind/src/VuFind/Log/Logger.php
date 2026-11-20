@@ -207,7 +207,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @throws \Psr\Log\InvalidArgumentException
      */
-    public function log($level, string|\Stringable $message, array $context = []): void
+    public function log(mixed $level, string|\Stringable $message, array $context = []): void
     {
         // Map incoming level (e.g., 'err', 'warn') to Monolog/PSR-3 constant.
         $monologLevel = is_string($level) && isset(self::LEVEL_MAP[$level])
@@ -276,7 +276,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @deprecated Deprecated since 11.1 and will be removed without replacement in 12.0
      */
-    public function debugNeeded($newState = null)
+    public function debugNeeded(bool $newState = null)
     {
         if (null !== $newState) {
             $this->debugNeeded = $newState;
@@ -314,7 +314,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return array
      */
-    protected function getDetailsFromException($error, $server): array
+    protected function getDetailsFromException(\Throwable $error, array $server): array
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
@@ -404,7 +404,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return string
      */
-    protected function argumentToString($arg)
+    protected function argumentToString(mixed $arg)
     {
         if (is_object($arg)) {
             return $arg::class . ' Object';

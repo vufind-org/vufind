@@ -79,7 +79,7 @@ class SwitchType implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $params = explode(':', $settings);
         $this->newHandler = !empty($params[0]) ? $params[0] : 'AllFields';
@@ -112,7 +112,7 @@ class SwitchType implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $handler = $results->getParams()->getSearchHandler();
         $this->results = $results;

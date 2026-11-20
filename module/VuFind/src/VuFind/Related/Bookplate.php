@@ -100,7 +100,7 @@ class Bookplate implements RelatedInterface
      *
      * @return void
      */
-    public function init($settings, $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
     {
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';

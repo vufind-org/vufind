@@ -84,9 +84,9 @@ class SearchTabsHelper
      * @return array
      */
     public function getHiddenFilters(
-        $searchClassId,
-        $returnDefaultsIfEmpty = true,
-        $ignoreCurrentRequest = false
+        string $searchClassId,
+        bool $returnDefaultsIfEmpty = true,
+        bool $ignoreCurrentRequest = false
     ) {
         $filters = $ignoreCurrentRequest
             ? null : $this->request->getQuery('hiddenFilters');
@@ -144,7 +144,7 @@ class SearchTabsHelper
      *
      * @return string
      */
-    public function extractClassName($tabId)
+    public function extractClassName(string $tabId)
     {
         [$class] = explode(':', $tabId, 2);
         return $class;
@@ -159,7 +159,7 @@ class SearchTabsHelper
      *
      * @return bool
      */
-    public function filtersMatch($class, $hiddenFilters, $configFilters)
+    public function filtersMatch(string $class, array $hiddenFilters, array $configFilters)
     {
         return $hiddenFilters == $this->parseFilters($class, $configFilters);
     }
@@ -171,7 +171,7 @@ class SearchTabsHelper
      *
      * @return null|array
      */
-    protected function getDefaultTabHiddenFilters($searchClassId)
+    protected function getDefaultTabHiddenFilters(string $searchClassId)
     {
         if (empty($this->tabConfig)) {
             return null;
@@ -204,7 +204,7 @@ class SearchTabsHelper
      *
      * @return array
      */
-    protected function parseFilters($class, $filters)
+    protected function parseFilters(string $class, array $filters)
     {
         $results = $this->results->get($class);
         $params = $results->getParams();

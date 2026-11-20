@@ -103,7 +103,7 @@ class SearchRunner
     public function run(
         array $request,
         string $searchClassId = 'Solr',
-        $setupCallback = null,
+        mixed $setupCallback = null,
         ?string $lastView = null
     ) {
         // Increment the ID counter, then save the current value to a variable;

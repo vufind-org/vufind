@@ -71,7 +71,7 @@ class EIT extends DefaultRecord
      *
      * @return void
      */
-    public function setRawData($data)
+    public function setRawData(mixed $data)
     {
         // Easy way to recursively convert a SimpleXML Object to an array
         $data = json_decode(json_encode((array)$data), 1);
@@ -99,7 +99,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         $su = $this->controlInfo['artinfo']['su'] ?? [];
 

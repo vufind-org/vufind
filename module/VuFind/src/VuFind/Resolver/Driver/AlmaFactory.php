@@ -64,7 +64,7 @@ class AlmaFactory extends DriverWithHttpClientFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $configs = [$container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')['OpenURL']];

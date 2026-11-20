@@ -151,7 +151,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse(string $fixture)
     {
         return $this->getFixture("eit/response/$fixture", 'VuFindSearch');
     }

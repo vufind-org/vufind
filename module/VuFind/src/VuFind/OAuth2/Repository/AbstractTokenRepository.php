@@ -73,7 +73,7 @@ class AbstractTokenRepository
      * @throws InvalidArgumentException
      * @return void
      */
-    public function persistNew($token)
+    public function persistNew(Object $token)
     {
         if (!is_a($token, $this->entityClass)) {
             throw new \InvalidArgumentException(
@@ -110,7 +110,7 @@ class AbstractTokenRepository
      *
      * @return void
      */
-    public function revoke($tokenId)
+    public function revoke(string $tokenId)
     {
         $token = $this->accessTokenService->getByIdAndType($tokenId, $this->tokenType, false);
         if ($token) {
@@ -126,7 +126,7 @@ class AbstractTokenRepository
      *
      * @return bool
      */
-    public function isRevoked($tokenId)
+    public function isRevoked(string $tokenId)
     {
         $token = $this->accessTokenService->getByIdAndType($tokenId, $this->tokenType, false);
         return $token ? $token->isRevoked() : true;

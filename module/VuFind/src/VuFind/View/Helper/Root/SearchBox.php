@@ -129,7 +129,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return bool
      */
-    public function autocompleteEnabled($activeSearchClass)
+    public function autocompleteEnabled(string $activeSearchClass)
     {
         // Simple case -- no combined handlers:
         if (!$this->combinedHandlersActive()) {
@@ -173,7 +173,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return bool
      */
-    public function autocompleteAutoSubmit($activeSearchClass)
+    public function autocompleteAutoSubmit(string $activeSearchClass)
     {
         return $this->getOptionsForTarget($activeSearchClass)->autocompleteAutoSubmit();
     }
@@ -185,7 +185,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return string
      */
-    public function autocompleteFormattingRulesJson($activeSearchClass): string
+    public function autocompleteFormattingRulesJson(string $activeSearchClass): string
     {
         if ($this->combinedHandlersActive()) {
             $rules = [];
@@ -220,7 +220,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return bool
      */
-    public function autocompleteDisplayLimit($activeSearchClass)
+    public function autocompleteDisplayLimit(string $activeSearchClass)
     {
         return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteDisplayLimit();
     }
@@ -254,7 +254,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return string
      */
-    protected function getOperatorCharacter($operator)
+    protected function getOperatorCharacter(string $operator)
     {
         static $map = ['NOT' => '-', 'OR' => '~'];
         return $map[$operator] ?? '';
@@ -270,7 +270,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return array
      */
-    public function getFilterDetails($filterList, $checkboxFilters)
+    public function getFilterDetails(array $filterList, array $checkboxFilters)
     {
         $results = [];
         foreach ($filterList as $field => $data) {
@@ -311,7 +311,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return string
      */
-    public function getPlaceholderText($activeSearchClass)
+    public function getPlaceholderText(string $activeSearchClass)
     {
         // Searchbox place
         if (!empty($this->placeholders)) {
@@ -343,7 +343,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return array
      */
-    public function getHandlers($activeSearchClass, $activeHandler, array $hiddenFilters = [])
+    public function getHandlers(string $activeSearchClass, string $activeHandler, array $hiddenFilters = [])
     {
         return $this->combinedHandlersActive()
             ? $this->getCombinedHandlers($activeSearchClass, $activeHandler, $hiddenFilters)
@@ -358,7 +358,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return int
      */
-    public function getFilterCount($checkboxFilters, $filterList)
+    public function getFilterCount(array $checkboxFilters, array $filterList)
     {
         $result = 0;
         foreach ($checkboxFilters as $filter) {
@@ -380,7 +380,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return array
      */
-    protected function getBasicHandlers($activeSearchClass, $activeHandler)
+    protected function getBasicHandlers(string $activeSearchClass, string $activeHandler)
     {
         $handlers = [];
         $options = $this->getOptionsForTarget($activeSearchClass);
@@ -400,7 +400,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return array
      */
-    protected function getCombinedHandlerConfig($activeSearchClass)
+    protected function getCombinedHandlerConfig(string $activeSearchClass)
     {
         if (!isset($this->cachedConfigs[$activeSearchClass])) {
             // Load and validate configuration:
@@ -444,7 +444,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return array
      */
-    protected function getAlphabrowseHandlers($activeHandler, $indent = true)
+    protected function getAlphabrowseHandlers(string $activeHandler, bool $indent = true)
     {
         $alphaBrowseBase = ($this->url)('alphabrowse-home');
         $labelPrefix = $this->translate('Browse Alphabetically') . ': ';
@@ -516,7 +516,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      *
      * @return array
      */
-    protected function getCombinedHandlers($activeSearchClass, $activeHandler, array $hiddenFilters = [])
+    protected function getCombinedHandlers(string $activeSearchClass, string $activeHandler, array $hiddenFilters = [])
     {
         // Build settings:
         $handlers = [];

@@ -61,7 +61,7 @@ class ExtendedIniNormalizer
      *
      * @return void
      */
-    public function normalizeDirectory($dir, $filter)
+    public function normalizeDirectory(string $dir, string $filter)
     {
         $dir = rtrim($dir, '/');
         $handle = opendir($dir);
@@ -83,7 +83,7 @@ class ExtendedIniNormalizer
      *
      * @return void
      */
-    public function normalizeFile($file)
+    public function normalizeFile(string $file)
     {
         file_put_contents($file, $this->normalizeFileToString($file));
     }
@@ -95,7 +95,7 @@ class ExtendedIniNormalizer
      *
      * @return string
      */
-    public function normalizeFileToString($file)
+    public function normalizeFileToString(string $file)
     {
         // Safeguard to avoid messing up wrong ini files:
         $fileArray = $this->loadFileIntoArray($file);
@@ -147,7 +147,7 @@ class ExtendedIniNormalizer
      *
      * @return string
      */
-    public function formatAsString($rawInput)
+    public function formatAsString(array|TextDomain $rawInput)
     {
         // Sanitize keys before sorting:
         $input = [];
@@ -194,7 +194,7 @@ class ExtendedIniNormalizer
      *
      * @return string
      */
-    public function extractComments($contents)
+    public function extractComments(array $contents)
     {
         $comments = '';
         foreach ($contents as $line) {

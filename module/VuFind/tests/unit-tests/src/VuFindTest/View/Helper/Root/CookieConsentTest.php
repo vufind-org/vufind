@@ -233,7 +233,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
              *
              * @return static
              */
-            public function __invoke($template = null)
+            public function __invoke(?string $template = null)
             {
                 return $this;
             }

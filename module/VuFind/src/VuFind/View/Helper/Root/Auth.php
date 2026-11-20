@@ -94,7 +94,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    protected function renderTemplate($name, $context = [])
+    protected function renderTemplate(string $name, array $context = [])
     {
         // Get the current auth module's class name
         $className = $this->getManager()->getAuthClassForTemplateRendering();
@@ -161,7 +161,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getCreateFields($context = [])
+    public function getCreateFields(array $context = [])
     {
         return $this->renderTemplate('create.phtml', $context);
     }
@@ -187,7 +187,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLoginFields($context = [])
+    public function getLoginFields(array $context = [])
     {
         return $this->renderTemplate('loginfields.phtml', $context);
     }
@@ -199,7 +199,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getOtpLoginFields($context = [])
+    public function getOtpLoginFields(array $context = [])
     {
         return $this->renderTemplate('otploginfields.phtml', $context);
     }
@@ -211,7 +211,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLogin($context = [])
+    public function getLogin(array $context = [])
     {
         return $this->renderTemplate('login.phtml', $context);
     }
@@ -223,7 +223,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLoginDesc($context = [])
+    public function getLoginDesc(array $context = [])
     {
         return $this->renderTemplate('logindesc.phtml', $context);
     }
@@ -247,7 +247,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getNewPasswordForm($context = [])
+    public function getNewPasswordForm(array $context = [])
     {
         return $this->renderTemplate('newpassword.phtml', $context);
     }
@@ -259,7 +259,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getResetPasswordForm($context = [])
+    public function getResetPasswordForm(array $context = [])
     {
         return $this->renderTemplate('resetpassword.phtml', $context);
     }
@@ -271,7 +271,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getPasswordRecoveryForm($context = [])
+    public function getPasswordRecoveryForm(array $context = [])
     {
         return $this->renderTemplate('recovery.phtml', $context);
     }

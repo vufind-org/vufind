@@ -114,9 +114,9 @@ class Solr extends AbstractBase
         Service $ss,
         string $backendId,
         FormatterManager $fm,
-        $cacheDir = null,
-        $filters = [],
-        $batchSize = 1000
+        string $cacheDir = null,
+        array $filters = [],
+        int $batchSize = 1000
     ) {
         $this->searchService = $ss;
         $this->backendId = $backendId;
@@ -139,7 +139,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getXML($id, $options = [])
+    public function getXML(string $id, array $options = [])
     {
         return $this->getFormattedData($id, 'xml', $options, 'hierarchyTree_%s.xml');
     }
@@ -170,7 +170,7 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    protected function searchSolrLegacy(Query $query, $rows): array
+    protected function searchSolrLegacy(Query $query, int $rows): array
     {
         $params = new ParamBag($this->getDefaultSearchParams());
         $command = new RawJsonSearchCommand(
@@ -192,7 +192,7 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    protected function searchSolrCursor(Query $query, $rows): array
+    protected function searchSolrCursor(Query $query, int $rows): array
     {
         $prevCursorMark = '';
         $cursorMark = '*';
@@ -238,7 +238,7 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    protected function searchSolr($q, $rows = 1073741823): array
+    protected function searchSolr(string $q, int $rows = 1073741823): array
     {
         $query = new Query($q);
         // If batch size is zero or negative, use legacy, non-cursor method:
@@ -254,7 +254,7 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    protected function getMapForHierarchy($id)
+    protected function getMapForHierarchy(string $id)
     {
         // Static cache of last map; if the user requests the same map twice
         // in a row (as when generating XML and JSON in sequence) this will
@@ -295,7 +295,7 @@ class Solr extends AbstractBase
      *
      * @return array|bool
      */
-    protected function getRecord($id)
+    protected function getRecord(string $id)
     {
         // Static cache of last record; if the user requests the same map twice
         // in a row (as when generating XML and JSON in sequence) this will
@@ -323,7 +323,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getJSON($id, $options = [])
+    public function getJSON(string $id, array $options = [])
     {
         return $this->getFormattedData($id, 'json', $options, 'tree_%s.json');
     }
@@ -341,10 +341,10 @@ class Solr extends AbstractBase
      * @return string
      */
     public function getFormattedData(
-        $id,
-        $format,
-        $options = [],
-        $cacheTemplate = 'tree_%s'
+        string $id,
+        string $format,
+        array $options = [],
+        string $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
             ? $this->cacheDir . '/'
@@ -403,7 +403,7 @@ class Solr extends AbstractBase
      *
      * @return bool
      */
-    public function supports($id)
+    public function supports(string $id)
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 

@@ -143,8 +143,8 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      * @return array
      */
     public function configureTestTargetAndExpectations(
-        $options = [],
-        $fetchFromSearchService = false
+        array $options = [],
+        bool $fetchFromSearchService = false
     ) {
         $options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20], $options);
         $mockObjects = $this->getSimilarItems($options);
@@ -248,7 +248,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getSimilarItems($options = [])
+    protected function getSimilarItems(array $options = [])
     {
         $search = $this->createMock(\VuFindSearch\Service::class);
         $routeHelper = $this->createMock(RouteHelper::class);
@@ -269,9 +269,9 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      * @return callable
      */
     protected function getCommandChecker(
-        $args = [],
-        $class = \VuFindSearch\Command\SimilarCommand::class,
-        $target = 'Solr'
+        array $args = [],
+        string $class = \VuFindSearch\Command\SimilarCommand::class,
+        string $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
             $this->assertSame($command::class, $class);

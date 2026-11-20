@@ -55,7 +55,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return UrlQueryHelper
      */
-    protected function getHelper($request = ['foo' => 'bar'], $query = null)
+    protected function getHelper(array $request = ['foo' => 'bar'], Query $query = null)
     {
         return new UrlQueryHelper($request, $query ?? new Query('search'));
     }

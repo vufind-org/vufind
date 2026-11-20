@@ -63,7 +63,7 @@ class Base62
      *
      * @throws Exception
      */
-    public function encode($base10Number)
+    public function encode(string $base10Number)
     {
         $binaryNumber = intval($base10Number);
         if ($binaryNumber === 0) {
@@ -90,7 +90,7 @@ class Base62
      *
      * @throws Exception
      */
-    public function decode($base62Number)
+    public function decode(string $base62Number)
     {
         $binaryNumber = 0;
         for ($i = 0; $i < strlen($base62Number); ++$i) {

@@ -74,9 +74,9 @@ class SolrMarcRemote extends SolrMarc implements
      * @throws \Exception
      */
     public function __construct(
-        $mainConfig = null,
-        $recordConfig = null,
-        $searchSettings = null
+        ?array $mainConfig = null,
+        ?array $recordConfig = null,
+        ?array $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
 
@@ -126,7 +126,7 @@ class SolrMarcRemote extends SolrMarc implements
      * @return bool|string
      * @throws \Exception
      */
-    protected function getRemoteFullrecord($id)
+    protected function getRemoteFullrecord(String $id)
     {
         if (empty($id)) {
             throw new \Exception('empty id given');

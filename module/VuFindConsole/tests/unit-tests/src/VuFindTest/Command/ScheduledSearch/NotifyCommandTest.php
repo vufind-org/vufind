@@ -463,7 +463,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&UserEntityInterface
      */
-    protected function getMockUserObject($userId = 2): MockObject&UserEntityInterface
+    protected function getMockUserObject(string $userId = 2): MockObject&UserEntityInterface
     {
         $user = $this->createMock(UserEntityInterface::class);
         $user->method('getId')->willReturn($userId);

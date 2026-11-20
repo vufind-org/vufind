@@ -89,7 +89,7 @@ class Flashmessages
      *
      * @return string
      */
-    protected function getClassForNamespace($ns)
+    protected function getClassForNamespace(string $ns)
     {
         return $ns;
     }

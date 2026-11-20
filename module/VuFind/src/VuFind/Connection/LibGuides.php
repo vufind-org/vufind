@@ -144,7 +144,7 @@ class LibGuides implements
      * @return object|null A JSON object of all LibGuides databases, or null
      * if an error occurs
      */
-    public function getAZ($excludeHidden = true)
+    public function getAZ(bool $excludeHidden = true)
     {
         if (!$this->authenticateAndSetHeaders()) {
             return null;
@@ -203,7 +203,7 @@ class LibGuides implements
      *
      * @return object|null A JSON object of the response data, or null if an error occurs
      */
-    protected function doGet($url)
+    protected function doGet(string $url)
     {
         $this->client->setMethod('GET');
         $this->client->setUri($url);

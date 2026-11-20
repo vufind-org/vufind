@@ -125,7 +125,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         ?StorageInterface $cache = null,
         array $plugins = [],
-        $rtl = false
+        bool $rtl = false
     ): Icon {
         $escaper = new Escaper();
         $plugins['escapeHtmlAttr'] ??= new EscapeHtmlAttr($escaper);

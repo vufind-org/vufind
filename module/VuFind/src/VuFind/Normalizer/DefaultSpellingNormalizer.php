@@ -49,7 +49,7 @@ class DefaultSpellingNormalizer
      *
      * @return string
      */
-    public function __invoke($text)
+    public function __invoke(string $text)
     {
         // The input to the function may be a Solr query with Boolean operators
         // in it; we want to be careful not to turn this into something invalid.
@@ -69,7 +69,7 @@ class DefaultSpellingNormalizer
      *
      * @return string The input text with diacritics removed
      */
-    protected function stripDiacritics($string)
+    protected function stripDiacritics(string $string)
     {
         // See http://userguide.icu-project.org/transforms/general for
         // an explanation of this.

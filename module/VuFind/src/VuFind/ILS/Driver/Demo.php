@@ -208,7 +208,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
         SearchService $ss,
-        $sessionFactory,
+        callable $sessionFactory,
         ?HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
@@ -280,7 +280,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return bool
      */
-    protected function isFailing($method, $default = 0)
+    protected function isFailing(string $method, int $default = 0)
     {
         // Method may come in like Class::Method, we just want the Method part
         $parts = explode('::', $method);
@@ -296,7 +296,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return string
      */
-    protected function getFakeLoc($returnText = true)
+    protected function getFakeLoc(bool $returnText = true)
     {
         $locations = $this->locations;
         $loc = rand() % count($locations);
@@ -486,7 +486,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number, ?array $patron = null)
+    protected function getRandomHolding(string $id, string $number, ?array $patron = null)
     {
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
@@ -583,7 +583,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array List of requests
      */
-    protected function createRequestList($requestType)
+    protected function createRequestList(string $requestType)
     {
         $key = strtolower($requestType);
         if ($records = $this->config['Records'][$key] ?? null) {
@@ -692,7 +692,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $status = $this->getSimulatedStatus($id);
         foreach (array_keys($status) as $i) {
@@ -719,7 +719,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return SessionContainer
      */
-    protected function getSession($patron = null)
+    protected function getSession(string $patron = null)
     {
         $sessionKey = md5($this->catalogId . '/' . ($patron ?? 'default'));
 
@@ -799,7 +799,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array
      */
-    protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
+    protected function setStatus(string $id, array $holding = [], bool $append = true, array $patron = null)
     {
         $session = $this->getSession($patron['id'] ?? null);
 
@@ -836,7 +836,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array An array of getStatus() return values on success.
      */
-    public function getStatuses($ids)
+    public function getStatuses(array $ids)
     {
         $this->checkIntermittentFailure();
 
@@ -908,7 +908,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, ?array $patron = null, array $options = [])
+    public function getHolding(string $id, ?array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
 
@@ -1001,7 +1001,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         $this->checkIntermittentFailure();
         $issues = rand(0, 3);
@@ -1024,7 +1024,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password)
+    public function patronLogin(string $username, string $password)
     {
         $this->checkIntermittentFailure();
 
@@ -1064,7 +1064,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $this->checkIntermittentFailure();
         $age = rand(13, 113);
@@ -1326,7 +1326,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return string
      */
-    protected function calculateDueStatus($due)
+    protected function calculateDueStatus(int $due)
     {
         $dueRelative = $due - time();
         if ($dueRelative < 0) {
@@ -1829,7 +1829,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return string[]
      */
-    protected function getRandomBibIds($limit): array
+    protected function getRandomBibIds(int $limit): array
     {
         $count = rand(0, $limit > 30 ? 30 : $limit);
         $results = [];
@@ -1929,7 +1929,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds($cancelDetails)
+    public function cancelHolds(array $cancelDetails)
     {
         $this->checkIntermittentFailure();
         // Rewrite the holds in the session, removing those the user wants to
@@ -2030,7 +2030,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelStorageRetrievalRequests($cancelDetails)
+    public function cancelStorageRetrievalRequests(array $cancelDetails)
     {
         $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
@@ -2095,7 +2095,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems($renewDetails)
+    public function renewMyItems(array $renewDetails)
     {
         $this->checkIntermittentFailure();
         // Simulate an account block at random.
@@ -2165,7 +2165,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails($checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails)
     {
         return $checkOutDetails['item_id'];
     }
@@ -2215,7 +2215,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         $this->checkIntermittentFailure();
         // Simulate failure:
@@ -2340,7 +2340,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeStorageRetrievalRequest($details)
+    public function placeStorageRetrievalRequest(array $details)
     {
         $this->checkIntermittentFailure();
         if (!$this->storageRetrievalRequests) {
@@ -2468,7 +2468,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeILLRequest($details)
+    public function placeILLRequest(array $details)
     {
         $this->checkIntermittentFailure();
         if (!$this->ILLRequests) {
@@ -2651,7 +2651,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelILLRequests($cancelDetails)
+    public function cancelILLRequests(array $cancelDetails)
     {
         $this->checkIntermittentFailure();
         // Rewrite the items in the session, removing those the user wants to
@@ -2736,7 +2736,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array Associative array of the results
      */
-    public function getPasswordRecoveryData($params)
+    public function getPasswordRecoveryData(array $params)
     {
         // We need a username and an email address to find the account:
         if (empty($params['cat_username'])) {
@@ -2960,7 +2960,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @return array
      */
-    public function getTrendingBibs($limit = 30, $maxage = 30, $patron = null)
+    public function getTrendingBibs(int $limit = 30, int $maxage = 30, array $patron = null)
     {
         // This is similar to getRecentlyReturnedBibs for demo purposes.
         return $this->getRecentlyReturnedBibs($limit, $maxage, $patron);

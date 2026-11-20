@@ -47,7 +47,7 @@ class Demo extends AbstractBase
      *
      * @param string $baseUrl Base URL for link resolver
      */
-    public function __construct($baseUrl = 'http://localhost')
+    public function __construct(string $baseUrl = 'http://localhost')
     {
         parent::__construct($baseUrl);
     }
@@ -61,7 +61,7 @@ class Demo extends AbstractBase
      *
      * @return string
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         return $openURL;
     }
@@ -76,7 +76,7 @@ class Demo extends AbstractBase
      *
      * @return array       Array of values
      */
-    public function parseLinks($data)
+    public function parseLinks(string $data)
     {
         return [
             [

@@ -70,7 +70,7 @@ class Sitemap extends AbstractFile
      *
      * @param string $frequency Frequency of URL updates
      */
-    public function __construct($frequency = 'weekly')
+    public function __construct(string $frequency = 'weekly')
     {
         $this->topTag = 'urlset';
         $this->frequency = $frequency;
@@ -83,7 +83,7 @@ class Sitemap extends AbstractFile
      *
      * @return string XML fragment
      */
-    protected function getEntry($url)
+    protected function getEntry(string|array $url)
     {
         if (is_array($url)) {
             $link = $url['url'];

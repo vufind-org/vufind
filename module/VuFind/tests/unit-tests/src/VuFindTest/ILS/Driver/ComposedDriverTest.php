@@ -1680,7 +1680,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A ComposedDriver instance.
      */
-    protected function initDriver($constructorArgs = [], $drivers = [], $driversConfigPath = null)
+    protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null)
     {
         $driver = $this->getDriver($constructorArgs);
         $driver->setConfig(
@@ -1700,7 +1700,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A ComposedDriver instance.
      */
-    protected function getDriver($constructorArgs = [])
+    protected function getDriver(array $constructorArgs = [])
     {
         $driver = new ComposedDriver(
             $constructorArgs['configManager'] ?? $this->getMockConfigManager([], ['config' => 'values']),
@@ -1720,10 +1720,10 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      * @return object MultiBackend driver
      */
     protected function initSimpleMethodTest(
-        $function,
-        $params,
-        $functionConfig,
-        $driverConfigs
+        string $function,
+        array $params,
+        array $functionConfig,
+        array $driverConfigs
     ) {
         $drivers = [];
         foreach ($driverConfigs as $diverName => $driverConfig) {

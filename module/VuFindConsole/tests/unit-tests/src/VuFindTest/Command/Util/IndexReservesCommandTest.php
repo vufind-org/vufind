@@ -72,11 +72,11 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      * @return Symfony\Component\Console\Tester\CommandTester
      */
     protected function getMockIlsCommandTesterWithCourseData(
-        $instructors = [],
-        $courses = [],
-        $departments = [],
-        $reserves = [],
-        $expectedXml = null
+        array $instructors = [],
+        array $courses = [],
+        array $departments = [],
+        array $reserves = [],
+        string $expectedXml = null
     ) {
         $ils = $this->getMockIlsConnection();
         $this->expectConsecutiveCalls(

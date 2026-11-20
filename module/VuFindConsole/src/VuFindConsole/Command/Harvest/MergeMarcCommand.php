@@ -103,7 +103,7 @@ class MergeMarcCommand extends Command
      * @return string[]
      * @throws \Exception
      */
-    protected function findXmlFiles($dir): array
+    protected function findXmlFiles(string $dir): array
     {
         $handle = @opendir($dir);
         if (!$handle) {

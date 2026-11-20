@@ -140,7 +140,7 @@ class MapSelection implements
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
     }
 
@@ -172,7 +172,7 @@ class MapSelection implements
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $reorder_coords = [];
         $filters = $results->getParams()->getRawFilters();

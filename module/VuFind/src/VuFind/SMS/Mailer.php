@@ -77,7 +77,7 @@ class Mailer extends AbstractBase
      * @param array $options Additional options: defaultFrom (optional) and mailer (must be
      * a \VuFind\Mailer\Mailer object)
      */
-    public function __construct(array $config, $options = [])
+    public function __construct(array $config, array $options = [])
     {
         // Set up parent object first:
         parent::__construct($config);

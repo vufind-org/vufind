@@ -130,7 +130,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return EIT
      */
-    protected function getDriver($overrides = []): EIT
+    protected function getDriver(array $overrides = []): EIT
     {
         // Simulate empty response for now:
         $fixture = ['response' => ['docs' => [[]]]];

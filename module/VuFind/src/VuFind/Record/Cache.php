@@ -87,7 +87,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function createOrUpdate($recordId, $source, $rawData)
+    public function createOrUpdate(string $recordId, string $source, mixed $rawData)
     {
         if (isset($this->cachableSources[$source])) {
             $this->debug("Updating {$source}|{$recordId}");
@@ -103,7 +103,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return array Array of \VuFind\RecordDriver\AbstractBase
      */
-    public function lookup($id, $source)
+    public function lookup(string $id, string $source)
     {
         $this->debug("Checking {$source}|{$id}");
         $record = $this->recordService->getRecord($id, $source);
@@ -131,7 +131,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return array Array of \VuFind\RecordDriver\AbstractBase
      */
-    public function lookupBatch($ids, $source)
+    public function lookupBatch(array $ids, string $source)
     {
         if (empty($ids)) {
             return [];
@@ -171,7 +171,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function setContext($context)
+    public function setContext(string $context)
     {
         $this->debug("Setting context to '$context'");
         if (empty($context)) {
@@ -208,7 +208,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    public function isPrimary($source)
+    public function isPrimary(string $source)
     {
         return isset($this->cachableSources[$source]['operatingMode'])
             ? $this->cachableSources[$source]['operatingMode'] === 'primary'
@@ -222,7 +222,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    public function isFallback($source)
+    public function isFallback(string $source)
     {
         return isset($this->cachableSources[$source]['operatingMode'])
             ? $this->cachableSources[$source]['operatingMode'] === 'fallback'
@@ -236,7 +236,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    public function isCachable($source)
+    public function isCachable(string $source)
     {
         return isset($this->cachableSources[$source]['operatingMode'])
             ? $this->cachableSources[$source]['operatingMode'] !== 'disabled'

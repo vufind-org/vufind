@@ -53,7 +53,7 @@ class Formats extends AbstractBase
      *
      * @param bool $enabled is this tab enabled?
      */
-    public function __construct($enabled = true)
+    public function __construct(bool $enabled = true)
     {
         $this->enabled = $enabled;
     }

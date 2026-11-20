@@ -96,7 +96,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function getDataFromUser($ids, $sources)
+    protected function getDataFromUser(array $ids, array $sources)
     {
         $result = $checked = [];
         foreach ($ids as $i => $id) {

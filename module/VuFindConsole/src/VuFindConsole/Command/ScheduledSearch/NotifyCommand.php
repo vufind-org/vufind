@@ -127,7 +127,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         protected Mailer $mailer,
         protected SearchServiceInterface $searchService,
         protected LocaleSettings $localeSettings,
-        $name = null
+        ?string $name = null
     ) {
         $this->urlHelper = $renderer->plugin('url');
         parent::__construct($name);
@@ -150,7 +150,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function msg($msg)
+    protected function msg(string $msg)
     {
         if (null !== $this->output) {
             $this->output->writeln($msg);
@@ -164,7 +164,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function warn($msg)
+    protected function warn(string $msg)
     {
         $this->msg('WARNING: ' . $msg);
     }
@@ -176,7 +176,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function err($msg)
+    protected function err(string $msg)
     {
         $this->msg('ERROR: ' . $msg);
     }
@@ -209,7 +209,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return bool
      */
-    protected function validateSchedule($todayTime, $lastTime, $s)
+    protected function validateSchedule(\DateTime $todayTime, \DateTime $lastTime, SearchEntityInterface $s)
     {
         $schedule = $s->getNotificationFrequency();
         if (!isset($this->scheduleOptions[$schedule])) {
@@ -236,7 +236,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return ?UserEntityInterface
      */
-    protected function getUserForSearch($s)
+    protected function getUserForSearch(SearchEntityInterface $s)
     {
         if (!$user = $s->getUser()) {
             $this->warn('Search ' . $s->getId() . ': is missing user data.');
@@ -258,7 +258,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function setLanguage($userLang)
+    protected function setLanguage(string $userLang)
     {
         // Start with default language setting; override with user language
         // preference if set and valid. Default to English if configuration
@@ -284,7 +284,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return \VuFind\Search\Base\Results|bool
      */
-    protected function getObjectForSearch($s)
+    protected function getObjectForSearch(SearchEntityInterface $s)
     {
         $minSO = $s->getSearchObject();
         if (!$minSO) {
@@ -313,7 +313,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return array|bool
      */
-    protected function getNewRecords($searchObject, $lastTime)
+    protected function getNewRecords(\VuFind\Search\Base\Results $searchObject, \DateTime $lastTime)
     {
         // Prepare query
         $params = $searchObject->getParams();
@@ -369,7 +369,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function buildEmail($s, $user, $searchObject, $newRecords)
+    protected function buildEmail(SearchEntityInterface $s, UserEntityInterface $user, \VuFind\Search\Base\Results $searchObject, array $newRecords)
     {
         $viewBaseUrl = $searchUrl = $s->getNotificationBaseUrl();
         $searchUrl .= ($this->urlHelper)(
@@ -413,7 +413,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @return bool
      */
-    protected function sendEmail($user, $message)
+    protected function sendEmail(UserEntityInterface $user, string $message)
     {
         $subject = ($this->mainConfig['Site']['title'] ?? '')
             . ': ' . $this->translate('Scheduled Alert Results');

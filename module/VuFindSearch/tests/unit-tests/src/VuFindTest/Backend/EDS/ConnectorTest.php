@@ -108,7 +108,7 @@ class ConnectorTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null, $client = null)
+    protected function createConnector(string $fixture = null, HttpClient $client = null)
     {
         if ($fixture) {
             $this->response = unserialize(

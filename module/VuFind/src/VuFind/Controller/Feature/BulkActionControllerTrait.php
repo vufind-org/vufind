@@ -56,7 +56,7 @@ trait BulkActionControllerTrait
      *
      * @return mixed
      */
-    public function redirectToSource($flashNamespace = null, $flashMsg = null, $redirectInLightbox = false)
+    public function redirectToSource(string $flashNamespace = null, string $flashMsg = null, bool $redirectInLightbox = false)
     {
         // Set flash message if requested:
         if (null !== $flashNamespace && !empty($flashMsg)) {

@@ -780,7 +780,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return Explanation
      */
-    protected function getExplanation($result, $config = null)
+    protected function getExplanation(array $result, array $config = null)
     {
         $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $paramsObj = new Params(

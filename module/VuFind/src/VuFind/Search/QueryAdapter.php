@@ -106,7 +106,7 @@ class QueryAdapter implements QueryAdapterInterface
      *
      * @return string
      */
-    public function display(AbstractQuery $query, $translate, $showName)
+    public function display(AbstractQuery $query, callable $translate, callable $showName)
     {
         // Simple case -- basic query:
         if ($query instanceof Query) {
@@ -253,7 +253,7 @@ class QueryAdapter implements QueryAdapterInterface
      *
      * @return array
      */
-    public function minify(AbstractQuery $query, $topLevel = true)
+    public function minify(AbstractQuery $query, bool $topLevel = true)
     {
         // Simple query:
         if ($query instanceof Query) {

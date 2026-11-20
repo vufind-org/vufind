@@ -102,7 +102,7 @@ trait QueryOffsetLimitTrait
      *
      * @return void
      */
-    public function setOffset($offset): void
+    public function setOffset(int $offset): void
     {
         $this->offset = $offset;
     }
@@ -124,7 +124,7 @@ trait QueryOffsetLimitTrait
      *
      * @return void
      */
-    public function setLimit($limit): void
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }

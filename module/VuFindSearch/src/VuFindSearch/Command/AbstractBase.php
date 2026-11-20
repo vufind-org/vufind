@@ -89,7 +89,7 @@ abstract class AbstractBase implements CommandInterface
      */
     public function __construct(
         string $backendId,
-        $context,
+        mixed $context,
         ?ParamBag $params = null
     ) {
         $this->backendId = $backendId;
@@ -127,7 +127,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @return CommandInterface
      */
-    protected function finalizeExecution($result): CommandInterface
+    protected function finalizeExecution(mixed $result): CommandInterface
     {
         $this->result = $result;
         $this->executed = true;
@@ -215,7 +215,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @return void
      */
-    public function setContext($context)
+    public function setContext(mixed $context)
     {
         $this->context = $context;
     }

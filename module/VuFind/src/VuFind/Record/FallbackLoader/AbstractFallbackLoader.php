@@ -75,7 +75,7 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
      *
      * @return array
      */
-    public function load($ids)
+    public function load(array $ids)
     {
         $retVal = [];
         foreach ($ids as $id) {
@@ -94,7 +94,7 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    abstract protected function fetchSingleRecord($id);
+    abstract protected function fetchSingleRecord(string $id);
 
     /**
      * When a record ID has changed, update the record driver and database to
@@ -105,7 +105,7 @@ abstract class AbstractFallbackLoader implements FallbackLoaderInterface
      *
      * @return void
      */
-    protected function updateRecord($record, $previousId)
+    protected function updateRecord($record, string $previousId)
     {
         // Update the record driver with knowledge of the previous identifier...
         $record->setPreviousUniqueId($previousId);

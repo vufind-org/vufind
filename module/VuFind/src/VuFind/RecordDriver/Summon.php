@@ -79,7 +79,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         $retval = [];
 
@@ -271,7 +271,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string OpenURL parameters.
      */
-    public function getOpenUrl($overrideSupportsOpenUrl = false)
+    public function getOpenUrl(bool $overrideSupportsOpenUrl = false)
     {
         // stop here if this record does not support OpenURLs
         if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
@@ -445,7 +445,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string|array|bool
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         $params = parent::getThumbnail($size);
 

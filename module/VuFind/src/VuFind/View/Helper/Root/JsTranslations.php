@@ -63,7 +63,7 @@ class JsTranslations extends AbstractJsStrings
      *
      * @return string
      */
-    protected function mapValue($translation, string $key): string
+    protected function mapValue(string|array $translation, string $key): string
     {
         $translateFunc
             = str_ends_with($key, '_html') || str_ends_with($key, '_unescaped')

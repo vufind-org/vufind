@@ -92,7 +92,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return CopyStringCommand
      */
-    protected function getSuccessfulMockCommand($expectedString = 'baz')
+    protected function getSuccessfulMockCommand(string $expectedString = 'baz')
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
@@ -208,7 +208,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockCommand(
         ?ExtendedIniNormalizer $normalizer = null,
         ?ExtendedIniReader $reader = null,
-        $languageDir = null,
+        string $languageDir = null,
         array $methods = ['addLineToFile']
     ) {
         return $this->getMockBuilder(CopyStringCommand::class)
@@ -229,7 +229,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniNormalizer
      */
-    protected function getMockNormalizer($methods = [])
+    protected function getMockNormalizer(array $methods = [])
     {
         $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor();
@@ -246,7 +246,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniReader
      */
-    protected function getMockReader($methods = [])
+    protected function getMockReader(array $methods = [])
     {
         $builder = $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor();

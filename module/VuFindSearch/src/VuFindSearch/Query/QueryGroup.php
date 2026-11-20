@@ -93,9 +93,9 @@ class QueryGroup extends AbstractQuery
      * @return void
      */
     public function __construct(
-        $operator,
+        string $operator,
         array $queries = [],
-        $reducedHandler = null
+        string $reducedHandler = null
     ) {
         $this->setOperator($operator);
         $this->setQueries($queries);
@@ -133,7 +133,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function setReducedHandler($handler)
+    public function setReducedHandler(string $handler)
     {
         $this->reducedHandler = $handler;
     }
@@ -206,7 +206,7 @@ class QueryGroup extends AbstractQuery
      *
      * @throws \InvalidArgumentException Unknown or invalid boolean operator
      */
-    public function setOperator($operator)
+    public function setOperator(string $operator)
     {
         if (!in_array($operator, self::$operators)) {
             throw new InvalidArgumentException(
@@ -251,7 +251,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return bool
      */
-    public function containsTerm($needle, $normalizer = null)
+    public function containsTerm(string $needle, callable $normalizer = null)
     {
         foreach ($this->getQueries() as $q) {
             if ($q->containsTerm($needle, $normalizer)) {
@@ -285,7 +285,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm($from, $to, $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null)
     {
         foreach ($this->getQueries() as $q) {
             $q->replaceTerm($from, $to, $normalizer);

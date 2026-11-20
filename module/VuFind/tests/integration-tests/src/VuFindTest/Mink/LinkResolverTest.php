@@ -49,7 +49,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getConfigIniOverrides($openUrlExtras = [])
+    public function getConfigIniOverrides(array $openUrlExtras = [])
     {
         return [
             'OpenURL' => $openUrlExtras + [
@@ -68,7 +68,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setupRecordPage($openUrlExtras = [], $extraConfigs = [])
+    protected function setupRecordPage(array $openUrlExtras = [], array $extraConfigs = [])
     {
         // Set up configs
         $this->changeConfigs(
@@ -94,7 +94,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertOpenUrl(Element $page, $click = true)
+    protected function assertOpenUrl(Element $page, bool $click = true)
     {
         // Click the OpenURL link:
         if ($click) {

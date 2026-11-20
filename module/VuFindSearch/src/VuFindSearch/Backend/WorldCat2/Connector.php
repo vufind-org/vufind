@@ -162,7 +162,7 @@ class Connector implements LoggerAwareInterface
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id)
+    public function getRecord(string $id)
     {
         $response = $this->makeApiCall('/bibs/' . urlencode($id));
         $record = json_decode($response->getBody(), true);
@@ -184,7 +184,7 @@ class Connector implements LoggerAwareInterface
      *
      * @return array
      */
-    public function search(ParamBag $params, $offset, $limit)
+    public function search(ParamBag $params, int $offset, int $limit)
     {
         $params->set('offset', $offset);
         $params->set('limit', $limit);

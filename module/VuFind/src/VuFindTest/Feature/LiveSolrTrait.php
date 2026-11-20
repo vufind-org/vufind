@@ -112,7 +112,7 @@ trait LiveSolrTrait
      *
      * @return object
      */
-    protected function getBackend($name = 'Solr')
+    protected function getBackend(string $name = 'Solr')
     {
         return $this->getLiveSolrContainer()
             ->get(\VuFind\Search\BackendManager::class)->get($name);
@@ -125,7 +125,7 @@ trait LiveSolrTrait
      *
      * @return \VuFind\Search\Base\Results
      */
-    protected function getResultsObject($name = 'Solr')
+    protected function getResultsObject(string $name = 'Solr')
     {
         return $this->getLiveSolrContainer()
             ->get(\VuFind\Search\Results\PluginManager::class)->get($name);

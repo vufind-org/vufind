@@ -218,7 +218,7 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return void
      */
-    protected function setSubTemplateParams(string $templateName, $value): void
+    protected function setSubTemplateParams(string $templateName, mixed $value): void
     {
         $this->subTemplatesParams[$templateName] = $value;
     }

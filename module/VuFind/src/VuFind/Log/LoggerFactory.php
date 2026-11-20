@@ -290,7 +290,7 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addDebugHandler(MonologLogger $monologLogger, $debug): void
+    protected function addDebugHandler(MonologLogger $monologLogger, bool|int $debug): void
     {
         // Only add debug writer ONCE!
         static $hasDebugWriter = false;
@@ -366,7 +366,7 @@ class LoggerFactory implements FactoryInterface
     protected function addHandlers(
         MonologLogger $monologLogger,
         HandlerInterface $baseHandler,
-        $filters
+        string|array $filters
     ): void {
         if (!is_array($filters)) {
             $filters = explode(',', $filters);

@@ -139,7 +139,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $holding = [];
 
@@ -207,7 +207,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses($idList)
+    public function getStatuses(array $idList)
     {
         $status = [];
         foreach ($idList as $id) {
@@ -335,7 +335,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return ?array         Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($barcode, $passwd)
+    public function patronLogin(string $barcode, string $passwd)
     {
         $sql = <<<HERE
             SELECT usr.id, usr.first_given_name as firstName,
@@ -386,7 +386,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $transList = [];
 
@@ -475,7 +475,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $fineList = [];
 
@@ -532,7 +532,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $holdList = [];
 
@@ -589,7 +589,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $sql = <<<HERE
             SELECT usr.family_name, usr.first_given_name, usr.day_phone,
@@ -797,7 +797,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return string The formatted date
      */
-    protected function formatDate($date)
+    protected function formatDate(string $date)
     {
         if (!$date) {
             return '';

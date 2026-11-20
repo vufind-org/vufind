@@ -68,7 +68,7 @@ class User implements
      *
      * @return array
      */
-    public function getPermissions($options)
+    public function getPermissions(mixed $options)
     {
         // If no user is logged in, or the user doesn't match the passed-in
         // filter, we can't grant the permission to any roles.

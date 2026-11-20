@@ -50,7 +50,7 @@ trait LowerCaseServiceNameTrait
      *
      * @return mixed
      */
-    public function get($name, ?array $options = null)
+    public function get(string $name, ?array $options = null)
     {
         return parent::get($this->getNormalizedServiceName($name), $options);
     }
@@ -63,7 +63,7 @@ trait LowerCaseServiceNameTrait
      *
      * @return bool
      */
-    public function has($id)
+    public function has(string $id)
     {
         return parent::has($this->getNormalizedServiceName($id));
     }
@@ -77,7 +77,7 @@ trait LowerCaseServiceNameTrait
      *
      * @return string
      */
-    protected function getNormalizedServiceName($name)
+    protected function getNormalizedServiceName(string $name)
     {
         if (
             $name != ($lower = strtolower($name))

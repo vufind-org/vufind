@@ -93,7 +93,7 @@ class PostAction extends AbstractShibbolethLogoutNotificationAction
      *
      * @return void
      */
-    public function logoutNotification($sessionId)
+    public function logoutNotification(string $sessionId)
     {
         $rows = $this->externalSessionService->getAllByExternalSessionId(trim($sessionId));
         if ($rows) {

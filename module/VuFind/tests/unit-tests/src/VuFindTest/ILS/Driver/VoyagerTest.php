@@ -180,7 +180,7 @@ class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
              *
              * @return PDOStatement
              */
-            protected function executeSQL($sql, $bind = [])
+            protected function executeSQL(string|array $sql, array $bind = [])
             {
                 $this->lastSql = $sql;
                 $this->lastBind = $bind;

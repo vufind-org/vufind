@@ -112,14 +112,14 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @return null|\SimpleXMLElement
      */
     public function mockMakeRequest(
-        $path,
-        $paramsGet = [],
-        $paramsPost = [],
-        $method = 'GET',
-        $rawBody = null,
-        $headers = null,
-        $allowedErrors = [],
-        $returnStatus = false
+        string $path,
+        array $paramsGet = [],
+        array $paramsPost = [],
+        string $method = 'GET',
+        string $rawBody = null,
+        Headers|array $headers = null,
+        array $allowedErrors = [],
+        bool $returnStatus = false
     ) {
         // Get the next step of the test, and make assertions as necessary
         // (we'll skip making assertions if the next step is empty):

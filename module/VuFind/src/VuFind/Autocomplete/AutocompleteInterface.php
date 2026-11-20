@@ -52,7 +52,7 @@ interface AutocompleteInterface
      *
      * @return array        The suggestions for the provided query
      */
-    public function getSuggestions($query);
+    public function getSuggestions(string $query);
 
     /**
      * Set parameters that affect the behavior of the autocomplete handler.
@@ -62,5 +62,5 @@ interface AutocompleteInterface
      *
      * @return void
      */
-    public function setConfig($params);
+    public function setConfig(string $params);
 }

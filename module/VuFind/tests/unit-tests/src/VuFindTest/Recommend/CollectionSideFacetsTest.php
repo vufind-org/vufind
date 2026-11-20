@@ -87,7 +87,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams($query = null)
+    protected function getMockParams(\VuFindSearch\Query\Query $query = null)
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');

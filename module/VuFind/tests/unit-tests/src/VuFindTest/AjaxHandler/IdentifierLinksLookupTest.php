@@ -59,7 +59,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    protected function setupConfig($config)
+    protected function setupConfig(array $config)
     {
         $this->container->set(
             \VuFind\Config\ConfigManagerInterface::class,
@@ -109,7 +109,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    protected function setupPluginManager($plugins)
+    protected function setupPluginManager(array $plugins)
     {
         $pm = new PluginManager($this->container);
         foreach ($plugins as $name => $plugin) {

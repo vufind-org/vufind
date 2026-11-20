@@ -272,7 +272,7 @@ class Paytrail extends AbstractBase
      *
      * @return array|false
      */
-    public function getPaymentResponseParams($request)
+    public function getPaymentResponseParams(Laminas\Http\Request $request)
     {
         $params = $request->getQuery()->toArray();
 

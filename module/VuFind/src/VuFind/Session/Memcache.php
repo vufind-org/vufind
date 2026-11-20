@@ -119,7 +119,7 @@ class Memcache extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId): string
+    public function read(string $sessId): string
     {
         // For some reason, Memcache tests fail if we do not pass exactly three
         // parameters to the get method, even though this seems inconsistent with
@@ -139,7 +139,7 @@ class Memcache extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId): bool
+    public function destroy(string $sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);
@@ -156,7 +156,7 @@ class Memcache extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data): bool
+    protected function saveSession(string $sessId, string $data): bool
     {
         // Memcached and Memcache have different set() signatures, so we need to
         // behave differently depending on the class of the connection.

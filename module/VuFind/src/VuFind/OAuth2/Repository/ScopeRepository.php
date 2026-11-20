@@ -66,7 +66,7 @@ class ScopeRepository implements ScopeRepositoryInterface
      *
      * @return ?ScopeEntityInterface
      */
-    public function getScopeEntityByIdentifier($identifier): ?ScopeEntityInterface
+    public function getScopeEntityByIdentifier(string $identifier): ?ScopeEntityInterface
     {
         if (!isset($this->oauth2Config['Scopes'][$identifier])) {
             return null;

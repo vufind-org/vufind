@@ -75,7 +75,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settingsStr)
+    public function setConfig(string $settingsStr)
     {
         // Parse the settings:
         $settings = explode(':', $settingsStr);
@@ -117,7 +117,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         // no action needed
     }

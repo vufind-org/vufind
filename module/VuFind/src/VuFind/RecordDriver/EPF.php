@@ -82,7 +82,7 @@ class EPF extends EDS
      *
      * @return string
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         // Override EDS parent class and get default implementation
         return DefaultRecord::getThumbnail($size);

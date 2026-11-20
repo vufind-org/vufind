@@ -292,7 +292,7 @@ class FavoritesService implements TranslatorAwareInterface
     public function removeUserResourcesById(
         UserEntityInterface $user,
         array $ids,
-        $source = DEFAULT_SEARCH_BACKEND
+        string $source = DEFAULT_SEARCH_BACKEND
     ): void {
         // Retrieve a list of resource IDs:
         $resources = $this->resourceService->getResourcesByRecordIds($ids, $source);
@@ -642,7 +642,7 @@ class FavoritesService implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function formatTagStringForEditing($tags): string
+    public function formatTagStringForEditing(array $tags): string
     {
         $tagStr = '';
         if (count($tags) > 0) {

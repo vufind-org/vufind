@@ -353,7 +353,7 @@ class MonitorCommand extends Command
      *
      * @return void
      */
-    protected function msg($msg)
+    protected function msg(string $msg)
     {
         $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";
         $this->output->writeln($msg);
@@ -366,7 +366,7 @@ class MonitorCommand extends Command
      *
      * @return void
      */
-    protected function err($msg)
+    protected function err(string $msg)
     {
         if ($this->output instanceof ConsoleOutputInterface) {
             $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";

@@ -207,7 +207,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null)
+    protected function createConnector(string $fixture = null)
     {
         $adapter = new TestAdapter();
         if ($fixture) {

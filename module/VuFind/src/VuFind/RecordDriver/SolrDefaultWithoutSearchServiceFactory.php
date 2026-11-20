@@ -68,7 +68,7 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if (!empty($options)) {

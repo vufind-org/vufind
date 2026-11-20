@@ -117,7 +117,7 @@ class CsvReader
      *
      * @throws \Exception
      */
-    public function __construct($files, $delimiter = ',', $template = null)
+    public function __construct(array|string $files, string $delimiter = ',', string $template = null)
     {
         $this->files = is_array($files) ? $files : [$files];
         $this->delimiter = $delimiter;
@@ -143,7 +143,7 @@ class CsvReader
      *
      * @return string
      */
-    protected function getValueFromLine($line, $key)
+    protected function getValueFromLine(array $line, string $key)
     {
         return isset($this->template[$key]) ? $line[$this->template[$key]] : '';
     }
@@ -156,7 +156,7 @@ class CsvReader
      * @return void
      * @throws \Exception
      */
-    protected function loadFile($fn)
+    protected function loadFile(string $fn)
     {
         if (!file_exists($fn) || !($fh = fopen($fn, 'r'))) {
             throw new \Exception("Could not open $fn!");

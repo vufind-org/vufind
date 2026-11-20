@@ -72,7 +72,7 @@ class Recommend implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $parts = explode(':', $settings, 3);
         $backend = array_shift($parts);

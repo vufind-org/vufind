@@ -851,7 +851,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&Url
      */
-    protected function getMockUrl($expectedRoute): MockObject&Url
+    protected function getMockUrl(string $expectedRoute): MockObject&Url
     {
         $url = $this->createMock(Url::class);
         $url->expects($this->once())->method('__invoke')

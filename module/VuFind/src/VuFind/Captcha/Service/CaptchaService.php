@@ -113,7 +113,7 @@ class CaptchaService implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function setErrorMode($mode): bool
+    public function setErrorMode(string $mode): bool
     {
         if (in_array($mode, ['flash', 'throw', 'none'])) {
             $this->errorMode = $mode;
@@ -165,7 +165,7 @@ class CaptchaService implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function active($domain = false): bool
+    public function active(bool|string $domain = false): bool
     {
         return $this->active
             && ($domain == false || $this->domains === true

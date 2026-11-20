@@ -122,7 +122,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return void
      */
-    protected function debugSQL($func, $sql, $params = null)
+    protected function debugSQL(string $func, string $sql, array $params = null)
     {
         if ($this->logger) {
             $logString = "[$func] $sql";
@@ -214,7 +214,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array               An string query string and bind data
      */
-    protected function buildSqlFromArray($sql)
+    protected function buildSqlFromArray(array $sql)
     {
         $modifier = isset($sql['modifier']) ? $sql['modifier'] . ' ' : '';
 
@@ -240,7 +240,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return string            The best status message to display.
      */
-    protected function pickStatus($statusArray)
+    protected function pickStatus(array $statusArray)
     {
         // Pick the first entry by default, then see if we can find a better match:
         $status = $statusArray[0];
@@ -264,7 +264,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return int
      */
-    protected function getStatusRanking($status)
+    protected function getStatusRanking(string $status)
     {
         // This array controls the rankings of possible status messages. The lower
         // the ID in the ITEM_STATUS_TYPE table, the higher the priority of the
@@ -311,7 +311,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array             Availability and other status information.
      */
-    protected function determineAvailability($statusArray)
+    protected function determineAvailability(array $statusArray)
     {
         // It's possible for a record to have multiple status codes. We
         // need to loop through in search of the "Not Charged" (i.e. on
@@ -345,7 +345,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return string
      */
-    protected function getItemSortSequenceSQL($locationColumn)
+    protected function getItemSortSequenceSQL(string $locationColumn)
     {
         if (!$this->useHoldingsSortGroups) {
             return '0 as SORT_SEQ';
@@ -366,7 +366,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getStatusSQL($id)
+    protected function getStatusSQL(array $id)
     {
         // Expressions
         $sqlExpressions = [
@@ -422,7 +422,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getStatusNoItemsSQL($id)
+    protected function getStatusNoItemsSQL(array $id)
     {
         // Expressions
         $sqlExpressions = [
@@ -474,7 +474,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data
      */
-    protected function getStatusData($sqlRows)
+    protected function getStatusData(array $sqlRows)
     {
         $data = [];
 
@@ -515,7 +515,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array Keyed data
      */
-    protected function processStatusData($data)
+    protected function processStatusData(array $data)
     {
         // Process the raw data into final status information:
         $status = [];
@@ -562,7 +562,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
@@ -606,7 +606,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses($idList)
+    public function getStatuses(array $idList)
     {
         $status = [];
         if (is_array($idList)) {
@@ -624,7 +624,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getHoldingItemsSQL($id)
+    protected function getHoldingItemsSQL(array $id)
     {
         // Expressions
         $returnDate = <<<EOT
@@ -704,7 +704,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getHoldingNoItemsSQL($id)
+    protected function getHoldingNoItemsSQL(array $id)
     {
         // Expressions
         $sqlExpressions = [
@@ -763,7 +763,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data
      */
-    protected function getHoldingData($sqlRows)
+    protected function getHoldingData(array $sqlRows)
     {
         $data = [];
 
@@ -817,7 +817,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    protected function getPurchaseHistoryData($id)
+    protected function getPurchaseHistoryData(string $id)
     {
         $sql = 'select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON ' .
                "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, " .
@@ -861,7 +861,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return string|array Results as a string if single, array if multiple
      */
-    protected function getMFHDData(MarcReader $record, $fieldSpecs)
+    protected function getMFHDData(MarcReader $record, array|string $fieldSpecs)
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
@@ -909,7 +909,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data
      */
-    protected function processRecordSegment($recordSegment)
+    protected function processRecordSegment(array $recordSegment)
     {
         $marcDetails = [];
 
@@ -970,7 +970,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return string
      */
-    protected function getLocationName($id)
+    protected function getLocationName(int $id)
     {
         static $cache = [];
 
@@ -994,7 +994,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data
      */
-    protected function processHoldingRow($sqlRow)
+    protected function processHoldingRow(array $sqlRow)
     {
         return [
             'id' => $sqlRow['BIB_ID'],
@@ -1202,7 +1202,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         // Return empty array if purchase history is disabled or embedded
         // in holdings
@@ -1218,7 +1218,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return string Sanitized PIN code
      */
-    protected function sanitizePIN($pin)
+    protected function sanitizePIN(string $pin)
     {
         $pin = preg_replace('/[^0-9a-zA-Z#&<>+^`~]+/', '', $pin);
         return $pin;
@@ -1237,7 +1237,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $login)
+    public function patronLogin(string $username, string $login)
     {
         // Load the field used for verifying the login from the config file, and
         // make sure there's nothing crazy in there:
@@ -1330,7 +1330,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getMyTransactionsSQL($patron)
+    protected function getMyTransactionsSQL(array $patron)
     {
         // Expressions
         $sqlExpressions = [
@@ -1411,7 +1411,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return string|bool
      */
-    protected function pickTransactionStatus($statuses)
+    protected function pickTransactionStatus(array $statuses)
     {
         $regex = $this->config['Loans']['show_statuses'] ?? '/lost|missing|claim/i';
         $retVal = [];
@@ -1502,7 +1502,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $transList = [];
 
@@ -1529,7 +1529,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getFineSQL($patron)
+    protected function getFineSQL(array $patron)
     {
         // Expressions
         $sqlExpressions = [
@@ -1578,7 +1578,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws DateException
      * @return array Keyed data for display by template files
      */
-    protected function processFinesData($sqlRow)
+    protected function processFinesData(array $sqlRow)
     {
         $dueDate = $this->translate('not_applicable');
         // Convert Voyager Format to display format
@@ -1627,7 +1627,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $fineList = [];
 
@@ -1654,7 +1654,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getMyHoldsSQL($patron)
+    protected function getMyHoldsSQL(array $patron)
     {
         // Modifier
         $sqlSelectModifier = 'distinct';
@@ -1722,7 +1722,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws DateException
      * @return array Keyed data for display by template files
      */
-    protected function processMyHoldsData($sqlRow)
+    protected function processMyHoldsData(array $sqlRow)
     {
         $available = $sqlRow['HOLD_RECALL_STATUS'] == 2;
         $expireDate = $this->translate('Unknown');
@@ -1771,7 +1771,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return mixed Array of the patron's holds.
      */
-    protected function processHoldsList($holdList)
+    protected function processHoldsList(array $holdList)
     {
         $returnList = [];
 
@@ -1801,7 +1801,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $holdList = [];
         $returnList = [];
@@ -1830,7 +1830,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getMyStorageRetrievalRequestsSQL($patron)
+    protected function getMyStorageRetrievalRequestsSQL(array $patron)
     {
         // Modifier
         $sqlSelectModifier = 'distinct';
@@ -1915,7 +1915,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array Keyed data for display by template files
      */
-    protected function processMyStorageRetrievalRequestsData($sqlRow)
+    protected function processMyStorageRetrievalRequestsData(array $sqlRow)
     {
         $available = $sqlRow['STATUS'] == 4;
         $expireDate = '';
@@ -1978,7 +1978,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return array        Array of the patron's storage retrieval requests.
      */
-    public function getMyStorageRetrievalRequests($patron)
+    public function getMyStorageRetrievalRequests(array $patron)
     {
         $list = [];
 
@@ -2006,7 +2006,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $sql = 'SELECT PATRON.LAST_NAME, PATRON.FIRST_NAME, ' .
                'PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, ' .
@@ -2223,7 +2223,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
      */
-    public function findReserves($course, $inst, $dept)
+    public function findReserves(string $course, string $inst, string $dept)
     {
         $recordList = [];
         $reserveWhere = [];
@@ -2460,7 +2460,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @return PDOStatement
      */
-    protected function executeSQL($sql, $bind = [])
+    protected function executeSQL(string|array $sql, array $bind = [])
     {
         if (is_array($sql)) {
             $bind = $sql['bind'];

@@ -139,7 +139,7 @@ class Session extends \Behat\Mink\Session
      *
      * @return void
      */
-    public function visit($url)
+    public function visit(string $url)
     {
         // Request remote code coverage if enabled:
         if ($this->testName && $this->coverageDir) {

@@ -74,7 +74,7 @@ class GeoCoords
      *
      * @return bool
      */
-    protected function recommendationEnabled($settings)
+    protected function recommendationEnabled(array $settings)
     {
         if (isset($settings['top']) && is_array($settings['top'])) {
             foreach ($settings['top'] as $setting) {

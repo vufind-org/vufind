@@ -498,11 +498,11 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      * @return \VuFindTest\Search\TestHarness\Results
      */
     protected function getMockResults(
-        $page = 1,
-        $limit = 20,
-        $total = 0,
-        $firstLast = true,
-        $sort = null
+        int $page = 1,
+        int $limit = 20,
+        int $total = 0,
+        bool $firstLast = true,
+        string $sort = null
     ): \VuFindTest\Search\TestHarness\Results {
         $mockConfigManager = $this->getMockConfigManager(
             ['config' => $firstLast ? $this->getFirstLastConfig() : []]
@@ -532,7 +532,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return ResultScroller
      */
-    protected function getMockResultScroller($results): ResultScroller
+    protected function getMockResultScroller(\VuFind\Search\Base\Results $results): ResultScroller
     {
         $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
@@ -586,7 +586,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
              *
              * @return void
              */
-            protected function rememberSearch($search)
+            protected function rememberSearch(\VuFind\Search\Base\Results $search)
             {
                 // Do nothing
             }

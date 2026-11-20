@@ -74,8 +74,8 @@ class Recommend
      */
     public function __invoke(
         RecommendInterface $recommend,
-        $location = null,
-        $index = null
+        string $location = null,
+        int $index = null
     ) {
         $template = 'Recommend/%s.phtml';
         $className = $recommend::class;

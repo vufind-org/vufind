@@ -54,7 +54,7 @@ class BaseFormatter
      *
      * @return void
      */
-    protected function filterArrayValues(&$array)
+    protected function filterArrayValues(array &$array)
     {
         foreach ($array as $key => &$value) {
             if (is_array($value) && !empty($value)) {
@@ -85,7 +85,7 @@ class BaseFormatter
      *
      * @return void
      */
-    protected function resetArrayIndices(&$array)
+    protected function resetArrayIndices(array &$array)
     {
         $isNumeric = count(array_filter(array_keys($array), 'is_string')) === 0;
         if ($isNumeric) {

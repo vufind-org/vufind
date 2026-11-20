@@ -61,7 +61,7 @@ class SolrFactory extends AbstractFallbackLoaderFactory
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('searches');

@@ -75,7 +75,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getMockRecord($driver = null)
+    protected function getMockRecord(HierarchyDriver $driver = null)
     {
         $record = new \VuFindTest\RecordDriver\TestHarness();
         $record->setRawData(
@@ -94,7 +94,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Loader
      */
-    protected function getMockRecordLoader($record = null)
+    protected function getMockRecordLoader(\VuFind\RecordDriver\AbstractBase $record = null)
     {
         $loader = $this->createMock(Loader::class);
         $loader->expects($this->once())->method('load')
@@ -136,7 +136,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getMockResultsManager($results = null)
+    protected function getMockResultsManager(?Results $results = null)
     {
         $manager = $this->createMock(PluginManager::class);
         $manager->expects($this->once())->method('get')

@@ -79,7 +79,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function getHelpFiles($language)
+    protected function getHelpFiles(string $language)
     {
         $dir = APPLICATION_PATH
             . '/themes/root/templates/HelpTranslations/' . $language;
@@ -168,7 +168,7 @@ class LanguageHelper
      *
      * @return string
      */
-    public function getLangName($lang)
+    public function getLangName(string $lang)
     {
         if (isset($this->configuredLanguages[$lang])) {
             return $this->configuredLanguages[$lang];
@@ -190,7 +190,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function getTextDomains($includeOptional)
+    protected function getTextDomains(bool $includeOptional)
     {
         static $domains = false;
         if (!$domains) {
@@ -223,7 +223,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function loadLanguage($lang, $includeOptional, $includeAliases = true)
+    protected function loadLanguage(string $lang, bool $includeOptional, bool $includeAliases = true)
     {
         $includeAliases ? $this->loader->enableAliases() : $this->loader->disableAliases();
         $base = $this->loader->load($lang, '');
@@ -315,7 +315,7 @@ class LanguageHelper
      *
      * @return array
      */
-    protected function summarizeData($details)
+    protected function summarizeData(array $details)
     {
         $data = [];
         foreach ($details as $langCode => $diffs) {
@@ -352,7 +352,7 @@ class LanguageHelper
      *
      * @return array
      */
-    public function getAllDetails($mainLanguage, $includeOptional = true)
+    public function getAllDetails(string $mainLanguage, bool $includeOptional = true)
     {
         $main = $this->loadLanguage($mainLanguage, $includeOptional);
         $mainNoAliases = $this->loadLanguage($mainLanguage, $includeOptional, false);

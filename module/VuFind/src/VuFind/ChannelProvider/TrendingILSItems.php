@@ -83,7 +83,7 @@ class TrendingILSItems extends AbstractILSChannelProvider
      *
      * @return string
      */
-    protected function extractIdsFromResponse($response)
+    protected function extractIdsFromResponse(array $response)
     {
         return $response['id'];
     }

@@ -54,7 +54,7 @@ interface RandomInterface
      */
     public function random(
         AbstractQuery $query,
-        $limit,
+        int $limit,
         ?ParamBag $params = null
     );
 }

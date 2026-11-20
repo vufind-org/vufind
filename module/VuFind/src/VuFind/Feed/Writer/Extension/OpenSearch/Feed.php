@@ -118,7 +118,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setEncoding($enc)
+    public function setEncoding(string $enc)
     {
         $this->stringWrapper = StringUtils::getWrapper($enc);
         $this->encoding      = $enc;
@@ -142,7 +142,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchTotalResults($totalResults)
+    public function setOpensearchTotalResults(int $totalResults)
     {
         $this->totalResults = $totalResults;
         return $this;
@@ -165,7 +165,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchStartIndex($startIndex)
+    public function setOpensearchStartIndex(int $startIndex)
     {
         $this->startIndex = $startIndex;
         return $this;
@@ -188,7 +188,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchItemsPerPage($itemsPerPage)
+    public function setOpensearchItemsPerPage(int $itemsPerPage)
     {
         $this->itemsPerPage = $itemsPerPage;
         return $this;
@@ -211,7 +211,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchSearchTerms($searchTerms)
+    public function setOpensearchSearchTerms(string $searchTerms)
     {
         $this->searchTerms = $searchTerms;
         return $this;
@@ -238,10 +238,10 @@ class Feed extends ParentFeed
      * @return Feed
      */
     public function addOpensearchLink(
-        $url,
-        $role = null,
-        $type = null,
-        $title = null
+        string $url,
+        string $role = null,
+        string $type = null,
+        string $title = null
     ) {
         if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
             throw new Exception\InvalidArgumentException(

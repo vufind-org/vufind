@@ -52,7 +52,7 @@ class HelperInitializer implements InitializerInterface
      *
      * @return object
      */
-    public function __invoke(ContainerInterface $container, $instance)
+    public function __invoke(ContainerInterface $container, object $instance)
     {
         if ($instance instanceof AbstractStandalone) {
             $instance->setEscaper($container->get(\VuFind\Escaper\Escaper::class));

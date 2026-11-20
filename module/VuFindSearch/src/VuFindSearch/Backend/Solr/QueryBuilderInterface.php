@@ -65,5 +65,5 @@ interface QueryBuilderInterface
      *
      * @return void
      */
-    public function setCreateSpellingQuery($enable);
+    public function setCreateSpellingQuery(bool $enable);
 }

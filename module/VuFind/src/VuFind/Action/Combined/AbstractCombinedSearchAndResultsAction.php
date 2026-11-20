@@ -57,8 +57,8 @@ abstract class AbstractCombinedSearchAndResultsAction extends AbstractSearchAndR
      */
     protected function adjustQueryForSettings(
         ServerRequestInterface $request,
-        $settings,
-        $searchType = null
+        array $settings,
+        string $searchType = null
     ): ServerRequestInterface {
         // Apply limit setting, if any:
         $query = $request->getQueryParams();

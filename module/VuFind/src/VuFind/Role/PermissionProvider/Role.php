@@ -48,7 +48,7 @@ class Role implements PermissionProviderInterface
      *
      * @return array
      */
-    public function getPermissions($options)
+    public function getPermissions(mixed $options)
     {
         // We should be receiving a role string or an array of roles; we should
         // simply normalize it to an array and send it back.

@@ -70,7 +70,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function setIdentifier($identifier)
+    public function setIdentifier(string $identifier)
     {
         $this->identifier = $identifier;
     }

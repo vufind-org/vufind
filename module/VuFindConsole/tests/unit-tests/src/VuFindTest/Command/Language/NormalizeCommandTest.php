@@ -181,7 +181,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniNormalizer
      */
-    protected function getMockNormalizer($methods = [])
+    protected function getMockNormalizer(array $methods = [])
     {
         $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor();
@@ -198,7 +198,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniReader
      */
-    protected function getMockReader($methods = [])
+    protected function getMockReader(array $methods = [])
     {
         $builder = $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor();

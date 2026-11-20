@@ -117,7 +117,7 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function addConfigToContext($context)
+    protected function addConfigToContext(array $context)
     {
         $channels = [];
         $relatedTokens = [];
@@ -181,7 +181,7 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function getChannelsFromResults($providers, Results $results, $token)
+    protected function getChannelsFromResults(array $providers, Results $results, string $token)
     {
         // Collect details:
         $channels = [];
@@ -205,7 +205,7 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function getChannelProviders($source, $configSection, $activeId = null)
+    protected function getChannelProviders(string $source, string $configSection, string $activeId = null)
     {
         $providerIds = $this->config["source.$source"][$configSection] ?? [];
         // If an active ID is set, find that ID or return nothing; otherwise, return all available providers.
@@ -223,7 +223,7 @@ class ChannelLoader
      *
      * @return ChannelProviderInterface
      */
-    protected function getChannelProvider($providerId)
+    protected function getChannelProvider(string $providerId)
     {
         // Extract service name from provider ID:
         [$serviceName] = explode(':', $providerId);
@@ -245,9 +245,9 @@ class ChannelLoader
      * @return array
      */
     public function getHomeContext(
-        $token = null,
-        $activeChannel = null,
-        $activeSource = null
+        string $token = null,
+        string $activeChannel = null,
+        string $activeSource = null
     ) {
         // Load appropriate channel objects:
         $defaultSource = $this->config['General']['default_home_source']
@@ -300,10 +300,10 @@ class ChannelLoader
      * @return array
      */
     public function getRecordContext(
-        $recordId,
-        $token = null,
-        $activeChannel = null,
-        $source = DEFAULT_SEARCH_BACKEND,
+        string $recordId,
+        string $token = null,
+        string $activeChannel = null,
+        string $source = DEFAULT_SEARCH_BACKEND,
         array $configSections = ['record'],
         string $context = 'default'
     ) {
@@ -343,10 +343,10 @@ class ChannelLoader
      * @return array
      */
     public function getSearchContext(
-        $searchRequest = [],
-        $token = null,
-        $activeChannel = null,
-        $source = DEFAULT_SEARCH_BACKEND
+        array $searchRequest = [],
+        string $token = null,
+        string $activeChannel = null,
+        string $source = DEFAULT_SEARCH_BACKEND
     ) {
         // Load appropriate channel objects:
         $providers = $this->getChannelProviders($source, 'search', $activeChannel);

@@ -67,7 +67,7 @@ interface QueryAdapterInterface
      *
      * @return string
      */
-    public function display(AbstractQuery $query, $translate, $showName);
+    public function display(AbstractQuery $query, callable $translate, callable $showName);
 
     /**
      * Convert user request parameters into a query (currently for advanced searches
@@ -88,5 +88,5 @@ interface QueryAdapterInterface
      *
      * @return array
      */
-    public function minify(AbstractQuery $query, $topLevel = true);
+    public function minify(AbstractQuery $query, bool $topLevel = true);
 }

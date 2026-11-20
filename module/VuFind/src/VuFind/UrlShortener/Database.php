@@ -108,7 +108,7 @@ class Database implements UrlShortenerInterface
      * @throws Exception
      * @return string
      */
-    protected function saveAndShortenHash($path, $hash, $length)
+    protected function saveAndShortenHash(string $path, string $hash, int $length)
     {
         // Validate hash length:
         if ($length > $this->maxHashLength) {
@@ -189,7 +189,7 @@ class Database implements UrlShortenerInterface
      *
      * @return string
      */
-    public function shorten($url)
+    public function shorten(string $url)
     {
         return $this->baseUrl . '/short/' . $this->getShortHash($url);
     }
@@ -202,7 +202,7 @@ class Database implements UrlShortenerInterface
      * @return string
      * @throws Exception
      */
-    public function resolve($input)
+    public function resolve(string $input)
     {
         $match = $this->service->getShortLinkByHash($input);
         if (!$match) {

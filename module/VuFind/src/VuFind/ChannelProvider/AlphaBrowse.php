@@ -195,7 +195,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      *
      * @return array
      */
-    protected function summarizeBrowseDetails($details)
+    protected function summarizeBrowseDetails(array $details)
     {
         $ids = $results = [];
         if (isset($details['Browse']['items'])) {

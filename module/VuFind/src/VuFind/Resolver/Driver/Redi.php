@@ -69,7 +69,7 @@ class Redi extends AbstractBase
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
+    public function __construct(string $baseUrl, \Laminas\Http\Client $httpClient)
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
@@ -84,7 +84,7 @@ class Redi extends AbstractBase
      *
      * @return string         raw XML returned by resolver
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         $url = $this->getResolverUrl($openURL);
         $feed = $this->httpClient->setUri($url)->send()->getBody();
@@ -101,7 +101,7 @@ class Redi extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks($xmlstr)
+    public function parseLinks(string $xmlstr)
     {
         $xml = new DOMDocument();
         if (!@$xml->loadHTML($xmlstr)) {
@@ -127,7 +127,7 @@ class Redi extends AbstractBase
      *
      * @return array Get back a array with title, URL and service_type
      */
-    protected function parseDOI($xml)
+    protected function parseDOI(DOMDocument $xml)
     {
         $retval = [];
 
@@ -166,7 +166,7 @@ class Redi extends AbstractBase
      *
      * @return string
      */
-    protected function parseRediInfo($xml, $infoToken)
+    protected function parseRediInfo(DOMDocument $xml, string $infoToken)
     {
         $xpath = new DOMXPath($xml);
 
@@ -194,7 +194,7 @@ class Redi extends AbstractBase
      * @return array Get back Redi direct link to sources containing title, URL and
      *               service_type
      */
-    protected function parseRediOpenURLs($xml)
+    protected function parseRediOpenURLs(DOMDocument $xml)
     {
         $retval = [];
 
@@ -274,7 +274,7 @@ class Redi extends AbstractBase
      *
      * @return string
      */
-    protected function removeDoubleAngleQuotationMarks($string)
+    protected function removeDoubleAngleQuotationMarks(string $string)
     {
         return str_replace(
             ['»', chr(194) . chr(160)],

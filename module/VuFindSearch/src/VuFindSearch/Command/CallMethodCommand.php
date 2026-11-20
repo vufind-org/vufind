@@ -83,7 +83,7 @@ abstract class CallMethodCommand extends AbstractBase
         string $interface,
         string $method,
         ?ParamBag $params = null,
-        $context = null
+        mixed $context = null
     ) {
         parent::__construct(
             $backendId,

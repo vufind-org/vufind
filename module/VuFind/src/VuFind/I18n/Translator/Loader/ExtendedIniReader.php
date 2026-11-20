@@ -54,7 +54,7 @@ class ExtendedIniReader
      *
      * @return TextDomain
      */
-    public function getTextDomain($input, $convertBlanks = true)
+    public function getTextDomain(string|array $input, bool $convertBlanks = true)
     {
         $data = new TextDomain();
 

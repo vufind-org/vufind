@@ -137,7 +137,7 @@ class EPFTest extends \PHPUnit\Framework\TestCase
      *
      * @return EPF
      */
-    protected function getDriver($overrides = []): EPF
+    protected function getDriver(array $overrides = []): EPF
     {
         $record = new EPF();
         $record->setRawData($overrides);

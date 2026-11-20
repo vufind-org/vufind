@@ -69,7 +69,7 @@ class SolrReserves extends Solr
      *
      * @return array
      */
-    protected function getSuggestionsFromSearch($searchResults, $query, $exact)
+    protected function getSuggestionsFromSearch(array $searchResults, string $query, bool $exact)
     {
         $results = [];
         foreach ($searchResults as $object) {

@@ -101,7 +101,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
      *
      * @return RecordEntityInterface
      */
-    public function updateRecord(string $id, string $source, $rawData): RecordEntityInterface
+    public function updateRecord(string $id, string $source, mixed $rawData): RecordEntityInterface
     {
         $record = $this->getRecord($id, $source);
         if (!$record) {

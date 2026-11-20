@@ -172,7 +172,7 @@ class Backend extends AbstractBackend
         CacheAdapter $cache,
         SessionContainer $session,
         ?array $config = null,
-        $isGuest = true
+        bool $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
         $this->client = $client;
@@ -205,8 +205,8 @@ class Backend extends AbstractBackend
      **/
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     ) {
         // process EDS API communication tokens.
@@ -369,7 +369,7 @@ class Backend extends AbstractBackend
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
@@ -501,7 +501,7 @@ class Backend extends AbstractBackend
      *
      * @return array of terms
      */
-    public function autocomplete($query, $domain = 'rawqueries')
+    public function autocomplete(string $query, string $domain = 'rawqueries')
     {
         return $this->client
             ->autocomplete($query, $domain, $this->getAutocompleteData());
@@ -516,7 +516,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection($records)
+    protected function createRecordCollection(array $records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }
@@ -545,7 +545,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    protected function getAuthenticationToken($isInvalid = false)
+    protected function getAuthenticationToken(bool $isInvalid = false)
     {
         $token = null;
         if ($this->ipAuth) {
@@ -597,7 +597,7 @@ class Backend extends AbstractBackend
      *
      * @return array autocomplete data
      */
-    protected function getAutocompleteData($isInvalid = false)
+    protected function getAutocompleteData(bool $isInvalid = false)
     {
         // Autocomplete is currently unsupported with IP authentication
         if ($this->ipAuth) {
@@ -651,7 +651,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    public function getSessionToken($isInvalid = false)
+    public function getSessionToken(bool $isInvalid = false)
     {
         // check to see if the user has logged in/out between the creation
         // of this session token and now
@@ -702,7 +702,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    public function createSession($isGuest, $profile = '')
+    public function createSession(bool $isGuest, string $profile = '')
     {
         try {
             $authToken = $this->getAuthenticationToken();
@@ -742,7 +742,7 @@ class Backend extends AbstractBackend
      *
      * @return array
      */
-    public function getInfo($sessionToken = null, $bustCache = false)
+    public function getInfo(string $sessionToken = null, string $bustCache = false)
     {
         // Use a different cache key for guests, just in case info differs:
         $cacheKey = $this->isGuest ? 'edsGuestInfo' : 'edsLoggedInInfo';
@@ -802,7 +802,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setAuthManager($authManager)
+    public function setAuthManager(\VuFind\Auth\Manager $authManager)
     {
         $this->authManager = $authManager;
     }
@@ -814,7 +814,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setBackendType($backendType)
+    public function setBackendType(string $backendType)
     {
         $this->backendType = $backendType;
     }

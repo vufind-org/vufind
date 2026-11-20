@@ -145,7 +145,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams($idLimit = 1024)
+    protected function getMockParams(int $idLimit = 1024)
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getLimit')

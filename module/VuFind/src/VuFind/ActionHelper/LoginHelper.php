@@ -318,7 +318,7 @@ class LoginHelper implements HelperInterface
      */
     public function getAndClearFollowupUrl(
         ServerRequestInterface $request,
-        $checkRedirect = false
+        bool $checkRedirect = false
     ): ?string {
         if ($url = $this->followupHelper->retrieveAndClear('url')) {
             $lightboxParent = $this->followupHelper->retrieveAndClear('lightboxParent');

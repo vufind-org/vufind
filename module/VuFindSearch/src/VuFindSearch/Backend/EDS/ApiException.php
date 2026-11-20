@@ -56,7 +56,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @param array $apiErrorMessage Error message
      */
-    public function __construct($apiErrorMessage)
+    public function __construct(array $apiErrorMessage)
     {
         if (is_array($apiErrorMessage)) {
             $this->setApiError($apiErrorMessage);
@@ -73,7 +73,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return void
      */
-    protected function setApiError($message)
+    protected function setApiError(array $message)
     {
         if (isset($message['ErrorCode'])) {
             // AuthErrorMessages

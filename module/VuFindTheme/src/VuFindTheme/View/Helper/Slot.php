@@ -85,7 +85,7 @@ class Slot
      *
      * @return Slot|string|mixed
      */
-    public function __invoke($name, $value = null)
+    public function __invoke(string $name, mixed $value = null)
     {
         $this->stack[] = $name;
         if ($value != null) {
@@ -128,7 +128,7 @@ class Slot
      *
      * @return string|mixed
      */
-    protected function build($name)
+    protected function build(string $name)
     {
         $pre = $this->blockPrepends[$name] ?? [];
         $post = $this->blockAppends[$name] ?? [];
@@ -150,7 +150,7 @@ class Slot
      *
      * @return string|null
      */
-    public function get($default = null)
+    public function get(mixed $default = null)
     {
         $name = array_pop($this->stack);
         $ret = $this->build($name);
@@ -164,7 +164,7 @@ class Slot
      *
      * @return string|null
      */
-    public function set($value)
+    public function set(mixed $value)
     {
         $name = array_pop($this->stack);
         if (!isset($this->blocks[$name])) {
@@ -180,7 +180,7 @@ class Slot
      *
      * @return string
      */
-    public function prepend($value)
+    public function prepend(string $value)
     {
         $name = array_pop($this->stack);
         if (!isset($this->blockPrepends[$name])) {
@@ -198,7 +198,7 @@ class Slot
      *
      * @return string
      */
-    public function append($value)
+    public function append(string $value)
     {
         $name = array_pop($this->stack);
         if (!isset($this->blockAppends[$name])) {
@@ -227,7 +227,7 @@ class Slot
      *
      * @return string|mixed
      */
-    public function end($method = self::SET)
+    public function end(string $method = self::SET)
     {
         $method = strtoupper($method);
         if ($method === self::SET) {

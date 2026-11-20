@@ -65,7 +65,7 @@ class SafeMoneyFormat
      *
      * @return string
      */
-    public function __invoke($number, $currency = null)
+    public function __invoke(float $number, string $currency = null)
     {
         $result = ($this->escapeHtml)(
             $this->currencyFormatter->convertToDisplayFormat($number, $currency)

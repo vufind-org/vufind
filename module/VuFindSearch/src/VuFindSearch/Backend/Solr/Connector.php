@@ -122,10 +122,10 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * identifier
      */
     public function __construct(
-        $url,
+        string|array $url,
         HandlerMap $map,
-        $cf,
-        $uniqueKey = 'id'
+        callable|HttpClient $cf,
+        string $uniqueKey = 'id'
     ) {
         $this->url = $url;
         $this->map = $map;
@@ -195,7 +195,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function retrieve($id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params
@@ -275,7 +275,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      */
     public function write(
         DocumentInterface $document,
-        $handler = 'update',
+        string $handler = 'update',
         ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
@@ -304,7 +304,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string Response body
      */
-    public function query($handler, ParamBag $params, bool $cacheable = false)
+    public function query(string $handler, ParamBag $params, bool $cacheable = false)
     {
         $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
@@ -369,7 +369,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    protected function isRethrowableSolrException($ex)
+    protected function isRethrowableSolrException(\Exception $ex)
     {
         // Solr can return 404 when the instance hasn't completed startup, so allow that to be retried:
         return $ex instanceof TimeoutException
@@ -384,7 +384,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return \Exception
      */
-    protected function forceToBackendException($ex)
+    protected function forceToBackendException(\Exception $ex)
     {
         // Don't wrap specific backend exceptions....
         if (
@@ -412,9 +412,9 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
      */
     protected function trySolrUrls(
-        $method,
-        $urlSuffix,
-        $callback = null,
+        string $method,
+        string $urlSuffix,
+        ?callable $callback = null,
         bool $cacheable = false
     ) {
         // This exception should never get thrown; it's just a safety in case

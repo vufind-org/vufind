@@ -134,7 +134,7 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Importer
      */
-    protected function getMockImporter($methods = [])
+    protected function getMockImporter(array $methods = [])
     {
         $builder = $this->getMockBuilder(Importer::class)
             ->disableOriginalConstructor();

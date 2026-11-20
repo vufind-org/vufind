@@ -135,7 +135,7 @@ class LibGuidesProfile implements
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // No action needed.
     }
@@ -168,7 +168,7 @@ class LibGuidesProfile implements
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $this->results = $results;
     }
@@ -210,7 +210,7 @@ class LibGuidesProfile implements
      *
      * @return mixed LibGuides account object or false
      */
-    protected function findBestMatchByCallNumber($results)
+    protected function findBestMatchByCallNumber(\VuFind\Search\Base\Results $results)
     {
         // Skip if no call number mapping was provided by config.
         if (empty($this->callNumberToAlias)) {
@@ -268,7 +268,7 @@ class LibGuidesProfile implements
      *
      * @return mixed LibGuides account object or false
      */
-    protected function findBestMatchBySubject($results)
+    protected function findBestMatchBySubject(\VuFind\Search\Base\Results $results)
     {
         $data = $this->getLibGuidesData();
         $subjectToId = $data['subjectToId'];

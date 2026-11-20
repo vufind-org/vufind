@@ -61,7 +61,7 @@ abstract class AbstractHandlerMap
      *
      * @return void
      */
-    public function prepare($function, ParamBag $params)
+    public function prepare(string $function, ParamBag $params)
     {
         $defaults   = $this->getDefaults($function)->getArrayCopy();
         $invariants = $this->getInvariants($function)->getArrayCopy();
@@ -76,7 +76,7 @@ abstract class AbstractHandlerMap
      *
      * @return ParamBag Query invariants
      */
-    abstract public function getInvariants($function);
+    abstract public function getInvariants(string $function);
 
     /**
      * Return query defaults for search function.
@@ -85,7 +85,7 @@ abstract class AbstractHandlerMap
      *
      * @return ParamBag Query defaults
      */
-    abstract public function getDefaults($function);
+    abstract public function getDefaults(string $function);
 
     /**
      * Return query appends for search function.
@@ -94,7 +94,7 @@ abstract class AbstractHandlerMap
      *
      * @return ParamBag Query appends
      */
-    abstract public function getAppends($function);
+    abstract public function getAppends(string $function);
 
     /// Internal API
 

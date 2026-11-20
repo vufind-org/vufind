@@ -74,7 +74,7 @@ class DeleteCommand extends AbstractCommand
      *
      * @return bool
      */
-    protected function writeFileToDisk($filename, $content)
+    protected function writeFileToDisk(string $filename, string $content)
     {
         return file_put_contents($filename, $content);
     }

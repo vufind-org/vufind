@@ -87,7 +87,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
+    protected function getMockDriver(string $type = 'Sample', array $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
@@ -104,7 +104,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Auth\ILS
      */
-    protected function getAuth($driver = null, $patron = null)
+    protected function getAuth(\VuFind\ILS\Driver\AbstractBase $driver = null, array $patron = null)
     {
         if (empty($driver)) {
             $driver = $this->getMockDriver();
@@ -146,7 +146,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass',
@@ -375,7 +375,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Auth\ILSAuthenticator
      */
-    protected function getMockILSAuthenticator($patron = null)
+    protected function getMockILSAuthenticator(array $patron = null)
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()

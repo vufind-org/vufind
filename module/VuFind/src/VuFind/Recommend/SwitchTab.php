@@ -57,7 +57,7 @@ class SwitchTab implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
     }
 
@@ -87,7 +87,7 @@ class SwitchTab implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
     }
 
@@ -98,7 +98,7 @@ class SwitchTab implements RecommendInterface
      *
      * @return void
      */
-    protected function setTabSelections($tabEnv)
+    protected function setTabSelections(array $tabEnv)
     {
         $tabs = [ 'active' => null, 'inactive' => [] ];
         foreach ($tabEnv as $tab) {
@@ -118,7 +118,7 @@ class SwitchTab implements RecommendInterface
      *
      * @return array|null
      */
-    public function getActiveTab($tabEnv)
+    public function getActiveTab(array $tabEnv)
     {
         if ($this->tabSelections === null) {
             $this->setTabSelections($tabEnv);
@@ -133,7 +133,7 @@ class SwitchTab implements RecommendInterface
      *
      * @return array
      */
-    public function getInactiveTabs($tabEnv)
+    public function getInactiveTabs(array $tabEnv)
     {
         if ($this->tabSelections === null) {
             $this->setTabSelections($tabEnv);

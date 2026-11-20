@@ -1095,7 +1095,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Params
      */
-    protected function getParams($mappings = null): Params
+    protected function getParams(array $mappings = null): Params
     {
         $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(

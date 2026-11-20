@@ -50,7 +50,7 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function fillInAccountForm(Element $page, $overrides = [])
+    protected function fillInAccountForm(Element $page, array $overrides = [])
     {
         $defaults = [
             'firstname' => 'Tester',
@@ -83,10 +83,10 @@ trait UserCreationTrait
      */
     protected function fillInLoginForm(
         Element $page,
-        $username,
-        $password,
-        $inModal = true,
-        $prefix = ''
+        string $username,
+        string $password,
+        bool $inModal = true,
+        string $prefix = ''
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         if (null !== $username) {
@@ -118,10 +118,10 @@ trait UserCreationTrait
      */
     protected function fillInChangePasswordForm(
         Element $page,
-        $old,
-        $new,
-        $inModal = false,
-        $prefix = '#newpassword '
+        string $old,
+        string $new,
+        bool $inModal = false,
+        string $prefix = '#newpassword '
     ) {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $this->findCssAndSetValue($page, $prefix . '[name="oldpwd"]', $old);
@@ -156,7 +156,7 @@ trait UserCreationTrait
      *
      * @return void
      */
-    protected function submitLoginForm(Element $page, $inModal = true, $prefix = '')
+    protected function submitLoginForm(Element $page, bool $inModal = true, string $prefix = '')
     {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');

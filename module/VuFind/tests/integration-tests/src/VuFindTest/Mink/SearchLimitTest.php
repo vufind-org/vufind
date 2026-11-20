@@ -102,7 +102,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertResultTitles($page, string $first, string $last, int $count): void
+    protected function assertResultTitles(Element $page, string $first, string $last, int $count): void
     {
         $titles = $page->findAll('css', '.result a.title');
         $this->assertCount($count, $titles);

@@ -120,7 +120,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $holding = [];
 
@@ -333,7 +333,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses($idList)
+    public function getStatuses(array $idList)
     {
         $status = [];
         foreach ($idList as $id) {
@@ -499,7 +499,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array            Holdings info augmented with req_allowed field
      */
-    protected function checkHoldAllowed($patron_id, $holdings)
+    protected function checkHoldAllowed(string $patron_id, array $holdings)
     {
         // Get the patron type
         $sql = 'SELECT p.patron_type_id ' .
@@ -664,7 +664,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return mixed
      */
-    protected function getField($data, $code)
+    protected function getField(array $data, string $code)
     {
         foreach ($data as $d) {
             if ($d['code'] == $code) {
@@ -685,7 +685,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return string
      */
-    protected function renderPartSubPattern($data)
+    protected function renderPartSubPattern(array $data)
     {
         $end_time = $start_string = null;
 
@@ -865,7 +865,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return string
      */
-    protected function renderSubPattern($data)
+    protected function renderSubPattern(array $data)
     {
         $return_string = '';
         $sub_pattern = [];
@@ -909,7 +909,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array
      */
-    protected function renderOtherPattern($data)
+    protected function renderOtherPattern(array $data)
     {
         $return = [];
         $i = 0;
@@ -937,7 +937,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array
      */
-    protected function renderPattern($patterns, $field)
+    protected function renderPattern(array $patterns, array $field)
     {
         $return = [];
         // Check we have a pattern and the pattern exists
@@ -984,7 +984,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array
      */
-    protected function renderSerialHoldings($holdings_marc)
+    protected function renderSerialHoldings(array $holdings_marc)
     {
         // Convert to one line per tag
         $data_set = [];
@@ -1072,7 +1072,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         // Strip off the prefix from vtls exports
         $db_id = str_replace('vtls', '', $id);
@@ -1157,7 +1157,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($barcode, $password)
+    public function patronLogin(string $barcode, string $password)
     {
         $sql = 'SELECT i.id, b.barcode, i.subfield_data AS password, p.name, ' .
             'p.e_mail_address_primary, p.department ' .
@@ -1205,7 +1205,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile(array $patron)
     {
         $sql = 'SELECT p.name, p.street_address_1, p.street_address_2, p.city, ' .
             'p.postal_code, p.telephone_primary, t.name as patron_type ' .
@@ -1254,7 +1254,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines(array $patron)
     {
         $fineList = [];
 
@@ -1295,7 +1295,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds(array $patron)
     {
         $holdList = [];
 
@@ -1334,7 +1334,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions(array $patron)
     {
         $transList = [];
 
@@ -1445,7 +1445,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array            Opening hours information.
      */
-    public function getOpeningHours($fake_time = null)
+    public function getOpeningHours(string $fake_time = null)
     {
         // Change this value for debugging
         // eg. strtotime('25-12-2009') = Christmas
@@ -1528,7 +1528,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold($holdDetails)
+    public function placeHold(array $holdDetails)
     {
         // Extract key values from the hold details
         $patron_id = $holdDetails['patron'];
@@ -1645,7 +1645,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return bool
      */
-    protected function cancelHold($request_number)
+    protected function cancelHold(string $request_number)
     {
         $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
@@ -1682,7 +1682,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return string       Session ID
      */
-    protected function fakeLogin($patron)
+    protected function fakeLogin(array $patron)
     {
         $virtua_url = $this->getApiBaseUrl();
         $postParams = [
@@ -1741,7 +1741,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems($renewDetails)
+    public function renewMyItems(array $renewDetails)
     {
         $item_list = $renewDetails['details'];
         $patron = $renewDetails['patron'];
@@ -1872,7 +1872,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws ILSException
      * @return string Response body
      */
-    protected function httpRequest($url, $postParams = null, $rawPost = null)
+    protected function httpRequest(string $url, array $postParams = null, string $rawPost = null)
     {
         $method = (null === $postParams && null === $rawPost) ? 'GET' : 'POST';
 

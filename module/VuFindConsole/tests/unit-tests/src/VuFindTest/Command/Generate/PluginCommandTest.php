@@ -149,7 +149,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools($methods = [])
+    protected function getMockGeneratorTools(array $methods = [])
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
@@ -164,7 +164,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ContainerInterface
      */
-    protected function getMockContainer($methods = [])
+    protected function getMockContainer(array $methods = [])
     {
         return $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

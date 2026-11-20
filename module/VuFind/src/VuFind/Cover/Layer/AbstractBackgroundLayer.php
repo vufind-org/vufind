@@ -51,7 +51,7 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
      *
      * @return int unique number for this record
      */
-    protected function createSeed($title, $callnumber)
+    protected function createSeed(string $title, string $callnumber)
     {
         // Pick text for seeding the algorithm:
         $textSeed = $callnumber ?: $title ?: '';
@@ -73,7 +73,7 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
      *
      * @return int
      */
-    protected function getAccentColor($im, $seed, $settings)
+    protected function getAccentColor($im, int $seed, object $settings)
     {
         // Number to color, hsb to control saturation and lightness
         return $settings->accentColor == 'random'

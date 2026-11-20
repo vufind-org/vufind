@@ -65,7 +65,7 @@ class Libraryh3lp implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $params = explode(':', $settings);
         $this->chatId = $params[0] === 'user'
@@ -100,7 +100,7 @@ class Libraryh3lp implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
     }
 

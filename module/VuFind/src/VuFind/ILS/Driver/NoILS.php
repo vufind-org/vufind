@@ -106,7 +106,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getSolrRecord($id)
+    protected function getSolrRecord(string $id)
     {
         // Add idPrefix condition
         $idPrefix = $this->getIdPrefix();
@@ -129,7 +129,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus(string $id)
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
         if ($useStatus == 'custom') {
@@ -165,7 +165,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses($idList)
+    public function getStatuses(array $idList)
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
         if ($useStatus == 'custom' || $useStatus == 'marc') {
@@ -232,7 +232,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array An Array of Holdings Information
      */
-    protected function getFormattedMarcDetails($recordDriver, $configSection)
+    protected function getFormattedMarcDetails(object $recordDriver, string $configSection)
     {
         $marcStatus = $this->config[$configSection] ?? false;
         if ($marcStatus) {
@@ -289,7 +289,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getPurchaseHistory($id)
+    public function getPurchaseHistory(string $id)
     {
         return [];
     }

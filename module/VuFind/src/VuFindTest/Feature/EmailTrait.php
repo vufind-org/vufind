@@ -96,7 +96,7 @@ trait EmailTrait
      *
      * @return Email[]
      */
-    protected function getLoggedEmails($allowEmpty = false): array
+    protected function getLoggedEmails(bool $allowEmpty = false): array
     {
         $data = file_get_contents($this->getEmailLogPath());
         if (!$data) {

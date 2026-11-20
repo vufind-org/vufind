@@ -71,7 +71,7 @@ class Channels implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         if (!empty($settings)) {
             $this->source = $settings;

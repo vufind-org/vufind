@@ -200,7 +200,7 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
      *
      * @return bool
      */
-    protected function isAccessDenied($permission): bool
+    protected function isAccessDenied(string $permission): bool
     {
         return $permission && !$this->authorizationService->isGranted($permission);
     }
@@ -212,7 +212,7 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
      *
      * @return ResponseInterface|false
      */
-    protected function getResponseIfAccessDenied($permission): ResponseInterface|false
+    protected function getResponseIfAccessDenied(string $permission): ResponseInterface|false
     {
         if ($this->isAccessDenied($permission)) {
             $this->logger->debug("API access denied ($permission)");
@@ -237,7 +237,7 @@ abstract class AbstractApiAction extends AbstractTemplateRenderingAction impleme
      * @return ResponseInterface
      * @throws Exception
      */
-    protected function output($data, $status, $httpCode = null, $message = ''): ResponseInterface
+    protected function output(mixed $data, string $status, ?int $httpCode = null, string $message = ''): ResponseInterface
     {
         $response = $this->response;
         if ($httpCode !== null) {

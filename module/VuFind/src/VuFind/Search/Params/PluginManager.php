@@ -85,7 +85,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * container, this value will be passed to the parent constructor.
      */
     public function __construct(
-        $configOrContainerInstance = null,
+        mixed $configOrContainerInstance = null,
         array $v3config = []
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,

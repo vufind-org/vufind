@@ -61,7 +61,7 @@ class ShortenUrl
      *
      * @return string
      */
-    public function __invoke($url)
+    public function __invoke(string $url)
     {
         return $this->shortener->shorten($url);
     }

@@ -240,7 +240,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDriver
      */
-    protected function getDriver($id = 'test', $source = 'Solr')
+    protected function getDriver(string $id = 'test', string $source = 'Solr')
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->method('getUniqueId')->willReturn($id);
@@ -255,7 +255,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Router
      */
-    protected function getRouter($config = [])
+    protected function getRouter(array $config = [])
     {
         return new Router($config);
     }

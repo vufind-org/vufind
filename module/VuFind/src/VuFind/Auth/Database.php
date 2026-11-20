@@ -101,7 +101,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(Request $request)
     {
         // Make sure the credentials are non-blank:
         $this->username = trim($request->getPost()->get('username', ''));
@@ -160,7 +160,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface New user entity.
      */
-    public function create($request)
+    public function create(Request $request)
     {
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
@@ -204,7 +204,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword($request)
+    public function updatePassword(Request $request)
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
@@ -236,7 +236,7 @@ class Database extends AbstractBase
      *
      * @return void
      */
-    protected function validateUsername($params, $checkPolicy = true)
+    protected function validateUsername(array $params, bool $checkPolicy = true)
     {
         // Needs a username
         if (trim($params['username']) === '') {
@@ -255,7 +255,7 @@ class Database extends AbstractBase
      *
      * @return void
      */
-    protected function validatePassword($params)
+    protected function validatePassword(array $params)
     {
         // Needs a password
         if (trim($params['password']) === '') {
@@ -278,7 +278,7 @@ class Database extends AbstractBase
      * @return void
      * @throws AuthEmailNotVerifiedException
      */
-    protected function checkEmailVerified($user)
+    protected function checkEmailVerified(UserEntityInterface $user)
     {
         $config = $this->getConfig();
         $verify_email = $config['Authentication']['verify_email'] ?? false;
@@ -300,7 +300,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function checkPassword($password, $userRow)
+    protected function checkPassword(string $password, UserEntityInterface $userRow)
     {
         // Special case: hashing enabled:
         if ($this->passwordHashingEnabled()) {
@@ -324,7 +324,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function emailAllowed($email)
+    protected function emailAllowed(string $email)
     {
         // If no inclusion list is configured, all emails are allowed:
         $fullConfig = $this->getConfig();
@@ -473,7 +473,7 @@ class Database extends AbstractBase
      *
      * @return string[]
      */
-    protected function collectParamsFromRequest($request)
+    protected function collectParamsFromRequest(Request $request)
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.

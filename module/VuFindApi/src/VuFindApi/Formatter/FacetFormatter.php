@@ -51,7 +51,7 @@ class FacetFormatter extends BaseFormatter
      *
      * @return array
      */
-    protected function buildFacetFilters($request)
+    protected function buildFacetFilters(array $request)
     {
         $facetFilters = [];
         if (isset($request['facetFilter'])) {
@@ -78,7 +78,7 @@ class FacetFormatter extends BaseFormatter
      *
      * @return bool
      */
-    protected function matchFacetItem($facet, $filters)
+    protected function matchFacetItem(array $facet, array $filters)
     {
         $discard = true;
         array_walk_recursive(
@@ -106,7 +106,7 @@ class FacetFormatter extends BaseFormatter
      *
      * @return array
      */
-    protected function buildFacetValues($list, $filters = false)
+    protected function buildFacetValues(array $list, array $filters = false)
     {
         $result = [];
         $fields = [
@@ -152,7 +152,7 @@ class FacetFormatter extends BaseFormatter
      *
      * @return array
      */
-    public function format($request, Results $results, $hierarchicalFacetData)
+    public function format(array $request, Results $results, array $hierarchicalFacetData)
     {
         if ($results->getResultTotal() <= 0 || empty($request['facet'])) {
             return [];

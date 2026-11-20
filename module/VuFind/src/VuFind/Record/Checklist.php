@@ -61,7 +61,7 @@ class Checklist
      *
      * @param array $values Values for list (all begin unchecked)
      */
-    public function __construct($values)
+    public function __construct(array $values)
     {
         $this->unchecked = array_unique($values);
     }
@@ -114,7 +114,7 @@ class Checklist
      *
      * @return bool
      */
-    public function check($value)
+    public function check(mixed $value)
     {
         $key = array_search($value, $this->unchecked);
         if ($key !== false) {
@@ -133,7 +133,7 @@ class Checklist
      *
      * @return bool
      */
-    public function uncheck($value)
+    public function uncheck(mixed $value)
     {
         $key = array_search($value, $this->checked);
         if ($key !== false) {

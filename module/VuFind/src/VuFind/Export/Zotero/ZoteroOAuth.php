@@ -71,7 +71,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
     public function __construct(
         protected GuzzleService $guzzleService,
         protected string $serviceName,
-        $clientCredentials,
+        ClientCredentialsInterface|array $clientCredentials,
         ?SignatureInterface $signature = null
     ) {
         parent::__construct($clientCredentials, $signature);
@@ -208,7 +208,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return ZoteroTokenCredentials
      */
-    protected function createTokenCredentials($body)
+    protected function createTokenCredentials(string $body)
     {
         parse_str($body, $data);
 

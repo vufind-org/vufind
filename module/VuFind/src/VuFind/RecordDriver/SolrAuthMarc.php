@@ -54,9 +54,9 @@ class SolrAuthMarc extends SolrAuthDefault
      * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
-        $mainConfig = null,
-        $recordConfig = null,
-        $searchSettings = null
+        ?array $mainConfig = null,
+        ?array $recordConfig = null,
+        ?array $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
         $this->xmlType = 'Authority';

@@ -157,7 +157,7 @@ abstract class Base implements LoggerAwareInterface
      *      <li>search_http_method - HTTP method for search API calls</li>
      *    </ul>
      */
-    public function __construct($settings = [])
+    public function __construct(array $settings = [])
     {
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
@@ -211,7 +211,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array
      */
-    public function info($authenticationToken = null, $sessionToken = null)
+    public function info(string $authenticationToken = null, string $sessionToken = null)
     {
         $this->debug('Info');
         $url = $this->apiHost . '/info';
@@ -229,9 +229,9 @@ abstract class Base implements LoggerAwareInterface
      * @return array
      */
     public function createSession(
-        $profile = null,
-        $isGuest = null,
-        $authToken = null
+        string $profile = null,
+        string $isGuest = null,
+        string $authToken = null
     ) {
         $this->debug(
             'Create Session for profile: '
@@ -259,12 +259,12 @@ abstract class Base implements LoggerAwareInterface
      * @return array    The requested record
      */
     public function retrieveEdsItem(
-        $an,
-        $dbId,
-        $authenticationToken,
-        $sessionToken,
-        $highlightTerms = null,
-        $extraQueryParams = []
+        string $an,
+        string $dbId,
+        string $authenticationToken,
+        string $sessionToken,
+        string $highlightTerms = null,
+        array $extraQueryParams = []
     ) {
         $this->debug(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
@@ -289,9 +289,9 @@ abstract class Base implements LoggerAwareInterface
      * @return array    The requested record
      */
     public function retrieveEpfItem(
-        $pubId,
-        $authenticationToken,
-        $sessionToken
+        string $pubId,
+        string $authenticationToken,
+        string $sessionToken
     ) {
         $this->debug(
             "Get Record. pubId: $pubId"
@@ -311,7 +311,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array An array of query results as returned from the api
      */
-    public function search($query, $authenticationToken, $sessionToken)
+    public function search(SearchRequestModel $query, string $authenticationToken, string $sessionToken)
     {
         // Query String Parameters
         $method = $this->searchHttpMethod;
@@ -332,7 +332,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array of terms
      */
-    protected function parseAutocomplete($msg)
+    protected function parseAutocomplete(array $msg)
     {
         $result = [];
         if (isset($msg['terms']) && is_array($msg['terms'])) {
@@ -355,7 +355,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array An array of autocomplete terns as returned from the api
      */
-    public function autocomplete($query, $type, $data, $raw = false)
+    public function autocomplete(string $query, string $type, array $data, bool $raw = false)
     {
         // $filters is an array of filter objects
         // filter objects consist of name and an array of values (customer ids)
@@ -386,10 +386,10 @@ abstract class Base implements LoggerAwareInterface
      * @return array
      */
     public function authenticate(
-        $username = null,
-        $password = null,
-        $orgid = null,
-        $params = null
+        string $username = null,
+        string $password = null,
+        string $orgid = null,
+        array $params = null
     ) {
         $this->debug(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
@@ -420,7 +420,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array
      */
-    protected function createQSFromArray($params)
+    protected function createQSFromArray(array $params)
     {
         $queryParameters = [];
         if (null != $params && is_array($params)) {
@@ -465,13 +465,13 @@ abstract class Base implements LoggerAwareInterface
      * @return object         EDS API response (or an Error object).
      */
     protected function call(
-        $baseUrl,
-        $headerParams = [],
-        $params = [],
-        $method = 'GET',
-        $message = null,
-        $messageFormat = '',
-        $cacheable = true
+        string $baseUrl,
+        array $headerParams = [],
+        array $params = [],
+        string $method = 'GET',
+        string $message = null,
+        string $messageFormat = '',
+        bool $cacheable = true
     ) {
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
@@ -540,7 +540,7 @@ abstract class Base implements LoggerAwareInterface
      * @throws ApiException
      * @return array        The processed response from EDS API
      */
-    protected function process($input)
+    protected function process(string $input)
     {
         //process response.
         try {
@@ -566,7 +566,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array Associative array of header parameters to add.
      */
-    protected function setTokens($authenticationToken = null, $sessionToken = null)
+    protected function setTokens(string $authenticationToken = null, string $sessionToken = null)
     {
         $headers = [];
         if (!empty($authenticationToken)) {
@@ -592,12 +592,12 @@ abstract class Base implements LoggerAwareInterface
      * @return string             HTTP response body
      */
     abstract protected function httpRequest(
-        $baseUrl,
-        $method,
-        $queryString,
-        $headers,
-        $messageBody,
-        $messageFormat,
-        $cacheable = true
+        string $baseUrl,
+        string $method,
+        string $queryString,
+        array $headers,
+        string $messageBody,
+        string $messageFormat,
+        bool $cacheable = true
     );
 }

@@ -330,7 +330,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], $searchConfig = [])
+    protected function getDriver(array $overrides = [], array $searchConfig = [])
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new SolrDefault(null, null, $searchConfig);

@@ -146,7 +146,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      *
      * @return string|bool
      */
-    protected function searchTheme($path, $formats = [''])
+    protected function searchTheme(string $path, array $formats = [''])
     {
         // Check all supported image formats:
         $filenames = [];
@@ -250,7 +250,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      * @return string
      * @throws \Exception
      */
-    protected function getContentTypeFromExtension($filename)
+    protected function getContentTypeFromExtension(string $filename)
     {
         $parts = explode('.', $filename);
         $fileExtension = strtolower(end($parts));

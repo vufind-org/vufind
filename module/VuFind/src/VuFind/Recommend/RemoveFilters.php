@@ -67,7 +67,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
     }
 
@@ -97,7 +97,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $filters = $results->getParams()->getFilterList(false);
         foreach ($filters as $filter) {

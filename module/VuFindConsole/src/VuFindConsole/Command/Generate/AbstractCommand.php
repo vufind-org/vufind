@@ -57,7 +57,7 @@ abstract class AbstractCommand extends Command
      * @param string|null    $name  The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(GeneratorTools $tools, $name = null)
+    public function __construct(GeneratorTools $tools, ?string $name = null)
     {
         $this->generatorTools = $tools;
         parent::__construct($name);

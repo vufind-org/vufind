@@ -65,7 +65,7 @@ class SIP2 extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
@@ -139,7 +139,7 @@ class SIP2 extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function processSIP2User($info, $username, $password)
+    protected function processSIP2User(array $info, string $username, string $password)
     {
         $user = $this->getOrCreateUserByUsername($info['variable']['AA'][0]);
 

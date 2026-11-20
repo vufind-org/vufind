@@ -71,7 +71,7 @@ class Connector extends Base implements LoggerAwareInterface
      *    </ul>
      * @param HttpClient $client   HTTP client object
      */
-    public function __construct($settings, $client)
+    public function __construct(array $settings, HttpClient $client)
     {
         parent::__construct($settings);
         $this->client = $client;
@@ -92,13 +92,13 @@ class Connector extends Base implements LoggerAwareInterface
      * @return string               HTTP response body
      */
     protected function httpRequest(
-        $baseUrl,
-        $method,
-        $queryString,
-        $headers,
-        $messageBody = null,
-        $messageFormat = 'application/json; charset=utf-8',
-        $cacheable = true
+        string $baseUrl,
+        string $method,
+        string $queryString,
+        array $headers,
+        string $messageBody = null,
+        string $messageFormat = 'application/json; charset=utf-8',
+        bool $cacheable = true
     ) {
         $this->debug("{$method}: {$baseUrl}?{$queryString}");
 

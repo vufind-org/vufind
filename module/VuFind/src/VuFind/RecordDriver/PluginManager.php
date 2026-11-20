@@ -110,7 +110,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * container, this value will be passed to the parent constructor.
      */
     public function __construct(
-        $configOrContainerInstance = null,
+        mixed $configOrContainerInstance = null,
         array $v3config = []
     ) {
         // These objects are not meant to be shared -- every time we retrieve one,
@@ -159,9 +159,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @return AbstractBase
      */
     public function getSolrRecord(
-        $data,
-        $keyPrefix = 'Solr',
-        $defaultKeySuffix = 'Default'
+        array $data,
+        string $keyPrefix = 'Solr',
+        string $defaultKeySuffix = 'Default'
     ) {
         $key = $keyPrefix . ucwords(
             $data['record_format'] ?? $data['recordtype'] ?? $defaultKeySuffix
@@ -187,7 +187,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return AbstractBase
      */
-    public function getSearch2Record($data, $defaultKeySuffix = 'Default')
+    public function getSearch2Record(array $data, string $defaultKeySuffix = 'Default')
     {
         return $this->getSolrRecord($data, 'Search2', $defaultKeySuffix);
     }
@@ -199,7 +199,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return AbstractBase
      */
-    public function getSolrAuthRecord($data)
+    public function getSolrAuthRecord(array $data)
     {
         return $this->getSolrRecord($data, 'SolrAuth');
     }

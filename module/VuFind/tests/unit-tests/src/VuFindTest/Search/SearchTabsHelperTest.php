@@ -211,8 +211,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
      * @return \VuFind\Search\SearchTabsHelper
      */
     protected function getSearchTabsHelper(
-        $config = 'default_unfiltered',
-        $filters = null
+        string $config = 'default_unfiltered',
+        array $filters = null
     ) {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);
         $mockRequest->method('getQuery')->with('hiddenFilters')->willReturn($filters);

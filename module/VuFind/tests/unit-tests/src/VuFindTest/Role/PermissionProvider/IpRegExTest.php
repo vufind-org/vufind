@@ -49,7 +49,7 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      *
      * @return IpRegEx
      */
-    protected function getPermissionProvider($ipAddr)
+    protected function getPermissionProvider(string $ipAddr)
     {
         $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);

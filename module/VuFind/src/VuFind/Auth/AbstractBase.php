@@ -229,7 +229,7 @@ abstract class AbstractBase implements
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    abstract public function authenticate($request);
+    abstract public function authenticate(Request $request);
 
     /**
      * Validate the credentials in the provided request, but do not change the state
@@ -241,7 +241,7 @@ abstract class AbstractBase implements
      * @throws AuthException
      * @return bool
      */
-    public function validateCredentials($request)
+    public function validateCredentials(Request $request)
     {
         try {
             $user = $this->authenticate($request);
@@ -636,7 +636,7 @@ abstract class AbstractBase implements
      * @return void
      * @throws Exception
      */
-    protected function setUserValueByField(UserEntityInterface $user, string $field, $value): void
+    protected function setUserValueByField(UserEntityInterface $user, string $field, mixed $value): void
     {
         $setter = $this->userSetterMap[$field] ?? null;
         if (!$setter || !is_callable([$user, $setter])) {

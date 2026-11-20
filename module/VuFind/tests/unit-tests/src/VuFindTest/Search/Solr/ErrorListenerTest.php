@@ -102,7 +102,7 @@ class ErrorListenerTest extends TestCase
      *
      * @return Response Response
      */
-    protected function createResponse($name)
+    protected function createResponse(string $name)
     {
         return Response::fromString(
             $this->getFixture('response/solr/' . $name)

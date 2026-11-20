@@ -76,7 +76,7 @@ class CreateHierarchyTreesCommand extends Command
      * @param string|null   $name    The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Loader $loader, PluginManager $results, $name = null)
+    public function __construct(Loader $loader, PluginManager $results, ?string $name = null)
     {
         $this->recordLoader = $loader;
         $this->resultsManager = $results;

@@ -49,5 +49,5 @@ interface LayerInterface
      *
      * @return void
      */
-    public function render($im, $details, $settings);
+    public function render($im, array $details, object $settings);
 }

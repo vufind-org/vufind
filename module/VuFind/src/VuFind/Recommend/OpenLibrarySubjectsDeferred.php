@@ -68,7 +68,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         $this->rawParams = $settings;
     }
@@ -132,7 +132,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         // No action needed
     }

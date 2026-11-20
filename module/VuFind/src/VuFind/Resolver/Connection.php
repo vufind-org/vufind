@@ -95,7 +95,7 @@ class Connection
      *
      * @return void
      */
-    public function enableCache($cacheDir)
+    public function enableCache(string $cacheDir)
     {
         if (is_dir($cacheDir) && is_writable($cacheDir)) {
             $this->cachePath = $cacheDir;
@@ -118,7 +118,7 @@ class Connection
      * @return array          An associative array with the following keys:
      * linktype, aval, href, coverage
      */
-    public function fetchLinks($openURL)
+    public function fetchLinks(string $openURL)
     {
         if (!empty($this->cachePath)) {
             $hashedURL = md5($openURL);
@@ -144,7 +144,7 @@ class Connection
      *
      * @return mixed             Varies by method (false if undefined method)
      */
-    public function __call($methodName, $params)
+    public function __call(string $methodName, array $params)
     {
         $method = [$this->driver, $methodName];
         if (is_callable($method)) {

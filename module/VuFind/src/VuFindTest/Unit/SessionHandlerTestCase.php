@@ -84,7 +84,7 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUpDestroyExpectations($sessId): void
+    protected function setUpDestroyExpectations(string $sessId): void
     {
         $search = $this->createMock(SearchServiceInterface::class);
         $search->expects($this->once())

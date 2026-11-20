@@ -63,7 +63,7 @@ class ResultsFactory implements FactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         // Replace trailing "Results" with "Params" to get the params service:

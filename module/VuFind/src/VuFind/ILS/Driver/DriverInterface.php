@@ -58,7 +58,7 @@ interface DriverInterface
      *
      * @return void
      */
-    public function setConfig($config);
+    public function setConfig(array $config);
 
     /**
      * Initialize the driver.
@@ -82,7 +82,7 @@ interface DriverInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id);
+    public function getStatus(string $id);
 
     /**
      * Get Statuses.
@@ -95,7 +95,7 @@ interface DriverInterface
      * @throws \VuFind\Exception\ILS
      * @return array     An array of getStatus() return values on success.
      */
-    public function getStatuses($ids);
+    public function getStatuses(array $ids);
 
     /**
      * Get Holding.
@@ -112,7 +112,7 @@ interface DriverInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, ?array $patron = null, array $options = []);
+    public function getHolding(string $id, ?array $patron = null, array $options = []);
 
     /**
      * Get Purchase History.
@@ -125,5 +125,5 @@ interface DriverInterface
      * @throws \VuFind\Exception\ILS
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory($id);
+    public function getPurchaseHistory(string $id);
 }

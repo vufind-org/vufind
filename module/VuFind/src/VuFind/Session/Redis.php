@@ -87,7 +87,7 @@ class Redis extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId): string
+    public function read(string $sessId): string
     {
         return $this->callWithRetry(
             function () use ($sessId): string {
@@ -105,7 +105,7 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data): bool
+    protected function saveSession(string $sessId, string $data): bool
     {
         return $this->callWithRetry(
             function () use ($sessId, $data): bool {
@@ -126,7 +126,7 @@ class Redis extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId): bool
+    public function destroy(string $sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);

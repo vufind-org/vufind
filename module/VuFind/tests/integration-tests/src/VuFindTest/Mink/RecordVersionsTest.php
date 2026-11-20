@@ -47,7 +47,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function runVersionsTest($path)
+    protected function runVersionsTest(string $path)
     {
         // Search for an item known to have other versions in test data:
         $page = $this->performSearch('id:0001732009-0', null, $path);

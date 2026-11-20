@@ -108,7 +108,7 @@ class SwitchDbHashCommand extends Command
      *
      * @return ConfigWriter
      */
-    protected function getConfigWriter($path)
+    protected function getConfigWriter(string $path)
     {
         return new ConfigWriter($path);
     }

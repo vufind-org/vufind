@@ -62,7 +62,7 @@ class HTMLTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         if ($options !== null) {

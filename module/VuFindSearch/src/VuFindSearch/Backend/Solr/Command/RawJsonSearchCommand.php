@@ -110,7 +110,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
      *
      * @return CommandInterface
      */
-    protected function finalizeExecution($result): CommandInterface
+    protected function finalizeExecution(mixed $result): CommandInterface
     {
         // We should JSON-decode the result when we save it, for convenience:
         return parent::finalizeExecution(json_decode($result, $this->asArray));

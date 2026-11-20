@@ -79,7 +79,7 @@ class DOI implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig($settings)
+    public function setConfig(string $settings)
     {
         // Find the last colon in the configuration that is not part of a URL:
         $breakPoint = strrpos($settings, ':');
@@ -120,7 +120,7 @@ class DOI implements RecommendInterface
      *
      * @return void
      */
-    public function process($results)
+    public function process(\VuFind\Search\Base\Results $results)
     {
         $query = $results->getParams()->getDisplayQuery();
         preg_match('|10\.[^\s/]{4,}/[^\s]{1,}|', $query, $matches);

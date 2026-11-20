@@ -177,7 +177,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return PermissionDeniedManager
      */
-    protected function getMockPdm($config = false): PermissionDeniedManager
+    protected function getMockPdm(array $config = false): PermissionDeniedManager
     {
         $mockPdm = $this->getMockBuilder(PermissionDeniedManager::class)
             ->setConstructorArgs([$this->permissionDeniedConfig])
@@ -193,7 +193,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return PermissionManager
      */
-    protected function getMockPm($isAuthorized = false)
+    protected function getMockPm(array $isAuthorized = false)
     {
         $mockPm = $this->createMock(PermissionManager::class);
         $mockPm->method('isAuthorized')->willReturn($isAuthorized);

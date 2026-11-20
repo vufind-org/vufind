@@ -70,7 +70,7 @@ class Writer
      *
      * @return void
      */
-    public function commit($backend)
+    public function commit(string $backend)
     {
         // Commit can take a long time -- use a custom timeout:
         $this->write($backend, new CommitDocument(), 60 * 60);
@@ -85,7 +85,7 @@ class Writer
      *
      * @return void
      */
-    public function deleteAll($backend)
+    public function deleteAll(string $backend)
     {
         $this->deleteByQuery($backend, '*:*');
     }
@@ -100,7 +100,7 @@ class Writer
      *
      * @return void
      */
-    public function deleteByQuery($backend, $query)
+    public function deleteByQuery(string $backend, string $query)
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addQuery($query);
@@ -115,7 +115,7 @@ class Writer
      *
      * @return void
      */
-    public function deleteRecords($backend, $idList)
+    public function deleteRecords(string $backend, array $idList)
     {
         // Delete IDs:
         $deleteDoc = new DeleteDocument();
@@ -135,7 +135,7 @@ class Writer
      *
      * @return void
      */
-    public function optimize($backend)
+    public function optimize(string $backend)
     {
         // Optimize can take a long time -- use a custom timeout:
         $this->write($backend, new OptimizeDocument(), 60 * 60 * 24);
@@ -152,9 +152,9 @@ class Writer
      * @return void
      */
     public function save(
-        $backend,
+        string $backend,
         DocumentInterface $doc,
-        $handler = 'update',
+        string $handler = 'update',
         ?ParamBag $params = null
     ) {
         $this->write($backend, $doc, null, $handler, $params);
@@ -173,11 +173,11 @@ class Writer
      * @return array
      */
     protected function write(
-        $backend,
+        string $backend,
         DocumentInterface $doc,
-        $timeout = null,
-        $handler = 'update',
-        $params = null
+        ?int $timeout = null,
+        string $handler = 'update',
+        ?ParamBag $params = null
     ) {
         $command = new WriteDocumentCommand(...func_get_args());
         return $this->searchService->invoke($command)->getResult();

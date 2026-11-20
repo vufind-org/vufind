@@ -96,7 +96,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      *
      * @return string               Fully qualified class name
      */
-    protected function getClassName($requestedName)
+    protected function getClassName(string $requestedName)
     {
         // If class name generation is disabled or we have a FQCN that refers to an existing class, return it as-is:
         if (null === $this->defaultNamespace || (str_contains($requestedName, '\\') && class_exists($requestedName))) {
@@ -152,7 +152,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      */
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);

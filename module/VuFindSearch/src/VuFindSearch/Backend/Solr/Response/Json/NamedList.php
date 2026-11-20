@@ -163,7 +163,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function removeKey($key)
+    public function removeKey(string $key)
     {
         $this->removeKeys([$key]);
     }

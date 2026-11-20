@@ -118,7 +118,7 @@ trait CacheTrait
      *
      * @return void
      */
-    protected function putCachedData($key, $entry, $lifetime = null)
+    protected function putCachedData(string $key, mixed $entry, int $lifetime = null)
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {
@@ -139,7 +139,7 @@ trait CacheTrait
      *
      * @return void
      */
-    protected function removeCachedData($key)
+    protected function removeCachedData(string $key)
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {

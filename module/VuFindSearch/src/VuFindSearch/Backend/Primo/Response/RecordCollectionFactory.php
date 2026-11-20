@@ -63,7 +63,7 @@ class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordC
      *
      * @return RecordCollection
      */
-    public function factory($response)
+    public function factory(array $response)
     {
         if (!is_array($response)) {
             throw new InvalidArgumentException(
@@ -89,7 +89,7 @@ class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordC
      *
      * @return array
      */
-    protected function getDocumentListFromResponse($response): array
+    protected function getDocumentListFromResponse(array $response): array
     {
         return $response['documents'];
     }

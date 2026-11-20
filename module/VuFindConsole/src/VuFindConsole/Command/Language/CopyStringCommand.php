@@ -92,7 +92,7 @@ class CopyStringCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function addLineToFile($filename, $key, $value)
+    protected function addLineToFile(string $filename, string $key, string $value)
     {
         $fHandle = fopen($filename, 'a');
         if (!$fHandle) {

@@ -116,7 +116,7 @@ class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools($methods = [])
+    protected function getMockGeneratorTools(array $methods = [])
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
@@ -131,7 +131,7 @@ class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ContainerInterface
      */
-    protected function getMockRouteGenerator($methods = [])
+    protected function getMockRouteGenerator(array $methods = [])
     {
         return $this->getMockBuilder(RouteGenerator::class)
             ->disableOriginalConstructor()

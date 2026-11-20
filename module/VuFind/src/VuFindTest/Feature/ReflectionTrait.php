@@ -53,7 +53,7 @@ trait ReflectionTrait
      *
      * @return mixed
      */
-    protected function callMethod($object, $method, array $arguments = [])
+    protected function callMethod(object|string $object, string $method, array $arguments = [])
     {
         $reflectionMethod = new \ReflectionMethod($object, $method);
         return $reflectionMethod->invokeArgs($object, $arguments);
@@ -71,7 +71,7 @@ trait ReflectionTrait
      *
      * @return mixed
      */
-    protected function getProperty($object, $property)
+    protected function getProperty(object|string $object, string $property)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
         return $reflectionProperty->getValue($object);
@@ -90,7 +90,7 @@ trait ReflectionTrait
      *
      * @return void
      */
-    protected function setProperty($object, $property, $value)
+    protected function setProperty(object|string $object, string $property, mixed $value)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
         return $reflectionProperty->setValue($object, $value);

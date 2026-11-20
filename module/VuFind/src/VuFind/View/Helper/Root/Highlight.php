@@ -69,10 +69,10 @@ class Highlight
      * @return string          Highlighted, HTML encoded string
      */
     public function __invoke(
-        $haystack,
-        $needle = null,
-        $clear = false,
-        $escape = true
+        string $haystack,
+        mixed $needle = null,
+        bool $clear = false,
+        bool $escape = true
     ) {
         // Normalize value to an array so we can loop through it; this saves us from
         // writing the highlighting code twice, once for arrays, once for non-arrays.

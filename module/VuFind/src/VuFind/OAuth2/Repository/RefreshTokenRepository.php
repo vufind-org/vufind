@@ -103,7 +103,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return void
      */
-    public function revokeRefreshToken($tokenId): void
+    public function revokeRefreshToken(string $tokenId): void
     {
         $this->revoke($tokenId);
     }
@@ -115,7 +115,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
      *
      * @return bool Return true if this token has been revoked
      */
-    public function isRefreshTokenRevoked($tokenId): bool
+    public function isRefreshTokenRevoked(string $tokenId): bool
     {
         return $this->isRevoked($tokenId);
     }

@@ -118,10 +118,10 @@ trait MarcReaderTrait
      * @return array
      */
     protected function getFieldArray(
-        $field,
-        $subfields = null,
-        $concat = true,
-        $separator = ' '
+        string $field,
+        array $subfields = null,
+        bool $concat = true,
+        string $separator = ' '
     ) {
         // Default to subfield a if nothing is specified.
         if (!is_array($subfields)) {
@@ -143,7 +143,7 @@ trait MarcReaderTrait
      *
      * @return string
      */
-    protected function getFirstFieldValue($field, $subfields = null)
+    protected function getFirstFieldValue(string $field, array $subfields = null)
     {
         $matches = $this->getFieldArray($field, $subfields);
         return $matches[0] ?? '';
@@ -156,7 +156,7 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getPublicationInfo($subfield = 'a')
+    protected function getPublicationInfo(string $subfield = 'a')
     {
         // Get string separator for publication information:
         $separator = $this->mainConfig['Record']['marcPublicationInfoSeparator'] ?? ' ';
@@ -203,7 +203,7 @@ trait MarcReaderTrait
      *
      * @return string
      */
-    protected function getSubfield($field, $subfield)
+    protected function getSubfield(array $field, string $subfield)
     {
         return $this->getMarcReader()->getSubfield($field, $subfield);
     }
@@ -216,7 +216,7 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getSubfields($field, $subfield)
+    protected function getSubfields(array $field, string $subfield)
     {
         return $this->getMarcReader()->getSubfields($field, $subfield);
     }
@@ -236,10 +236,10 @@ trait MarcReaderTrait
      * @return array
      */
     protected function getSubfieldArray(
-        $currentField,
-        $subfields,
-        $concat = true,
-        $separator = ' '
+        array $currentField,
+        array $subfields,
+        bool $concat = true,
+        string $separator = ' '
     ) {
         // Start building a line of text for the current field
         $matches = [];

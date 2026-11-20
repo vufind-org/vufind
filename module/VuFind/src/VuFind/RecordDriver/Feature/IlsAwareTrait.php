@@ -186,7 +186,7 @@ trait IlsAwareTrait
      *
      * @return void
      */
-    public function setIlsBackends($backends)
+    public function setIlsBackends(array $backends)
     {
         $this->ilsBackends = $backends;
     }

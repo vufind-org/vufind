@@ -62,7 +62,7 @@ class Buchhandel extends \VuFind\Content\AbstractCover
      * @param string $url      Base URL for Buchhandel
      * @param string $apiToken API token for Buchhandel
      */
-    public function __construct($url, $apiToken)
+    public function __construct(string $url, string $apiToken)
     {
         $this->url = $url;
         $this->apiToken = $apiToken;

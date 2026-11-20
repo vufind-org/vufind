@@ -56,5 +56,5 @@ interface AccessPermissionInterface
      *
      * @return void
      */
-    public function setAccessPermission($ap);
+    public function setAccessPermission(string|bool $ap);
 }

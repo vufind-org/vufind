@@ -50,7 +50,7 @@ class Deprecated implements RelatedInterface
      *
      * @return void
      */
-    public function init($settings, $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
     {
     }
 }

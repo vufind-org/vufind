@@ -155,7 +155,7 @@ class Mailer implements
      *
      * @return array
      */
-    public function stringToAddressList($input): array
+    public function stringToAddressList(string $input): array
     {
         // Create recipient list
         $list = [];
@@ -409,7 +409,7 @@ class Mailer implements
      *
      * @return void
      */
-    public function setMaxRecipients($max)
+    public function setMaxRecipients(int $max)
     {
         $this->maxRecipients = $max;
     }
@@ -421,7 +421,7 @@ class Mailer implements
      *
      * @return string
      */
-    public function getDefaultRecordSubject($record)
+    public function getDefaultRecordSubject(\VuFind\RecordDriver\AbstractBase $record)
     {
         return $this->translate('Library Catalog Record') . ': ' . $record->getBreadcrumb();
     }
@@ -443,7 +443,7 @@ class Mailer implements
      *
      * @return void
      */
-    public function setFromAddressOverride($address)
+    public function setFromAddressOverride(string $address)
     {
         $this->fromAddressOverride = $address;
     }

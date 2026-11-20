@@ -73,7 +73,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool
      */
-    public function getUrl($key, $size, $ids)
+    public function getUrl(string $key, string $size, array $ids)
     {
         $baseUrl = $this->getBaseUrl($key, $ids);
         if ($baseUrl == false) {
@@ -106,7 +106,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool Base URL, or false if no identifier can be used
      */
-    protected function getBaseUrl($key, $ids)
+    protected function getBaseUrl(string $key, array $ids)
     {
         $url = "https://www.syndetics.com/index.aspx?client={$key}";
         $ident = '';
@@ -136,7 +136,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool Image filename, or false if the size is not 'small', 'medium' or 'large'
      */
-    protected function getImageFilenameFromSize($size)
+    protected function getImageFilenameFromSize(string $size)
     {
         return match ($size) {
             'small' => 'SC.GIF',
@@ -172,7 +172,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool Image filename, or false if none matches
      */
-    protected function getImageFilenameFromMetadata($xmldoc, $size)
+    protected function getImageFilenameFromMetadata(DOMDocument $xmldoc, string $size)
     {
         $elementName = match ($size) {
             'small' => 'SC',

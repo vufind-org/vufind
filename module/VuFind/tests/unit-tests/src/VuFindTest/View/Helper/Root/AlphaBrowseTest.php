@@ -50,7 +50,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      *
      * @return Url
      */
-    protected function getMockUrlHelper($expectedQuery): Url
+    protected function getMockUrlHelper(string $expectedQuery): Url
     {
         $mock = $this->createMock(Url::class);
         $mock->expects($this->once())->method('__invoke')

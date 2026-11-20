@@ -68,9 +68,9 @@ class DefaultRecord extends AbstractBase
      * @param ?array $searchSettings Search-specific configuration file
      */
     public function __construct(
-        $mainConfig = null,
-        $recordConfig = null,
-        $searchSettings = null
+        ?array $mainConfig = null,
+        ?array $recordConfig = null,
+        ?array $searchSettings = null
     ) {
         // Turn on highlighting as needed:
         $this->highlight = $searchSettings['General']['highlighting'] ?? false;
@@ -102,7 +102,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getAllSubjectHeadings($extended = false)
+    public function getAllSubjectHeadings(bool $extended = false)
     {
         $headings = [];
         foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
@@ -175,7 +175,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getAuthorDataFields($index, $dataFields = [])
+    public function getAuthorDataFields(string $index, array $dataFields = [])
     {
         $data = $dataFieldValues = [];
 
@@ -451,7 +451,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getDeduplicatedAuthors($dataFields = ['role'])
+    public function getDeduplicatedAuthors(array $dataFields = ['role'])
     {
         $authors = [];
         foreach (['primary', 'secondary', 'corporate'] as $type) {
@@ -893,7 +893,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    protected function getUnknownFormatOpenUrlParams($format = 'UnknownFormat')
+    protected function getUnknownFormatOpenUrlParams(string $format = 'UnknownFormat')
     {
         $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
@@ -956,7 +956,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string OpenURL parameters.
      */
-    public function getOpenUrl($overrideSupportsOpenUrl = false)
+    public function getOpenUrl(bool $overrideSupportsOpenUrl = false)
     {
         // stop here if this record does not support OpenURLs
         if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
@@ -1302,7 +1302,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string|array|bool
      */
-    public function getThumbnail($size = 'small')
+    public function getThumbnail(string $size = 'small')
     {
         if (!empty($this->fields['thumbnail'])) {
             return $this->fields['thumbnail'];
@@ -1565,7 +1565,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed XML, or false if format unsupported.
      */
-    public function getXML($format, $baseUrl = null, $linker = null)
+    public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null)
     {
         // For OAI-PMH Dublin Core, produce the necessary XML:
         if ($format == 'oai_dc') {

@@ -90,7 +90,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function queryToEdsQuery(Query $query, $operator = 'AND')
+    protected function queryToEdsQuery(Query $query, string $operator = 'AND')
     {
         $expression = $query->getString();
         $fieldCode = ($query->getHandler() == 'AllFields')

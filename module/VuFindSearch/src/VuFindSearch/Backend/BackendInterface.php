@@ -50,7 +50,7 @@ interface BackendInterface
      *
      * @return void
      */
-    public function setIdentifier($identifier);
+    public function setIdentifier(string $identifier);
 
     /**
      * Return backend identifier.
@@ -71,8 +71,8 @@ interface BackendInterface
      */
     public function search(
         AbstractQuery $query,
-        $offset,
-        $limit,
+        int $offset,
+        int $limit,
         ?ParamBag $params = null
     );
 
@@ -84,5 +84,5 @@ interface BackendInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ?ParamBag $params = null);
+    public function retrieve(string $id, ?ParamBag $params = null);
 }

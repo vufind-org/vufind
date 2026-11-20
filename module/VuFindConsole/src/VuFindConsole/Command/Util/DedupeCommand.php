@@ -99,7 +99,7 @@ class DedupeCommand extends Command
      *
      * @return resource
      */
-    protected function openOutputFile($filename)
+    protected function openOutputFile(string $filename)
     {
         return @fopen($filename, 'w');
     }
@@ -112,7 +112,7 @@ class DedupeCommand extends Command
      *
      * @return void
      */
-    protected function writeToOutputFile($handle, $text)
+    protected function writeToOutputFile($handle, string $text)
     {
         fwrite($handle, $text);
     }

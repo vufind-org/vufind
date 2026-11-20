@@ -82,7 +82,7 @@ class SimulatedSSO extends AbstractBase
      * @param ManagerInterface $sessionManager   Session manager
      */
     public function __construct(
-        $url,
+        callable $url,
         array $config,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ManagerInterface $sessionManager
@@ -99,7 +99,7 @@ class SimulatedSSO extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate($request)
+    public function authenticate(Request $request)
     {
         // If we made it this far, we should log in the user!
         $username = $this->simulatedSSOConfig['General']['username'] ?? 'fakeuser1';

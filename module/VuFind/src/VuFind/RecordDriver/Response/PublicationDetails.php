@@ -68,7 +68,7 @@ class PublicationDetails
      * @param string $name  Name of publisher
      * @param string $date  Date of publication
      */
-    public function __construct($place, $name, $date)
+    public function __construct(string $place, string $name, string $date)
     {
         $this->place = $place;
         $this->name = $name;

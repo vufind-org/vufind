@@ -61,7 +61,7 @@ class AbstractContainerAwareCommand extends AbstractCommand
     public function __construct(
         GeneratorTools $tools,
         ContainerInterface $container,
-        $name = null
+        ?string $name = null
     ) {
         $this->container = $container;
         parent::__construct($tools, $name);
