@@ -160,11 +160,18 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
             'limit' => $this->batchSize,
         ];
         $query = $params->getQuery();
+        if (!method_exists($params, 'getBackendParameters')) {
+            throw new \Exception($params::class . ' does not support getBackendParameters()!');
+        }
         $paramBag = $params->getBackendParameters();
+        if ($this->page > 1) {
+            // Random method does not support pagination:
+            return ['contents' => []];
+        }
         $command = new RandomCommand(
             $params->getSearchClassId(),
             $query,
-            $this->batchSize,
+            $this->limit ?? $this->batchSize,
             $paramBag
         );
         $random = $this->searchService->invoke($command)->getResult()->getRecords();
