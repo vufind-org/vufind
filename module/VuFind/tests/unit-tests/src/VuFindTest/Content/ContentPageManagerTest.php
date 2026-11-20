@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class PageLocatorTest.
+ * Content Page Manager Test Class.
  *
  * PHP version 8
  *
@@ -29,11 +29,13 @@
 
 namespace VuFindTest\Content;
 
-use VuFind\Content\PageLocator;
+use VuFind\Content\ContentPageManager;
+use VuFind\Db\Service\ContentPageServiceInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Content Page Locator Test Class.
+ * Content Page Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +43,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PageLocatorTest extends \PHPUnit\Framework\TestCase
+class ContentPageManagerTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 
@@ -52,8 +54,6 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testDetermineTemplateAndRenderer()
     {
-        $language  = 'aa';
-        $defaultLanguage = 'bb';
         $pathPrefix = 'templates/page-locator-test/';
         $fixturePath = $this->getFixtureDir('VuFindTheme') . 'themes/';
         $testCases = [
@@ -129,7 +129,12 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
-        $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
+        $contentPageService = $this->createMock(ContentPageServiceInterface::class);
+        $pageLocator = new ContentPageManager($themeInfo, $contentPageService);
+        $localeSettings = $this->createMock(LocaleSettings::class);
+        $localeSettings->method('getUserLocale')->willReturn('aa');
+        $localeSettings->method('getDefaultLocale')->willReturn('bb');
+        $pageLocator->setLocaleSettings($localeSettings);
         foreach ($testCases as $case) {
             $this->assertEquals(
                 $case['result'],

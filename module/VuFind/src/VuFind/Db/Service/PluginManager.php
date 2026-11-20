@@ -54,6 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AuthHashServiceInterface::class => AuthHashService::class,
         ChangeTrackerServiceInterface::class => ChangeTrackerService::class,
         CommentsServiceInterface::class => CommentsService::class,
+        ContentPageServiceInterface::class => ContentPageService::class,
+        CustomLinkServiceInterface::class => CustomLinkService::class,
         AuditEventServiceInterface::class => AuditEventService::class,
         ExternalSessionServiceInterface::class => ExternalSessionService::class,
         FeedbackServiceInterface::class => FeedbackService::class,

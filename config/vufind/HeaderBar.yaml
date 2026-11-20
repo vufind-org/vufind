@@ -36,8 +36,11 @@
 # in local configuration. If you wish to completely override the default
 # configuration you can disable configuration inheritance by adding a
 # "@parent_yaml": false entry at the very top of your local configuration file.
+HeaderLeft:
+  CustomLinkPosition: 'default'
 
 Header:
+  CustomLinkPosition: 'header_right'
   MenuItems:
     - label: 'Feedback'
       route: feedback-home

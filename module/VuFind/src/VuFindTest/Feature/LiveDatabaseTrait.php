@@ -250,6 +250,21 @@ trait LiveDatabaseTrait
                 'entity' => \VuFind\Db\Entity\Tags::class,
                 'name' => 'tags',
             ],
+            [
+                'service' => \VuFind\Db\Service\NoticeService::class,
+                'entity' => \VuFind\Db\Entity\Notice::class,
+                'name' => 'notice',
+            ],
+            [
+                'service' => \VuFind\Db\Service\ContentPageService::class,
+                'entity' => \VuFind\Db\Entity\ContentPage::class,
+                'name' => 'content_page',
+            ],
+            [
+                'service' => \VuFind\Db\Service\CustomLinkService::class,
+                'entity' => \VuFind\Db\Entity\CustomLink::class,
+                'name' => 'custom_link',
+            ],
         ];
         foreach ($checks as $check) {
             $dbService = $test->getDbService($check['service']);

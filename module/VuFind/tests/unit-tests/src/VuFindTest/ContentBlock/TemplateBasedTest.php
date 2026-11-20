@@ -55,11 +55,11 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => '/path/to/foo.phtml',
             'relativePath' => 'to/foo.phtml',
         ];
-        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
-        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+        $contentPageManager = $this->createMock(\VuFind\Content\ContentPageManager::class);
+        $contentPageManager->expects($this->once())->method('determineTemplateAndRenderer')
             ->with('templates/ContentBlock/TemplateBased/', 'foo')
             ->willReturn($details);
-        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block = new \VuFind\ContentBlock\TemplateBased($contentPageManager);
         $block->setConfig('foo');
         $this->assertEquals(
             ['template' => 'to/foo.phtml', 'pageLocatorDetails' => $details],
@@ -81,14 +81,14 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => '/path/to/customBasePath/bar.phtml',
             'relativePath' => 'customBasePath/bar.phtml',
         ];
-        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
-        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+        $contentPageManager = $this->createMock(\VuFind\Content\ContentPageManager::class);
+        $contentPageManager->expects($this->once())->method('determineTemplateAndRenderer')
             ->with(
                 'templates/customBasePath/',
                 'bar',
                 '%pathPrefix%/%pageName%'
             )->willReturn($details);
-        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block = new \VuFind\ContentBlock\TemplateBased($contentPageManager);
         $block->setConfig('foo');
         $this->assertEquals(
             ['template' => 'customBasePath/bar.phtml', 'pageLocatorDetails' => $details],
@@ -109,11 +109,11 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => '/path/to/foo_en.phtml',
             'relativePath' => 'to/foo_en.phtml',
         ];
-        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
-        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+        $contentPageManager = $this->createMock(\VuFind\Content\ContentPageManager::class);
+        $contentPageManager->expects($this->once())->method('determineTemplateAndRenderer')
             ->with('templates/ContentBlock/TemplateBased/', 'foo')
             ->willReturn($details);
-        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block = new \VuFind\ContentBlock\TemplateBased($contentPageManager);
         $block->setConfig('foo');
         $this->assertEquals(
             ['template' => 'to/foo_en.phtml', 'pageLocatorDetails' => $details],
@@ -136,11 +136,11 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => $file,
             'relativePath' => 'page-locator-test/page4.md',
         ];
-        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
-        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+        $contentPageManager = $this->createMock(\VuFind\Content\ContentPageManager::class);
+        $contentPageManager->expects($this->once())->method('determineTemplateAndRenderer')
             ->with('templates/ContentBlock/TemplateBased/', $file)
             ->willReturn($details);
-        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block = new \VuFind\ContentBlock\TemplateBased($contentPageManager);
         $block->setConfig($file);
         $this->assertEquals(
             [

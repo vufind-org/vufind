@@ -1,0 +1,100 @@
+<?php
+  $this->assetManager()->appendScriptLink('content_form.js');
+  $tabs = [];
+?>
+<?php foreach ($this->formData['translations'] as $language => $translation): ?>
+  <?php
+  ob_start();
+  $id = 'translations[' . $this->escapeHtmlAttr($language) . ']';
+  ?>
+  <div class="form-group">
+    <label for="<?=$id?>[title]"><?=$this->transEsc('Link Title')?></label>
+    <input
+      type="text"
+      name="<?=$id?>[title]"
+      id="<?=$id?>[title]"
+      class="form-control"
+      value="<?=$this->escapeHtmlAttr($translation['title'] ?? '')?>"
+    />
+    <label for="<?=$id?>[url]" class="type_fieldset-url"><?=$this->transEsc('URL')?></label>
+    <input
+      type="text"
+      name="<?=$id?>[url]"
+      id="<?=$id?>[url]"
+      class="form-control type_fieldset-url"
+      value="<?=$this->escapeHtmlAttr($translation['url'] ?? '')?>"
+    />
+    <label for="<?=$id?>[headline]" class="type_fieldset-page"><?=$this->transEsc('Content Page Headline')?></label>
+    <input
+      type="text"
+      name="<?=$id?>[headline]"
+      id="<?=$id?>[headline]"
+      class="form-control type_fieldset-page"
+      value="<?=$this->escapeHtmlAttr($translation['headline'] ?? '')?>"
+    />
+    <label for="<?=$id?>[content]" class="type_fieldset-page"><?=$this->transEsc('Content Page Content')?></label>
+    <textarea
+      name="<?=$id?>[content]"
+      rows="6"
+      id="<?=$id?>[content]"
+      class="form-control type_fieldset-page"
+    ><?=$this->escapeHtml($translation['content'] ?? '')?></textarea>
+  </div>
+  <?php
+    $content = ob_get_contents();
+    ob_end_clean();
+    $tabs[$language] = [
+      'description' => $this->displayLanguageOption($this->config()->getArray('config')['Languages'][$language]),
+      'content' => $content,
+    ];
+  ?>
+<?php endforeach; ?>
+
+<form method="POST" class="content-form custom-link-form">
+  <?php if (count($this->formData['contexts'] ?? []) > 1): ?>
+    <?php
+      $contextValueMapping = [];
+      foreach ($this->formData['contexts'] as $context) {
+        $contextValueMapping[$context] = 'CustomLinkContext::' . $context;
+      }
+    ?>
+    <?=$this->component('radio-fieldset', [
+      'groupName' => 'context',
+      'displayName' => 'Context',
+      'values' => $contextValueMapping,
+      'checkedValue' => $this->formData['activeContext'] ?? null,
+    ])?>
+  <?php endif; ?>
+
+  <?php if (count($this->formData['types'] ?? []) > 1): ?>
+    <?php
+    $typeValueMapping = [];
+    foreach ($this->formData['types'] as $type) {
+      $typeValueMapping[$type] = 'CustomLinkType::' . $type;
+    }
+    ?>
+    <?=$this->component('radio-fieldset', [
+      'groupName' => 'type',
+      'displayName' => 'Custom Link Type',
+      'values' => $typeValueMapping,
+      'checkedValue' => $this->formData['activeType'] ?? null,
+    ])?>
+  <?php endif; ?>
+  <div class="content-form-tabs">
+    <?php if (count($tabs) > 1): ?>
+      <?=$this->component(
+        'tabs',
+        [
+          'tabs' => $tabs,
+          'activeTab' => array_key_first($tabs),
+        ]
+      )?>
+    <?php else: ?>
+      <?=current($tabs)['content']?>
+    <?php endif; ?>
+  </div>
+  <div class="form-group">
+    <button type="submit" name="submit" class="btn-primary btn"><?=$this->transEsc('Save')?></button>
+    <button type="submit" name="cancel" class="btn-secondary btn"><?=$this->transEsc('Cancel')?></button>
+  </div>
+</form>

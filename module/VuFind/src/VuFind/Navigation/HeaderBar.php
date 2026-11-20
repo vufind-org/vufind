@@ -33,6 +33,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
+use VuFind\Content\CustomLinkManager;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -55,14 +56,15 @@ class HeaderBar extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService   Section service
-     * @param array                   $sectionConfig    Section configuration
-     * @param array                   $config           Main configuration
-     * @param Cart                    $cart             Cart
-     * @param Manager                 $authManager      Authentication manager
-     * @param GlobalsContainer        $globalsContainer Global data container
-     * @param LocaleSettings          $localeSettings   Locale settings
-     * @param Request                 $request          Request
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param CustomLinkManager       $customLinkManager Custom link manager
+     * @param Cart                    $cart              Cart
+     * @param Manager                 $authManager       Authentication manager
+     * @param GlobalsContainer        $globalsContainer  Global data container
+     * @param LocaleSettings          $localeSettings    Locale settings
+     * @param Request                 $request           Request
      */
     public function __construct(
         SectionServiceInterface $sectionService,
@@ -70,6 +72,7 @@ class HeaderBar extends AbstractMenu
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
+        CustomLinkManager $customLinkManager,
         protected Cart $cart,
         protected Manager $authManager,
         protected GlobalsContainer $globalsContainer,
@@ -80,6 +83,7 @@ class HeaderBar extends AbstractMenu
         $this->addRequiredSettings(
             [
                 'MenuItems',
+                'CustomLinkPosition',
             ],
             self::GROUP_CONTEXT
         );
@@ -98,7 +102,7 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config, $customLinkManager);
     }
 
     /**
@@ -119,6 +123,15 @@ class HeaderBar extends AbstractMenu
         array $context = [],
         string $contextKey = self::DEFAULT_CONTEXT
     ): bool {
+        if ($contextKey === self::GROUP_CONTEXT) {
+            // Conditional requirement checks.
+            $diff = array_diff(['MenuItems', 'CustomLinkPosition'], [$setting]);
+            if (count($diff) === 1) {
+                // Setting is one of the two. If the other setting exists then
+                // this setting is optional.
+                return count(array_intersect($diff, array_keys($context))) === 0;
+            }
+        }
         if ($contextKey === self::ITEM_CONTEXT) {
             // Conditional requirement checks.
             $diff = array_diff(['route', 'url', 'template', 'submenuItems'], [$setting]);
@@ -157,7 +170,10 @@ class HeaderBar extends AbstractMenu
     public static function getDefaultMenuConfig(): array
     {
         $yaml = <<<YAML
+            HeaderLeft:
+              CustomLinkPosition: 'default'
             Header:
+              CustomLinkPosition: 'header_right'
               MenuItems:
                 - label: 'Feedback'
                   route: feedback-home

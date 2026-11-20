@@ -1,0 +1,37 @@
+<?php
+  $this->headTitle($this->translate('Custom Links'));
+
+  $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
+    ->add($this->translate('Custom Links'), active: true);
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h1><?=$this->transEsc('Custom Links')?></h1>
+  <?=$this->flashmessages()?>
+  <table class="table table-striped content-list custom-link-list">
+    <thead>
+    <tr>
+      <th class="content-list-edit-col"><?=$this->transEsc('Edit')?></th>
+      <th><?=$this->transEsc('Custom Link')?></th>
+    </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($this->customLinkList ?? [] as $customLink): ?>
+        <tr class="custom-link-row" data-custom-link-id="<?=$this->escapeHtmlAttr($customLink['id'])?>">
+          <td>
+            <a class="content-edit-button" href="<?=$this->url('admin/custom-links', ['action' => 'Edit'])?>?custom_link_id=<?=$customLink['id']?>" title="<?=$this->transEsc('Edit')?>"><?=$this->icon('content-edit')?></a>
+            <a class="content-edit-button" href="<?=$this->url('admin/custom-links', ['action' => 'Delete'])?>?custom_link_id=<?=$customLink['id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('content-delete')?></a>
+          </td>
+          <td>
+            <?=$this->customLinks()->renderCustomLinkPreview($customLink)?>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  <a href="<?=$this->url('admin/custom-links', ['action' => 'Add'])?>"><?=$this->transEsc('Add New Custom Link')?></a>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
+</div>

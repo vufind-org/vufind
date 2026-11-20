@@ -35,7 +35,7 @@ use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Content\PageLocator;
+use VuFind\Content\ContentPageManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_callable;
@@ -55,24 +55,14 @@ class ContentAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param PageLocator $pageLocator Page locator
+     * @param ContentPageManager $contentPageManager Content page manager
      */
     #[Autowire]
     public function __construct(
-        protected PageLocator $pageLocator,
+        protected ContentPageManager $contentPageManager,
     ) {
         parent::__construct();
     }
-
-    /**
-     * Types/formats of content.
-     *
-     * @var array $types
-     */
-    protected $types = [
-        'phtml',
-        'md',
-    ];
 
     /**
      * Resolve full version of shortlink & redirect to target.
@@ -104,27 +94,27 @@ class ContentAction extends AbstractTemplateRenderingAction
             }
             $page = substr($page, $p + 1);
         }
-        $data = $this->pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
+        $data = $this->contentPageManager->determineTemplateAndRenderer($pathPrefix, $page);
 
         $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 
         return $method && is_callable([$this, $method])
-            ? $this->$method($data['page'], $data['relativePath'], $data['path'])
+            ? $this->$method($data['page'] ?? null, $data['relativePath'] ?? null, $data['path'] ?? null)
             : $this->renderNotFoundPage($request, $response);
     }
 
     /**
      * Get response for markdown based page.
      *
-     * @param string $page    Page name/route (if applicable)
-     * @param string $relPath Relative path to file with content (if applicable)
-     * @param string $path    Full path to file with content (if applicable)
+     * @param ?string $page    Page name/route (if applicable)
+     * @param ?string $relPath Relative path to file with content (if applicable)
+     * @param ?string $path    Full path to file with content (if applicable)
      *
      * @return ResponseInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getViewForMd(string $page, string $relPath, string $path): ResponseInterface
+    protected function getViewForMd(?string $page, ?string $relPath, ?string $path): ResponseInterface
     {
         return $this->renderTemplate(
             $this->request,
@@ -137,15 +127,15 @@ class ContentAction extends AbstractTemplateRenderingAction
     /**
      * Get ViewModel for phtml base page.
      *
-     * @param string $page    Page name/route (if applicable)
-     * @param string $relPath Relative path to file with content (if applicable)
-     * @param string $path    Full path to file with content (if applicable)
+     * @param ?string $page    Page name/route (if applicable)
+     * @param ?string $relPath Relative path to file with content (if applicable)
+     * @param ?string $path    Full path to file with content (if applicable)
      *
      * @return ResponseInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getViewForPhtml(string $page, string $relPath, string $path): ResponseInterface
+    protected function getViewForPhtml(?string $page, ?string $relPath, ?string $path): ResponseInterface
     {
         // Convert relative path to a relative page name:
         $relPage = $relPath;
@@ -163,6 +153,27 @@ class ContentAction extends AbstractTemplateRenderingAction
             $this->request,
             $this->response,
             ['page' => $relPage]
+        );
+    }
+
+    /**
+     * Get response for database based page.
+     *
+     * @param ?string $page    Page name/route (if applicable)
+     * @param ?string $relPath Relative path to file with content (if applicable)
+     * @param ?string $path    Full path to file with content (if applicable)
+     *
+     * @return ResponseInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getViewForDatabase(?string $page, ?string $relPath, ?string $path): ResponseInterface
+    {
+        return $this->renderTemplate(
+            $this->request,
+            $this->response,
+            ['contentPage' => $this->contentPageManager->getByHridFromDatabase($page)],
+            'content/database_content_page'
         );
     }
 }

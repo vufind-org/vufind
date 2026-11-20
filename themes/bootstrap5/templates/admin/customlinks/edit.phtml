@@ -1,0 +1,17 @@
+<?php
+  $this->headTitle($this->translate('Edit Custom Link'));
+
+  $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
+    ->add($this->translate('Custom Link'), $this->url('admin/custom-links'))
+    ->add($this->translate('Edit'), active: true);
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h1><?=$this->transEsc('Edit Custom Link')?></h1>
+  <?=$this->flashmessages()?>
+  <?=$this->partial('form', ['formData' => $this->formData])?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
+</div>

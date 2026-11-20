@@ -40,6 +40,7 @@ Account:
   label: Your Account
   id: acc-menu-acc-header
   class: account-menu
+  CustomLinkPosition: 'account_menu'
   MenuItems:
     - name: favorites
       label: saved_items

@@ -30,6 +30,7 @@
 namespace VuFind\Navigation;
 
 use Exception;
+use VuFind\Content\CustomLinkManager;
 use VuFind\Exception\BadConfig;
 use VuFind\Section\Plugin\AbstractBase;
 use VuFind\Section\SectionServiceInterface;
@@ -65,14 +66,16 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService Section service
-     * @param array                   $sectionConfig  Section configuration
-     * @param array                   $config         Main configuration
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param CustomLinkManager       $customLinkManager Custom link manager
      */
     public function __construct(
         protected SectionServiceInterface $sectionService,
         array $sectionConfig,
-        protected array $config
+        protected array $config,
+        protected CustomLinkManager $customLinkManager
     ) {
         $this->requiredSettings[self::GROUP_CONTEXT] ??= [];
         $this->requiredSettings[self::ITEM_CONTEXT] ??= [];
@@ -228,6 +231,25 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     protected function processGroup(array $group): array|false
     {
         $items = $this->processItems($group['MenuItems'] ?? []);
+        if ($customLinkPosition = $group['CustomLinkPosition'] ?? null) {
+            $activeLinks = $this->customLinkManager->getActiveList($customLinkPosition);
+            foreach ($activeLinks as $customLink) {
+                $item = [
+                    'label' => $customLink['title'],
+                ];
+                switch ($customLink['type']) {
+                    case 'page':
+                        $item['route'] = 'content-page';
+                        $item['routeParams'] = ['page' => $customLink['page'] ?? ''];
+                        break;
+                    default:
+                        $item['url'] = $customLink['url'] ?? '';
+                        $item['attributes']['target'] = '_blank';
+                        break;
+                }
+                $items[] = $item;
+            }
+        }
         // Skip groups without items to display.
         if (!empty($items)) {
             $group['MenuItems'] = $items;

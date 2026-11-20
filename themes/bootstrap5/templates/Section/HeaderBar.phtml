@@ -9,9 +9,9 @@
       <?=$this->icon('ui-menu') ?>
     </button>
     <?php if (!isset($globals['renderingError'])): ?>
-      <div class="collapse navbar-collapse justify-content-end" id="header-collapse">
+      <div class="collapse navbar-collapse" id="header-collapse">
         <?php foreach ($this->menu ?? [] as $group): ?>
-          <ul class="nav navbar-nav">
+          <ul class="nav navbar-nav header-menu">
             <?php foreach ($group['MenuItems'] as $item): ?>
               <?php if (isset($item['template'])): ?>
                 <?php
@@ -49,9 +49,7 @@
               <?php else: ?>
                 <?php
                   $attributes = $this->htmlAttributes($item['attributes'] ?? []);
-                  $attributes['href'] = isset($item['route'])
-                    ? $this->url($item['route'], $item['routeParams'] ?? [])
-                    : $item['url'];
+                  $attributes['href'] = $item['url'];
                   $attributes->add('class', 'nav-link');
                   if (isset($item['icon'])) {
                     $attributes->add('class', 'icon-link');

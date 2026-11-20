@@ -31,6 +31,7 @@ namespace VuFind\Navigation;
 
 use Laminas\View\Renderer\RendererInterface;
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Content\CustomLinkManager;
 use VuFind\Exception\BadConfig;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -54,10 +55,11 @@ class SiteMap extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService Section service
-     * @param array                   $sectionConfig  Section configuration
-     * @param array                   $config         Main configuration
-     * @param RendererInterface       $renderer       View renderer
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param CustomLinkManager       $customLinkManager Custom link manager
+     * @param RendererInterface       $renderer          View renderer
      */
     public function __construct(
         SectionServiceInterface $sectionService,
@@ -65,6 +67,7 @@ class SiteMap extends AbstractMenu
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
+        CustomLinkManager $customLinkManager,
         #[Autowire(service: 'ViewRenderer')]
         protected RendererInterface $renderer
     ) {
@@ -89,7 +92,7 @@ class SiteMap extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config, $customLinkManager);
     }
 
     /**
@@ -271,10 +274,10 @@ class SiteMap extends AbstractMenu
               MenuItems:
                 - label: 'Home Page'
                   route: home
-            
+
             HeaderBar:
               section: HeaderBar
-            
+
             FooterMenu:
               section: FooterMenu
             YAML;

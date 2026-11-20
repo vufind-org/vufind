@@ -30,6 +30,7 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Content\CustomLinkManager;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -54,10 +55,11 @@ class AdminMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService  Section service
-     * @param array                   $sectionConfig   Section configuration
-     * @param array                   $config          Main configuration
-     * @param array                   $overdriveConfig Overdrive configuration
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param CustomLinkManager       $customLinkManager Custom link manager
+     * @param array                   $overdriveConfig   Overdrive configuration
      */
     public function __construct(
         SectionServiceInterface $sectionService,
@@ -65,6 +67,7 @@ class AdminMenu extends AbstractMenu
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
+        CustomLinkManager $customLinkManager,
         #[Autowire(config: 'Overdrive')]
         array $overdriveConfig
     ) {
@@ -75,7 +78,7 @@ class AdminMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config, $customLinkManager);
         $this->showOverdriveAdminMenu
             = $overdriveConfig['Overdrive']['showOverdriveAdminMenu'] ?? false;
     }
@@ -138,6 +141,10 @@ class AdminMenu extends AbstractMenu
                 - name: notices
                   label: Notices
                   route: admin/notices
+
+                - name: customlinks
+                  label: Custom Links
+                  route: admin/custom-links
             YAML;
         return Yaml::parse($yaml);
     }

@@ -54,10 +54,10 @@ class TemplateBased implements ContentBlockInterface
     /**
      * TemplateBased constructor.
      *
-     * @param \VuFind\Content\PageLocator $pageLocator Content page locator service
+     * @param \VuFind\Content\ContentPageManager $contentPageManager Content page manager
      */
     #[Autowire]
-    public function __construct(protected \VuFind\Content\PageLocator $pageLocator)
+    public function __construct(protected \VuFind\Content\ContentPageManager $contentPageManager)
     {
     }
 
@@ -87,7 +87,7 @@ class TemplateBased implements ContentBlockInterface
         $page = null,
         $pattern = null
     ) {
-        $data = $this->pageLocator->determineTemplateAndRenderer(
+        $data = $this->contentPageManager->determineTemplateAndRenderer(
             $pathPrefix,
             $page ?? $this->templateName,
             $pattern
