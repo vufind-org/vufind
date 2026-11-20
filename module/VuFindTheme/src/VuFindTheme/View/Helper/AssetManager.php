@@ -126,7 +126,7 @@ class AssetManager
      * @param array  $extras                Array of extra attributes
      * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
-     * @return void
+     * @return static
      */
     public function appendStyleLink(
         string $href,
