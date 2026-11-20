@@ -80,7 +80,7 @@ trait LowerCaseServiceNameTrait
     protected function getNormalizedServiceName(string $name)
     {
         if (
-            $name != ($lower = strtolower($name))
+            $name !== ($lower = strtolower($name))
             && (isset($this->services[$lower]) || isset($this->factories[$lower])
             || isset($this->aliases[$lower]))
         ) {

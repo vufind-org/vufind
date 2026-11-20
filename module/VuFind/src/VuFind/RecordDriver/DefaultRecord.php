@@ -1568,7 +1568,7 @@ class DefaultRecord extends AbstractBase
     public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null)
     {
         // For OAI-PMH Dublin Core, produce the necessary XML:
-        if ($format == 'oai_dc') {
+        if ($format === 'oai_dc') {
             $dc = 'http://purl.org/dc/elements/1.1/';
             $xml = new \SimpleXMLElement(
                 '<oai_dc:dc '

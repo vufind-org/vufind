@@ -102,9 +102,9 @@ class VuFindWorkKeys
             return $dom;
         }
         $titles = $titles instanceof \Traversable
-            ? iterator_to_array($titles) : (array)$titles;
+            ? iterator_to_array($titles) : $titles;
         $trimmedTitles = $trimmedTitles instanceof \Traversable
-            ? iterator_to_array($trimmedTitles) : (array)$trimmedTitles;
+            ? iterator_to_array($trimmedTitles) : $trimmedTitles;
         $normalizedTitles = [];
         foreach (array_merge($titles, $trimmedTitles) as $title) {
             $normalizedTitle = self::normalize(

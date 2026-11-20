@@ -98,7 +98,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $writer = $this->getMockSolrWriter();
         if ($expectedXml) {
             $updateValidator = function ($update) use ($expectedXml) {
-                $this->assertEquals($expectedXml, trim($update->getContent()));
+                $this->assertSame($expectedXml, trim($update->getContent()));
                 return true;
             };
             $writer->expects($this->once())->method('save')

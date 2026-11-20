@@ -49,7 +49,7 @@ class Flashmessages extends \VuFind\View\Helper\Root\Flashmessages
      */
     protected function getClassForNamespace(string $ns)
     {
-        if ($ns == 'error') {
+        if ($ns === 'error') {
             $ns = 'danger';
         }
         return 'flash-message alert alert-' . $ns;

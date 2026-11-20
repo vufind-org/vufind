@@ -144,7 +144,7 @@ class LuceneSyntaxHelper
     public function containsAdvancedLuceneSyntax(string $searchString)
     {
         // Check for various conditions that flag an advanced Lucene query:
-        if ($searchString == '*:*') {
+        if ($searchString === '*:*') {
             return true;
         }
 

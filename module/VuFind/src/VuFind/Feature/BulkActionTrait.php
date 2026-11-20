@@ -92,7 +92,7 @@ trait BulkActionTrait
      */
     public function getBulkActionLimit(string $action)
     {
-        if ($action == 'export') {
+        if ($action === 'export') {
             $formats = $this->export->getActiveFormats('bulk');
             return max(array_map([$this, 'getExportActionLimit'], $formats));
         }

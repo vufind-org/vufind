@@ -56,7 +56,7 @@ class Truncate
      */
     public function __invoke(string|PropertyStringInterface $str, int $len, string $append = '...')
     {
-        if ($len == 0) {
+        if ($len === 0) {
             return '';
         } elseif (mb_strlen((string)$str, 'UTF-8') > $len) {
             return trim(mb_substr((string)$str, 0, $len, 'UTF-8')) . $append;

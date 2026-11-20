@@ -117,7 +117,7 @@ class Writer
                 // If we just left the target section and didn't find the
                 // desired setting, we should write it to the end.
                 if (
-                    $currentSection == $section && !$settingSet
+                    $currentSection === $section && !$settingSet
                     && $value !== null
                 ) {
                     $this->content = rtrim($this->content);
@@ -126,7 +126,7 @@ class Writer
                     $settingSet = true;
                 }
                 $currentSection = $matches[1];
-            } elseif ($currentSection == $section && strstr($content, '=')) {
+            } elseif ($currentSection === $section && strstr($content, '=')) {
                 $contentParts = explode('=', $content, 2);
                 $key = trim($contentParts[0]);
                 // If the key we are trying to set is already present as an array,
@@ -136,7 +136,7 @@ class Writer
                     continue;
                 }
                 // Standard case for match on section + key:
-                if ($key == $setting) {
+                if ($key === $setting) {
                     $settingSet = true;
                     if ($value === null) {
                         continue;
@@ -158,7 +158,7 @@ class Writer
         // Did we loop through everything without finding a place to put the setting?
         if (!$settingSet && $value !== null) {
             // We never found the target section?
-            if ($currentSection != $section) {
+            if ($currentSection !== $section) {
                 $this->content .= '[' . $section . "]\n";
             }
             $this->content .= $this->buildContentLine($setting, $value, 0) . "\n";

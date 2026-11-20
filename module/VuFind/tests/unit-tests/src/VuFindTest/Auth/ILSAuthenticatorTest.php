@@ -323,7 +323,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         string $pass = 'pass'
     ): void {
         $connection->expects($this->once())->method('__call')->willReturnCallback(
-            function ($method, $args) use ($user, $pass, $return) {
+            function (string $method, array $args) use ($user, $pass, $return) {
                 if ($method !== 'patronLogin') {
                     return null;
                 }

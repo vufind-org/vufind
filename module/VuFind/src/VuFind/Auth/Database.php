@@ -314,7 +314,7 @@ class Database extends AbstractBase
         }
 
         // Default case: unencrypted passwords:
-        return $password == $userRow->getRawPassword();
+        return $password === $userRow->getRawPassword();
     }
 
     /**

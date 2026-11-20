@@ -125,7 +125,7 @@ class SearchTabs implements LoggerAwareInterface
             $selected = $class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
             try {
-                if ($type == 'basic') {
+                if ($type === 'basic') {
                     if (!isset($activeOptions)) {
                         $activeOptions = $this->results->get($activeSearchClass)->getOptions();
                     }
@@ -136,7 +136,7 @@ class SearchTabs implements LoggerAwareInterface
                         $handler,
                         $filters,
                     );
-                } elseif ($type == 'advanced') {
+                } elseif ($type === 'advanced') {
                     $url = $this->getAdvancedTabUrl(
                         $class,
                         $filters,

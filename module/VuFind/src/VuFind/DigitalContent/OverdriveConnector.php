@@ -611,7 +611,7 @@ class OverdriveConnector implements
                 'emailAddress' => $email,
                 'suspensionType' => $suspensionType,
             ];
-            if ($suspensionType == 'limited') {
+            if ($suspensionType === 'limited') {
                 $params['numberOfDays'] = $numberOfDays;
             }
 
@@ -667,7 +667,7 @@ class OverdriveConnector implements
                 'emailAddress' => $email,
                 'suspensionType' => $suspensionType,
             ];
-            if ($suspensionType == 'limited') {
+            if ($suspensionType === 'limited') {
                 $params['numberOfDays'] = $numberOfDays;
             }
 
@@ -1500,7 +1500,7 @@ class OverdriveConnector implements
                 'Content-Type: application/json',
             ];
             try {
-                $client = $this->getHttpClient(null, $returnType != 'redirect');
+                $client = $this->getHttpClient(null, $returnType !== 'redirect');
             } catch (Exception $e) {
                 $this->error(
                     'error while setting up the client: ' . $e->getMessage()
@@ -1537,7 +1537,7 @@ class OverdriveConnector implements
 
             // if all goes well for DELETE, the code will be 204
             // and response is empty.
-            if ($requestType == 'DELETE' || $requestType == 'PUT') {
+            if ($requestType === 'DELETE' || $requestType === 'PUT') {
                 if ($response->getStatusCode() == 204) {
                     return true;
                 } else {
@@ -1549,10 +1549,10 @@ class OverdriveConnector implements
                 }
             }
 
-            if ($returnType == 'body') {
+            if ($returnType === 'body') {
                 // probably need to check for return status
                 return $body;
-            } elseif ($returnType == 'redirect') {
+            } elseif ($returnType === 'redirect') {
                 $headers = $response->getHeaders();
                 if ($headers->has('location')) {
                     $loc = $headers->get('location');

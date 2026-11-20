@@ -218,9 +218,9 @@ class TitleHolds
         );
 
         if ($checkHolds) {
-            if ($type == 'always') {
+            if ($type === 'always') {
                 $addlink = true;
-            } elseif ($type == 'availability') {
+            } elseif ($type === 'availability') {
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
                     if (

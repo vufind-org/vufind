@@ -130,9 +130,9 @@ class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwa
 
         $options = ['headers' => $headers];
 
-        if ($method == 'GET') {
+        if ($method === 'GET') {
             $baseUrl .= '?' . $queryString;
-        } elseif ($method == 'POST') {
+        } elseif ($method === 'POST') {
             $options['body'] = $queryString;
             $options['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
         }

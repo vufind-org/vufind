@@ -294,7 +294,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
                 ->onlyMethods($methods)
                 ->setConstructorArgs([new \VuFind\Date\Converter(), new EmailAddressValidator()])
                 ->getMock();
-        } elseif ($type == 'Demo') {
+        } elseif ($type === 'Demo') {
             $mock = $this->getMockDemoDriver();
         } else {
             $class = __NAMESPACE__ . '\\MultiDriverTest\\' . $type . 'Mock';

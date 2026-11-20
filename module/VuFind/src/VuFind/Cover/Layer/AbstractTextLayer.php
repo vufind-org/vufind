@@ -129,6 +129,6 @@ abstract class AbstractTextLayer extends AbstractLayer
             imagettftext($im, $fontSize, 0, $x - 1, $y, $scolor, $font, $text);
         }
         // 1 centered in main color
-        imagettftext($im, $fontSize, 0, $x, (int)$y, $mcolor, $font, $text);
+        imagettftext($im, $fontSize, 0, $x, $y, $mcolor, $font, $text);
     }
 }

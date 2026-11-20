@@ -353,7 +353,7 @@ class ILS extends AbstractBase
      */
     protected function handleLogin(string $username, string $password, string $loginMethod)
     {
-        if ($password == '') {
+        if ($password === '') {
             throw new AuthException('authentication_error_blank');
         }
 
@@ -368,7 +368,7 @@ class ILS extends AbstractBase
                 }
             }
         } else {
-            if ($username == '') {
+            if ($username === '') {
                 throw new AuthException('authentication_error_blank');
             }
             // Connect to catalog:

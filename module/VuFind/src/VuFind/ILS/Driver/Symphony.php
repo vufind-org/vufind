@@ -190,7 +190,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 // However, we can't check the SymWS version if this fault
                 // happened with the Standard service (which contains the
                 // 'version' operation).
-                if ($service != 'standard') {
+                if ($service !== 'standard') {
                     $this->checkSymwsVersion();
                 }
 
@@ -345,9 +345,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 // Try the request again with the new SoapHeader.
                 $soapClient->__setSoapHeaders($header);
                 return $soapClient->$operation($parameters);
-            } elseif ($operation == 'logoutUser') {
+            } elseif ($operation === 'logoutUser') {
                 return null;
-            } elseif ($operation == 'lookupSessionInfo') {
+            } elseif ($operation === 'lookupSessionInfo') {
                 // lookupSessionInfo did not exist in SymWS 3.0.
                 $this->checkSymwsVersion();
                 throw $e;

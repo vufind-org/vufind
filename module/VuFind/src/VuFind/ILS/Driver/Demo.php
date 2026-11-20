@@ -632,7 +632,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 }
             }
 
-            if ($requestType == 'Holds') {
+            if ($requestType === 'Holds') {
                 $pos = rand() % 5;
                 if ($pos > 1) {
                     $currentItem['position'] = $pos;
@@ -662,7 +662,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 $currentItem['processed'] = ($status === 1 || rand(1, 3) === 3)
                     ? $this->dateConverter->convertToDisplayDate('U', time())
                     : '';
-                if ($requestType == 'ILLRequests') {
+                if ($requestType === 'ILLRequests') {
                     $transit = rand() % 2;
                     if (
                         !$currentItem['available']

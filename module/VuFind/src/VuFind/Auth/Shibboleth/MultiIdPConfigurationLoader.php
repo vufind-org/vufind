@@ -57,7 +57,7 @@ class MultiIdPConfigurationLoader implements
         $idpConfig = null;
         $prefix = null;
         foreach ($this->shibConfig as $name => $configuration) {
-            if ($entityId == trim($configuration['entityId'])) {
+            if ($entityId === trim($configuration['entityId'])) {
                 $idpConfig = $configuration;
                 $prefix = $name;
                 break;

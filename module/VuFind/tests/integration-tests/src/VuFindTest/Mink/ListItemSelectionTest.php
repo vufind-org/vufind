@@ -128,14 +128,14 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkNumberOfSelectedGlobal(Element $page, int $expectedNumber)
     {
         $this->clickCss($page, '[name=bulkActionForm] [name=email]');
-        if ($expectedNumber == 0) {
+        if ($expectedNumber === 0) {
             $warning = $this->findCss($page, '.modal-body .alert');
             $this->assertEquals(
                 'No items were selected. Please click on a checkbox next to an item and try again.',
                 $warning->getText(),
                 'Wrong number of selected global'
             );
-        } elseif ($expectedNumber == 1) {
+        } elseif ($expectedNumber === 1) {
             $this->unFindCss($page, '.modal-body .btn-default');
             $this->findCss($page, '.modal-body .form-control-static');
         } else {
@@ -157,7 +157,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkClearSelectionButton(Element $page, int $expectedNumber)
     {
         $button = $this->findCss($page, '.clear-selection');
-        if ($expectedNumber == 0) {
+        if ($expectedNumber === 0) {
             $this->assertTrue(
                 $button->hasClass('hidden'),
                 'Clear selection button is not hidden'

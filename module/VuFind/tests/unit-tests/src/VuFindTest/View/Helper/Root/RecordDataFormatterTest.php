@@ -168,7 +168,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')
-            ->willReturnCallback(function ($service) {
+            ->willReturnCallback(function (string $service) {
                 return $this->createMock($service);
             });
         $record->setDbServiceManager($serviceManager);

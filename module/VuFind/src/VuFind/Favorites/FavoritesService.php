@@ -645,13 +645,11 @@ class FavoritesService implements TranslatorAwareInterface
     public function formatTagStringForEditing(array $tags): string
     {
         $tagStr = '';
-        if (count($tags) > 0) {
-            foreach ($tags as $tag) {
-                if (strstr($tag['tag'], ' ')) {
-                    $tagStr .= "\"{$tag['tag']}\" ";
-                } else {
-                    $tagStr .= "{$tag['tag']} ";
-                }
+        foreach ($tags as $tag) {
+            if (strstr($tag['tag'], ' ')) {
+                $tagStr .= "\"{$tag['tag']}\" ";
+            } else {
+                $tagStr .= "{$tag['tag']} ";
             }
         }
         return trim($tagStr);

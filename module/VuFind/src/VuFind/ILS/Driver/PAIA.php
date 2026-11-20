@@ -912,8 +912,8 @@ class PAIA extends DAIA
         // check also for grantType as patron's password is never required when
         // grantType = client_credentials is configured
         if (
-            $username == ''
-            || ($password == '' && $this->grantType != 'client_credentials')
+            $username === ''
+            || ($password === '' && $this->grantType != 'client_credentials')
         ) {
             throw new ILSException('Invalid Login, Please try again.');
         }

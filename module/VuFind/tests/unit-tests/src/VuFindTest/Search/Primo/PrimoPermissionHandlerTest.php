@@ -847,7 +847,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerMemberAuthSuccessfullCallback(string $param): bool
     {
-        return $param == 'primo.MEMBER';
+        return $param === 'primo.MEMBER';
     }
 
     /**
@@ -860,7 +860,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerDefaultAuthSuccessfullCallback(string $param): bool
     {
-        return $param == 'primo.defaultRule';
+        return $param === 'primo.defaultRule';
     }
 
     /**
@@ -884,13 +884,13 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerMemberIsOnCampusCallback(string $param): bool
     {
-        if ($param == 'primo.defaultRule') {
+        if ($param === 'primo.defaultRule') {
             return false;
         }
-        if ($param == 'primo.isAtMEMBER') {
+        if ($param === 'primo.isAtMEMBER') {
             return true;
         }
-        return $param == 'primo.isOnCampusAtMEMBER';
+        return $param === 'primo.isOnCampusAtMEMBER';
     }
 
     /**
@@ -903,10 +903,10 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerMemberIsNotOnCampusCallback(string $param): bool
     {
-        if ($param == 'primo.defaultRule') {
+        if ($param === 'primo.defaultRule') {
             return false;
         }
-        return $param == 'primo.isAtMEMBER';
+        return $param === 'primo.isAtMEMBER';
     }
 
     /**
@@ -930,6 +930,6 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerIsOnDefaultCampusCallback(string $param): bool
     {
-        return $param == 'primo.defaultRule';
+        return $param === 'primo.defaultRule';
     }
 }

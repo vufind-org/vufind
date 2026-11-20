@@ -265,7 +265,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // is missing.
         $language = $this->localeSettings->getDefaultLocale();
         $allLanguages = array_keys($this->localeSettings->getEnabledLocales());
-        if ($userLang != '' && in_array($userLang, $allLanguages)) {
+        if ($userLang !== '' && in_array($userLang, $allLanguages)) {
             $language = $userLang;
         }
         $this->translator->setLocale($language);

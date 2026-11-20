@@ -1118,7 +1118,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetPublicationDetails(): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
-        $details = new \VuFind\RecordDriver\Response\PublicationDetails('US', 'Here', 2017);
+        $details = new \VuFind\RecordDriver\Response\PublicationDetails('US', 'Here', '2017');
         $this->assertEquals([$details], $driver->getPublicationDetails());
     }
 
@@ -1154,7 +1154,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetPublicationDetailsFromBib(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $details = new \VuFind\RecordDriver\Response\PublicationDetails('', '', 2017);
+        $details = new \VuFind\RecordDriver\Response\PublicationDetails('', '', '2017');
         $this->assertEquals([$details], $driver->getPublicationDetails());
     }
 

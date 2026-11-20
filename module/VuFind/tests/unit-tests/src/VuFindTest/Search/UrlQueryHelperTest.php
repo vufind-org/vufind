@@ -189,7 +189,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             '?foo=bar&sort=title&view=grid&lookfor=search&type=x&limit=50&page=3',
             $helper->setSort('title')->setViewParam('grid')->setHandler('x')
-                ->setLimit(50)->setPage(3)->getParams(false)
+                ->setLimit('50')->setPage('3')->getParams(false)
         );
     }
 

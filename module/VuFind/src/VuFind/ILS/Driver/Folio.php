@@ -238,7 +238,7 @@ class Folio extends AbstractAPI implements
     {
         // Only log non-GET requests, unless configured otherwise
         if (
-            $method == 'GET'
+            $method === 'GET'
             && !($this->config['API']['debug_get_requests'] ?? false)
         ) {
             return;

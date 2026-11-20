@@ -79,9 +79,9 @@ class BasemapConfig extends AbstractConfig
     public function getBasemap(string $origin)
     {
         $options = [];
-        if ($origin == 'MapSelection') {
+        if ($origin === 'MapSelection') {
             $options = $this->getMapSelectionBasemap();
-        } elseif ($origin == 'MapTab') {
+        } elseif ($origin === 'MapTab') {
             $options = $this->getMapTabBasemap();
         }
         // Fail over to geofeatures.ini [Basemap] if no other settings found:

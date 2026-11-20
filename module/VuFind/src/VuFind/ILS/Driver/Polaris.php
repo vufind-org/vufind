@@ -169,7 +169,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
 
             // httpService doesn't explicitly support PUT, so add this:
-            if ($http_method == 'PUT') {
+            if ($http_method === 'PUT') {
                 $http_headers[] = 'Content-Length: ' . strlen($json_data);
             }
             $client->setHeaders($http_headers);

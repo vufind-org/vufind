@@ -2200,7 +2200,7 @@ class SierraRest extends AbstractBase implements
         $client = $this->createHttpClient($apiUrl);
 
         // Add params
-        if ($method == 'GET') {
+        if ($method === 'GET') {
             $client->setParameterGet($params);
         } else {
             if (is_string($params)) {
@@ -2231,7 +2231,7 @@ class SierraRest extends AbstractBase implements
         try {
             $response = $client->setMethod($method)->send();
         } catch (\Exception $e) {
-            $params = $method == 'GET'
+            $params = $method === 'GET'
                 ? $client->getRequest()->getQuery()->toString()
                 : $client->getRequest()->getPost()->toString();
             $this->error(
@@ -2264,7 +2264,7 @@ class SierraRest extends AbstractBase implements
         // valid JSON that the caller can handle
         $decodedResult = json_decode($result, true);
         if (!$response->isSuccess() && null === $decodedResult) {
-            $params = $method == 'GET'
+            $params = $method === 'GET'
                 ? $client->getRequest()->getQuery()->toString()
                 : $client->getRequest()->getPost()->toString();
             $this->error(

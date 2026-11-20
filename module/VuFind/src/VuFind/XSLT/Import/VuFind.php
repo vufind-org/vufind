@@ -235,7 +235,7 @@ class VuFind
         $cmd = $settings['Aperture']['webcrawler'];
 
         // if we're using another method - substitute that into the path
-        $cmd = ($method != 'webcrawler')
+        $cmd = ($method !== 'webcrawler')
             ? str_replace('webcrawler', $method, $cmd) : $cmd;
 
         // return the full command
@@ -555,7 +555,7 @@ class VuFind
         $text = '';
 
         // Extract all text:
-        foreach ((array)$in as $current) {
+        foreach ($in as $current) {
             // Convert DOMElement to SimpleXML:
             $xml = simplexml_import_dom($current);
 
@@ -580,7 +580,7 @@ class VuFind
      */
     public static function removeTagAndReturnXMLasText(array $in, string $tag)
     {
-        foreach ((array)$in as $current) {
+        foreach ($in as $current) {
             $matches = $current->getElementsByTagName($tag);
             foreach ($matches as $match) {
                 $current->removeChild($match);

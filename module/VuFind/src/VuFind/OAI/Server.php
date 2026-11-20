@@ -828,7 +828,7 @@ class Server
         $xml = $response->addChild($verb);
 
         // The verb determines whether we're returning headers only or full records:
-        $headersOnly = ($verb != 'ListRecords');
+        $headersOnly = ($verb !== 'ListRecords');
 
         // Apply the delete lifetime limit to the from date if necessary:
         $deleteCutoff = $this->deleteLifetime
@@ -1338,7 +1338,7 @@ class Server
     protected function showError(string $code, string $message)
     {
         // Certain errors should not echo parameters:
-        $echoParams = $code != 'badVerb' && $code != 'badArgument';
+        $echoParams = $code !== 'badVerb' && $code !== 'badArgument';
         $response = $this->createResponse($echoParams);
 
         $xml = $response->addChild('error', htmlspecialchars($message));

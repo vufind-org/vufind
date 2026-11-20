@@ -146,7 +146,7 @@ abstract class AbstractCommand extends Command
         string $domain = 'default',
         bool $createIfMissing = false
     ) {
-        $subDir = $domain == 'default' ? '' : ('/' . $domain);
+        $subDir = $domain === 'default' ? '' : ('/' . $domain);
         $langDir = $this->languageDir . $subDir;
         if ($createIfMissing && !is_dir($langDir)) {
             mkdir($langDir);

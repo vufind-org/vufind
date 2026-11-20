@@ -1303,7 +1303,7 @@ class Aleph extends AbstractBase implements
         }
         return $this->createPatronArray(
             id: (string)$id,
-            cat_username: (string)$user,
+            cat_username: $user,
             cat_password: $password,
             firstname: $firstName,
             lastname: (string)$lastName,
@@ -1513,7 +1513,7 @@ class Aleph extends AbstractBase implements
      */
     public function parseDate(string $date)
     {
-        if ($date == null || $date == '') {
+        if ($date == null || $date === '') {
             return '';
         } elseif (preg_match('/^[0-9]{8}$/', $date) === 1) { // 20120725
             return $this->dateConverter->convertToDisplayDate('Ynd', $date);

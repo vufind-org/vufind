@@ -464,9 +464,9 @@ class UrlQueryHelper
         $params = $this->urlParams;
 
         // Account for operators:
-        if ($operator == 'NOT') {
+        if ($operator === 'NOT') {
             $field = '-' . $field;
-        } elseif ($operator == 'OR') {
+        } elseif ($operator === 'OR') {
             $field = '~' . $field;
         }
 

@@ -184,7 +184,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
             return false;
         }
         $nodes = $xmldoc->getElementsByTagName($elementName);
-        if ($nodes->length == 0) {
+        if ($nodes->length === 0) {
             return false;
         }
         return $nodes->item(0)->nodeValue;

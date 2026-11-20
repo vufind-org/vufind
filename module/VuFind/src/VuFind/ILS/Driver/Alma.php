@@ -181,7 +181,7 @@ class Alma extends AbstractBase implements
             // also with e.g. POST requests)
             $client->setParameterGet($paramsGet);
             // Set POST parameters
-            if ($method == 'POST') {
+            if ($method === 'POST') {
                 $client->setParameterPost($paramsPost);
             }
 
@@ -1657,7 +1657,7 @@ class Alma extends AbstractBase implements
             = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/';
         // e. g. 2017-07-09T18:00:00
 
-        if ($date == null || $date == '') {
+        if ($date == null || $date === '') {
             return '';
         } elseif (preg_match($compactDate, $date) === 1) {
             return $this->dateConverter->convertToDisplayDate('Ynd', $date);

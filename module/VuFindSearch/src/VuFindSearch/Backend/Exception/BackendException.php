@@ -60,7 +60,7 @@ class BackendException extends RuntimeException
      */
     public function addTag(string $tag)
     {
-        $this->tags[] = (string)$tag;
+        $this->tags[] = $tag;
     }
 
     /**

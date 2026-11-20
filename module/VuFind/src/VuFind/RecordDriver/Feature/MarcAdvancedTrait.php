@@ -999,7 +999,7 @@ trait MarcAdvancedTrait
     public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null)
     {
         // Special case for MARC:
-        if ($format == 'marc21') {
+        if ($format === 'marc21') {
             try {
                 $xml = $this->getMarcReader()->toFormat('MARCXML');
             } catch (\Exception) {

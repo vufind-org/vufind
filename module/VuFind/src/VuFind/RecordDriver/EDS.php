@@ -1096,7 +1096,7 @@ class EDS extends DefaultRecord
         );
         foreach ($numbering as $data) {
             if (
-                strtolower($data['Type'] ?? '') == $type
+                strtolower($data['Type'] ?? '') === $type
                 && !empty($data['Value'])
             ) {
                 return $data['Value'];

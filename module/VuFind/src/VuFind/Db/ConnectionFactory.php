@@ -182,7 +182,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $driverOptions = $this->config['Database']['extra_options'] ?? [];
 
         // Apply MySQL-specific adjustments:
-        if ($driver == 'pdo_mysql') {
+        if ($driver === 'pdo_mysql') {
             if (PHP_VERSION_ID >= 80400) {
                 // @phpstan-ignore-next-line
                 $driverOptions[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT]

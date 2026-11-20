@@ -960,9 +960,9 @@ class Unicorn extends AbstractBase implements
             [$instructor_id, $course_id, $dept_id, $bib_id]
                 = explode('|', $item);
             if (
-                $bib_id && (empty($instructorId) || $instructorId == $instructor_id)
-                && (empty($courseId) || $courseId == $course_id)
-                && (empty($departmentId) || $departmentId == $dept_id)
+                $bib_id && (empty($instructorId) || $instructorId === $instructor_id)
+                && (empty($courseId) || $courseId === $course_id)
+                && (empty($departmentId) || $departmentId === $dept_id)
             ) {
                 $items[] = [
                     'BIB_ID' => $bib_id,

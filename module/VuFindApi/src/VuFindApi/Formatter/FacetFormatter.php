@@ -162,10 +162,8 @@ class FacetFormatter extends BaseFormatter
         $facets = $results->getFacetList();
 
         // Format hierarchical facets, if any
-        if ($hierarchicalFacetData) {
-            foreach ($hierarchicalFacetData as $facet => $data) {
-                $facets[$facet]['list'] = $data;
-            }
+        foreach ($hierarchicalFacetData as $facet => $data) {
+            $facets[$facet]['list'] = $data;
         }
 
         // Add "missing" fields to non-hierarchical facets to make them similar

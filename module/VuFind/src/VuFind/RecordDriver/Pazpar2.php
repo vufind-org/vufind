@@ -87,7 +87,7 @@ class Pazpar2 extends DefaultRecord
                 }
             }
             // If there's no children, we're at data
-            if ($data->count() == 0) {
+            if ($data->count() === 0) {
                 if (!isset($children['_attr_'])) {
                     $children = (string)$data; // Flatten
                 } else {

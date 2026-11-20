@@ -84,7 +84,7 @@ abstract class AbstractAPI extends AbstractBase implements
     {
         $logParams = [];
         $logHeaders = [];
-        if ($method == 'GET') {
+        if ($method === 'GET') {
             $logParams = $params;
             $logHeaders = $req_headers->toArray();
         }

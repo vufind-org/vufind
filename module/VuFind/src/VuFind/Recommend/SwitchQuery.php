@@ -154,7 +154,7 @@ class SwitchQuery implements RecommendInterface
         $this->results = $results;
 
         // We can't currently deal with advanced searches:
-        if ($this->results->getParams()->getSearchType() == 'advanced') {
+        if ($this->results->getParams()->getSearchType() === 'advanced') {
             return;
         }
 

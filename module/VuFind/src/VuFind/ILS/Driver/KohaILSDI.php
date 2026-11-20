@@ -383,8 +383,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     protected function getField(string $contents, string $default = 'Unknown')
     {
-        if ((string)$contents !== '') {
-            return (string)$contents;
+        if ($contents !== '') {
+            return $contents;
         } else {
             return $default;
         }
@@ -1798,15 +1798,15 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     {
         $reserveWhere = [];
         $bindParams = [];
-        if ($course != '') {
+        if ($course !== '') {
             $reserveWhere[] = 'COURSE_ID = :course';
             $bindParams[':course'] = $course;
         }
-        if ($inst != '') {
+        if ($inst !== '') {
             $reserveWhere[] = 'INSTRUCTOR_ID = :inst';
             $bindParams[':inst'] = $inst;
         }
-        if ($dept != '') {
+        if ($dept !== '') {
             $reserveWhere[] = 'DEPARTMENT_ID = :dept';
             $bindParams[':dept'] = $dept;
         }

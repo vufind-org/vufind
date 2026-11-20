@@ -165,9 +165,9 @@ class Connector implements \Psr\Log\LoggerAwareInterface
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
         $baseUrl = null;
-        if ($method == 'GET') {
+        if ($method === 'GET') {
             $baseUrl = $this->host . $qs;
-        } elseif ($method == 'POST') {
+        } elseif ($method === 'POST') {
             throw new \Exception('POST not supported');
         }
 

@@ -306,7 +306,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         }
 
         $ils->method('__call')->willReturnCallback(
-            function ($method, $args) use ($patron, $profile, $blocks) {
+            function (string $method, array $args) use ($patron, $profile, $blocks) {
                 switch ($method) {
                     case 'patronLogin':
                         $this->assertEquals('user', $args[0]);
@@ -346,7 +346,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $exception = new \VuFind\Exception\ILS('Simulated failure');
         $ils->expects($this->once())->method('__call')
             ->willReturnCallback(
-                function ($method) use ($exception) {
+                function (string $method) use ($exception) {
                     if ($method === 'patronLogin') {
                         throw $exception;
                     }

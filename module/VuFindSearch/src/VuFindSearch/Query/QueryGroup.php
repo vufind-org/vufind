@@ -213,7 +213,7 @@ class QueryGroup extends AbstractQuery
                 "Unknown or invalid boolean operator: {$operator}"
             );
         }
-        if ($operator == 'NOT') {
+        if ($operator === 'NOT') {
             $this->operator = 'OR';
             $this->negation = true;
         } else {

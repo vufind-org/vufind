@@ -70,7 +70,7 @@ class TranslatableString implements TranslatableStringInterface
      */
     public function __construct(string $string, string $displayString, bool $translatable = true)
     {
-        $this->string = (string)$string;
+        $this->string = $string;
         $this->displayString = $displayString;
         $this->translatable = $translatable;
     }

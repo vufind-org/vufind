@@ -107,9 +107,9 @@ class Connector extends Base implements LoggerAwareInterface
         $this->client->setHeaders($headers);
         $this->client->setMethod($method);
 
-        if ($method == 'GET' && !empty($queryString)) {
+        if ($method === 'GET' && !empty($queryString)) {
             $baseUrl .= '?' . $queryString;
-        } elseif ($method == 'POST' && isset($messageBody)) {
+        } elseif ($method === 'POST' && isset($messageBody)) {
             $this->client->setRawBody($messageBody);
         }
         $this->client->setUri($baseUrl);

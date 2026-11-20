@@ -456,7 +456,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
                 'value' => 'External:' . $alphaBrowseUrl,
                 'label' => $labelPrefix . $this->translate($label),
                 'indent' => $indent,
-                'selected' => $activeHandler == 'AlphaBrowse:' . $source,
+                'selected' => $activeHandler === 'AlphaBrowse:' . $source,
                 'group' => $this->searchboxConfig['General']['alphaBrowseGroup'] ?? false,
             ];
         }

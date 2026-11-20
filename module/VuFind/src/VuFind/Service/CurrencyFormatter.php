@@ -85,7 +85,7 @@ class CurrencyFormatter
     public function convertToDisplayFormat(float $number, string $currency = null)
     {
         return $this->formatter->formatCurrency(
-            (float)$number,
+            $number,
             $currency ?: $this->defaultCurrency
         );
     }
