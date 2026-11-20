@@ -52,58 +52,58 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
     public function testLogException()
     {
         $callback = function ($level, $message, $context = []): bool {
-                $expectedContext = <<<CONTEXT
-                    Server Context:
-                    Array
-                    (
-                        [REMOTE_ADDR] => 5.6.7.8
-                        [HTTP_USER_AGENT] => Fake browser
-                        [HTTP_HOST] => localhost:80
-                        [REQUEST_URI] => /foo/bar
-                    )
-                    CONTEXT;
-                if (is_array($message)) {
-                    $details = $message;
-                    $expectedMessage = 'Exception/Detailed log. See context for levels.';
-                    $contextCheck = ($context['vufind_log_details'] ?? null) === $details;
-                } else {
-                    $contextCheck = isset($context['vufind_log_details']) && is_array($context['vufind_log_details']);
-                    $details = $contextCheck ? $context['vufind_log_details'] : [];
-                    $expectedMessage = $message;
-                }
+            $expectedContext = <<<CONTEXT
+                Server Context:
+                Array
+                (
+                    [REMOTE_ADDR] => 5.6.7.8
+                    [HTTP_USER_AGENT] => Fake browser
+                    [HTTP_HOST] => localhost:80
+                    [REQUEST_URI] => /foo/bar
+                )
+                CONTEXT;
+            if (is_array($message)) {
+                $details = $message;
+                $expectedMessage = 'Exception/Detailed log. See context for levels.';
+                $contextCheck = ($context['vufind_log_details'] ?? null) === $details;
+            } else {
+                $contextCheck = isset($context['vufind_log_details']) && is_array($context['vufind_log_details']);
+                $details = $contextCheck ? $context['vufind_log_details'] : [];
+                $expectedMessage = $message;
+            }
 
-                if (!$contextCheck && !is_array($message)) {
-                    return false;
-                }
-                $targetDetails = is_array($message) ? $message : ($context['vufind_log_details'] ?? []);
+            if (!$contextCheck && !is_array($message)) {
+                return false;
+            }
+            $targetDetails = is_array($message) ? $message : ($context['vufind_log_details'] ?? []);
 
-                if (count($targetDetails) !== 5) {
-                    return false;
-                }
+            if (count($targetDetails) !== 5) {
+                return false;
+            }
 
-                $expectedA2 = 'Exception : test'
-                    . '(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, '
-                    . 'Host = localhost:80, Request URI = /foo/bar)';
+            $expectedA2 = 'Exception : test'
+                . '(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, '
+                . 'Host = localhost:80, Request URI = /foo/bar)';
 
-                return $targetDetails[1] === 'Exception : test'
-                    && $targetDetails[2] === $expectedA2
-                    && str_contains($targetDetails[3], $targetDetails[2])
-                    && str_contains($targetDetails[3], 'Backtrace:')
-                    && str_contains($targetDetails[3], 'line')
-                    && str_contains($targetDetails[3], 'class =')
-                    && str_contains($targetDetails[3], 'function =')
-                    && str_contains($targetDetails[4], $expectedContext)
-                    && str_contains($targetDetails[4], 'Backtrace:')
-                    && str_contains($targetDetails[4], 'line')
-                    && str_contains($targetDetails[4], 'class =')
-                    && str_contains($targetDetails[4], 'function =')
-                    && str_contains($targetDetails[5], $expectedContext)
-                    && str_contains($targetDetails[5], 'Backtrace:')
-                    && str_contains($targetDetails[5], 'line')
-                    && str_contains($targetDetails[5], 'args:')
-                    && str_contains($targetDetails[5], 'class =')
-                    && str_contains($targetDetails[5], 'function =');
-            };
+            return $targetDetails[1] === 'Exception : test'
+                && $targetDetails[2] === $expectedA2
+                && str_contains($targetDetails[3], $targetDetails[2])
+                && str_contains($targetDetails[3], 'Backtrace:')
+                && str_contains($targetDetails[3], 'line')
+                && str_contains($targetDetails[3], 'class =')
+                && str_contains($targetDetails[3], 'function =')
+                && str_contains($targetDetails[4], $expectedContext)
+                && str_contains($targetDetails[4], 'Backtrace:')
+                && str_contains($targetDetails[4], 'line')
+                && str_contains($targetDetails[4], 'class =')
+                && str_contains($targetDetails[4], 'function =')
+                && str_contains($targetDetails[5], $expectedContext)
+                && str_contains($targetDetails[5], 'Backtrace:')
+                && str_contains($targetDetails[5], 'line')
+                && str_contains($targetDetails[5], 'args:')
+                && str_contains($targetDetails[5], 'class =')
+                && str_contains($targetDetails[5], 'function =');
+        };
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getUserIp'])
