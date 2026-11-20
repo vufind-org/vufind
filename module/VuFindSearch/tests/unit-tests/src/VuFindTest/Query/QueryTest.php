@@ -48,7 +48,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testContainsTerm()
+    public function testContainsTerm(): void
     {
         $q = new Query('test query we<(ird and/or');
 
@@ -73,7 +73,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testReplaceTerm()
+    public function testReplaceTerm(): void
     {
         $q = new Query('test query we<(ird and/or');
         $q->replaceTerm('we<(ird', 'we>(ird');
@@ -95,7 +95,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testReplacePunctuatedTerm()
+    public function testReplacePunctuatedTerm(): void
     {
         $q = new Query('this, that');
         $q->replaceTerm('this,', 'the other,');
@@ -108,7 +108,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testMultipleReplacements()
+    public function testMultipleReplacements(): void
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $q = new Query('color code');
@@ -134,7 +134,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testNormalization()
+    public function testNormalization(): void
     {
         $q = new Query('this is a tést OF THINGS');
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
@@ -158,7 +158,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testSetHandler()
+    public function testSetHandler(): void
     {
         $q = new Query('foo', 'bar');
         $q->setHandler('baz');
@@ -170,7 +170,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function testSetOperator()
+    public function testSetOperator(): void
     {
         $q = new Query('foo', 'bar');
         $q->setOperator('baz');

@@ -50,7 +50,7 @@ class Demo extends \VuFind\Content\AbstractBase
      * @throws \Exception
      * @return array     Returns array with table of contents data.
      */
-    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj)
+    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj): array
     {
         // Initialize return value:
         return [

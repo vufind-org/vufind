@@ -47,5 +47,5 @@ interface CachingDownloaderAwareInterface
      *
      * @return void
      */
-    public function setCachingDownloader(CachingDownloader $cachingDownloader);
+    public function setCachingDownloader(CachingDownloader $cachingDownloader): void;
 }

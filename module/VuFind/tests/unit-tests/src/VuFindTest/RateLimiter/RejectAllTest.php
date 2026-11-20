@@ -48,7 +48,7 @@ class RejectAllTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReserve()
+    public function testReserve(): void
     {
         $policy = new RejectAll();
         $this->expectException(ReserveNotSupportedException::class);
@@ -60,7 +60,7 @@ class RejectAllTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConsume()
+    public function testConsume(): void
     {
         $policy = new RejectAll();
         $limit = $policy->consume();

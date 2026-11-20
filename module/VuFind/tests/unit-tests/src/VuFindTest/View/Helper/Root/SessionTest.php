@@ -48,7 +48,7 @@ class SessionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSession()
+    public function testSession(): void
     {
         $session = new Session(new Container('SessionTest'));
         // Values default to null

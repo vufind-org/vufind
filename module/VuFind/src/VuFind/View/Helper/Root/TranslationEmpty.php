@@ -53,7 +53,7 @@ class TranslationEmpty implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function __invoke(string|object $str, array $fallbackDomains = [])
+    public function __invoke(string|object $str, array $fallbackDomains = []): bool
     {
         $result = $this->translate($str, [], '', false, $fallbackDomains);
         // Existing empty translations will result in &#x200C, otherwise the default

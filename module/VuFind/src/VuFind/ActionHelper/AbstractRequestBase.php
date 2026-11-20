@@ -269,7 +269,7 @@ abstract class AbstractRequestBase implements HelperInterface
         ?Connection $catalog = null,
         ?array $patron = null,
         ?array $holdInfo = null
-    ) {
+    ): int {
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(':', $checkHolds['defaultRequiredDate'])

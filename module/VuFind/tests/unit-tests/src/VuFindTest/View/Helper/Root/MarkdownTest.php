@@ -50,7 +50,7 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
      *
      * @return Markdown
      */
-    protected function getHelper()
+    protected function getHelper(): Markdown
     {
         $view = $this->getPhpRenderer();
         return new Markdown(
@@ -68,7 +68,7 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMarkdown()
+    public function testMarkdown(): void
     {
         $markdown = "# Main heading\n## Second heading";
         $html = "<h1>Main heading</h1>\n<h2>Second heading</h2>\n";

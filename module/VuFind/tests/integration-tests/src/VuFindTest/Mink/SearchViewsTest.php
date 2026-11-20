@@ -45,7 +45,7 @@ class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testGridAjaxStatus()
+    public function testGridAjaxStatus(): void
     {
         $this->changeConfigs(
             ['searches' => ['Views' => ['list' => 'List', 'grid' => 'Grid']]]

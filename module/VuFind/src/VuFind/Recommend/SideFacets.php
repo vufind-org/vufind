@@ -167,7 +167,7 @@ class SideFacets extends AbstractFacets
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Parse the additional settings:
         $settings = explode(':', $settings);
@@ -286,7 +286,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getCheckboxFacetSet()
+    public function getCheckboxFacetSet(): array
     {
         $result = $this->results->getParams()->getCheckboxFacets(
             array_keys($this->checkboxFacets),
@@ -306,7 +306,7 @@ class SideFacets extends AbstractFacets
      * @return array
      * @throws \Exception
      */
-    public function getFacetSet()
+    public function getFacetSet(): array
     {
         $facetSet = $this->results->getFacetList($this->mainFacets);
 
@@ -335,7 +335,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array Array of from/to value arrays keyed by field.
      */
-    public function getDateFacets()
+    public function getDateFacets(): array
     {
         return $this->getRangeFacets('dateFacets');
     }
@@ -346,7 +346,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array Array of from/to value arrays keyed by field.
      */
-    public function getFullDateFacets()
+    public function getFullDateFacets(): array
     {
         return $this->getRangeFacets('fullDateFacets');
     }
@@ -357,7 +357,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array Array of from/to value arrays keyed by field.
      */
-    public function getGenericRangeFacets()
+    public function getGenericRangeFacets(): array
     {
         return $this->getRangeFacets('genericRangeFacets');
     }
@@ -368,7 +368,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array Array of from/to value arrays keyed by field.
      */
-    public function getNumericRangeFacets()
+    public function getNumericRangeFacets(): array
     {
         return $this->getRangeFacets('numericRangeFacets');
     }
@@ -378,7 +378,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getAllRangeFacets()
+    public function getAllRangeFacets(): array
     {
         $raw = [
             'date' => $this->getDateFacets(),
@@ -400,7 +400,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getCollapsedFacets()
+    public function getCollapsedFacets(): array
     {
         if (empty($this->collapsedFacets)) {
             return [];
@@ -419,7 +419,7 @@ class SideFacets extends AbstractFacets
      *
      * @return int
      */
-    public function getShowMoreSetting(string $facetName, int $default = 6)
+    public function getShowMoreSetting(string $facetName, int $default = 6): int
     {
         // Look for either facet-specific configuration or else a configured
         // default. If neither is found, initialize return value to null.
@@ -441,7 +441,7 @@ class SideFacets extends AbstractFacets
      *
      * @return int
      */
-    public function getShowInLightboxSetting(string $facetName)
+    public function getShowInLightboxSetting(string $facetName): int
     {
         // Look for either facet-specific configuration or else a configured
         // default.
@@ -462,7 +462,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array Array of from/to value arrays keyed by field.
      */
-    protected function getRangeFacets(string $property)
+    protected function getRangeFacets(string $property): array
     {
         $filters = $this->results->getParams()->getRawFilters();
         $result = [];
@@ -489,7 +489,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getHierarchicalFacets()
+    public function getHierarchicalFacets(): array
     {
         return $this->hierarchicalFacets;
     }
@@ -499,7 +499,7 @@ class SideFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getHierarchicalFacetSortOptions()
+    public function getHierarchicalFacetSortOptions(): array
     {
         return $this->hierarchicalFacetSortOptions;
     }

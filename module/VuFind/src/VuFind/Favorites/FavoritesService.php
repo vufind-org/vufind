@@ -52,7 +52,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\SessionContainerRegistry;
 use VuFind\Tags\TagsService;
 
-use function count;
 use function func_get_args;
 
 /**
@@ -234,7 +233,7 @@ class FavoritesService implements TranslatorAwareInterface
     protected function persistToCache(
         RecordDriver $driver,
         ResourceEntityInterface $resource
-    ) {
+    ): void {
         if ($this->recordCache) {
             $this->recordCache->setContext(RecordCache::CONTEXT_FAVORITE);
             $this->recordCache->createOrUpdate(
@@ -315,7 +314,7 @@ class FavoritesService implements TranslatorAwareInterface
      *
      * @deprecated Use saveRecordToFavorites()
      */
-    public function save()
+    public function save(): array
     {
         return $this->saveRecordToFavorites(...func_get_args());
     }
@@ -507,7 +506,7 @@ class FavoritesService implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function cacheBatch(array $cacheRecordIds)
+    protected function cacheBatch(array $cacheRecordIds): void
     {
         if ($cacheRecordIds && $this->recordCache) {
             // Disable the cache so that we fetch latest versions, not cached ones:

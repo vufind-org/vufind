@@ -69,7 +69,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -92,7 +92,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return CopyStringCommand
      */
-    protected function getSuccessfulMockCommand(string $expectedString = 'baz')
+    protected function getSuccessfulMockCommand(string $expectedString = 'baz'): CopyStringCommand
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
@@ -117,7 +117,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $command = $this->getSuccessfulMockCommand();
         $commandTester = new CommandTester($command);
@@ -134,7 +134,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithReplaceOptionAndDefaultDelimiter()
+    public function testSuccessWithReplaceOptionAndDefaultDelimiter(): void
     {
         $command = $this->getSuccessfulMockCommand('transformed');
         $commandTester = new CommandTester($command);
@@ -157,7 +157,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithReplaceOptionAndCustomDelimiter()
+    public function testSuccessWithReplaceOptionAndCustomDelimiter(): void
     {
         $command = $this->getSuccessfulMockCommand('transformed');
         $commandTester = new CommandTester($command);
@@ -181,7 +181,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailureWithMissingTextDomain()
+    public function testFailureWithMissingTextDomain(): void
     {
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
@@ -210,7 +210,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         ?ExtendedIniReader $reader = null,
         string $languageDir = null,
         array $methods = ['addLineToFile']
-    ) {
+    ): CopyStringCommand {
         return $this->getMockBuilder(CopyStringCommand::class)
             ->setConstructorArgs(
                 [
@@ -229,7 +229,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniNormalizer
      */
-    protected function getMockNormalizer(array $methods = [])
+    protected function getMockNormalizer(array $methods = []): ExtendedIniNormalizer
     {
         $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor();
@@ -246,7 +246,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniReader
      */
-    protected function getMockReader(array $methods = [])
+    protected function getMockReader(array $methods = []): ExtendedIniReader
     {
         $builder = $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor();

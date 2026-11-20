@@ -87,7 +87,7 @@ class FacetsTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver(array $data = [])
+    protected function getDriver(array $data = []): TestHarness
     {
         $driver = new TestHarness();
         $finalData = $data + [

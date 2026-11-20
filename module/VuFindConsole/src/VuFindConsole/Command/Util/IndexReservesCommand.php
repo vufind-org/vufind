@@ -90,7 +90,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp(
@@ -141,7 +141,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
         array $courses,
         array $departments,
         array $reserves
-    ) {
+    ): UpdateDocument {
         $index = [];
         foreach ($reserves as $record) {
             $requiredKeysFound

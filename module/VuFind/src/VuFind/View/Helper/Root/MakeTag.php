@@ -301,7 +301,7 @@ class MakeTag
         string $contents,
         string|array $attrs = [],
         array $options = []
-    ) {
+    ): string {
         // $attrs not an object, interpret as class name
         if (!is_array($attrs)) {
             $attrs = !empty($attrs) ? ['class' => $attrs] : [];
@@ -318,7 +318,7 @@ class MakeTag
      *
      * @return void
      */
-    protected function verifyTagName(string $tagName)
+    protected function verifyTagName(string $tagName): void
     {
         // Simplify check by making tag lowercase
         $lowerTagName = mb_strtolower($tagName, 'UTF-8');
@@ -386,7 +386,7 @@ class MakeTag
         string $contents,
         array $attrs = [],
         array $options = []
-    ) {
+    ): string {
         $this->verifyTagName($tagName);
 
         $htmlAttrs = ($this->htmlAttributes)($attrs);

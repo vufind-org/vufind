@@ -73,7 +73,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Net\UserIpReader
      */
-    protected function getReaderClass()
+    protected function getReaderClass(): \VuFind\Net\UserIpReader
     {
         $readerClass = new class () extends \VuFind\Net\UserIpReader {
             /**
@@ -103,7 +103,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $factory = new UserIpReaderFactory();
         $container = $this->getContainer();
@@ -119,7 +119,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonDefaultsWithSingleFilteredIP()
+    public function testNonDefaultsWithSingleFilteredIP(): void
     {
         $factory = new UserIpReaderFactory();
         $container = $this->getContainer(
@@ -142,7 +142,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonDefaultsWithMultipleFilteredIPs()
+    public function testNonDefaultsWithMultipleFilteredIPs(): void
     {
         $factory = new UserIpReaderFactory();
         $container = $this->getContainer(

@@ -89,7 +89,7 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addDbHandler(MonologLogger $logger, array $config, ContainerInterface $container)
+    protected function addDbHandler(MonologLogger $logger, array $config, ContainerInterface $container): void
     {
         $parts = explode(':', $config['Logging']['database']);
         $table_name = $parts[0];
@@ -163,7 +163,7 @@ class LoggerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function addOffice365Handler(MonologLogger $logger, array $config, ContainerInterface $container)
+    protected function addOffice365Handler(MonologLogger $logger, array $config, ContainerInterface $container): void
     {
         $options = [];
         $error_types = $config['Logging']['office365'];

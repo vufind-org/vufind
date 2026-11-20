@@ -64,7 +64,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractBase
      * @throws \Exception
      * @return array|string    Returns HTML string with preview image and link to TOC PDF file
      */
-    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj)
+    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj): array|string
     {
         $ids = [
             'isbn' => $isbnObj,

@@ -60,7 +60,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver(array $data)
+    protected function getDriver(array $data): TestHarness
     {
         $driver = new TestHarness();
         $driver->setRawData($data);
@@ -72,7 +72,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Router
      */
-    protected function getRouter()
+    protected function getRouter(): Router
     {
         return new Router('https://vufind.org/cover', $this->getCoverLoader());
     }
@@ -82,7 +82,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnsupportedThumbnail()
+    public function testUnsupportedThumbnail(): void
     {
         $this->assertFalse(
             $this->getRouter()->getUrl($this->getDriver([]))
@@ -94,7 +94,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStaticUrl()
+    public function testStaticUrl(): void
     {
         $url = 'http://foo/bar';
         $this->assertEquals(
@@ -108,7 +108,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDynamicUrl()
+    public function testDynamicUrl(): void
     {
         $params = ['foo' => 'bar'];
         $this->assertEquals(
@@ -144,7 +144,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getThemeDir()
+    protected function getThemeDir(): string
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
     }

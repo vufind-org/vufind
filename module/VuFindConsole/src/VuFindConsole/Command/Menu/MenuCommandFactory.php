@@ -64,7 +64,7 @@ class MenuCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('ConsoleMenu');
         $commandManager = $container->get(\VuFindConsole\Command\PluginManager::class);
         return new $requestedName($config, $commandManager, ...($options ?? []));

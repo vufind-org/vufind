@@ -80,7 +80,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttach()
+    public function testAttach(): void
     {
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())
@@ -94,7 +94,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParameters()
+    public function testParameters(): void
     {
         $params = new ParamBag(
             [

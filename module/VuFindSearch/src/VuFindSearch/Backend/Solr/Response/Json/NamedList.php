@@ -82,7 +82,7 @@ class NamedList implements Countable, Iterator
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $arr = [];
         foreach ($this as $k => $v) {
@@ -163,7 +163,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function removeKey(string $key)
+    public function removeKey(string $key): void
     {
         $this->removeKeys([$key]);
     }
@@ -175,7 +175,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function removeKeys(array $keys)
+    public function removeKeys(array $keys): void
     {
         $newList = [];
         foreach ($this->list as $current) {

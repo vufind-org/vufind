@@ -45,5 +45,5 @@ interface VersionAwareInterface
      *
      * @return array
      */
-    public function getWorkKeys();
+    public function getWorkKeys(): array;
 }

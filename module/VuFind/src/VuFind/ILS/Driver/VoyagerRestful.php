@@ -235,7 +235,7 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -314,7 +314,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return string
      */
-    protected function getCacheKey(string $key = null)
+    protected function getCacheKey(string $key = null): string
     {
         // Override the base class formatting with Voyager-specific details
         // to ensure proper caching in a MultiBackend environment.
@@ -331,7 +331,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool Whether an item is holdable
      */
-    protected function isHoldable(array $statusArray)
+    protected function isHoldable(array $statusArray): bool
     {
         // User defined hold behaviour
         $is_holdable = true;
@@ -358,7 +358,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool Whether an item is borrowable
      */
-    protected function isBorrowable(string $itemTypeID)
+    protected function isBorrowable(string $itemTypeID): bool
     {
         if (isset($this->config['Holds']['borrowable'])) {
             $borrowable = explode(':', $this->config['Holds']['borrowable']);
@@ -386,7 +386,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool Whether an item is requestable
      */
-    protected function isStorageRetrievalRequestAllowed(array $holdingsRow)
+    protected function isStorageRetrievalRequestAllowed(array $holdingsRow): bool
     {
         $holdingsRow = $holdingsRow['_fullRow'];
         if (
@@ -432,7 +432,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getHoldingItemsSQL(array $id)
+    protected function getHoldingItemsSQL(array $id): array
     {
         $sqlArray = parent::getHoldingItemsSQL($id);
         $sqlArray['expressions'][] = 'ITEM.ITEM_TYPE_ID';
@@ -448,7 +448,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array Keyed data
      */
-    protected function processHoldingRow(array $sqlRow)
+    protected function processHoldingRow(array $sqlRow): array
     {
         $row = parent::processHoldingRow($sqlRow);
         $row += ['item_id' => $sqlRow['ITEM_ID'], '_fullRow' => $sqlRow];
@@ -464,7 +464,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array Keyed data
      */
-    protected function processHoldingData(array $data, string $id, array $patron = null)
+    protected function processHoldingData(array $data, string $id, array $patron = null): array
     {
         $holding = parent::processHoldingData($data, $id, $patron);
 
@@ -567,7 +567,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkRequestIsValid(string $id, array $data, array $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron): bool
     {
         $holdType = $data['holdtype'] ?? 'auto';
         $level = $data['level'] ?? 'copy';
@@ -601,7 +601,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron)
+    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron): bool
     {
         if (
             !isset($this->config['StorageRetrievalRequests'])
@@ -625,7 +625,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array Keyed data for display by template files
      */
-    protected function processMyTransactionsData(array $sqlRow, array $patron = false)
+    protected function processMyTransactionsData(array $sqlRow, array $patron = false): array
     {
         $transactions = parent::processMyTransactionsData($sqlRow, $patron);
 
@@ -645,7 +645,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool
      */
-    protected function pickUpLocationIsValid(string $pickUpLocation, array $patron, array $holdDetails)
+    protected function pickUpLocationIsValid(string $pickUpLocation, array $patron, array $holdDetails): bool
     {
         $pickUpLibs = $this->getPickUpLocations($patron, $holdDetails);
         foreach ($pickUpLibs as $location) {
@@ -807,7 +807,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return number
      */
-    protected function requestGroupSortFunction(array $a, array $b)
+    protected function requestGroupSortFunction(array $a, array $b): number
     {
         $requestGroupOrder = isset($this->config['Holds']['requestGroupOrder'])
             ? explode(':', $this->config['Holds']['requestGroupOrder'])
@@ -1008,7 +1008,7 @@ class VoyagerRestful extends Voyager implements
         array $params = false,
         string $mode = 'GET',
         string $xml = false
-    ) {
+    ): obj {
         $hierarchyString = [];
         // Build Url Base
         $urlParams = "http://{$this->ws_host}:{$this->ws_port}/{$this->ws_app}";
@@ -1100,7 +1100,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return string Encoded string
      */
-    protected function encodeXML(string $string)
+    protected function encodeXML(string $string): string
     {
         return htmlspecialchars($string, ENT_COMPAT, 'UTF-8');
     }
@@ -1114,7 +1114,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return string    An XML string
      */
-    protected function buildBasicXML(array $xml)
+    protected function buildBasicXML(array $xml): string
     {
         $xmlString = '';
 
@@ -1147,7 +1147,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array
      */
-    protected function extractBlockReasons(\SimpleXMLElement $borrowBlocks)
+    protected function extractBlockReasons(\SimpleXMLElement $borrowBlocks): array
     {
         $ignoredConfig = $this->config['Patron']['ignoredBlockCodes'] ?? '';
         $ignored = array_map('trim', explode(',', $ignoredConfig));
@@ -1168,7 +1168,7 @@ class VoyagerRestful extends Voyager implements
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getRequestBlocks(array $patron)
+    public function getRequestBlocks(array $patron): mixed
     {
         return $this->checkAccountBlocks($patron['id']);
     }
@@ -1181,7 +1181,7 @@ class VoyagerRestful extends Voyager implements
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks(array $patron)
+    public function getAccountBlocks(array $patron): mixed
     {
         return $this->checkAccountBlocks($patron['id']);
     }
@@ -1197,7 +1197,7 @@ class VoyagerRestful extends Voyager implements
      * @return mixed           A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    protected function checkAccountBlocks(string $patronId)
+    protected function checkAccountBlocks(string $patronId): mixed
     {
         $cacheId = "blocks|$patronId";
         $blockReason = $this->getCachedData($cacheId);
@@ -1242,7 +1242,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $patron = $renewDetails['patron'];
         $finalResult = ['details' => []];
@@ -1413,7 +1413,7 @@ class VoyagerRestful extends Voyager implements
         string $request,
         string $bibId,
         string $itemId = false
-    ) {
+    ): bool {
         if (!empty($bibId) && !empty($patronId) && !empty($request)) {
             $hierarchy = [];
 
@@ -1471,7 +1471,7 @@ class VoyagerRestful extends Voyager implements
         string $patron,
         string $type,
         array $requestData
-    ) {
+    ): array {
         if (
             empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
@@ -1576,7 +1576,7 @@ class VoyagerRestful extends Voyager implements
      * @return string          The name of the request method to use or false on
      * failure
      */
-    protected function determineHoldType(string $patronId, string $bibId, string $itemId = false)
+    protected function determineHoldType(string $patronId, string $bibId, string $itemId = false): string
     {
         if ($itemId && !$this->itemHoldsEnabled) {
             return false;
@@ -1611,7 +1611,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array An array with a success (boolean) and sysMessage key
      */
-    protected function holdError(string $msg)
+    protected function holdError(string $msg): array
     {
         return [
             'success' => false,
@@ -1628,7 +1628,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool
      */
-    protected function isRecordOnLoan(int $patronId, int $bibId, int $itemId = null)
+    protected function isRecordOnLoan(int $patronId, int $bibId, int $itemId = null): bool
     {
         $sqlExpressions = [
             'count(cta.ITEM_ID) CNT',
@@ -1689,7 +1689,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool
      */
-    protected function itemsExist(int $bibId, ?int $requestGroupId = null)
+    protected function itemsExist(int $bibId, ?int $requestGroupId = null): bool
     {
         $sqlExpressions = [
             'count(i.ITEM_ID) CNT',
@@ -1751,7 +1751,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool
      */
-    protected function itemsAvailable(int $bibId, ?int $requestGroupId = null)
+    protected function itemsAvailable(int $bibId, ?int $requestGroupId = null): bool
     {
         // Build inner query first
         $sqlExpressions = [
@@ -1827,7 +1827,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return array Keyed data for use in an sql query
      */
-    protected function getMyHoldsSQL(array $patron)
+    protected function getMyHoldsSQL(array $patron): array
     {
         // Most of our SQL settings will be identical to the parent class....
         $sqlArray = parent::getMyHoldsSQL($patron);
@@ -1861,7 +1861,7 @@ class VoyagerRestful extends Voyager implements
      * @throws DateException
      * @return array Keyed data for display by template files
      */
-    protected function processMyHoldsData(array $sqlRow)
+    protected function processMyHoldsData(array $sqlRow): array
     {
         $result = parent::processMyHoldsData($sqlRow);
         $result['db_code'] = $sqlRow['DB_CODE'];
@@ -1879,7 +1879,7 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         $holds = parent::getMyHolds($patron);
         // Check if we have remote holds and augment if necessary
@@ -1931,7 +1931,7 @@ class VoyagerRestful extends Voyager implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): mixed
     {
         $patron = $holdDetails['patron'];
         $type = isset($holdDetails['holdtype']) && !empty($holdDetails['holdtype'])
@@ -2067,7 +2067,7 @@ class VoyagerRestful extends Voyager implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         $details = $cancelDetails['details'];
         $patron = $cancelDetails['patron'];
@@ -2150,7 +2150,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         $renewDetails = ($checkOutDetails['institution_dbkey'] ?? '')
             . '|' . $checkOutDetails['item_id'];
@@ -2168,7 +2168,7 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return mixed        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): mixed
     {
         // Get local loans from the database so that we can get more details
         // than available via the API.
@@ -2282,7 +2282,7 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    protected function getHoldsFromApi(array $patron, bool $local)
+    protected function getHoldsFromApi(array $patron, bool $local): array
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2370,7 +2370,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return mixed        Array of the patron's storage retrieval requests.
      */
-    protected function getCallSlips(array $patron, bool $local = false)
+    protected function getCallSlips(array $patron, bool $local = false): mixed
     {
         // Build Hierarchy
         $hierarchy = [
@@ -2462,7 +2462,7 @@ class VoyagerRestful extends Voyager implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeStorageRetrievalRequest(array $details)
+    public function placeStorageRetrievalRequest(array $details): mixed
     {
         $patron = $details['patron'];
         $level = isset($details['level']) && !empty($details['level'])
@@ -2572,7 +2572,7 @@ class VoyagerRestful extends Voyager implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelStorageRetrievalRequests(array $cancelDetails)
+    public function cancelStorageRetrievalRequests(array $cancelDetails): array
     {
         $details = $cancelDetails['details'];
         $patron = $cancelDetails['patron'];
@@ -2658,7 +2658,7 @@ class VoyagerRestful extends Voyager implements
      * @return bool|array False if UB request is not available or an array
      * of details on success
      */
-    protected function getUBRequestDetails(string $id, array $patron)
+    protected function getUBRequestDetails(string $id, array $patron): bool|array
     {
         $cacheId = "ub|$id|{$patron['id']}";
         $data = $this->getCachedData($cacheId);
@@ -2862,7 +2862,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkILLRequestIsValid(string $id, array $data, array $patron)
+    public function checkILLRequestIsValid(string $id, array $data, array $patron): bool
     {
         if (!isset($this->config['ILLRequests'])) {
             $this->debug('ILL Requests not configured');
@@ -2912,7 +2912,7 @@ class VoyagerRestful extends Voyager implements
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
      */
-    public function getILLPickupLibraries(string $id, array $patron)
+    public function getILLPickupLibraries(string $id, array $patron): bool|array
     {
         if (!isset($this->config['ILLRequests'])) {
             return false;
@@ -3022,7 +3022,7 @@ class VoyagerRestful extends Voyager implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeILLRequest(array $details)
+    public function placeILLRequest(array $details): mixed
     {
         $patron = $details['patron'];
         [$source, $patronId] = explode('.', $patron['id'], 2);
@@ -3170,7 +3170,7 @@ class VoyagerRestful extends Voyager implements
      * @throws ILSException
      * @return mixed        Array of the patron's holds on success.
      */
-    public function getMyILLRequests(array $patron)
+    public function getMyILLRequests(array $patron): mixed
     {
         return array_merge(
             $this->getHoldsFromApi($patron, false),
@@ -3190,7 +3190,7 @@ class VoyagerRestful extends Voyager implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelILLRequests(array $cancelDetails)
+    public function cancelILLRequests(array $cancelDetails): array
     {
         $details = $cancelDetails['details'];
         $patron = $cancelDetails['patron'];
@@ -3279,7 +3279,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @return bool
      */
-    protected function isLocalInst(string $institution)
+    protected function isLocalInst(string $institution): bool
     {
         // In some versions of Voyager, this will be 'LOCAL' while
         // in others, it may be something like '1@LOCAL' -- for now,
@@ -3302,7 +3302,7 @@ class VoyagerRestful extends Voyager implements
      * @return array An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function changePassword(array $details)
+    public function changePassword(array $details): array
     {
         $patron = $details['patron'];
         $id = htmlspecialchars($patron['id'], ENT_COMPAT, 'UTF-8');

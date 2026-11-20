@@ -49,7 +49,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDynamicCheckboxes()
+    public function testDynamicCheckboxes(): void
     {
         $options = $this->createMock(Options::class);
         $limiters = [

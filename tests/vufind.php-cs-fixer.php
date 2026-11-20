@@ -62,6 +62,7 @@ $rules = [
     ],
     'phpdoc_no_access' => true,
     'phpdoc_to_param_type' => true,
+    'phpdoc_to_return_type' => true,
     'phpdoc_summary' => true,
     'php_unit_method_casing' => true,
     'pow_to_exponentiation' => true,

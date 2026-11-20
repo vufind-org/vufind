@@ -58,7 +58,7 @@ trait GetServiceTrait
      *
      * @return T
      */
-    public function getService(string $name)
+    public function getService(string $name): T
     {
         return $this->serviceLocator->get($name);
     }

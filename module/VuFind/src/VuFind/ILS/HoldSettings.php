@@ -65,7 +65,7 @@ class HoldSettings
      *
      * @return string The Holds mode
      */
-    public function getHoldsMode()
+    public function getHoldsMode(): string
     {
         return $this->config['holds_mode'] ?? 'all';
     }
@@ -77,7 +77,7 @@ class HoldSettings
      *
      * @return string The Title Holds mode
      */
-    public function getTitleHoldsMode()
+    public function getTitleHoldsMode(): string
     {
         return $this->config['title_level_holds_mode'] ?? 'disabled';
     }

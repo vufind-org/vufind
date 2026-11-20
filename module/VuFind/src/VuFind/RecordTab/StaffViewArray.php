@@ -53,7 +53,7 @@ class StaffViewArray extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Staff View';
     }

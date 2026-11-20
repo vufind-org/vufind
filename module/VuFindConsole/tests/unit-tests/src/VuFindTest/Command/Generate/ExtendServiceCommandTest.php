@@ -49,7 +49,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -69,7 +69,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $tools = $this->getMockGeneratorTools(
             ['extendService', 'setOutputInterface']
@@ -96,7 +96,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testError()
+    public function testError(): void
     {
         $tools = $this->getMockGeneratorTools(
             ['extendService', 'setOutputInterface']
@@ -123,7 +123,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools(array $methods = [])
+    protected function getMockGeneratorTools(array $methods = []): GeneratorTools
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()

@@ -66,7 +66,7 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
             $container->get(RecordIdUpdater::class),

@@ -52,7 +52,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBookOpenURL()
+    public function testBookOpenURL(): void
     {
         $driver = $this->getDriver();
         $this->assertEquals(
@@ -66,7 +66,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSnippetCaption()
+    public function testGetSnippetCaption(): void
     {
         $config = ['Snippet_Captions' => ['foo' => 'bar']];
         $driver = $this->getDriver([], $config);
@@ -78,7 +78,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testArticleOpenURL()
+    public function testArticleOpenURL(): void
     {
         $overrides = [
             'format' => ['Article'],
@@ -99,7 +99,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testJournalOpenURL()
+    public function testJournalOpenURL(): void
     {
         $overrides = [
             'format' => ['Journal'],
@@ -117,7 +117,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnknownTypeOpenURL()
+    public function testUnknownTypeOpenURL(): void
     {
         $overrides = [
             'format' => ['Thingie'],
@@ -135,7 +135,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnknownTypeOnlyISBNsOpenURL()
+    public function testUnknownTypeOnlyISBNsOpenURL(): void
     {
         $overrides = [
             'format' => ['Thingie'],
@@ -152,7 +152,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnknownTypeBothISBNsandISSNsOpenURL()
+    public function testUnknownTypeBothISBNsandISSNsOpenURL(): void
     {
         $overrides = [
             'format' => ['Thingie'],
@@ -170,7 +170,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDublinCore()
+    public function testDublinCore(): void
     {
         $expected = $this->getFixture('oai/dc.xml');
         $xml = $this->getDriver()->getXML('oai_dc');
@@ -182,7 +182,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetContainerRecordID()
+    public function testGetContainerRecordID(): void
     {
         $this->assertEquals('', $this->getDriver()->getContainerRecordID());
     }
@@ -192,7 +192,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetChildRecordCount()
+    public function testGetChildRecordCount(): void
     {
         $this->assertEquals(0, $this->getDriver()->getChildRecordCount());
     }
@@ -202,7 +202,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHighlightedTitle()
+    public function testGetHighlightedTitle(): void
     {
         $this->assertEquals('', $this->getDriver()->getHighlightedTitle());
     }
@@ -212,7 +212,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyGetHighlightedSnippet()
+    public function testEmptyGetHighlightedSnippet(): void
     {
         $this->assertEquals(false, $this->getDriver()->getHighlightedSnippet());
     }
@@ -222,7 +222,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHighlightedSnippetAllEmpty()
+    public function testGetHighlightedSnippetAllEmpty(): void
     {
         $overrides = [
             'General' => ['snippets' => true],
@@ -238,7 +238,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHighlightedSnippetFirstEmpty()
+    public function testGetHighlightedSnippetFirstEmpty(): void
     {
         $overrides = [
             'General' => ['snippets' => true],
@@ -258,7 +258,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHighlightedSnippetInPreferredFieldOrder()
+    public function testGetHighlightedSnippetInPreferredFieldOrder(): void
     {
         $overrides = [
             'General' => ['snippets' => true],
@@ -281,7 +281,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHighlightedSnippetNonForbiddenField()
+    public function testGetHighlightedSnippetNonForbiddenField(): void
     {
         $overrides = [
             'General' => ['snippets' => true],
@@ -304,7 +304,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHighlightDetails()
+    public function testHighlightDetails(): void
     {
         $details = ['author' => 'test'];
         $driver = $this->getDriver();
@@ -317,7 +317,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetRawAuthorHighlights()
+    public function testGetRawAuthorHighlights(): void
     {
         $this->assertEquals([], $this->getDriver()->getRawAuthorHighlights());
     }
@@ -330,7 +330,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrDefault
      */
-    protected function getDriver(array $overrides = [], array $searchConfig = [])
+    protected function getDriver(array $overrides = [], array $searchConfig = []): SolrDefault
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new SolrDefault(null, null, $searchConfig);

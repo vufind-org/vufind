@@ -47,7 +47,7 @@ class SummonDatabases extends AbstractSummonRecommend
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         return $this->results->getDatabaseRecommendations();
     }

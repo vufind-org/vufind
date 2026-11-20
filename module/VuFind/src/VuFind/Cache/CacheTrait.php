@@ -65,7 +65,7 @@ trait CacheTrait
      *
      * @return void
      */
-    public function setCacheStorage(?StorageInterface $cache = null)
+    public function setCacheStorage(?StorageInterface $cache = null): void
     {
         $this->cache = $cache;
     }
@@ -80,7 +80,7 @@ trait CacheTrait
      *
      * @return mixed|null Cached entry or null if not cached or expired
      */
-    protected function getCachedData(string $key, ?int $maxRetrievalAge = null)
+    protected function getCachedData(string $key, ?int $maxRetrievalAge = null): mixed
     {
         // No cache object, no cached results!
         if (null === $this->cache) {
@@ -118,7 +118,7 @@ trait CacheTrait
      *
      * @return void
      */
-    protected function putCachedData(string $key, mixed $entry, int $lifetime = null)
+    protected function putCachedData(string $key, mixed $entry, int $lifetime = null): void
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {
@@ -139,7 +139,7 @@ trait CacheTrait
      *
      * @return void
      */
-    protected function removeCachedData(string $key)
+    protected function removeCachedData(string $key): void
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {

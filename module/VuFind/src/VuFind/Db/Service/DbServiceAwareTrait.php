@@ -54,7 +54,7 @@ trait DbServiceAwareTrait
      *
      * @return void
      */
-    public function setDbServiceManager(PluginManager $manager)
+    public function setDbServiceManager(PluginManager $manager): void
     {
         $this->dbServiceManager = $manager;
     }
@@ -65,7 +65,7 @@ trait DbServiceAwareTrait
      * @throws \Exception
      * @return PluginManager
      */
-    public function getDbServiceManager()
+    public function getDbServiceManager(): PluginManager
     {
         if (null === $this->dbServiceManager) {
             throw new \Exception('Service manager missing in ' . static::class . '.');

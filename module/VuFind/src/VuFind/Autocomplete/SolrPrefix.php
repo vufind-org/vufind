@@ -108,7 +108,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @return array        The suggestions for the provided query
      */
-    public function getSuggestions(string $query)
+    public function getSuggestions(string $query): array
     {
         if (!is_object($this->searchObject)) {
             throw new \Exception('Please set configuration first.');
@@ -148,7 +148,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @return string       Processed query
      */
-    protected function mungeQuery(string $query)
+    protected function mungeQuery(string $query): string
     {
         $forbidden = [':', '(', ')', '*', '+', '"'];
         return str_replace($forbidden, ' ', $query);
@@ -164,7 +164,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @return void
      */
-    public function setConfig(string $params)
+    public function setConfig(string $params): void
     {
         [$this->autocompleteField, $this->facetField, $limit] = explode(':', $params . '::');
         if ($limit && ctype_digit($limit)) {
@@ -180,7 +180,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @return void
      */
-    public function addFilters(array $filters)
+    public function addFilters(array $filters): void
     {
         $this->filters += $filters;
     }
@@ -190,7 +190,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @return void
      */
-    protected function initSearchObject()
+    protected function initSearchObject(): void
     {
         // Build a new search object:
         $this->searchObject = $this->resultsManager->get($this->searchClassId);

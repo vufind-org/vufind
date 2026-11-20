@@ -120,7 +120,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $settings = explode(':', $settings);
         $this->requestParam = !empty($settings[0]) ? $settings[0] : $this->requestParam;
@@ -179,7 +179,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $query = $results->getParams()->getQuery();
         if (is_callable([$query, 'getString'])) {
@@ -192,7 +192,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         if (!$this->hasMinimumConfig || !$this->queryString) {
             return [];
@@ -216,7 +216,7 @@ class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterf
      *
      * @return string The url
      */
-    public function getMoreResultsUrl()
+    public function getMoreResultsUrl(): string
     {
         $url = $this->resultsBaseUrl
             . '?' . $this->requestParam . '=' . urlencode($this->queryString);

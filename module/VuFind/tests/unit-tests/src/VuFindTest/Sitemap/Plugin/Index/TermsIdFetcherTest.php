@@ -93,7 +93,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      *
      * @return callable
      */
-    protected function getIdsExpectation(string $expectedCursorMark)
+    protected function getIdsExpectation(string $expectedCursorMark): callable
     {
         return function ($command) use ($expectedCursorMark) {
             $this->assertEquals(

@@ -85,7 +85,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testIdExtraction()
+    public function testIdExtraction(): void
     {
         foreach ($this->bibIds as $raw => $formatted) {
             // Extraction should return the same result whether we extract from
@@ -106,7 +106,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testDefaultBibFormatting()
+    public function testDefaultBibFormatting(): void
     {
         foreach (array_keys($this->bibIds) as $id) {
             $this->assertEquals(
@@ -121,7 +121,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testPrefixedBibFormatting()
+    public function testPrefixedBibFormatting(): void
     {
         $this->driver->setConfig(
             ['Catalog' => ['use_prefixed_ids' => true]]

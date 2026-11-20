@@ -51,7 +51,7 @@ trait RequestHelperTrait
      *
      * @return mixed
      */
-    protected function getParam(string $param, bool $prioritizePost = true, mixed $default = null)
+    protected function getParam(string $param, bool $prioritizePost = true, mixed $default = null): mixed
     {
         $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
         $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';

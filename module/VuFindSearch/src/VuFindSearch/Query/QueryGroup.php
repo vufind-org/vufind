@@ -121,7 +121,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return string|null
      */
-    public function getReducedHandler()
+    public function getReducedHandler(): ?string
     {
         return $this->reducedHandler;
     }
@@ -133,7 +133,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function setReducedHandler(string $handler)
+    public function setReducedHandler(string $handler): void
     {
         $this->reducedHandler = $handler;
     }
@@ -143,7 +143,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function unsetReducedHandler()
+    public function unsetReducedHandler(): void
     {
         $this->reducedHandler = null;
     }
@@ -155,7 +155,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function addQuery(AbstractQuery $query)
+    public function addQuery(AbstractQuery $query): void
     {
         $this->queries[] = $query;
     }
@@ -165,7 +165,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return array
      */
-    public function getQueries()
+    public function getQueries(): array
     {
         return $this->queries;
     }
@@ -177,7 +177,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function setQueries(array $queries)
+    public function setQueries(array $queries): void
     {
         $this->queries = [];
         $this->addQueries($queries);
@@ -190,7 +190,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function addQueries(array $queries)
+    public function addQueries(array $queries): void
     {
         foreach ($queries as $query) {
             $this->addQuery($query);
@@ -206,7 +206,7 @@ class QueryGroup extends AbstractQuery
      *
      * @throws \InvalidArgumentException Unknown or invalid boolean operator
      */
-    public function setOperator(string $operator)
+    public function setOperator(string $operator): void
     {
         if (!in_array($operator, self::$operators)) {
             throw new InvalidArgumentException(
@@ -226,7 +226,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -236,7 +236,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return bool
      */
-    public function isNegated()
+    public function isNegated(): bool
     {
         return $this->negation;
     }
@@ -251,7 +251,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return bool
      */
-    public function containsTerm(string $needle, callable $normalizer = null)
+    public function containsTerm(string $needle, callable $normalizer = null): bool
     {
         foreach ($this->getQueries() as $q) {
             if ($q->containsTerm($needle, $normalizer)) {
@@ -266,7 +266,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return string
      */
-    public function getAllTerms()
+    public function getAllTerms(): string
     {
         $parts = [];
         foreach ($this->getQueries() as $q) {
@@ -285,7 +285,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm(string $from, string $to, callable $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null): void
     {
         foreach ($this->getQueries() as $q) {
             $q->replaceTerm($from, $to, $normalizer);

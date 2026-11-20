@@ -67,7 +67,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
@@ -90,7 +90,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieveBatch()
+    public function testRetrieveBatch(): void
     {
         $conn = $this->getConnectorMock(['query']);
         $expected1 = new SummonQuery(null, ['idsToFetch' => range(1, 50), 'pageNumber' => 1, 'pageSize' => 50]);
@@ -122,7 +122,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieveWrapsSummonException()
+    public function testRetrieveWrapsSummonException(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
 
@@ -140,7 +140,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
@@ -175,7 +175,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testSearchWrapsSummonException()
+    public function testSearchWrapsSummonException(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
 
@@ -193,7 +193,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testMergedParamBag()
+    public function testMergedParamBag(): void
     {
         $myParams = new ParamBag(['maxTopics' => 32]);
         $expectedParams = new SummonQuery('boo:(baz)', ['pageSize' => 10, 'pageNumber' => 1.0, 'maxTopics' => 32]);
@@ -211,7 +211,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testConstructorSetters()
+    public function testConstructorSetters(): void
     {
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock();
@@ -225,7 +225,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testSetQueryBuilder()
+    public function testSetQueryBuilder(): void
     {
         $qb = new QueryBuilder();
         $back = new Backend($this->getConnectorMock());
@@ -244,7 +244,7 @@ class BackendTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse(string $fixture)
+    protected function loadResponse(string $fixture): mixed
     {
         return unserialize(
             $this->getFixture("summon/response/$fixture", 'VuFindSearch')
@@ -258,7 +258,7 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): array
     {
         return $this->getMockBuilder(\VuFindSearch\Backend\Summon\GuzzleConnector::class)
             ->onlyMethods($mock)

@@ -74,7 +74,7 @@ class PurgeCachedRecordCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Removes a record and optionally a resource from the database.')

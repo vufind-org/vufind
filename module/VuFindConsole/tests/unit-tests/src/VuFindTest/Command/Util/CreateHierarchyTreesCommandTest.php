@@ -53,7 +53,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return HierarchyDriver
      */
-    protected function getMockHierarchyDriver()
+    protected function getMockHierarchyDriver(): HierarchyDriver
     {
         return $this->createMock(HierarchyDriver::class);
     }
@@ -63,7 +63,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return TreeSource
      */
-    protected function getMockTreeSource()
+    protected function getMockTreeSource(): TreeSource
     {
         return $this->createMock(TreeSource::class);
     }
@@ -75,7 +75,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getMockRecord(HierarchyDriver $driver = null)
+    protected function getMockRecord(HierarchyDriver $driver = null): \VuFind\RecordDriver\AbstractBase
     {
         $record = new \VuFindTest\RecordDriver\TestHarness();
         $record->setRawData(
@@ -94,7 +94,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Loader
      */
-    protected function getMockRecordLoader(\VuFind\RecordDriver\AbstractBase $record = null)
+    protected function getMockRecordLoader(\VuFind\RecordDriver\AbstractBase $record = null): Loader
     {
         $loader = $this->createMock(Loader::class);
         $loader->expects($this->once())->method('load')
@@ -108,7 +108,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Results
      */
-    protected function getMockResults()
+    protected function getMockResults(): Results
     {
         $results = $this->createMock(Results::class);
         $output = [
@@ -136,7 +136,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getMockResultsManager(?Results $results = null)
+    protected function getMockResultsManager(?Results $results = null): PluginManager
     {
         $manager = $this->createMock(PluginManager::class);
         $manager->expects($this->once())->method('get')
@@ -156,7 +156,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
     protected function getCommand(
         ?Loader $loader = null,
         ?PluginManager $results = null
-    ) {
+    ): SuppressedCommand {
         return new CreateHierarchyTreesCommand(
             $loader ?? $this->getMockRecordLoader(),
             $results ?? $this->getMockResultsManager()
@@ -168,7 +168,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPopulatingEverything()
+    public function testPopulatingEverything(): void
     {
         $tree = $this->getMockTreeSource();
         $tree->expects($this->once())->method('getJSON')

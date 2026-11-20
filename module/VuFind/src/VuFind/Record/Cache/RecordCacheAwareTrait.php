@@ -54,7 +54,7 @@ trait RecordCacheAwareTrait
      *
      * @return void
      */
-    public function setRecordCache(\VuFind\Record\Cache $recordCache)
+    public function setRecordCache(\VuFind\Record\Cache $recordCache): void
     {
         $this->recordCache = $recordCache;
     }
@@ -64,7 +64,7 @@ trait RecordCacheAwareTrait
      *
      * @return \VuFind\Record\Cache
      */
-    public function getRecordCache()
+    public function getRecordCache(): \VuFind\Record\Cache
     {
         return $this->recordCache;
     }

@@ -138,7 +138,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Service
      */
-    public function getService()
+    public function getService(): Service
     {
         $searchObj = $this->createMock(\VuFindSearch\Service::class);
         return $searchObj;

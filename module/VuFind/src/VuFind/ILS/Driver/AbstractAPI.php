@@ -64,7 +64,7 @@ abstract class AbstractAPI extends AbstractBase implements
      *
      * @return array
      */
-    protected function preRequest(\Laminas\Http\Headers $headers, array $params)
+    protected function preRequest(\Laminas\Http\Headers $headers, array $params): array
     {
         return [$headers, $params];
     }
@@ -80,7 +80,7 @@ abstract class AbstractAPI extends AbstractBase implements
      *
      * @return void
      */
-    protected function debugRequest(string $method, string $path, array $params, \Laminas\Http\Headers $req_headers)
+    protected function debugRequest(string $method, string $path, array $params, \Laminas\Http\Headers $req_headers): void
     {
         $logParams = [];
         $logHeaders = [];
@@ -158,7 +158,7 @@ abstract class AbstractAPI extends AbstractBase implements
         bool|array|string $allowedFailureCodes = [],
         string|array $debugParams = null,
         int $attemptNumber = 1
-    ) {
+    ): \Laminas\Http\Response {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
             $method,
@@ -250,7 +250,7 @@ abstract class AbstractAPI extends AbstractBase implements
      * @throws BadConfig if base url excluded
      * @return void
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         parent::setConfig($config);
         // Base URL required for API drivers

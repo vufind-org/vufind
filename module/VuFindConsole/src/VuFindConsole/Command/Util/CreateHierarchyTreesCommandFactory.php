@@ -64,7 +64,7 @@ class CreateHierarchyTreesCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),

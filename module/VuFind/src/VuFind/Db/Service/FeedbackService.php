@@ -180,7 +180,7 @@ class FeedbackService extends AbstractDbService implements FeedbackServiceInterf
      *
      * @return string
      */
-    protected function mapField(string $column)
+    protected function mapField(string $column): string
     {
         return $this->fieldMap[$column] ?? $column;
     }

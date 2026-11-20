@@ -79,7 +79,7 @@ class NonTabRecordActionCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Adds routes for a non-tab record action.')

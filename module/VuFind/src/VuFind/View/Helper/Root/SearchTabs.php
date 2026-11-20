@@ -112,7 +112,7 @@ class SearchTabs implements LoggerAwareInterface
         string $handler,
         string $type = 'basic',
         array $hiddenFilters = []
-    ) {
+    ): array {
         $retVal = ['tabs' => []];
         $allFilters = $this->helper->getTabFilterConfig();
         $allPermissions = $this->helper->getTabPermissionConfig();
@@ -177,7 +177,7 @@ class SearchTabs implements LoggerAwareInterface
      *
      * @return array
      */
-    public function getTabConfigForParams(\VuFind\Search\Base\Params $params)
+    public function getTabConfigForParams(\VuFind\Search\Base\Params $params): array
     {
         $tabConfig = $this->getTabConfig(
             $params->getSearchClassId(),
@@ -204,7 +204,7 @@ class SearchTabs implements LoggerAwareInterface
         string $searchClassId,
         bool $returnDefaultsIfEmpty = true,
         bool $ignoreCurrentRequest = false
-    ) {
+    ): array {
         return $this->helper->getHiddenFilters(
             $searchClassId,
             $returnDefaultsIfEmpty,
@@ -225,7 +225,7 @@ class SearchTabs implements LoggerAwareInterface
         string $searchClassId,
         bool $ignoreHiddenFilterMemory = false,
         string $prepend = '&amp;'
-    ) {
+    ): string {
         if ($this->currentHiddenFilterParamsDisabled) {
             return '';
         }
@@ -282,7 +282,7 @@ class SearchTabs implements LoggerAwareInterface
         string $query,
         string $handler,
         array $filters
-    ) {
+    ): string {
         // Set up results object for URL building:
         $results = $this->results->get($targetClass);
         $params = $results->getParams();
@@ -309,7 +309,7 @@ class SearchTabs implements LoggerAwareInterface
      *
      * @return string
      */
-    protected function getHomeTabUrl(string $class, array $filters)
+    protected function getHomeTabUrl(string $class, array $filters): string
     {
         $results = $this->results->get($class);
         return ($this->url)($results->getOptions()->getSearchHomeAction())
@@ -324,7 +324,7 @@ class SearchTabs implements LoggerAwareInterface
      *
      * @return string
      */
-    protected function getAdvancedTabUrl(string $class, array $filters)
+    protected function getAdvancedTabUrl(string $class, array $filters): string
     {
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:

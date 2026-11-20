@@ -144,7 +144,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripFacetFields()
+    public function testStripFacetFields(): void
     {
         $params = new ParamBag(
             [
@@ -170,7 +170,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAllShardsUsedForRecordRetrieval()
+    public function testAllShardsUsedForRecordRetrieval(): void
     {
         $params   = new ParamBag(
             [
@@ -197,7 +197,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttach()
+    public function testAttach(): void
     {
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
@@ -213,7 +213,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripSpecsEmptySpecs()
+    public function testStripSpecsEmptySpecs(): void
     {
         $this->setProperty($this->listener, 'specs', []);
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['A', 'B', 'E']]);
@@ -225,7 +225,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripSpecsNoFieldsToStrip()
+    public function testStripSpecsNoFieldsToStrip(): void
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['F', 'G', 'H']]);
         $this->assertEquals($specs, self::$specs);
@@ -236,7 +236,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripSpecsStrip()
+    public function testStripSpecsStrip(): void
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['A', 'B', 'E']]);
         $this->assertEquals(
@@ -264,7 +264,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripSpecsAllQueryFields()
+    public function testStripSpecsAllQueryFields(): void
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['A', 'B', 'C', 'D', 'E']]);
         $this->assertEquals(

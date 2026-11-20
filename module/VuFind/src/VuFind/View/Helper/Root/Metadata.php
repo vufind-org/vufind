@@ -65,7 +65,7 @@ class Metadata
      *
      * @return array
      */
-    protected function getVocabularies(\VuFind\RecordDriver\AbstractBase $driver)
+    protected function getVocabularies(\VuFind\RecordDriver\AbstractBase $driver): array
     {
         $recordDriverConfigs = $this->config['Vocabularies'] ?? [];
         $retVal = [];
@@ -88,7 +88,7 @@ class Metadata
      *
      * @return void
      */
-    public function generateMetatags(\VuFind\RecordDriver\AbstractBase $driver)
+    public function generateMetatags(\VuFind\RecordDriver\AbstractBase $driver): void
     {
         foreach ($this->getVocabularies($driver) as $metatagType) {
             $vocabulary = $this->pluginManager->get($metatagType);

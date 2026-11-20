@@ -54,7 +54,7 @@ class SolrArchivesSpace extends SolrDefault
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         $urls = parent::getURLs();
         // We're going to assume that if there is a link, it's always pointing at

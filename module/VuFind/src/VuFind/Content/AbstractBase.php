@@ -57,7 +57,7 @@ abstract class AbstractBase implements
      *
      * @return string
      */
-    protected function getIsbn10(ISBN $isbnObj)
+    protected function getIsbn10(ISBN $isbnObj): string
     {
         $isbn = is_object($isbnObj) ? $isbnObj->get10() : false;
         return (!$isbn && is_object($isbnObj)) ? $isbnObj->get13() : $isbn;
@@ -71,7 +71,7 @@ abstract class AbstractBase implements
      * @return \Laminas\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient(string $url = null)
+    protected function getHttpClient(string $url = null): \Laminas\Http\Client
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -88,5 +88,5 @@ abstract class AbstractBase implements
      * @return array|string For array of strings returned, they all are escaped in the template and presented as list.
      * If string is returned it is considered as raw HTML and is NOT escaped.
      */
-    abstract public function loadByIsbn(string $key, ISBN $isbnObj);
+    abstract public function loadByIsbn(string $key, ISBN $isbnObj): array|string;
 }

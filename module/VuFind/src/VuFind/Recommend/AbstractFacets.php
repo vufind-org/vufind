@@ -86,7 +86,7 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->results = $results;
     }
@@ -98,7 +98,7 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @return bool
      */
-    public function excludeAllowed(string $field)
+    public function excludeAllowed(string $field): bool
     {
         return in_array($field, $this->excludableFacets);
     }
@@ -110,7 +110,7 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @return string 'AND' or 'OR'
      */
-    public function getFacetOperator(string $field)
+    public function getFacetOperator(string $field): string
     {
         return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
@@ -120,7 +120,7 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getResults()
+    public function getResults(): \VuFind\Search\Base\Results
     {
         return $this->results;
     }
@@ -138,7 +138,7 @@ abstract class AbstractFacets implements RecommendInterface
         array $config,
         array $allFacets,
         string $section = 'Results_Settings'
-    ) {
+    ): void {
         // Which facets are excludable?
         if (isset($config[$section]['exclude'])) {
             $this->excludableFacets = ($config[$section]['exclude'] === '*')

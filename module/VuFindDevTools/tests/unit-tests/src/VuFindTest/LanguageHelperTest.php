@@ -48,7 +48,7 @@ class LanguageHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLangName()
+    public function testGetLangName(): void
     {
         $h = $this->getMockHelper();
 
@@ -68,7 +68,7 @@ class LanguageHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testComparison()
+    public function testComparison(): void
     {
         $l1 = new TextDomain(['1' => 'one', '2' => 'two', '3' => 'three']);
         $l2 = new TextDomain(['2' => 'two', '4' => 'four']);
@@ -87,7 +87,7 @@ class LanguageHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return Controller
      */
-    protected function getMockHelper()
+    protected function getMockHelper(): Controller
     {
         return new LanguageHelper(
             $this->createMock(\VuFind\I18n\Translator\Loader\ExtendedIni::class),

@@ -65,7 +65,7 @@ class AbstractDbServiceFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\Doctrine\ORM\EntityManagerInterface::class),
             $container->get(\VuFind\Db\Entity\PluginManager::class),

@@ -48,7 +48,7 @@ class RecordCollectionFactoryTest extends TestCase
      *
      * @return void
      */
-    public function testFactory()
+    public function testFactory(): void
     {
         $resp = ['data' => [['id' => 1], ['id' => 2], ['id' => 3]]];
         $fact = new RecordCollectionFactory();
@@ -61,7 +61,7 @@ class RecordCollectionFactoryTest extends TestCase
      *
      * @return void
      */
-    public function testInvalidInput()
+    public function testInvalidInput(): void
     {
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');

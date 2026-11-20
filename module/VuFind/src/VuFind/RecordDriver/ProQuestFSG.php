@@ -65,7 +65,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return void
      */
-    public function setRawData(mixed $data)
+    public function setRawData(mixed $data): void
     {
         // Ensure that $driver->setRawData($driver->getRawData()) doesn't blow up:
         if (isset($data['fullrecord'])) {
@@ -82,7 +82,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return PropertyString::fromHtml($this->marcGetShortTitle());
     }
@@ -92,7 +92,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return PropertyString::fromHtml($this->marcGetTitle());
     }
@@ -103,7 +103,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerTitle()
+    public function getContainerTitle(): string
     {
         // For books, don't display any container.
         if ($this->isBook()) {
@@ -118,7 +118,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerReference()
+    public function getContainerReference(): string
     {
         // For books, don't display any container.
         if ($this->isBook()) {
@@ -132,7 +132,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return bool
      */
-    protected function isBook()
+    protected function isBook(): bool
     {
         $type = $this->getFirstFieldValue('513', ['a']);
         return str_contains($type, 'Book') && !str_contains($type, 'Book Review');
@@ -143,7 +143,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return string
      */
-    public function getSource()
+    public function getSource(): string
     {
         return $this->getFirstFieldValue('786', ['t']);
     }
@@ -154,7 +154,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return array
      */
-    public function getHumanReadablePublicationDates()
+    public function getHumanReadablePublicationDates(): array
     {
         $dates = $this->marcGetHumanReadablePublicationDates();
         // For books, we should only display the year
@@ -173,7 +173,7 @@ class ProQuestFSG extends DefaultRecord
      *
      * @return mixed
      */
-    public function getCleanDOI()
+    public function getCleanDOI(): mixed
     {
         $identifiers = $this->getFieldArray('024', ['a', '2'], true, '~');
         foreach ($identifiers as $identifier) {

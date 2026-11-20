@@ -167,7 +167,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Only change settings from current values if they are defined in $settings or .ini
 
@@ -247,7 +247,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->results = $results;
     }
@@ -257,7 +257,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         if (count($this->resultFacet) < 1) {
             $this->logError('At least one facet key is required.');
@@ -347,7 +347,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      * @return An array mapping a database name to a sub-array with
      * the url.
      */
-    protected function getDatabases()
+    protected function getDatabases(): An
     {
         $databases = [];
         if ($this->useLibGuides) {
@@ -363,7 +363,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      * @return array An array mapping a database name to an array
      * representing the full object retrieved from the LibGuides /az API.
      */
-    protected function getLibGuidesDatabases()
+    protected function getLibGuidesDatabases(): array
     {
         $nameToDatabase = $this->getCachedData('libGuidesAZ-nameToDatabase');
         if (empty($nameToDatabase)) {
@@ -389,7 +389,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return string The URL, or null.
      */
-    public function getLinkToAllDatabases()
+    public function getLinkToAllDatabases(): string
     {
         return $this->linkToAllDatabases;
     }

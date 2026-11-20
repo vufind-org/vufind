@@ -109,7 +109,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function supportsMoreOptionsLink()
+    public function supportsMoreOptionsLink(): bool
     {
         return (bool)$this->moreOptionsBaseUrl;
     }
@@ -123,7 +123,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @return string raw response returned by resolver
      */
-    public function fetchLinks(string $openURL)
+    public function fetchLinks(string $openURL): string
     {
         // Make the call to resolver and load results
         $url = $this->getResolverUrl($openURL);
@@ -141,7 +141,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array Array of values
      */
-    public function parseLinks(string $response)
+    public function parseLinks(string $response): array
     {
         try {
             $json = json_decode($response, true, flags: JSON_THROW_ON_ERROR);

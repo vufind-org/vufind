@@ -77,7 +77,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function abstractQueryToArray(AbstractQuery $query)
+    protected function abstractQueryToArray(AbstractQuery $query): array
     {
         if ($query instanceof Query) {
             return $this->queryToArray($query);
@@ -93,7 +93,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function queryGroupToArray(QueryGroup $query)
+    protected function queryGroupToArray(QueryGroup $query): array
     {
         $nextLevel = $query->getQueries();
         $parts = [];
@@ -113,7 +113,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function queryToArray(Query $query)
+    protected function queryToArray(Query $query): array
     {
         // Clean and validate input:
         $index = $query->getHandler();

@@ -53,7 +53,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return DedupeCommand
      */
-    protected function getMockCommand()
+    protected function getMockCommand(): DedupeCommand
     {
         $mockMethods = [
             'getInput',
@@ -74,7 +74,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setSuccessfulExpectations(DedupeCommand $command, string $output)
+    protected function setSuccessfulExpectations(DedupeCommand $command, string $output): void
     {
         $fakeHandle = 7;    // arbitrary number for test purposes
         $command->expects($this->once())->method('openOutputFile')
@@ -98,7 +98,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingFile()
+    public function testWithMissingFile(): void
     {
         $command = new DedupeCommand();
         $commandTester = new CommandTester($command);
@@ -115,7 +115,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithArguments()
+    public function testSuccessWithArguments(): void
     {
         $outputFilename = '/fake/outfile';
         $command = $this->getMockCommand();
@@ -137,7 +137,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithoutArguments()
+    public function testSuccessWithoutArguments(): void
     {
         $fixture = $this->getFixtureDir('VuFindConsole') . 'fileWithDuplicateLines';
         $outputFilename = '/fake/outfile';

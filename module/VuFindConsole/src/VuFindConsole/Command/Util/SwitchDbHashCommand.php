@@ -90,7 +90,7 @@ class SwitchDbHashCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp(
@@ -108,7 +108,7 @@ class SwitchDbHashCommand extends Command
      *
      * @return ConfigWriter
      */
-    protected function getConfigWriter(string $path)
+    protected function getConfigWriter(string $path): ConfigWriter
     {
         return new ConfigWriter($path);
     }

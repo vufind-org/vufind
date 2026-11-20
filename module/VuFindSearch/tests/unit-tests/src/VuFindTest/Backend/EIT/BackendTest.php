@@ -52,7 +52,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
@@ -76,7 +76,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
@@ -107,7 +107,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetQueryBuilder()
+    public function testSetQueryBuilder(): void
     {
         $qb = new QueryBuilder();
         $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
@@ -120,7 +120,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultQueryBuilder()
+    public function testDefaultQueryBuilder(): void
     {
         $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
         $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
@@ -131,7 +131,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConstructorSetters()
+    public function testConstructorSetters(): void
     {
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock();
@@ -151,7 +151,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse(string $fixture)
+    protected function loadResponse(string $fixture): mixed
     {
         return $this->getFixture("eit/response/$fixture", 'VuFindSearch');
     }
@@ -163,7 +163,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): array
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\EIT\Connector::class)
@@ -177,7 +177,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory
      */
-    protected function getRCFactory()
+    protected function getRCFactory(): \VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory
     {
         $callback = function ($data) {
             $driver = new \VuFind\RecordDriver\EIT();

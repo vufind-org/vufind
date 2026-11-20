@@ -58,7 +58,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTokenLoginException()
+    public function testTokenLoginException(): void
     {
         $cookieManager = $this->getCookieManager(
             [
@@ -83,7 +83,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTokenLoginInvalidToken()
+    public function testTokenLoginInvalidToken(): void
     {
         $cookieManager = $this->getCookieManager(
             [
@@ -109,7 +109,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTokenLoginFail()
+    public function testTokenLoginFail(): void
     {
         $userService = $this->createMock(UserServiceInterface::class);
         $cookieManager = $this->getCookieManager(
@@ -129,7 +129,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return User
      */
-    protected function getMockUser()
+    protected function getMockUser(): User
     {
         $user = $this->createMock(UserEntityInterface::class);
         $user->method('getId')->willReturn(0);
@@ -157,7 +157,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return LoginTokenServiceInterface
      */
-    protected function getMockLoginTokenService()
+    protected function getMockLoginTokenService(): LoginTokenServiceInterface
     {
         return $this->createMock(LoginTokenServiceInterface::class);
     }
@@ -190,7 +190,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return LoginTokenManager
      */
-    protected function getLoginToken(CookieManager $cookieManager, LoginToken $tokenTable, UserServiceInterface $userTable, bool $browscapOk)
+    protected function getLoginToken(CookieManager $cookieManager, LoginToken $tokenTable, UserServiceInterface $userTable, bool $browscapOk): LoginTokenManager
     {
         $config = [];
         $saveHandler = $this->createMock(SaveHandlerInterface::class);

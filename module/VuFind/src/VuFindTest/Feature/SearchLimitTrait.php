@@ -62,7 +62,7 @@ trait SearchLimitTrait
      *
      * @return void
      */
-    protected function assertLimitControl(Element $page, array $options, int $active)
+    protected function assertLimitControl(Element $page, array $options, int $active): void
     {
         $limit = $this->findCss($page, $this->limitControlSelector);
         $this->assertEquals((string)$active, $limit->getValue());
@@ -82,7 +82,7 @@ trait SearchLimitTrait
      *
      * @return void
      */
-    protected function assertNoLimitControl(Element $page)
+    protected function assertNoLimitControl(Element $page): void
     {
         $this->assertNull($page->find('css', $this->limitControlSelector));
     }

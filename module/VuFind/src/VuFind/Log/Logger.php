@@ -276,7 +276,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @deprecated Deprecated since 11.1 and will be removed without replacement in 12.0
      */
-    public function debugNeeded(bool $newState = null)
+    public function debugNeeded(bool $newState = null): bool
     {
         if (null !== $newState) {
             $this->debugNeeded = $newState;
@@ -404,7 +404,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return string
      */
-    protected function argumentToString(mixed $arg)
+    protected function argumentToString(mixed $arg): string
     {
         if (is_object($arg)) {
             return $arg::class . ' Object';

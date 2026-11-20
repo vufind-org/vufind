@@ -50,7 +50,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testBasic()
+    public function testBasic(): void
     {
         $q = new Query('query1', 'handler1');
         $qb = new QueryBuilder();
@@ -64,7 +64,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testAdvanced()
+    public function testAdvanced(): void
     {
         // The query builder expects a very strict structure -- a single query group
         // inside another query group containing a collection of queries.

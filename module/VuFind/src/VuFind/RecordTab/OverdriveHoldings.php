@@ -47,7 +47,7 @@ class OverdriveHoldings extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Holdings';
     }

@@ -51,7 +51,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
      *
      * @return Map
      */
-    public function getMap()
+    public function getMap(): Map
     {
         $mapTabDisplay = true;
         $basemapOptions = [

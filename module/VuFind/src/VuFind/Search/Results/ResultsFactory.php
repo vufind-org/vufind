@@ -65,7 +65,7 @@ class ResultsFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         // Replace trailing "Results" with "Params" to get the params service:
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
         // Replace leading namespace with "VuFind" if service is not available:

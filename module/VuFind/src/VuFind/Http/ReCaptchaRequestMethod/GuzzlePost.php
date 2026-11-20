@@ -70,7 +70,7 @@ class GuzzlePost implements RequestMethod, LoggerAwareInterface
      *
      * @return string Body of the reCAPTCHA response
      */
-    public function submit(RequestParameters $params)
+    public function submit(RequestParameters $params): string
     {
         try {
             $response = $this->guzzleService->post(

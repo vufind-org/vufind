@@ -96,7 +96,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateIsAllowed()
+    public function testCreateIsAllowed(): void
     {
         $this->assertTrue($this->auth->supportsCreation());
     }
@@ -109,7 +109,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getRequest(array $post)
+    protected function getRequest(array $post): \Laminas\Http\Request
     {
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
@@ -124,7 +124,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getAccountCreationRequest(array $overrides = [])
+    protected function getAccountCreationRequest(array $overrides = []): \Laminas\Http\Request
     {
         $post = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
@@ -142,7 +142,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getLoginRequest(array $overrides = [])
+    protected function getLoginRequest(array $overrides = []): \Laminas\Http\Request
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass',
@@ -155,7 +155,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreationWithBlankUsername()
+    public function testCreationWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -168,7 +168,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreationWithBlankPassword()
+    public function testCreationWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -181,7 +181,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreationWithPasswordMismatch()
+    public function testCreationWithPasswordMismatch(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -194,7 +194,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreationWithInvalidEmail()
+    public function testCreationWithInvalidEmail(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -207,7 +207,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulCreation()
+    public function testSuccessfulCreation(): void
     {
         $request = $this->getAccountCreationRequest();
         $newUser = $this->auth->create($request)->toArray();
@@ -224,7 +224,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreationWithDuplicateUsername()
+    public function testCreationWithDuplicateUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -237,7 +237,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreationWithDuplicateEmail()
+    public function testCreationWithDuplicateEmail(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -250,7 +250,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -263,7 +263,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -276,7 +276,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithUnrecognizedUsername()
+    public function testLoginWithUnrecognizedUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -289,7 +289,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBadPassword()
+    public function testLoginWithBadPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -302,7 +302,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLogin()
+    public function testLogin(): void
     {
         $user = $this->auth->authenticate($this->getLoginRequest());
         $this->assertEquals('testuser', $user->getUsername());

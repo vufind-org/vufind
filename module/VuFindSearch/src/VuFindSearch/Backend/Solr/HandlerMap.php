@@ -93,7 +93,7 @@ class HandlerMap extends AbstractHandlerMap
      * @throws InvalidArgumentException Duplicate fallback handler
      * @throws InvalidArgumentException Duplicate function handler definition
      */
-    public function setHandlerMap(array $map)
+    public function setHandlerMap(array $map): void
     {
         $fallback = null;
         foreach ($map as $handler => $definition) {
@@ -157,7 +157,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @throws RuntimeException Undefined function handler
      */
-    public function getHandler(string $function)
+    public function getHandler(string $function): string
     {
         if (!isset($this->handlers[$function])) {
             if (!$this->fallback) {
@@ -177,7 +177,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return array Query invariants
      */
-    public function getInvariants(string $function)
+    public function getInvariants(string $function): array
     {
         $handler = $this->getHandler($function);
         return $this->getParameters($handler, 'invariants');
@@ -190,7 +190,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return array Query defaults
      */
-    public function getDefaults(string $function)
+    public function getDefaults(string $function): array
     {
         $handler = $this->getHandler($function);
         return $this->getParameters($handler, 'defaults');
@@ -203,7 +203,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return array Query appends
      */
-    public function getAppends(string $function)
+    public function getAppends(string $function): array
     {
         $handler = $this->getHandler($function);
         return $this->getParameters($handler, 'appends');
@@ -220,7 +220,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return void
      */
-    public function addParameter(string $handler, string $type, string $name, string $value)
+    public function addParameter(string $handler, string $type, string $name, string $value): void
     {
         $this->getParameters($handler, $type)->add($name, $value);
     }
@@ -235,7 +235,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return void
      */
-    public function setParameters(string $handler, string $type, array $parameters)
+    public function setParameters(string $handler, string $type, array $parameters): void
     {
         if (!in_array($type, ['invariants', 'appends', 'defaults'])) {
             throw new InvalidArgumentException(
@@ -256,7 +256,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @throws InvalidArgumentException Invalid parameter key
      */
-    public function getParameters(string $handler, string $type)
+    public function getParameters(string $handler, string $type): ParamBag
     {
         // Create ParamBag if not already present; this also handles validation
         // of the $type parameter.

@@ -68,7 +68,7 @@ class BlockLoader
      *
      * @return array
      */
-    public function getFromSearchClassId(string $searchClassId)
+    public function getFromSearchClassId(string $searchClassId): array
     {
         $options = $this->optionsManager->get($searchClassId);
         return $this->getFromOptions($options);
@@ -81,7 +81,7 @@ class BlockLoader
      *
      * @return array
      */
-    public function getFromOptions(Options $options)
+    public function getFromOptions(Options $options): array
     {
         return $this->getFromConfig($options->getSearchIni());
     }
@@ -99,7 +99,7 @@ class BlockLoader
         string $name,
         string $section = 'HomePage',
         string $setting = 'content'
-    ) {
+    ): array {
         $config = $this->configManager->getConfigArray($name);
         return $this->getFromConfigArray($config, $section, $setting);
     }
@@ -117,7 +117,7 @@ class BlockLoader
         array $config,
         string $section = 'HomePage',
         string $setting = 'content'
-    ) {
+    ): array {
         $blocks = [];
         foreach ($config[$section][$setting] ?? [] as $current) {
             $parts = explode(':', $current, 2);

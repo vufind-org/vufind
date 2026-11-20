@@ -69,7 +69,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return ParentTemplate
      */
-    protected function getHelper(array $stack)
+    protected function getHelper(array $stack): ParentTemplate
     {
         // Get mock TemplateStack
         $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
@@ -91,7 +91,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParent()
+    public function testParent(): void
     {
         $helper = $this->getHelper(['parent', 'child']);
         $this->assertEquals(
@@ -105,7 +105,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRepeatCalls()
+    public function testRepeatCalls(): void
     {
         $helper = $this->getHelper(['parent', 'child']);
 
@@ -122,7 +122,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSkip()
+    public function testSkip(): void
     {
         $helper = $this->getHelper(['parent', 'noop', 'skip', 'child']);
         $this->assertEquals(
@@ -136,7 +136,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testException()
+    public function testException(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('not found in parent themes: missing.phtml');

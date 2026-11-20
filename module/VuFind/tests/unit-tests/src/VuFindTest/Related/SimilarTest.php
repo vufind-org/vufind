@@ -47,7 +47,7 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetResults()
+    public function testGetResults(): void
     {
         // Similar is really just a thin wrapper around the search service; make
         // sure it does its job properly with the help of some mocks.

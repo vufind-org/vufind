@@ -48,7 +48,7 @@ class SideFacetsDeferred extends SideFacets
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getResults()
+    public function getResults(): \VuFind\Search\Base\Results
     {
         // Since we didn't add facets in init, do it now so that the config is
         // available for e.g. $this->results->getParams()->getFilterList().
@@ -61,7 +61,7 @@ class SideFacetsDeferred extends SideFacets
      *
      * @return array
      */
-    public function getActiveFacets()
+    public function getActiveFacets(): array
     {
         return $this->mainFacets;
     }

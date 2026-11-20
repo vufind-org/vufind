@@ -64,7 +64,7 @@ class AbstractSolrCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFind\Solr\Writer::class),
             ...($options ?? [])

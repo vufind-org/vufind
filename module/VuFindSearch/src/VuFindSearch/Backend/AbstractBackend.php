@@ -70,7 +70,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function setIdentifier(string $identifier)
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -80,7 +80,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
@@ -94,7 +94,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      */
     public function setRecordCollectionFactory(
         RecordCollectionFactoryInterface $factory
-    ) {
+    ): void {
         $this->collectionFactory = $factory;
     }
 
@@ -105,7 +105,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return RecordCollectionFactoryInterface
      */
-    abstract public function getRecordCollectionFactory();
+    abstract public function getRecordCollectionFactory(): RecordCollectionFactoryInterface;
 
     /// Internal API
 
@@ -116,7 +116,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @return RecordCollectionInterface
      */
-    protected function injectSourceIdentifier(RecordCollectionInterface $response)
+    protected function injectSourceIdentifier(RecordCollectionInterface $response): RecordCollectionInterface
     {
         $response->setSourceIdentifiers($this->identifier);
 

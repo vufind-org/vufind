@@ -95,7 +95,7 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIllegalAgeInput()
+    public function testIllegalAgeInput(): void
     {
         $service = $this->createMock($this->validServiceClass);
         $command = new $this->targetClass($service, 'foo');
@@ -117,7 +117,7 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulExpiration()
+    public function testSuccessfulExpiration(): void
     {
         $date = new DateTime();
         $service = $this->createMock($this->validServiceClass);
@@ -155,7 +155,7 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulNonExpiration()
+    public function testSuccessfulNonExpiration(): void
     {
         $date = new DateTime();
         $service = $this->createMock($this->validServiceClass);

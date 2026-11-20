@@ -49,7 +49,7 @@ class SummonBestBetsDeferred extends AbstractSummonRecommendDeferred
      *
      * @return string Module name in call to AjaxHandler
      */
-    protected function getAjaxModule()
+    protected function getAjaxModule(): string
     {
         return 'SummonBestBets';
     }

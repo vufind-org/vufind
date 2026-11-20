@@ -53,7 +53,7 @@ class HarvestOaiCommandFactory implements FactoryInterface
      *
      * @return string
      */
-    protected function getHarvestRoot()
+    protected function getHarvestRoot(): string
     {
         // Get the base VuFind path:
         $home = strlen(LOCAL_OVERRIDE_DIR) > 0
@@ -89,7 +89,7 @@ class HarvestOaiCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFind\Config\PathResolver::class),
             $container->get(\VuFindHttp\HttpService::class)->createClient(),

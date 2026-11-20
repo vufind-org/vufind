@@ -91,7 +91,7 @@ class SourceAndIdList
      *
      * @return array
      */
-    public function getAll()
+    public function getAll(): array
     {
         return $this->ids;
     }
@@ -101,7 +101,7 @@ class SourceAndIdList
      *
      * @return array
      */
-    public function getIdsBySource()
+    public function getIdsBySource(): array
     {
         return array_map('array_keys', $this->bySource);
     }
@@ -114,7 +114,7 @@ class SourceAndIdList
      *
      * @return int[]
      */
-    public function getRecordPositions(Record $record)
+    public function getRecordPositions(Record $record): array
     {
         $id = $record->getUniqueID();
         $source = $record->getSourceIdentifier();

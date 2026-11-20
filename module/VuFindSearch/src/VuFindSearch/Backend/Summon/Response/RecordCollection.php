@@ -76,7 +76,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['recordCount'] ?? 0;
     }
@@ -86,7 +86,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         return $this->response['facetFields'] ?? [];
     }
@@ -96,7 +96,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getSpellcheck()
+    public function getSpellcheck(): array
     {
         return is_array($this->response['didYouMeanSuggestions'] ?? null)
             ? $this->response['didYouMeanSuggestions'] : [];
@@ -107,7 +107,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getBestBets()
+    public function getBestBets(): array
     {
         return $this->response['recommendationLists']['bestBet'] ?? [];
     }
@@ -117,7 +117,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getDatabaseRecommendations()
+    public function getDatabaseRecommendations(): array
     {
         return $this->response['recommendationLists']['database'] ?? [];
     }
@@ -127,7 +127,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getTopicRecommendations()
+    public function getTopicRecommendations(): array
     {
         return $this->response['topicRecommendations'] ?? [];
     }

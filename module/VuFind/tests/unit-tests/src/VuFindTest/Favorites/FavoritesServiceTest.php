@@ -106,7 +106,7 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNewListIsPopulatedCorrectly()
+    public function testNewListIsPopulatedCorrectly(): void
     {
         $user = $this->getMockUser();
         $newList = $this->createMock(UserListEntityInterface::class);

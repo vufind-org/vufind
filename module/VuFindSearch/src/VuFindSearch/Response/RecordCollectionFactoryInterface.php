@@ -47,5 +47,5 @@ interface RecordCollectionFactoryInterface
      *
      * @return RecordCollectionInterface
      */
-    public function factory(mixed $response);
+    public function factory(mixed $response): RecordCollectionInterface;
 }

@@ -74,7 +74,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParseLinks()
+    public function testParseLinks(): void
     {
         $conn = $this->createConnector('jop.xml');
 
@@ -143,7 +143,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetResolverUrl()
+    public function testGetResolverUrl(): void
     {
         $ipAddr = '1.2.3.4';
         $connector = $this->createConnector(null, $ipAddr);
@@ -160,7 +160,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDowngradeOpenUrl()
+    public function testDowngradeOpenUrl(): void
     {
         $ipAddr = '1.2.3.4';
         $connector = $this->createConnector(null, $ipAddr);
@@ -194,7 +194,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDowngradeOpenUrlWithoutMappingKey()
+    public function testDowngradeOpenUrlWithoutMappingKey(): void
     {
         $ipAddr = '1.2.3.4';
         $connector = $this->createConnector(null, $ipAddr);
@@ -216,7 +216,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector(string $fixture = null, string $ipAddr = '127.0.0.1')
+    protected function createConnector(string $fixture = null, string $ipAddr = '127.0.0.1'): Connector
     {
         $adapter = new TestAdapter();
         if ($fixture) {

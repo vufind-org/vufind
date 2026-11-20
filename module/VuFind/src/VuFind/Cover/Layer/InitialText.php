@@ -49,7 +49,7 @@ class InitialText extends AbstractTextLayer
      *
      * @return void
      */
-    public function render($im, array $details, object $settings)
+    public function render($im, array $details, object $settings): void
     {
         // Get the first letter of title or author...
         $initial = mb_substr($details['title'] . $details['author'], 0, 1, 'UTF-8');

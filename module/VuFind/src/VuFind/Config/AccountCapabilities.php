@@ -79,7 +79,7 @@ class AccountCapabilities
      *
      * @return string
      */
-    public function getCommentSetting()
+    public function getCommentSetting(): string
     {
         if (!$this->isAccountAvailable()) {
             return 'disabled';
@@ -136,7 +136,7 @@ class AccountCapabilities
      *
      * @return string
      */
-    public function getListSetting()
+    public function getListSetting(): string
     {
         if (!$this->isAccountAvailable()) {
             return 'disabled';
@@ -157,7 +157,7 @@ class AccountCapabilities
      *
      * @return string
      */
-    public function getSavedSearchSetting()
+    public function getSavedSearchSetting(): string
     {
         if (!$this->isAccountAvailable()) {
             return 'disabled';
@@ -171,7 +171,7 @@ class AccountCapabilities
      *
      * @return string
      */
-    public function getTagSetting()
+    public function getTagSetting(): string
     {
         if (!$this->isAccountAvailable()) {
             return 'disabled';
@@ -185,7 +185,7 @@ class AccountCapabilities
      *
      * @return string
      */
-    public function getListTagSetting()
+    public function getListTagSetting(): string
     {
         if (!$this->isAccountAvailable()) {
             return 'disabled';
@@ -208,7 +208,7 @@ class AccountCapabilities
      *
      * @return string
      */
-    public function getSmsSetting()
+    public function getSmsSetting(): string
     {
         return ($this->config['Mail']['sms'] ?? 'enabled') === 'disabled'
             ? 'disabled' : 'enabled';
@@ -242,7 +242,7 @@ class AccountCapabilities
      *
      * @return bool
      */
-    protected function isAccountAvailable()
+    protected function isAccountAvailable(): bool
     {
         // We can't use account features if login is broken or privacy is on:
         $auth = $this->getAuth();

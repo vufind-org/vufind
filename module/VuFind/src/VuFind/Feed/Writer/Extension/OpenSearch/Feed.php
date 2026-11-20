@@ -118,7 +118,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setEncoding(string $enc)
+    public function setEncoding(string $enc): Feed
     {
         $this->stringWrapper = StringUtils::getWrapper($enc);
         $this->encoding      = $enc;
@@ -130,7 +130,7 @@ class Feed extends ParentFeed
      *
      * @return string
      */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->encoding;
     }
@@ -142,7 +142,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchTotalResults(int $totalResults)
+    public function setOpensearchTotalResults(int $totalResults): Feed
     {
         $this->totalResults = $totalResults;
         return $this;
@@ -153,7 +153,7 @@ class Feed extends ParentFeed
      *
      * @return int
      */
-    public function getOpensearchTotalResults()
+    public function getOpensearchTotalResults(): int
     {
         return $this->totalResults;
     }
@@ -165,7 +165,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchStartIndex(int $startIndex)
+    public function setOpensearchStartIndex(int $startIndex): Feed
     {
         $this->startIndex = $startIndex;
         return $this;
@@ -176,7 +176,7 @@ class Feed extends ParentFeed
      *
      * @return int
      */
-    public function getOpensearchStartIndex()
+    public function getOpensearchStartIndex(): int
     {
         return $this->startIndex;
     }
@@ -188,7 +188,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchItemsPerPage(int $itemsPerPage)
+    public function setOpensearchItemsPerPage(int $itemsPerPage): Feed
     {
         $this->itemsPerPage = $itemsPerPage;
         return $this;
@@ -199,7 +199,7 @@ class Feed extends ParentFeed
      *
      * @return int
      */
-    public function getOpensearchItemsPerPage()
+    public function getOpensearchItemsPerPage(): int
     {
         return $this->itemsPerPage;
     }
@@ -211,7 +211,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setOpensearchSearchTerms(string $searchTerms)
+    public function setOpensearchSearchTerms(string $searchTerms): Feed
     {
         $this->searchTerms = $searchTerms;
         return $this;
@@ -222,7 +222,7 @@ class Feed extends ParentFeed
      *
      * @return string
      */
-    public function getOpensearchSearchTerms()
+    public function getOpensearchSearchTerms(): string
     {
         return $this->searchTerms;
     }
@@ -242,7 +242,7 @@ class Feed extends ParentFeed
         string $role = null,
         string $type = null,
         string $title = null
-    ) {
+    ): Feed {
         if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
             throw new Exception\InvalidArgumentException(
                 'Invalid parameter: "url" must be '
@@ -268,7 +268,7 @@ class Feed extends ParentFeed
      *
      * @return string
      */
-    public function getOpensearchLinks()
+    public function getOpensearchLinks(): string
     {
         return $this->links;
     }

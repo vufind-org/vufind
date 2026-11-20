@@ -45,7 +45,7 @@ class SummonBestBetsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $this->assertEquals(
             'mod=SummonBestBets&params=lookfor&lookfor=foo',

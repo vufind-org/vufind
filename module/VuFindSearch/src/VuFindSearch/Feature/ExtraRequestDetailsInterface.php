@@ -46,12 +46,12 @@ interface ExtraRequestDetailsInterface
      *
      * @return array
      */
-    public function getExtraRequestDetails();
+    public function getExtraRequestDetails(): array;
 
     /**
      * Clears all accumulated extra request details.
      *
      * @return void
      */
-    public function resetExtraRequestDetails();
+    public function resetExtraRequestDetails(): void;
 }

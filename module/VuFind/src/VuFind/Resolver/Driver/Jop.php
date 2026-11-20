@@ -105,7 +105,7 @@ class Jop extends AbstractBase
      *
      * @return string         raw XML returned by resolver
      */
-    public function fetchLinks(string $openURL)
+    public function fetchLinks(string $openURL): string
     {
         // Get the actual resolver url for the given openUrl
         $url = $this->getResolverUrl($openURL);
@@ -125,7 +125,7 @@ class Jop extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks(string $xmlstr)
+    public function parseLinks(string $xmlstr): array
     {
         $records = []; // array to return
 
@@ -161,7 +161,7 @@ class Jop extends AbstractBase
      *
      * @return string Link
      */
-    public function getResolverUrl(string $openURL)
+    public function getResolverUrl(string $openURL): string
     {
         // Unfortunately the JOP-API only allows OpenURL V0.1 and
         // breaks when sending a non expected parameter.
@@ -200,7 +200,7 @@ class Jop extends AbstractBase
      *
      * @return bool
      */
-    public function supportsMoreOptionsLink()
+    public function supportsMoreOptionsLink(): bool
     {
         // the JOP link resolver returns unstyled XML which is not helpful for the
         // user
@@ -214,7 +214,7 @@ class Jop extends AbstractBase
      *
      * @return string       JOP-compatible v0.1 OpenURL
      */
-    protected function downgradeOpenUrl(array $parsed)
+    protected function downgradeOpenUrl(array $parsed): string
     {
         // we need 'genre' but only the values
         // article or journal are allowed...
@@ -267,7 +267,7 @@ class Jop extends AbstractBase
      *
      * @return void
      */
-    protected function getElectronicResults(string $state, string $coverage, array &$records, DOMXpath $xpath)
+    protected function getElectronicResults(string $state, string $coverage, array &$records, DOMXpath $xpath): void
     {
         $results = $xpath->query(
             '/OpenURLResponseXML/Full/ElectronicData/ResultList/Result[@state=' .
@@ -371,7 +371,7 @@ class Jop extends AbstractBase
      *
      * @return void
      */
-    protected function getPrintResults(string $state, string $coverage, array &$records, DOMXpath $xpath)
+    protected function getPrintResults(string $state, string $coverage, array &$records, DOMXpath $xpath): void
     {
         $results = $xpath->query(
             "/OpenURLResponseXML/Full/PrintData/ResultList/Result[@state={$state}]"

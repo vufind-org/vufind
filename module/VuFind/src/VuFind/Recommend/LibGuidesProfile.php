@@ -135,7 +135,7 @@ class LibGuidesProfile implements
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // No action needed.
     }
@@ -168,7 +168,7 @@ class LibGuidesProfile implements
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->results = $results;
     }
@@ -178,7 +178,7 @@ class LibGuidesProfile implements
      *
      * @return mixed
      */
-    public function getResults()
+    public function getResults(): mixed
     {
         if (empty($this->strategies)) {
             throw new \Exception('LibGuidesAPI.ini must define at least one strategy if LibGuidesProfile is used.');
@@ -210,7 +210,7 @@ class LibGuidesProfile implements
      *
      * @return mixed LibGuides account object or false
      */
-    protected function findBestMatchByCallNumber(\VuFind\Search\Base\Results $results)
+    protected function findBestMatchByCallNumber(\VuFind\Search\Base\Results $results): mixed
     {
         // Skip if no call number mapping was provided by config.
         if (empty($this->callNumberToAlias)) {
@@ -268,7 +268,7 @@ class LibGuidesProfile implements
      *
      * @return mixed LibGuides account object or false
      */
-    protected function findBestMatchBySubject(\VuFind\Search\Base\Results $results)
+    protected function findBestMatchBySubject(\VuFind\Search\Base\Results $results): mixed
     {
         $data = $this->getLibGuidesData();
         $subjectToId = $data['subjectToId'];
@@ -310,7 +310,7 @@ class LibGuidesProfile implements
      *
      * @return array An array containing the idToAccount and subjectToId maps
      */
-    protected function getLibGuidesData()
+    protected function getLibGuidesData(): array
     {
         $idToAccount = $this->getCachedData('libGuidesProfile-idToAccount');
         $subjectToId = $this->getCachedData('libGuidesProfile-subjectToId');
@@ -329,7 +329,7 @@ class LibGuidesProfile implements
      *
      * @return array An array containing the idToAccount and subjectToId maps
      */
-    protected function populateLibGuidesCache()
+    protected function populateLibGuidesCache(): array
     {
         $idToAccount = [];
         $subjectToId = [];

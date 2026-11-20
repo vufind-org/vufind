@@ -47,7 +47,7 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function goToCollection()
+    protected function goToCollection(): Element
     {
         $session = $this->getMinkSession();
         $path = '/Collection/topcollection1';

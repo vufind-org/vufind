@@ -58,7 +58,7 @@ class VuFindGeo
      *
      * @return void
      */
-    protected static function logError(string $msg)
+    protected static function logError(string $msg): void
     {
         call_user_func(static::$logMethod, $msg);
     }
@@ -70,7 +70,7 @@ class VuFindGeo
      *
      * @return array
      */
-    protected static function parseCoverage(string $coverage)
+    protected static function parseCoverage(string $coverage): array
     {
         $parts = array_map('trim', explode(';', $coverage));
         $parsed = [];
@@ -91,7 +91,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateNumericCoordinates(array $coords)
+    protected static function validateNumericCoordinates(array $coords): bool
     {
         if (
             !is_numeric($coords['westlimit'] ?? 'NaN')
@@ -113,7 +113,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateLines(array $coords)
+    protected static function validateLines(array $coords): bool
     {
         if (
             $coords['westlimit'] != $coords['eastlimit']
@@ -133,7 +133,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateExtent(array $coords)
+    protected static function validateExtent(array $coords): bool
     {
         if (
             abs($coords['northlimit']) > 90
@@ -155,7 +155,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateNorthSouth(array $coords)
+    protected static function validateNorthSouth(array $coords): bool
     {
         if ($coords['northlimit'] < $coords['southlimit']) {
             static::logError('North < South.');
@@ -171,7 +171,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateEastWest(array $coords)
+    protected static function validateEastWest(array $coords): bool
     {
         $east = $coords['eastlimit'];
         $west = $coords['westlimit'];
@@ -200,7 +200,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateCoordinateDistance(array $coords)
+    protected static function validateCoordinateDistance(array $coords): bool
     {
         $distEW = $coords['eastlimit'] - $coords['westlimit'];
         $distNS = $coords['northlimit'] - $coords['southlimit'];
@@ -235,7 +235,7 @@ class VuFindGeo
      *
      * @return bool
      */
-    protected static function validateCoverageCoordinates(array $coords)
+    protected static function validateCoverageCoordinates(array $coords): bool
     {
         return static::validateNumericCoordinates($coords)
             && static::validateLines($coords)
@@ -253,7 +253,7 @@ class VuFindGeo
      *
      * @return string
      */
-    public static function getAllCoordinatesFromCoverage(string $coverage)
+    public static function getAllCoordinatesFromCoverage(string $coverage): string
     {
         $coords = static::parseCoverage($coverage);
         return static::validateCoverageCoordinates($coords)
@@ -274,7 +274,7 @@ class VuFindGeo
      *
      * @return string
      */
-    public static function getDisplayCoordinatesFromCoverage(string $coverage)
+    public static function getDisplayCoordinatesFromCoverage(string $coverage): string
     {
         $coords = static::parseCoverage($coverage);
         return static::validateCoverageCoordinates($coords)
@@ -294,7 +294,7 @@ class VuFindGeo
      *
      * @return string
      */
-    public static function getLabelFromCoverage(string $coverage)
+    public static function getLabelFromCoverage(string $coverage): string
     {
         $coords = static::parseCoverage($coverage);
         return $coords['name'] ?? '';

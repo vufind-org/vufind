@@ -93,7 +93,7 @@ class Service
      *
      * @return CommandInterface
      */
-    public function invoke(CommandInterface $command)
+    public function invoke(CommandInterface $command): CommandInterface
     {
         // The backend instance is no longer added as an event parameter.
         // All other legacy event parameters are accessible via the command object.
@@ -124,7 +124,7 @@ class Service
      *
      * @throws Exception\RuntimeException Unable to resolve backend
      */
-    protected function resolve(string $backendId, array|ArrayAccess $args)
+    protected function resolve(string $backendId, array|ArrayAccess $args): BackendInterface
     {
         if (!isset($this->backends[$backendId])) {
             $response = $this->getEventManager()->triggerUntil(
@@ -166,7 +166,7 @@ class Service
      *
      * @return void
      */
-    public function triggerError(mixed $target, array $args)
+    public function triggerError(mixed $target, array $args): void
     {
         $this->getEventManager()->trigger(self::EVENT_ERROR, $target, $args);
     }
@@ -180,7 +180,7 @@ class Service
      *
      * @return void
      */
-    protected function triggerPre(mixed $target, array $args)
+    protected function triggerPre(mixed $target, array $args): void
     {
         $this->getEventManager()->trigger(self::EVENT_PRE, $target, $args);
     }
@@ -194,7 +194,7 @@ class Service
      *
      * @return void
      */
-    protected function triggerPost(mixed $target, array $args)
+    protected function triggerPost(mixed $target, array $args): void
     {
         $this->getEventManager()->trigger(self::EVENT_POST, $target, $args);
     }

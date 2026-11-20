@@ -68,7 +68,7 @@ class Channels extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->options['label'] ?? 'Channels';
     }
@@ -78,7 +78,7 @@ class Channels extends AbstractBase
      *
      * @return array
      */
-    public function getContext()
+    public function getContext(): array
     {
         $request = $this->getRequest() ?: null;
         $query = $request?->getQuery();

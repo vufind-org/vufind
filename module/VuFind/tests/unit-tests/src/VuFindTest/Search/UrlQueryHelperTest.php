@@ -55,7 +55,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return UrlQueryHelper
      */
-    protected function getHelper(array $request = ['foo' => 'bar'], Query $query = null)
+    protected function getHelper(array $request = ['foo' => 'bar'], Query $query = null): UrlQueryHelper
     {
         return new UrlQueryHelper($request, $query ?? new Query('search'));
     }
@@ -65,7 +65,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicGetters()
+    public function testBasicGetters(): void
     {
         // Test basic getters
         $helper = $this->getHelper();
@@ -86,7 +86,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetDefaultParameters()
+    public function testSetDefaultParameters(): void
     {
         $helper = $this->getHelper();
 
@@ -121,7 +121,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQuerySuppression()
+    public function testQuerySuppression(): void
     {
         $helper = $this->getHelper();
         $this->assertEquals(false, $helper->isQuerySuppressed());
@@ -138,7 +138,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReplacingQueryTerms()
+    public function testReplacingQueryTerms(): void
     {
         $helper = $this->getHelper();
         $this->assertEquals(
@@ -156,7 +156,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFacetsAndFilters()
+    public function testFacetsAndFilters(): void
     {
         $helper = $this->getHelper();
         $faceted = $helper->addFacet('f', '1')->addFilter('f:2');
@@ -183,7 +183,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStackingSetters()
+    public function testStackingSetters(): void
     {
         $helper = $this->getHelper();
         $this->assertEquals(
@@ -198,7 +198,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAdvancedSearch()
+    public function testAdvancedSearch(): void
     {
         $q = unserialize($this->getFixture('searches/advanced/query'));
         $helper = new UrlQueryHelper([], $q);
@@ -217,7 +217,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFactory()
+    public function testFactory(): void
     {
         $factory = new UrlQueryHelperFactory();
         $config = $this->createMock(ConfigManagerInterface::class);

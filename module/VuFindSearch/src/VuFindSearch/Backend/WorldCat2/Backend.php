@@ -94,7 +94,7 @@ class Backend extends AbstractBackend
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         if (null === $params) {
             $params = new ParamBag();
         }
@@ -129,7 +129,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -141,7 +141,7 @@ class Backend extends AbstractBackend
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -156,7 +156,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         if ($this->collectionFactory === null) {
             $this->collectionFactory = new Response\RecordCollectionFactory();
@@ -182,7 +182,7 @@ class Backend extends AbstractBackend
      *
      * @return Connector
      */
-    public function getConnector()
+    public function getConnector(): Connector
     {
         return $this->connector;
     }
@@ -196,7 +196,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection(array $records)
+    protected function createRecordCollection(array $records): RecordCollectionInterface
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }

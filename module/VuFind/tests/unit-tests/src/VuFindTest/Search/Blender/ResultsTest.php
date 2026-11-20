@@ -57,7 +57,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPerformSearch()
+    public function testPerformSearch(): void
     {
         $callback = function (CommandInterface $command): CommandInterface {
             $this->assertInstanceOf(SearchCommand::class, $command);

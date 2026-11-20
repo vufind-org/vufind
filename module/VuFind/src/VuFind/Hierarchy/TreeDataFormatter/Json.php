@@ -45,7 +45,7 @@ class Json extends AbstractBase
      *
      * @return string
      */
-    public function getData()
+    public function getData(): string
     {
         return json_encode($this->formatNode($this->topNode));
     }
@@ -59,7 +59,7 @@ class Json extends AbstractBase
      *
      * @return string
      */
-    protected function formatNode(object $record, string $parentID = null)
+    protected function formatNode(object $record, string $parentID = null): string
     {
         $raw = [
             'id' => $record->id,
@@ -85,7 +85,7 @@ class Json extends AbstractBase
      *
      * @return string
      */
-    protected function mapChildren(string $parentID)
+    protected function mapChildren(string $parentID): string
     {
         $json = [];
         foreach ($this->childMap[$parentID] as $current) {

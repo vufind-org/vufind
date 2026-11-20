@@ -87,7 +87,7 @@ class Terms implements IteratorAggregate
      *
      * @return array
      */
-    public function getFieldTerms(string $field)
+    public function getFieldTerms(string $field): array
     {
         if ($this->hasFieldTerms($field)) {
             return $this->terms->offsetGet($field);
@@ -102,7 +102,7 @@ class Terms implements IteratorAggregate
      *
      * @return bool
      */
-    public function hasFieldTerms(string $field)
+    public function hasFieldTerms(string $field): bool
     {
         return $this->terms->offsetExists($field);
     }

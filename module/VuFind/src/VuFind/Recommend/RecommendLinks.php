@@ -73,7 +73,7 @@ class RecommendLinks implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'RecommendLinks' : $settings[0];
@@ -109,7 +109,7 @@ class RecommendLinks implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         // No action needed.
     }
@@ -119,7 +119,7 @@ class RecommendLinks implements RecommendInterface
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getLinks()
+    public function getLinks(): \VuFind\Search\Base\Results
     {
         return $this->links;
     }

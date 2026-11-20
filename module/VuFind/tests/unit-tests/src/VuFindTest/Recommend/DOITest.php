@@ -47,7 +47,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyQuery()
+    public function testEmptyQuery(): void
     {
         $doi = $this->getDOI();
         $this->assertNull($doi->getDOI());
@@ -61,7 +61,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonDoiQuery()
+    public function testNonDoiQuery(): void
     {
         $doi = $this->getDOI($this->getMockResults('hello world'));
         $this->assertNull($doi->getDOI());
@@ -75,7 +75,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExactDoiQuery()
+    public function testExactDoiQuery(): void
     {
         $doi = $this->getDOI($this->getMockResults('10.1109/CC.2018.8485472'));
         $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
@@ -89,7 +89,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonExactDoiQuery()
+    public function testNonExactDoiQuery(): void
     {
         $doi = $this->getDOI($this->getMockResults('Yes 10.1109/CC.2018.8485472'));
         $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
@@ -103,7 +103,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDoiRedirectConfigs()
+    public function testDoiRedirectConfigs(): void
     {
         $testData = [
             'true' => true,
@@ -133,7 +133,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return DOI
      */
-    protected function getDOI(\VuFind\Search\Solr\Results $results = null, string $settings = 'http://doi/')
+    protected function getDOI(\VuFind\Search\Solr\Results $results = null, string $settings = 'http://doi/'): DOI
     {
         if (null === $results) {
             $results = $this->getMockResults();
@@ -153,7 +153,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults(string $query = '', string $type = 'basic')
+    protected function getMockResults(string $query = '', string $type = 'basic'): \VuFind\Search\Solr\Results
     {
         $params = $this->getMockParams($query, $type);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
@@ -169,7 +169,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(string $query = '', string $type = 'basic')
+    protected function getMockParams(string $query = '', string $type = 'basic'): \VuFind\Search\Solr\Params
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->method('getDisplayQuery')->willReturn($query);

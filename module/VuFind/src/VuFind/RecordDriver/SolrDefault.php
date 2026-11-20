@@ -163,7 +163,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return string
      */
-    public function getFirstIndexed()
+    public function getFirstIndexed(): string
     {
         return $this->fields['first_indexed'] ?? '';
     }
@@ -173,7 +173,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return array
      */
-    public function getHighlightDetails()
+    public function getHighlightDetails(): array
     {
         return $this->highlightDetails;
     }
@@ -185,7 +185,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return void
      */
-    public function setHighlightDetails(array $details)
+    public function setHighlightDetails(array $details): void
     {
         $this->highlightDetails = $details;
     }
@@ -195,7 +195,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return array
      */
-    public function getRawAuthorHighlights()
+    public function getRawAuthorHighlights(): array
     {
         // Don't check for highlighted values if highlighting is disabled:
         return ($this->highlight && isset($this->highlightDetails['author']))
@@ -209,7 +209,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return mixed        Caption if found, false if none available.
      */
-    public function getSnippetCaption(string $field)
+    public function getSnippetCaption(string $field): mixed
     {
         return $this->snippetCaptions[$field] ?? false;
     }
@@ -220,7 +220,7 @@ class SolrDefault extends DefaultRecord implements
      * @return mixed False if no snippet found, otherwise associative array
      * with 'snippet' and 'caption' keys.
      */
-    public function getHighlightedSnippet()
+    public function getHighlightedSnippet(): mixed
     {
         // Only process snippets if the setting is enabled:
         if ($this->snippet) {
@@ -265,7 +265,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return string
      */
-    public function getHighlightedTitle()
+    public function getHighlightedTitle(): string
     {
         // Don't check for highlighted values if highlighting is disabled:
         if (!$this->highlight) {
@@ -282,7 +282,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return void
      */
-    public function attachSearchService(\VuFindSearch\Service $service)
+    public function attachSearchService(\VuFindSearch\Service $service): void
     {
         $this->searchService = $service;
     }
@@ -292,7 +292,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return int Number of records
      */
-    public function getChildRecordCount()
+    public function getChildRecordCount(): int
     {
         // Shortcut: if this record is not the top record, let's not find out the
         // count. This assumes that contained records cannot contain more records.
@@ -320,7 +320,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return string Container record id (empty string if none)
      */
-    public function getContainerRecordID()
+    public function getContainerRecordID(): string
     {
         return $this->containerLinking
             && !empty($this->fields['hierarchy_parent_id'])
@@ -332,7 +332,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return array
      */
-    public function getWorkKeys()
+    public function getWorkKeys(): array
     {
         return $this->fields['work_keys_str_mv'] ?? [];
     }
@@ -342,7 +342,7 @@ class SolrDefault extends DefaultRecord implements
      *
      * @return bool
      */
-    public function explainEnabled()
+    public function explainEnabled(): bool
     {
         return $this->explainEnabled;
     }

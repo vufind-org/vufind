@@ -49,7 +49,7 @@ class EPFResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getSearchClassId()
+    protected function getSearchClassId(): string
     {
         return 'EPF';
     }
@@ -59,7 +59,7 @@ class EPFResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getDefaultHeading()
+    protected function getDefaultHeading(): string
     {
         return 'epf_recommendations';
     }

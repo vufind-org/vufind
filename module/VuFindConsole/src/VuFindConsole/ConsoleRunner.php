@@ -72,7 +72,7 @@ class ConsoleRunner
      *
      * @return array
      */
-    protected function getCommandList()
+    protected function getCommandList(): array
     {
         // Does the first argument match a command alias? If so, load only that:
         if ($this->pluginManager->has($_SERVER['argv'][1] ?? '')) {
@@ -98,7 +98,7 @@ class ConsoleRunner
      *
      * @return mixed
      */
-    public function run()
+    public function run(): mixed
     {
         // Get command list before initializing Application, since we may need
         // to manipulate $_SERVER for backward compatibility.

@@ -192,7 +192,7 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendChangeNotificationEmail(UserEntityInterface $user, string $newEmail)
+    protected function sendChangeNotificationEmail(UserEntityInterface $user, string $newEmail): void
     {
         // Don't send the notification if the existing email is not valid:
         if (!$this->getHelper(EmailHelper::class)->isValidAddress($user->getEmail())) {

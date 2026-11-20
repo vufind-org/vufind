@@ -103,7 +103,7 @@ abstract class AbstractBase implements
      * @throws AuthException
      * @return ?array
      */
-    public function getConfig()
+    public function getConfig(): ?array
     {
         // Validate configuration if not already validated:
         if (!$this->configValidated) {
@@ -136,7 +136,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function clearLoginState()
+    public function clearLoginState(): void
     {
         // By default, do no checking.
     }
@@ -190,7 +190,7 @@ abstract class AbstractBase implements
      * @throws AuthException
      * @return void
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         // By default, do no checking.
     }
@@ -229,7 +229,7 @@ abstract class AbstractBase implements
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    abstract public function authenticate(Request $request);
+    abstract public function authenticate(Request $request): UserEntityInterface;
 
     /**
      * Validate the credentials in the provided request, but do not change the state
@@ -241,7 +241,7 @@ abstract class AbstractBase implements
      * @throws AuthException
      * @return bool
      */
-    public function validateCredentials(Request $request)
+    public function validateCredentials(Request $request): bool
     {
         try {
             $user = $this->authenticate($request);
@@ -256,7 +256,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function isExpired()
+    public function isExpired(): bool
     {
         // By default, logins do not expire:
         return false;
@@ -352,7 +352,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsCreation()
+    public function supportsCreation(): bool
     {
         // By default, account creation is not supported.
         return false;
@@ -405,7 +405,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsConnectingLibraryCard()
+    public function supportsConnectingLibraryCard(): bool
     {
         return method_exists($this, 'connectLibraryCard');
     }
@@ -475,7 +475,7 @@ abstract class AbstractBase implements
      *
      * @return array
      */
-    public function getUsernamePolicy()
+    public function getUsernamePolicy(): array
     {
         return $this->getPolicyConfig('username');
     }

@@ -45,28 +45,28 @@ interface TabInterface
      *
      * @return string
      */
-    public function getDescription();
+    public function getDescription(): string;
 
     /**
      * Is this tab active?
      *
      * @return bool
      */
-    public function isActive();
+    public function isActive(): bool;
 
     /**
      * Is this tab initially visible?
      *
      * @return bool
      */
-    public function isVisible();
+    public function isVisible(): bool;
 
     /**
      * Can this tab be loaded via AJAX?
      *
      * @return bool
      */
-    public function supportsAjax();
+    public function supportsAjax(): bool;
 
     /**
      * Can this tab be embedded in search results (via tab/accordion)?

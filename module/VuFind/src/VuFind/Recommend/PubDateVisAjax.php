@@ -88,7 +88,7 @@ class PubDateVisAjax implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Save the basic parameters:
         $this->settings = $settings;
@@ -133,7 +133,7 @@ class PubDateVisAjax implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->searchObject = $results;
     }

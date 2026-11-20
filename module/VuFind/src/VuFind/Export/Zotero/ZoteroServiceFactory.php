@@ -72,7 +72,7 @@ class ZoteroServiceFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $sessionContainer = new Container(
             'zotero_oauth',
             $container->get(ManagerInterface::class)

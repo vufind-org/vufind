@@ -260,7 +260,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @throws InvalidArgumentException Fixture file could not be loaded as HTTP response
      * @throws RuntimeException         Fixture file does not exist
      */
-    protected function mockResponse(string|array|null $fixture = null)
+    protected function mockResponse(string|array|null $fixture = null): void
     {
         $adapter = new TestAdapter();
         if (!empty($fixture)) {
@@ -288,7 +288,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @throws InvalidArgumentException Fixture file could not be loaded as HTTP response
      * @throws RuntimeException         Fixture file does not exist
      */
-    protected function loadResponse(string $filename)
+    protected function loadResponse(string $filename): HttpResponse
     {
         return HttpResponse::fromString(
             $this->getFixture("aleph/$filename")

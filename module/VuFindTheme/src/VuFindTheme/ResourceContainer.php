@@ -88,7 +88,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function addCss(array|string $css)
+    public function addCss(array|string $css): void
     {
         if ((!is_array($css) && !is_a($css, 'Traversable')) || isset($css['file'])) {
             $this->addCssEntry($css);
@@ -111,7 +111,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function addJs(array|string $js)
+    public function addJs(array|string $js): void
     {
         if ((!is_array($js) && !is_a($js, 'Traversable')) || isset($js['file'])) {
             $this->addJsEntry($js);
@@ -134,7 +134,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addCssEntry(string|array $cssEntry)
+    protected function addCssEntry(string|array $cssEntry): void
     {
         if (!is_array($cssEntry)) {
             $this->addCssStringEntry($cssEntry);
@@ -150,7 +150,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addCssStringEntry(string $cssEntry)
+    protected function addCssStringEntry(string $cssEntry): void
     {
         $parts = $this->parseSetting($cssEntry);
         // Special case for media with parentheses
@@ -178,7 +178,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addCssArrayEntry(array $cssEntry)
+    protected function addCssArrayEntry(array $cssEntry): void
     {
         if (isset($cssEntry['priority']) && isset($cssEntry['load_after'])) {
             throw new \Exception(
@@ -218,7 +218,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addJsEntry(string|array $jsEntry)
+    protected function addJsEntry(string|array $jsEntry): void
     {
         if (!is_array($jsEntry)) {
             $this->addJsStringEntry($jsEntry);
@@ -234,7 +234,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addJsStringEntry(string $jsEntry)
+    protected function addJsStringEntry(string $jsEntry): void
     {
         $parts = $this->parseSetting($jsEntry);
         if (count($parts) === 1) {
@@ -255,7 +255,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function addJsArrayEntry(array $jsEntry)
+    protected function addJsArrayEntry(array $jsEntry): void
     {
         if (!isset($jsEntry['position'])) {
             $jsEntry['position'] = 'header';
@@ -299,7 +299,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function removeEntry(array $entry, array &$array)
+    protected function removeEntry(array $entry, array &$array): void
     {
         foreach (array_keys($array) as $i) {
             if (($array[$i]['file'] ?? '') === ($entry['file'] ?? null)) {
@@ -318,7 +318,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function insertEntry(array $entry, array &$array)
+    protected function insertEntry(array $entry, array &$array): void
     {
         if (isset($entry['priority']) || isset($entry['load_after'])) {
             foreach (array_keys($array) as $i) {
@@ -356,7 +356,7 @@ class ResourceContainer
      *
      * @return array
      */
-    public function getCss()
+    public function getCss(): array
     {
         return $this->css;
     }
@@ -369,7 +369,7 @@ class ResourceContainer
      *
      * @return array
      */
-    public function getJs(?string $position = null)
+    public function getJs(?string $position = null): array
     {
         if (!isset($position)) {
             return $this->js;
@@ -391,7 +391,7 @@ class ResourceContainer
      *
      * @return array
      */
-    public function parseSetting(string $current)
+    public function parseSetting(string $current): array
     {
         // TODO: replace this method with a deprecation warning when all configs
         // have been converted to arrays
@@ -414,7 +414,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function setEncoding(string $e)
+    public function setEncoding(string $e): void
     {
         $this->encoding = $e;
     }
@@ -424,7 +424,7 @@ class ResourceContainer
      *
      * @return string
      */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->encoding;
     }
@@ -436,7 +436,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function setFavicon(string|array $favicon)
+    public function setFavicon(string|array $favicon): void
     {
         $this->favicon = $favicon;
     }
@@ -446,7 +446,7 @@ class ResourceContainer
      *
      * @return string|array|null
      */
-    public function getFavicon()
+    public function getFavicon(): string|array|null
     {
         return $this->favicon;
     }
@@ -458,7 +458,7 @@ class ResourceContainer
      *
      * @return void
      */
-    public function setGenerator(string $generator)
+    public function setGenerator(string $generator): void
     {
         $this->generator = $generator;
     }
@@ -468,7 +468,7 @@ class ResourceContainer
      *
      * @return string
      */
-    public function getGenerator()
+    public function getGenerator(): string
     {
         return $this->generator;
     }
@@ -480,7 +480,7 @@ class ResourceContainer
      *
      * @return void
      */
-    protected function removeCSS(string $file)
+    protected function removeCSS(string $file): void
     {
         [$name, ] = explode('.', $file);
         $name .= '.css';

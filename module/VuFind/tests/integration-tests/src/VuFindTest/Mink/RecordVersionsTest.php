@@ -47,7 +47,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function runVersionsTest(string $path)
+    protected function runVersionsTest(string $path): void
     {
         // Search for an item known to have other versions in test data:
         $page = $this->performSearch('id:0001732009-0', null, $path);
@@ -102,7 +102,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testVersions()
+    public function testVersions(): void
     {
         $this->runVersionsTest('/Search');
     }
@@ -112,7 +112,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testVersionsInSearch2()
+    public function testVersionsInSearch2(): void
     {
         $this->runVersionsTest('/Search2');
     }
@@ -122,7 +122,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testVersionsTabInit()
+    public function testVersionsTabInit(): void
     {
         // Enable QRCodes:
         $extraConfigs = [
@@ -152,7 +152,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testDisabledVersionsTab()
+    public function testDisabledVersionsTab(): void
     {
         // Disable versions tab:
         $extraConfigs = [
@@ -192,7 +192,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testDisabledVersions()
+    public function testDisabledVersions(): void
     {
         // Disable versions:
         $extraConfigs = [

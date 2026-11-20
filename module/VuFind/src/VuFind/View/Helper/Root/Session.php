@@ -72,7 +72,7 @@ class Session
      *
      * @return mixed
      */
-    public function get(string $name)
+    public function get(string $name): mixed
     {
         return $this->sessionContainer->$name ?? null;
     }
@@ -85,7 +85,7 @@ class Session
      *
      * @return mixed Previous value
      */
-    public function put(string $name, mixed $value)
+    public function put(string $name, mixed $value): mixed
     {
         $oldValue = $this->sessionContainer->$name ?? null;
         $this->sessionContainer->$name = $value;

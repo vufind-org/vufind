@@ -50,7 +50,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Solr\Writer
      */
-    protected function getMockWriter()
+    protected function getMockWriter(): \VuFind\Solr\Writer
     {
         return $this->createMock(\VuFind\Solr\Writer::class);
     }
@@ -60,7 +60,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -79,7 +79,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingFile()
+    public function testWithMissingFile(): void
     {
         $writer = $this->getMockWriter();
         $command = new DeletesCommand($writer);
@@ -97,7 +97,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithFlatFileAndDefaultIndex()
+    public function testSuccessWithFlatFileAndDefaultIndex(): void
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
@@ -120,7 +120,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithFlatFileIdPrefixAndDefaultIndex()
+    public function testSuccessWithFlatFileIdPrefixAndDefaultIndex(): void
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
@@ -144,7 +144,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMarcFileAndNonDefaultIndex()
+    public function testSuccessWithMarcFileAndNonDefaultIndex(): void
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')

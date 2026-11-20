@@ -54,7 +54,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return bool The boolean value of the configuration setting
      */
-    public function showTree()
+    public function showTree(): bool
     {
         $treeConfigDriver = $this->config['HierarchyTree']['show'] ?? false;
         return $this->enabled && $treeConfigDriver;
@@ -67,7 +67,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return string The value of the configuration setting
      */
-    public function getTreeRendererType()
+    public function getTreeRendererType(): string
     {
         return $this->config['HierarchyTree']['treeRenderer'] ?? $this->defaultTreeRenderer;
     }
@@ -77,7 +77,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return string
      */
-    public function getTreeSourceType()
+    public function getTreeSourceType(): string
     {
         return $this->config['HierarchyTree']['treeSource'] ?? 'Solr';
     }
@@ -90,7 +90,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return int The value of the configuration setting
      */
-    public function getTreeCacheTime()
+    public function getTreeCacheTime(): int
     {
         return $this->config['HierarchyTree']['solrCacheTime'] ?? 43200;
     }
@@ -102,7 +102,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return bool The value of the configuration setting
      */
-    public function treeSorting()
+    public function treeSorting(): bool
     {
         return $this->config['HierarchyTree']['sorting'] ?? false;
     }
@@ -114,7 +114,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return array The values of the configuration setting
      */
-    public function getTreeSettings()
+    public function getTreeSettings(): array
     {
         return $this->config['HierarchyTree'] ?? [];
     }
@@ -124,7 +124,7 @@ class ConfigurationBased extends AbstractBase
      *
      * @return string
      */
-    public function getCollectionLinkType()
+    public function getCollectionLinkType(): string
     {
         return isset($this->config['Collections']['link_type'])
             ? ucwords(strtolower($this->config['Collections']['link_type'])) : 'All';

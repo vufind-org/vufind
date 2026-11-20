@@ -104,7 +104,7 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
         array $imageParams,
         string $size = 'small',
         bool $includeFixturePath = true
-    ) {
+    ): string|bool {
         $loader = new LocalFile();
         return $loader->getUrl(
             ($includeFixturePath ? "$this->fixtureBase/" : '') . $keyPattern,

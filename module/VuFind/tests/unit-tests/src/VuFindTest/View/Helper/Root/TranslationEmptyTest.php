@@ -50,7 +50,7 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTranslationEmpty()
+    public function testTranslationEmpty(): void
     {
         $translationEmpty = new TranslationEmpty();
         $translationEmpty->setTranslator(

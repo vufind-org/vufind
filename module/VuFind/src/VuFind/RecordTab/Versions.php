@@ -62,7 +62,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         $options = $this->searchOptionsManager
             ->get($this->getRecordDriver()->getSourceIdentifier());
@@ -75,7 +75,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         $count = $this->getRecordDriver()->tryMethod('getOtherVersionCount');
         return $this->translate('other_versions_title', ['%%count%%' => $count]);

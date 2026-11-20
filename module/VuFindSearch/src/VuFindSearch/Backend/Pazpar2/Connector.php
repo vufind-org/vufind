@@ -98,7 +98,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return session id
      */
-    public function init()
+    public function init(): session
     {
         $this->session = false; // clear any existing session
         $session = $this->query('init');
@@ -117,7 +117,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return SimpleXMLElement Response
      */
-    protected function query(string $command, ?ParamBag $data = null)
+    protected function query(string $command, ?ParamBag $data = null): SimpleXMLElement
     {
         // If we don't have a session as long as we're not being explicit
         if (!$this->session && $command !== 'init') {
@@ -160,7 +160,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws \VuFindSearch\Backend\Exception\RequestErrorException Server
      * signaled a client error (HTTP 4xx)
      */
-    protected function send(Client $client)
+    protected function send(Client $client): string
     {
         $this->debug(
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
@@ -193,7 +193,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function ping()
+    public function ping(): void
     {
         $this->query('ping');
     }
@@ -207,7 +207,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return associative array of XML data
      */
-    public function record(string $id)
+    public function record(string $id): associative
     {
         return $this->query('record', new ParamBag(['id' => $id]));
     }
@@ -229,7 +229,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return associative array of XML data
      */
-    public function search(?ParamBag $options = null)
+    public function search(?ParamBag $options = null): associative
     {
         return $this->query('search', $options);
     }
@@ -239,7 +239,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return session id
      */
-    public function session()
+    public function session(): session
     {
         return $this->session;
     }
@@ -254,7 +254,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool Success/failure status
      */
-    public function settings(string $settings = false)
+    public function settings(string $settings = false): bool
     {
         if ($settings === false) {
             return false;
@@ -276,7 +276,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array Associative array of XML data
      */
-    public function show(?ParamBag $options = null)
+    public function show(?ParamBag $options = null): array
     {
         return $this->query('show', $options);
     }
@@ -286,7 +286,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return associative array of XML data
      */
-    public function stat()
+    public function stat(): associative
     {
         return $this->query('stat');
     }
@@ -302,7 +302,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array Associative array of XML data
      */
-    public function termlist(?ParamBag $options = null)
+    public function termlist(?ParamBag $options = null): array
     {
         return $this->query('termlist', $options);
     }
@@ -314,7 +314,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array Associative array of XML data
      */
-    public function bytarget(string $id)
+    public function bytarget(string $id): array
     {
         return $this->query('bytarget', new ParamBag(['id' => $id]));
     }

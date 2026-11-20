@@ -52,7 +52,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getFakeFacetData(bool $includeOr = false)
+    protected function getFakeFacetData(bool $includeOr = false): array
     {
         $data = [
             'foo' => [
@@ -120,7 +120,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getFakeHierarchicalFacetData(array $request, bool $includeOr = false)
+    protected function getFakeHierarchicalFacetData(array $request, bool $includeOr = false): array
     {
         $data = [
             'hierarchical_foo' => [
@@ -191,7 +191,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Results
      */
-    protected function getFakeResults(array $request, array $facetData)
+    protected function getFakeResults(array $request, array $facetData): Results
     {
         $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
@@ -206,7 +206,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFormatter()
+    public function testFormatter(): void
     {
         $formatter = new \VuFindApi\Formatter\FacetFormatter();
         $request = [
@@ -265,7 +265,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFormatterWithFiltering()
+    public function testFormatterWithFiltering(): void
     {
         $formatter = new \VuFindApi\Formatter\FacetFormatter();
         $request = [

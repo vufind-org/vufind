@@ -47,12 +47,12 @@ interface RecordCacheAwareInterface
      *
      * @return void
      */
-    public function setRecordCache(\VuFind\Record\Cache $recordCache);
+    public function setRecordCache(\VuFind\Record\Cache $recordCache): void;
 
     /**
      * Get record cache.
      *
      * @return \VuFind\Record\Cache
      */
-    public function getRecordCache();
+    public function getRecordCache(): \VuFind\Record\Cache;
 }

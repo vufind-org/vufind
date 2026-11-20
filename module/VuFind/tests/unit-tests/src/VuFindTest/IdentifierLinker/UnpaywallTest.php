@@ -51,7 +51,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfigValidation()
+    public function testConfigValidation(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Missing configuration for Unpaywall DOI linker: unpaywall_email');
@@ -64,7 +64,7 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testApiSuccess()
+    public function testApiSuccess(): void
     {
         $adapter = new TestAdapter();
         $testData = [

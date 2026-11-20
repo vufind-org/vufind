@@ -256,7 +256,7 @@ class LocaleSettings
      *
      * @return void
      */
-    public function markLocaleInitialized(string $locale)
+    public function markLocaleInitialized(string $locale): void
     {
         $this->initializedLocales[] = $locale;
     }
@@ -268,7 +268,7 @@ class LocaleSettings
      *
      * @return bool
      */
-    public function isLocaleInitialized(string $locale)
+    public function isLocaleInitialized(string $locale): bool
     {
         return in_array($locale, $this->initializedLocales);
     }

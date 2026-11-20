@@ -50,7 +50,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connection
      */
-    protected function getMockIlsConnection()
+    protected function getMockIlsConnection(): Connection
     {
         return $this->createMock(Connection::class);
     }
@@ -60,7 +60,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Writer
      */
-    protected function getMockSolrWriter()
+    protected function getMockSolrWriter(): Writer
     {
         return $this->createMock(Writer::class);
     }
@@ -73,7 +73,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return SuppressedCommand
      */
-    protected function getCommand(?Writer $solr = null, ?Connection $ils = null)
+    protected function getCommand(?Writer $solr = null, ?Connection $ils = null): SuppressedCommand
     {
         $args = [
             $solr ?? $this->getMockSolrWriter(),
@@ -90,7 +90,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoRecordsToDelete()
+    public function testNoRecordsToDelete(): void
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
@@ -111,7 +111,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRecordsToDelete()
+    public function testRecordsToDelete(): void
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
@@ -136,7 +136,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoAuthorityRecordsToDelete()
+    public function testNoAuthorityRecordsToDelete(): void
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
@@ -157,7 +157,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWriteToFile()
+    public function testWriteToFile(): void
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
@@ -178,7 +178,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailedWriteToFile()
+    public function testFailedWriteToFile(): void
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')

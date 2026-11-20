@@ -50,5 +50,5 @@ interface RetrieveBatchInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieveBatch(array $ids, ?ParamBag $params = null);
+    public function retrieveBatch(array $ids, ?ParamBag $params = null): \VuFindSearch\Response\RecordCollectionInterface;
 }

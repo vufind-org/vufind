@@ -127,7 +127,7 @@ class GeniePlus extends AbstractAPI
      *
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         $this->validateConfiguration();
         $this->availableStatuses
@@ -186,7 +186,7 @@ class GeniePlus extends AbstractAPI
         string $path = '/',
         array $params = [],
         array $headers = []
-    ) {
+    ): \Laminas\Http\Response {
         $headers[] = 'Accept: application/json';
         if (null === $this->token) {
             $this->renewAccessToken();
@@ -221,7 +221,7 @@ class GeniePlus extends AbstractAPI
      *
      * @return array
      */
-    protected function getFieldFromApiRecord(array $record, string $field, string $type = 'Item')
+    protected function getFieldFromApiRecord(array $record, string $field, string $type = 'Item'): array
     {
         $fieldName = $this->config[$type]['field'][$field] ?? '';
         return $record[$fieldName] ?? [];
@@ -357,7 +357,7 @@ class GeniePlus extends AbstractAPI
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         $template = $this->config['API']['catalog_template'];
         $path = $this->getTemplateQueryPath($template);
@@ -384,7 +384,7 @@ class GeniePlus extends AbstractAPI
      *
      * @return mixed     An array of getStatus() return values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): mixed
     {
         return array_map([$this, 'getStatus'], $ids);
     }
@@ -459,7 +459,7 @@ class GeniePlus extends AbstractAPI
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         $template = $this->config['API']['patron_template'];
         $path = $this->getTemplateQueryPath($template);
@@ -517,7 +517,7 @@ class GeniePlus extends AbstractAPI
      *
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $template = $this->config['API']['patron_template'];
         $path = $this->getTemplateQueryPath($template);
@@ -610,7 +610,7 @@ class GeniePlus extends AbstractAPI
      *
      * @return mixed        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron, array $params = [])
+    public function getMyTransactions(array $patron, array $params = []): mixed
     {
         $patronTemplate = $this->config['API']['patron_template'];
         $loanTemplate = $this->config['API']['loan_template'];

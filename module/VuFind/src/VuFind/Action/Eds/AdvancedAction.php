@@ -223,7 +223,7 @@ class AdvancedAction extends AbstractSearchAndResultsAction
      *
      * @return array To and from dates
      */
-    protected function processPublicationDateRange(?Results $searchObject = null)
+    protected function processPublicationDateRange(?Results $searchObject = null): array
     {
         $from = $to = '';
         if ($searchObject) {

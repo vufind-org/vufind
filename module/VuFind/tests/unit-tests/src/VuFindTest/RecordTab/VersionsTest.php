@@ -117,7 +117,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getMockPluginManager()
+    protected function getMockPluginManager(): PluginManager
     {
         return $this->createMock(\VuFind\Search\Options\PluginManager::class);
     }

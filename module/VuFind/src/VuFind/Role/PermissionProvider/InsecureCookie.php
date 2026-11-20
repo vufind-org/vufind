@@ -65,7 +65,7 @@ class InsecureCookie implements PermissionProviderInterface
      *
      * @return array
      */
-    public function getPermissions(mixed $options)
+    public function getPermissions(mixed $options): array
     {
         foreach ((array)$options as $cookieName) {
             $this->debug("getPermissions: option cookieName '{$cookieName}'");

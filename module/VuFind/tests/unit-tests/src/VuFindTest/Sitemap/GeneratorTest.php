@@ -81,7 +81,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         array $objects = [],
         array $locales = ['en', 'de'],
         string $baseUrl = 'http://foo'
-    ) {
+    ): Generator {
         return new Generator(
             $baseUrl,
             $config,
@@ -244,7 +244,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
              *
              * @return SitemapIndex
              */
-            protected function getNewSitemapIndex()
+            protected function getNewSitemapIndex(): SitemapIndex
             {
                 return $this->mockIndex;
             }

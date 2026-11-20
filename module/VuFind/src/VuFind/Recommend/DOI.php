@@ -79,7 +79,7 @@ class DOI implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Find the last colon in the configuration that is not part of a URL:
         $breakPoint = strrpos($settings, ':');
@@ -120,7 +120,7 @@ class DOI implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $query = $results->getParams()->getDisplayQuery();
         preg_match('|10\.[^\s/]{4,}/[^\s]{1,}|', $query, $matches);
@@ -133,7 +133,7 @@ class DOI implements RecommendInterface
      *
      * @return string
      */
-    public function getDOI()
+    public function getDOI(): string
     {
         return $this->match;
     }
@@ -143,7 +143,7 @@ class DOI implements RecommendInterface
      *
      * @return string
      */
-    public function getURL()
+    public function getURL(): string
     {
         return null === $this->match
             ? null : $this->prefix . urlencode($this->match);
@@ -154,7 +154,7 @@ class DOI implements RecommendInterface
      *
      * @return bool
      */
-    public function isFullMatch()
+    public function isFullMatch(): bool
     {
         return $this->exact;
     }
@@ -164,7 +164,7 @@ class DOI implements RecommendInterface
      *
      * @return bool
      */
-    public function redirectFullMatch()
+    public function redirectFullMatch(): bool
     {
         return $this->redirectFullMatch;
     }

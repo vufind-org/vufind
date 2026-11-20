@@ -76,7 +76,7 @@ class Recommend
         RecommendInterface $recommend,
         string $location = null,
         int $index = null
-    ) {
+    ): string {
         $template = 'Recommend/%s.phtml';
         $className = $recommend::class;
         $context = [

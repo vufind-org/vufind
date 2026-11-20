@@ -65,7 +65,7 @@ class SampleTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDepartments()
+    public function testGetDepartments(): void
     {
         $this->assertSame([], $this->driver->getDepartments());
     }

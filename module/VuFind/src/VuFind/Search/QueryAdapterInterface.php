@@ -56,7 +56,7 @@ interface QueryAdapterInterface
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function deminify(array $search);
+    public function deminify(array $search): Query|QueryGroup|WorkKeysQuery;
 
     /**
      * Convert a Query or QueryGroup into a human-readable display query.
@@ -67,7 +67,7 @@ interface QueryAdapterInterface
      *
      * @return string
      */
-    public function display(AbstractQuery $query, callable $translate, callable $showName);
+    public function display(AbstractQuery $query, callable $translate, callable $showName): string;
 
     /**
      * Convert user request parameters into a query (currently for advanced searches
@@ -88,5 +88,5 @@ interface QueryAdapterInterface
      *
      * @return array
      */
-    public function minify(AbstractQuery $query, bool $topLevel = true);
+    public function minify(AbstractQuery $query, bool $topLevel = true): array;
 }

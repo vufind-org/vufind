@@ -46,7 +46,7 @@ interface DbServiceAwareInterface
      * @throws \Exception
      * @return PluginManager
      */
-    public function getDbServiceManager();
+    public function getDbServiceManager(): PluginManager;
 
     /**
      * Set the plugin manager.
@@ -55,5 +55,5 @@ interface DbServiceAwareInterface
      *
      * @return void
      */
-    public function setDbServiceManager(PluginManager $manager);
+    public function setDbServiceManager(PluginManager $manager): void;
 }

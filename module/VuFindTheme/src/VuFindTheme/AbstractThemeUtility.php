@@ -76,7 +76,7 @@ abstract class AbstractThemeUtility
      *
      * @return string
      */
-    public function getLastError()
+    public function getLastError(): string
     {
         return $this->lastError;
     }
@@ -89,7 +89,7 @@ abstract class AbstractThemeUtility
      *
      * @return bool
      */
-    protected function copyDir(string $src, string $dest)
+    protected function copyDir(string $src, string $dest): bool
     {
         try {
             self::cpDir($src, $dest);
@@ -107,7 +107,7 @@ abstract class AbstractThemeUtility
      *
      * @return bool
      */
-    protected function deleteDir(string $path)
+    protected function deleteDir(string $path): bool
     {
         try {
             self::rmDir($path);
@@ -125,7 +125,7 @@ abstract class AbstractThemeUtility
      *
      * @return bool
      */
-    protected function setLastError(string $error)
+    protected function setLastError(string $error): bool
     {
         $this->lastError = $error;
         return false;

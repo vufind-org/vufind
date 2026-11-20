@@ -48,7 +48,7 @@ class WebResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getSearchClassId()
+    protected function getSearchClassId(): string
     {
         return 'SolrWeb';
     }
@@ -58,7 +58,7 @@ class WebResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getDefaultHeading()
+    protected function getDefaultHeading(): string
     {
         return 'Library Web Search';
     }

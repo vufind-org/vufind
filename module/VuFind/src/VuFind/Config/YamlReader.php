@@ -65,7 +65,7 @@ class YamlReader
      *
      * @return array
      */
-    public function get(string $filename, bool $useLocalConfig = true, bool $forceReload = false)
+    public function get(string $filename, bool $useLocalConfig = true, bool $forceReload = false): array
     {
         return $this->configManager->getConfigArray(
             $filename,

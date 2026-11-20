@@ -47,7 +47,7 @@ class ChecklistTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testChecklist()
+    public function testChecklist(): void
     {
         $list = new Checklist(['a', 'b', 'c']);
         $this->assertFalse($list->hasChecked());

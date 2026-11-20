@@ -50,7 +50,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetConfigDefaults()
+    public function testSetConfigDefaults(): void
     {
         $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));
         $solr->setConfig('');

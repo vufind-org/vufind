@@ -89,7 +89,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function supportsOpenUrl()
+    public function supportsOpenUrl(): bool
     {
         return false;
     }
@@ -99,7 +99,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function supportsCoinsOpenUrl()
+    public function supportsCoinsOpenUrl(): bool
     {
         return false;
     }
@@ -112,7 +112,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return array
      * @throws \Exception
      */
-    public function getAvailableDigitalFormats()
+    public function getAvailableDigitalFormats(): array
     {
         $formats = [];
         $formatNames = $this->connector->getFormatNames();
@@ -143,7 +143,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return array Array of formats.
      * @throws \Exception
      */
-    public function getDigitalFormats()
+    public function getDigitalFormats(): array
     {
         $formats = [];
         $formatNames = $this->connector->getFormatNames();
@@ -172,7 +172,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return array
      * @throws \Exception
      */
-    public function getFormattedDigitalFormats()
+    public function getFormattedDigitalFormats(): array
     {
         $results = [];
         foreach ($this->getDigitalFormats() as $format) {
@@ -215,7 +215,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return array      an array of links
      * @throws \Exception
      */
-    public function getPreviewLinks()
+    public function getPreviewLinks(): array
     {
         $results = [];
         if ($this->getIsMarc()) {
@@ -242,7 +242,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function supportsAjaxStatus()
+    public function supportsAjaxStatus(): bool
     {
         return $this->config['enableAjaxStatus'] ?? true;
     }
@@ -255,7 +255,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool Whether the logged-in user has access to Overdrive.
      */
-    public function getOverdriveAccess()
+    public function getOverdriveAccess(): bool
     {
         return $this->connector->getAccess();
     }
@@ -267,7 +267,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         return (bool)$this->connector->getUser();
     }
@@ -281,7 +281,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return string OverdriveID
      * @throws \Exception
      */
-    public function getOverdriveID()
+    public function getOverdriveID(): string
     {
         $result = 0;
 
@@ -306,7 +306,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * or false if there was a problem.
      * @throws \Exception
      */
-    public function getOverdriveAvailability()
+    public function getOverdriveAvailability(): object|bool
     {
         $overDriveId = $this->getOverdriveID();
         return $this->connector->getAvailability($overDriveId);
@@ -317,7 +317,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function supportsPatronActions()
+    public function supportsPatronActions(): bool
     {
         return $this->config['usePatronAPI'];
     }
@@ -331,7 +331,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *    by this user or false in the data property if not.
      * @throws \Exception
      */
-    public function isCheckedOut()
+    public function isCheckedOut(): object
     {
         $result = $this->connector->getResultObject();
         if ($this->isLoggedIn() && $this->supportsPatronActions()) {
@@ -376,7 +376,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return object|bool Returns the hold info if on hold or false if not.
      * @throws \Exception
      */
-    public function isHeld()
+    public function isHeld(): object|bool
     {
         if ($this->isLoggedIn() && $this->supportsPatronActions()) {
             $overDriveId = $this->getOverdriveID();
@@ -399,7 +399,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return string
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb(): string
     {
         $short = $this->getShortTitle();
         return $short ? $short : $this->getTitle();
@@ -413,7 +413,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return \VuFind\Marc\MarcReader
      */
-    public function getMarcReader()
+    public function getMarcReader(): \VuFind\Marc\MarcReader
     {
         return $this->getIsMarc()
             ? parent::getMarcReader()
@@ -425,7 +425,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return string
      */
-    public function getTitleSection()
+    public function getTitleSection(): string
     {
         return $this->getIsMarc()
             ? parent::getTitleSection()
@@ -437,7 +437,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array
      */
-    public function getGeneralNotes()
+    public function getGeneralNotes(): array
     {
         return $this->getIsMarc() ? parent::getGeneralNotes() : [];
     }
@@ -455,7 +455,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return string|array|bool
      * @throws \Exception
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string|array|bool
     {
         $coverMap = [
             'large' => 'cover300Wide',
@@ -481,7 +481,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array
      */
-    public function getSummary()
+    public function getSummary(): array
     {
         if ($this->getIsMarc()) {
             return parent::getSummary();
@@ -501,7 +501,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return bool
      */
-    public function getIsMarc()
+    public function getIsMarc(): bool
     {
         return $this->config['isMarc'];
     }
@@ -519,7 +519,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         if (!$this->config) {
             return [];
@@ -536,7 +536,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array Multidimensional array with data
      */
-    public function getFormattedRawData()
+    public function getFormattedRawData(): array
     {
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
@@ -554,7 +554,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold()
+    public function getRealTimeTitleHold(): mixed
     {
         $od_id = $this->getOverdriveID();
         $rec_id = $this->getUniqueID();
@@ -581,7 +581,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         return $this->getIsMarc()
             ? parent::getURLs()
@@ -593,7 +593,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * @return array the permanent link to the resource
      */
-    public function getPermanentLink()
+    public function getPermanentLink(): array
     {
         if (!empty($libraryURL = $this->config['libraryURL'])) {
             $data = json_decode($this->fields['fullrecord'], false);

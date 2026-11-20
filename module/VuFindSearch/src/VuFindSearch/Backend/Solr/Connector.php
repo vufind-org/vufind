@@ -142,7 +142,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -152,7 +152,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return HandlerMap
      */
-    public function getMap()
+    public function getMap(): HandlerMap
     {
         return $this->map;
     }
@@ -162,7 +162,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function getUniqueKey()
+    public function getUniqueKey(): string
     {
         return $this->uniqueKey;
     }
@@ -172,7 +172,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return ?Http
      */
-    public function getLastUrl()
+    public function getLastUrl(): ?Http
     {
         return $this->lastUrl;
     }
@@ -182,7 +182,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function resetLastUrl()
+    public function resetLastUrl(): void
     {
         $this->lastUrl = null;
     }
@@ -195,7 +195,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): string
     {
         $params = $params ?: new ParamBag();
         $params
@@ -242,7 +242,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function search(ParamBag $params)
+    public function search(ParamBag $params): string
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
@@ -256,7 +256,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function terms(ParamBag $params)
+    public function terms(ParamBag $params): string
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
@@ -277,7 +277,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
         DocumentInterface $document,
         string $handler = 'update',
         ?ParamBag $params = null
-    ) {
+    ): string {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
@@ -304,7 +304,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string Response body
      */
-    public function query(string $handler, ParamBag $params, bool $cacheable = false)
+    public function query(string $handler, ParamBag $params, bool $cacheable = false): string
     {
         $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
@@ -338,7 +338,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
         array $options,
         string $method,
         ...$args
-    ) {
+    ): mixed {
         $reflectionMethod = new \ReflectionMethod($this, $method);
         if (!$reflectionMethod->isPublic()) {
             throw new InvalidArgumentException("Method '$method' is not public");
@@ -369,7 +369,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    protected function isRethrowableSolrException(\Exception $ex)
+    protected function isRethrowableSolrException(\Exception $ex): bool
     {
         // Solr can return 404 when the instance hasn't completed startup, so allow that to be retried:
         return $ex instanceof TimeoutException
@@ -384,7 +384,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return \Exception
      */
-    protected function forceToBackendException(\Exception $ex)
+    protected function forceToBackendException(\Exception $ex): \Exception
     {
         // Don't wrap specific backend exceptions....
         if (
@@ -416,7 +416,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
         string $urlSuffix,
         ?callable $callback = null,
         bool $cacheable = false
-    ) {
+    ): string {
         // This exception should never get thrown; it's just a safety in case
         // something unanticipated occurs.
         $exception = new \Exception('Unexpected exception.');
@@ -478,7 +478,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
      * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
      */
-    protected function send(HttpClient $client)
+    protected function send(HttpClient $client): string
     {
         $this->debug(
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())

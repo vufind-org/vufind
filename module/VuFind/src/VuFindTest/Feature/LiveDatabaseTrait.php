@@ -132,7 +132,7 @@ trait LiveDatabaseTrait
      *
      * @return \VuFindTest\Container\MockContainer
      */
-    public function getMockContainerWithDoctrineDependencies()
+    public function getMockContainerWithDoctrineDependencies(): \VuFindTest\Container\MockContainer
     {
         // Set up the bare minimum services to actually load real configs:
         $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';

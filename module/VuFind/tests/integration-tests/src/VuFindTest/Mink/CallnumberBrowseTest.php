@@ -57,7 +57,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function changeCallnumberSettings(string $nos, string $locs, bool $full = false)
+    protected function changeCallnumberSettings(string $nos, string $locs, bool $full = false): void
     {
         $this->changeConfigs(
             [
@@ -82,7 +82,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkLink(\Behat\Mink\Element\Element $link, string $type)
+    protected function checkLink(\Behat\Mink\Element\Element $link, string $type): void
     {
         $this->assertIsObject($link);
         $href = $link->getAttribute('href');
@@ -97,7 +97,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function setupMultipleCallnumbers()
+    protected function setupMultipleCallnumbers(): void
     {
         $this->changeConfigs(
             [
@@ -129,7 +129,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function activateAndTestLinks(string $type, \Behat\Mink\Element\Element $page, bool $expectLinks)
+    protected function activateAndTestLinks(string $type, \Behat\Mink\Element\Element $page, bool $expectLinks): void
     {
         // Single callnumbers (Sample)
         $this->changeConfigs(
@@ -169,7 +169,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function validateSetting(string $nos = 'first', string $locs = 'msg', bool $expectLinks = true, bool $full = false)
+    protected function validateSetting(string $nos = 'first', string $locs = 'msg', bool $expectLinks = true, bool $full = false): void
     {
         $this->changeCallnumberSettings($nos, $locs, $full);
         $page = $this->performSearch('id:' . $this->id);
@@ -187,7 +187,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFirstAndMsg()
+    public function testFirstAndMsg(): void
     {
         $this->validateSetting('first');
     }
@@ -198,7 +198,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAllAndMsg()
+    public function testAllAndMsg(): void
     {
         $this->validateSetting('all');
     }
@@ -209,7 +209,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testMsgAndMsg()
+    public function testMsgAndMsg(): void
     {
         $this->validateSetting('msg', 'msg', false);
     }
@@ -220,7 +220,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFirstAndGroup()
+    public function testFirstAndGroup(): void
     {
         $this->validateSetting('first', 'group');
     }
@@ -231,7 +231,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAllAndGroup()
+    public function testAllAndGroup(): void
     {
         $this->validateSetting('all', 'group');
     }
@@ -242,7 +242,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testMsgAndGroup()
+    public function testMsgAndGroup(): void
     {
         $this->validateSetting('msg', 'group', false);
     }
@@ -252,7 +252,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testStatusFull()
+    public function testStatusFull(): void
     {
         $this->validateSetting('first', 'msg', true, true);
     }

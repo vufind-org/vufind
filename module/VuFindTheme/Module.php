@@ -47,7 +47,7 @@ class Module
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return [
             'vufind' => [
@@ -79,7 +79,7 @@ class Module
      *
      * @return array
      */
-    public function getServiceConfig()
+    public function getServiceConfig(): array
     {
         return [
             'aliases' => [
@@ -93,7 +93,7 @@ class Module
      *
      * @return array
      */
-    public function getViewHelperConfig()
+    public function getViewHelperConfig(): array
     {
         return [
             'abstract_factories' => [

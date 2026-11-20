@@ -48,7 +48,7 @@ class RawJSONDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testBasicBehavior()
+    public function testBasicBehavior(): void
     {
         $document = new RawJSONDocument('{}');
         $this->assertSame(

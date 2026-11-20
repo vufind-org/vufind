@@ -151,7 +151,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -163,7 +163,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      *
      * @return void
      */
-    public function setSourceIdentifier(string $identifier)
+    public function setSourceIdentifier(string $identifier): void
     {
         $this->source = $identifier;
         // Don't touch the records here to keep their original source identifiers
@@ -224,7 +224,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      *
      * @return void
      */
-    public function add(RecordInterface $record, bool $checkExisting = true)
+    public function add(RecordInterface $record, bool $checkExisting = true): void
     {
         $label = $this->config['Backends'][$record->getSearchBackendIdentifier()]
             ?? '';

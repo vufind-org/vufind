@@ -120,7 +120,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
      *
      * @return void
      */
-    protected function setPaginationHelper(\VuFind\ILS\PaginationHelper $helper)
+    protected function setPaginationHelper(\VuFind\ILS\PaginationHelper $helper): void
     {
         $this->paginationHelper = $helper;
     }
@@ -130,7 +130,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
      *
      * @return \VuFind\ILS\PaginationHelper
      */
-    protected function getPaginationHelper()
+    protected function getPaginationHelper(): \VuFind\ILS\PaginationHelper
     {
         if (null === $this->paginationHelper) {
             $this->paginationHelper = new \VuFind\ILS\PaginationHelper();

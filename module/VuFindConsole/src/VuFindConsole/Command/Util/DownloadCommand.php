@@ -70,7 +70,7 @@ class DownloadCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Downloads a file using the HTTP GET method')

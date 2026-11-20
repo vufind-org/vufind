@@ -49,7 +49,7 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHeaderValue()
+    public function testGetHeaderValue(): void
     {
         $token = new AuthToken('token', 10);
         $this->assertSame('Bearer token', $token->getHeaderValue());
@@ -62,7 +62,7 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsExpired()
+    public function testIsExpired(): void
     {
         $token = new AuthToken('token', 1);
         $this->assertFalse($token->isExpired());
@@ -75,7 +75,7 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetExpiresIn()
+    public function testGetExpiresIn(): void
     {
         $token = new AuthToken('token', 11);
         $this->assertSame(11, $token->getExpiresIn());

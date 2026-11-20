@@ -85,7 +85,7 @@ class OpenUrl
      *
      * @return object
      */
-    public function __invoke(\VuFind\RecordDriver $driver, string $area)
+    public function __invoke(\VuFind\RecordDriver $driver, string $area): object
     {
         $this->recordDriver = $driver;
         $this->area = $area;
@@ -101,7 +101,7 @@ class OpenUrl
      *
      * @return void
      */
-    protected function addImageBasedParams(bool $imagebased, array &$params)
+    protected function addImageBasedParams(bool $imagebased, array &$params): void
     {
         $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
         $params['openUrlImageBasedSrc'] = null;
@@ -147,7 +147,7 @@ class OpenUrl
      *
      * @return string
      */
-    public function renderTemplate(bool $imagebased = null)
+    public function renderTemplate(bool $imagebased = null): string
     {
         if (isset($this->config['url'])) {
             // Trim off any parameters (for legacy compatibility -- default config
@@ -225,7 +225,7 @@ class OpenUrl
      * @return string|bool false if image based linking is not active,
      * config image_based_linking_mode otherwise (default = 'both')
      */
-    public function getImageBasedLinkingMode()
+    public function getImageBasedLinkingMode(): string|bool
     {
         if (
             $this->imageBasedLinkingIsActive()
@@ -241,7 +241,7 @@ class OpenUrl
      *
      * @return bool
      */
-    public function imageBasedLinkingIsActive()
+    public function imageBasedLinkingIsActive(): bool
     {
         return isset($this->config['dynamic_graphic']);
     }
@@ -251,7 +251,7 @@ class OpenUrl
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
@@ -265,7 +265,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkContext()
+    protected function checkContext(): bool
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
         if (empty($this->config['url'])) {
@@ -288,7 +288,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkIfRulesApply()
+    protected function checkIfRulesApply(): bool
     {
         // special case if no rules are defined at all assume that any record is
         // valid for openUrls
@@ -314,7 +314,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkExcludedRecordsRules(array $resolverDriverRules)
+    protected function checkExcludedRecordsRules(array $resolverDriverRules): bool
     {
         if (isset($resolverDriverRules['exclude'])) {
             // No exclusion rules mean no exclusions -- return false
@@ -332,7 +332,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkSupportedRecordsRules(array $resolverDriverRules)
+    protected function checkSupportedRecordsRules(array $resolverDriverRules): bool
     {
         if (isset($resolverDriverRules['include'])) {
             // No inclusion rules mean include everything -- return true
@@ -349,7 +349,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function hasNonEmptyValue(array $in)
+    protected function hasNonEmptyValue(array $in): bool
     {
         foreach ($in as $current) {
             if (!empty($current)) {
@@ -366,7 +366,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkMethodRules(array $rules)
+    protected function checkMethodRules(array $rules): bool
     {
         $ruleMatchCounter = 0;
         foreach ($rules as $key => $value) {
@@ -414,7 +414,7 @@ class OpenUrl
      *
      * @return bool
      */
-    protected function checkRules(array $ruleset)
+    protected function checkRules(array $ruleset): bool
     {
         // check each rule - first rule-match
         foreach ($ruleset as $rule) {

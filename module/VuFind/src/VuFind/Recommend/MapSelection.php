@@ -140,7 +140,7 @@ class MapSelection implements
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
     }
 
@@ -172,7 +172,7 @@ class MapSelection implements
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $reorder_coords = [];
         $filters = $results->getParams()->getRawFilters();
@@ -221,7 +221,7 @@ class MapSelection implements
      *
      * @return array of floats
      */
-    public function getSelectedCoordinates()
+    public function getSelectedCoordinates(): array
     {
         return $this->selectedCoordinates;
     }
@@ -233,7 +233,7 @@ class MapSelection implements
      *
      * @return array of floats
      */
-    public function getDefaultCoordinates()
+    public function getDefaultCoordinates(): array
     {
         return $this->defaultCoordinates;
     }
@@ -243,7 +243,7 @@ class MapSelection implements
      *
      * @return array
      */
-    public function getBasemap()
+    public function getBasemap(): array
     {
         return [
             $this->basemapOptions['basemap_url'],
@@ -258,7 +258,7 @@ class MapSelection implements
      *
      * @return number
      */
-    public function getHeight()
+    public function getHeight(): number
     {
         return $this->height;
     }
@@ -270,7 +270,7 @@ class MapSelection implements
      *
      * @return string
      */
-    public function getSearchParams()
+    public function getSearchParams(): string
     {
         return $this->searchParams;
     }
@@ -282,7 +282,7 @@ class MapSelection implements
      *
      * @return string
      */
-    public function getGeoField()
+    public function getGeoField(): string
     {
         return $this->geoField;
     }
@@ -292,7 +292,7 @@ class MapSelection implements
      *
      * @return array
      */
-    public function fetchDataFromSearchService()
+    public function fetchDataFromSearchService(): array
     {
         $params = $this->searchFilters;
         $params->set('fl', 'id, ' . $this->geoField . ', title');
@@ -320,7 +320,7 @@ class MapSelection implements
      *
      * @return array
      */
-    public function getSearchResultCoordinates()
+    public function getSearchResultCoordinates(): array
     {
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
@@ -335,7 +335,7 @@ class MapSelection implements
      *
      * @return array
      */
-    public function getMapResultCoordinates()
+    public function getMapResultCoordinates(): array
     {
         $results = [];
         $rawCoords = $this->getSearchResultCoordinates();

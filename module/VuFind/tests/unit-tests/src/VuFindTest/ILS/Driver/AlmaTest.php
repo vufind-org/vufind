@@ -120,7 +120,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         Headers|array $headers = null,
         array $allowedErrors = [],
         bool $returnStatus = false
-    ) {
+    ): ?\SimpleXMLElement {
         // Get the next step of the test, and make assertions as necessary
         // (we'll skip making assertions if the next step is empty):
         $testData = $this->fixtureSteps[$this->currentFixtureStep] ?? [];
@@ -197,7 +197,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetCourses()
+    public function testGetCourses(): void
     {
         $this->createConnector('get-courses');
         $result = $this->driver->getCourses();

@@ -110,7 +110,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array
      */
-    public function search(ParamBag $params, int $offset, int $limit)
+    public function search(ParamBag $params, int $offset, int $limit): array
     {
         $startrec = $offset + 1;
         $params->set('startrec', $startrec);
@@ -138,7 +138,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
-    public function checkForHttpError(\Laminas\Http\Response $result)
+    public function checkForHttpError(\Laminas\Http\Response $result): void
     {
         if (!$result->isSuccess()) {
             throw HttpErrorException::createFromResponse($result);
@@ -153,7 +153,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return \SimpleXMLElement
      */
-    protected function call(string $method = 'GET', ?array $params = null)
+    protected function call(string $method = 'GET', ?array $params = null): \SimpleXMLElement
     {
         $queryString = '';
         if ($params) {
@@ -200,7 +200,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws \Exception
      * @return array
      */
-    public function getRecord(string $id, ?ParamBag $params = null)
+    public function getRecord(string $id, ?ParamBag $params = null): array
     {
         $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();

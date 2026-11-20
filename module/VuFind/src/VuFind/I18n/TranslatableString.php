@@ -80,7 +80,7 @@ class TranslatableString implements TranslatableStringInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->string;
     }
@@ -91,7 +91,7 @@ class TranslatableString implements TranslatableStringInterface
      *
      * @return string
      */
-    public function getDisplayString()
+    public function getDisplayString(): string
     {
         return $this->displayString;
     }
@@ -101,7 +101,7 @@ class TranslatableString implements TranslatableStringInterface
      *
      * @return bool
      */
-    public function isTranslatable()
+    public function isTranslatable(): bool
     {
         return $this->translatable;
     }

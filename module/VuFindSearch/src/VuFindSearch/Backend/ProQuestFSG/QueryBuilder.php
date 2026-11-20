@@ -84,7 +84,7 @@ class QueryBuilder
      *
      * @return string
      */
-    protected function abstractQueryToString(AbstractQuery $query)
+    protected function abstractQueryToString(AbstractQuery $query): string
     {
         if ($query instanceof Query) {
             return $this->queryToString($query);
@@ -100,7 +100,7 @@ class QueryBuilder
      *
      * @return string
      */
-    protected function queryGroupToString(QueryGroup $query)
+    protected function queryGroupToString(QueryGroup $query): string
     {
         $groups = $excludes = [];
 
@@ -147,7 +147,7 @@ class QueryBuilder
      *
      * @return string
      */
-    protected function queryToString(Query $query)
+    protected function queryToString(Query $query): string
     {
         // Clean and validate input:
         $index = $query->getHandler();

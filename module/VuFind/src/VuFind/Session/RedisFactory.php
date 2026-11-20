@@ -66,7 +66,7 @@ class RedisFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
@@ -87,7 +87,7 @@ class RedisFactory implements FactoryInterface
      *
      * @return \Credis_Client
      */
-    protected function getConnection(array $config)
+    protected function getConnection(array $config): \Credis_Client
     {
         // Set defaults if nothing set in config file.
         $host = $config['redis_host'] ?? 'localhost';

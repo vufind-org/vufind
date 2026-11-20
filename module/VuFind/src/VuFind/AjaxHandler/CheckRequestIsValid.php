@@ -70,7 +70,7 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
      *
      * @return string
      */
-    protected function getStatusMessage(string $requestType, bool $results)
+    protected function getStatusMessage(string $requestType, bool $results): string
     {
         // If successful, return success message:
         if ($results) {

@@ -92,7 +92,7 @@ class SolrMarcRemote extends SolrMarc implements
      *
      * @return MarcReader
      */
-    public function getMarcReader()
+    public function getMarcReader(): MarcReader
     {
         $this->verifyFullRecordIsAvailable();
         return parent::getMarcReader();
@@ -103,7 +103,7 @@ class SolrMarcRemote extends SolrMarc implements
      *
      * @return void
      */
-    protected function verifyFullRecordIsAvailable()
+    protected function verifyFullRecordIsAvailable(): void
     {
         // handle availability of fullrecord
         if (!isset($this->fields['fullrecord'])) {
@@ -126,7 +126,7 @@ class SolrMarcRemote extends SolrMarc implements
      * @return bool|string
      * @throws \Exception
      */
-    protected function getRemoteFullrecord(String $id)
+    protected function getRemoteFullrecord(String $id): bool|string
     {
         if (empty($id)) {
             throw new \Exception('empty id given');

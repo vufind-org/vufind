@@ -49,7 +49,7 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPrefixStripping()
+    public function testPrefixStripping(): void
     {
         $l = new InjectTemplateListener(['VuFind/']);
         // We should strip a registered prefix:
@@ -69,7 +69,7 @@ class ThemeInjectTemplateListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCamelCaseToLowerCase()
+    public function testCamelCaseToLowerCase(): void
     {
         $l = new InjectTemplateListener(['VuFind/']);
         $this->assertEquals(

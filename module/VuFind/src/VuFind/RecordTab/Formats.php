@@ -63,7 +63,7 @@ class Formats extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->enabled;
     }
@@ -73,7 +73,7 @@ class Formats extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Formats';
     }

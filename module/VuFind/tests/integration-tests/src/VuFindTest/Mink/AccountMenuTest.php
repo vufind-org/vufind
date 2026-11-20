@@ -68,7 +68,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function setJSStorage(array $states)
+    protected function setJSStorage(array $states): void
     {
         $session = $this->getMinkSession();
         $this->waitForPageLoad($session->getPage());
@@ -86,7 +86,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getJSStorage()
+    protected function getJSStorage(): array
     {
         $session = $this->getMinkSession();
         return $session->evaluateScript(
@@ -105,7 +105,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return object
      */
-    protected function setUpFinesEnvironment()
+    protected function setUpFinesEnvironment(): object
     {
         // Seed some fines
         $this->setJSStorage(['fines' => ['value' => 30.5, 'display' => '$30.50']]);
@@ -188,7 +188,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testIndividualCacheClearing()
+    public function testIndividualCacheClearing(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -210,7 +210,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testGlobalCacheClearing()
+    public function testGlobalCacheClearing(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -453,7 +453,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return \Behat\Mink\Session
      */
-    protected function login(string $user = 'username1', string $password = 'test')
+    protected function login(string $user = 'username1', string $password = 'test'): \Behat\Mink\Session
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -473,7 +473,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getFakeTransactions(string $bibId)
+    protected function getFakeTransactions(string $bibId): array
     {
         $transactions = [];
         $template = [

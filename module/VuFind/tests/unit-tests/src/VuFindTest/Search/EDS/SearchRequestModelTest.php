@@ -47,7 +47,7 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAndFilters()
+    public function testAndFilters(): void
     {
         $parameters = [
             'filters' => [
@@ -104,7 +104,7 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOrFilters()
+    public function testOrFilters(): void
     {
         $parameters = [
             'filters' => [
@@ -155,7 +155,7 @@ class SearchRequestModelTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLimiters()
+    public function testLimiters(): void
     {
         $parameters = [
             'filters' => [

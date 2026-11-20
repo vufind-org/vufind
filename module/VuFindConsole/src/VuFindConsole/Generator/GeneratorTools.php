@@ -79,7 +79,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getPluginManagerForNamespace(array $classParts, string $namespace)
+    protected function getPluginManagerForNamespace(array $classParts, string $namespace): string
     {
         $classParts[0] = $namespace;
         $classParts[count($classParts) - 1] = 'PluginManager';
@@ -92,7 +92,7 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getVuFindExtendedModules()
+    protected function getVuFindExtendedModules(): array
     {
         $moduleDir = __DIR__ . '/../../../../';
         $handle = opendir($moduleDir);
@@ -114,7 +114,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getPluginManagerFromExplodedClassName(array $classParts)
+    protected function getPluginManagerFromExplodedClassName(array $classParts): string
     {
         $pmClass = $this->getPluginManagerForNamespace($classParts, 'VuFind');
         // Special cases: no such service; use framework core services instead:
@@ -144,7 +144,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getShortNameFromExplodedClassName(array $classParts)
+    protected function getShortNameFromExplodedClassName(array $classParts): string
     {
         $shortName = array_pop($classParts);
         // Special case: controllers use shortened aliases
@@ -162,7 +162,7 @@ class GeneratorTools
      *
      * @return string
      */
-    protected function getExpectedInterfaceFromPluginManager(ContainerInterface $pm)
+    protected function getExpectedInterfaceFromPluginManager(ContainerInterface $pm): string
     {
         // Special case: controllers
         if ($pm instanceof \Laminas\Mvc\Controller\ControllerManager) {
@@ -192,7 +192,7 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getConfigPathForClass(string $class)
+    protected function getConfigPathForClass(string $class): array
     {
         // Special case: controller
         if ($class === \Laminas\Mvc\Controller\ControllerManager::class) {
@@ -223,7 +223,7 @@ class GeneratorTools
         ContainerInterface $container,
         array $classParts,
         bool $topLevelService
-    ) {
+    ): ContainerInterface {
         // Special case -- short-circuit for top-level service:
         if ($topLevelService) {
             return $container;
@@ -257,7 +257,7 @@ class GeneratorTools
         string $class,
         string $factory = null,
         bool $topLevelService = false
-    ) {
+    ): bool {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
         $module = $classParts[0];
@@ -322,7 +322,7 @@ class GeneratorTools
      *
      * @return void
      */
-    protected function generateFactory(string $factory, string $module)
+    protected function generateFactory(string $factory, string $module): void
     {
         $this->createClassInModule(
             $factory,
@@ -379,7 +379,7 @@ class GeneratorTools
         string $class,
         string $target,
         bool $extendFactory = false
-    ) {
+    ): bool {
         // Set things up differently depending on whether this is a top-level
         // service or a class in a plugin manager.
         $cm = $container->get('ControllerManager');
@@ -448,7 +448,7 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getAllFactoriesFromContainer(ContainerInterface $container)
+    protected function getAllFactoriesFromContainer(ContainerInterface $container): array
     {
         // There is no "getFactories" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'factories');
@@ -476,7 +476,7 @@ class GeneratorTools
      *
      * @return array
      */
-    protected function getAllDelegatorsFromContainer(ContainerInterface $container)
+    protected function getAllDelegatorsFromContainer(ContainerInterface $container): array
     {
         // There is no "getDelegators" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'delegators');
@@ -494,7 +494,7 @@ class GeneratorTools
     protected function getDelegatorsFromContainer(
         ContainerInterface $container,
         string $class
-    ) {
+    ): array {
         $delegators = $this->getAllDelegatorsFromContainer($container);
         return $delegators[$class] ?? [];
     }
@@ -511,7 +511,7 @@ class GeneratorTools
     protected function getPluginManagerContainingClass(
         ContainerInterface $container,
         string $class
-    ) {
+    ): ContainerInterface {
         $factories = $this->getAllFactoriesFromContainer($container);
         foreach (array_keys($factories) as $service) {
             if (str_ends_with($service, 'PluginManager')) {
@@ -533,7 +533,7 @@ class GeneratorTools
      * @return bool
      * @throws \Exception
      */
-    public function extendService(string $source, string $target)
+    public function extendService(string $source, string $target): bool
     {
         $parts = explode('/', $source);
         $partCount = count($parts);
@@ -580,7 +580,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    protected function cloneFactory(mixed $factory, string $module)
+    protected function cloneFactory(mixed $factory, string $module): string
     {
         if ($factory === AutowiringFactory::class) {
             $this->writeln('WARNING: you are extending AutowiringFactory, which is not recommended.');
@@ -664,7 +664,7 @@ class GeneratorTools
         MethodGenerator $method,
         string $ns,
         string $module
-    ) {
+    ): void {
         $body = $method->getBody();
         $regex = '/new\s+([\w\\\\]*)\s*\(/m';
         preg_match_all($regex, $body, $matches);
@@ -696,7 +696,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    protected function generateLocalClassName(string $class, string $module)
+    protected function generateLocalClassName(string $class, string $module): string
     {
         // Determine the name of the new class by exploding the old class and
         // replacing the namespace:
@@ -727,7 +727,7 @@ class GeneratorTools
         string $parent = null,
         array $interfaces = [],
         callable $callback = null
-    ) {
+    ): void {
         $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
         if (is_callable($callback)) {
             $callback($generator);
@@ -751,7 +751,7 @@ class GeneratorTools
         string $module,
         bool $allowOverwrite = false,
         bool $skipBackup = false
-    ) {
+    ): void {
         // Use the class name parts from the previous step to determine a path
         // and filename, then create the new path.
         $parts = explode('\\', $classGenerator->getNamespaceName());
@@ -796,7 +796,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    protected function createSubclassInModule(string $class, string $module)
+    protected function createSubclassInModule(string $class, string $module): string
     {
         // Normalize leading backslashes; in some contexts we will
         // have them and in others we may not.
@@ -815,7 +815,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function createTree(array $path)
+    protected function createTree(array $path): void
     {
         $fullPath = APPLICATION_PATH;
         foreach ($path as $part) {
@@ -839,7 +839,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    public function backUpFile(string $filename)
+    public function backUpFile(string $filename): void
     {
         $backup = $filename . '.' . time() . '.bak';
         if (!copy($filename, $backup)) {
@@ -857,7 +857,7 @@ class GeneratorTools
      * @return string
      * @throws \Exception
      */
-    public function getModuleConfigPath(string $module)
+    public function getModuleConfigPath(string $module): string
     {
         $configPath = APPLICATION_PATH . "/module/$module/config/module.config.php";
         if (!file_exists($configPath)) {
@@ -875,7 +875,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    public function writeModuleConfig(string $configPath, string $config)
+    public function writeModuleConfig(string $configPath, string $config): void
     {
         $generator = new FileGenerator();
         $generator->setBody('return ' . var_export($config, true) . ';');
@@ -898,7 +898,7 @@ class GeneratorTools
         array $path,
         string|array $setting,
         array &$config
-    ) {
+    ): void {
         $current = & $config;
         $finalStep = array_pop($path);
         foreach ($path as $step) {
@@ -931,7 +931,7 @@ class GeneratorTools
         array $newValues,
         string $module,
         bool $backup = true
-    ) {
+    ): void {
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
         if ($backup) {
@@ -962,7 +962,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function writeNewConfig(array $path, string|array $setting, string $module, bool $backup = true)
+    protected function writeNewConfig(array $path, string|array $setting, string $module, bool $backup = true): void
     {
         $this->writeNewConfigs([compact('path', 'setting')], $module, $backup);
     }
@@ -975,7 +975,7 @@ class GeneratorTools
      *
      * @return mixed
      */
-    protected function retrieveConfig(array $path)
+    protected function retrieveConfig(array $path): mixed
     {
         $config = $this->config;
         foreach ($path as $part) {

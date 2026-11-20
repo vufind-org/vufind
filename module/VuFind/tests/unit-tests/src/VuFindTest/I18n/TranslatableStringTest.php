@@ -53,7 +53,7 @@ class TranslatableStringTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutTranslate()
+    public function testWithoutTranslate(): void
     {
         $s = new TranslatableString('foo', 'bar');
         $this->assertSame('foo', (string)$s);

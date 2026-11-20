@@ -87,7 +87,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Holdings';
     }
@@ -97,7 +97,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return bool
      */
-    public function isVisible()
+    public function isVisible(): bool
     {
         // Check if the driver has a supportsHoldingsTab method and use it,
         // defaulting to true (visible) if the method doesn't exist
@@ -113,7 +113,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    protected function getSimpleUniqueCallNumbers(array $items)
+    protected function getSimpleUniqueCallNumbers(array $items): array
     {
         $callNos = [];
         foreach ($items as $item) {
@@ -135,7 +135,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    public function getUniqueCallNumbers(array $items, bool $fullDetails = false)
+    public function getUniqueCallNumbers(array $items, bool $fullDetails = false): array
     {
         if (!$fullDetails) {
             return $this->getSimpleUniqueCallNumbers($items);
@@ -172,7 +172,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return ($this->catalog && $this->hideWhenEmpty)
             ? $this->catalog->hasHoldings($this->driver->getUniqueID()) : true;
@@ -183,7 +183,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return string
      */
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return $this->template;
     }
@@ -197,7 +197,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return ?\Laminas\Paginator\Paginator (or null, if paginator is not needed/unsupported)
      */
-    public function getPaginator(int $totalItemCount, int $page, int $itemLimit)
+    public function getPaginator(int $totalItemCount, int $page, int $itemLimit): ?\Laminas\Paginator\Paginator
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
         if (!$itemLimit || $totalItemCount <= $itemLimit) {

@@ -64,7 +64,7 @@ class ImportCsvCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             new \VuFind\CSV\Importer($container),
             ...($options ?? [])

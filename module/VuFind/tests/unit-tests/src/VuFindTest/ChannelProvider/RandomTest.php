@@ -78,7 +78,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function setUpTestInputsAndExpectations()
+    public function setUpTestInputsAndExpectations(): array
     {
         $query = new Query('bar');
         $paramBag = new ParamBag(['far' => 'rar']);
@@ -131,7 +131,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredCoverRouterMock(mixed $recordDriver)
+    protected function getConfiguredCoverRouterMock(mixed $recordDriver): MockObject
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
@@ -148,7 +148,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredRecordRouterMock(mixed $recordDriver)
+    protected function getConfiguredRecordRouterMock(mixed $recordDriver): MockObject
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
@@ -170,7 +170,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         array $args = [],
         string $class = \VuFindSearch\Command\RandomCommand::class,
         string $target = 'Solr'
-    ) {
+    ): callable {
         return function ($command) use ($class, $args, $target) {
             $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
@@ -189,7 +189,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredParamsMock(\VuFindSearch\Query\Query $query, \VuFindSearch\ParamBag $paramBag)
+    protected function getConfiguredParamsMock(\VuFindSearch\Query\Query $query, \VuFindSearch\ParamBag $paramBag): MockObject
     {
         // Use Solr instead of Base to ensure we can mock getBackendParameters:
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
@@ -204,7 +204,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver()
+    protected function getDriver(): TestHarness
     {
         $driver = new TestHarness();
         $data = [

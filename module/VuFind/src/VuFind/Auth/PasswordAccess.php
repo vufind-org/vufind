@@ -56,7 +56,7 @@ class PasswordAccess extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $config = $this->getConfig();
         $requestPassword = trim($request->getPost()->get('password', ''));

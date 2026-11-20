@@ -47,7 +47,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicPhtmlFunctionality()
+    public function testBasicPhtmlFunctionality(): void
     {
         $details = [
             'renderer' => 'phtml',
@@ -73,7 +73,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicPhtmlFunctionalityWithContextOverrides()
+    public function testBasicPhtmlFunctionalityWithContextOverrides(): void
     {
         $details = [
             'renderer' => 'phtml',
@@ -101,7 +101,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testI18nPhtmlFunctionality()
+    public function testI18nPhtmlFunctionality(): void
     {
         $details = [
             'renderer' => 'phtml',
@@ -126,7 +126,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicMarkdownFunctionality()
+    public function testBasicMarkdownFunctionality(): void
     {
         $fixturePath = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
         $file = $fixturePath . '/parent/templates/page-locator-test/page4.md';

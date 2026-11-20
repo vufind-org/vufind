@@ -93,7 +93,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -134,7 +134,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return array Keyed data
      */
-    protected function processHoldingRow(string $id, array $row, array $patron)
+    protected function processHoldingRow(string $id, array $row, array $patron): array
     {
         $itemData = [
             'id' => $row['ITEM_ID'],
@@ -158,7 +158,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @return array $renewData Array of the renewability status and associated
      * message
      */
-    protected function determineRenewability(string $requested)
+    protected function determineRenewability(string $requested): array
     {
         $renewData = [];
 
@@ -176,7 +176,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return array Keyed data for display by template files
      */
-    protected function processTransactionsRow(array $row)
+    protected function processTransactionsRow(array $row): array
     {
         $transactions = parent::processTransactionsRow($row);
         $renewData = $this->determineRenewability($row['REQUEST']);
@@ -336,7 +336,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return obj  A Simple XML Object loaded with the xml data returned by the API
      */
-    protected function makeRequest(array $params = false, string $mode = 'GET')
+    protected function makeRequest(array $params = false, string $mode = 'GET'): obj
     {
         $queryString = [];
         // Build Url Base
@@ -387,7 +387,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return mixed A session string on success, boolean false on failure
      */
-    protected function getSession()
+    protected function getSession(): mixed
     {
         $params = ['profile' => $this->wsProfile,
                         'menu' => 'account',
@@ -414,7 +414,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return bool true on success, false on failure
      */
-    protected function registerUser(string $userBarcode, string $userPassword)
+    protected function registerUser(string $userBarcode, string $userPassword): bool
     {
         // Get Session
         $session = $this->getSession();
@@ -449,7 +449,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return bool true if the request can be made, false if it cannot
      */
-    public function checkRequestIsValid(string $bibId, string $itemData, array $patron)
+    public function checkRequestIsValid(string $bibId, string $itemData, array $patron): bool
     {
         // Register Account
         $session = $this->registerUser(
@@ -493,7 +493,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return obj A Simple XML Object
      */
-    protected function getItems(string $session)
+    protected function getItems(string $session): obj
     {
         $params = ['session' => $session,
                         'profile' => $this->wsProfile,
@@ -521,7 +521,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return obj A Simple XML Object
      */
-    protected function renewItems(string $session, array $items)
+    protected function renewItems(string $session, array $items): obj
     {
         $params = ['session' => $session,
                         'profile' => $this->wsProfile,
@@ -552,7 +552,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @return array  An array with keys indicating the success (boolean),
      * status (string) and sysMessage (string) if available
      */
-    protected function placeRequest(string $session, array $requestDetails)
+    protected function placeRequest(string $session, array $requestDetails): array
     {
         $params = ['session' => $session,
                         'profile' => $this->wsProfile,
@@ -630,7 +630,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @return array  An array of cancel information keyed by item ID plus
      * the number of successful cancels
      */
-    protected function cancelRequest(string $session, array $data)
+    protected function cancelRequest(string $session, array $data): array
     {
         $responseItems = [];
 
@@ -711,7 +711,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): mixed
     {
         $userBarcode      = $holdDetails['patron']['id'];
         $userPassword     = $holdDetails['patron']['cat_password'];
@@ -757,7 +757,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         $cancelIDs = [];
         $details = $cancelDetails['details'];
@@ -795,7 +795,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return array        An Array specifying the results of each renewal attempt
      */
-    protected function processRenewals(array $renewIDs, array $origData, array $renewData)
+    protected function processRenewals(array $renewIDs, array $origData, array $renewData): array
     {
         $response = ['ids' => $renewIDs];
         $i = 0;
@@ -848,7 +848,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $renewItemKeys = [];
         $renewIDs = [];
@@ -892,7 +892,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         return $checkOutDetails['item_id'] . '|' . $checkOutDetails['barcode'];
     }

@@ -87,7 +87,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setLanguage(string $lang)
+    public function setLanguage(string $lang): void
     {
         $this->lang = substr($lang, 0, 2); // strip off regional suffixes
     }
@@ -100,7 +100,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return ?array
      */
-    public function get(string $author)
+    public function get(string $author): ?array
     {
         // Don't retrieve the same page multiple times; this indicates a loop
         // that needs to be broken!
@@ -128,7 +128,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return bool
      */
-    protected function alreadyRetrieved(string $author)
+    protected function alreadyRetrieved(string $author): bool
     {
         if (isset($this->pagesRetrieved[$author])) {
             return true;
@@ -144,7 +144,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return array Array with two values values: image name and image caption
      */
-    protected function extractImageFromInfoBox(string $infoboxStr)
+    protected function extractImageFromInfoBox(string $infoboxStr): array
     {
         $imageName = $imageCaption = null;
 
@@ -194,7 +194,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function extractInfoBox(array $body)
+    protected function extractInfoBox(array $body): string
     {
         // We are looking for the infobox inside "{{...}}"
         //   It may contain nested blocks too, thus the recursion
@@ -223,7 +223,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function extractImageFromBody(array $body)
+    protected function extractImageFromBody(array $body): array
     {
         $imageName = $imageCaption = null;
         // The tag marking image files will vary depending on API language:
@@ -253,7 +253,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function stripImageAndFileLinks(string $body)
+    protected function stripImageAndFileLinks(string $body): string
     {
         // Remove unwanted image/file links
         // Nested brackets make this annoying: We can't add 'File' or 'Image' as
@@ -293,7 +293,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function sanitizeWikipediaBody(string $body)
+    protected function sanitizeWikipediaBody(string $body): string
     {
         // Cull our content back to everything before the first heading
         $body = trim(substr($body, 0, strpos($body, '==')));
@@ -359,7 +359,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function checkForRedirect(array $body)
+    protected function checkForRedirect(array $body): array
     {
         $name = $redirectTo = $page = null;
 
@@ -396,7 +396,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function extractBodyText(array $body, string $infoboxStr)
+    protected function extractBodyText(array $body, string $infoboxStr): string
     {
         if ($infoboxStr) {
             // Start of the infobox
@@ -421,7 +421,7 @@ class Wikipedia implements TranslatorAwareInterface
      * @return array
      * @author Rushikesh Katikar <rushikesh.katikar@gmail.com>
      */
-    protected function parseWikipedia(array $rawBody)
+    protected function parseWikipedia(array $rawBody): array
     {
         $imageName = null;
         $imageCaption = null;
@@ -480,7 +480,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @return mixed            URL on success, false on failure
      */
-    protected function getWikipediaImageURL(string $imageName)
+    protected function getWikipediaImageURL(string $imageName): mixed
     {
         $imageUrl = null;
         $url = "https://{$this->lang}.wikipedia.org/w/api.php" .

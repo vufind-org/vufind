@@ -85,7 +85,7 @@ class TransEscWithPrefix implements TranslatorAwareInterface
         string $default = null,
         bool $useIcuFormatter = false,
         array $fallbackDomains = []
-    ) {
+    ): string {
         return ($this->escapeHtml)(
             $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter, $fallbackDomains)
         );

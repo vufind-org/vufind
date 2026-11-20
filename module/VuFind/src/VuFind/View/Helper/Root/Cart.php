@@ -57,7 +57,7 @@ class Cart
      *
      * @return \VuFind\Cart
      */
-    public function __invoke()
+    public function __invoke(): \VuFind\Cart
     {
         return $this->cart;
     }

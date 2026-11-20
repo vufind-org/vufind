@@ -79,7 +79,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultOfflineMode()
+    public function testDefaultOfflineMode(): void
     {
         $this->assertEquals('ils-offline', $this->driver->getOfflineMode());
     }
@@ -89,7 +89,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultLoginVisibility()
+    public function testDefaultLoginVisibility(): void
     {
         $this->assertFalse($this->driver->loginIsHidden());
     }
@@ -99,7 +99,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultHoldingsVisibility()
+    public function testDefaultHoldingsVisibility(): void
     {
         $this->assertFalse($this->driver->hasHoldings('foo'));
     }
@@ -109,7 +109,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCustomHoldingsVisibility()
+    public function testCustomHoldingsVisibility(): void
     {
         $this->driver->setConfig(
             [
@@ -134,7 +134,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnsupportedFunctions()
+    public function testUnsupportedFunctions(): void
     {
         $this->assertEquals([], $this->driver->getPurchaseHistory('foo'));
         $this->assertEquals(null, $this->driver->patronLogin('foo', 'bar'));

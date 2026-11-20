@@ -55,7 +55,7 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
         string $settings = '',
         ?array $request = null,
         ?\VuFind\Search\Solr\Results $results = null
-    ) {
+    ): \VuFind\Recommend\RecommendInterface {
         if (null === $results) {
             $results = $this->getMockResults();
         }
@@ -76,7 +76,7 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults(\VuFind\Search\Solr\Params $params = null)
+    protected function getMockResults(\VuFind\Search\Solr\Params $params = null): \VuFind\Search\Solr\Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
@@ -93,7 +93,7 @@ abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null)
+    protected function getMockParams(\VuFindSearch\Query\Query $query = null): \VuFind\Search\Solr\Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');

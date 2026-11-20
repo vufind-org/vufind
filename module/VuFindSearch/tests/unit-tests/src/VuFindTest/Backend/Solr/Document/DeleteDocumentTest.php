@@ -50,7 +50,7 @@ class DeleteDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXML()
+    public function testAsXML(): void
     {
         $document = new DeleteDocument();
         $document->addKey('foobar');
@@ -71,7 +71,7 @@ class DeleteDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXMLMultiKey()
+    public function testAsXMLMultiKey(): void
     {
         $document = new DeleteDocument();
         $document->addKeys(['foo', 'bar']);

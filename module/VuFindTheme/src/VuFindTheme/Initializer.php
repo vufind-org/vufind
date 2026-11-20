@@ -152,7 +152,7 @@ class Initializer
      * @throws \Exception
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         // Make sure to initialize the theme just once
         if (self::$themeInitialized) {
@@ -340,7 +340,7 @@ class Initializer
      *
      * @return void
      */
-    protected function setUpThemeViewHelpers(array $helpers)
+    protected function setUpThemeViewHelpers(array $helpers): void
     {
         // Grab the helper loader from the view manager:
         $loader = $this->serviceManager->get('ViewHelperManager');
@@ -357,7 +357,7 @@ class Initializer
      *
      * @return void
      */
-    protected function setUpThemes(array $themes)
+    protected function setUpThemes(array $themes): void
     {
         $templatePathStack = [];
 
@@ -424,7 +424,7 @@ class Initializer
      *
      * @return void
      */
-    protected function updateTranslator(array $themes)
+    protected function updateTranslator(array $themes): void
     {
         $theme = null;
         $pathStack = [];

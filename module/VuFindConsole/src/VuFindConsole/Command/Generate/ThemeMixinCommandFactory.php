@@ -63,7 +63,7 @@ class ThemeMixinCommandFactory extends AbstractCommandFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFindTheme\MixinGenerator::class),
             ...($options ?? [])

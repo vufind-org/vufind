@@ -72,7 +72,7 @@ class SearchSettings
      *
      * @return static
      */
-    public function __invoke(Params $params)
+    public function __invoke(Params $params): static
     {
         $this->params = $params;
         return $this;
@@ -83,7 +83,7 @@ class SearchSettings
      *
      * @return bool
      */
-    public function bulkOptionsEnabled()
+    public function bulkOptionsEnabled(): bool
     {
         if (!($this->config['Site']['showBulkOptions'] ?? false)) {
             return false;
@@ -96,7 +96,7 @@ class SearchSettings
      *
      * @return bool
      */
-    public function cartControlsEnabled()
+    public function cartControlsEnabled(): bool
     {
         return
             $this->getOptions()->supportsCart()
@@ -109,7 +109,7 @@ class SearchSettings
      *
      * @return bool
      */
-    public function checkboxesEnabled()
+    public function checkboxesEnabled(): bool
     {
         return $this->bulkOptionsEnabled() || $this->cartControlsEnabled();
     }

@@ -58,7 +58,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null)
+    protected function getMockParams(\VuFindSearch\Query\Query $query = null): \VuFind\Search\Solr\Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
@@ -90,7 +90,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testResponse()
+    public function testResponse(): void
     {
         // Set up session settings:
         $ss = $this->container->createMock(Settings::class, ['disableWrite']);

@@ -48,7 +48,7 @@ class RawCSVDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testBasicBehavior()
+    public function testBasicBehavior(): void
     {
         $document = new RawCSVDocument('a,b,c');
         $this->assertSame(

@@ -52,7 +52,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testMissingILSConfiguration()
+    public function testMissingILSConfiguration(): void
     {
         $this->expectException(\VuFind\Exception\ILS::class);
 
@@ -72,7 +72,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testDefaultCallSingleMainDriver()
+    public function testDefaultCallSingleMainDriver(): void
     {
         $expected = [
             '1' => [
@@ -118,7 +118,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testDefaultCallBaseMainDriver()
+    public function testDefaultCallBaseMainDriver(): void
     {
         $expected = [
             '1' => [
@@ -169,7 +169,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testDefaultCallOverwrittenMainDriver()
+    public function testDefaultCallOverwrittenMainDriver(): void
     {
         $expected = [
             '1' => [
@@ -222,7 +222,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testMergeSingleArrayResultsBaseMainDriverWithoutSupport()
+    public function testMergeSingleArrayResultsBaseMainDriverWithoutSupport(): void
     {
         $result1 = [
             'firstname' => 'John',
@@ -273,7 +273,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testMergeSingleArrayResultsBaseMainDriverWithSupport()
+    public function testMergeSingleArrayResultsBaseMainDriverWithSupport(): void
     {
         $result1 = [
             'firstname' => 'John',
@@ -333,7 +333,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testMergeSingleArrayResultsOverwrittenMainDriverWithoutSupport()
+    public function testMergeSingleArrayResultsOverwrittenMainDriverWithoutSupport(): void
     {
         $result1 = null;
 
@@ -385,7 +385,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testMergeSingleArrayResultsOverwrittenMainDriverWithSupport()
+    public function testMergeSingleArrayResultsOverwrittenMainDriverWithSupport(): void
     {
         $result1 = null;
 
@@ -446,7 +446,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysBaseMainDriverNoSupportNoSubfields()
+    public function testCombineArraysOfAssociativeArraysBaseMainDriverNoSupportNoSubfields(): void
     {
         $expected = [
             [
@@ -486,7 +486,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysBaseMainDriverNoSupportWithSubfields()
+    public function testCombineArraysOfAssociativeArraysBaseMainDriverNoSupportWithSubfields(): void
     {
         $expected = [
             'count' => 2,
@@ -533,7 +533,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverNoSupportNoSubfields()
+    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverNoSupportNoSubfields(): void
     {
         $expected = [
             [
@@ -575,7 +575,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverNoSupportWithSubfields()
+    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverNoSupportWithSubfields(): void
     {
         $expected = [
             'count' => 2,
@@ -625,7 +625,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysBaseMainDriverWithSupportNoSubfields()
+    public function testCombineArraysOfAssociativeArraysBaseMainDriverWithSupportNoSubfields(): void
     {
         $result1 = [
             [
@@ -751,7 +751,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysBaseMainDriverWithSupportWithSubfields()
+    public function testCombineArraysOfAssociativeArraysBaseMainDriverWithSupportWithSubfields(): void
     {
         $result1 = [
             'count' => 3,
@@ -886,7 +886,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverWithSupportNoSubfields()
+    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverWithSupportNoSubfields(): void
     {
         $result1 = null;
 
@@ -1013,7 +1013,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverWithSupportWithSubfields()
+    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverWithSupportWithSubfields(): void
     {
         $result1 = null;
 
@@ -1150,7 +1150,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverWithoutOptionResultSubfields()
+    public function testCombineArraysOfAssociativeArraysOverwrittenMainDriverWithoutOptionResultSubfields(): void
     {
         $result1 = null;
 
@@ -1227,7 +1227,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineMultipleArraysOfAssociativeArraysBaseMainDriverWithoutSupport()
+    public function testCombineMultipleArraysOfAssociativeArraysBaseMainDriverWithoutSupport(): void
     {
         $result1 = [
             [
@@ -1318,7 +1318,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineMultipleArraysOfAssociativeArraysBaseMainDriverWithSupport()
+    public function testCombineMultipleArraysOfAssociativeArraysBaseMainDriverWithSupport(): void
     {
         $result1 = [
             [
@@ -1450,7 +1450,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCombineMultipleArraysOfAssociativeArraysOverwrittenMainDriverWithoutSupport()
+    public function testCombineMultipleArraysOfAssociativeArraysOverwrittenMainDriverWithoutSupport(): void
     {
         $result1 = null;
 
@@ -1543,7 +1543,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testeCombineMultipleArraysOfAssociativeArraysOverwrittenMainDriverWithSupport()
+    public function testeCombineMultipleArraysOfAssociativeArraysOverwrittenMainDriverWithSupport(): void
     {
         $result1 = null;
 
@@ -1680,7 +1680,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A ComposedDriver instance.
      */
-    protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null)
+    protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null): mixed
     {
         $driver = $this->getDriver($constructorArgs);
         $driver->setConfig(
@@ -1700,7 +1700,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A ComposedDriver instance.
      */
-    protected function getDriver(array $constructorArgs = [])
+    protected function getDriver(array $constructorArgs = []): mixed
     {
         $driver = new ComposedDriver(
             $constructorArgs['configManager'] ?? $this->getMockConfigManager([], ['config' => 'values']),
@@ -1724,7 +1724,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
         array $params,
         array $functionConfig,
         array $driverConfigs
-    ) {
+    ): object {
         $drivers = [];
         foreach ($driverConfigs as $diverName => $driverConfig) {
             $driver = $this->getMockILS($driverConfig['class'], ['init', $function]);

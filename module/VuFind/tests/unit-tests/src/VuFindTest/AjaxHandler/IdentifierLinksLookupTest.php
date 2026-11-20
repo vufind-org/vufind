@@ -59,7 +59,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    protected function setupConfig(array $config)
+    protected function setupConfig(array $config): void
     {
         $this->container->set(
             \VuFind\Config\ConfigManagerInterface::class,
@@ -82,7 +82,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         string $times = 'once',
         int $key = 0,
         array $expected = [['doi' => 'bar']]
-    ) {
+    ): IdentifierLinkerInterface {
         $mockPlugin = $this->container
             ->createMock(IdentifierLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->$times())->method('getLinks')
@@ -109,7 +109,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    protected function setupPluginManager(array $plugins)
+    protected function setupPluginManager(array $plugins): void
     {
         $pm = new PluginManager($this->container);
         foreach ($plugins as $name => $plugin) {
@@ -262,7 +262,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testFirstDefaultLookup()
+    public function testFirstDefaultLookup(): void
     {
         // Set up config manager:
         $this->setupConfig(['IdentifierLinks' => ['resolver' => 'foo,foo2']]);
@@ -300,7 +300,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testFirstExplicitLookup()
+    public function testFirstExplicitLookup(): void
     {
         // Set up config manager:
         $this->setupConfig(
@@ -341,7 +341,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testFirstExplicitLookupMultipleDOIs()
+    public function testFirstExplicitLookupMultipleDOIs(): void
     {
         // Set up config manager:
         $this->setupConfig(
@@ -394,7 +394,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testMergeLookup()
+    public function testMergeLookup(): void
     {
         // Set up config manager:
         $this->setupConfig(

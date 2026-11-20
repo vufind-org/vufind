@@ -49,7 +49,7 @@ class LibGuidesAZResultsDeferred extends AbstractSearchObjectDeferred
      *
      * @return string Module name in call to AjaxHandler
      */
-    protected function getAjaxModule()
+    protected function getAjaxModule(): string
     {
         return 'LibGuidesAZResults';
     }

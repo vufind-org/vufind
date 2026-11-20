@@ -73,7 +73,7 @@ class Highlight
         mixed $needle = null,
         bool $clear = false,
         bool $escape = true
-    ) {
+    ): string {
         // Normalize value to an array so we can loop through it; this saves us from
         // writing the highlighting code twice, once for arrays, once for non-arrays.
         // Also make sure our generated array is empty if needle itself is empty --

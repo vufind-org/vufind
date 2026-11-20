@@ -59,5 +59,5 @@ interface GetIdsInterface
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    );
+    ): \VuFindSearch\Response\RecordCollectionInterface;
 }

@@ -84,7 +84,7 @@ class ExpandFacets implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Save the basic parameters:
         $this->settings = $settings;
@@ -131,7 +131,7 @@ class ExpandFacets implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->searchObject = $results;
     }
@@ -141,7 +141,7 @@ class ExpandFacets implements RecommendInterface
      *
      * @return array
      */
-    public function getExpandedSet()
+    public function getExpandedSet(): array
     {
         return $this->searchObject->getFacetList($this->facets);
     }
@@ -152,7 +152,7 @@ class ExpandFacets implements RecommendInterface
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getEmptyResults()
+    public function getEmptyResults(): \VuFind\Search\Base\Results
     {
         return $this->emptyResults;
     }

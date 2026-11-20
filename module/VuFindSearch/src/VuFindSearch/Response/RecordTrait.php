@@ -80,7 +80,7 @@ trait RecordTrait
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier(string $identifier)
+    public function setSourceIdentifier(string $identifier): void
     {
         $this->setSourceIdentifiers($identifier, $identifier);
     }
@@ -94,7 +94,7 @@ trait RecordTrait
      *
      * @return void
      */
-    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = '')
+    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = ''): void
     {
         $this->sourceIdentifier = $recordSourceId;
         $this->searchBackendIdentifier = $searchBackendId ?: $recordSourceId;
@@ -105,7 +105,7 @@ trait RecordTrait
      *
      * @return string
      */
-    public function getSourceIdentifier()
+    public function getSourceIdentifier(): string
     {
         return $this->sourceIdentifier;
     }
@@ -115,7 +115,7 @@ trait RecordTrait
      *
      * @return string
      */
-    public function getSearchBackendIdentifier()
+    public function getSearchBackendIdentifier(): string
     {
         return $this->searchBackendIdentifier;
     }
@@ -129,7 +129,7 @@ trait RecordTrait
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid)
+    public function setResultSetIdentifier(string $uuid): void
     {
         $this->resultSetIdentifier = $uuid;
     }
@@ -155,7 +155,7 @@ trait RecordTrait
      *
      * @return void
      */
-    public function addLabel(string $label, string $class)
+    public function addLabel(string $label, string $class): void
     {
         $this->labels[] = compact('label', 'class');
     }
@@ -168,7 +168,7 @@ trait RecordTrait
      *
      * @return void
      */
-    public function setLabels(array $labels)
+    public function setLabels(array $labels): void
     {
         $this->labels = $labels;
     }
@@ -178,7 +178,7 @@ trait RecordTrait
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */
-    public function getLabels()
+    public function getLabels(): array
     {
         return $this->labels;
     }

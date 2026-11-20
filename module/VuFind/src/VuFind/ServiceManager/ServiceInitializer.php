@@ -52,7 +52,7 @@ class ServiceInitializer implements InitializerInterface
      *
      * @return bool
      */
-    protected function isCacheEnabled(ContainerInterface $sm)
+    protected function isCacheEnabled(ContainerInterface $sm): bool
     {
         // Use static cache to save time on repeated lookups:
         static $enabled = null;
@@ -83,7 +83,7 @@ class ServiceInitializer implements InitializerInterface
      *
      * @return object
      */
-    public function __invoke(ContainerInterface $sm, object $instance)
+    public function __invoke(ContainerInterface $sm, object $instance): object
     {
         if ($instance instanceof \VuFind\Db\Service\DbServiceAwareInterface) {
             $instance->setDbServiceManager(

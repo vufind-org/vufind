@@ -77,7 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    protected function getExpectedInterface(): string
     {
         return LayerInterface::class;
     }

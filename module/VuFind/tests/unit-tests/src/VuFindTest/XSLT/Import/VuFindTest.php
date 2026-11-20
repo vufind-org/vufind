@@ -51,7 +51,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindTest\Container\MockContainer
      */
-    protected function getMockContainer()
+    protected function getMockContainer(): \VuFindTest\Container\MockContainer
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
@@ -64,7 +64,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetChangeTracker()
+    public function testGetChangeTracker(): void
     {
         VuFind::setServiceLocator($this->getMockContainer());
         $this->assertInstanceOf(\VuFind\Db\Service\ChangeTrackerServiceInterface::class, VuFind::getChangeTracker());
@@ -75,7 +75,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetConfig()
+    public function testGetConfig(): void
     {
         $container = $this->getMockContainer();
         $this->addConfigRelatedServicesToContainer($container);
@@ -89,7 +89,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHarvestTextFile()
+    public function testHarvestTextFile(): void
     {
         $this->assertEquals(
             file_get_contents(__FILE__),
@@ -102,7 +102,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripBadChars()
+    public function testStripBadChars(): void
     {
         $this->assertEquals('f oo', VuFind::stripBadChars('f' . chr(8) . 'oo'));
     }
@@ -112,7 +112,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMapString()
+    public function testMapString(): void
     {
         $this->assertEquals(
             'CD',
@@ -125,7 +125,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStripArticles()
+    public function testStripArticles(): void
     {
         $this->assertEquals('title', VuFind::stripArticles('The Title'));
         $this->assertEquals('title', VuFind::stripArticles('A Title'));
@@ -137,7 +137,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testXmlAsText()
+    public function testXmlAsText(): void
     {
         $doc = new \DOMDocument('1.0');
         $node = new \DOMElement('bar', 'foo');
@@ -151,7 +151,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRemoveTagAndReturnXMLasText()
+    public function testRemoveTagAndReturnXMLasText(): void
     {
         $doc = new \DOMDocument('1.0');
         $node = new \DOMElement('bar', 'foo');
@@ -169,7 +169,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExplode()
+    public function testExplode(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<part>a</part>\n<part>b</part>\n";
@@ -184,7 +184,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testImplode()
+    public function testImplode(): void
     {
         $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
@@ -200,7 +200,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExtractBestDateOrRange()
+    public function testExtractBestDateOrRange(): void
     {
         $data = [
             '1990' => ['foo', 'bar', '1990'],
@@ -225,7 +225,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExtractEarliestYear()
+    public function testExtractEarliestYear(): void
     {
         $data = [
             'October 9, 1990 (approx)' => '1990',

@@ -50,7 +50,7 @@ class OptimizeDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXML()
+    public function testAsXML(): void
     {
         $document = new OptimizeDocument(false);
         $this->assertSame(
@@ -69,7 +69,7 @@ class OptimizeDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXMLWithWaitSearcher()
+    public function testAsXMLWithWaitSearcher(): void
     {
         $document = new OptimizeDocument(true, true);
         $xml = $document->getContent();

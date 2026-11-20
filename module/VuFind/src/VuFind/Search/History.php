@@ -68,7 +68,7 @@ class History
      *
      * @return void
      */
-    public function purgeSearchHistory(int $userId = null)
+    public function purgeSearchHistory(int $userId = null): void
     {
         $this->searchService->destroySession($this->sessionId, $userId);
     }
@@ -80,7 +80,7 @@ class History
      *
      * @return array
      */
-    public function getSearchHistory(int $userId = null)
+    public function getSearchHistory(int $userId = null): array
     {
         // Retrieve search history
         $searchHistory = $this->searchService->getSearches($this->sessionId, $userId);
@@ -110,7 +110,7 @@ class History
      *
      * @return array
      */
-    public function getScheduleOptions()
+    public function getScheduleOptions(): array
     {
         // If scheduled searches are disabled, return no options:
         if (!($this->config['Account']['schedule_searches'] ?? false)) {

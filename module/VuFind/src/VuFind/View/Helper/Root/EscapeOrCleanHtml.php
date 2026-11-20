@@ -84,7 +84,7 @@ class EscapeOrCleanHtml
         ?string $dataContext = null,
         ?bool $allowHtml = null,
         string $renderingContext = 'default'
-    ) {
+    ): mixed {
         if ($value instanceof PropertyStringInterface) {
             if (
                 ($allowHtml ?? ($dataContext && ($this->htmlContexts[$dataContext] ?? false)))
@@ -104,7 +104,7 @@ class EscapeOrCleanHtml
      *
      * @return string
      */
-    protected function escape(string $value)
+    protected function escape(string $value): string
     {
         return $this->escaper->escapeHtml($value);
     }

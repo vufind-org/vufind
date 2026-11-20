@@ -50,14 +50,14 @@ interface BackendInterface
      *
      * @return void
      */
-    public function setIdentifier(string $identifier);
+    public function setIdentifier(string $identifier): void;
 
     /**
      * Return backend identifier.
      *
      * @return string
      */
-    public function getIdentifier();
+    public function getIdentifier(): string;
 
     /**
      * Perform a search and return record collection.
@@ -74,7 +74,7 @@ interface BackendInterface
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    );
+    ): \VuFindSearch\Response\RecordCollectionInterface;
 
     /**
      * Retrieve a single document.
@@ -84,5 +84,5 @@ interface BackendInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null);
+    public function retrieve(string $id, ?ParamBag $params = null): \VuFindSearch\Response\RecordCollectionInterface;
 }

@@ -111,7 +111,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return Spellcheck
      */
-    public function getSpellcheck()
+    public function getSpellcheck(): Spellcheck
     {
         if (!$this->spellcheck) {
             $this->spellcheck = new Spellcheck(
@@ -127,7 +127,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['response']['numFound'];
     }
@@ -140,7 +140,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         if (null === $this->facetFields) {
             $this->facetFields = [];
@@ -207,7 +207,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getQueryFacets()
+    public function getQueryFacets(): array
     {
         return $this->response['facet_counts']['facet_queries'] ?? [];
     }
@@ -221,7 +221,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getPivotFacets()
+    public function getPivotFacets(): array
     {
         $result = [];
         foreach (
@@ -239,7 +239,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getGroups()
+    public function getGroups(): array
     {
         return $this->response['grouped'] ?? [];
     }
@@ -249,7 +249,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getHighlighting()
+    public function getHighlighting(): array
     {
         return $this->response['highlighting'] ?? [];
     }
@@ -259,7 +259,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return string
      */
-    public function getCursorMark()
+    public function getCursorMark(): string
     {
         return $this->response['nextCursorMark'] ?? '';
     }
@@ -269,7 +269,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return mixed
      */
-    public function getMaxScore()
+    public function getMaxScore(): mixed
     {
         return $this->response['response']['maxScore'] ?? null;
     }
@@ -279,7 +279,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getResponseHeader()
+    public function getResponseHeader(): array
     {
         return $this->response['responseHeader'] ?? [];
     }
@@ -289,7 +289,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    protected function getSolrParameters()
+    protected function getSolrParameters(): array
     {
         return $this->response['responseHeader']['params'] ?? [];
     }
@@ -299,7 +299,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return string
      */
-    protected function getSpellcheckQuery()
+    protected function getSpellcheckQuery(): string
     {
         $params = $this->getSolrParameters();
         return $params['spellcheck.q'] ?? ($params['q'] ?? '');
@@ -310,7 +310,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    protected function getRawSpellcheckSuggestions()
+    protected function getRawSpellcheckSuggestions(): array
     {
         return $this->response['spellcheck']['suggestions'] ?? [];
     }

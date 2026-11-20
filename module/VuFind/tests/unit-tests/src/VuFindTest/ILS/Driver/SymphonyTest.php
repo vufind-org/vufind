@@ -66,7 +66,7 @@ class SymphonyTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadBaseUrl()
+    public function testBadBaseUrl(): void
     {
         // Without SOAP functionality, we can't proceed:
         if (!class_exists('SoapClient')) {

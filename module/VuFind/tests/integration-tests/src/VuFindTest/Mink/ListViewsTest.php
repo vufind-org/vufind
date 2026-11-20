@@ -62,7 +62,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function goToSearch()
+    protected function goToSearch(): Element
     {
         $page = $this->getSearchHomePage();
         $this->findCss($page, '#searchForm_lookfor')
@@ -78,7 +78,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function goToRecord()
+    protected function goToRecord(): Element
     {
         $page = $this->goToSearch();
         $this->clickCss($page, '.result a.title');
@@ -93,7 +93,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCommentsInTabMode()
+    public function testCommentsInTabMode(): void
     {
         // Change the theme:
         $this->changeConfigs(
@@ -164,7 +164,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testFavoritesInTabMode()
+    public function testFavoritesInTabMode(): void
     {
         // Change the theme:
         $this->changeConfigs(
@@ -231,7 +231,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function localStorageDance()
+    protected function localStorageDance(): void
     {
         $page = $this->goToRecord();
         $session = $this->getMinkSession();
@@ -267,7 +267,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testSavedOpenInTabsMode()
+    public function testSavedOpenInTabsMode(): void
     {
         // Change the theme:
         $this->changeConfigs(
@@ -281,7 +281,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testSavedOpenInAccordionMode()
+    public function testSavedOpenInAccordionMode(): void
     {
         // Change the theme:
         $this->changeConfigs(

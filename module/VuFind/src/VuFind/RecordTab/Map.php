@@ -113,7 +113,7 @@ class Map extends AbstractBase
      *
      * @return bool
      */
-    public function supportsAjax()
+    public function supportsAjax(): bool
     {
         // No, magic required
         return false;
@@ -124,7 +124,7 @@ class Map extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Map View';
     }
@@ -134,7 +134,7 @@ class Map extends AbstractBase
      *
      * @return string
      */
-    public function getMapGraticule()
+    public function getMapGraticule(): string
     {
         return $this->graticule;
     }
@@ -144,7 +144,7 @@ class Map extends AbstractBase
      *
      * @return array
      */
-    public function getBasemap()
+    public function getBasemap(): array
     {
         return $this->basemapOptions;
     }
@@ -154,7 +154,7 @@ class Map extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         if ($this->mapTabDisplay) {
             $geocoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
@@ -168,7 +168,7 @@ class Map extends AbstractBase
      *
      * @return array
      */
-    public function getGeoLocationCoords()
+    public function getGeoLocationCoords(): array
     {
         $geoCoords = $this->getRecordDriver()->tryMethod('getGeoLocation');
         if (empty($geoCoords)) {
@@ -195,7 +195,7 @@ class Map extends AbstractBase
      *
      * @return array
      */
-    public function getDisplayCoords()
+    public function getDisplayCoords(): array
     {
         $label_coords = [];
         $coords = $this->getRecordDriver()->tryMethod('getDisplayCoordinates');
@@ -223,7 +223,7 @@ class Map extends AbstractBase
      *
      * @return array
      */
-    public function getMapLabels()
+    public function getMapLabels(): array
     {
         $mapLabelData = explode(':', $this->mapLabels);
         if ($mapLabelData[0] == 'driver') {
@@ -265,7 +265,7 @@ class Map extends AbstractBase
      *
      * @return array
      */
-    public function getMapTabData()
+    public function getMapTabData(): array
     {
         $geoCoords = $this->getGeoLocationCoords();
         if (empty($geoCoords)) {

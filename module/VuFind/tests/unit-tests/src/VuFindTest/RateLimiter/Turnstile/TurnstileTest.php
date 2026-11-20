@@ -52,7 +52,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsChallengeAllowed()
+    public function testIsChallengeAllowed(): void
     {
         $event = new MvcEvent();
         $turnstile = $this->buildTurnstile();
@@ -81,7 +81,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidateAndCacheResults()
+    public function testValidateAndCacheResults(): void
     {
         $policyId = 'policy1';
         $clientIp = '111.222.123.213';

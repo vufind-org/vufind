@@ -64,7 +64,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAlphaBrowseSeeAlso()
+    public function testAlphaBrowseSeeAlso(): void
     {
         $solr = $this->getBackend();
         $extras = new ParamBag(['extras' => 'id']);
@@ -82,7 +82,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAlphaBrowseUseInstead()
+    public function testAlphaBrowseUseInstead(): void
     {
         $solr = $this->getBackend();
         $extras = new ParamBag(['extras' => 'id']);
@@ -101,7 +101,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDeweyValues()
+    public function testDeweyValues(): void
     {
         $solr = $this->getBackend();
         $extras = new ParamBag(['extras' => 'id']);
@@ -122,7 +122,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTermsHandler()
+    public function testTermsHandler(): void
     {
         $solr = $this->getBackend();
         $currentPageInfo = $solr->terms('id', 'test', 1)->getFieldTerms('id');

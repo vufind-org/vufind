@@ -80,7 +80,7 @@ class ContentCafe extends \VuFind\Content\AbstractCover
      *
      * @return string|bool
      */
-    public function getUrl(string $key, string $size, array $ids)
+    public function getUrl(string $key, string $size, array $ids): string|bool
     {
         $size = strtoupper(substr($size, 0, 1));
 

@@ -50,7 +50,7 @@ class UpdateDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXML()
+    public function testAsXML(): void
     {
         $record = $this->createMock(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
         $record->expects($this->once())

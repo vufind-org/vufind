@@ -113,7 +113,7 @@ class Generator
      *
      * @return void
      */
-    public function setOptions(array $rawSettings)
+    public function setOptions(array $rawSettings): void
     {
         // Merge incoming settings with defaults:
         $settings = $rawSettings + $this->defaultSettings;
@@ -142,7 +142,7 @@ class Generator
      *
      * @return void
      */
-    protected function initImage()
+    protected function initImage(): void
     {
         // Create image
         $this->im = imagecreate($this->settings->width, $this->settings->height);
@@ -156,7 +156,7 @@ class Generator
      *
      * @return void
      */
-    protected function destroyImage()
+    protected function destroyImage(): void
     {
         imagedestroy($this->im);
     }
@@ -166,7 +166,7 @@ class Generator
      *
      * @return string
      */
-    protected function renderPng()
+    protected function renderPng(): string
     {
         ob_start();
         imagepng($this->im);
@@ -184,7 +184,7 @@ class Generator
      *
      * @return string contents of image file
      */
-    public function generate(string $title, string $author, string $callnumber = null)
+    public function generate(string $title, string $author, string $callnumber = null): string
     {
         $details = compact('title', 'author', 'callnumber');
 
@@ -203,7 +203,7 @@ class Generator
      *
      * @return LayerInterface
      */
-    protected function getBackgroundLayer()
+    protected function getBackgroundLayer(): LayerInterface
     {
         $service = strtolower($this->settings->backgroundMode) . 'background';
         return $this->layerManager->get(
@@ -216,7 +216,7 @@ class Generator
      *
      * @return LayerInterface
      */
-    protected function getTextLayer()
+    protected function getTextLayer(): LayerInterface
     {
         $service = strtolower($this->settings->textMode) . 'text';
         return $this->layerManager->get(
@@ -231,7 +231,7 @@ class Generator
      *
      * @return string file path
      */
-    protected function fontPath(string $font)
+    protected function fontPath(string $font): string
     {
         // Check all supported image formats:
         $filenames = ['css/font/' . $font];

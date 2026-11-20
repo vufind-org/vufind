@@ -144,7 +144,7 @@ class Generator
      *
      * @return callable|null Current verbose callback (null if disabled)
      */
-    public function setVerbose(?callable $newMode = null)
+    public function setVerbose(?callable $newMode = null): ?callable
     {
         if (null !== $newMode) {
             $this->verbose = $newMode;
@@ -159,7 +159,7 @@ class Generator
      *
      * @return void
      */
-    protected function verboseMsg(string $msg)
+    protected function verboseMsg(string $msg): void
     {
         if (is_callable($this->verbose)) {
             call_user_func($this->verbose, $msg);
@@ -173,7 +173,7 @@ class Generator
      *
      * @return string Current or new base url
      */
-    public function setBaseUrl(string $newUrl = null)
+    public function setBaseUrl(string $newUrl = null): string
     {
         if (null !== $newUrl) {
             $this->baseUrl = $newUrl;
@@ -188,7 +188,7 @@ class Generator
      *
      * @return string Current or new base sitemap url
      */
-    public function setBaseSitemapUrl(string $newUrl = null)
+    public function setBaseSitemapUrl(string $newUrl = null): string
     {
         if (null !== $newUrl) {
             $this->baseSitemapUrl = $newUrl;
@@ -216,7 +216,7 @@ class Generator
      *
      * @return float
      */
-    protected function getTime()
+    protected function getTime(): float
     {
         $time = explode(' ', microtime());
         return $time[1] + $time[0];
@@ -227,7 +227,7 @@ class Generator
      *
      * @return void
      */
-    public function generate()
+    public function generate(): void
     {
         // Start timer:
         $startTime = $this->getTime();
@@ -315,7 +315,7 @@ class Generator
      *
      * @return array
      */
-    public function getWarnings()
+    public function getWarnings(): array
     {
         return $this->warnings;
     }
@@ -327,7 +327,7 @@ class Generator
      *
      * @return void
      */
-    protected function buildIndex(array $sitemaps)
+    protected function buildIndex(array $sitemaps): void
     {
         // Only build index file if requested:
         if ($this->indexFile !== false) {
@@ -378,7 +378,7 @@ class Generator
      *
      * @return SitemapIndex
      */
-    protected function getNewSitemapIndex()
+    protected function getNewSitemapIndex(): SitemapIndex
     {
         return new SitemapIndex();
     }
@@ -388,7 +388,7 @@ class Generator
      *
      * @return Sitemap
      */
-    protected function getNewSitemap()
+    protected function getNewSitemap(): Sitemap
     {
         return new Sitemap($this->frequency);
     }
@@ -401,7 +401,7 @@ class Generator
      *
      * @return string
      */
-    protected function getFilenameForPage(int|string $page, bool $includePath = true)
+    protected function getFilenameForPage(int|string $page, bool $includePath = true): string
     {
         return ($includePath ? $this->fileLocation . '/' : '')
             . $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';
@@ -412,7 +412,7 @@ class Generator
      *
      * @return string
      */
-    protected function getBaseSitemapIndexUrl()
+    protected function getBaseSitemapIndexUrl(): string
     {
         // Pick the appropriate base URL based on the configuration files:
         return $this->baseSitemapUrl;

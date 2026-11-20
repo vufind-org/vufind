@@ -67,7 +67,7 @@ class CleanUpRecordCacheCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Removes unused cached records from the database.')

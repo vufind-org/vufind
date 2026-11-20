@@ -71,7 +71,7 @@ class UserComments extends AbstractBase
      *
      * @return bool
      */
-    public function isCaptchaActive()
+    public function isCaptchaActive(): bool
     {
         return $this->useCaptcha;
     }
@@ -81,7 +81,7 @@ class UserComments extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->enabled;
     }
@@ -91,7 +91,7 @@ class UserComments extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Comments';
     }

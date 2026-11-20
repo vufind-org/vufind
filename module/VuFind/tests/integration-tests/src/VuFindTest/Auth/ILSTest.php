@@ -87,7 +87,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver(string $type = 'Sample', array $methods = ['patronLogin'])
+    protected function getMockDriver(string $type = 'Sample', array $methods = ['patronLogin']): \VuFind\ILS\Driver\Sample
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
@@ -104,7 +104,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Auth\ILS
      */
-    protected function getAuth(\VuFind\ILS\Driver\AbstractBase $driver = null, array $patron = null)
+    protected function getAuth(\VuFind\ILS\Driver\AbstractBase $driver = null, array $patron = null): \VuFind\Auth\ILS
     {
         if (empty($driver)) {
             $driver = $this->getMockDriver();
@@ -133,7 +133,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateIsDisallowed()
+    public function testCreateIsDisallowed(): void
     {
         $this->assertFalse($this->getAuth()->supportsCreation());
     }
@@ -146,7 +146,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\Http\Request
      */
-    protected function getLoginRequest(array $overrides = [])
+    protected function getLoginRequest(array $overrides = []): \Laminas\Http\Request
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass',
@@ -161,7 +161,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -174,7 +174,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -187,7 +187,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadLoginResponse()
+    public function testBadLoginResponse(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -206,7 +206,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLogin()
+    public function testLogin(): void
     {
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
@@ -226,7 +226,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithMissingCatId()
+    public function testLoginWithMissingCatId(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
@@ -252,7 +252,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpdateUserPasswordWithEmptyValue()
+    public function testUpdateUserPasswordWithEmptyValue(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Password cannot be blank');
@@ -273,7 +273,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpdateUserPasswordWithoutLoggedInUser()
+    public function testUpdateUserPasswordWithoutLoggedInUser(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
@@ -293,7 +293,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpdateUserPasswordWithMismatch()
+    public function testUpdateUserPasswordWithMismatch(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Passwords do not match');
@@ -314,7 +314,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpdateUserPassword()
+    public function testUpdateUserPassword(): void
     {
         $request = $this->getLoginRequest(
             [
@@ -337,7 +337,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpdateUserPasswordUsingCatIdField()
+    public function testUpdateUserPasswordUsingCatIdField(): void
     {
         $request = $this->getLoginRequest(
             [
@@ -375,7 +375,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Auth\ILSAuthenticator
      */
-    protected function getMockILSAuthenticator(array $patron = null)
+    protected function getMockILSAuthenticator(array $patron = null): \VuFind\Auth\ILSAuthenticator
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()

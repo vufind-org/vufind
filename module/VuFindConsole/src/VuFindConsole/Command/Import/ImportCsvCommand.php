@@ -79,7 +79,7 @@ class ImportCsvCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Indexes CSV files into Solr.')

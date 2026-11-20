@@ -51,7 +51,7 @@ class MultiIdPConfigurationLoader implements
      * @throws \VuFind\Exception\Auth
      * @return array shibboleth configuration
      */
-    public function getConfiguration(string $entityId)
+    public function getConfiguration(string $entityId): array
     {
         $config = $this->config['Shibboleth'] ?? [];
         $idpConfig = null;

@@ -55,7 +55,7 @@ class AbstractBaseFactory implements FactoryInterface
      *
      * @return AbstractBase
      */
-    protected function applyPermissions(ContainerInterface $container, AbstractBase $controller)
+    protected function applyPermissions(ContainerInterface $container, AbstractBase $controller): AbstractBase
     {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissionBehavior');
         $permissions = $config['global']['controllerAccess'] ?? [];
@@ -112,7 +112,7 @@ class AbstractBaseFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return $this->applyPermissions(
             $container,
             new $requestedName($container, ...($options ?: []))

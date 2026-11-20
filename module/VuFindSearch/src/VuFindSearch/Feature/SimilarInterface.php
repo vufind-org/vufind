@@ -50,5 +50,5 @@ interface SimilarInterface
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function similar(string $id, ?ParamBag $params = null);
+    public function similar(string $id, ?ParamBag $params = null): \VuFindSearch\Response\RecordCollectionInterface;
 }

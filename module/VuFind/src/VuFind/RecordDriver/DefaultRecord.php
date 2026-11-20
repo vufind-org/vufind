@@ -83,7 +83,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getAccessRestrictions()
+    public function getAccessRestrictions(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -102,7 +102,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         $headings = [];
         foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
@@ -128,7 +128,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array Subject headings
      */
-    public function getAllSubjectHeadingsFlattened()
+    public function getAllSubjectHeadingsFlattened(): array
     {
         $headings = [];
         $subjects = $this->getAllSubjectHeadings();
@@ -158,7 +158,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return null|array
      */
-    public function getAllRecordLinks()
+    public function getAllRecordLinks(): ?array
     {
         return null;
     }
@@ -175,7 +175,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getAuthorDataFields(string $index, array $dataFields = [])
+    public function getAuthorDataFields(string $index, array $dataFields = []): array
     {
         $data = $dataFieldValues = [];
 
@@ -212,7 +212,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getAwards()
+    public function getAwards(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -223,7 +223,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getBibliographyNotes()
+    public function getBibliographyNotes(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -235,7 +235,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string Breadcrumb text to represent this record.
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb(): string
     {
         return $this->getShortTitle();
     }
@@ -245,7 +245,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getCallNumber()
+    public function getCallNumber(): string
     {
         $all = $this->getCallNumbers();
         return $all[0] ?? '';
@@ -256,7 +256,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getCallNumbers()
+    public function getCallNumbers(): array
     {
         return array_unique((array)($this->fields['callnumber-raw'] ?? []));
     }
@@ -266,7 +266,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanDOI()
+    public function getCleanDOI(): mixed
     {
         $field = 'doi_str_mv';
         return !empty($this->fields[$field][0]) ? $this->fields[$field][0] : false;
@@ -278,7 +278,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanISBN()
+    public function getCleanISBN(): mixed
     {
         // Get all the ISBNs and initialize the return value:
         $isbns = $this->getISBNs();
@@ -354,7 +354,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanISSN()
+    public function getCleanISSN(): mixed
     {
         $issns = $this->getISSNs();
         if (empty($issns)) {
@@ -372,7 +372,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanOCLCNum()
+    public function getCleanOCLCNum(): mixed
     {
         $nums = $this->getOCLC();
         return empty($nums) ? false : $nums[0];
@@ -383,7 +383,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanUPC()
+    public function getCleanUPC(): mixed
     {
         $nums = $this->getUPC();
         return empty($nums) ? false : $nums[0];
@@ -395,7 +395,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanNBN()
+    public function getCleanNBN(): mixed
     {
         return false;
     }
@@ -405,7 +405,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanISMN()
+    public function getCleanISMN(): mixed
     {
         return false;
     }
@@ -415,7 +415,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getCorporateAuthors()
+    public function getCorporateAuthors(): array
     {
         return (array)($this->fields['author_corporate'] ?? []);
     }
@@ -425,7 +425,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getCorporateAuthorsRoles()
+    public function getCorporateAuthorsRoles(): array
     {
         return (array)($this->fields['author_corporate_role'] ?? []);
     }
@@ -437,7 +437,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getDateSpan()
+    public function getDateSpan(): array
     {
         return (array)($this->fields['dateSpan'] ?? []);
     }
@@ -451,7 +451,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getDeduplicatedAuthors(array $dataFields = ['role'])
+    public function getDeduplicatedAuthors(array $dataFields = ['role']): array
     {
         $authors = [];
         foreach (['primary', 'secondary', 'corporate'] as $type) {
@@ -500,7 +500,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getEdition()
+    public function getEdition(): string
     {
         return $this->fields['edition'] ?? '';
     }
@@ -510,7 +510,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getFindingAids()
+    public function getFindingAids(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -521,7 +521,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         return (array)($this->fields['format'] ?? []);
     }
@@ -531,7 +531,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getGeneralNotes()
+    public function getGeneralNotes(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -542,7 +542,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getRawAuthorHighlights()
+    public function getRawAuthorHighlights(): array
     {
         // Not supported by default.
         return [];
@@ -553,7 +553,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPrimaryAuthorsWithHighlighting()
+    public function getPrimaryAuthorsWithHighlighting(): array
     {
         $highlights = [];
         // Create a map of de-highlighted values => highlighted values.
@@ -580,7 +580,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getLastIndexed()
+    public function getLastIndexed(): string
     {
         return $this->fields['last_indexed'] ?? '';
     }
@@ -605,7 +605,7 @@ class DefaultRecord extends AbstractBase
      * @return mixed False if no snippet found, otherwise associative array
      * with 'snippet' and 'caption' keys.
      */
-    public function getHighlightedSnippet()
+    public function getHighlightedSnippet(): mixed
     {
         // Not supported by default.
         return false;
@@ -616,7 +616,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getHighlightedTitle()
+    public function getHighlightedTitle(): string
     {
         // Not supported by default.
         return '';
@@ -627,7 +627,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getInstitutions()
+    public function getInstitutions(): array
     {
         return (array)($this->fields['institution'] ?? []);
     }
@@ -637,7 +637,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getBuildings()
+    public function getBuildings(): array
     {
         return (array)($this->fields['building'] ?? []);
     }
@@ -647,7 +647,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getISBNs()
+    public function getISBNs(): array
     {
         return (array)($this->fields['isbn'] ?? []);
     }
@@ -657,7 +657,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         return (array)($this->fields['issn'] ?? []);
     }
@@ -667,7 +667,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         return (array)($this->fields['language'] ?? []);
     }
@@ -677,7 +677,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    protected function getRawLCCN()
+    protected function getRawLCCN(): string
     {
         // Get LCCN from Index
         return $this->fields['lccn'] ?? '';
@@ -688,7 +688,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getLCCN()
+    public function getLCCN(): string
     {
         // Remove all blanks.
         $raw = preg_replace('{[ \t]+}', '', $this->getRawLCCN());
@@ -722,7 +722,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getNewerTitles()
+    public function getNewerTitles(): array
     {
         return (array)($this->fields['title_new'] ?? []);
     }
@@ -732,7 +732,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getOCLC()
+    public function getOCLC(): array
     {
         return (array)($this->fields['oclc_num'] ?? []);
     }
@@ -742,7 +742,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    protected function getOpenUrlFormat()
+    protected function getOpenUrlFormat(): string
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...
@@ -781,7 +781,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    protected function getCoinsID()
+    protected function getCoinsID(): string
     {
         // Get the COinS ID -- it should be in the OpenURL section of config.ini,
         // but we'll also check the COinS section for compatibility with legacy
@@ -800,7 +800,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    protected function getDefaultOpenUrlParams()
+    protected function getDefaultOpenUrlParams(): array
     {
         // Get a representative publication date:
         $pubDate = $this->getPublicationDates();
@@ -830,7 +830,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    protected function getBookOpenUrlParams()
+    protected function getBookOpenUrlParams(): array
     {
         $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:book';
@@ -861,7 +861,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    protected function getArticleOpenUrlParams()
+    protected function getArticleOpenUrlParams(): array
     {
         $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
@@ -893,7 +893,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    protected function getUnknownFormatOpenUrlParams(string $format = 'UnknownFormat')
+    protected function getUnknownFormatOpenUrlParams(string $format = 'UnknownFormat'): array
     {
         $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
@@ -915,7 +915,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    protected function getJournalOpenUrlParams()
+    protected function getJournalOpenUrlParams(): array
     {
         $params = $this->getUnknownFormatOpenUrlParams('Journal');
         /* This is probably the most technically correct way to represent
@@ -956,7 +956,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string OpenURL parameters.
      */
-    public function getOpenUrl(bool $overrideSupportsOpenUrl = false)
+    public function getOpenUrl(bool $overrideSupportsOpenUrl = false): string
     {
         // stop here if this record does not support OpenURLs
         if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
@@ -988,7 +988,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string OpenURL parameters.
      */
-    public function getCoinsOpenUrl()
+    public function getCoinsOpenUrl(): string
     {
         return $this->getOpenUrl($this->supportsCoinsOpenUrl());
     }
@@ -998,7 +998,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPhysicalDescriptions()
+    public function getPhysicalDescriptions(): array
     {
         return (array)($this->fields['physical'] ?? []);
     }
@@ -1008,7 +1008,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPlacesOfPublication()
+    public function getPlacesOfPublication(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1019,7 +1019,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPlayingTimes()
+    public function getPlayingTimes(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1030,7 +1030,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPreviousTitles()
+    public function getPreviousTitles(): array
     {
         return (array)($this->fields['title_old'] ?? []);
     }
@@ -1040,7 +1040,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthor(): string
     {
         $authors = $this->getPrimaryAuthors();
         return $authors[0] ?? '';
@@ -1051,7 +1051,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         return (array)($this->fields['author'] ?? []);
     }
@@ -1062,7 +1062,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPrimaryAuthorsRoles()
+    public function getPrimaryAuthorsRoles(): array
     {
         return (array)($this->fields['author_role'] ?? []);
     }
@@ -1072,7 +1072,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getProductionCredits()
+    public function getProductionCredits(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1083,7 +1083,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         return (array)($this->fields['publishDate'] ?? []);
     }
@@ -1094,7 +1094,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getHumanReadablePublicationDates()
+    public function getHumanReadablePublicationDates(): array
     {
         return $this->getPublicationDates();
     }
@@ -1105,7 +1105,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPublicationDetails()
+    public function getPublicationDetails(): array
     {
         $places = $this->getPlacesOfPublication();
         $names = $this->getPublishers();
@@ -1132,7 +1132,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPublicationFrequency()
+    public function getPublicationFrequency(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1143,7 +1143,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getPublishers()
+    public function getPublishers(): array
     {
         return (array)($this->fields['publisher'] ?? []);
     }
@@ -1154,7 +1154,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getRealTimeHistory()
+    public function getRealTimeHistory(): array
     {
         // Not supported by the default index schema -- implement in child classes.
         return [];
@@ -1166,7 +1166,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings(): array
     {
         // Not supported by the default index schema -- implement in child classes.
         return ['holdings' => []];
@@ -1177,7 +1177,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getRelationshipNotes()
+    public function getRelationshipNotes(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1188,7 +1188,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getSecondaryAuthors(): array
     {
         return (array)($this->fields['author2'] ?? []);
     }
@@ -1199,7 +1199,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getSecondaryAuthorsRoles()
+    public function getSecondaryAuthorsRoles(): array
     {
         return (array)($this->fields['author2_role'] ?? []);
     }
@@ -1211,7 +1211,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getSeries()
+    public function getSeries(): array
     {
         // Only use the contents of the series2 field if the series field is empty
         return !empty($this->fields['series'])
@@ -1224,7 +1224,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         // title_short is a single-valued field in the default schema, but tolerating
         // multi-values improves compatibility with custom schemas (e.g. K10plus-Zentral)
@@ -1237,7 +1237,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getSource()
+    public function getSource(): string
     {
         // Not supported in base class:
         return '';
@@ -1248,7 +1248,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getSubtitle()
+    public function getSubtitle(): string
     {
         // title_sub is a single-valued field in the default schema, but tolerating
         // multi-values improves compatibility with custom schemas (e.g. K10plus-Zentral)
@@ -1261,7 +1261,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getSystemDetails()
+    public function getSystemDetails(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1272,7 +1272,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getSummary()
+    public function getSummary(): array
     {
         // We need to return an array, so if we have a description, turn it into an
         // array (it is a flat string in the default Solr schema, but we also
@@ -1285,7 +1285,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getTargetAudienceNotes()
+    public function getTargetAudienceNotes(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1302,7 +1302,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string|array|bool
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string|array|bool
     {
         if (!empty($this->fields['thumbnail'])) {
             return $this->fields['thumbnail'];
@@ -1356,7 +1356,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         // title is a single-valued field in the default schema, but tolerating multi-
         // values improves compatibility with custom schemas (e.g. K10plus-Zentral)
@@ -1369,7 +1369,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getTitleSection()
+    public function getTitleSection(): string
     {
         // Not currently stored in the default index schema
         return '';
@@ -1381,7 +1381,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getTitleStatement()
+    public function getTitleStatement(): string
     {
         // Not currently stored in the default index schema
         return '';
@@ -1392,7 +1392,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getTOC()
+    public function getTOC(): array
     {
         return (array)($this->fields['contents'] ?? []);
     }
@@ -1402,7 +1402,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getHierarchicalPlaceNames()
+    public function getHierarchicalPlaceNames(): array
     {
         // Not currently stored in the default index schema
         return [];
@@ -1413,7 +1413,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getUPC()
+    public function getUPC(): array
     {
         return (array)($this->fields['upc_str_mv'] ?? []);
     }
@@ -1425,7 +1425,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getUuids()
+    public function getUuids(): array
     {
         return (array)($this->fields['uuid_str_mv'] ?? []);
     }
@@ -1436,7 +1436,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed
      */
-    public function getCleanUuid()
+    public function getCleanUuid(): mixed
     {
         $uuids = $this->getUuids();
         return empty($uuids) ? false : $uuids[0];
@@ -1456,7 +1456,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         $filter = function ($url) {
             return ['url' => $url];
@@ -1469,7 +1469,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getHierarchyTopID()
+    public function getHierarchyTopID(): array
     {
         // Unsupported by default:
         return [];
@@ -1480,7 +1480,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getHierarchyTopTitle()
+    public function getHierarchyTopTitle(): array
     {
         // Unsupported by default:
         return [];
@@ -1491,7 +1491,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getContainingCollections()
+    public function getContainingCollections(): array
     {
         // Unsupported by default:
         return [];
@@ -1505,7 +1505,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return bool
      */
-    public function isCollection()
+    public function isCollection(): bool
     {
         // Unsupported by default:
         return false;
@@ -1531,7 +1531,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string|bool
      */
-    public function getHierarchyType()
+    public function getHierarchyType(): string|bool
     {
         // Unsupported by default:
         return false;
@@ -1544,7 +1544,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         if (!isset($this->fields['id'])) {
             throw new \Exception('ID not set!');
@@ -1565,7 +1565,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed XML, or false if format unsupported.
      */
-    public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null)
+    public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null): mixed
     {
         // For OAI-PMH Dublin Core, produce the necessary XML:
         if ($format === 'oai_dc') {
@@ -1621,7 +1621,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array Strings representing citation formats.
      */
-    protected function getSupportedCitationFormats()
+    protected function getSupportedCitationFormats(): array
     {
         return ['APA', 'Chicago', 'MLA'];
     }
@@ -1632,7 +1632,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getContainerTitle()
+    public function getContainerTitle(): string
     {
         return $this->fields['container_title'] ?? '';
     }
@@ -1643,7 +1643,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getContainerVolume()
+    public function getContainerVolume(): string
     {
         return $this->fields['container_volume'] ?? '';
     }
@@ -1654,7 +1654,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getContainerIssue()
+    public function getContainerIssue(): string
     {
         return $this->fields['container_issue'] ?? '';
     }
@@ -1665,7 +1665,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getContainerStartPage()
+    public function getContainerStartPage(): string
     {
         return $this->fields['container_start_page'] ?? '';
     }
@@ -1675,7 +1675,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getContainerEndPage()
+    public function getContainerEndPage(): string
     {
         // Not supported by the default index schema -- implement in child classes.
         return '';
@@ -1687,7 +1687,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getContainerReference()
+    public function getContainerReference(): string
     {
         return $this->fields['container_reference'] ?? '';
     }
@@ -1697,7 +1697,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string
      */
-    public function getSortTitle()
+    public function getSortTitle(): string
     {
         return $this->fields['title_sort'] ?? parent::getSortTitle();
     }
@@ -1709,7 +1709,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getSchemaOrgFormatsArray()
+    public function getSchemaOrgFormatsArray(): array
     {
         $types = [];
 
@@ -1756,7 +1756,7 @@ class DefaultRecord extends AbstractBase
      *
      * @deprecated Use \VuFind\View\Helper\Root\SchemaOrg::getRecordTypes()
      */
-    public function getSchemaOrgFormats()
+    public function getSchemaOrgFormats(): string
     {
         return implode(' ', $this->getSchemaOrgFormatsArray());
     }
@@ -1766,7 +1766,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array Array keyed by source id containing record id
      */
-    public function getDedupData()
+    public function getDedupData(): array
     {
         return $this->fields['dedup_data'] ?? [];
     }
@@ -1776,7 +1776,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return int Number of records
      */
-    public function getChildRecordCount()
+    public function getChildRecordCount(): int
     {
         // Unsupported by default
         return 0;
@@ -1787,7 +1787,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return string Container record id (empty string if none)
      */
-    public function getContainerRecordID()
+    public function getContainerRecordID(): string
     {
         // Unsupported by default
         return '';
@@ -1798,7 +1798,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getGeoLocation()
+    public function getGeoLocation(): array
     {
         return (array)($this->fields['long_lat'] ?? []);
     }
@@ -1808,7 +1808,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getDisplayCoordinates()
+    public function getDisplayCoordinates(): array
     {
         return (array)($this->fields['long_lat_display'] ?? []);
     }
@@ -1818,7 +1818,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getCoordinateLabels()
+    public function getCoordinateLabels(): array
     {
         return (array)($this->fields['long_lat_label'] ?? []);
     }

@@ -310,7 +310,7 @@ class FixDatabaseAction extends AbstractUpgradeAction
      *
      * @return bool
      */
-    protected function hasDatabaseRootCredentials()
+    protected function hasDatabaseRootCredentials(): bool
     {
         return isset($this->session->dbRootUser) && isset($this->session->dbRootPass);
     }

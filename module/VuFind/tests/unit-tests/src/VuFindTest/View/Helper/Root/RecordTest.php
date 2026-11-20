@@ -485,7 +485,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetUniqueHtmlElementId()
+    public function testGetUniqueHtmlElementId(): void
     {
         $driver = $this->loadRecordFixture('testbug1.json');
         $record = $this->getRecord($driver);
@@ -925,7 +925,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         string $tpl,
         string $response = 'success',
         ?object $matcher = null
-    ) {
+    ): void {
         $record->getViewResolver()->expects($matcher ?? $this->once())->method('resolve')
             ->with($tpl)
             ->willReturn(true);

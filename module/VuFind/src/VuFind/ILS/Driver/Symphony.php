@@ -105,7 +105,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         // Merge in defaults.
         $this->config += [
@@ -174,7 +174,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return object The SoapClient object for the specified service
      */
-    protected function getSoapClient(string $service)
+    protected function getSoapClient(string $service): object
     {
         static $soapClients = [];
 
@@ -214,7 +214,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         mixed $login = null,
         mixed $password = null,
         bool $reset = false
-    ) {
+    ): object {
         $data = ['clientID' => $this->config['WebServices']['clientID']];
         if (null !== $login) {
             $data['sessionToken']
@@ -245,7 +245,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         string $login,
         ?string $password = null,
         bool $reset = false
-    ) {
+    ): string {
         static $sessionTokens = [];
 
         // If we keyed only by $login, we might mistakenly retrieve a valid
@@ -294,7 +294,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         string $operation,
         array $parameters = [],
         array $options = []
-    ) {
+    ): mixed {
         // If provided, use the SoapHeader and skip the rest of makeRequest().
         if (isset($options['header'])) {
             return $this->getSoapClient($service)->soapCall(
@@ -369,7 +369,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws \Exception if the SymWS version is too old
      * @return void
      */
-    protected function checkSymwsVersion()
+    protected function checkSymwsVersion(): void
     {
         $resp = $this->makeRequest('standard', 'version', []);
         foreach ($resp->version as $v) {
@@ -394,7 +394,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array An associative array of items
      */
-    protected function getStatuses999Holdings(array $ids)
+    protected function getStatuses999Holdings(array $ids): array
     {
         $items   = [];
         $marcMap = [
@@ -459,7 +459,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return object Result of the "lookupTitleInfo" call to the standard service
      */
-    protected function lookupTitleInfo(array $ids)
+    protected function lookupTitleInfo(array $ids): object
     {
         $ids = is_array($ids) ? $ids : [$ids];
 
@@ -512,7 +512,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return bool             true if excluded, false if not
      */
-    protected function libraryIsFilteredOut(string $libraryID)
+    protected function libraryIsFilteredOut(string $libraryID): bool
     {
         $notIncluded = !empty($this->config['LibraryFilter']['include_only'])
             && !in_array(
@@ -543,7 +543,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         int $titleID,
         bool $is_holdable = false,
         int $bound_in = null
-    ) {
+    ): array {
         $items = [];
 
         $callInfos = is_array($callInfos) ? $callInfos : [$callInfos];
@@ -725,7 +725,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return array An array of parseCallInfo() return values on success,
      * an empty array otherwise.
      */
-    protected function parseBoundwithLinkInfo(object $boundwithLinkInfos, int $ckey)
+    protected function parseBoundwithLinkInfo(object $boundwithLinkInfos, int $ckey): array
     {
         $items = [];
 
@@ -785,7 +785,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array An array of items that are on order, an empty array otherwise.
      */
-    protected function parseTitleOrderInfo(object $titleOrderInfos, int $titleID)
+    protected function parseTitleOrderInfo(object $titleOrderInfos, int $titleID): array
     {
         $items = [];
 
@@ -861,7 +861,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array  an array (possibly empty) of VuFind items
      */
-    protected function parseMarcHoldingsInfo(object $marcHoldingsInfos, int $titleID)
+    protected function parseMarcHoldingsInfo(object $marcHoldingsInfos, int $titleID): array
     {
         $items = [];
         $marcHoldingsInfos = is_array($marcHoldingsInfos)
@@ -908,7 +908,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return array An array of parseCallInfo() return values on success,
      * an empty array otherwise.
      */
-    protected function getLiveStatuses(array $ids)
+    protected function getLiveStatuses(array $ids): array
     {
         $items = [];
         foreach ($ids as $id) {
@@ -995,7 +995,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @todo policy description override
      */
-    protected function translatePolicyID(string $policyType, string $policyID)
+    protected function translatePolicyID(string $policyType, string $policyID): string
     {
         $policyType = strtoupper($policyType);
         $policyID   = strtoupper($policyID);
@@ -1016,7 +1016,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         $statuses = $this->getStatuses([$id]);
         return $statuses[$id] ?? [];
@@ -1033,7 +1033,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array     An array of getStatus() return values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): array
     {
         if ($this->config['999Holdings']['mode']) {
             return $this->getStatuses999Holdings($ids);
@@ -1074,7 +1074,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory(string $id)
+    public function getPurchaseHistory(string $id): array
     {
         return [];
     }
@@ -1091,7 +1091,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         $usernameField = $this->config['Behaviors']['usernameField'];
 
@@ -1178,7 +1178,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         try {
             $userProfileGroupField
@@ -1259,7 +1259,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): array
     {
         try {
             $transList = [];
@@ -1319,7 +1319,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         try {
             $holdList = [];
@@ -1376,7 +1376,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         try {
             $fineList = [];
@@ -1443,7 +1443,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * whether or not it was successful and a system message (if available)
      * or boolean false on failure
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): mixed
     {
         $count  = 0;
         $items  = [];
@@ -1504,7 +1504,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         $renewDetails = $checkOutDetails['barcode'];
         return $renewDetails;
@@ -1521,7 +1521,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $details = [];
         $patron  = $renewDetails['patron'];
@@ -1572,7 +1572,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return array  An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): array
     {
         try {
             $options = [];
@@ -1632,7 +1632,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array An associative array of policy codes and descriptions.
      */
-    protected function getPolicyList(string $policyType)
+    protected function getPolicyList(string $policyType): array
     {
         try {
             $cacheKey = 'symphony' . hash('sha256', "{$policyType}");

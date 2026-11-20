@@ -59,7 +59,7 @@ class SearchServiceTest extends TestCase
      *
      * @return void
      */
-    public function testInvoke()
+    public function testInvoke(): void
     {
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -80,7 +80,7 @@ class SearchServiceTest extends TestCase
      *
      * @return void
      */
-    public function testInvokeException()
+    public function testInvokeException(): void
     {
         $this->expectException(BackendException::class);
         $this->expectExceptionMessage('test');
@@ -105,7 +105,7 @@ class SearchServiceTest extends TestCase
      *
      * @return void
      */
-    public function testFailedResolveWithCommand()
+    public function testFailedResolveWithCommand(): void
     {
         $this->expectException(\VuFindSearch\Exception\RuntimeException::class);
         $this->expectExceptionMessage('Unable to resolve backend: getInfo, EDS');
@@ -137,7 +137,7 @@ class SearchServiceTest extends TestCase
     protected function createMockBackend(
         string $class = \VuFindSearch\Backend\BackendInterface::class,
         string $identifier = 'foo'
-    ) {
+    ): object {
         $backend = $this->createMock($class);
         $backend->method('getIdentifier')->willReturn($identifier);
         return $backend;
@@ -148,7 +148,7 @@ class SearchServiceTest extends TestCase
      *
      * @return BackendInterface
      */
-    protected function getBackend()
+    protected function getBackend(): BackendInterface
     {
         if (!$this->backend) {
             $this->backend = $this->createMockBackend();
@@ -161,7 +161,7 @@ class SearchServiceTest extends TestCase
      *
      * @return Service
      */
-    protected function getService()
+    protected function getService(): Service
     {
         $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = $this->getMockBuilder(Service::class)

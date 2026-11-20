@@ -117,7 +117,7 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function addConfigToContext(array $context)
+    protected function addConfigToContext(array $context): array
     {
         $channels = [];
         $relatedTokens = [];
@@ -181,7 +181,7 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function getChannelsFromResults(array $providers, Results $results, string $token)
+    protected function getChannelsFromResults(array $providers, Results $results, string $token): array
     {
         // Collect details:
         $channels = [];
@@ -205,7 +205,7 @@ class ChannelLoader
      *
      * @return array
      */
-    protected function getChannelProviders(string $source, string $configSection, string $activeId = null)
+    protected function getChannelProviders(string $source, string $configSection, string $activeId = null): array
     {
         $providerIds = $this->config["source.$source"][$configSection] ?? [];
         // If an active ID is set, find that ID or return nothing; otherwise, return all available providers.
@@ -223,7 +223,7 @@ class ChannelLoader
      *
      * @return ChannelProviderInterface
      */
-    protected function getChannelProvider(string $providerId)
+    protected function getChannelProvider(string $providerId): ChannelProviderInterface
     {
         // Extract service name from provider ID:
         [$serviceName] = explode(':', $providerId);
@@ -248,7 +248,7 @@ class ChannelLoader
         string $token = null,
         string $activeChannel = null,
         string $activeSource = null
-    ) {
+    ): array {
         // Load appropriate channel objects:
         $defaultSource = $this->config['General']['default_home_source']
             ?? DEFAULT_SEARCH_BACKEND;
@@ -306,7 +306,7 @@ class ChannelLoader
         string $source = DEFAULT_SEARCH_BACKEND,
         array $configSections = ['record'],
         string $context = 'default'
-    ) {
+    ): array {
         // Load record:
         $driver = $this->recordLoader->load($recordId, $source);
 
@@ -347,7 +347,7 @@ class ChannelLoader
         string $token = null,
         string $activeChannel = null,
         string $source = DEFAULT_SEARCH_BACKEND
-    ) {
+    ): array {
         // Load appropriate channel objects:
         $providers = $this->getChannelProviders($source, 'search', $activeChannel);
 

@@ -95,7 +95,7 @@ class Writer
      *
      * @return void
      */
-    public function set(string $section, string $setting, string $value)
+    public function set(string $section, string $setting, string $value): void
     {
         // Break the configuration file into lines:
         $lines = explode("\n", $this->content);
@@ -173,7 +173,7 @@ class Writer
      *
      * @return void
      */
-    public function clear(string $section, string $setting)
+    public function clear(string $section, string $setting): void
     {
         $this->set($section, $setting, null);
     }
@@ -183,7 +183,7 @@ class Writer
      *
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }
@@ -193,7 +193,7 @@ class Writer
      *
      * @return bool
      */
-    public function save()
+    public function save(): bool
     {
         // Create parent directory structure if necessary:
         $stack = [];
@@ -219,7 +219,7 @@ class Writer
      *
      * @return string  Value formatted for output to ini file.
      */
-    protected function buildContentValue(mixed $e)
+    protected function buildContentValue(mixed $e): string
     {
         if ($e === true) {
             return 'true';
@@ -241,7 +241,7 @@ class Writer
      *
      * @return string       Formatted line
      */
-    protected function buildContentLine(string $key, mixed $value, int $tab = 17)
+    protected function buildContentLine(string $key, mixed $value, int $tab = 17): string
     {
         // Build a tab string so the equals signs line up attractively:
         $tabStr = '';
@@ -280,7 +280,7 @@ class Writer
      *
      * @return string       Formatted line
      */
-    protected function buildContentArrayLines(string $key, array $value)
+    protected function buildContentArrayLines(string $key, array $value): string
     {
         $expectedKey = 0;
         $content = '';
@@ -307,7 +307,7 @@ class Writer
      *
      * @return string
      */
-    protected function buildContent(array $assoc_arr, array $comments)
+    protected function buildContent(array $assoc_arr, array $comments): string
     {
         $content = '';
         foreach ($assoc_arr as $key => $elem) {
@@ -368,7 +368,7 @@ class Writer
      *
      * @return array           Associative array as described above.
      */
-    public static function extractComments(string $filename)
+    public static function extractComments(string $filename): array
     {
         $lines = file($filename);
 

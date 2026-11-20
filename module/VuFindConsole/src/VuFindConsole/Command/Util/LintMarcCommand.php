@@ -59,7 +59,7 @@ class LintMarcCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('This command lets you validate MARC file contents.')

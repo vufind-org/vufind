@@ -58,7 +58,7 @@ class Summon extends \VuFind\Content\AbstractCover
      *
      * @return string|bool
      */
-    public function getUrl(string $key, string $size, array $ids)
+    public function getUrl(string $key, string $size, array $ids): string|bool
     {
         if (!isset($ids['isbn'])) {
             return false;

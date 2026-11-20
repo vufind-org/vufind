@@ -101,7 +101,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): UserEntityInterface
     {
         // Make sure the credentials are non-blank:
         $this->username = trim($request->getPost()->get('username', ''));
@@ -129,7 +129,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function passwordHashingEnabled()
+    protected function passwordHashingEnabled(): bool
     {
         $config = $this->getConfig();
         return $config['Authentication']['hash_passwords'] ?? false;
@@ -160,7 +160,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface New user entity.
      */
-    public function create(Request $request)
+    public function create(Request $request): UserEntityInterface
     {
         // Collect POST parameters from request
         $params = $this->collectParamsFromRequest($request);
@@ -204,7 +204,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request): UserEntityInterface
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
@@ -236,7 +236,7 @@ class Database extends AbstractBase
      *
      * @return void
      */
-    protected function validateUsername(array $params, bool $checkPolicy = true)
+    protected function validateUsername(array $params, bool $checkPolicy = true): void
     {
         // Needs a username
         if (trim($params['username']) === '') {
@@ -255,7 +255,7 @@ class Database extends AbstractBase
      *
      * @return void
      */
-    protected function validatePassword(array $params)
+    protected function validatePassword(array $params): void
     {
         // Needs a password
         if (trim($params['password']) === '') {
@@ -278,7 +278,7 @@ class Database extends AbstractBase
      * @return void
      * @throws AuthEmailNotVerifiedException
      */
-    protected function checkEmailVerified(UserEntityInterface $user)
+    protected function checkEmailVerified(UserEntityInterface $user): void
     {
         $config = $this->getConfig();
         $verify_email = $config['Authentication']['verify_email'] ?? false;
@@ -300,7 +300,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function checkPassword(string $password, UserEntityInterface $userRow)
+    protected function checkPassword(string $password, UserEntityInterface $userRow): bool
     {
         // Special case: hashing enabled:
         if ($this->passwordHashingEnabled()) {
@@ -324,7 +324,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function emailAllowed(string $email)
+    protected function emailAllowed(string $email): bool
     {
         // If no inclusion list is configured, all emails are allowed:
         $fullConfig = $this->getConfig();
@@ -355,7 +355,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    public function supportsCreation()
+    public function supportsCreation(): bool
     {
         return true;
     }
@@ -423,7 +423,7 @@ class Database extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    public function resetPassword(array $recoveryData, array $params)
+    public function resetPassword(array $recoveryData, array $params): void
     {
         $this->validatePassword($params);
         $user = $this->getUserService()->getUserById($recoveryData['details']['id']);
@@ -438,7 +438,7 @@ class Database extends AbstractBase
      *
      * @return array
      */
-    public function getUsernamePolicy()
+    public function getUsernamePolicy(): array
     {
         $policy = parent::getUsernamePolicy();
         // Limit maxLength to the database limit
@@ -473,7 +473,7 @@ class Database extends AbstractBase
      *
      * @return string[]
      */
-    protected function collectParamsFromRequest(Request $request)
+    protected function collectParamsFromRequest(Request $request): array
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
@@ -529,7 +529,7 @@ class Database extends AbstractBase
      *
      * @return UserEntityInterface A user entity
      */
-    protected function createUserFromParams(array $params, UserServiceInterface $userService)
+    protected function createUserFromParams(array $params, UserServiceInterface $userService): UserEntityInterface
     {
         $user = $userService->createEntityForUsername($params['username']);
         $user->setFirstname($params['firstname']);

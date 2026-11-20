@@ -59,7 +59,7 @@ abstract class AbstractBase
      *
      * @return bool
      */
-    abstract public function showTree();
+    abstract public function showTree(): bool;
 
     /**
      * Constructor.
@@ -85,7 +85,7 @@ abstract class AbstractBase
      *
      * @return object The tree data source object
      */
-    public function getTreeSource()
+    public function getTreeSource(): object
     {
         $source = $this->dataManager->get($this->getTreeSourceType());
         $source->setHierarchyDriver($this);
@@ -99,7 +99,7 @@ abstract class AbstractBase
      *
      * @return object
      */
-    public function getTreeRenderer(\VuFind\RecordDriver\AbstractBase $driver)
+    public function getTreeRenderer(\VuFind\RecordDriver\AbstractBase $driver): object
     {
         $renderer = $this->rendererManager->get($this->getTreeRendererType());
         $renderer->setRecordDriver($driver);
@@ -123,7 +123,7 @@ abstract class AbstractBase
         string $mode,
         string $hierarchyID,
         array $options
-    ) {
+    ): string {
         if (!$this->showTree()) {
             return false;
         }
@@ -136,7 +136,7 @@ abstract class AbstractBase
      *
      * @return string
      */
-    abstract public function getTreeRendererType();
+    abstract public function getTreeRendererType(): string;
 
     /**
      * Get Tree Settings.
@@ -145,33 +145,33 @@ abstract class AbstractBase
      *
      * @return array The values of the configuration setting
      */
-    abstract public function getTreeSettings();
+    abstract public function getTreeSettings(): array;
 
     /**
      * Get Tree Data Source Type.
      *
      * @return string
      */
-    abstract public function getTreeSourceType();
+    abstract public function getTreeSourceType(): string;
 
     /**
      * Check if sorting is enabled in the hierarchy Options.
      *
      * @return bool
      */
-    abstract public function treeSorting();
+    abstract public function treeSorting(): bool;
 
     /**
      * Get Collection Link Type.
      *
      * @return string
      */
-    abstract public function getCollectionLinkType();
+    abstract public function getCollectionLinkType(): string;
 
     /**
      * Get tree cache time in seconds.
      *
      * @return int
      */
-    abstract public function getTreeCacheTime();
+    abstract public function getTreeCacheTime(): int;
 }

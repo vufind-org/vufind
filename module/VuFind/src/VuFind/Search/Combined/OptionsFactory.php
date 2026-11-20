@@ -65,7 +65,7 @@ class OptionsFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(ConfigManagerInterface::class),
             $container->get(\VuFind\Search\Options\PluginManager::class),

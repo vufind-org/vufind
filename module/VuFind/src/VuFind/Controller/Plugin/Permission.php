@@ -99,7 +99,7 @@ class Permission extends AbstractPlugin implements
      *
      * @return bool
      */
-    public function isAuthorized(string $permission, mixed $context = null)
+    public function isAuthorized(string $permission, mixed $context = null): bool
     {
         return $this->permissionManager->isAuthorized($permission, $context);
     }
@@ -120,7 +120,7 @@ class Permission extends AbstractPlugin implements
         string $permission,
         string $defaultBehavior = null,
         bool $passIfUndefined = false
-    ) {
+    ): mixed {
         // If no permission rule is defined and we're only checking defined
         // permissions, bail out now....
         if (
@@ -183,7 +183,7 @@ class Permission extends AbstractPlugin implements
      *
      * @return \Lmc\Rbac\Identity\IdentityInterface|null
      */
-    public function getIdentity()
+    public function getIdentity(): ?\Lmc\Rbac\Identity\IdentityInterface
     {
         return $this->authManager->getIdentity();
     }

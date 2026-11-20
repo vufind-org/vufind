@@ -61,7 +61,7 @@ class Escaper extends \Laminas\Escaper\Escaper
      *
      * @return string
      */
-    public function escapeHtmlAttr(string $string)
+    public function escapeHtmlAttr(string $string): string
     {
         return $this->extendedHtmlAttrEscaping
             ? parent::escapeHtmlAttr($string)

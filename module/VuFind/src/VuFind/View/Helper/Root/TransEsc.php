@@ -78,7 +78,7 @@ class TransEsc
         string $default = null,
         bool $useIcuFormatter = false,
         array $fallbackDomains = []
-    ) {
+    ): string {
         $translated = ($this->translate)($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
         return ($this->escapeHtml)($translated);
     }

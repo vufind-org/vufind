@@ -79,7 +79,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Save the basic parameters:
         $this->settings = $settings;
@@ -112,7 +112,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->results = $results;
     }
@@ -122,7 +122,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getResults()
+    public function getResults(): \VuFind\Search\Base\Results
     {
         return $this->results;
     }
@@ -132,7 +132,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return string
      */
-    public function getSearchTerm()
+    public function getSearchTerm(): string
     {
         $search = $this->results->getParams()->getQuery();
         return ($search instanceof Query) ? $search->getString() : '';
@@ -143,7 +143,7 @@ class AuthorFacets implements RecommendInterface
      *
      * @return array Facets data arrays
      */
-    public function getSimilarAuthors()
+    public function getSimilarAuthors(): array
     {
         // Do not provide recommendations for blank searches:
         $lookfor = $this->getSearchTerm();

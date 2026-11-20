@@ -65,7 +65,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMatchingRange()
+    public function testMatchingRange(): void
     {
         // In this example, we'll pass the IP address as the options to the provider.
         // Note that we're not actually testing the range checking itself, because
@@ -88,7 +88,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonMatchingRegExArray()
+    public function testNonMatchingRegExArray(): void
     {
         // In this example, we'll pass the IP address as the options to the provider.
         // Note that we're not actually testing the range checking itself, because

@@ -49,7 +49,7 @@ class CSS extends \MatthiasMullie\Minify\CSS
      *
      * @return \MatthiasMullie\PathConverter\ConverterInterface
      */
-    protected function getPathConverter(string $source, string $target)
+    protected function getPathConverter(string $source, string $target): \MatthiasMullie\PathConverter\ConverterInterface
     {
         return new PathConverter($source, $target);
     }

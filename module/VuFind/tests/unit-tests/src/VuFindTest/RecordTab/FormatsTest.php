@@ -88,7 +88,7 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Formats
      */
-    protected function getFormats(bool $enabled = true)
+    protected function getFormats(bool $enabled = true): Formats
     {
         return new Formats($enabled);
     }

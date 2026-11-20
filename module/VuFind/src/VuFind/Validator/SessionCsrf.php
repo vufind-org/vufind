@@ -69,7 +69,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return void
      */
-    public function trimTokenList(int $limit)
+    public function trimTokenList(int $limit): void
     {
         $session = $this->csrf->getSession();
         if ($limit < 1) {
@@ -87,7 +87,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return int
      */
-    public function getTokenCount()
+    public function getTokenCount(): int
     {
         return count($this->csrf->getSession()->tokenList ?? []);
     }
@@ -102,7 +102,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return string
      */
-    public function getHash(bool $regenerate = false)
+    public function getHash(bool $regenerate = false): string
     {
         return $this->csrf->getHash($regenerate);
     }
@@ -114,7 +114,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return bool
      */
-    public function isValid(mixed $value)
+    public function isValid(mixed $value): bool
     {
         return $this->csrf->isValid($value);
     }
@@ -129,7 +129,7 @@ class SessionCsrf implements CsrfInterface
      *
      * @return array<string, string>
      */
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->csrf->getMessages();
     }

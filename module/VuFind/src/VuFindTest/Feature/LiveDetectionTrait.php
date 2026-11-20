@@ -55,7 +55,7 @@ trait LiveDetectionTrait
      *
      * @return bool
      */
-    public function continuousIntegrationRunning()
+    public function continuousIntegrationRunning(): bool
     {
         // We'll assume that if the CI Solr PID is present, then CI is active:
         $port = $this->getSolrPort();

@@ -60,7 +60,7 @@ class QueryAdapter implements QueryAdapterInterface
      *
      * @return Query|QueryGroup|WorkKeysQuery
      */
-    public function deminify(array $search)
+    public function deminify(array $search): Query|QueryGroup|WorkKeysQuery
     {
         $type = $search['s'] ?? null;
         if ('w' === $type) {
@@ -106,7 +106,7 @@ class QueryAdapter implements QueryAdapterInterface
      *
      * @return string
      */
-    public function display(AbstractQuery $query, callable $translate, callable $showName)
+    public function display(AbstractQuery $query, callable $translate, callable $showName): string
     {
         // Simple case -- basic query:
         if ($query instanceof Query) {
@@ -135,7 +135,7 @@ class QueryAdapter implements QueryAdapterInterface
         QueryGroup $query,
         callable $translate,
         callable $showName
-    ) {
+    ): string {
         // Groups and exclusions.
         $groups = $excludes = [];
 
@@ -253,7 +253,7 @@ class QueryAdapter implements QueryAdapterInterface
      *
      * @return array
      */
-    public function minify(AbstractQuery $query, bool $topLevel = true)
+    public function minify(AbstractQuery $query, bool $topLevel = true): array
     {
         // Simple query:
         if ($query instanceof Query) {

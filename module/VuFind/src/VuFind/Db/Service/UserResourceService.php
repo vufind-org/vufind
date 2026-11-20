@@ -60,7 +60,7 @@ class UserResourceService extends AbstractDbService implements
      *
      * @return array
      */
-    public function getDuplicates()
+    public function getDuplicates(): array
     {
         $dql = 'SELECT MIN(ur.resource) as resource_id, MIN(ur.list) as list_id, '
             . 'MIN(ur.user) as user_id, COUNT(ur.resource) as cnt, MIN(ur.id) as id '

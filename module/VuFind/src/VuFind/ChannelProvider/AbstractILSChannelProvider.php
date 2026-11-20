@@ -102,7 +102,7 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->maxAge = $options['maxAge'] ?? 30;
         $this->setBatchSizeFromOptions($options);
@@ -148,7 +148,7 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      *
      * @return array
      */
-    abstract protected function getIlsResponse();
+    abstract protected function getIlsResponse(): array;
 
     /**
      * Given one element from the ILS function's response array, extract the
@@ -158,7 +158,7 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      *
      * @return string
      */
-    abstract protected function extractIdsFromResponse(array $response);
+    abstract protected function extractIdsFromResponse(array $response): string;
 
     /**
      * Recently returned channel contents are always the same; this does not
@@ -166,7 +166,7 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      *
      * @return array
      */
-    protected function getChannel()
+    protected function getChannel(): array
     {
         // Use a callback to extract IDs from the arrays in the ILS return value:
         $ids = array_map([$this, 'extractIdsFromResponse'], $this->getIlsResponse());

@@ -48,7 +48,7 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testResponse()
+    public function testResponse(): void
     {
         $sm = $this->container->createMock(ManagerInterface::class);
         $sm->expects($this->once())->method('getId');

@@ -47,7 +47,7 @@ trait ListItemSelectionTrait
      *
      * @return array
      */
-    protected function getSelectedIds()
+    protected function getSelectedIds(): array
     {
         // Values may be stored as a default state (checked_default), a list of IDs that do not
         // match the default state (non_default_ids), and a list of all IDs (all_ids_global). If these

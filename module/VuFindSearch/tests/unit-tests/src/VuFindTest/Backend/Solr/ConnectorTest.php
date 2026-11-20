@@ -64,7 +64,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $conn = $this->createConnector('single-record');
         $resp = $conn->retrieve('id');
@@ -78,7 +78,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieveMissingRecord()
+    public function testRetrieveMissingRecord(): void
     {
         $conn = $this->createConnector('no-match');
         $resp = $conn->retrieve('id');
@@ -90,7 +90,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testInternalServerError()
+    public function testInternalServerError(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
         $this->expectExceptionCode(500);
@@ -104,7 +104,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testBadRequestError()
+    public function testBadRequestError(): void
     {
         $this->expectException(\VuFindSearch\Backend\Exception\RequestErrorException::class);
         $this->expectExceptionCode(400);
@@ -118,7 +118,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testWriteCSV()
+    public function testWriteCSV(): void
     {
         $csvData = 'a,b,c';
         $client = $this->getMockBuilder(HttpClient::class)
@@ -141,7 +141,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testWriteJSON()
+    public function testWriteJSON(): void
     {
         $jsonData = '[1,2,3]';
         $client = $this->getMockBuilder(HttpClient::class)
@@ -171,7 +171,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testCaching()
+    public function testCaching(): void
     {
         $conn = $this->createConnector('single-record');
 
@@ -211,7 +211,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testGetters()
+    public function testGetters(): void
     {
         $url = 'http://example.tld/';
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
@@ -234,7 +234,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testCallWithHttpOptions()
+    public function testCallWithHttpOptions(): void
     {
         $this->response
             = $this->getFixture('solr/response/single-record', 'VuFindSearch');
@@ -273,7 +273,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testClientCreation()
+    public function testClientCreation(): void
     {
         $this->response
             = $this->getFixture('solr/response/single-record', 'VuFindSearch');
@@ -303,7 +303,7 @@ class ConnectorTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector(string $fixture = null, HttpClient $client = null)
+    protected function createConnector(string $fixture = null, HttpClient $client = null): Connector
     {
         if ($fixture) {
             $this->response
@@ -329,7 +329,7 @@ class ConnectorTest extends TestCase
      *
      * @return Connector
      */
-    protected function getConnectorMock(array $mock = [], HttpClient $client = null)
+    protected function getConnectorMock(array $mock = [], HttpClient $client = null): Connector
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
@@ -353,7 +353,7 @@ class ConnectorTest extends TestCase
      *
      * @return HttpClient
      */
-    protected function createClient()
+    protected function createClient(): HttpClient
     {
         $client = new HttpClient();
         $adapter = new TestAdapter();

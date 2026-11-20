@@ -62,7 +62,7 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
      * @return void
      * @throws \VuFind\Exception\ILS
      */
-    public function testGetNewOAuth2Token()
+    public function testGetNewOAuth2Token(): void
     {
         $response = <<<END
             HTTP/1.1 200 OK
@@ -110,7 +110,7 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function mockResponse(string|array|null $responseData)
+    protected function mockResponse(string|array|null $responseData): void
     {
         $adapter = new TestAdapter();
         if (!empty($responseData)) {

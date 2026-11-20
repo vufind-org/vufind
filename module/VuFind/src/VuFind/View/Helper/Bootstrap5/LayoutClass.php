@@ -71,7 +71,7 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
      *
      * @return string       CSS classes to apply
      */
-    public function __invoke(string $class, bool $hasSidebar = true)
+    public function __invoke(string $class, bool $hasSidebar = true): string
     {
         $overwrittenSidebarOnLeft = ($this->layoutHelper)()->sidebarOnLeft;
         if ($overwrittenSidebarOnLeft !== null) {

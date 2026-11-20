@@ -68,7 +68,7 @@ trait MarcReaderTrait
      *
      * @return string
      */
-    public function getRawMarcData()
+    public function getRawMarcData(): string
     {
         // Set preferred MARC field from config or default, if it's not existing
         $preferredMarcFields = $this->mainConfig['Record']['preferredMarcFields']
@@ -92,7 +92,7 @@ trait MarcReaderTrait
      *
      * @return \VuFind\Marc\MarcReader
      */
-    public function getMarcReader()
+    public function getMarcReader(): \VuFind\Marc\MarcReader
     {
         if (null === $this->lazyMarcReader) {
             $this->lazyMarcReader = new $this->marcReaderClass(
@@ -122,7 +122,7 @@ trait MarcReaderTrait
         array $subfields = null,
         bool $concat = true,
         string $separator = ' '
-    ) {
+    ): array {
         // Default to subfield a if nothing is specified.
         if (!is_array($subfields)) {
             $subfields = ['a'];
@@ -143,7 +143,7 @@ trait MarcReaderTrait
      *
      * @return string
      */
-    protected function getFirstFieldValue(string $field, array $subfields = null)
+    protected function getFirstFieldValue(string $field, array $subfields = null): string
     {
         $matches = $this->getFieldArray($field, $subfields);
         return $matches[0] ?? '';
@@ -156,7 +156,7 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getPublicationInfo(string $subfield = 'a')
+    protected function getPublicationInfo(string $subfield = 'a'): array
     {
         // Get string separator for publication information:
         $separator = $this->mainConfig['Record']['marcPublicationInfoSeparator'] ?? ' ';
@@ -203,7 +203,7 @@ trait MarcReaderTrait
      *
      * @return string
      */
-    protected function getSubfield(array $field, string $subfield)
+    protected function getSubfield(array $field, string $subfield): string
     {
         return $this->getMarcReader()->getSubfield($field, $subfield);
     }
@@ -216,7 +216,7 @@ trait MarcReaderTrait
      *
      * @return array
      */
-    protected function getSubfields(array $field, string $subfield)
+    protected function getSubfields(array $field, string $subfield): array
     {
         return $this->getMarcReader()->getSubfields($field, $subfield);
     }
@@ -240,7 +240,7 @@ trait MarcReaderTrait
         array $subfields,
         bool $concat = true,
         string $separator = ' '
-    ) {
+    ): array {
         // Start building a line of text for the current field
         $matches = [];
 

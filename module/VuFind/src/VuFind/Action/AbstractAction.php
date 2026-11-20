@@ -312,7 +312,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
      *
      * @return void
      */
-    protected function disableSessionWrites()
+    protected function disableSessionWrites(): void
     {
         $this->getSessionSettings()->disableWrite();
     }

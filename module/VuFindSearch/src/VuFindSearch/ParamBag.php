@@ -77,7 +77,7 @@ class ParamBag implements \Countable
      *
      * @return mixed|null Parameter value or NULL if not set
      */
-    public function get(string $name)
+    public function get(string $name): mixed
     {
         return $this->params[$name] ?? null;
     }
@@ -99,7 +99,7 @@ class ParamBag implements \Countable
      *
      * @return bool
      */
-    public function hasParam(string $name)
+    public function hasParam(string $name): bool
     {
         return isset($this->params[$name]);
     }
@@ -112,7 +112,7 @@ class ParamBag implements \Countable
      *
      * @return bool
      */
-    public function contains(string $name, string $value)
+    public function contains(string $name, string $value): bool
     {
         $haystack = $this->get($name);
         return is_array($haystack) && in_array($value, $haystack);
@@ -126,7 +126,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function set(string $name, string $value)
+    public function set(string $name, string $value): void
     {
         $this->params[$name] = is_array($value) ? $value : [$value];
     }
@@ -138,7 +138,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function remove(string $name)
+    public function remove(string $name): void
     {
         if (isset($this->params[$name])) {
             unset($this->params[$name]);
@@ -154,7 +154,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function add(string $name, mixed $value, bool $deduplicate = true)
+    public function add(string $name, mixed $value, bool $deduplicate = true): void
     {
         if (!isset($this->params[$name])) {
             $this->params[$name] = [];
@@ -182,7 +182,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function mergeWith(ParamBag $bag)
+    public function mergeWith(ParamBag $bag): void
     {
         foreach ($bag->params as $key => $value) {
             if (!empty($value)) {
@@ -198,7 +198,7 @@ class ParamBag implements \Countable
      *
      * @return void
      */
-    public function mergeWithAll(array $bags)
+    public function mergeWithAll(array $bags): void
     {
         foreach ($bags as $bag) {
             $this->mergeWith($bag);
@@ -210,7 +210,7 @@ class ParamBag implements \Countable
      *
      * @return array
      */
-    public function getArrayCopy()
+    public function getArrayCopy(): array
     {
         return $this->params;
     }
@@ -222,7 +222,7 @@ class ParamBag implements \Countable
      *
      * @return array Old parameters
      */
-    public function exchangeArray(array $input)
+    public function exchangeArray(array $input): array
     {
         $current = $this->params;
         $this->params = [];
@@ -240,7 +240,7 @@ class ParamBag implements \Countable
      *
      * @return array
      */
-    public function request()
+    public function request(): array
     {
         $request = [];
         foreach ($this->params as $name => $values) {

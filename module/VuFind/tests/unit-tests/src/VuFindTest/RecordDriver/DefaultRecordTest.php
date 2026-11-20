@@ -53,7 +53,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPublicationDates()
+    public function testGetPublicationDates(): void
     {
         $pubDates = ['1992'];
         $this->assertEquals($pubDates, $this->getDriver()->getPublicationDates());
@@ -64,7 +64,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCoordinateLabels()
+    public function testGetCoordinateLabels(): void
     {
         $coordinateLabels = [];
         $this->assertEquals($coordinateLabels, $this->getDriver()->getCoordinateLabels());
@@ -75,7 +75,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDisplayCoordinates()
+    public function testGetDisplayCoordinates(): void
     {
         $displayCoordinates = [];
         $this->assertEquals($displayCoordinates, $this->getDriver()->getDisplayCoordinates());
@@ -86,7 +86,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetGeoLocation()
+    public function testGetGeoLocation(): void
     {
         $geoLoc = [];
         $this->assertEquals($geoLoc, $this->getDriver()->getGeoLocation());
@@ -97,7 +97,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSchemaOrgFormatsArray()
+    public function testGetSchemaOrgFormatsArray(): void
     {
         $formats = ['Book'];
         $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormatsArray());
@@ -108,7 +108,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSchemaOrgFormats()
+    public function testGetSchemaOrgFormats(): void
     {
         $formats = 'Book';
         $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormats());
@@ -119,7 +119,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSortTitle()
+    public function testGetSortTitle(): void
     {
         $this->assertEquals(
             'congiura dei principi napoletani 1701 :(prima e seconda stesura)',
@@ -132,7 +132,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetContainerReference()
+    public function testGetContainerReference(): void
     {
         $this->assertEquals('', $this->getDriver()->getContainerReference());
     }
@@ -142,7 +142,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThumbnail()
+    public function testGetThumbnail(): void
     {
         $thumbnail = [
           'author' => 'Vico, Giambattista, 1668-1744.',
@@ -162,7 +162,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetURLs()
+    public function testGetURLs(): void
     {
         $testURL = [['url' => 'http://fictional.com/sample/url']];
         $this->assertEquals($testURL, $this->getDriver()->getURLs());
@@ -173,7 +173,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTOC()
+    public function testGetTOC(): void
     {
         $this->assertEquals([], $this->getDriver()->getTOC());
     }
@@ -183,7 +183,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSummary()
+    public function testGetSummary(): void
     {
         $this->assertEquals([], $this->getDriver()->getSummary());
     }
@@ -193,7 +193,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSubtitle()
+    public function testGetSubtitle(): void
     {
         $this->assertEquals('(prima e seconda stesura) /', $this->getDriver()->getSubtitle());
     }
@@ -203,7 +203,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSecondaryAuthorsRoles()
+    public function testGetSecondaryAuthorsRoles(): void
     {
         $this->assertEquals([], $this->getDriver()->getSecondaryAuthorsRoles());
     }
@@ -213,7 +213,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSecondaryAuthors()
+    public function testGetSecondaryAuthors(): void
     {
         $author2 = ['Pandolfi, Claudia.'];
         $this->assertEquals($author2, $this->getDriver()->getSecondaryAuthors());
@@ -224,7 +224,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPublicationDetails()
+    public function testGetPublicationDetails(): void
     {
         $pubDetails = [new PublicationDetails('', 'Centro di Studi Vichiani,', '1992')];
         $this->assertEquals($pubDetails, $this->getDriver()->getPublicationDetails());
@@ -235,7 +235,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPrimaryAuthorsRoles()
+    public function testGetPrimaryAuthorsRoles(): void
     {
         $this->assertEquals([], $this->getDriver()->getPrimaryAuthorsRoles());
     }
@@ -245,7 +245,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPrimaryAuthor()
+    public function testGetPrimaryAuthor(): void
     {
         $this->assertEquals('Vico, Giambattista, 1668-1744.', $this->getDriver()->getPrimaryAuthor());
     }
@@ -255,7 +255,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPreviousTitles()
+    public function testGetPreviousTitles(): void
     {
         $this->assertEquals([], $this->getDriver()->getPreviousTitles());
     }
@@ -265,7 +265,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPhysicalDescriptions()
+    public function testGetPhysicalDescriptions(): void
     {
         $physical = ['296 p. : ill. ; 24 cm.'];
         $this->assertEquals($physical, $this->getDriver()->getPhysicalDescriptions());
@@ -276,7 +276,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCoinsOpenUrl()
+    public function testGetCoinsOpenUrl(): void
     {
         $coinsOpenUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A'
             . 'UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co'
@@ -294,7 +294,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetOpenUrl()
+    public function testGetOpenUrl(): void
     {
         $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3A'
             . 'UTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+co'
@@ -345,7 +345,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetNewerTitles()
+    public function testGetNewerTitles(): void
     {
         $this->assertEquals([], $this->getDriver()->getNewerTitles());
     }
@@ -355,7 +355,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLCCN()
+    public function testGetLCCN(): void
     {
         $this->assertEquals('', $this->getDriver()->getLCCN());
     }
@@ -365,7 +365,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetInstitutions()
+    public function testGetInstitutions(): void
     {
         $institution = ['MyInstitution'];
         $this->assertEquals($institution, $this->getDriver()->getInstitutions());
@@ -376,7 +376,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLastIndexed()
+    public function testGetLastIndexed(): void
     {
         $this->assertEquals('', $this->getDriver()->getLastIndexed());
     }
@@ -386,7 +386,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPrimaryAuthorsWithHighlighting()
+    public function testGetPrimaryAuthorsWithHighlighting(): void
     {
         $primAuthHighlight = ['Vico, Giambattista, 1668-1744.'];
         $this->assertEquals($primAuthHighlight, $this->getDriver()->getPrimaryAuthorsWithHighlighting());
@@ -397,7 +397,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDateSpan()
+    public function testGetDateSpan(): void
     {
         $this->assertEquals([], $this->getDriver()->getDateSpan());
     }
@@ -407,7 +407,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCorporateAuthorsRoles()
+    public function testGetCorporateAuthorsRoles(): void
     {
         $this->assertEquals([], $this->getDriver()->getCorporateAuthorsRoles());
     }
@@ -417,7 +417,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCorporateAuthors()
+    public function testGetCorporateAuthors(): void
     {
         $this->assertEquals([], $this->getDriver()->getCorporateAuthors());
     }
@@ -427,7 +427,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCleanDOI()
+    public function testGetCleanDOI(): void
     {
         $cleanDOI = false;
         $this->assertEquals($cleanDOI, $this->getDriver()->getCleanDOI());
@@ -438,7 +438,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCallNumber()
+    public function testGetCallNumber(): void
     {
         $this->assertEquals('', $this->getDriver()->getCallNumber());
     }
@@ -448,7 +448,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBreadcrumb()
+    public function testGetBreadcrumb(): void
     {
         $breadcrumb = 'La congiura dei Principi Napoletani 1701 :';
         $this->assertEquals($breadcrumb, $this->getDriver()->getBreadcrumb());
@@ -459,7 +459,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCitationBehavior()
+    public function testCitationBehavior(): void
     {
         // The DefaultRecord driver should have some supported formats:
         $driver = $this->getDriver();
@@ -550,7 +550,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDeduplicatedAuthors()
+    public function testGetDeduplicatedAuthors(): void
     {
         $authorName = 'Tester, Marc';
 
@@ -587,7 +587,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrDefault
      */
-    protected function getDriver(array $overrides = [], ?array $mainConfig = null)
+    protected function getDriver(array $overrides = [], ?array $mainConfig = null): SolrDefault
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

@@ -45,7 +45,7 @@ class NotFound extends \Exception implements HttpStatusInterface
      *
      * @return int
      */
-    public function getHttpStatus()
+    public function getHttpStatus(): int
     {
         return 404;
     }

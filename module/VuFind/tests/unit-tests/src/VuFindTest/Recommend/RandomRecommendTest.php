@@ -72,7 +72,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCanSetSettings()
+    public function testCanSetSettings(): void
     {
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
         $this->recommend->setConfig('SolrWeb:5:mixed:disregard:20:facet1:value1:facet2:value2');
@@ -108,7 +108,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultSettings()
+    public function testDefaultSettings(): void
     {
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
         $this->recommend->setConfig('');
@@ -143,7 +143,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCanInitialise()
+    public function testCanInitialise(): void
     {
         $service = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
@@ -182,7 +182,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCanInitialiseInDisregardMode()
+    public function testCanInitialiseInDisregardMode(): void
     {
         $service = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
@@ -275,7 +275,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWillReturnEmptyForMinimumResultLimit()
+    public function testWillReturnEmptyForMinimumResultLimit(): void
     {
         $recommend = $this->getConfiguredModule('Solr:10:mixed:retain:20:facet1:value1:facet2:value2');
         $output = $recommend->getResults();
@@ -287,7 +287,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWillReturnResults()
+    public function testWillReturnResults(): void
     {
         $recommend = $this->getConfiguredModule('Solr:10:mixed:retain:0:facet1:value1:facet2:value2');
         $output = $recommend->getResults();
@@ -299,7 +299,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCanSetDisplayMode()
+    public function testCanSetDisplayMode(): void
     {
         $this->recommend->setConfig('Solr:10:mixed');
         $this->assertEquals('mixed', $this->recommend->getDisplayMode());
@@ -312,7 +312,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function unserializeFixture(string $file)
+    protected function unserializeFixture(string $file): mixed
     {
         return unserialize($this->getFixture("searches/basic/$file"));
     }

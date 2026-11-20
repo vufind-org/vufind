@@ -47,7 +47,7 @@ class Primo extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return $this->getTitle();
     }
@@ -57,7 +57,7 @@ class Primo extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->fields['title'] ?? '';
     }
@@ -67,7 +67,7 @@ class Primo extends DefaultRecord
      *
      * @return string
      */
-    public function getHighlightedTitle()
+    public function getHighlightedTitle(): string
     {
         // Don't check for highlighted values if highlighting is disabled:
         if (!$this->highlight) {
@@ -81,7 +81,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         return isset($this->fields['creator'])
             ? array_map('trim', $this->fields['creator']) : [];
@@ -92,7 +92,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getCreators()
+    public function getCreators(): array
     {
         return $this->fields['creator'] ?? [];
     }
@@ -109,7 +109,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         $base = $this->fields['subjects'] ?? [];
         $callback = function ($str) use ($extended) {
@@ -127,7 +127,7 @@ class Primo extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerReference()
+    public function getContainerReference(): string
     {
         $parts = explode(',', $this->getIsPartOf(), 2);
         return isset($parts[1]) ? trim($parts[1]) : '';
@@ -138,7 +138,7 @@ class Primo extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerEndPage()
+    public function getContainerEndPage(): string
     {
         return $this->fields['container_end_page'] ?? '';
     }
@@ -148,7 +148,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         // Convert to displayable words and return as an array:
         return array_map(
@@ -164,7 +164,7 @@ class Primo extends DefaultRecord
      *
      * @return string
      */
-    public function getIsPartOf()
+    public function getIsPartOf(): string
     {
         return $this->fields['ispartof'] ?? '';
     }
@@ -174,7 +174,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getDescription()
+    public function getDescription(): array
     {
         return $this->fields['description'] ?? [];
     }
@@ -184,7 +184,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getSource()
+    public function getSource(): array
     {
         $base = $this->fields['source'] ?? '';
         // Trim off unwanted image and any other tags:
@@ -196,7 +196,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         $issns = [];
         if (isset($this->fields['issn'])) {
@@ -210,7 +210,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         return isset($this->fields['language'])
             ? (array)$this->fields['language'] : [];
@@ -227,7 +227,7 @@ class Primo extends DefaultRecord
      *
      * @return string|array|bool
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string|array|bool
     {
         $params = ['size' => $size];
 
@@ -265,7 +265,7 @@ class Primo extends DefaultRecord
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         $retVal = [];
 
@@ -289,7 +289,7 @@ class Primo extends DefaultRecord
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         return $this->fields['recordid'];
     }
@@ -315,7 +315,7 @@ class Primo extends DefaultRecord
      *
      * @return array Strings representing citation formats.
      */
-    protected function getSupportedCitationFormats()
+    protected function getSupportedCitationFormats(): array
     {
         return [];
     }

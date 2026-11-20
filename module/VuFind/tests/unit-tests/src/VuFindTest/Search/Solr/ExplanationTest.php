@@ -429,7 +429,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExplainParams()
+    public function testExplainParams(): void
     {
         $recordId = 424332884;
         $response = [
@@ -468,7 +468,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExplanationArray()
+    public function testExplanationArray(): void
     {
         $recordId = 436708868;
         $response = [
@@ -510,7 +510,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMinPercent()
+    public function testMinPercent(): void
     {
         $minPercent = 1;
         $recordId = 436708868;
@@ -549,7 +549,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMaxFields()
+    public function testMaxFields(): void
     {
         $recordId = 436708868;
         $explanationText = $this->testResponse;
@@ -587,7 +587,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEscapingBrackets()
+    public function testEscapingBrackets(): void
     {
         $recordId = '(De-565)ada436708868';
         $explanationText = $this->testResponse;
@@ -622,7 +622,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoBoost()
+    public function testNoBoost(): void
     {
         $recordId = 1;
         $explanationText = $this->testResponse2;
@@ -652,7 +652,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBoost()
+    public function testBoost(): void
     {
         $recordId = 436708868;
         $responseHeader = [
@@ -687,7 +687,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCoord()
+    public function testCoord(): void
     {
         $recordId = 1;
         $explanationText = $this->testResponse3;
@@ -718,7 +718,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoExplainOther()
+    public function testNoExplainOther(): void
     {
         $recordId = 1;
         $response = [
@@ -748,7 +748,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNoMatchingClause()
+    public function testNoMatchingClause(): void
     {
         $recordId = 1;
         $response = [
@@ -780,7 +780,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      *
      * @return Explanation
      */
-    protected function getExplanation(array $result, array $config = null)
+    protected function getExplanation(array $result, array $config = null): Explanation
     {
         $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $paramsObj = new Params(

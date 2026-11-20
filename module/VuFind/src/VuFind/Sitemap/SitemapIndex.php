@@ -65,7 +65,7 @@ class SitemapIndex extends AbstractFile
      *
      * @return string XML fragment
      */
-    protected function getEntry(string $url)
+    protected function getEntry(string $url): string
     {
         $loc = htmlspecialchars($url);
         $lastmod = htmlspecialchars($this->lastmod);

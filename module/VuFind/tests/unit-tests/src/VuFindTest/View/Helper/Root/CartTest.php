@@ -45,7 +45,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCart()
+    public function testCart(): void
     {
         // Create a mock cart object:
         $cart = $this->createMock(\VuFind\Cart::class);

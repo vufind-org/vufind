@@ -71,7 +71,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return \VuFind\Hierarchy\Driver\AbstractBase
      * @throws \Exception
      */
-    protected function getHierarchyDriver()
+    protected function getHierarchyDriver(): \VuFind\Hierarchy\Driver\AbstractBase
     {
         if (null === $this->hierarchyDriver) {
             throw new \Exception('Missing hierarchy driver');
@@ -86,7 +86,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return AbstractBase
      */
-    public function setHierarchyDriver(\VuFind\Hierarchy\Driver\AbstractBase $driver)
+    public function setHierarchyDriver(\VuFind\Hierarchy\Driver\AbstractBase $driver): AbstractBase
     {
         $this->hierarchyDriver = $driver;
         return $this;
@@ -97,7 +97,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function getCollectionRoute()
+    public function getCollectionRoute(): string
     {
         return $this->collectionRoute;
     }
@@ -107,7 +107,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function getRecordRoute()
+    public function getRecordRoute(): string
     {
         return $this->recordRoute;
     }
@@ -123,7 +123,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    abstract public function getJSON(string $id, array $options = []);
+    abstract public function getJSON(string $id, array $options = []): string;
 
     /**
      * Get XML for the specified hierarchy ID.
@@ -133,7 +133,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    abstract public function getXML(string $id, array $options = []);
+    abstract public function getXML(string $id, array $options = []): string;
 
     /**
      * Does this data source support the specified hierarchy ID?
@@ -142,5 +142,5 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    abstract public function supports(string $id);
+    abstract public function supports(string $id): bool;
 }

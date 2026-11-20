@@ -86,7 +86,7 @@ class Alma extends AbstractBase
      *
      * @return string         Raw XML returned by resolver
      */
-    public function fetchLinks(string $openURL)
+    public function fetchLinks(string $openURL): string
     {
         // Make the call to Alma and load results
         $url = $this->getResolverUrl(
@@ -105,7 +105,7 @@ class Alma extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks(string $xmlstr)
+    public function parseLinks(string $xmlstr): array
     {
         $records = []; // array to return
         try {
@@ -179,7 +179,7 @@ class Alma extends AbstractBase
      *
      * @return string
      */
-    protected function getKeyWithId(\SimpleXMLElement $service, string $id)
+    protected function getKeyWithId(\SimpleXMLElement $service, string $id): string
     {
         foreach ($service->keys->children() as $key) {
             if ((string)$key->attributes()->id === $id) {
@@ -197,7 +197,7 @@ class Alma extends AbstractBase
      *
      * @return string
      */
-    protected function mapServiceType(string $serviceType)
+    protected function mapServiceType(string $serviceType): string
     {
         $map = [
             'getFullTxt' => 'getFullTxt',
@@ -217,7 +217,7 @@ class Alma extends AbstractBase
      *
      * @return string
      */
-    protected function cleanupText(string $str)
+    protected function cleanupText(string $str): string
     {
         $str = trim(preg_replace('/<br\/?>/', ' ', $str));
         $str = strip_tags($str);

@@ -77,7 +77,7 @@ class SearchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testSearchQuery()
+    public function testSearchQuery(): void
     {
         $command = $this->getCommand();
         $query = new Query('foo');
@@ -92,7 +92,7 @@ class SearchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testSearchOffset()
+    public function testSearchOffset(): void
     {
         $command = $this->getCommand();
         $this->assertEquals(0, $command->getOffset());
@@ -105,7 +105,7 @@ class SearchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testSearchLimit()
+    public function testSearchLimit(): void
     {
         $command = $this->getCommand();
         $this->assertEquals(1, $command->getLimit());
@@ -118,7 +118,7 @@ class SearchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testSearchParameters()
+    public function testSearchParameters(): void
     {
         $command = $this->getCommand();
         $this->assertEquals(
@@ -135,7 +135,7 @@ class SearchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testCommandContext()
+    public function testCommandContext(): void
     {
         $command = $this->getCommand();
         $this->assertEquals('search', $command->getContext());
@@ -148,7 +148,7 @@ class SearchCommandTest extends TestCase
      *
      * @return void
      */
-    public function testTargetBackendIdentifier()
+    public function testTargetBackendIdentifier(): void
     {
         $backendId = 'bar';
         $command = $this->getCommand();
@@ -191,7 +191,7 @@ class SearchCommandTest extends TestCase
      *
      * @return SearchCommand
      */
-    public function getCommand()
+    public function getCommand(): SearchCommand
     {
         $command = new SearchCommand(
             'bar',

@@ -147,7 +147,7 @@ class Yaml extends AbstractBase
         array &$parentConfig,
         array &$childConfig,
         array $path
-    ) {
+    ): void {
         foreach ($path as $pathPart) {
             if (!array_key_exists($pathPart, $childConfig) && !array_key_exists($pathPart, $parentConfig)) {
                 return;

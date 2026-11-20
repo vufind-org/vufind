@@ -57,7 +57,7 @@ class DatabaseFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new Exception('Unexpected options passed to factory.');
         }

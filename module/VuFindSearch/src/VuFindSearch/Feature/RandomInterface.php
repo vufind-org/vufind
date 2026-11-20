@@ -56,5 +56,5 @@ interface RandomInterface
         AbstractQuery $query,
         int $limit,
         ?ParamBag $params = null
-    );
+    ): \VuFindSearch\Response\RecordCollectionInterface;
 }

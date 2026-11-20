@@ -121,7 +121,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $this->collapsed = filter_var($settings, FILTER_VALIDATE_BOOLEAN);
     }
@@ -154,7 +154,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->searchObject = $results;
     }
@@ -164,7 +164,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         $this->client->setUri('http://api.dp.la/v2/items');
         $this->client->setMethod('GET');
@@ -186,7 +186,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return array
      */
-    protected function getApiInput()
+    protected function getApiInput(): array
     {
         // Extract the first search term from the search object:
         $search = $this->searchObject->getParams()->getQuery();
@@ -215,7 +215,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return array
      */
-    protected function processResults(string $response)
+    protected function processResults(string $response): array
     {
         $body = json_decode($response);
         $results = [];
@@ -247,7 +247,7 @@ class DPLATerms implements RecommendInterface
      *
      * @return array
      */
-    public function isCollapsed()
+    public function isCollapsed(): array
     {
         return $this->collapsed;
     }

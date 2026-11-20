@@ -129,7 +129,7 @@ class Unpaywall implements
      *
      * @return null|string
      */
-    protected function callApi(string $doi)
+    protected function callApi(string $doi): ?string
     {
         $url = $this->apiUrl . '/' . urlencode($doi) . '?'
             . http_build_query(['email' => $this->email]);

@@ -64,7 +64,7 @@ class DriverWithDateConverterFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         // Set up the driver with the date converter (and any extra parameters
         // passed in as options):
         $driver = new $requestedName(

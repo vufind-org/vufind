@@ -47,7 +47,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testInstance()
+    public function testInstance(): void
     {
         $helper = $this->getHelper();
         $ret = $helper('test');
@@ -59,7 +59,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGet()
+    public function testGet(): void
     {
         $helper = $this->getHelper();
 
@@ -78,7 +78,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSet()
+    public function testSet(): void
     {
         $helper = $this->getHelper();
 
@@ -124,7 +124,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCapture()
+    public function testCapture(): void
     {
         $helper = $this->getHelper();
 
@@ -146,7 +146,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testClear()
+    public function testClear(): void
     {
         $helper = $this->getHelper();
         $set1 = $helper('test')->set('ONE');
@@ -170,7 +170,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPrepend()
+    public function testPrepend(): void
     {
         $helper = $this->getHelper();
 
@@ -212,7 +212,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAppend()
+    public function testAppend(): void
     {
         $helper = $this->getHelper();
 
@@ -254,7 +254,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNesting()
+    public function testNesting(): void
     {
         $helper = $this->getHelper();
 
@@ -276,7 +276,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNestingWithoutEcho()
+    public function testNestingWithoutEcho(): void
     {
         $helper = $this->getHelper();
 
@@ -298,7 +298,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindTheme\View\Helper\Slot
      */
-    protected function getHelper()
+    protected function getHelper(): \VuFindTheme\View\Helper\Slot
     {
         $helper = new Slot();
         return $helper;

@@ -59,7 +59,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSingleHiddenFilter()
+    public function testGetSingleHiddenFilter(): void
     {
         $newItems = $this->getNewItemsHelper(['filter' => 'a:b']);
         $this->assertSame(['a:b'], $newItems->getHiddenFilters());
@@ -70,7 +70,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMultipleHiddenFilters()
+    public function testGetMultipleHiddenFilters(): void
     {
         $newItems = $this->getNewItemsHelper(['filter' => ['a:b', 'b:c']]);
         $this->assertSame(['a:b', 'b:c'], $newItems->getHiddenFilters());
@@ -81,7 +81,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $newItems = $this->getNewItemsHelper([]);
         $this->assertSame([], $newItems->getHiddenFilters());
@@ -96,7 +96,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCustomRanges()
+    public function testCustomRanges(): void
     {
         $newItems = $this->getNewItemsHelper(['ranges' => '10,150,300']);
         $this->assertSame([10, 150, 300], $newItems->getRanges());
@@ -107,7 +107,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCustomResultPages()
+    public function testCustomResultPages(): void
     {
         $newItems = $this->getNewItemsHelper(['result_pages' => '2']);
         $this->assertSame(2, $newItems->getResultPages());
@@ -118,7 +118,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIllegalResultPages()
+    public function testIllegalResultPages(): void
     {
         $newItems = $this->getNewItemsHelper(['result_pages' => '-2']);
         // expect a default of 10 if a bad value was passed in
@@ -130,7 +130,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSolrFilter()
+    public function testGetSolrFilter(): void
     {
         $range = 30;
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
@@ -145,7 +145,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(int $idLimit = 1024)
+    protected function getMockParams(int $idLimit = 1024): \VuFind\Search\Solr\Params
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getLimit')

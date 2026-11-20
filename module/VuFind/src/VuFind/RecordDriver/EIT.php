@@ -71,7 +71,7 @@ class EIT extends DefaultRecord
      *
      * @return void
      */
-    public function setRawData(mixed $data)
+    public function setRawData(mixed $data): void
     {
         // Easy way to recursively convert a SimpleXML Object to an array
         $data = json_decode(json_encode((array)$data), 1);
@@ -99,7 +99,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         $su = $this->controlInfo['artinfo']['su'] ?? [];
 
@@ -120,7 +120,7 @@ class EIT extends DefaultRecord
      *
      * @return string Breadcrumb text to represent this record.
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb(): string
     {
         return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
@@ -130,7 +130,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getCallNumbers()
+    public function getCallNumbers(): array
     {
         return [];
     }
@@ -140,7 +140,7 @@ class EIT extends DefaultRecord
      *
      * @return mixed
      */
-    public function getCleanOCLCNum()
+    public function getCleanOCLCNum(): mixed
     {
         return false;
     }
@@ -150,7 +150,7 @@ class EIT extends DefaultRecord
      *
      * @return mixed
      */
-    public function getCleanISSN()
+    public function getCleanISSN(): mixed
     {
         return $this->controlInfo['jinfo']['issn'] ?? false;
     }
@@ -162,7 +162,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getDateSpan()
+    public function getDateSpan(): array
     {
         return [];
     }
@@ -172,7 +172,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getEdition()
+    public function getEdition(): string
     {
         return null;
     }
@@ -182,7 +182,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         if (
             isset($this->controlInfo['artinfo']['doctype'])
@@ -199,7 +199,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): string
     {
         if (
             isset($this->controlInfo['artinfo']['aug']['au'])
@@ -217,7 +217,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         if (isset($this->controlInfo['pubinfo']['dt']['@attributes']['year'])) {
             return [
@@ -235,7 +235,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getPublishers()
+    public function getPublishers(): array
     {
         return isset($this->controlInfo['pubinfo']['pub'])
             ? [$this->controlInfo['pubinfo']['pub']] : [];
@@ -246,7 +246,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
@@ -256,7 +256,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getSummary()
+    public function getSummary(): array
     {
         // We need to return an array, so if we have a description, turn it into an
         // array as needed (it should be a flat string according to the default
@@ -280,7 +280,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
@@ -299,7 +299,7 @@ class EIT extends DefaultRecord
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         // If non-empty, map internal URL array to expected return format;
         // otherwise, return empty array:
@@ -322,7 +322,7 @@ class EIT extends DefaultRecord
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         if (!isset($this->fields['fields']['header']['@attributes']['uiTerm'])) {
             throw new \Exception(
@@ -338,7 +338,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerTitle()
+    public function getContainerTitle(): string
     {
         return $this->controlInfo['jinfo']['jtl'] ?? '';
     }
@@ -349,7 +349,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerVolume()
+    public function getContainerVolume(): string
     {
         return $this->controlInfo['pubinfo']['vid'] ?? null;
     }
@@ -360,7 +360,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerIssue()
+    public function getContainerIssue(): string
     {
         return $this->controlInfo['pubinfo']['iid'] ?? null;
     }
@@ -371,7 +371,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerStartPage()
+    public function getContainerStartPage(): string
     {
         return $this->controlInfo['artinfo']['ppf'] ?? null;
     }
@@ -381,7 +381,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    protected function getContainerPageCount()
+    protected function getContainerPageCount(): string
     {
         return $this->controlInfo['artinfo']['ppct'] ?? null;
     }
@@ -391,7 +391,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerEndPage()
+    public function getContainerEndPage(): string
     {
         $startpage = $this->getContainerStartPage();
         $pagecount = $this->getContainerPageCount();
@@ -408,7 +408,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getSortTitle()
+    public function getSortTitle(): string
     {
         return $this->controlInfo['artinfo']['tig']['atl'] ?? '';
     }
@@ -418,7 +418,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    protected function getOpenUrlFormat()
+    protected function getOpenUrlFormat(): string
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...
@@ -441,7 +441,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    protected function getCoinsID()
+    protected function getCoinsID(): string
     {
         // Added at Richard and Leslie's request, to facilitate ILL
         return parent::getCoinsID() . '.ebsco';
@@ -453,7 +453,7 @@ class EIT extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerReference()
+    public function getContainerReference(): string
     {
         $str = '';
         $vol = $this->getContainerVolume();

@@ -60,7 +60,7 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
      *
      * @return void
      */
-    protected function initLookFor(\VuFind\Search\Base\Params $params, array $request, array &$settings)
+    protected function initLookFor(\VuFind\Search\Base\Params $params, array $request, array &$settings): void
     {
         // Collect the best possible search term(s):
         $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];

@@ -66,7 +66,7 @@ class SessionKey implements PermissionProviderInterface
      *
      * @return array
      */
-    public function getPermissions(mixed $options)
+    public function getPermissions(mixed $options): array
     {
         foreach ((array)$options as $sessionKey) {
             $this->debug("getPermissions: option sessionKey '{$sessionKey}'");

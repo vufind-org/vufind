@@ -80,7 +80,7 @@ class LookupIssnsCommand extends \VuFindSearch\Command\CallMethodCommand
      *
      * @return string|string[]
      */
-    public function getIssns()
+    public function getIssns(): string|array
     {
         return $this->issns;
     }

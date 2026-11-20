@@ -112,7 +112,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->fields = $options['fields'] ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
@@ -245,7 +245,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getToken(string $filter, string $title)
+    protected function getToken(string $filter, string $title): string
     {
         return str_replace('|', ' ', $title)    // make sure delimiter not in title
             . '|' . $filter;
@@ -268,7 +268,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         string $filter,
         string $title,
         bool $tokenOnly = false
-    ) {
+    ): array {
         $retVal = [
             'title' => $title,
             'providerId' => $this->providerId,
@@ -322,7 +322,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function buildChannelFromToken(Results $results, string $token)
+    protected function buildChannelFromToken(Results $results, string $token): array
     {
         $parts = explode('|', $token, 2);
         if (count($parts) < 2) {
@@ -347,7 +347,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         string $field,
         array $value,
         bool $tokenOnly = false
-    ) {
+    ): array {
         return $this->buildChannel(
             $results,
             "$field:{$value['value']}",

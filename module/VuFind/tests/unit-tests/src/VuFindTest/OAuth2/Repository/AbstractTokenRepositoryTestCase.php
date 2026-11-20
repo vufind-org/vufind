@@ -63,7 +63,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return AccessTokenRepository
      */
-    protected function getAccessTokenRepository()
+    protected function getAccessTokenRepository(): AccessTokenRepository
     {
         return new AccessTokenRepository(
             $this->getOAuth2Config(),
@@ -77,7 +77,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return AuthCodeRepository
      */
-    protected function getAuthCodeRepository()
+    protected function getAuthCodeRepository(): AuthCodeRepository
     {
         return new AuthCodeRepository(
             $this->getOAuth2Config(),
@@ -91,7 +91,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return RefreshTokenRepository
      */
-    protected function getRefreshTokenRepository()
+    protected function getRefreshTokenRepository(): RefreshTokenRepository
     {
         return new RefreshTokenRepository(
             $this->getOAuth2Config(),
@@ -115,7 +115,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return MockObject
      */
-    protected function getEntityManager()
+    protected function getEntityManager(): MockObject
     {
         $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
             ->disableOriginalConstructor()
@@ -135,7 +135,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      *
      * @return MockObject
      */
-    protected function getPluginManager(bool $setExpectation = false)
+    protected function getPluginManager(bool $setExpectation = false): MockObject
     {
         $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         if ($setExpectation) {

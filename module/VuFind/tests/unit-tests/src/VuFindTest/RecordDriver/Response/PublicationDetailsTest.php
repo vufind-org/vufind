@@ -50,7 +50,7 @@ class PublicationDetailsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetters()
+    public function testGetters(): void
     {
         $pd = new PublicationDetails('a', 'b', 'c');
         $this->assertEquals('a', $pd->getPlace());
@@ -63,7 +63,7 @@ class PublicationDetailsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testToString()
+    public function testToString(): void
     {
         $pd = new PublicationDetails('a', 'b', 'c');
         $this->assertEquals('a b c', $pd->__toString());

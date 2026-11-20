@@ -68,7 +68,7 @@ class EPF extends EDS
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         return $this->fields['Header']['PublicationId'];
     }
@@ -82,7 +82,7 @@ class EPF extends EDS
      *
      * @return string
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string
     {
         // Override EDS parent class and get default implementation
         return DefaultRecord::getThumbnail($size);
@@ -93,7 +93,7 @@ class EPF extends EDS
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         return $this->getFilteredIdentifiers(['issn-print', 'issn-online']);
     }
@@ -103,7 +103,7 @@ class EPF extends EDS
      *
      * @return array
      */
-    public function getISBNs()
+    public function getISBNs(): array
     {
         return $this->getFilteredIdentifiers(['isbn-print', 'isbn-online']);
     }
@@ -113,7 +113,7 @@ class EPF extends EDS
      *
      * @return array
      */
-    public function getFullTextHoldings()
+    public function getFullTextHoldings(): array
     {
         return $this->fields['FullTextHoldings'] ?? [];
     }

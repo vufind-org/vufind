@@ -71,7 +71,7 @@ class SimilarCommandTest extends TestCase
      *
      * @return void
      */
-    public function testSearchParameters()
+    public function testSearchParameters(): void
     {
         $command = $this->getCommand();
         $this->assertEquals(
@@ -88,7 +88,7 @@ class SimilarCommandTest extends TestCase
      *
      * @return void
      */
-    public function testTargetBackendIdentifier()
+    public function testTargetBackendIdentifier(): void
     {
         $backendId = 'bar';
         $command = $this->getCommand();
@@ -102,7 +102,7 @@ class SimilarCommandTest extends TestCase
      *
      * @return void
      */
-    public function testCommandContext()
+    public function testCommandContext(): void
     {
         $command = $this->getCommand();
         $this->assertEquals('similar', $command->getContext());
@@ -141,7 +141,7 @@ class SimilarCommandTest extends TestCase
      *
      * @return SimilarCommand
      */
-    public function getCommand()
+    public function getCommand(): SimilarCommand
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
@@ -155,7 +155,7 @@ class SimilarCommandTest extends TestCase
      *
      * @return Backend
      */
-    public function getBackend()
+    public function getBackend(): Backend
     {
         $backend = $this->createMock(Backend::class);
         return $backend;

@@ -88,7 +88,7 @@ trait IlsAwareTrait
         \VuFind\ILS\Connection $ils,
         \VuFind\ILS\Logic\Holds $holdLogic,
         \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
-    ) {
+    ): void {
         $this->ils = $ils;
         $this->holdLogic = $holdLogic;
         $this->titleHoldLogic = $titleHoldLogic;
@@ -99,7 +99,7 @@ trait IlsAwareTrait
      *
      * @return bool
      */
-    protected function hasILS()
+    protected function hasILS(): bool
     {
         return null !== $this->ils
             && in_array($this->getSourceIdentifier(), $this->ilsBackends);
@@ -111,7 +111,7 @@ trait IlsAwareTrait
      *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings(): array
     {
         return $this->hasILS() ? $this->holdLogic->getHoldings(
             $this->getUniqueID(),
@@ -125,7 +125,7 @@ trait IlsAwareTrait
      *
      * @return array
      */
-    public function getRealTimeHistory()
+    public function getRealTimeHistory(): array
     {
         // Get Acquisitions Data
         if (!$this->hasILS()) {
@@ -143,7 +143,7 @@ trait IlsAwareTrait
      *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold()
+    public function getRealTimeTitleHold(): mixed
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
@@ -171,7 +171,7 @@ trait IlsAwareTrait
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         $params = [$this->getUniqueID()];
         return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord', $params)
@@ -186,7 +186,7 @@ trait IlsAwareTrait
      *
      * @return void
      */
-    public function setIlsBackends(array $backends)
+    public function setIlsBackends(array $backends): void
     {
         $this->ilsBackends = $backends;
     }
@@ -196,7 +196,7 @@ trait IlsAwareTrait
      *
      * @return bool
      */
-    public function supportsAjaxStatus()
+    public function supportsAjaxStatus(): bool
     {
         // as AJAX status lookups are done via the ILS AJAX status lookup support is
         // only given if the ILS is available for this record

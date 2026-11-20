@@ -49,7 +49,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetInstructors()
+    public function testGetInstructors(): void
     {
         $instructors = [
             'Mr. English' => 'Mr. English',
@@ -65,7 +65,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCourses()
+    public function testGetCourses(): void
     {
         $courses = [
             'English 101' => 'English 101',
@@ -81,7 +81,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDepartments()
+    public function testGetDepartments(): void
     {
         $departments = [
             'English' => 'English',
@@ -97,7 +97,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetReserves()
+    public function testGetReserves(): void
     {
         $reserves = [
             [
@@ -127,7 +127,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetErrors()
+    public function testGetErrors(): void
     {
         $reader = $this->getReader();
         $reader->getReserves();
@@ -141,7 +141,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyFile()
+    public function testEmptyFile(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Could not find valid data. Details:');
@@ -156,7 +156,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return CsvReader
      */
-    protected function getReader(string $fixture = 'reserves.csv')
+    protected function getReader(string $fixture = 'reserves.csv'): CsvReader
     {
         return new CsvReader($this->getFixtureDir() . "reserves/$fixture");
     }

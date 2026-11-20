@@ -117,7 +117,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttach()
+    public function testAttach(): void
     {
         $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
@@ -135,7 +135,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConditionalFilterWithoutAuthorizationService()
+    public function testConditionalFilterWithoutAuthorizationService(): void
     {
         $params = new ParamBag([]);
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
@@ -154,7 +154,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConditionalFilterWithoutAuthorizationServiceWithParams()
+    public function testConditionalFilterWithoutAuthorizationServiceWithParams(): void
     {
         $params = new ParamBag(
             [
@@ -179,7 +179,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConditionalFilterEmptyConfig()
+    public function testConditionalFilterEmptyConfig(): void
     {
         $params = new ParamBag([]);
         $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
@@ -199,7 +199,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConditionalFilterEmptyConfigWithFQ()
+    public function testConditionalFilterEmptyConfigWithFQ(): void
     {
         $params = new ParamBag(
             [
@@ -227,7 +227,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConditionalFilter()
+    public function testConditionalFilter(): void
     {
         $params = new ParamBag([]);
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
@@ -259,7 +259,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegativeConditionalFilter()
+    public function testNegativeConditionalFilter(): void
     {
         $params = new ParamBag([]);
 
@@ -282,7 +282,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegativeConditionalFilterWithFQ()
+    public function testNegativeConditionalFilterWithFQ(): void
     {
         $params = new ParamBag(
             [
@@ -315,7 +315,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConditionalFilterWithFQ()
+    public function testConditionalFilterWithFQ(): void
     {
         $params = new ParamBag(
             [

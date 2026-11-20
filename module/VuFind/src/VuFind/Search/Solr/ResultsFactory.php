@@ -63,7 +63,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $solr = parent::__invoke($container, $requestedName, $options);
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $solr->setSpellingProcessor(

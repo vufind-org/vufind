@@ -86,7 +86,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
         string $domain = null,
         bool $secure = false,
         bool $httpOnly = false
-    ) {
+    ): CookieManager {
         return $this->getMockBuilder(\VuFind\Cookie\CookieManager::class)
             ->onlyMethods(['set'])
             ->setConstructorArgs([$cookies, $path, $domain, $secure, $httpOnly])
@@ -103,7 +103,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Cart
      */
-    protected function getCart(int $maxSize = 100, bool $active = true, array|CookieManager $cookies = [])
+    protected function getCart(int $maxSize = 100, bool $active = true, array|CookieManager $cookies = []): \VuFind\Cart
     {
         if (!($cookies instanceof CookieManager)) {
             $cookies = $this->getMockCookieManager($cookies);
@@ -116,7 +116,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyCart()
+    public function testEmptyCart(): void
     {
         $cart = $this->getCart();
         $this->assertTrue($cart->isEmpty());
@@ -128,7 +128,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMaxSize()
+    public function testMaxSize(): void
     {
         $cart = $this->getCart(50);
         $this->assertEquals(50, $cart->getMaxSize());
@@ -139,7 +139,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFullCart()
+    public function testFullCart(): void
     {
         $cart = $this->getCart(2); // create a very small cart
         $this->assertFalse($cart->isFull());
@@ -158,7 +158,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testActiveCart()
+    public function testActiveCart(): void
     {
         $cart = $this->getCart();
         $this->assertTrue($cart->isActive());
@@ -169,7 +169,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDisabledCart()
+    public function testDisabledCart(): void
     {
         $cart = $this->getCart(100, false);
         $this->assertFalse($cart->isActive());
@@ -180,7 +180,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCookieWrite()
+    public function testCookieWrite(): void
     {
         $manager = $this->getMockCookieManager();
         $this->expectConsecutiveCalls($manager, 'set', [['vufind_cart', 'Aa'], ['vufind_cart_src', 'Solr']]);
@@ -193,7 +193,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testContains()
+    public function testContains(): void
     {
         $cart = $this->getCart();
         $this->assertFalse($cart->contains('Solr|a'));
@@ -206,7 +206,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCartCanBeEmptied()
+    public function testCartCanBeEmptied(): void
     {
         $cart = $this->getCart();
         $cart->addItem('Solr|a');
@@ -220,7 +220,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRemoveItems()
+    public function testRemoveItems(): void
     {
         $cart = $this->getCart();
         $cart->addItems(['Solr|a', 'Solr|b', 'Solr|c']);
@@ -235,7 +235,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetRecordDetails()
+    public function testGetRecordDetails(): void
     {
         $this->loader->expects($this->once())
             ->method('loadBatch')
@@ -251,7 +251,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testVF1Cookie()
+    public function testVF1Cookie(): void
     {
         $cart = $this->getCart(100, true, ['vufind_cart' => "a\tb\tc"]);
         $this->assertCount(3, $cart->getItems());
@@ -265,7 +265,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testVF2Cookie()
+    public function testVF2Cookie(): void
     {
         $cookies = [
             'vufind_cart' => "Aa\tBb\tCc",

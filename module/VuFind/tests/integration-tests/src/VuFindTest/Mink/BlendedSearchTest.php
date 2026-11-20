@@ -48,7 +48,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getBlenderIniOverrides()
+    protected function getBlenderIniOverrides(): array
     {
         return [
             'Backends' => [
@@ -95,7 +95,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testDisabledSearch()
+    public function testDisabledSearch(): void
     {
         // Disable logging of a known exception:
         $this->changeConfigs(

@@ -83,7 +83,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getString(callable $normalizer = null)
+    public function getString(callable $normalizer = null): string
     {
         return $normalizer ? $normalizer($this->queryString) : $this->queryString;
     }
@@ -95,7 +95,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setString(string $string)
+    public function setString(string $string): void
     {
         $this->queryString = $string;
     }
@@ -105,7 +105,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getHandler()
+    public function getHandler(): string
     {
         return $this->queryHandler;
     }
@@ -117,7 +117,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setHandler(string $handler)
+    public function setHandler(string $handler): void
     {
         $this->queryHandler = $handler;
     }
@@ -127,7 +127,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -139,7 +139,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setOperator(string $operator)
+    public function setOperator(string $operator): void
     {
         $this->operator = $operator;
     }
@@ -154,7 +154,7 @@ class Query extends AbstractQuery
      *
      * @return bool
      */
-    public function containsTerm(string $needle, callable $normalizer = null)
+    public function containsTerm(string $needle, callable $normalizer = null): bool
     {
         // Escape characters with special meaning in regular expressions to avoid
         // errors:
@@ -168,7 +168,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getAllTerms()
+    public function getAllTerms(): string
     {
         return $this->getString();
     }
@@ -183,7 +183,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm(string $from, string $to, callable $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null): void
     {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):

@@ -48,7 +48,7 @@ class SessionCsrfTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCounting()
+    public function testCounting(): void
     {
         $csrf = new SessionCsrf(['session' => new Container('csrftest1')]);
         $this->assertEquals(0, $csrf->getTokenCount());
@@ -63,7 +63,7 @@ class SessionCsrfTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTrimming()
+    public function testTrimming(): void
     {
         $csrf = new SessionCsrf(['session' => new Container('csrftest2')]);
         // Try trimming an empty list:

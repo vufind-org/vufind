@@ -76,7 +76,7 @@ abstract class AbstractPluginManager extends Base
      * @throws InvalidServiceException if invalid
      * @return void
      */
-    public function validate(mixed $plugin)
+    public function validate(mixed $plugin): void
     {
         $expectedInterface = $this->getExpectedInterface();
         if (!$plugin instanceof $expectedInterface) {
@@ -93,5 +93,5 @@ abstract class AbstractPluginManager extends Base
      *
      * @return string
      */
-    abstract protected function getExpectedInterface();
+    abstract protected function getExpectedInterface(): string;
 }

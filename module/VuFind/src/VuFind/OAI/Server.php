@@ -254,7 +254,7 @@ class Server
      *
      * @return void
      */
-    public function init(array $config, string $baseURL, array $params)
+    public function init(array $config, string $baseURL, array $params): void
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -274,7 +274,7 @@ class Server
      *
      * @return void
      */
-    public function setRecordLinkerHelper(\VuFind\View\Helper\Root\RecordLinker $helper)
+    public function setRecordLinkerHelper(\VuFind\View\Helper\Root\RecordLinker $helper): void
     {
         $this->recordLinkerHelper = $helper;
     }
@@ -287,7 +287,7 @@ class Server
      *
      * @return void
      */
-    public function setRecordFormatter(RecordFormatter $formatter)
+    public function setRecordFormatter(RecordFormatter $formatter): void
     {
         $this->recordFormatter = $formatter;
         // Reset metadata formats so they can be reinitialized; the formatter
@@ -302,7 +302,7 @@ class Server
      *
      * @return string
      */
-    protected function getUTCDateTime(string $time = 'now')
+    protected function getUTCDateTime(string $time = 'now'): string
     {
         // All times must be in UTC, so translate the current time to the
         // appropriate time zone:
@@ -315,7 +315,7 @@ class Server
      *
      * @return string
      */
-    public function getResponse()
+    public function getResponse(): string
     {
         if (!$this->hasParam('verb')) {
             return $this->showError('badVerb', 'Missing Verb Argument');
@@ -347,7 +347,7 @@ class Server
      *
      * @return void
      */
-    protected function attachDeleted(SimpleXMLElement $xml, ChangeTrackerEntityInterface $trackerEntity, bool $headerOnly = false)
+    protected function attachDeleted(SimpleXMLElement $xml, ChangeTrackerEntityInterface $trackerEntity, bool $headerOnly = false): void
     {
         // Deleted records only have a header, no metadata. However, depending
         // on the context we are attaching them, they may or may not need a
@@ -379,7 +379,7 @@ class Server
         string $date,
         array $sets = [],
         string $status = ''
-    ) {
+    ): void {
         $header = $xml->addChild('header');
         if (!empty($status)) {
             $header['status'] = $status;
@@ -399,7 +399,7 @@ class Server
      *
      * @return string|false String on success and false if an error occurred
      */
-    protected function getVuFindMetadata(object $record)
+    protected function getVuFindMetadata(object $record): string|bool
     {
         // Root node
         $recordDoc = new \DOMDocument();
@@ -462,7 +462,7 @@ class Server
         string $format,
         bool $headerOnly = false,
         string $set = ''
-    ) {
+    ): bool {
         if ($format === false) {
             // If no format was requested, report success without doing anything:
             return true;
@@ -534,7 +534,7 @@ class Server
      *
      * @return string
      */
-    protected function getRecord()
+    protected function getRecord(): string
     {
         // Validate parameters
         if (!$this->hasParam('metadataPrefix')) {
@@ -584,7 +584,7 @@ class Server
      *
      * @return bool         True if parameter is set and non-empty.
      */
-    protected function hasParam(string $param)
+    protected function hasParam(string $param): bool
     {
         return isset($this->params[$param]) && !empty($this->params[$param]);
     }
@@ -594,7 +594,7 @@ class Server
      *
      * @return string
      */
-    protected function identify()
+    protected function identify(): string
     {
         $response = $this->createResponse();
         $xml = $response->addChild('Identify');
@@ -632,7 +632,7 @@ class Server
      *
      * @return bool
      */
-    protected function supportsVuFindMetadata()
+    protected function supportsVuFindMetadata(): bool
     {
         return !empty($this->vufindApiFields) && null !== $this->recordFormatter;
     }
@@ -643,7 +643,7 @@ class Server
      *
      * @return void
      */
-    protected function initializeMetadataFormats()
+    protected function initializeMetadataFormats(): void
     {
         $this->metadataFormats['oai_dc'] = [
             'schema' => 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
@@ -667,7 +667,7 @@ class Server
      *
      * @return array
      */
-    protected function getMetadataFormats()
+    protected function getMetadataFormats(): array
     {
         if (empty($this->metadataFormats)) {
             $this->initializeMetadataFormats();
@@ -684,7 +684,7 @@ class Server
      *
      * @return void
      */
-    protected function initializeSettings(array $config)
+    protected function initializeSettings(array $config): void
     {
         // Override default repository name if configured:
         if (isset($config['OAI']['repository_name'])) {
@@ -750,7 +750,7 @@ class Server
      *
      * @return string
      */
-    protected function listMetadataFormats()
+    protected function listMetadataFormats(): string
     {
         // If a specific ID was provided, try to load the related record; otherwise,
         // set $record to false so we know it is a generic request.
@@ -797,7 +797,7 @@ class Server
      *
      * @return string
      */
-    protected function listRecords(string $verb = 'ListRecords')
+    protected function listRecords(string $verb = 'ListRecords'): string
     {
         // Load and validate parameters; if an Exception is thrown, we need to parse
         // and output an appropriate error.
@@ -910,7 +910,7 @@ class Server
      *
      * @return string
      */
-    protected function listSets()
+    protected function listSets(): string
     {
         // Resumption tokens are not currently supported for this verb:
         if ($this->hasParam('resumptionToken')) {
@@ -974,7 +974,7 @@ class Server
      *
      * @return ChangeTrackerEntityInterface[]
      */
-    protected function listRecordsGetDeleted(int $from, int $until, int $currentCursor)
+    protected function listRecordsGetDeleted(int $from, int $until, int $currentCursor): array
     {
         return $this->trackerService->getDeletedEntities(
             $this->core,
@@ -993,7 +993,7 @@ class Server
      *
      * @return int
      */
-    protected function listRecordsGetDeletedCount(int $from, int $until)
+    protected function listRecordsGetDeletedCount(int $from, int $until): int
     {
         return $this->trackerService->getDeletedCount(
             $this->core,
@@ -1022,7 +1022,7 @@ class Server
         int $limit,
         string $format,
         string $set = ''
-    ) {
+    ): \VuFind\Search\Base\Results {
         // Set up search parameters:
         $results = $this->resultsManager->get($this->searchClassId);
         $params = $results->getParams();
@@ -1076,7 +1076,7 @@ class Server
      * @throws \Exception
      * @return mixed Array of parameters or false on error
      */
-    protected function listRecordsGetParams()
+    protected function listRecordsGetParams(): mixed
     {
         // If we received a resumption token, use it to override any existing
         // parameters or fail if it is invalid.
@@ -1157,7 +1157,7 @@ class Server
      *
      * @return bool      True if invalid, false if not.
      */
-    protected function isBadDate(int $from, int $until)
+    protected function isBadDate(int $from, int $until): bool
     {
         $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
         if (!$this->dateTimeCreationSuccessful($dt)) {
@@ -1216,7 +1216,7 @@ class Server
      *
      * @return bool      True if valid, false if not.
      */
-    protected function listRecordsValidateDates(int $from, int $until)
+    protected function listRecordsValidateDates(int $from, int $until): bool
     {
         // Validate dates:
         if (!$from || !$until) {
@@ -1246,7 +1246,7 @@ class Server
      *
      * @return mixed     The record array (if successful) or false
      */
-    protected function loadRecord(string $id)
+    protected function loadRecord(string $id): mixed
     {
         // Strip the ID prefix, if necessary:
         $id = $this->stripID($id);
@@ -1268,7 +1268,7 @@ class Server
      *
      * @return integer     Unix timestamp (or false if $date invalid)
      */
-    protected function normalizeDate(string $date, string $time = '00:00:00')
+    protected function normalizeDate(string $date, string $time = '00:00:00'): int
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
@@ -1289,7 +1289,7 @@ class Server
      *
      * @return string    The prefixed ID.
      */
-    protected function prefixID(string $id)
+    protected function prefixID(string $id): string
     {
         $prefix = empty($this->idNamespace)
             ? '' : 'oai:' . $this->idNamespace . ':';
@@ -1315,7 +1315,7 @@ class Server
         int $currentCursor,
         int $listSize,
         string $cursorMark
-    ) {
+    ): void {
         // Save the old cursor position before overwriting it for storage in the
         // database!
         $oldCursor = $params['cursor'];
@@ -1335,7 +1335,7 @@ class Server
      *
      * @return string
      */
-    protected function showError(string $code, string $message)
+    protected function showError(string $code, string $message): string
     {
         // Certain errors should not echo parameters:
         $echoParams = $code !== 'badVerb' && $code !== 'badArgument';
@@ -1357,7 +1357,7 @@ class Server
      *
      * @return SimpleXMLElement
      */
-    protected function createResponse(bool $echoParams = true)
+    protected function createResponse(bool $echoParams = true): SimpleXMLElement
     {
         // Set up standard response wrapper:
         $xml = simplexml_load_string(
@@ -1387,7 +1387,7 @@ class Server
      *
      * @return string    The stripped ID (false if prefix invalid).
      */
-    protected function stripID(string $id)
+    protected function stripID(string $id): string
     {
         // No prefix?  No stripping!
         if (empty($this->idNamespace)) {
@@ -1413,7 +1413,7 @@ class Server
      * @throws \Exception
      * @return void
      */
-    protected function unexpectedError(string $msg)
+    protected function unexpectedError(string $msg): void
     {
         throw new \Exception("Unexpected fatal error -- {$msg}.");
     }

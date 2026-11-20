@@ -92,7 +92,7 @@ class WorkKeysQuery extends AbstractQuery
      *
      * @return void
      */
-    public function setId(?string $id)
+    public function setId(?string $id): void
     {
         $this->id = $id;
     }
@@ -151,7 +151,7 @@ class WorkKeysQuery extends AbstractQuery
      *
      * @return bool
      */
-    public function containsTerm(string $needle, callable $normalizer = null)
+    public function containsTerm(string $needle, callable $normalizer = null): bool
     {
         return false;
     }
@@ -161,7 +161,7 @@ class WorkKeysQuery extends AbstractQuery
      *
      * @return string
      */
-    public function getAllTerms()
+    public function getAllTerms(): string
     {
         return $this->id;
     }
@@ -176,7 +176,7 @@ class WorkKeysQuery extends AbstractQuery
      *
      * @return void
      */
-    public function replaceTerm(string $from, string $to, callable $normalizer = null)
+    public function replaceTerm(string $from, string $to, callable $normalizer = null): void
     {
         // Not applicable
     }

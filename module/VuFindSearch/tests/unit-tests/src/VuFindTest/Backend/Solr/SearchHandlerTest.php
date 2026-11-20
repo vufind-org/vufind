@@ -48,7 +48,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testSimpleSearchDismax()
+    public function testSimpleSearchDismax(): void
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
@@ -63,7 +63,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testSimpleStandardSearch()
+    public function testSimpleStandardSearch(): void
     {
         $spec = ['QueryFields' => ['id' => [['or', '~']]]];
         $hndl = new SearchHandler($spec);
@@ -78,7 +78,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testToArray()
+    public function testToArray(): void
     {
         $spec = ['DismaxParams' => [['foo', 'bar'], ['mm', '100%']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
@@ -97,7 +97,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testSimpleSearchExtendedDismax()
+    public function testSimpleSearchExtendedDismax(): void
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec, 'edismax');
@@ -112,7 +112,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testCustomMunge()
+    public function testCustomMunge(): void
     {
         // fake munge rules based on a simplified version of default searchspecs.yaml
         $spec = [
@@ -154,7 +154,7 @@ class SearchHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testPreprocessQueryString()
+    public function testPreprocessQueryString(): void
     {
         // fake munge rules based on a simplified version of default searchspecs.yaml
         $spec = [

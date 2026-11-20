@@ -55,7 +55,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connection
      */
-    protected function getMockIlsConnection()
+    protected function getMockIlsConnection(): Connection
     {
         return $this->createMock(Connection::class);
     }
@@ -77,7 +77,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         array $departments = [],
         array $reserves = [],
         string $expectedXml = null
-    ) {
+    ): Symfony\Component\Console\Tester\CommandTester {
         $ils = $this->getMockIlsConnection();
         $this->expectConsecutiveCalls(
             $ils,
@@ -123,7 +123,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Writer
      */
-    protected function getMockSolrWriter()
+    protected function getMockSolrWriter(): Writer
     {
         return $this->createMock(Writer::class);
     }
@@ -136,7 +136,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return IndexReservesCommand
      */
-    protected function getCommand(?Writer $solr = null, ?Connection $ils = null)
+    protected function getCommand(?Writer $solr = null, ?Connection $ils = null): IndexReservesCommand
     {
         return new IndexReservesCommand(
             $solr ?? $this->getMockSolrWriter(),
@@ -149,7 +149,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadParameterCombinationTemplate()
+    public function testBadParameterCombinationTemplate(): void
     {
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
@@ -166,7 +166,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadParameterCombinationDelimiter()
+    public function testBadParameterCombinationDelimiter(): void
     {
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
@@ -183,7 +183,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadFilename()
+    public function testBadFilename(): void
     {
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
@@ -200,7 +200,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMultipleFiles()
+    public function testSuccessWithMultipleFiles(): void
     {
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
@@ -275,7 +275,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingData()
+    public function testMissingData(): void
     {
         $commandTester = $this->getMockIlsCommandTesterWithCourseData();
         $commandTester->execute([]);
@@ -292,7 +292,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithILS()
+    public function testSuccessWithILS(): void
     {
         $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
         $courses = [
@@ -373,7 +373,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithILSWithInvalidData()
+    public function testSuccessWithILSWithInvalidData(): void
     {
         $instructors = ['inst1' => 'inst1'];
         $courses = ['course1' => 'course1'];
@@ -432,7 +432,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithILSWithMissingData()
+    public function testSuccessWithILSWithMissingData(): void
     {
         $instructors = ['inst1' => 'inst1'];
         $courses = ['course1' => 'course1'];
@@ -483,7 +483,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithILSWithMissingRequiredData()
+    public function testSuccessWithILSWithMissingRequiredData(): void
     {
         $instructors = ['inst1' => 'inst1'];
         $courses = ['course1' => 'course1'];
@@ -510,7 +510,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testILSException()
+    public function testILSException(): void
     {
         $exception = new \VuFind\Exception\ILS('Simulated exception');
         $ils = $this->getMockIlsConnection();
@@ -541,7 +541,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testShortIniSetting()
+    public function testShortIniSetting(): void
     {
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);

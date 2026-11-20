@@ -62,7 +62,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['total'];
     }
@@ -72,7 +72,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         $result = [];
         foreach ($this->response['facets'] ?? [] as $field) {
@@ -95,7 +95,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->response['errors'] ?? [];
     }

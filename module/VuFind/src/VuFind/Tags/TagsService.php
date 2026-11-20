@@ -172,7 +172,7 @@ class TagsService
         ResourceEntityInterface|int $resourceOrId,
         UserEntityInterface|int $userOrId,
         UserListEntityInterface|int|null $listOrId = null
-    ) {
+    ): void {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
         if (($trimmedTagText = trim($tagText)) !== '') {
             $tagIds = [];
@@ -215,7 +215,7 @@ class TagsService
      *
      * @return void
      */
-    protected function fixDuplicateTag(string $tag, bool $caseSensitive)
+    protected function fixDuplicateTag(string $tag, bool $caseSensitive): void
     {
         // Make sure this really is a duplicate.
         $result = $this->tagDbService->getTagsByText($tag, $caseSensitive);
@@ -395,7 +395,7 @@ class TagsService
         UserEntityInterface|int|null $userOrId = null,
         string $sort = 'count',
         UserEntityInterface|int|null $ownerOrId = null
-    ) {
+    ): array {
         return $this->tagDbService->getRecordTagsFromFavorites(
             $id,
             $source,

@@ -50,14 +50,14 @@ interface QueryInterface
      *
      * @return bool
      */
-    public function containsTerm(string $needle, callable $normalizer = null);
+    public function containsTerm(string $needle, callable $normalizer = null): bool;
 
     /**
      * Get a concatenated list of all query strings within the object.
      *
      * @return string
      */
-    public function getAllTerms();
+    public function getAllTerms(): string;
 
     /**
      * Replace a term.
@@ -69,5 +69,5 @@ interface QueryInterface
      *
      * @return void
      */
-    public function replaceTerm(string $from, string $to, callable $normalizer = null);
+    public function replaceTerm(string $from, string $to, callable $normalizer = null): void;
 }

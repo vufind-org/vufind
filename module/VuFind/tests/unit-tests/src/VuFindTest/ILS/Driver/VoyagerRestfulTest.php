@@ -187,7 +187,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
              *
              * @return PDOStatement
              */
-            protected function executeSQL(string|array $sql, array $bind = [])
+            protected function executeSQL(string|array $sql, array $bind = []): PDOStatement
             {
                 return $this->mockResult;
             }

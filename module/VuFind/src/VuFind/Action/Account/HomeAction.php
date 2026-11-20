@@ -214,7 +214,7 @@ class HomeAction extends AbstractAccountAction
      *
      * @return void
      */
-    protected function processAuthenticationException(AuthException $e)
+    protected function processAuthenticationException(AuthException $e): void
     {
         $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         $msg = $e->getMessage();

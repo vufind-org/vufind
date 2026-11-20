@@ -47,7 +47,7 @@ trait FakeDriverTrait
      *
      * @return TestHarness
      */
-    protected function getDriver()
+    protected function getDriver(): TestHarness
     {
         $data = [
             'Title' => 'Fake Title',

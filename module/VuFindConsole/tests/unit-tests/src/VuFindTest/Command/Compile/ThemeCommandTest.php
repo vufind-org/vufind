@@ -49,7 +49,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -67,7 +67,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $compiler = $this->getMockCompiler(['compile']);
         $compiler->expects($this->once())->method('compile')
@@ -91,7 +91,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailureWithMissingForce()
+    public function testFailureWithMissingForce(): void
     {
         $compiler = $this->getMockCompiler(['compile', 'getLastError']);
         $compiler->expects($this->once())->method('compile')
@@ -122,7 +122,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithForceOption()
+    public function testSuccessWithForceOption(): void
     {
         $compiler = $this->getMockCompiler(['compile']);
         $compiler->expects($this->once())->method('compile')
@@ -154,7 +154,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ThemeCompiler
      */
-    protected function getMockCompiler(array $methods = [])
+    protected function getMockCompiler(array $methods = []): ThemeCompiler
     {
         return $this->getMockBuilder(ThemeCompiler::class)
             ->disableOriginalConstructor()

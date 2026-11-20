@@ -49,7 +49,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetAllSubjectHeadings()
+    public function testGetAllSubjectHeadings(): void
     {
         $this->assertEquals([], $this->getDriver()->getAllSubjectHeadings());
     }
@@ -59,7 +59,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBreadcrumb()
+    public function testGetBreadcrumb(): void
     {
         $driver = $this->getDriver();
         $this->assertEquals('', $driver->getBreadcrumb());
@@ -70,7 +70,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCleanISSN()
+    public function testGetCleanISSN(): void
     {
         $this->assertEquals(false, $this->getDriver()->getCleanISSN());
     }
@@ -80,7 +80,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFormats()
+    public function testGetFormats(): void
     {
         $this->assertEquals([], $this->getDriver()->getFormats());
     }
@@ -90,7 +90,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPrimaryAuthors()
+    public function testGetPrimaryAuthors(): void
     {
         $this->assertEquals([], $this->getDriver()->getPrimaryAuthors());
     }
@@ -100,7 +100,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPublicationDates()
+    public function testGetPublicationDates(): void
     {
         $this->assertEquals([], $this->getDriver()->getPublicationDates());
     }
@@ -110,7 +110,7 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPublishers()
+    public function testGetPublishers(): void
     {
         $overrides = [
             'header' => [

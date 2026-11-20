@@ -87,7 +87,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      *
      * @return void
      */
-    public function setCoverRouter(CoverRouter $coverRouter)
+    public function setCoverRouter(CoverRouter $coverRouter): void
     {
         $this->coverRouter = $coverRouter;
     }
@@ -99,7 +99,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      *
      * @return void
      */
-    public function setRecordRouter(RecordRouter $recordRouter)
+    public function setRecordRouter(RecordRouter $recordRouter): void
     {
         $this->recordRouter = $recordRouter;
     }
@@ -112,7 +112,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      *
      * @return void
      */
-    public function setProviderId(string $id)
+    public function setProviderId(string $id): void
     {
         $this->providerId = $id;
     }
@@ -137,7 +137,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
      *
      * @return array
      */
-    protected function summarizeRecordDrivers(iterable $drivers)
+    protected function summarizeRecordDrivers(iterable $drivers): array
     {
         $summary = [];
         foreach ($drivers as $current) {

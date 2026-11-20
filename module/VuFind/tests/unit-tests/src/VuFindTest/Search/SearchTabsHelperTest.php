@@ -73,7 +73,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHiddenFilters()
+    public function testGetHiddenFilters(): void
     {
         // Default tab with no filters
         $helper = $this->getSearchTabsHelper();
@@ -132,7 +132,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTabConfig()
+    public function testTabConfig(): void
     {
         $helper = $this->getSearchTabsHelper();
         $this->assertEquals(
@@ -147,7 +147,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExtractClassName()
+    public function testExtractClassName(): void
     {
         $helper = $this->getSearchTabsHelper();
 
@@ -161,7 +161,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFiltersMatch()
+    public function testFiltersMatch(): void
     {
         $helper = $this->getSearchTabsHelper();
 
@@ -213,7 +213,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     protected function getSearchTabsHelper(
         string $config = 'default_unfiltered',
         array $filters = null
-    ) {
+    ): \VuFind\Search\SearchTabsHelper {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);
         $mockRequest->method('getQuery')->with('hiddenFilters')->willReturn($filters);
 

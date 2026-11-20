@@ -65,7 +65,7 @@ class LinkIqFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         if (!($baseUrl = $config['OpenURL']['url'] ?? null)) {
             throw new BadConfig('[OpenURL] url is not set.');

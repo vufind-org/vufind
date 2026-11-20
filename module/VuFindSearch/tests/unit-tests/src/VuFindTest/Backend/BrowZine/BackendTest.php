@@ -55,7 +55,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('retrieve() not supported by BrowZine.');
@@ -70,7 +70,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $conn = $this->getConnector('search');
         $back = new Backend($conn, $this->getRCFactory());
@@ -97,7 +97,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetQueryBuilder()
+    public function testSetQueryBuilder(): void
     {
         $qb = new QueryBuilder();
         $back = new Backend($this->getConnector(), $this->getRCFactory());
@@ -110,7 +110,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultQueryBuilder()
+    public function testDefaultQueryBuilder(): void
     {
         $back = new Backend($this->getConnector(), $this->getRCFactory());
         $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
@@ -121,7 +121,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConstructorSetters()
+    public function testConstructorSetters(): void
     {
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnector();
@@ -135,7 +135,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultRecordCollectionFactory()
+    public function testDefaultRecordCollectionFactory(): void
     {
         $back = new Backend($this->getConnector());
         $this->assertInstanceOf(RecordCollectionFactory::class, $back->getRecordCollectionFactory());
@@ -150,7 +150,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connector
      */
-    protected function getConnector(string $fixture = null)
+    protected function getConnector(string $fixture = null): Connector
     {
         $adapter = new TestAdapter();
         if ($fixture) {
@@ -170,7 +170,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): array
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\BrowZine\Connector::class)
@@ -184,7 +184,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordCollectionFactory
      */
-    protected function getRCFactory()
+    protected function getRCFactory(): RecordCollectionFactory
     {
         $callback = function ($data) {
             $driver = new \VuFind\RecordDriver\BrowZine();

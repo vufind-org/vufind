@@ -64,7 +64,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }

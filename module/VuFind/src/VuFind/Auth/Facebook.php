@@ -70,7 +70,7 @@ class Facebook extends AbstractBase implements
      * @throws AuthException
      * @return void
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         // Throw an exception if the required username setting is missing.
         $fb = $this->config['Facebook'] ?? [];
@@ -96,7 +96,7 @@ class Facebook extends AbstractBase implements
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $code = $request->getQuery()->get('code');
         if (empty($code)) {
@@ -159,7 +159,7 @@ class Facebook extends AbstractBase implements
      *
      * @return string
      */
-    protected function getAccessTokenFromCode(string $code)
+    protected function getAccessTokenFromCode(string $code): string
     {
         $requestUrl = 'https://graph.facebook.com/oauth/access_token?'
             . 'client_id=' . urlencode($this->getConfig()['Facebook']['appId'])
@@ -179,7 +179,7 @@ class Facebook extends AbstractBase implements
      *
      * @return object
      */
-    protected function getDetailsFromAccessToken(string $accessToken)
+    protected function getDetailsFromAccessToken(string $accessToken): object
     {
         $request = 'https://graph.facebook.com/v2.2/me?'
             . '&access_token=' . urlencode($accessToken);

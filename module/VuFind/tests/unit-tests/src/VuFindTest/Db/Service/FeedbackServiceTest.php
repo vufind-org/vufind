@@ -153,7 +153,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getConfiguredFeedbackService()
+    protected function getConfiguredFeedbackService(): array
     {
         $entityManager = $this->createMock(\Doctrine\ORM\EntityManager::class);
         $entityPluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);

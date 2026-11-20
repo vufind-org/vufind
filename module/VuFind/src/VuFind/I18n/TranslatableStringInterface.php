@@ -46,12 +46,12 @@ interface TranslatableStringInterface extends \Stringable
      *
      * @return string
      */
-    public function getDisplayString();
+    public function getDisplayString(): string;
 
     /**
      * Checks if the string can be translated.
      *
      * @return bool
      */
-    public function isTranslatable();
+    public function isTranslatable(): bool;
 }

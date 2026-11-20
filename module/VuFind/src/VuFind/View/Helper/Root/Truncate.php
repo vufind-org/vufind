@@ -54,7 +54,7 @@ class Truncate
      *
      * @return string|PropertyStringInterface
      */
-    public function __invoke(string|PropertyStringInterface $str, int $len, string $append = '...')
+    public function __invoke(string|PropertyStringInterface $str, int $len, string $append = '...'): string|PropertyStringInterface
     {
         if ($len === 0) {
             return '';

@@ -47,7 +47,7 @@ class SolrReserves extends SolrDefault
      *
      * @return string
      */
-    public function getInstructor()
+    public function getInstructor(): string
     {
         return $this->fields['instructor'] ?? '';
     }
@@ -57,7 +57,7 @@ class SolrReserves extends SolrDefault
      *
      * @return string
      */
-    public function getInstructorId()
+    public function getInstructorId(): string
     {
         return $this->fields['instructor_id'] ?? '';
     }
@@ -67,7 +67,7 @@ class SolrReserves extends SolrDefault
      *
      * @return string
      */
-    public function getCourse()
+    public function getCourse(): string
     {
         return $this->fields['course'] ?? '';
     }
@@ -77,7 +77,7 @@ class SolrReserves extends SolrDefault
      *
      * @return string
      */
-    public function getCourseId()
+    public function getCourseId(): string
     {
         return $this->fields['course_id'] ?? '';
     }
@@ -87,7 +87,7 @@ class SolrReserves extends SolrDefault
      *
      * @return string
      */
-    public function getDepartment()
+    public function getDepartment(): string
     {
         return $this->fields['department'] ?? '';
     }
@@ -97,7 +97,7 @@ class SolrReserves extends SolrDefault
      *
      * @return string
      */
-    public function getDepartmentId()
+    public function getDepartmentId(): string
     {
         return $this->fields['department_id'] ?? '';
     }
@@ -107,7 +107,7 @@ class SolrReserves extends SolrDefault
      *
      * @return int
      */
-    public function getItemCount()
+    public function getItemCount(): int
     {
         return isset($this->fields['bib_id'])
             ? count($this->fields['bib_id']) : 0;
@@ -118,7 +118,7 @@ class SolrReserves extends SolrDefault
      *
      * @return array
      */
-    public function getItemIds()
+    public function getItemIds(): array
     {
         return $this->fields['bib_id'] ?? [];
     }

@@ -45,7 +45,7 @@ class MapTabConfig extends AbstractConfig
      *
      * @return array
      */
-    protected function getDefaultOptions()
+    protected function getDefaultOptions(): array
     {
         return [
             'recordMap' => false,
@@ -60,7 +60,7 @@ class MapTabConfig extends AbstractConfig
      *
      * @return array
      */
-    public function getMapTabOptions()
+    public function getMapTabOptions(): array
     {
         $validFields = ['displayCoords', 'mapLabels', 'graticule', 'recordMap'];
         // Check geofeatures.ini

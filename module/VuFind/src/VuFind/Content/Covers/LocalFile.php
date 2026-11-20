@@ -73,7 +73,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @return bool
      */
-    public function supports(array $ids)
+    public function supports(array $ids): bool
     {
         // We won't know what we need until we parse the path string; accept
         // everything at this stage:
@@ -90,7 +90,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @return string|bool
      */
-    public function getUrl(string $key, string $size, array $ids)
+    public function getUrl(string $key, string $size, array $ids): string|bool
     {
         // convert all of the tokens:
         $fileName = $this->replaceImageTypeTokens(

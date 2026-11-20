@@ -73,7 +73,7 @@ class SortFacetList implements \VuFind\I18n\HasSorterInterface
      *
      * @return array      Associative URL => description array sorted by description
      */
-    public function __invoke(\VuFind\Search\Base\Results $results, string $field, array $list, array $searchRoute, string $formatString = '%%displayText%%')
+    public function __invoke(\VuFind\Search\Base\Results $results, string $field, array $list, array $searchRoute, string $formatString = '%%displayText%%'): array
     {
         $facets = [];
         // avoid limit on URL

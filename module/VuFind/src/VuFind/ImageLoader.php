@@ -103,7 +103,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function setThemeInfo(\VuFindTheme\ThemeInfo $theme)
+    public function setThemeInfo(\VuFindTheme\ThemeInfo $theme): void
     {
         $this->themeTools = $theme;
     }
@@ -113,7 +113,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function getImage()
+    public function getImage(): string
     {
         // No image loaded?  Use "unavailable" as default:
         if (null === $this->image) {
@@ -128,7 +128,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      *
      * @return string
      */
-    public function getContentType()
+    public function getContentType(): string
     {
         // No content type loaded?  Use "unavailable" as default:
         if (null === $this->contentType) {
@@ -146,7 +146,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      *
      * @return string|bool
      */
-    protected function searchTheme(string $path, array $formats = [''])
+    protected function searchTheme(string $path, array $formats = ['']): string|bool
     {
         // Check all supported image formats:
         $filenames = [];
@@ -167,7 +167,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      * @return void
      * @author Thomas Schwaerzler <vufind-tech@lists.sourceforge.net>
      */
-    public function loadUnavailable()
+    public function loadUnavailable(): void
     {
         // No setting -- use default, and don't log anything:
         if (empty($this->configuredFailImage)) {
@@ -231,7 +231,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    protected function loadDefaultFailImage()
+    protected function loadDefaultFailImage(): void
     {
         $file = $this->searchTheme($this->defaultFailImage);
         if (!file_exists($file)) {
@@ -250,7 +250,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
      * @return string
      * @throws \Exception
      */
-    protected function getContentTypeFromExtension(string $filename)
+    protected function getContentTypeFromExtension(string $filename): string
     {
         $parts = explode('.', $filename);
         $fileExtension = strtolower(end($parts));

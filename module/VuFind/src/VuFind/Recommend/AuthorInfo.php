@@ -100,7 +100,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $parts = explode(':', $settings);
         if (
@@ -118,7 +118,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return TranslatorAwareInterface
      */
-    public function setTranslator(TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator): TranslatorAwareInterface
     {
         $this->setTranslatorThroughTrait($translator);
         $this->wikipedia->setTranslator($translator);
@@ -153,7 +153,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->searchObject = $results;
     }
@@ -172,7 +172,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *              'wiki_lang'   : string : truncated from the lang. settings
      *           }
      */
-    public function getAuthorInfo()
+    public function getAuthorInfo(): array
     {
         // Don't load Wikipedia content if Wikipedia is disabled:
         try {
@@ -190,7 +190,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string
      */
-    protected function normalizeName(string $author)
+    protected function normalizeName(string $author): string
     {
         // remove dates
         $author = preg_replace('/[0-9]+-[0-9]*/', '', $author);
@@ -216,7 +216,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string|bool
      */
-    protected function getWikipediaNameFromViaf(string $lccn)
+    protected function getWikipediaNameFromViaf(string $lccn): string|bool
     {
         $param = urlencode("LC|$lccn");
         $url = "http://viaf.org/viaf/sourceID/{$param}/justlinks.json";
@@ -235,7 +235,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string
      */
-    protected function normalizeNameWithViaf(string $author)
+    protected function normalizeNameWithViaf(string $author): string
     {
         // Do authority search:
         $auth = $this->resultsManager->get('SolrAuth');
@@ -262,7 +262,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getAuthor()
+    protected function getAuthor(): string
     {
         $search = $this->searchObject->getParams()->getQuery();
         if ($search instanceof Query) {

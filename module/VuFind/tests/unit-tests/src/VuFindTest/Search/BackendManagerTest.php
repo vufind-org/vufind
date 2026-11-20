@@ -50,7 +50,7 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThrowsOnNonObject()
+    public function testGetThrowsOnNonObject(): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('Expected backend registry to return object');
@@ -68,7 +68,7 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThrowsOnNonBackend()
+    public function testGetThrowsOnNonBackend(): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('does not implement the expected interface');
@@ -86,7 +86,7 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttachDetachShared()
+    public function testAttachDetachShared(): void
     {
         $registry = $this->createMock(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $events   = new SharedEventManager();

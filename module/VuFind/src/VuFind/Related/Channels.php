@@ -55,7 +55,7 @@ class Channels implements RelatedInterface
      *
      * @return void
      */
-    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver): void
     {
         $this->driver = $driver;
     }
@@ -65,7 +65,7 @@ class Channels implements RelatedInterface
      *
      * @return array
      */
-    public function getDriver()
+    public function getDriver(): array
     {
         return $this->driver;
     }

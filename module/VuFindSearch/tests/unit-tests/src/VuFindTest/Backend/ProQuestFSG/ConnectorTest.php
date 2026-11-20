@@ -51,7 +51,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $responseBody = $this->getFixture('proquestfsg/searchresult.xml');
         $connector = $this->getConnector(
@@ -74,7 +74,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearchInvalidDatabase()
+    public function testSearchInvalidDatabase(): void
     {
         $responseBody = $this->getFixture('proquestfsg/searchresult.xml');
         $connector = $this->getConnector(
@@ -102,7 +102,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetRecord()
+    public function testGetRecord(): void
     {
         $responseBody = $this->getFixture('proquestfsg/record.xml');
         $connector = $this->getConnector(
@@ -148,7 +148,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      *
      * @return Connector
      */
-    protected function getConnector(Client $client, array $config = [])
+    protected function getConnector(Client $client, array $config = []): Connector
     {
         $connector = new Connector($client, $config);
         return $connector;

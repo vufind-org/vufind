@@ -61,7 +61,7 @@ class VuFindSitemapTest extends \PHPUnit\Framework\TestCase
              *
              * @return string Name of parser to use (i.e. Aperture or Tika)
              */
-            public static function getParser()
+            public static function getParser(): string
             {
                 return 'Tika';
             }
@@ -73,7 +73,7 @@ class VuFindSitemapTest extends \PHPUnit\Framework\TestCase
              *
              * @return array
              */
-            protected static function getTikaFields(string $htmlFile)
+            protected static function getTikaFields(string $htmlFile): array
             {
                 return [
                     'title' => 'The Fake Title',

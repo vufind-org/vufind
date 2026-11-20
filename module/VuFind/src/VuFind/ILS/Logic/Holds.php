@@ -74,7 +74,7 @@ class Holds
      * and 'summary' arrays are note/summary information collected from within the
      * items.
      */
-    protected function formatHoldings(array $holdings)
+    protected function formatHoldings(array $holdings): array
     {
         $retVal = [];
 
@@ -146,7 +146,7 @@ class Holds
      *
      * @return array A sorted results set
      */
-    public function getHoldings(string $id, array $ids = null, array $options = [], array $linkOverrides = [])
+    public function getHoldings(string $id, array $ids = null, array $options = [], array $linkOverrides = []): array
     {
         // Retrieve stored patron credentials; it is the responsibility of the
         // controller and view to inform the user that these credentials are
@@ -218,7 +218,7 @@ class Holds
      *
      * @return array A sorted results set
      */
-    protected function standardHoldings(array $result)
+    protected function standardHoldings(array $result): array
     {
         $holdings = [];
         if ($result['total']) {
@@ -245,7 +245,7 @@ class Holds
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings(array $result, array $holdConfig, bool $requestsBlocked, array $linkOverrides = [])
+    protected function driverHoldings(array $result, array $holdConfig, bool $requestsBlocked, array $linkOverrides = []): array
     {
         $holdings = [];
 
@@ -294,7 +294,7 @@ class Holds
      *
      * @return array A sorted results set
      */
-    protected function generateHoldings(array $result, string $type, array $holdConfig, array $linkOverrides = [])
+    protected function generateHoldings(array $result, string $type, array $holdConfig, array $linkOverrides = []): array
     {
         $holdings = [];
         $any_available = false;
@@ -395,7 +395,7 @@ class Holds
         array $patron,
         bool $requestsBlocked,
         array $linkOverrides = []
-    ) {
+    ): array {
         if (!is_array($holdings)) {
             return $holdings;
         }
@@ -449,7 +449,7 @@ class Holds
      *
      * @return array Modified holdings
      */
-    protected function processILLRequests(array $holdings, string $id, array $patron, bool $requestsBlocked, array $linkOverrides = [])
+    protected function processILLRequests(array $holdings, string $id, array $patron, bool $requestsBlocked, array $linkOverrides = []): array
     {
         if (!is_array($holdings)) {
             return $holdings;
@@ -504,7 +504,7 @@ class Holds
      *
      * @return array Details for generating URL
      */
-    protected function getRequestDetails(array $details, array $HMACKeys, string $action, array $linkOverrides = [])
+    protected function getRequestDetails(array $details, array $HMACKeys, string $action, array $linkOverrides = []): array
     {
         // Include request type in the details
         $details['requestType'] = $action;
@@ -549,7 +549,7 @@ class Holds
      *
      * @return string Grouping key
      */
-    protected function getHoldingsGroupKey(array $copy)
+    protected function getHoldingsGroupKey(array $copy): string
     {
         // Group by holdings id and location unless configured otherwise
         $grouping = $this->config['Catalog']['holdings_grouping']
@@ -592,7 +592,7 @@ class Holds
      *
      * @return array
      */
-    public function getSuppressedLocations()
+    public function getSuppressedLocations(): array
     {
         return (array)($this->config['Record']['hide_holdings'] ?? []);
     }

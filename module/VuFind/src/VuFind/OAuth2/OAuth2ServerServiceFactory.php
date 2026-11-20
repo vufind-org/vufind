@@ -116,7 +116,7 @@ class OAuth2ServerServiceFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
@@ -330,7 +330,7 @@ class OAuth2ServerServiceFactory implements FactoryInterface
      *
      * @throws \Exception if the field is invalid
      */
-    protected function checkIfUserIdentifierFieldIsValid()
+    protected function checkIfUserIdentifierFieldIsValid(): void
     {
         $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
         if (

@@ -50,7 +50,7 @@ class VersionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultDir()
+    public function testDefaultDir(): void
     {
         // If we don't pass in a directory, we'll get the APPLICATION_PATH
         $this->assertEquals(
@@ -64,7 +64,7 @@ class VersionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingFile()
+    public function testMissingFile(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot load /will/never/exist/ever/ever/build.xml.');
@@ -77,7 +77,7 @@ class VersionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testKnownVersion()
+    public function testKnownVersion(): void
     {
         $fixture = $this->getFixtureDir() . 'configs/buildxml-2.5';
         $this->assertEquals('2.5', Version::getBuildVersion($fixture));

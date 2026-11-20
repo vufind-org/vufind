@@ -77,7 +77,7 @@ class GetVisData extends AbstractBase
      *
      * @return array
      */
-    protected function processFacetValues(array $filters, array $fields)
+    protected function processFacetValues(array $filters, array $fields): array
     {
         $facets = $this->results->getFullFieldFacets(array_keys($fields));
         $options = $this->results->getOptions();

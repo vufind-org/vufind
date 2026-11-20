@@ -114,7 +114,7 @@ class Backend extends AbstractBackend implements
      *
      * @return void
      */
-    public function setPageSize(int $pageSize)
+    public function setPageSize(int $pageSize): void
     {
         $this->pageSize = $pageSize;
     }
@@ -134,7 +134,7 @@ class Backend extends AbstractBackend implements
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         if ($query instanceof WorkKeysQuery) {
             return $this->workKeysSearch($query, $offset, $limit, $params);
         }
@@ -160,7 +160,7 @@ class Backend extends AbstractBackend implements
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): string {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
@@ -175,7 +175,7 @@ class Backend extends AbstractBackend implements
      *
      * @return array
      */
-    public function getExtraRequestDetails()
+    public function getExtraRequestDetails(): array
     {
         return [
             'solrRequestUrl' => $this->connector->getLastUrl(),
@@ -187,7 +187,7 @@ class Backend extends AbstractBackend implements
      *
      * @return void
      */
-    public function resetExtraRequestDetails()
+    public function resetExtraRequestDetails(): void
     {
         $this->connector->resetLastUrl();
     }
@@ -207,7 +207,7 @@ class Backend extends AbstractBackend implements
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
@@ -240,7 +240,7 @@ class Backend extends AbstractBackend implements
         AbstractQuery $query,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
@@ -259,7 +259,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): RecordCollectionInterface
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -278,7 +278,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    public function retrieveBatch(array $ids, ?ParamBag $params = null)
+    public function retrieveBatch(array $ids, ?ParamBag $params = null): RecordCollectionInterface
     {
         $params = $params ?: new ParamBag();
 
@@ -319,7 +319,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    public function similar(string $id, ?ParamBag $params = null)
+    public function similar(string $id, ?ParamBag $params = null): RecordCollectionInterface
     {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
@@ -346,7 +346,7 @@ class Backend extends AbstractBackend implements
         ?string $start = null,
         ?int $limit = null,
         ?ParamBag $params = null
-    ) {
+    ): Terms {
         // Support alternate syntax with ParamBag as first parameter:
         if ($field instanceof ParamBag && $params === null) {
             $params = $field;
@@ -404,7 +404,7 @@ class Backend extends AbstractBackend implements
         int $limit = 20,
         ParamBag $params = null,
         int $offsetDelta = 0
-    ) {
+    ): array {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
@@ -437,7 +437,7 @@ class Backend extends AbstractBackend implements
         ?int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
-    ) {
+    ): array {
         $connector = $this->getConnector();
 
         // Write!
@@ -460,7 +460,7 @@ class Backend extends AbstractBackend implements
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -472,7 +472,7 @@ class Backend extends AbstractBackend implements
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -487,7 +487,7 @@ class Backend extends AbstractBackend implements
      *
      * @return void
      */
-    public function setSimilarBuilder(SimilarBuilder $similarBuilder)
+    public function setSimilarBuilder(SimilarBuilder $similarBuilder): void
     {
         $this->similarBuilder = $similarBuilder;
     }
@@ -499,7 +499,7 @@ class Backend extends AbstractBackend implements
      *
      * @return SimilarBuilder
      */
-    public function getSimilarBuilder()
+    public function getSimilarBuilder(): SimilarBuilder
     {
         if (!$this->similarBuilder) {
             $this->similarBuilder = new SimilarBuilder();
@@ -514,7 +514,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         if (!$this->collectionFactory) {
             $this->collectionFactory = new Response\Json\RecordCollectionFactory();
@@ -527,7 +527,7 @@ class Backend extends AbstractBackend implements
      *
      * @return Connector
      */
-    public function getConnector()
+    public function getConnector(): Connector
     {
         return $this->connector;
     }
@@ -541,7 +541,7 @@ class Backend extends AbstractBackend implements
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection(string $json)
+    protected function createRecordCollection(string $json): RecordCollectionInterface
     {
         return $this->getRecordCollectionFactory()
             ->factory($this->deserialize($json));
@@ -556,7 +556,7 @@ class Backend extends AbstractBackend implements
      *
      * @throws BackendException Deserialization error
      */
-    protected function deserialize(string $json)
+    protected function deserialize(string $json): array
     {
         $response = json_decode($json, true);
         $error    = json_last_error();
@@ -578,7 +578,7 @@ class Backend extends AbstractBackend implements
      * @return void
      * @throws RemoteErrorException
      */
-    protected function refineBrowseException(RemoteErrorException $e)
+    protected function refineBrowseException(RemoteErrorException $e): void
     {
         $error = $e->getMessage() . $e->getResponse();
         if (
@@ -607,7 +607,7 @@ class Backend extends AbstractBackend implements
      * @throws InvalidArgumentException Response writer and named list
      * implementation already set to an incompatible type.
      */
-    protected function injectResponseWriter(ParamBag $params)
+    protected function injectResponseWriter(ParamBag $params): void
     {
         if (array_diff($params->get('wt') ?: [], ['json'])) {
             throw new InvalidArgumentException(

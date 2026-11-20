@@ -48,7 +48,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testSetHandlerMapThrowsOnDuplicateFallback()
+    public function testSetHandlerMapThrowsOnDuplicateFallback(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Duplicate fallback');
@@ -65,7 +65,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testSetHandlerMapThrowsOnDuplicateFunctionHandler()
+    public function testSetHandlerMapThrowsOnDuplicateFunctionHandler(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Handler for function already defined');
@@ -82,7 +82,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testGetHandlerThrowsOnUndefinedFunctionHandler()
+    public function testGetHandlerThrowsOnUndefinedFunctionHandler(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Undefined function handler');
@@ -96,7 +96,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testGetParametersThrowsOnUndefinedType()
+    public function testGetParametersThrowsOnUndefinedType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid parameter key: bad');
@@ -110,7 +110,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testSetParametersThrowsOnUndefinedType()
+    public function testSetParametersThrowsOnUndefinedType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid parameter key: bad');
@@ -124,7 +124,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testGetDefaultsAppendsInvariants()
+    public function testGetDefaultsAppendsInvariants(): void
     {
         $map = new HandlerMap(
             [
@@ -157,7 +157,7 @@ class HandlerMapTest extends TestCase
      *
      * @see https://vufind.org/jira/browse/VUFIND-820 VUFIND-820
      */
-    public function testGetDefaultsAppendsInvariantsPureFallback()
+    public function testGetDefaultsAppendsInvariantsPureFallback(): void
     {
         $map = new HandlerMap(
             [
@@ -188,7 +188,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testAddParameter()
+    public function testAddParameter(): void
     {
         $map = new HandlerMap(
             [

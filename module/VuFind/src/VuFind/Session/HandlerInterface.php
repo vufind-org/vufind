@@ -50,12 +50,12 @@ interface HandlerInterface extends SaveHandlerInterface
      *
      * @return void
      */
-    public function enableWrites();
+    public function enableWrites(): void;
 
     /**
      * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */
-    public function disableWrites();
+    public function disableWrites(): void;
 }

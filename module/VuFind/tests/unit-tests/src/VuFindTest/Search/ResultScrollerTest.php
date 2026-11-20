@@ -54,7 +54,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNextPrevNavBug()
+    public function testNextPrevNavBug(): void
     {
         $results = $this->getMockResults(0, 0, 0, true, 'sorted');
         $plugin = $this->getMockResultScroller($results);
@@ -79,7 +79,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDisabled()
+    public function testDisabled(): void
     {
         $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
@@ -109,7 +109,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingOnSingleRecord()
+    public function testScrollingOnSingleRecord(): void
     {
         $results = $this->getMockResults(1, 10, 1);
         $plugin = $this->getMockResultScroller($results);
@@ -130,7 +130,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingInMiddleOfPage()
+    public function testScrollingInMiddleOfPage(): void
     {
         $results = $this->getMockResults(1, 10, 10);
         $plugin = $this->getMockResultScroller($results);
@@ -151,7 +151,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingToFirstRecord()
+    public function testScrollingToFirstRecord(): void
     {
         $results = $this->getMockResults(5, 2, 10);
         $plugin = $this->getMockResultScroller($results);
@@ -172,7 +172,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingToFirstRecordWithPageSize1()
+    public function testScrollingToFirstRecordWithPageSize1(): void
     {
         $results = $this->getMockResults(10, 1, 10);
         $plugin = $this->getMockResultScroller($results);
@@ -194,7 +194,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingToLastRecord()
+    public function testScrollingToLastRecord(): void
     {
         $results = $this->getMockResults(1, 2, 10);
         $plugin = $this->getMockResultScroller($results);
@@ -216,7 +216,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingToLastRecordAcrossPageBoundaries()
+    public function testScrollingToLastRecordAcrossPageBoundaries(): void
     {
         $results = $this->getMockResults(1, 2, 9);
         $plugin = $this->getMockResultScroller($results);
@@ -238,7 +238,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDisabledFirstLast()
+    public function testDisabledFirstLast(): void
     {
         $results = $this->getMockResults(1, 10, 10, false);
         $plugin = $this->getMockResultScroller($results);
@@ -259,7 +259,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingAtStartOfFirstPage()
+    public function testScrollingAtStartOfFirstPage(): void
     {
         $results = $this->getMockResults(1, 10, 10);
         $plugin = $this->getMockResultScroller($results);
@@ -280,7 +280,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingAtEndOfLastPage()
+    public function testScrollingAtEndOfLastPage(): void
     {
         $results = $this->getMockResults(1, 10, 10);
         $plugin = $this->getMockResultScroller($results);
@@ -301,7 +301,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingAtEndOfLastPageInMultiPageScenario()
+    public function testScrollingAtEndOfLastPageInMultiPageScenario(): void
     {
         $results = $this->getMockResults(2, 10, 17);
         $plugin = $this->getMockResultScroller($results);
@@ -322,7 +322,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingAtStartOfMiddlePage()
+    public function testScrollingAtStartOfMiddlePage(): void
     {
         $results = $this->getMockResults(2, 10, 30);
         $plugin = $this->getMockResultScroller($results);
@@ -343,7 +343,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getFirstLastConfig()
+    protected function getFirstLastConfig(): array
     {
         return ['Record' => ['first_last_navigation' => true]];
     }
@@ -353,7 +353,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingAtEndOfMiddlePage()
+    public function testScrollingAtEndOfMiddlePage(): void
     {
         $results = $this->getMockResults(2, 10, 30);
         $plugin = $this->getMockResultScroller($results);
@@ -374,7 +374,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testScrollingAtEndOfMiddlePageWithSorting()
+    public function testScrollingAtEndOfMiddlePageWithSorting(): void
     {
         $results = $this->getMockResults(2, 10, 30, true, 'sorted');
         $plugin = $this->getMockResultScroller($results);
@@ -397,7 +397,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReducingTotalResults()
+    public function testReducingTotalResults(): void
     {
         $results = $this->getMockResults(1, 2, 6);
         $plugin = $this->getMockResultScroller($results);
@@ -444,7 +444,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReducingTotalResultsWithDisabledFirstLast()
+    public function testReducingTotalResultsWithDisabledFirstLast(): void
     {
         $results = $this->getMockResults(1, 2, 6, false);
         $plugin = $this->getMockResultScroller($results);
@@ -586,7 +586,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
              *
              * @return void
              */
-            protected function rememberSearch(\VuFind\Search\Base\Results $search)
+            protected function rememberSearch(\VuFind\Search\Base\Results $search): void
             {
                 // Do nothing
             }

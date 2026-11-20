@@ -45,7 +45,7 @@ class BrowZine extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return $this->getTitle();
     }
@@ -55,7 +55,7 @@ class BrowZine extends DefaultRecord
      *
      * @return string
      */
-    public function getSjrValue()
+    public function getSjrValue(): string
     {
         return $this->fields['sjrValue'] ?? '';
     }
@@ -65,7 +65,7 @@ class BrowZine extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->fields['name'] ?? parent::getTitle();
     }
@@ -81,7 +81,7 @@ class BrowZine extends DefaultRecord
      *
      * @return string|array|bool
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string|array|bool
     {
         if (isset($this->fields['coverImageUrl'])) {
             return $this->fields['coverImageUrl'];
@@ -94,7 +94,7 @@ class BrowZine extends DefaultRecord
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         return isset($this->fields['issn']) ? (array)$this->fields['issn'] : [];
     }
@@ -113,7 +113,7 @@ class BrowZine extends DefaultRecord
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         $urls = [];
         $fields = ['browzineWebLink', 'externalLink'];

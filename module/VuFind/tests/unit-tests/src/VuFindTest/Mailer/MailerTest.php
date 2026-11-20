@@ -59,7 +59,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFactoryConfiguration()
+    public function testFactoryConfiguration(): void
     {
         $config = [
             'Mail' => [
@@ -97,7 +97,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSend()
+    public function testSend(): void
     {
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
@@ -114,7 +114,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithAddressObjectInSender()
+    public function testSendWithAddressObjectInSender(): void
     {
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
@@ -132,7 +132,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithAddressObjectInRecipient()
+    public function testSendWithAddressObjectInRecipient(): void
     {
         $callback = function ($message): bool {
             return '"Recipient TextName" <to@example.com>' == $message->getTo()[0]->toString()
@@ -150,7 +150,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithAddressListInRecipient()
+    public function testSendWithAddressListInRecipient(): void
     {
         $callback = function ($message): bool {
             return '"Recipient TextName" <to@example.com>' == $message->getTo()[0]->toString()
@@ -170,7 +170,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithFromOverride()
+    public function testSendWithFromOverride(): void
     {
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
@@ -190,7 +190,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithReplyTo()
+    public function testSendWithReplyTo(): void
     {
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
@@ -210,7 +210,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithFromOverrideAndReplyTo()
+    public function testSendWithFromOverrideAndReplyTo(): void
     {
         $callback = function ($message): bool {
             $fromString = $message->getFrom()[0]->toString();
@@ -231,7 +231,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithSubjectInBody()
+    public function testSendWithSubjectInBody(): void
     {
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
@@ -257,7 +257,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendWithSubjectNotAllowedInBody()
+    public function testSendWithSubjectNotAllowedInBody(): void
     {
         $body = <<<EOT
             Subject: overridden subject
@@ -289,7 +289,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadTo()
+    public function testBadTo(): void
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
@@ -304,7 +304,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadReplyTo()
+    public function testBadReplyTo(): void
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Reply-To Email Address');
@@ -326,7 +326,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyTo()
+    public function testEmptyTo(): void
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
@@ -341,7 +341,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTooManyRecipients()
+    public function testTooManyRecipients(): void
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Too Many Email Recipients');
@@ -356,7 +356,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadFrom()
+    public function testBadFrom(): void
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
@@ -371,7 +371,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTransportException()
+    public function testTransportException(): void
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Boom');
@@ -387,7 +387,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnknownException()
+    public function testUnknownException(): void
     {
         // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
         // environment
@@ -456,7 +456,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSendRecord()
+    public function testSendRecord(): void
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
@@ -498,7 +498,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      * @return void
      * @throws \VuFind\Exception\Mail
      */
-    public function testSendMimeMessageWithMultipartAlternativeContentType()
+    public function testSendMimeMessageWithMultipartAlternativeContentType(): void
     {
         $html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
         $text = 'this is the text part';
@@ -523,7 +523,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      *
      * @return Mailer
      */
-    protected function getMailer(?callable $callback = null, ?TemplateRendererInterface $renderer = null)
+    protected function getMailer(?callable $callback = null, ?TemplateRendererInterface $renderer = null): Mailer
     {
         $transport = $this->createMock(MailerInterface::class);
         if ($callback) {

@@ -91,7 +91,7 @@ abstract class AbstractJsonRecordCollectionFactory implements RecordCollectionFa
      *
      * @return RecordCollection
      */
-    public function factory(array $response)
+    public function factory(array $response): RecordCollection
     {
         if (!is_array($response)) {
             throw new InvalidArgumentException(

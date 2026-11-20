@@ -45,7 +45,7 @@ class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\CatalogResultsDeferred::class,
@@ -64,7 +64,7 @@ class CatalogResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestC
      *
      * @return void
      */
-    public function testLookforArray()
+    public function testLookforArray(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\CatalogResultsDeferred::class,

@@ -140,7 +140,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutConfig()
+    public function testWithoutConfig(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('No institutionCode found.');
@@ -154,7 +154,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutAuthorizationService()
+    public function testWithoutAuthorizationService(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $this->assertEquals(false, $handler->hasPermission());
@@ -166,7 +166,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerCodeSuccessfull()
+    public function testHandlerCodeSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -185,7 +185,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultCode()
+    public function testHandlerDefaultCode(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -210,7 +210,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetInstCode()
+    public function testSetInstCode(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $handler->setInstCode('MEMBER');
@@ -222,7 +222,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerMemberAuthSuccessfull()
+    public function testHandlerMemberAuthSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -247,7 +247,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerMemberAuthNotSuccessfull()
+    public function testHandlerMemberAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -272,7 +272,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultAuthSuccessfull()
+    public function testHandlerDefaultAuthSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -297,7 +297,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultAuthNotSuccessfull()
+    public function testHandlerDefaultAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -322,7 +322,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAuthNotExisting()
+    public function testAuthNotExisting(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $handler->setInstCode('NOTEXISTING');
@@ -343,7 +343,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerWithoutDefaultAuthSuccessfull()
+    public function testHandlerWithoutDefaultAuthSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigWithoutDefault);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -368,7 +368,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerWithoutDefaultAuthNotSuccessfull()
+    public function testHandlerWithoutDefaultAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigWithoutDefault);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -393,7 +393,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerWithoutDefaultCodeSuccessfull()
+    public function testHandlerWithoutDefaultCodeSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigWithoutDefault);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -412,7 +412,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerWithoutDefaultCodeAuthNotSuccessfull()
+    public function testHandlerWithoutDefaultCodeAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigWithoutDefault);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -429,7 +429,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerWithoutDefaultDefaultAuthSuccessfull()
+    public function testHandlerWithoutDefaultDefaultAuthSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigWithoutDefault);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -454,7 +454,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerWithoutDefaultDefaultAuthNotSuccessfull()
+    public function testHandlerWithoutDefaultDefaultAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigWithoutDefault);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -483,7 +483,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultOnlyAuthNotSuccessfull()
+    public function testHandlerDefaultOnlyAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigDefaultOnly);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -510,7 +510,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultOnlyCodeAuthNotSuccessfull()
+    public function testHandlerDefaultOnlyCodeAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigDefaultOnly);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -535,7 +535,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultOnlyDefaultAuthSuccessfull()
+    public function testHandlerDefaultOnlyDefaultAuthSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigDefaultOnly);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -560,7 +560,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultOnlyDefaultAuthNotSuccessfull()
+    public function testHandlerDefaultOnlyDefaultAuthNotSuccessfull(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigDefaultOnly);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -589,7 +589,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerMemberIsOnCampusWithDefault()
+    public function testHandlerMemberIsOnCampusWithDefault(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigInstitutionCode);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -618,7 +618,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerMemberIsNotOnCampusWithDefault()
+    public function testHandlerMemberIsNotOnCampusWithDefault(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigInstitutionCode);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -645,7 +645,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerIsNotAMemberAndNotDefaultOnCampus()
+    public function testHandlerIsNotAMemberAndNotDefaultOnCampus(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigInstitutionCode);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -672,7 +672,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerIsNotAMemberButOnDefaultCampus()
+    public function testHandlerIsNotAMemberButOnDefaultCampus(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigInstitutionCode);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -703,7 +703,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerMemberIsOnCampus()
+    public function testHandlerMemberIsOnCampus(): void
     {
         $handler = new PrimoPermissionHandler(
             $this->primoConfigWithoutDefaultWithInstCode
@@ -733,7 +733,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerMemberIsNotOnCampus()
+    public function testHandlerMemberIsNotOnCampus(): void
     {
         $handler = new PrimoPermissionHandler(
             $this->primoConfigWithoutDefaultWithInstCode
@@ -761,7 +761,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerIsNotAMember()
+    public function testHandlerIsNotAMember(): void
     {
         $handler = new PrimoPermissionHandler(
             $this->primoConfigWithoutDefaultWithInstCode
@@ -793,7 +793,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultOnlyNoOncampus()
+    public function testHandlerDefaultOnlyNoOncampus(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigDefaultOnlyNoOnCampusRule);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);
@@ -811,7 +811,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHandlerDefaultOnlyCodeNoOncampus()
+    public function testHandlerDefaultOnlyCodeNoOncampus(): void
     {
         $handler = new PrimoPermissionHandler($this->primoConfigDefaultOnlyNoOnCampusRule);
         $mockAuth = $this->createMock(AuthorizationServiceInterface::class);

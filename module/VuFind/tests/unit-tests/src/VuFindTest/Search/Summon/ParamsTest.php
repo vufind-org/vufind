@@ -51,7 +51,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckboxVisibility()
+    public function testCheckboxVisibility(): void
     {
         $config = [
             'Summon' => [

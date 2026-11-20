@@ -58,7 +58,7 @@ class Ratings
      *
      * @return RatingsService
      */
-    public function __invoke()
+    public function __invoke(): RatingsService
     {
         return $this->service;
     }

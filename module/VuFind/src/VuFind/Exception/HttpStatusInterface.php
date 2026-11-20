@@ -47,5 +47,5 @@ interface HttpStatusInterface
      *
      * @return int
      */
-    public function getHttpStatus();
+    public function getHttpStatus(): int;
 }

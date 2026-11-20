@@ -75,7 +75,7 @@ class DeepPagingException extends RuntimeException
      *
      * @return int
      */
-    public function getLegalPage()
+    public function getLegalPage(): int
     {
         return $this->legalPage;
     }

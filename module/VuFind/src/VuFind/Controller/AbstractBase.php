@@ -130,7 +130,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    public function validateAccessPermission(MvcEvent $e)
+    public function validateAccessPermission(MvcEvent $e): void
     {
         // If there is an access permission set for this controller, pass it
         // through the permission helper, and if the helper returns a custom
@@ -151,7 +151,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string|bool|null
      */
-    public function getAccessPermission()
+    public function getAccessPermission(): string|bool|null
     {
         return $this->accessPermission;
     }
@@ -164,7 +164,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    public function setAccessPermission(string|bool $ap)
+    public function setAccessPermission(string|bool $ap): void
     {
         $this->accessPermission = empty($ap) ? false : $ap;
     }
@@ -174,7 +174,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return HttpRequest
      */
-    public function getRequest()
+    public function getRequest(): HttpRequest
     {
         if (!$this->request) {
             $this->request = new HttpRequest();
@@ -188,7 +188,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    protected function attachDefaultListeners()
+    protected function attachDefaultListeners(): void
     {
         parent::attachDefaultListeners();
 
@@ -210,7 +210,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return ViewModel
      */
-    protected function createViewModel(array $params = null)
+    protected function createViewModel(array $params = null): ViewModel
     {
         if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
@@ -236,7 +236,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return ViewModel
      */
-    protected function createEmailViewModel(array $params = null, string $defaultSubject = null)
+    protected function createEmailViewModel(array $params = null, string $defaultSubject = null): ViewModel
     {
         // Build view:
         $view = $this->createViewModel($params);
@@ -294,7 +294,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Auth\Manager
      */
-    protected function getAuthManager()
+    protected function getAuthManager(): \VuFind\Auth\Manager
     {
         return $this->getService(\VuFind\Auth\Manager::class);
     }
@@ -304,7 +304,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Service\AuthorizationServiceInterface
      */
-    protected function getAuthorizationService()
+    protected function getAuthorizationService(): \VuFind\Service\AuthorizationServiceInterface
     {
         return $this->getService(\VuFind\Service\AuthorizationService::class);
     }
@@ -314,7 +314,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Auth\ILSAuthenticator
      */
-    protected function getILSAuthenticator()
+    protected function getILSAuthenticator(): \VuFind\Auth\ILSAuthenticator
     {
         return $this->getService(\VuFind\Auth\ILSAuthenticator::class);
     }
@@ -334,7 +334,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \Laminas\View\Renderer\RendererInterface
      */
-    protected function getViewRenderer()
+    protected function getViewRenderer(): \Laminas\View\Renderer\RendererInterface
     {
         return $this->getService('ViewRenderer');
     }
@@ -348,7 +348,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return mixed
      */
-    public function forceLogin(string $msg = null, array $extras = [], bool $forward = true)
+    public function forceLogin(string $msg = null, array $extras = [], bool $forward = true): mixed
     {
         // Set default message if necessary.
         if (null === $msg) {
@@ -480,7 +480,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @deprecated Use AbstractBase::getConfigArray
      */
-    public function getConfig(string $id = 'config')
+    public function getConfig(string $id = 'config'): \VuFind\Config\Config
     {
         return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
     }
@@ -502,7 +502,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\ILS\Connection
      */
-    public function getILS()
+    public function getILS(): \VuFind\ILS\Connection
     {
         return $this->getService(\VuFind\ILS\Connection::class);
     }
@@ -512,7 +512,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Record\Loader
      */
-    public function getRecordLoader()
+    public function getRecordLoader(): \VuFind\Record\Loader
     {
         return $this->getService(\VuFind\Record\Loader::class);
     }
@@ -522,7 +522,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Record\Cache
      */
-    public function getRecordCache()
+    public function getRecordCache(): \VuFind\Record\Cache
     {
         return $this->getService(\VuFind\Record\Cache::class);
     }
@@ -532,7 +532,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Record\Router
      */
-    public function getRecordRouter()
+    public function getRecordRouter(): \VuFind\Record\Router
     {
         return $this->getService(\VuFind\Record\Router::class);
     }
@@ -559,7 +559,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    public function getServerUrl(bool|string $route = true)
+    public function getServerUrl(bool|string $route = true): string
     {
         $serverHelper = $this->getViewRenderer()->plugin('serverurl');
         return $serverHelper(
@@ -577,7 +577,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return mixed
      */
-    public function forwardTo(string $controller, string $action, array $params = [])
+    public function forwardTo(string $controller, string $action, array $params = []): mixed
     {
         // Check for action first before forwarding to a controller:
         $event = clone $this->getEvent();
@@ -615,7 +615,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     protected function formWasSubmitted(
         string|array|null $submitElements = null,
         bool $useCaptcha = false
-    ) {
+    ): bool {
         $buttonFound = false;
         // Use of 'submit' as an input name was deprecated in release 10.0, but the
         // check is retained for backward compatibility with legacy custom templates.
@@ -668,7 +668,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         string $noTarget,
         string|array $messages = [],
         array $extras = []
-    ) {
+    ): mixed {
         return $this->forwardTo(
             'Confirm',
             'Confirm',
@@ -692,7 +692,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    protected function disableSessionWrites()
+    protected function disableSessionWrites(): void
     {
         $this->getService(\VuFind\Session\Settings::class)->disableWrite();
     }
@@ -702,7 +702,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\Search\Memory
      */
-    public function getSearchMemory()
+    public function getSearchMemory(): \VuFind\Search\Memory
     {
         return $this->getService(\VuFind\Search\Memory::class);
     }
@@ -712,7 +712,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return bool
      */
-    protected function commentsEnabled()
+    protected function commentsEnabled(): bool
     {
         $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getCommentSetting() !== 'disabled';
@@ -734,7 +734,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return bool
      */
-    protected function listsEnabled()
+    protected function listsEnabled(): bool
     {
         $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getListSetting() !== 'disabled';
@@ -745,7 +745,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return bool
      */
-    protected function tagsEnabled()
+    protected function tagsEnabled(): bool
     {
         $check = $this->getService(\VuFind\Config\AccountCapabilities::class);
         return $check->getTagSetting() !== 'disabled';
@@ -763,7 +763,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = [])
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true, array $extras = []): void
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -816,7 +816,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    protected function normalizeUrlForComparison(string $url)
+    protected function normalizeUrlForComparison(string $url): string
     {
         $parts = explode('://', $url, 2);
         return trim(end($parts), '/');
@@ -827,7 +827,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return bool
      */
-    protected function hasFollowupUrl()
+    protected function hasFollowupUrl(): bool
     {
         return null !== $this->getService(FollowupHelper::class)->retrieve('url');
     }
@@ -841,7 +841,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    protected function getAndClearFollowupUrl(bool $checkRedirect = false)
+    protected function getAndClearFollowupUrl(bool $checkRedirect = false): string
     {
         if ($url = $this->getService(FollowupHelper::class)->retrieveAndClear('url')) {
             $lightboxParent = $this->getService(FollowupHelper::class)->retrieveAndClear('lightboxParent');
@@ -867,7 +867,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return void
      */
-    protected function clearFollowupUrl()
+    protected function clearFollowupUrl(): void
     {
         $followupHelper = $this->getService(FollowupHelper::class);
         $followupHelper->clear('isReferrer');
@@ -880,7 +880,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \VuFind\RecordTab\TabManager
      */
-    protected function getRecordTabManager()
+    protected function getRecordTabManager(): \VuFind\RecordTab\TabManager
     {
         return $this->getService(\VuFind\RecordTab\TabManager::class);
     }
@@ -890,7 +890,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return bool
      */
-    protected function inLightbox()
+    protected function inLightbox(): bool
     {
         return
             $this->params()->fromPost(
@@ -907,7 +907,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return string
      */
-    protected function getILSLoginMethod(string $target = '')
+    protected function getILSLoginMethod(string $target = ''): string
     {
         $config = $this->getILS()->checkFunction(
             'patronLogin',
@@ -921,7 +921,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return array
      */
-    protected function getILSLoginSettings()
+    protected function getILSLoginSettings(): array
     {
         $targets = null;
         $defaultTarget = null;
@@ -951,7 +951,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      *
      * @return \Laminas\Http\Response
      */
-    protected function getRefreshResponse(bool $forceGet = false)
+    protected function getRefreshResponse(bool $forceGet = false): \Laminas\Http\Response
     {
         $response = $this->getResponse();
         $response->setStatusCode(205);

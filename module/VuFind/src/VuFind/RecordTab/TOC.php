@@ -45,7 +45,7 @@ class TOC extends AbstractContent
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Table of Contents';
     }
@@ -55,7 +55,7 @@ class TOC extends AbstractContent
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         $toc = $this->getRecordDriver()->tryMethod('getTOC');
         return !empty($toc) || parent::isActive();

@@ -47,7 +47,7 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPaginationSupported()
+    public function testPaginationSupported(): void
     {
         $helper = new PaginationHelper();
 
@@ -154,7 +154,7 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPaginationNotSupported()
+    public function testPaginationNotSupported(): void
     {
         $helper = new PaginationHelper();
 

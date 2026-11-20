@@ -113,7 +113,7 @@ class MultiAuth extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         if (empty($this->config['MultiAuth']['method_order'])) {
             throw new AuthException(
@@ -157,7 +157,7 @@ class MultiAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $this->filterCredentials($request);
 
@@ -182,7 +182,7 @@ class MultiAuth extends AbstractBase
      *
      * @return void
      */
-    protected function filterCredentials(\Laminas\Http\PhpEnvironment\Request $request)
+    protected function filterCredentials(\Laminas\Http\PhpEnvironment\Request $request): void
     {
         $this->username = $request->getPost()->get('username');
         $this->password = $request->getPost()->get('password');
@@ -206,7 +206,7 @@ class MultiAuth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    protected function authUser(\Laminas\Http\PhpEnvironment\Request $request)
+    protected function authUser(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $exception = null;
         $manager = $this->getPluginManager();
@@ -244,7 +244,7 @@ class MultiAuth extends AbstractBase
      *
      * @return void
      */
-    public function setPluginManager(PluginManager $manager)
+    public function setPluginManager(PluginManager $manager): void
     {
         $this->manager = $manager;
     }
@@ -255,7 +255,7 @@ class MultiAuth extends AbstractBase
      * @throws \Exception
      * @return PluginManager
      */
-    public function getPluginManager()
+    public function getPluginManager(): PluginManager
     {
         if (null === $this->manager) {
             throw new \Exception('Plugin manager missing.');

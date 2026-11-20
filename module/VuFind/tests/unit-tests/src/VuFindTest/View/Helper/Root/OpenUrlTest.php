@@ -59,7 +59,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckContextDefaults()
+    public function testCheckContextDefaults(): void
     {
         $config = [
             'url' => 'http://foo/bar',
@@ -76,7 +76,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckContextWithOverrides()
+    public function testCheckContextWithOverrides(): void
     {
         $config = [
             'url' => 'http://foo/bar',
@@ -95,7 +95,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckContextNoUrl()
+    public function testCheckContextNoUrl(): void
     {
         $driver = $this->getMockDriver();
         $openUrl = ($this->getOpenUrl())($driver, 'results');
@@ -110,7 +110,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckExcludedRecordsRulesFalse()
+    public function testCheckExcludedRecordsRulesFalse(): void
     {
         $fixture = $this->getJsonFixture('openurlrules/rule1.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
@@ -124,7 +124,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckExcludedRecordsRulesTrue()
+    public function testCheckExcludedRecordsRulesTrue(): void
     {
         $fixture = $this->getJsonFixture('openurlrules/rule2.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
@@ -139,7 +139,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckExcludedRecordsRulesFalseDueToWildcardFailure()
+    public function testCheckExcludedRecordsRulesFalseDueToWildcardFailure(): void
     {
         $driver = $this->getMockDriver(
             'fake-data',
@@ -159,7 +159,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckSupportedRecordsRulesFalse()
+    public function testCheckSupportedRecordsRulesFalse(): void
     {
         $fixture = $this->getJsonFixture('openurlrules/rule3.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
@@ -174,7 +174,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckSupportedRecordsRulesWithWildcardStillFalse()
+    public function testCheckSupportedRecordsRulesWithWildcardStillFalse(): void
     {
         $driver = $this->getMockDriver(
             'fake-openurl',
@@ -193,7 +193,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckSupportedRecordsRulesTrue()
+    public function testCheckSupportedRecordsRulesTrue(): void
     {
         $fixture = $this->getJsonFixture('openurlrules/rule4.json');
         $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
@@ -207,7 +207,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRecordDriverClassInRules()
+    public function testRecordDriverClassInRules(): void
     {
         $formats = ['Article'];
         $defaultDriver = $this->getMockDriver(
@@ -231,7 +231,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\View\Helper\Root\Context
      */
-    protected function getMockContext()
+    protected function getMockContext(): \VuFind\View\Helper\Root\Context
     {
         return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
@@ -251,7 +251,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         string $class = \VuFind\RecordDriver\SolrDefault::class,
         array $formats = ['ElectronicArticle', 'Article'],
         string $issn = '1234-5678'
-    ) {
+    ): \VuFind\RecordDriver\SolrDefault {
         $driver = $this->createMock($class);
         $driver->method('getOpenUrl')->willReturn($openUrl);
         $driver->method('getCleanISSN')->willReturn($issn);
@@ -268,7 +268,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return OpenURL
      */
-    protected function getOpenUrl(array $rules = null, array $config = [], object $mockContext = null)
+    protected function getOpenUrl(array $rules = null, array $config = [], object $mockContext = null): OpenURL
     {
         if (null === $rules) {
             $rules = $this->getJsonFixture('openurlrules/defaults.json');

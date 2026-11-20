@@ -56,7 +56,7 @@ class RestfulException extends ILSException
      *
      * @return void
      */
-    public function setXmlResponse(string $body)
+    public function setXmlResponse(string $body): void
     {
         $this->xmlResponse = $body;
     }
@@ -66,7 +66,7 @@ class RestfulException extends ILSException
      *
      * @return string|bool
      */
-    public function getXmlResponse()
+    public function getXmlResponse(): string|bool
     {
         return $this->xmlResponse;
     }

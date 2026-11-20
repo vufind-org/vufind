@@ -58,7 +58,7 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    public function render()
+    public function render(): void
     {
         $this->setTotalResults($this->dom, $this->base);
         $this->setStartIndex($this->dom, $this->base);
@@ -76,7 +76,7 @@ class Feed extends AbstractRenderer
      * @return void
      */
     // phpcs:disable
-    protected function _appendNamespaces()
+    protected function _appendNamespaces(): void
     {
         // phpcs:enable
         // (We have to ignore coding standards here because the method name has
@@ -95,7 +95,7 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    protected function setTotalResults(DOMDocument $dom, DOMElement $root)
+    protected function setTotalResults(DOMDocument $dom, DOMElement $root): void
     {
         $totalResults = $this->getDataContainer()->getOpensearchTotalResults();
         if ($totalResults !== null) {
@@ -115,7 +115,7 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    protected function setStartIndex(DOMDocument $dom, DOMElement $root)
+    protected function setStartIndex(DOMDocument $dom, DOMElement $root): void
     {
         $startIndex = $this->getDataContainer()->getOpensearchStartIndex();
         if ($startIndex !== null) {
@@ -135,7 +135,7 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    protected function setItemsPerPage(DOMDocument $dom, DOMElement $root)
+    protected function setItemsPerPage(DOMDocument $dom, DOMElement $root): void
     {
         $itemsPerPage = $this->getDataContainer()->getOpensearchItemsPerPage();
         if ($itemsPerPage !== null) {
@@ -155,7 +155,7 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    protected function setQuery(DOMDocument $dom, DOMElement $root)
+    protected function setQuery(DOMDocument $dom, DOMElement $root): void
     {
         $searchTerms = $this->getDataContainer()->getOpensearchSearchTerms();
         $startIndex = $this->getDataContainer()->getOpensearchStartIndex();
@@ -179,7 +179,7 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    protected function setLinks(DOMDocument $dom, DOMElement $root)
+    protected function setLinks(DOMDocument $dom, DOMElement $root): void
     {
         $links = $this->getDataContainer()->getOpensearchLinks();
         foreach ($links as $link) {

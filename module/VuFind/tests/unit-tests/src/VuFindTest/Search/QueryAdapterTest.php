@@ -98,7 +98,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOperatorDefinedEverywhere()
+    public function testOperatorDefinedEverywhere(): void
     {
         $q = unserialize($this->getFixture('searches/operators'));
         $adapter = $this->getQueryAdapter();
@@ -125,7 +125,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAdvancedRequest()
+    public function testAdvancedRequest(): void
     {
         $req = unserialize($this->getFixture('searches/advanced/request'));
         $q = unserialize($this->getFixture('searches/advanced/query'));
@@ -137,7 +137,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyRequest()
+    public function testEmptyRequest(): void
     {
         $this->assertEquals(new Query(), $this->getQueryAdapter()->fromRequest([], 'AllFields'));
     }
@@ -147,7 +147,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDisplay()
+    public function testDisplay(): void
     {
         // Array of fixture directory => expected display query
         $cases = [

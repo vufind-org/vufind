@@ -54,7 +54,7 @@ class Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
      *
      * @return string
      */
-    protected function getConfigSettingName(string $name)
+    protected function getConfigSettingName(string $name): string
     {
         // Account for one special exception:
         $lcName = strtolower($name);
@@ -68,7 +68,7 @@ class Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
      *
      * @return string
      */
-    protected function getPluginManagerServiceName(string $name)
+    protected function getPluginManagerServiceName(string $name): string
     {
         $lcName = strtolower($name);
         // Account for two special legacy exceptions:

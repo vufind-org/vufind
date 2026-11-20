@@ -83,7 +83,7 @@ abstract class AbstractJsStrings
      *
      * @return void
      */
-    public function addStrings(array $new)
+    public function addStrings(array $new): void
     {
         foreach ($new as $k => $v) {
             $this->strings[$k] = $v;
@@ -111,7 +111,7 @@ abstract class AbstractJsStrings
      *
      * @return string
      */
-    public function getJSON()
+    public function getJSON(): string
     {
         return $this->getJSONFromArray($this->strings);
     }
@@ -121,7 +121,7 @@ abstract class AbstractJsStrings
      *
      * @return string
      */
-    public function getScript()
+    public function getScript(): string
     {
         return $this->varName . ' = ' . $this->getJSON() . ';';
     }

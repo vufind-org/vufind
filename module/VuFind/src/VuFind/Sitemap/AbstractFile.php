@@ -64,7 +64,7 @@ abstract class AbstractFile
      *
      * @return void
      */
-    public function addUrl(string|array $url)
+    public function addUrl(string|array $url): void
     {
         $this->urls[] = $url;
     }
@@ -76,14 +76,14 @@ abstract class AbstractFile
      *
      * @return string XML fragment
      */
-    abstract protected function getEntry(string|array $url);
+    abstract protected function getEntry(string|array $url): string;
 
     /**
      * Get the map as a string.
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         // Create entries first as they may affect the required namespaces:
         $entries = '';
@@ -117,7 +117,7 @@ abstract class AbstractFile
      *
      * @return bool
      */
-    public function write(string $file)
+    public function write(string $file): bool
     {
         // if a subfolder was specified that does not exist, make one
         $dirname = dirname($file);
@@ -162,7 +162,7 @@ abstract class AbstractFile
      *
      * @return array
      */
-    protected function getExtraNamespaces()
+    protected function getExtraNamespaces(): array
     {
         return [];
     }

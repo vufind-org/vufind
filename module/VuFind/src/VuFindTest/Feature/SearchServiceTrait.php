@@ -49,7 +49,7 @@ trait SearchServiceTrait
      *
      * @return \VuFindSearch\Service
      */
-    protected function getSearchService(BackendManager $bm)
+    protected function getSearchService(BackendManager $bm): \VuFindSearch\Service
     {
         $shared = new \Laminas\EventManager\SharedEventManager();
         $shared->attach(

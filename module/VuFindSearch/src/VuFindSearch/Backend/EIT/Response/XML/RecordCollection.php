@@ -69,7 +69,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['total'] ?? 0;
     }
@@ -79,7 +79,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         return []; // not supported by EIT
     }
@@ -89,7 +89,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->response['offset'] ?? 0;
     }

@@ -49,7 +49,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testKeywordFilter()
+    public function testKeywordFilter(): void
     {
         $results = $this->getSolrResults($this->getMockParams());
         $results->getParams()->expects($this->once())->method('getDisplayQuery')->willReturn('foo');
@@ -87,7 +87,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null)
+    protected function getMockParams(\VuFindSearch\Query\Query $query = null): \VuFind\Search\Solr\Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');

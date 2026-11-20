@@ -119,7 +119,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
      *
      * @return array Array with keys: url, backlink_url, backlink_text
      */
-    public function getMetadata(?string $key, string $size, array $ids)
+    public function getMetadata(?string $key, string $size, array $ids): array
     {
         $url = $this->getUrl($key, $size, $ids);
         if ($url) {

@@ -73,7 +73,7 @@ trait OauthServiceTrait
         string $oauthUrl,
         string $clientId,
         string $clientSecret
-    ) {
+    ): stdClass|bool {
         $this->oauthServiceTraitDebug('connecting to API');
         $tokenData = $this->tokenData;
         $this->oauthServiceTraitDebug('Last API Token: ' . $this->varDump($tokenData));
@@ -141,7 +141,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function oauthServiceTraitDebug(string $msg)
+    protected function oauthServiceTraitDebug(string $msg): void
     {
         $this->oauthServiceTraitLog('debug', $msg);
     }
@@ -153,7 +153,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function oauthServiceTraitError(string $msg)
+    protected function oauthServiceTraitError(string $msg): void
     {
         $this->oauthServiceTraitLog('err', $msg);
     }
@@ -166,7 +166,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function oauthServiceTraitLog(string $level, string $msg)
+    protected function oauthServiceTraitLog(string $level, string $msg): void
     {
         if (method_exists($this, 'log')) {
             $this->log(...func_get_args());

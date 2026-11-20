@@ -128,7 +128,7 @@ class Mailer implements
      *
      * @return Mailer
      */
-    public function resetConnection()
+    public function resetConnection(): Mailer
     {
         $this->setTransport($this->initialTransport);
         return $this;
@@ -216,7 +216,7 @@ class Mailer implements
         string|Address|array|null $replyTo = null,
         bool $subjectInBody = true,
         array $parts = []
-    ) {
+    ): void {
         try {
             if (!($from instanceof Address)) {
                 $from = new Address($from);
@@ -343,7 +343,7 @@ class Mailer implements
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
-    ) {
+    ): void {
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
         }
@@ -361,7 +361,7 @@ class Mailer implements
      *
      * @return string
      */
-    public function getDefaultLinkSubject()
+    public function getDefaultLinkSubject(): string
     {
         return $this->translate('Library Catalog Search Result');
     }
@@ -388,7 +388,7 @@ class Mailer implements
         ?string $subject = null,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null
-    ) {
+    ): void {
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);
         }
@@ -409,7 +409,7 @@ class Mailer implements
      *
      * @return void
      */
-    public function setMaxRecipients(int $max)
+    public function setMaxRecipients(int $max): void
     {
         $this->maxRecipients = $max;
     }
@@ -421,7 +421,7 @@ class Mailer implements
      *
      * @return string
      */
-    public function getDefaultRecordSubject(\VuFind\RecordDriver\AbstractBase $record)
+    public function getDefaultRecordSubject(\VuFind\RecordDriver\AbstractBase $record): string
     {
         return $this->translate('Library Catalog Record') . ': ' . $record->getBreadcrumb();
     }
@@ -431,7 +431,7 @@ class Mailer implements
      *
      * @return string
      */
-    public function getFromAddressOverride()
+    public function getFromAddressOverride(): string
     {
         return $this->fromAddressOverride;
     }
@@ -443,7 +443,7 @@ class Mailer implements
      *
      * @return void
      */
-    public function setFromAddressOverride(string $address)
+    public function setFromAddressOverride(string $address): void
     {
         $this->fromAddressOverride = $address;
     }

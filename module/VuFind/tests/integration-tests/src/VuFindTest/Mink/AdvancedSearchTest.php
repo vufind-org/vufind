@@ -100,7 +100,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function editAdvancedSearch(Element $page)
+    protected function editAdvancedSearch(Element $page): void
     {
         $links = $page->findAll('css', '.adv_search_links a');
         foreach ($links as $link) {
@@ -119,7 +119,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAdvancedSearchForm()
+    public function testAdvancedSearchForm(): void
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
@@ -207,7 +207,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAdvancedSearchBreadcrumb()
+    public function testAdvancedSearchBreadcrumb(): void
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
@@ -240,7 +240,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAdvancedMultiGroupSearchWithNotOperator()
+    public function testAdvancedMultiGroupSearchWithNotOperator(): void
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
@@ -274,7 +274,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAdvancedSingleGroupSearchWithNotOperator()
+    public function testAdvancedSingleGroupSearchWithNotOperator(): void
     {
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);

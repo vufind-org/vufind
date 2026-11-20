@@ -61,7 +61,7 @@ trait TranslatorAwareTrait
      *
      * @return TranslatorAwareInterface
      */
-    public function setTranslator(TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator): TranslatorAwareInterface
     {
         $this->translator = $translator;
         return $this;
@@ -72,7 +72,7 @@ trait TranslatorAwareTrait
      *
      * @return TranslatorInterface
      */
-    public function getTranslator()
+    public function getTranslator(): TranslatorInterface
     {
         return $this->translator;
     }
@@ -84,7 +84,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function getTranslatorLocale(string $default = 'en')
+    public function getTranslatorLocale(string $default = 'en'): string
     {
         return null !== $this->translator
             && is_callable([$this->translator, 'getLocale'])
@@ -136,7 +136,7 @@ trait TranslatorAwareTrait
         string $default = null,
         bool $useIcuFormatter = false,
         array $fallbackDomains = []
-    ) {
+    ): string {
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
 
@@ -210,7 +210,7 @@ trait TranslatorAwareTrait
         string $default = null,
         bool $useIcuFormatter = false,
         array $fallbackDomains = []
-    ) {
+    ): string {
         if (is_string($target)) {
             if (null === $default) {
                 $default = $target;
@@ -239,7 +239,7 @@ trait TranslatorAwareTrait
         string $default = null,
         string $domain = 'default',
         bool $useIcuFormatter = false
-    ) {
+    ): string {
         if (null === $this->translator) {
             $msg = $str = $rawStr;
         } else {
@@ -279,7 +279,7 @@ trait TranslatorAwareTrait
      *
      * @return array
      */
-    protected function extractTextDomain(string|object|array $target)
+    protected function extractTextDomain(string|object|array $target): array
     {
         $parts = is_array($target) ? $target : explode('::', $target, 2);
         if (count($parts) < 1 || count($parts) > 2) {

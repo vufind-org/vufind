@@ -48,7 +48,7 @@ class OptimizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithOptions()
+    public function testSuccessWithOptions(): void
     {
         $writer = $this->createMock(\VuFind\Solr\Writer::class);
         $writer->expects($this->once())->method('commit')

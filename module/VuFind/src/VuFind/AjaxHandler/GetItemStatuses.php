@@ -107,7 +107,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array        Filtered version of $record
      */
-    protected function filterSuppressedLocations(array $record)
+    protected function filterSuppressedLocations(array $record): array
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
@@ -131,7 +131,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array
      */
-    protected function translateList(string $transPrefix, array $list)
+    protected function translateList(string $transPrefix, array $list): array
     {
         $transList = [];
         foreach ($list as $current) {
@@ -152,7 +152,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array
      */
-    protected function pickValue(array $rawList, string $mode, string $msg, string $transPrefix = false)
+    protected function pickValue(array $rawList, string $mode, string $msg, string $transPrefix = false): array
     {
         // Make sure array contains only unique values:
         // array unique for multidimensional arrays due to callnumber array,
@@ -180,7 +180,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return string
      */
-    protected function getCallnumberHandler(array $list = null, string $displaySetting = null)
+    protected function getCallnumberHandler(array $list = null, string $displaySetting = null): string
     {
         if ($displaySetting == 'msg' && count($list) > 1) {
             return false;
@@ -196,7 +196,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return string
      */
-    protected function reduceServices(ServerRequestInterface $request, array $rawServices)
+    protected function reduceServices(ServerRequestInterface $request, array $rawServices): string
     {
         // Normalize, dedup and sort available services
         $normalize = function ($in) {
@@ -302,7 +302,7 @@ class GetItemStatuses extends AbstractBase implements
         array $record,
         string $locationSetting,
         string $callnumberSetting
-    ) {
+    ): array {
         if (isset($this->getThisLoader)) {
             $itemIdParams = empty($record[0]['item_id']) ? [] : ['item_id' => $record[0]['item_id']];
             $getThisURL = $this->routeHelper->getUrlFromRoute(
@@ -381,7 +381,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array                    Summarized availability information
      */
-    protected function getItemStatusGroup(ServerRequestInterface $request, array $record, string $callnumberSetting)
+    protected function getItemStatusGroup(ServerRequestInterface $request, array $record, string $callnumberSetting): array
     {
         // Summarize call number, location and availability info across all items:
         $locations = [];
@@ -459,7 +459,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array Summarized availability information
      */
-    protected function getItemStatusError(array $record, string $msg = '')
+    protected function getItemStatusError(array $record, string $msg = ''): array
     {
         return [
             'id' => $record[0]['id'],
@@ -503,7 +503,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return string
      */
-    protected function renderFullStatus(ServerRequestInterface $request, array $record, array $simpleStatus, array $values = [])
+    protected function renderFullStatus(ServerRequestInterface $request, array $record, array $simpleStatus, array $values = []): string
     {
         // Default case: no extra holdings fields are shown
         $holdingsTextFieldsToShow = [];

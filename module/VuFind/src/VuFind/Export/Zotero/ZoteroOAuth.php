@@ -82,7 +82,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string
      */
-    public function urlTemporaryCredentials()
+    public function urlTemporaryCredentials(): string
     {
         return $this->baseUrl . 'request';
     }
@@ -92,7 +92,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string
      */
-    public function urlAuthorization()
+    public function urlAuthorization(): string
     {
         $url = $this->baseUrl . 'authorize?library_access=1&write_access=1';
         if ($this->serviceName) {
@@ -106,7 +106,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string
      */
-    public function urlTokenCredentials()
+    public function urlTokenCredentials(): string
     {
         return $this->baseUrl . 'access';
     }
@@ -118,7 +118,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return string
      */
-    public function urlUserDetails()
+    public function urlUserDetails(): string
     {
         return '';
     }
@@ -196,7 +196,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return GuzzleHttpClient
      */
-    public function createHttpClient()
+    public function createHttpClient(): GuzzleHttpClient
     {
         return $this->guzzleService->createClient();
     }
@@ -208,7 +208,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      *
      * @return ZoteroTokenCredentials
      */
-    protected function createTokenCredentials(string $body)
+    protected function createTokenCredentials(string $body): ZoteroTokenCredentials
     {
         parse_str($body, $data);
 

@@ -54,7 +54,7 @@ class DeleteCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp(
@@ -74,7 +74,7 @@ class DeleteCommand extends AbstractCommand
      *
      * @return bool
      */
-    protected function writeFileToDisk(string $filename, string $content)
+    protected function writeFileToDisk(string $filename, string $content): bool
     {
         return file_put_contents($filename, $content);
     }

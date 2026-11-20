@@ -47,7 +47,7 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormalizeIp()
+    public function testNormalizeIp(): void
     {
         $utils = new IpAddressUtils();
         $this->assertEquals(
@@ -82,7 +82,7 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsInRange()
+    public function testIsInRange(): void
     {
         $utils = new IpAddressUtils();
         $this->assertFalse($utils->isInRange('127.0.0.1', ['127.0.0.0']));
@@ -140,7 +140,7 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTruncate()
+    public function testTruncate(): void
     {
         $utils = new IpAddressUtils();
 

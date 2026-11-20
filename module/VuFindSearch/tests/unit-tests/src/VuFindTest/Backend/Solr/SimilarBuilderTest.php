@@ -51,7 +51,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultParams()
+    public function testDefaultParams(): void
     {
         $sb = new SimilarBuilder();
         $response = $sb->build('testrecord');
@@ -68,7 +68,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExistingLimit()
+    public function testExistingLimit(): void
     {
         $sb = new SimilarBuilder();
         $response = $sb->build('testrecord', new ParamBag(['rows' => 42]));
@@ -81,7 +81,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAlternativeIdField()
+    public function testAlternativeIdField(): void
     {
         $sb = new SimilarBuilder(null, 'key');
         $response = $sb->build('testrecord');
@@ -94,7 +94,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMltConfig()
+    public function testMltConfig(): void
     {
         $config = [
             'MoreLikeThis' => [
@@ -132,7 +132,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUseQtParam()
+    public function testUseQtParam(): void
     {
         $config = [
             'MoreLikeThis' => [
@@ -156,7 +156,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUseQtParamWithHandler()
+    public function testUseQtParamWithHandler(): void
     {
         $config = [
             'MoreLikeThis' => [

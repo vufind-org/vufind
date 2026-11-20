@@ -73,7 +73,7 @@ class PluginManager extends AbstractPluginManager
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    protected function getExpectedInterface(): string
     {
         return HelperInterface::class;
     }

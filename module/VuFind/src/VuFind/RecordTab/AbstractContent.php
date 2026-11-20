@@ -81,7 +81,7 @@ abstract class AbstractContent extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         // Depending on the "hide if empty" setting, we either want to check if
         // the API results are empty (an expensive operation) or if we have an
@@ -98,7 +98,7 @@ abstract class AbstractContent extends AbstractBase
      *
      * @return array
      */
-    public function getContent()
+    public function getContent(): array
     {
         if (null === $this->results) {
             $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');

@@ -102,7 +102,7 @@ class ResultScroller
      *
      * @return bool True if enabled and initialized with results, false otherwise.
      */
-    public function init(Results $searchObject)
+    public function init(Results $searchObject): bool
     {
         // Do nothing if disabled or search is empty:
         if (!$this->enabled || $searchObject->getResultTotal() <= 0) {
@@ -176,7 +176,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function scrollOnCurrentPage(array $retVal, int $pos)
+    protected function scrollOnCurrentPage(array $retVal, int $pos): array
     {
         $retVal['previousRecord'] = $this->data->currIds[$pos - 1];
         $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
@@ -196,7 +196,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function fetchPreviousPage(array $retVal, Results $lastSearch, int $pos, int $count)
+    protected function fetchPreviousPage(array $retVal, Results $lastSearch, int $pos, int $count): array
     {
         // if the current page is NOT the first page, and
         // the previous page has not been fetched before, then
@@ -236,7 +236,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function fetchNextPage(array $retVal, Results $lastSearch, int $pos)
+    protected function fetchNextPage(array $retVal, Results $lastSearch, int $pos): array
     {
         // if the current page is NOT the last page, and the next page has not been
         // fetched, then fetch the next page
@@ -277,7 +277,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function scrollToPreviousPage(array $retVal, Results $lastSearch, int $pos)
+    protected function scrollToPreviousPage(array $retVal, Results $lastSearch, int $pos): array
     {
         // decrease the page in the session because
         // we're now sliding into the previous page
@@ -321,7 +321,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function scrollToNextPage(array $retVal, Results $lastSearch, int $pos)
+    protected function scrollToNextPage(array $retVal, Results $lastSearch, int $pos): array
     {
         // increase the page in the session because
         // we're now sliding into the next page
@@ -363,7 +363,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function scrollToFirstRecord(array $retVal, Results $lastSearch)
+    protected function scrollToFirstRecord(array $retVal, Results $lastSearch): array
     {
         // Set page in session to First Page
         $this->data->page = 1;
@@ -400,7 +400,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function scrollToLastRecord(array $retVal, Results $lastSearch)
+    protected function scrollToLastRecord(array $retVal, Results $lastSearch): array
     {
         // Set page in session to Last Page
         $this->data->page = $this->getLastPageNumber();
@@ -437,7 +437,7 @@ class ResultScroller
      *
      * @return string
      */
-    protected function getFirstRecordId(Results $lastSearch)
+    protected function getFirstRecordId(Results $lastSearch): string
     {
         if (!isset($this->data->firstId)) {
             $firstPage = $this->fetchPage($lastSearch, 1);
@@ -451,7 +451,7 @@ class ResultScroller
      *
      * @return int
      */
-    protected function getLastPageNumber()
+    protected function getLastPageNumber(): int
     {
         return ceil($this->data->total / $this->data->limit);
     }
@@ -463,7 +463,7 @@ class ResultScroller
      *
      * @return string
      */
-    protected function getLastRecordId(Results $lastSearch)
+    protected function getLastRecordId(Results $lastSearch): string
     {
         if (!isset($this->data->lastId)) {
             $results = $this->fetchPage($lastSearch, $this->getLastPageNumber());
@@ -483,7 +483,7 @@ class ResultScroller
      *
      * @return array
      */
-    public function getScrollData(BaseRecord $driver)
+    public function getScrollData(BaseRecord $driver): array
     {
         $retVal = [
             'firstRecord' => null, 'lastRecord' => null,
@@ -604,7 +604,7 @@ class ResultScroller
      *
      * @return array
      */
-    protected function fetchPage(object $searchObject, int $page = null)
+    protected function fetchPage(object $searchObject, int $page = null): array
     {
         if (null !== $page) {
             $searchObject->getParams()->setPage($page);
@@ -661,7 +661,7 @@ class ResultScroller
      *
      * @return void
      */
-    protected function rememberSearch(Results $search)
+    protected function rememberSearch(Results $search): void
     {
         $baseUrl = $this->routeHelper->getUrlFromRoute($search->getOptions()->getSearchAction());
         $this->searchMemory->rememberSearch(

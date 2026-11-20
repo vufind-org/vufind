@@ -55,7 +55,7 @@ class CopyStringCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $note = "(may include 'textdomain::' prefix)";
         $this
@@ -92,7 +92,7 @@ class CopyStringCommand extends AbstractCommand
      *
      * @return void
      */
-    protected function addLineToFile(string $filename, string $key, string $value)
+    protected function addLineToFile(string $filename, string $key, string $value): void
     {
         $fHandle = fopen($filename, 'a');
         if (!$fHandle) {

@@ -112,7 +112,7 @@ class SearchHandler
      *
      * @see \VuFind\Service\Solr\LuceneSyntaxHelper::containsAdvancedLuceneSyntax()
      */
-    public function createAdvancedQueryString(string $search)
+    public function createAdvancedQueryString(string $search): string
     {
         return $this->createQueryString($search, true);
     }
@@ -126,7 +126,7 @@ class SearchHandler
      *
      * @see \VuFind\Service\Solr\SearchHandler::createAdvancedQueryString()
      */
-    public function createSimpleQueryString(string $search)
+    public function createSimpleQueryString(string $search): string
     {
         return $this->createQueryString($search, false);
     }
@@ -138,7 +138,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function preprocessQueryString(string $search)
+    public function preprocessQueryString(string $search): string
     {
         // Apply Dismax munging, if required:
         if ($this->hasDismax()) {
@@ -154,7 +154,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function createBoostQueryString(string $search)
+    public function createBoostQueryString(string $search): string
     {
         $boostQuery = [];
         if ($this->hasDismax()) {
@@ -195,7 +195,7 @@ class SearchHandler
      *
      * @return bool
      */
-    public function hasDismax()
+    public function hasDismax(): bool
     {
         return !empty($this->specs['DismaxFields']);
     }
@@ -205,7 +205,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function getDismaxHandler()
+    public function getDismaxHandler(): string
     {
         return $this->specs['DismaxHandler'];
     }
@@ -215,7 +215,7 @@ class SearchHandler
      *
      * @return bool
      */
-    public function hasExtendedDismax()
+    public function hasExtendedDismax(): bool
     {
         return $this->hasDismax() && ('edismax' == $this->getDismaxHandler());
     }
@@ -225,7 +225,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function getAllFields()
+    public function getAllFields(): array
     {
         // If we have non-Dismax rules, the keys are the field names.
         $queryFields = array_keys($this->mungeRules());
@@ -244,7 +244,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function getDismaxFields()
+    public function getDismaxFields(): array
     {
         return $this->specs['DismaxFields'];
     }
@@ -254,7 +254,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function getDismaxParams()
+    public function getDismaxParams(): array
     {
         return $this->specs['DismaxParams'];
     }
@@ -264,7 +264,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function getFilterQuery()
+    public function getFilterQuery(): string
     {
         return empty($this->specs['FilterQuery'])
             ? null : $this->specs['FilterQuery'];
@@ -275,7 +275,7 @@ class SearchHandler
      *
      * @return bool
      */
-    public function hasFilterQuery()
+    public function hasFilterQuery(): bool
     {
         return (bool)$this->specs['FilterQuery'];
     }
@@ -285,7 +285,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->specs;
     }
@@ -298,7 +298,7 @@ class SearchHandler
      *
      * @return void
      */
-    protected function setDefaultMustMatch()
+    protected function setDefaultMustMatch(): void
     {
         // Initialize parameter array if absent:
         if (!isset($this->specs['DismaxParams'])) {
@@ -337,7 +337,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function dismaxSubquery(string $search)
+    protected function dismaxSubquery(string $search): string
     {
         $dismaxParams = [];
         foreach ($this->specs['DismaxParams'] as $param) {
@@ -367,7 +367,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function mungeValues(string $search, bool $tokenize = true)
+    protected function mungeValues(string $search, bool $tokenize = true): string
     {
         if ($tokenize) {
             $tokens = $this->tokenize($search);
@@ -422,7 +422,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function dismaxMunge(string $search)
+    protected function dismaxMunge(string $search): string
     {
         foreach ($this->specs['DismaxMunge'] as $operation) {
             $search = $this->customMunge($search, $operation);
@@ -438,7 +438,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function customMunge(string $string, array $operation)
+    protected function customMunge(string $string, array $operation): string
     {
         switch ($operation[0]) {
             case 'append':
@@ -482,7 +482,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function createQueryString(string $search, bool $advanced = false)
+    protected function createQueryString(string $search, bool $advanced = false): string
     {
         // If this is a basic query and we have Dismax settings (or if we have
         // Extended Dismax available), let's build a Dismax subquery to avoid
@@ -514,7 +514,7 @@ class SearchHandler
      *
      * @return array
      */
-    protected function mungeRules()
+    protected function mungeRules(): array
     {
         return $this->specs['QueryFields'];
     }
@@ -528,7 +528,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function munge(array $mungeRules, array $mungeValues, string $joiner = 'OR')
+    protected function munge(array $mungeRules, array $mungeValues, string $joiner = 'OR'): string
     {
         $clauses = [];
         foreach ($mungeRules as $field => $clausearray) {
@@ -576,7 +576,7 @@ class SearchHandler
      *
      * @return array
      */
-    protected function tokenize(string $string)
+    protected function tokenize(string $string): array
     {
         // First replace escaped quotes with a non-printable character that will
         // never be found in user input (ASCII 26, "substitute"). Next use a regex

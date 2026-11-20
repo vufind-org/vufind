@@ -83,7 +83,7 @@ class Sitemap extends AbstractFile
      *
      * @return string XML fragment
      */
-    protected function getEntry(string|array $url)
+    protected function getEntry(string|array $url): string
     {
         if (is_array($url)) {
             $link = $url['url'];
@@ -128,7 +128,7 @@ class Sitemap extends AbstractFile
      *
      * @return array
      */
-    protected function getExtraNamespaces()
+    protected function getExtraNamespaces(): array
     {
         $result = parent::getExtraNamespaces();
         if ($this->xhtmlNamespaceNeeded) {

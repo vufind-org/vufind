@@ -67,7 +67,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
      *
      * @return TemplatePath
      */
-    protected function getHelper()
+    protected function getHelper(): TemplatePath
     {
         // Get mock TemplateStack
         $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
@@ -87,7 +87,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExists()
+    public function testExists(): void
     {
         $helper = $this->getHelper();
         $this->assertEquals(
@@ -101,7 +101,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testThemeDoesntExist()
+    public function testThemeDoesntExist(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Template not found in missing: file.phtml');
@@ -115,7 +115,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFileDoesntExist()
+    public function testFileDoesntExist(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Template not found in parent: missing.phtml');

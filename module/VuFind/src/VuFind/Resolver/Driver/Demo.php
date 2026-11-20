@@ -61,7 +61,7 @@ class Demo extends AbstractBase
      *
      * @return string
      */
-    public function fetchLinks(string $openURL)
+    public function fetchLinks(string $openURL): string
     {
         return $openURL;
     }
@@ -76,7 +76,7 @@ class Demo extends AbstractBase
      *
      * @return array       Array of values
      */
-    public function parseLinks(string $data)
+    public function parseLinks(string $data): array
     {
         return [
             [

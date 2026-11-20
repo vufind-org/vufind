@@ -73,7 +73,7 @@ class Suggester
      *
      * @return array
      */
-    public function getSuggestions(array $request, string $typeParam = 'type', string $queryParam = 'q')
+    public function getSuggestions(array $request, string $typeParam = 'type', string $queryParam = 'q'): array
     {
         // Process incoming parameters:
         $type = $request[$typeParam] ?? '';

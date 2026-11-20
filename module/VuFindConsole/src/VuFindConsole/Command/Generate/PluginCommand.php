@@ -55,7 +55,7 @@ class PluginCommand extends AbstractContainerAwareCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Creates a new plugin class.')

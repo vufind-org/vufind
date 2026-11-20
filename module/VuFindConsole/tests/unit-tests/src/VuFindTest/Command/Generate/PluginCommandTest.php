@@ -50,7 +50,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -71,7 +71,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
@@ -96,7 +96,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithFactoryParameter()
+    public function testSuccessWithFactoryParameter(): void
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
@@ -123,7 +123,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testError()
+    public function testError(): void
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
@@ -149,7 +149,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools(array $methods = [])
+    protected function getMockGeneratorTools(array $methods = []): GeneratorTools
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
@@ -164,7 +164,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ContainerInterface
      */
-    protected function getMockContainer(array $methods = [])
+    protected function getMockContainer(array $methods = []): ContainerInterface
     {
         return $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

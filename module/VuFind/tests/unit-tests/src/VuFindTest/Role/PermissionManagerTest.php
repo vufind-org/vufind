@@ -131,7 +131,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDeniedPermission()
+    public function testDeniedPermission(): void
     {
         $pm = new PermissionManager($this->permissionConfig);
         $mockAuth = $this->createMock(\VuFind\Service\AuthorizationService::class);

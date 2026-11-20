@@ -53,7 +53,7 @@ trait DateFacetTrait
      *
      * @return array
      */
-    protected function processDateFacets(Results $results, array $filters, array $dateFacets)
+    protected function processDateFacets(Results $results, array $filters, array $dateFacets): array
     {
         $result = [];
         foreach ($dateFacets as $current) {

@@ -69,7 +69,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         // No special processing needed here.
     }
@@ -94,7 +94,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getIdPrefix()
+    protected function getIdPrefix(): string
     {
         return $this->config['settings']['idPrefix'] ?? null;
     }
@@ -106,7 +106,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getSolrRecord(string $id)
+    protected function getSolrRecord(string $id): \VuFind\RecordDriver\AbstractBase
     {
         // Add idPrefix condition
         $idPrefix = $this->getIdPrefix();
@@ -129,7 +129,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
         if ($useStatus == 'custom') {
@@ -165,7 +165,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses(array $idList)
+    public function getStatuses(array $idList): array
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
         if ($useStatus == 'custom' || $useStatus == 'marc') {
@@ -232,7 +232,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array An Array of Holdings Information
      */
-    protected function getFormattedMarcDetails(object $recordDriver, string $configSection)
+    protected function getFormattedMarcDetails(object $recordDriver, string $configSection): array
     {
         $marcStatus = $this->config[$configSection] ?? false;
         if ($marcStatus) {
@@ -289,7 +289,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getPurchaseHistory(string $id)
+    public function getPurchaseHistory(string $id): array
     {
         return [];
     }
@@ -302,7 +302,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @return string "ils-offline" for systems where the main ILS is offline,
      * "ils-none" for systems which do not use an ILS
      */
-    public function getOfflineMode()
+    public function getOfflineMode(): string
     {
         return $this->config['settings']['mode'] ?? 'ils-offline';
     }
@@ -314,7 +314,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return bool true if the login should be hidden, false if not
      */
-    public function loginIsHidden()
+    public function loginIsHidden(): bool
     {
         return $this->config['settings']['hideLogin'] ?? false;
     }
@@ -346,7 +346,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array An associative array with key = dept. ID, value = dept. name.
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         // Does not work while ILS offline:
         return [];
@@ -360,7 +360,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         // Does not work while ILS offline:
         return [];
@@ -374,7 +374,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         // Does not work while ILS offline:
         return [];

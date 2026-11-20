@@ -115,7 +115,7 @@ class PaginationHelper
         ?string $sort,
         int $defaultPageSize,
         array $functionConfig
-    ) {
+    ): array {
         // Get page and page size:
         $limit = $defaultPageSize;
         $ilsPaging = true;

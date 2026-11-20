@@ -81,7 +81,7 @@ class Router implements \Psr\Log\LoggerAwareInterface
         string $size = 'small',
         bool $resolveDynamic = true,
         bool $testLoadImage = false
-    ) {
+    ): string|bool|null {
         $metadata = $this->getMetadata(
             $driver,
             $size,
@@ -116,7 +116,7 @@ class Router implements \Psr\Log\LoggerAwareInterface
         bool $resolveDynamic = true,
         bool $testLoadImage = false,
         bool $ajax = false
-    ) {
+    ): bool|array|null {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
 

@@ -664,7 +664,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testGetRecordCollectionFactory()
+    public function testGetRecordCollectionFactory(): void
     {
         $this->expectExceptionMessage(
             'getRecordCollectionFactory not supported in Blender'
@@ -712,7 +712,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testSearchTotalFailure()
+    public function testSearchTotalFailure(): void
     {
         $backend = $this->getBackend(
             null,
@@ -1009,7 +1009,7 @@ class BackendTest extends TestCase
      *
      * @return object
      */
-    protected function getBackendForFacetsAndErrors(array $facets, array $errors)
+    protected function getBackendForFacetsAndErrors(array $facets, array $errors): object
     {
         $collection = $this->createMock(SolrRecordCollection::class);
         $collection->expects($this->once())
@@ -1091,7 +1091,7 @@ class BackendTest extends TestCase
      */
     protected function getSolrConnector(
         string $fixture = null
-    ) {
+    ): object {
         $callback = function (
             $handler,
             ParamBag $params,
@@ -1253,7 +1253,7 @@ class BackendTest extends TestCase
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getSolrRecordCollectionFactory()
+    protected function getSolrRecordCollectionFactory(): \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
     {
         $callback = function ($data) {
             $driver = new \VuFind\RecordDriver\SolrMarc();
@@ -1270,7 +1270,7 @@ class BackendTest extends TestCase
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getEDSRecordCollectionFactory()
+    protected function getEDSRecordCollectionFactory(): \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
     {
         $callback = function ($data) {
             $driver = new \VuFind\RecordDriver\EDS();

@@ -355,7 +355,7 @@ trait ILSMockTrait
      *
      * @return bool
      */
-    public function loginIsHidden()
+    public function loginIsHidden(): bool
     {
         return false;
     }

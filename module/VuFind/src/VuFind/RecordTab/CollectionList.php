@@ -80,7 +80,7 @@ class CollectionList extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Collection Items';
     }
@@ -90,7 +90,7 @@ class CollectionList extends AbstractBase
      *
      * @return \VuFind\Search\SolrCollection\Params
      */
-    public function getParams()
+    public function getParams(): \VuFind\Search\SolrCollection\Params
     {
         return $this->getResults()->getParams();
     }
@@ -100,7 +100,7 @@ class CollectionList extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return parent::isActive() && $this->getRecordDriver()->tryMethod('isCollection');
     }
@@ -110,7 +110,7 @@ class CollectionList extends AbstractBase
      *
      * @return \VuFind\Search\SolrCollection\Results
      */
-    public function getResults()
+    public function getResults(): \VuFind\Search\SolrCollection\Results
     {
         if (null === $this->results) {
             $driver = $this->getRecordDriver();
@@ -142,7 +142,7 @@ class CollectionList extends AbstractBase
      *
      * @return bool
      */
-    public function supportsAjax()
+    public function supportsAjax(): bool
     {
         // No, search parameters from the URL are needed.
         return false;

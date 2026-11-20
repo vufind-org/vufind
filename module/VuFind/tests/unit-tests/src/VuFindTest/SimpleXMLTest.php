@@ -45,7 +45,7 @@ class SimpleXMLTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAppendElement()
+    public function testAppendElement(): void
     {
         $parent = simplexml_load_string('<top><children></children></top>');
         $child = simplexml_load_string('<child attr="true" />');

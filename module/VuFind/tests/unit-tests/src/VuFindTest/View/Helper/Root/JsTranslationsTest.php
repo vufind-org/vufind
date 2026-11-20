@@ -54,7 +54,7 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHelper()
+    public function testHelper(): void
     {
         $view = $this->getPhpRenderer($this->getViewHelpers());
         $translate = $view->plugin('translate');
@@ -110,7 +110,7 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers(): array
     {
         $translator = $this->getMockTranslator(
             [

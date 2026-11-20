@@ -57,7 +57,7 @@ trait SearchBackendEventManagerTrait
      *
      * @return void
      */
-    public function setEventManager(EventManagerInterface $events)
+    public function setEventManager(EventManagerInterface $events): void
     {
         // Using the class name as the event namespace is recommended; the VuFind\Search and VuFindSearch
         // values are only retained for legacy backward compatibility.
@@ -72,7 +72,7 @@ trait SearchBackendEventManagerTrait
      *
      * @return EventManagerInterface
      */
-    public function getEventManager()
+    public function getEventManager(): EventManagerInterface
     {
         if (!$this->events) {
             $this->setEventManager(new EventManager());

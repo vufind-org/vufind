@@ -65,7 +65,7 @@ class CopyToClipboardButton
      *
      * @return string HTML string
      */
-    public function __invoke(string $elementSelector, bool $hideButtonText = true)
+    public function __invoke(string $elementSelector, bool $hideButtonText = true): string
     {
         static $buttonNumber = 0;
         $buttonNumber++;

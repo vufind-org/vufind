@@ -142,7 +142,7 @@ class Section
      *
      * @return mixed             Varies by method (null if undefined method)
      */
-    public function __call(string $methodName, array $params)
+    public function __call(string $methodName, array $params): mixed
     {
         $method = [$this->section, $methodName];
         if (is_callable($method)) {

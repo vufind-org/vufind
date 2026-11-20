@@ -68,7 +68,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
      *
      * @return bool
      */
-    public function generate(string $name, string $themeTemplate = 'local_theme_example')
+    public function generate(string $name, string $themeTemplate = 'local_theme_example'): bool
     {
         // Check for existing theme
         $baseDir = $this->info->getBaseDir() . '/';
@@ -93,7 +93,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
      *
      * @return bool
      */
-    public function configure(array $config, string $name)
+    public function configure(array $config, string $name): bool
     {
         // Enable theme
         $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);

@@ -74,7 +74,7 @@ class Office365Handler extends PostHandler
      *
      * @return string
      */
-    protected function getBody(array $event)
+    protected function getBody(array $event): string
     {
         $data = [
             '@context' => 'https://schema.org/extensions',

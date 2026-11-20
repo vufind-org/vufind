@@ -61,7 +61,7 @@ class Missing extends DefaultRecord
      *
      * @return string
      */
-    public function determineMissingTitle()
+    public function determineMissingTitle(): string
     {
         // If available, use details from ILS:
         $ilsDetails = $this->getExtraDetail('ils_details');
@@ -87,7 +87,7 @@ class Missing extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         $title = parent::getShortTitle();
         return empty($title) ? $this->determineMissingTitle() : $title;
@@ -98,7 +98,7 @@ class Missing extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         $title = parent::getShortTitle();
         return empty($title) ? $this->determineMissingTitle() : $title;
@@ -109,7 +109,7 @@ class Missing extends DefaultRecord
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         return ['Unknown'];
     }

@@ -46,7 +46,7 @@ interface PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getPreviousUniqueId();
+    public function getPreviousUniqueId(): string;
 
     /**
      * Set previous unique ID.
@@ -55,5 +55,5 @@ interface PreviousUniqueIdInterface
      *
      * @return void
      */
-    public function setPreviousUniqueId(string $id);
+    public function setPreviousUniqueId(string $id): void;
 }

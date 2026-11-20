@@ -47,7 +47,7 @@ class ExplainTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function setUpTest()
+    protected function setUpTest(): void
     {
         $this->changeConfigs(
             [

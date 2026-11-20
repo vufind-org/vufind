@@ -77,7 +77,7 @@ class SetupThemeResources
      *
      * @return void
      */
-    public function __invoke(bool $partial = false)
+    public function __invoke(bool $partial = false): void
     {
         // meta tags are illegal outside of <head>, so we don't want to render them
         // in partial mode:
@@ -93,7 +93,7 @@ class SetupThemeResources
      *
      * @return void
      */
-    protected function addMetaTags()
+    protected function addMetaTags(): void
     {
         // Set up encoding:
         ($this->headMeta)->prependHttpEquiv(
@@ -115,7 +115,7 @@ class SetupThemeResources
      *
      * @return void
      */
-    protected function addLinks(bool $partial = false)
+    protected function addLinks(bool $partial = false): void
     {
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
@@ -159,7 +159,7 @@ class SetupThemeResources
      *
      * @return void
      */
-    protected function addScripts()
+    protected function addScripts(): void
     {
         $legalPositions = ['header', 'footer'];
 

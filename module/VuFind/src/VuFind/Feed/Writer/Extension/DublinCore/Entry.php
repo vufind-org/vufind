@@ -69,7 +69,7 @@ class Entry extends ParentEntry
      *
      * @return void
      */
-    public function addDCFormat(string $format)
+    public function addDCFormat(string $format): void
     {
         $this->dcFormats[] = $format;
     }
@@ -81,7 +81,7 @@ class Entry extends ParentEntry
      *
      * @return void
      */
-    public function setDCDate(string $date)
+    public function setDCDate(string $date): void
     {
         $this->dcDate = $date;
     }
@@ -91,7 +91,7 @@ class Entry extends ParentEntry
      *
      * @return string
      */
-    public function getDCDate()
+    public function getDCDate(): string
     {
         return $this->dcDate;
     }
@@ -101,7 +101,7 @@ class Entry extends ParentEntry
      *
      * @return array
      */
-    public function getDCFormats()
+    public function getDCFormats(): array
     {
         return $this->dcFormats;
     }

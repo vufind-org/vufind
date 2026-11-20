@@ -49,7 +49,7 @@ class AbstractHandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testPrepareDefaults()
+    public function testPrepareDefaults(): void
     {
         $map = $this->getMockBuilder(AbstractHandlerMap::class)
                 ->onlyMethods(['getDefaults', 'getAppends', 'getInvariants'])
@@ -80,7 +80,7 @@ class AbstractHandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testPrepareAppends()
+    public function testPrepareAppends(): void
     {
         $map = $this->getMockBuilder(AbstractHandlerMap::class)
                 ->onlyMethods(['getDefaults', 'getAppends', 'getInvariants'])
@@ -106,7 +106,7 @@ class AbstractHandlerMapTest extends TestCase
      *
      * @return void
      */
-    public function testPrepareInvariants()
+    public function testPrepareInvariants(): void
     {
         $map = $this->getMockBuilder(AbstractHandlerMap::class)
                 ->onlyMethods(['getDefaults', 'getAppends', 'getInvariants'])

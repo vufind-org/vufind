@@ -139,7 +139,7 @@ class RandomRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Save the basic parameters:
         $this->settings = $settings;
@@ -203,7 +203,7 @@ class RandomRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
     }
 
@@ -212,7 +212,7 @@ class RandomRecommend implements RecommendInterface
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         if (count($this->results) < $this->minimum) {
             return [];
@@ -225,7 +225,7 @@ class RandomRecommend implements RecommendInterface
      *
      * @return string
      */
-    public function getDisplayMode()
+    public function getDisplayMode(): string
     {
         return $this->displayMode;
     }

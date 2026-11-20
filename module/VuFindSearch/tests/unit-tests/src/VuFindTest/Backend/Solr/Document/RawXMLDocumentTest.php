@@ -50,7 +50,7 @@ class RawXMLDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testBasicBehavior()
+    public function testBasicBehavior(): void
     {
         $document = new RawXMLDocument('<empty />');
         $this->assertSame(

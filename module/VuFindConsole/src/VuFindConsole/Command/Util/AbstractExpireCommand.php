@@ -103,7 +103,7 @@ abstract class AbstractExpireCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription($this->commandDescription)
@@ -140,7 +140,7 @@ abstract class AbstractExpireCommand extends Command
      *
      * @return string
      */
-    protected function getTimestampedMessage(string $msg)
+    protected function getTimestampedMessage(string $msg): string
     {
         return '[' . date('Y-m-d H:i:s') . '] ' . $msg;
     }

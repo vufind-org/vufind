@@ -134,7 +134,7 @@ class EuropeanaResults implements
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Parse out parameters:
         $params = explode(':', $settings);
@@ -163,7 +163,7 @@ class EuropeanaResults implements
      *
      * @return string The url to be sent
      */
-    protected function getURL(string $targetUrl, string $requestParam, array $excludeProviders)
+    protected function getURL(string $targetUrl, string $requestParam, array $excludeProviders): string
     {
         // build url
         $url = $targetUrl . '?' . $requestParam . '=' . $this->lookfor;
@@ -219,7 +219,7 @@ class EuropeanaResults implements
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->debug('Pulling feed from ' . $this->targetUrl);
         if (null !== $this->httpService) {
@@ -259,7 +259,7 @@ class EuropeanaResults implements
      *
      * @return array|bool
      */
-    public function getResults()
+    public function getResults(): array|bool
     {
         return $this->results;
     }

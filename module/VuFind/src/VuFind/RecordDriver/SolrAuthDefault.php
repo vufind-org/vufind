@@ -67,7 +67,7 @@ class SolrAuthDefault extends SolrDefault
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         // No difference between short and long titles for authority records:
         return $this->getTitle();
@@ -78,7 +78,7 @@ class SolrAuthDefault extends SolrDefault
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->fields['heading'] ?? '';
     }
@@ -88,7 +88,7 @@ class SolrAuthDefault extends SolrDefault
      *
      * @return array
      */
-    public function getSeeAlso()
+    public function getSeeAlso(): array
     {
         return isset($this->fields['see_also'])
             && is_array($this->fields['see_also'])
@@ -100,7 +100,7 @@ class SolrAuthDefault extends SolrDefault
      *
      * @return array
      */
-    public function getUseFor()
+    public function getUseFor(): array
     {
         return isset($this->fields['use_for'])
             && is_array($this->fields['use_for'])

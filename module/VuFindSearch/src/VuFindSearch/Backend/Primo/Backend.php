@@ -96,7 +96,7 @@ class Backend extends AbstractBackend
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
             $baseParams->mergeWith($params);
@@ -133,7 +133,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): RecordCollectionInterface
     {
         $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
         $onCampus = $onCampus ? $onCampus[0] : false;
@@ -163,7 +163,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -175,7 +175,7 @@ class Backend extends AbstractBackend
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -190,7 +190,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         if ($this->collectionFactory === null) {
             $this->collectionFactory = new Response\RecordCollectionFactory();
@@ -203,7 +203,7 @@ class Backend extends AbstractBackend
      *
      * @return Connector
      */
-    public function getConnector()
+    public function getConnector(): Connector
     {
         return $this->connector;
     }
@@ -217,7 +217,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection(array $records)
+    protected function createRecordCollection(array $records): RecordCollectionInterface
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }
@@ -229,7 +229,7 @@ class Backend extends AbstractBackend
      *
      * @return array
      */
-    protected function paramBagToPrimoQuery(ParamBag $params)
+    protected function paramBagToPrimoQuery(ParamBag $params): array
     {
         $params = $params->getArrayCopy();
 

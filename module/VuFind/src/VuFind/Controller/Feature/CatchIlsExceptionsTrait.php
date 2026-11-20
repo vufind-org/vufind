@@ -62,7 +62,7 @@ trait CatchIlsExceptionsTrait
      * @return mixed
      * @throws DomainException
      */
-    public function onDispatch(\Laminas\Mvc\MvcEvent $event)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $event): mixed
     {
         // Catch any ILSExceptions thrown during processing and display a generic
         // failure message to the user (instead of going to the fatal exception

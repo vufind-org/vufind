@@ -64,7 +64,7 @@ class AbstractCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFindConsole\Generator\GeneratorTools::class),
             ...($options ?? [])

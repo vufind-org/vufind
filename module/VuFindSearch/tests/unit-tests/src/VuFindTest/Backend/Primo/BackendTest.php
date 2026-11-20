@@ -309,7 +309,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse(string $fixture)
+    protected function loadResponse(string $fixture): mixed
     {
         return unserialize(
             $this->getFixture("primo/response/$fixture", 'VuFindSearch')

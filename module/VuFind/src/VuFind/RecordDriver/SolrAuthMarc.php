@@ -67,7 +67,7 @@ class SolrAuthMarc extends SolrAuthDefault
      *
      * @return string|bool
      */
-    public function getRawLCCN()
+    public function getRawLCCN(): string|bool
     {
         $lccn = $this->getFirstFieldValue('010');
         if (!empty($lccn)) {

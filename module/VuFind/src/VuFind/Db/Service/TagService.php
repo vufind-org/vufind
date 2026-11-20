@@ -151,7 +151,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
         array $where = [],
         array $parameters = [],
         bool $caseSensitive = false
-    ) {
+    ): array {
         $tagClause = $caseSensitive ? 't.tag' : 'LOWER(t.tag)';
         $dql = 'SELECT t.id as id, COUNT(DISTINCT(rt.resource)) as cnt, MAX(rt.posted) as posted, '
             . $tagClause . ' AS tag '

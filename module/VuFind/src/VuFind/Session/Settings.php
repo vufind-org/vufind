@@ -69,7 +69,7 @@ class Settings
      *
      * @return void
      */
-    public function disableWrite()
+    public function disableWrite(): void
     {
         // Set the flag
         $this->disableWrite = true;
@@ -92,7 +92,7 @@ class Settings
      *
      * @return bool
      */
-    public function isWriteDisabled()
+    public function isWriteDisabled(): bool
     {
         return $this->disableWrite;
     }
@@ -104,7 +104,7 @@ class Settings
      *
      * @return Settings
      */
-    public function setSessionManager(ManagerInterface $sessionManager)
+    public function setSessionManager(ManagerInterface $sessionManager): Settings
     {
         $this->manager = $sessionManager;
         return $this;

@@ -51,7 +51,7 @@ class None implements AutocompleteInterface
      *
      * @return array        The suggestions for the provided query
      */
-    public function getSuggestions(string $query)
+    public function getSuggestions(string $query): array
     {
         // No suggestions
         return [];
@@ -65,7 +65,7 @@ class None implements AutocompleteInterface
      *
      * @return void
      */
-    public function setConfig(string $params)
+    public function setConfig(string $params): void
     {
         // Ignore all parameters
     }

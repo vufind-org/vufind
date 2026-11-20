@@ -51,7 +51,7 @@ class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIniOverride()
+    public function testIniOverride(): void
     {
         $pathResolver = $this->getPathResolver();
         $command = new HarvestOaiCommand($pathResolver);

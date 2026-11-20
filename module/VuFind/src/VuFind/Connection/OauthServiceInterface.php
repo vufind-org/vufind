@@ -58,5 +58,5 @@ interface OauthServiceInterface
         string $oauthUrl,
         string $clientId,
         string $clientSecret
-    );
+    ): string;
 }

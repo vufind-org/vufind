@@ -94,7 +94,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    protected function renderTemplate(string $name, array $context = [])
+    protected function renderTemplate(string $name, array $context = []): string
     {
         // Get the current auth module's class name
         $className = $this->getManager()->getAuthClassForTemplateRendering();
@@ -108,7 +108,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return Manager
      */
-    public function getManager()
+    public function getManager(): Manager
     {
         return $this->manager;
     }
@@ -161,7 +161,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getCreateFields(array $context = [])
+    public function getCreateFields(array $context = []): string
     {
         return $this->renderTemplate('create.phtml', $context);
     }
@@ -171,7 +171,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return array|bool Patron array if available, false otherwise.
      */
-    public function getILSPatron()
+    public function getILSPatron(): array|bool
     {
         try {
             return $this->ilsAuthenticator->storedCatalogLogin();
@@ -187,7 +187,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLoginFields(array $context = [])
+    public function getLoginFields(array $context = []): string
     {
         return $this->renderTemplate('loginfields.phtml', $context);
     }
@@ -199,7 +199,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getOtpLoginFields(array $context = [])
+    public function getOtpLoginFields(array $context = []): string
     {
         return $this->renderTemplate('otploginfields.phtml', $context);
     }
@@ -211,7 +211,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLogin(array $context = [])
+    public function getLogin(array $context = []): string
     {
         return $this->renderTemplate('login.phtml', $context);
     }
@@ -223,7 +223,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getLoginDesc(array $context = [])
+    public function getLoginDesc(array $context = []): string
     {
         return $this->renderTemplate('logindesc.phtml', $context);
     }
@@ -247,7 +247,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getNewPasswordForm(array $context = [])
+    public function getNewPasswordForm(array $context = []): string
     {
         return $this->renderTemplate('newpassword.phtml', $context);
     }
@@ -259,7 +259,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getResetPasswordForm(array $context = [])
+    public function getResetPasswordForm(array $context = []): string
     {
         return $this->renderTemplate('resetpassword.phtml', $context);
     }
@@ -271,7 +271,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getPasswordRecoveryForm(array $context = [])
+    public function getPasswordRecoveryForm(array $context = []): string
     {
         return $this->renderTemplate('recovery.phtml', $context);
     }
@@ -283,7 +283,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @deprecated Use getPasswordRecoveryCodeEmailTemplate instead
      */
-    public function getPasswordRecoveryEmailTemplate()
+    public function getPasswordRecoveryEmailTemplate(): string
     {
         $className = $this->getManager()->getAuthClassForTemplateRendering();
         $template = 'Auth/%s/recovery-email.phtml';
@@ -303,7 +303,7 @@ class Auth implements DbServiceAwareInterface
      *
      * @return string
      */
-    public function getPasswordRecoveryCodeEmailTemplate()
+    public function getPasswordRecoveryCodeEmailTemplate(): string
     {
         $className = $this->getManager()->getAuthClassForTemplateRendering();
         $template = 'Auth/%s/recovery-email-code.phtml';

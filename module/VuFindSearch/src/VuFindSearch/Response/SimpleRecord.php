@@ -67,7 +67,7 @@ class SimpleRecord implements RecordInterface
      *
      * @return mixed
      */
-    public function get(string $field)
+    public function get(string $field): mixed
     {
         return $this->fields[$field] ?? null;
     }

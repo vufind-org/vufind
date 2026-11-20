@@ -86,7 +86,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setOverrideTitle(string $title)
+    public function setOverrideTitle(string $title): void
     {
         $this->overrideTitle = $title;
     }
@@ -98,7 +98,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function registerExtensions(ContainerInterface $container)
+    public function registerExtensions(ContainerInterface $container): void
     {
         $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
         $manager->setInvokableClass(
@@ -131,7 +131,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return Feed
      */
-    public function __invoke(\VuFind\Search\Base\Results $results, string $currentPath = null)
+    public function __invoke(\VuFind\Search\Base\Results $results, string $currentPath = null): Feed
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
@@ -243,7 +243,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return string
      */
-    protected function getDcDate(RecordDriver $record)
+    protected function getDcDate(RecordDriver $record): string
     {
         // See if we can extract a date that's pre-formatted in a DC-friendly way:
         $dates = (array)$record->tryMethod('getPublicationDates');
@@ -350,7 +350,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return void
      */
-    protected function addEntry(Feed $feed, RecordDriver $record)
+    protected function addEntry(Feed $feed, RecordDriver $record): void
     {
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
@@ -388,7 +388,7 @@ class ResultFeed implements TranslatorAwareInterface
      *
      * @return int|DateTime|null
      */
-    protected function getDateModified(RecordDriver $record)
+    protected function getDateModified(RecordDriver $record): int|DateTime|null
     {
         // Best case -- "last indexed" date is available:
         $date = $record->tryMethod('getLastIndexed');

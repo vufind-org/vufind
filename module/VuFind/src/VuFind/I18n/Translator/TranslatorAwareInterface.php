@@ -51,5 +51,5 @@ interface TranslatorAwareInterface
      *
      * @return TranslatorAwareInterface
      */
-    public function setTranslator(TranslatorInterface $translator);
+    public function setTranslator(TranslatorInterface $translator): TranslatorAwareInterface;
 }

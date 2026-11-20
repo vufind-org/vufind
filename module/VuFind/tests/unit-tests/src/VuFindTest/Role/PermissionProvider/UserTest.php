@@ -77,7 +77,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPermissions()
+    public function testGetPermissions(): void
     {
         $this->check(
             'testuser1',
@@ -97,7 +97,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadConfig()
+    public function testBadConfig(): void
     {
         $this->check(
             'testuser1',
@@ -115,7 +115,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function check(string $testuser, array $options, array $roles)
+    protected function check(string $testuser, array $options, array $roles): void
     {
         $this->testuser
             = (isset($this->userValueMap[$testuser]))

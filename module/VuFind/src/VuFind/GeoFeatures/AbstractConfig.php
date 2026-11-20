@@ -59,7 +59,7 @@ class AbstractConfig
      *
      * @return array
      */
-    protected function getOptions(string $configName, string $section, array $validOptions)
+    protected function getOptions(string $configName, string $section, array $validOptions): array
     {
         $config = $this->configManager->getConfigArray($configName);
         $options = [];

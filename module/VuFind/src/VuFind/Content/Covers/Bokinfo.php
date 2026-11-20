@@ -70,7 +70,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      *
      * @return string|bool
      */
-    public function getUrl(string $key, string $size, array $ids)
+    public function getUrl(string $key, string $size, array $ids): string|bool
     {
         if (!isset($ids['isbn'])) {
             return false;
@@ -108,7 +108,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      *
      * @return HttpClient Http Client
      */
-    protected function createHttpClient(string $url)
+    protected function createHttpClient(string $url): HttpClient
     {
         $client = $this->httpService->createClient($url);
 
@@ -126,7 +126,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      *
      * @return bool Http Client
      */
-    protected function testUrlFunction(string $url)
+    protected function testUrlFunction(string $url): bool
     {
         try {
             $client = $this->createHttpClient($url);
@@ -148,7 +148,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
      *
      * @return string url of the image
      */
-    protected function getImageUrl(string $rawXML)
+    protected function getImageUrl(string $rawXML): string
     {
         if (!str_contains($rawXML, 'ResourceLink')) {
             return '';

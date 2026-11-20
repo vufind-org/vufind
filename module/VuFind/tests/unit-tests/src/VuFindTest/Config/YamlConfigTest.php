@@ -55,7 +55,7 @@ class YamlConfigTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearchSpecsRead()
+    public function testSearchSpecsRead(): void
     {
         // The searchspecs config should define author dismax fields (among many
         // other things).
@@ -69,7 +69,7 @@ class YamlConfigTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingFileRead()
+    public function testMissingFileRead(): void
     {
         $configManager = $this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class);
         $specs = $configManager->getConfigArray('notreallyasearchspecs');
@@ -81,7 +81,7 @@ class YamlConfigTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParentYaml()
+    public function testParentYaml(): void
     {
         $configManager = $this->getContainerWithConfigRelatedServices(
             baseDir: $this->getFixtureDir() . 'configs/inheritance'

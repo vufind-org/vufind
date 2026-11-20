@@ -88,7 +88,7 @@ class Memory
      *
      * @return void
      */
-    public function disable()
+    public function disable(): void
     {
         $this->active = false;
     }
@@ -98,7 +98,7 @@ class Memory
      *
      * @return void
      */
-    public function forgetSearch()
+    public function forgetSearch(): void
     {
         unset($this->session->last);
         unset($this->session->lastId);
@@ -112,7 +112,7 @@ class Memory
      *
      * @return void
      */
-    public function rememberLastSettings(string $context, array $params)
+    public function rememberLastSettings(string $context, array $params): void
     {
         if (!$this->active) {
             return;
@@ -130,7 +130,7 @@ class Memory
      *
      * @return void
      */
-    public function rememberParams(\VuFind\Search\Base\Params $params)
+    public function rememberParams(\VuFind\Search\Base\Params $params): void
     {
         // Since default sort may vary based on search handler, we don't want
         // to force the sort value to stick unless the user chose a non-default
@@ -159,7 +159,7 @@ class Memory
      *
      * @return void
      */
-    public function rememberSearch(string $url, int $id = null)
+    public function rememberSearch(string $url, int $id = null): void
     {
         // Do nothing if disabled.
         if (!$this->active) {
@@ -187,7 +187,7 @@ class Memory
      *
      * @return mixed
      */
-    public function retrieveLastSetting(string $context, string $setting, mixed $default = null)
+    public function retrieveLastSetting(string $context, string $setting, mixed $default = null): mixed
     {
         return $this->session->{"params|$context|$setting"} ?? $default;
     }
@@ -198,7 +198,7 @@ class Memory
      *
      * @return string|null
      */
-    public function retrieveSearch()
+    public function retrieveSearch(): ?string
     {
         return $this->session->last ?? null;
     }

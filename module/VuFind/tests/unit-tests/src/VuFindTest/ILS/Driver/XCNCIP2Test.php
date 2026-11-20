@@ -763,7 +763,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetMyTransactions()
+    public function testGetMyTransactions(): void
     {
         foreach ($this->transactionsTests as $test) {
             $this->configureDriver();
@@ -787,7 +787,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testDisableRenewalsConfiguration()
+    public function testDisableRenewalsConfiguration(): void
     {
         $config = [
             'Catalog' => [
@@ -855,7 +855,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetMyFines()
+    public function testGetMyFines(): void
     {
         foreach ($this->finesTests as $test) {
             $this->configureDriver();
@@ -879,7 +879,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testPatronLogin()
+    public function testPatronLogin(): void
     {
         foreach ($this->loginTests as $test) {
             $this->configureDriver();
@@ -898,7 +898,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetMyHolds()
+    public function testGetMyHolds(): void
     {
         foreach ($this->holdsTests as $test) {
             $this->configureDriver();
@@ -922,7 +922,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetMyProfile()
+    public function testGetMyProfile(): void
     {
         foreach ($this->profileTests as $test) {
             $this->configureDriver();
@@ -946,7 +946,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetMyStorageRetrievalRequests()
+    public function testGetMyStorageRetrievalRequests(): void
     {
         foreach ($this->storageRetrievalTests as $test) {
             $this->configureDriver();
@@ -970,7 +970,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetStatuses()
+    public function testGetStatuses(): void
     {
         foreach ($this->statusesTests as $test) {
             $this->configureDriver();
@@ -989,7 +989,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetHolding()
+    public function testGetHolding(): void
     {
         $config = [
             'Catalog' => [
@@ -1020,7 +1020,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetPickupLocations()
+    public function testGetPickupLocations(): void
     {
         // Test reading pickup locations from file
         $this->configureDriver();
@@ -1079,7 +1079,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testPlaceHold()
+    public function testPlaceHold(): void
     {
         $this->configureDriver();
         foreach ($this->placeHoldTests as $test) {
@@ -1109,7 +1109,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testPlaceStorageRetrievalRequest()
+    public function testPlaceStorageRetrievalRequest(): void
     {
         $this->configureDriver();
         foreach ($this->placeStorageRetrievalRequestTests as $test) {
@@ -1139,7 +1139,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testCancelHolds()
+    public function testCancelHolds(): void
     {
         $this->configureDriver();
         foreach ($this->cancelHoldsTests as $test) {
@@ -1168,7 +1168,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testCancelStorageRetrievalRequests()
+    public function testCancelStorageRetrievalRequests(): void
     {
         $this->configureDriver();
         foreach ($this->cancelStorageRetrievalTests as $test) {
@@ -1197,7 +1197,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testRenewMyItems()
+    public function testRenewMyItems(): void
     {
         $this->configureDriver();
         foreach ($this->renewMyItemsTests as $test) {
@@ -1322,7 +1322,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetRequestMethods()
+    public function testGetRequestMethods(): void
     {
         foreach ($this->requestTests as $id => $test) {
             $this->configureDriver($test['config'] ?? null);
@@ -1346,7 +1346,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetCancelRequestException()
+    public function testGetCancelRequestException(): void
     {
         $this->configureDriver();
         $method = new \ReflectionMethod(
@@ -1435,7 +1435,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * @return void
      * @throws \ReflectionException
      */
-    public function testParseProblem()
+    public function testParseProblem(): void
     {
         $xml = $this->getFixture('xcncip2/response/parseproblem.xml');
         $method = new \ReflectionMethod(
@@ -1454,7 +1454,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testAcceptOtherHttpStastusCodes()
+    public function testAcceptOtherHttpStastusCodes(): void
     {
         $config = [
             'Catalog' => [
@@ -1522,7 +1522,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * @return void
      * @throws \ReflectionException
      */
-    public function testInvalidateResponseCache()
+    public function testInvalidateResponseCache(): void
     {
         $this->configureDriver();
         $method = new \ReflectionMethod(
@@ -1551,7 +1551,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * @return void
      * @throws \ReflectionException
      */
-    public function testGetBib()
+    public function testGetBib(): void
     {
         $this->configureDriver();
         $method = new \ReflectionMethod(
@@ -1572,7 +1572,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * @return void
      * @throws ILSException
      */
-    public function testInitDriver()
+    public function testInitDriver(): void
     {
         $driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $driver->setConfig(
@@ -1633,7 +1633,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * @return void
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function mockResponse(string|array|null $fixture = null)
+    protected function mockResponse(string|array|null $fixture = null): void
     {
         $adapter = new TestAdapter();
         if (!empty($fixture)) {
@@ -1659,7 +1659,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return HttpResponse Response object
      */
-    protected function loadResponse(string $filename)
+    protected function loadResponse(string $filename): HttpResponse
     {
         return HttpResponse::fromString(
             $this->getFixture("xcncip2/response/$filename")
@@ -1673,7 +1673,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    protected function configureDriver(?array $config = null)
+    protected function configureDriver(?array $config = null): void
     {
         $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $this->driver->setConfig(

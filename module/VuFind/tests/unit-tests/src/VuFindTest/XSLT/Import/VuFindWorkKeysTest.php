@@ -47,7 +47,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetWorkKeysWithIncludeRegEx()
+    public function testGetWorkKeysWithIncludeRegEx(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT uniformtitle</workKey>\n"
@@ -75,7 +75,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetWorkKeysWithIncludeRegExAndDuplicateTitles()
+    public function testGetWorkKeysWithIncludeRegExAndDuplicateTitles(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT uniformtitle</workKey>\n"
@@ -101,7 +101,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetWorkKeysWithLongGreekTitle()
+    public function testGetWorkKeysWithLongGreekTitle(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT αυτοματοποίηση συστημάτων ηλεκτρικής ενέργειας: σχεδιασμός και προσομοίωση συστήματος "
@@ -131,7 +131,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetWorkKeysWithExcludeRegEx()
+    public function testGetWorkKeysWithExcludeRegEx(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT unformttle</workKey>\n"
@@ -159,7 +159,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetWorkKeysWithTransliteration()
+    public function testGetWorkKeysWithTransliteration(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT uniformtitlea</workKey>\n"
@@ -188,7 +188,7 @@ class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetWorkKeysWithoutAuthors()
+    public function testGetWorkKeysWithoutAuthors(): void
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT uniformtitlea</workKey>\n";

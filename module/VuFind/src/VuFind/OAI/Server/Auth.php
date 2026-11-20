@@ -67,7 +67,7 @@ class Auth extends Base
      *
      * @return void
      */
-    protected function initializeSettings(array $config)
+    protected function initializeSettings(array $config): void
     {
         // Use some of the same settings as the regular OAI server, but override
         // others:

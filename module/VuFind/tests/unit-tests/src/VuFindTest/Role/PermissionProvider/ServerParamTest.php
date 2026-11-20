@@ -49,7 +49,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStringTrue()
+    public function testStringTrue(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -63,7 +63,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testArrayTrue()
+    public function testArrayTrue(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -77,7 +77,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionsAndTrue()
+    public function testOptionsAndTrue(): void
     {
         $this->checkServerParams(
             ['testheader1' => 'testvalue1', 'testheader2' => 'testvalue2'],
@@ -91,7 +91,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionsAndFalse()
+    public function testOptionsAndFalse(): void
     {
         $this->checkServerParams(
             ['testheader1' => 'testvalue1'],
@@ -105,7 +105,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionValuesOrTrue()
+    public function testOptionValuesOrTrue(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue1'],
@@ -119,7 +119,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionValuesOrFalse()
+    public function testOptionValuesOrFalse(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -133,7 +133,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionRegexTrue()
+    public function testOptionRegexTrue(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -147,7 +147,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionRegexFalse()
+    public function testOptionRegexFalse(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -161,7 +161,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionNotTrue()
+    public function testOptionNotTrue(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -175,7 +175,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionNotFalse()
+    public function testOptionNotFalse(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -189,7 +189,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionNotRegexTrue()
+    public function testOptionNotRegexTrue(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -203,7 +203,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOptionNotRegexFalse()
+    public function testOptionNotRegexFalse(): void
     {
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
@@ -221,7 +221,7 @@ class ServerParamTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function checkServerParams(array $headers, mixed $options, array $expectedResult)
+    protected function checkServerParams(array $headers, mixed $options, array $expectedResult): void
     {
         $request = new \Laminas\Http\PhpEnvironment\Request();
         $request->setServer(new \Laminas\Stdlib\Parameters($headers));

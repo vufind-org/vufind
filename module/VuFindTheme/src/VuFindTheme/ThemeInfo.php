@@ -91,7 +91,7 @@ class ThemeInfo
      *
      * @return void
      */
-    public function setCache(StorageInterface $cache)
+    public function setCache(StorageInterface $cache): void
     {
         $this->cache = $cache;
     }
@@ -101,7 +101,7 @@ class ThemeInfo
      *
      * @return string
      */
-    public function getBaseDir()
+    public function getBaseDir(): string
     {
         return $this->baseDir;
     }
@@ -113,7 +113,7 @@ class ThemeInfo
      *
      * @return string
      */
-    protected function getMixinConfig(string $mixin)
+    protected function getMixinConfig(string $mixin): string
     {
         return $this->baseDir . "/$mixin/mixin.config.php";
     }
@@ -125,7 +125,7 @@ class ThemeInfo
      *
      * @return string
      */
-    protected function getThemeConfig(string $theme)
+    protected function getThemeConfig(string $theme): string
     {
         return $this->baseDir . "/$theme/theme.config.php";
     }
@@ -138,7 +138,7 @@ class ThemeInfo
      * @return void
      * @throws \Exception
      */
-    public function setTheme(string $theme)
+    public function setTheme(string $theme): void
     {
         // If the configured theme setting is illegal, throw an exception without
         // making any changes.
@@ -157,7 +157,7 @@ class ThemeInfo
      *
      * @return string
      */
-    public function getTheme()
+    public function getTheme(): string
     {
         return $this->currentTheme;
     }
@@ -170,7 +170,7 @@ class ThemeInfo
      *
      * @return void
      */
-    protected function loadThemeConfig(string $theme)
+    protected function loadThemeConfig(string $theme): void
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
@@ -188,7 +188,7 @@ class ThemeInfo
      *
      * @return array
      */
-    public function getThemeInfo()
+    public function getThemeInfo(): array
     {
         // Fill in the theme info cache if it is not already populated:
         if ($this->allThemeInfo === null) {
@@ -212,7 +212,7 @@ class ThemeInfo
      *
      * @return array|string
      */
-    public function getMergedConfig(string $key = '')
+    public function getMergedConfig(string $key = ''): array|string
     {
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
@@ -272,7 +272,7 @@ class ThemeInfo
      *
      * @return string|array|null
      */
-    public function findContainingTheme(string|array $relativePath, string|bool $returnType = false)
+    public function findContainingTheme(string|array $relativePath, string|bool $returnType = false): string|array|null
     {
         $basePath = $this->getBaseDir();
         $allPaths = is_array($relativePath)
@@ -316,7 +316,7 @@ class ThemeInfo
      *
      * @return array
      */
-    public function findInThemes(string|array $relativePathPattern)
+    public function findInThemes(string|array $relativePathPattern): array
     {
         $basePath = $this->getBaseDir();
         $allPaths = (array)$relativePathPattern;

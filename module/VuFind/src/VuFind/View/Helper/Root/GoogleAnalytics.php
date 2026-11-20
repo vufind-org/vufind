@@ -87,7 +87,7 @@ class GoogleAnalytics
      *
      * @return string
      */
-    public function __invoke()
+    public function __invoke(): string
     {
         if (!$this->key) {
             return '';

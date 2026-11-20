@@ -98,7 +98,7 @@ class Backend extends AbstractBackend
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
             $baseParams->mergeWith($params);
@@ -137,7 +137,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): RecordCollectionInterface
     {
         throw new \Exception('retrieve() not supported by BrowZine.');
     }
@@ -149,7 +149,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -161,7 +161,7 @@ class Backend extends AbstractBackend
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -176,7 +176,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         if ($this->collectionFactory === null) {
             $this->collectionFactory = new Response\RecordCollectionFactory();
@@ -189,7 +189,7 @@ class Backend extends AbstractBackend
      *
      * @return Connector
      */
-    public function getConnector()
+    public function getConnector(): Connector
     {
         return $this->connector;
     }
@@ -202,7 +202,7 @@ class Backend extends AbstractBackend
      *
      * @return mixed
      */
-    public function lookupDoi(string $doi, bool $includeJournal = false)
+    public function lookupDoi(string $doi, bool $includeJournal = false): mixed
     {
         return $this->getConnector()->lookupDoi($doi, $includeJournal);
     }
@@ -214,7 +214,7 @@ class Backend extends AbstractBackend
      *
      * @return mixed
      */
-    public function lookupIssns(string|array $issns)
+    public function lookupIssns(string|array $issns): mixed
     {
         return $this->getConnector()->lookupIssns($issns);
     }
@@ -228,7 +228,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection(array $records)
+    protected function createRecordCollection(array $records): RecordCollectionInterface
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }

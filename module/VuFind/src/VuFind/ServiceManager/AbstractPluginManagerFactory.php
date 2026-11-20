@@ -53,7 +53,7 @@ class AbstractPluginManagerFactory implements FactoryInterface
      *
      * @return string
      */
-    public function getConfigKey(string $requestedName)
+    public function getConfigKey(string $requestedName): string
     {
         // Extract namespace of plugin manager (chop off leading top-level
         // namespace -- e.g. VuFind -- and trailing PluginManager class).
@@ -80,7 +80,7 @@ class AbstractPluginManagerFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }

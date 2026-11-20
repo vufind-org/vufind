@@ -49,14 +49,14 @@ interface GeneratorInterface
      *
      * @return bool
      */
-    public function generate(string $name);
+    public function generate(string $name): bool;
 
     /**
      * Get last error message.
      *
      * @return string
      */
-    public function getLastError();
+    public function getLastError(): string;
 
     /**
      * Set the output interface. Implements a fluent interface.
@@ -65,5 +65,5 @@ interface GeneratorInterface
      *
      * @return mixed
      */
-    public function setOutputInterface(OutputInterface $output);
+    public function setOutputInterface(OutputInterface $output): mixed;
 }

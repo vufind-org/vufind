@@ -62,7 +62,7 @@ trait BulkActionTrait
      *
      * @return array
      */
-    protected function getBulkActionConfig()
+    protected function getBulkActionConfig(): array
     {
         if ($this->bulkActionConfig === null) {
             $this->bulkActionConfig = $this->configManager->getConfigArray('config');
@@ -75,7 +75,7 @@ trait BulkActionTrait
      *
      * @return array
      */
-    protected function getBulkActionExportConfig()
+    protected function getBulkActionExportConfig(): array
     {
         if ($this->bulkActionExportConfig === null) {
             $this->bulkActionExportConfig = $this->configManager->getConfigArray('export');
@@ -90,7 +90,7 @@ trait BulkActionTrait
      *
      * @return int
      */
-    public function getBulkActionLimit(string $action)
+    public function getBulkActionLimit(string $action): int
     {
         if ($action === 'export') {
             $formats = $this->export->getActiveFormats('bulk');
@@ -109,7 +109,7 @@ trait BulkActionTrait
      *
      * @return int
      */
-    public function getExportActionLimit(string $format)
+    public function getExportActionLimit(string $format): int
     {
         $bulkActionConfig = $this->getBulkActionConfig()['BulkActions'] ?? [];
         return $this->getBulkActionExportConfig()[$format]['limit']

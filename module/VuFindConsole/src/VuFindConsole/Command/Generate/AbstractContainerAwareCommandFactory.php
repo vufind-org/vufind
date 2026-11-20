@@ -63,7 +63,7 @@ class AbstractContainerAwareCommandFactory extends AbstractCommandFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return parent::__invoke(
             $container,
             $requestedName,

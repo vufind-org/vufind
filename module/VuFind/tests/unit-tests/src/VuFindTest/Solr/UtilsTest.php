@@ -47,7 +47,7 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParseRange()
+    public function testParseRange(): void
     {
         // basic range test:
         $result = Utils::parseRange('[1 TO 100]');

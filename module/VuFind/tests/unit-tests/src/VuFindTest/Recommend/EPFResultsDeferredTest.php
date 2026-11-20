@@ -47,7 +47,7 @@ class EPFResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\EPFResultsDeferred::class,

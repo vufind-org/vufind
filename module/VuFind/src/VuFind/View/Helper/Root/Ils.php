@@ -57,7 +57,7 @@ class Ils
      *
      * @return \VuFind\ILS\Connection
      */
-    public function __invoke()
+    public function __invoke(): \VuFind\ILS\Connection
     {
         return $this->connection;
     }

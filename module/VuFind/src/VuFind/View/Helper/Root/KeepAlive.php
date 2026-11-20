@@ -69,7 +69,7 @@ class KeepAlive
      *
      * @return int
      */
-    public function __invoke()
+    public function __invoke(): int
     {
         return $this->interval;
     }

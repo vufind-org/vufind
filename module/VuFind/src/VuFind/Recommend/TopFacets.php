@@ -71,7 +71,7 @@ class TopFacets extends AbstractFacets
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'ResultsTop' : $settings[0];
@@ -116,7 +116,7 @@ class TopFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getTopFacetSet()
+    public function getTopFacetSet(): array
     {
         return $this->results->getFacetList($this->facets);
     }
@@ -126,7 +126,7 @@ class TopFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getTopFacetSettings()
+    public function getTopFacetSettings(): array
     {
         return $this->baseSettings;
     }

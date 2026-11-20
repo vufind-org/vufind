@@ -208,7 +208,7 @@ class Backend extends AbstractBackend
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): \VuFindSearch\Response\RecordCollectionInterface {
         // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
         $sessionToken = $this->getSessionToken();
@@ -369,7 +369,7 @@ class Backend extends AbstractBackend
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): \VuFindSearch\Response\RecordCollectionInterface
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
@@ -434,7 +434,7 @@ class Backend extends AbstractBackend
      *
      * @return SearchRequestModel
      */
-    protected function paramBagToEBSCOSearchModel(ParamBag $params)
+    protected function paramBagToEBSCOSearchModel(ParamBag $params): SearchRequestModel
     {
         $params = $params->getArrayCopy();
         $options = [];
@@ -461,7 +461,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         return $this->collectionFactory;
     }
@@ -473,7 +473,7 @@ class Backend extends AbstractBackend
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -488,7 +488,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -501,7 +501,7 @@ class Backend extends AbstractBackend
      *
      * @return array of terms
      */
-    public function autocomplete(string $query, string $domain = 'rawqueries')
+    public function autocomplete(string $query, string $domain = 'rawqueries'): array
     {
         return $this->client
             ->autocomplete($query, $domain, $this->getAutocompleteData());
@@ -516,7 +516,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection(array $records)
+    protected function createRecordCollection(array $records): RecordCollectionInterface
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }
@@ -545,7 +545,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    protected function getAuthenticationToken(bool $isInvalid = false)
+    protected function getAuthenticationToken(bool $isInvalid = false): string
     {
         $token = null;
         if ($this->ipAuth) {
@@ -597,7 +597,7 @@ class Backend extends AbstractBackend
      *
      * @return array autocomplete data
      */
-    protected function getAutocompleteData(bool $isInvalid = false)
+    protected function getAutocompleteData(bool $isInvalid = false): array
     {
         // Autocomplete is currently unsupported with IP authentication
         if ($this->ipAuth) {
@@ -651,7 +651,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    public function getSessionToken(bool $isInvalid = false)
+    public function getSessionToken(bool $isInvalid = false): string
     {
         // check to see if the user has logged in/out between the creation
         // of this session token and now
@@ -669,7 +669,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    protected function createEBSCOSession()
+    protected function createEBSCOSession(): string
     {
         // if there is no profile passed, restore the default from the config file
         $this->session->profileID = (null == $this->profile)
@@ -687,7 +687,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    protected function isGuest()
+    protected function isGuest(): string
     {
         return $this->isGuest ? 'y' : 'n';
     }
@@ -702,7 +702,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    public function createSession(bool $isGuest, string $profile = '')
+    public function createSession(bool $isGuest, string $profile = ''): string
     {
         try {
             $authToken = $this->getAuthenticationToken();
@@ -742,7 +742,7 @@ class Backend extends AbstractBackend
      *
      * @return array
      */
-    public function getInfo(string $sessionToken = null, string $bustCache = false)
+    public function getInfo(string $sessionToken = null, string $bustCache = false): array
     {
         // Use a different cache key for guests, just in case info differs:
         $cacheKey = $this->isGuest ? 'edsGuestInfo' : 'edsLoggedInInfo';
@@ -802,7 +802,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setAuthManager(\VuFind\Auth\Manager $authManager)
+    public function setAuthManager(\VuFind\Auth\Manager $authManager): void
     {
         $this->authManager = $authManager;
     }
@@ -814,7 +814,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setBackendType(string $backendType)
+    public function setBackendType(string $backendType): void
     {
         $this->backendType = $backendType;
     }

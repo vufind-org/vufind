@@ -211,7 +211,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getCoverGeneratorSettings()
+    protected function getCoverGeneratorSettings(): array
     {
         $settings = $this->config['DynamicCovers'] ?? [];
         if (
@@ -240,7 +240,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    public function setCoverGenerator(Generator $generator)
+    public function setCoverGenerator(Generator $generator): void
     {
         $this->generator = $generator;
     }
@@ -250,7 +250,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getDefaultSettings()
+    protected function getDefaultSettings(): array
     {
         return [
             'isbns' => null,
@@ -277,7 +277,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getImageSettingsFromLegacyArgs(array $args)
+    protected function getImageSettingsFromLegacyArgs(array $args): array
     {
         return [
             'isbn' => $args[0],
@@ -299,7 +299,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    protected function storeSanitizedSettings(array $settings)
+    protected function storeSanitizedSettings(array $settings): void
     {
         $settings = array_merge($this->getDefaultSettings(), $settings);
         $this->isbns = array_map(
@@ -339,7 +339,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    public function loadImage(array $settings = [])
+    public function loadImage(array $settings = []): void
     {
         // reset to normal
         $this->hasLoadedUnavailable = false;
@@ -380,7 +380,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return void
      */
-    public function loadUnavailable()
+    public function loadUnavailable(): void
     {
         $this->hasLoadedUnavailable = true;
         parent::loadUnavailable();
@@ -391,7 +391,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool
      */
-    public function hasLoadedUnavailable()
+    public function hasLoadedUnavailable(): bool
     {
         return $this->hasLoadedUnavailable;
     }
@@ -403,7 +403,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return string
      */
-    protected function determineLocalFile(array $ids)
+    protected function determineLocalFile(array $ids): string
     {
         // We should check whether we have cached images for the 13- or 10-digit
         // ISBNs. If no file exists, we'll favor the 10-digit number if
@@ -440,7 +440,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getIdentifiers()
+    protected function getIdentifiers(): array
     {
         $ids = [];
         if (!empty($this->isbns)) {
@@ -479,7 +479,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool        True if image loaded, false on failure.
      */
-    protected function fetchFromAPI()
+    protected function fetchFromAPI(): bool
     {
         // Check that we have at least one valid identifier:
         $ids = $this->getIdentifiers();
@@ -519,7 +519,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return string      Cache path
      */
-    protected function getCachePath(string $size, string $id, string $extension = 'jpg')
+    protected function getCachePath(string $size, string $id, string $extension = 'jpg'): string
     {
         return $this->baseDir . '/' . $size . '/' . $id . '.' . $extension;
     }
@@ -530,7 +530,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool        True if image loaded, false on failure.
      */
-    protected function fetchFromContentType()
+    protected function fetchFromContentType(): bool
     {
         // Give up if no content type was passed in:
         if (empty($this->type)) {
@@ -565,7 +565,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool             Did we succeed?
      */
-    protected function convertNonJpeg(string $imageData, string $jpeg)
+    protected function convertNonJpeg(string $imageData, string $jpeg): bool
     {
         // We can't proceed if we don't have image conversion functions:
         if (!is_callable('imagecreatefromstring')) {
@@ -589,7 +589,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool
      */
-    protected function validateAndMoveTempFile(string $image, string $tempFile, string $finalFile)
+    protected function validateAndMoveTempFile(string $image, string $tempFile, string $finalFile): bool
     {
         [$width, $height, $type] = @getimagesize($tempFile);
 
@@ -620,7 +620,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool         True if image loaded, false on failure.
      */
-    protected function processImageURLForSource(string $url, bool $allowCache, string $source)
+    protected function processImageURLForSource(string $url, bool $allowCache, string $source): bool
     {
         // If caching is allowed at the source level, let's see if it's locally
         // configured....
@@ -651,7 +651,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool         True if image loaded, false on failure.
      */
-    protected function processImageURL(string $url, string $cache = true)
+    protected function processImageURL(string $url, string $cache = true): bool
     {
         // Check to see if url is a file path
         if (str_starts_with($url, 'file://')) {
@@ -713,7 +713,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getCoverUrls()
+    protected function getCoverUrls(): array
     {
         $ids = $this->getIdentifiers();
         $handlers = $this->getHandlers();
@@ -746,7 +746,7 @@ class Loader extends \VuFind\ImageLoader
      * @return \Generator Array with keys: key - API key, apiName - api name from
      * configuration, handler - handler object
      */
-    public function getHandlers()
+    public function getHandlers(): \Generator
     {
         if (!isset($this->config['Content']['coverimages'])) {
             return [];
@@ -771,7 +771,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    public function getIdentifiersForSettings(array $settings)
+    public function getIdentifiersForSettings(array $settings): array
     {
         $this->storeSanitizedSettings($settings);
         return $this->getIdentifiers();

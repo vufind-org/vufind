@@ -49,7 +49,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @return MakeLink
      */
-    protected function getHelper()
+    protected function getHelper(): MakeLink
     {
         return new MakeLink($this->getMakeTagHelper());
     }
@@ -59,7 +59,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @return void
      */
-    public function testLink()
+    public function testLink(): void
     {
         $helper = $this->getHelper();
 
@@ -84,7 +84,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @return void
      */
-    public function testSpan()
+    public function testSpan(): void
     {
         $helper = $this->getHelper();
 
@@ -98,7 +98,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @return void
      */
-    public function testAttributes()
+    public function testAttributes(): void
     {
         $helper = $this->getHelper();
 
@@ -147,7 +147,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @return void
      */
-    public function testOptionEscaping()
+    public function testOptionEscaping(): void
     {
         $helper = $this->getHelper();
 
@@ -186,7 +186,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @return void
      */
-    public function testOptionProxy()
+    public function testOptionProxy(): void
     {
         $helper = $this->getHelper();
 

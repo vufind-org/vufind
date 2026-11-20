@@ -87,7 +87,7 @@ class CachingProxy
      *
      * @return Response
      */
-    public function fetch(string $url)
+    public function fetch(string $url): Response
     {
         $file = $this->getCacheFile($url);
         $cacheAllowed = $this->cache && $this->hasLegalHost($url);
@@ -107,7 +107,7 @@ class CachingProxy
      *
      * @return bool|Response
      */
-    protected function fetchCache(string $file)
+    protected function fetchCache(string $file): bool|Response
     {
         return file_exists($file)
             ? unserialize(file_get_contents($file))
@@ -122,7 +122,7 @@ class CachingProxy
      *
      * @return void
      */
-    protected function setCache(string $file, Response $response)
+    protected function setCache(string $file, Response $response): void
     {
         if (!$this->cache) {
             return; // don't write if cache is disabled
@@ -143,7 +143,7 @@ class CachingProxy
      *
      * @return bool
      */
-    protected function hasLegalHost(string $url)
+    protected function hasLegalHost(string $url): bool
     {
         $host = parse_url($url, PHP_URL_HOST);
         foreach ($this->allowedHosts as $current) {
@@ -162,7 +162,7 @@ class CachingProxy
      * @return string
      * @throws \Exception
      */
-    protected function getCacheFile(string $url)
+    protected function getCacheFile(string $url): string
     {
         if (!$this->cache) {
             throw new \Exception('Unexpected call to getCacheFile -- cache is disabled.');

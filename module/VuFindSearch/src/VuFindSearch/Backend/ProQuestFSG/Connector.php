@@ -85,7 +85,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @throws \Exception
      * @return array
      */
-    public function getRecord(string $id, ?ParamBag $params = null)
+    public function getRecord(string $id, ?ParamBag $params = null): array
     {
         $params ??= new ParamBag();
         $params->set('query', "rec.identifier = \"{$id}\"");
@@ -101,7 +101,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      *
      * @return array
      */
-    public function search(ParamBag $params, int $offset, int $limit)
+    public function search(ParamBag $params, int $offset, int $limit): array
     {
         // Constant params
         $params->set('operation', 'searchRetrieve');
@@ -177,7 +177,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      *
      * @return bool
      */
-    protected function validateDatabaseValue(string $value)
+    protected function validateDatabaseValue(string $value): bool
     {
         if (!($this->config['Validation']['database_codes'] ?? false)) {
             return true;

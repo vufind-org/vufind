@@ -50,7 +50,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBulkOptionsLegacy()
+    public function testGetBulkOptionsLegacy(): void
     {
         $config = [
             'BulkExport' => [
@@ -73,7 +73,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetActiveFormats()
+    public function testGetActiveFormats(): void
     {
         $config = [
             'Export' => [
@@ -96,7 +96,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNeedsRedirect()
+    public function testNeedsRedirect(): void
     {
         $config = [
             'foo' => ['redirectUrl' => 'http://foo'],
@@ -112,7 +112,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testProcessGroupNonXML()
+    public function testProcessGroupNonXML(): void
     {
         $this->assertEquals(
             "a\nb\nc\n",
@@ -125,7 +125,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testProcessGroupXML()
+    public function testProcessGroupXML(): void
     {
         $config = [
             'foo' => [
@@ -151,7 +151,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRecordSupportsFormat()
+    public function testRecordSupportsFormat(): void
     {
         $config = [
             'foo' => ['requiredMethods' => ['getTitle']],
@@ -180,7 +180,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFormatsForRecord()
+    public function testGetFormatsForRecord(): void
     {
         // Use RefWorks and EndNote as our test data, since these are the items
         // turned on by default if no main config is passed in.
@@ -199,7 +199,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFormatsForRecords()
+    public function testGetFormatsForRecords(): void
     {
         $mainConfig = [
             'Export' => [
@@ -226,7 +226,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHeaders()
+    public function testGetHeaders(): void
     {
         $config = ['foo' => ['headers' => ['bar']]];
         $export = $this->getExport([], $config);
@@ -238,7 +238,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetRedirectUrl()
+    public function testGetRedirectUrl(): void
     {
         $mainConfig = ['config' => ['this' => 'that=true']];
         $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}'
@@ -351,7 +351,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getFakeMARCXML(string $id)
+    protected function getFakeMARCXML(string $id): string
     {
         return '<collection xmlns="http://www.loc.gov/MARC21/slim"><record><id>'
             . $id . '</id></record></collection>';
@@ -366,7 +366,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      *
      * @return Export
      */
-    protected function getExport(array $main = [], array $export = [], ?PhpRenderer $renderer = null)
+    protected function getExport(array $main = [], array $export = [], ?PhpRenderer $renderer = null): Export
     {
         return new Export($main, $export, $renderer ?? $this->createStub(PhpRenderer::class));
     }

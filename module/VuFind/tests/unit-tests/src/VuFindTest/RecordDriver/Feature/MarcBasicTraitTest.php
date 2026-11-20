@@ -50,7 +50,7 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMarcBasicTrait()
+    public function testMarcBasicTrait(): void
     {
         $obj = $this->createMockRecord('marctraits.xml');
 
@@ -94,7 +94,7 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMarcBasicTraitMissingFields()
+    public function testMarcBasicTraitMissingFields(): void
     {
         $obj = $this->createMockRecord('marctraitsempty.xml');
 

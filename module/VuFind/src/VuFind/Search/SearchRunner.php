@@ -105,7 +105,7 @@ class SearchRunner
         string $searchClassId = 'Solr',
         mixed $setupCallback = null,
         ?string $lastView = null
-    ) {
+    ): \VuFind\Search\Base\Results {
         // Increment the ID counter, then save the current value to a variable;
         // since events within this run could theoretically trigger additional
         // runs of the SearchRunner, we can't rely on the property value past
@@ -166,7 +166,7 @@ class SearchRunner
      *
      * @return void
      */
-    public function setEventManager(EventManagerInterface $events)
+    public function setEventManager(EventManagerInterface $events): void
     {
         $events->setIdentifiers([__CLASS__]);
         $this->events = $events;
@@ -179,7 +179,7 @@ class SearchRunner
      *
      * @return EventManagerInterface
      */
-    public function getEventManager()
+    public function getEventManager(): EventManagerInterface
     {
         if (!$this->events) {
             $this->setEventManager(new EventManager());

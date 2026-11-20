@@ -94,7 +94,7 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
      *
      * @return array
      */
-    public function getClaims()
+    public function getClaims(): array
     {
         // Get catalog information if the user has credentials:
         $profile = [];

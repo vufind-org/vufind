@@ -72,7 +72,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * @author Joel Timothy Norman <joel.t.norman@wmich.edu>
      * @author Andrew Nagy <vufind-tech@lists.sourceforge.net>
      */
-    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj)
+    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj): array
     {
         // Initialize return value:
         $excerpt = [];

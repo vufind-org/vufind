@@ -81,7 +81,7 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      *
      * @return string Module name in call to AjaxHandler
      */
-    abstract protected function getAjaxModule();
+    abstract protected function getAjaxModule(): string;
 
     /**
      * Store the configuration of the recommendation module.
@@ -90,7 +90,7 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $this->rawParams = $settings;
     }
@@ -168,7 +168,7 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      *
      * @return string
      */
-    public function getUrlParams()
+    public function getUrlParams(): string
     {
         return 'mod=' . urlencode($this->getAjaxModule())
             . '&params=' . urlencode($this->processedParams)

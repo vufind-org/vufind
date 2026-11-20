@@ -76,7 +76,7 @@ class ILS extends AbstractBase
      *
      * @return \VuFind\ILS\Connection
      */
-    public function getCatalog()
+    public function getCatalog(): \VuFind\ILS\Connection
     {
         return $this->catalog;
     }
@@ -88,7 +88,7 @@ class ILS extends AbstractBase
      *
      * @return void
      */
-    public function setCatalog(\VuFind\ILS\Connection $connection)
+    public function setCatalog(\VuFind\ILS\Connection $connection): void
     {
         $this->catalog = $connection;
     }
@@ -121,7 +121,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): UserEntityInterface
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
@@ -192,7 +192,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request): UserEntityInterface
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
@@ -254,7 +254,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    public function resetPassword(array $recoveryData, array $params)
+    public function resetPassword(array $recoveryData, array $params): void
     {
         // Validate Input
         $this->validatePasswordUpdate($params, $recoveryData['target'] ?? null);
@@ -276,7 +276,7 @@ class ILS extends AbstractBase
      *
      * @return string
      */
-    public function getILSLoginMethod(string $target = '')
+    public function getILSLoginMethod(string $target = ''): string
     {
         $config = $this->getCatalog()->checkFunction(
             'patronLogin',
@@ -292,7 +292,7 @@ class ILS extends AbstractBase
      *
      * @return string|bool
      */
-    public function getDelegateAuthMethod(Request $request)
+    public function getDelegateAuthMethod(Request $request): string|bool
     {
         return (null !== $this->emailAuthenticator
             && $this->emailAuthenticator->isValidLoginRequest($request))
@@ -351,7 +351,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function handleLogin(string $username, string $password, string $loginMethod)
+    protected function handleLogin(string $username, string $password, string $loginMethod): UserEntityInterface
     {
         if ($password === '') {
             throw new AuthException('authentication_error_blank');
@@ -399,7 +399,7 @@ class ILS extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Processed User object.
      */
-    protected function processILSUser(array $info)
+    protected function processILSUser(array $info): UserEntityInterface
     {
         // Figure out which field of the response to use as an identifier; fail
         // if the expected field is missing or empty:
@@ -449,7 +449,7 @@ class ILS extends AbstractBase
      *
      * @return void
      */
-    protected function validatePasswordUpdate(array $params, ?string $target = null)
+    protected function validatePasswordUpdate(array $params, ?string $target = null): void
     {
         // Needs a password
         if (trim($params['password']) === '') {
@@ -470,7 +470,7 @@ class ILS extends AbstractBase
      *
      * @return array|null Patron or null if no credentials exist
      */
-    protected function getLoggedInPatron()
+    protected function getLoggedInPatron(): ?array
     {
         $patron = $this->authenticator->storedCatalogLogin();
         return $patron ? $patron : null;
@@ -481,7 +481,7 @@ class ILS extends AbstractBase
      *
      * @return string
      */
-    protected function getUsernameField()
+    protected function getUsernameField(): string
     {
         $config = $this->getConfig();
         return $config['Authentication']['ILS_username_field'] ?? 'cat_username';

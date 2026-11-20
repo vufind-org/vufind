@@ -48,7 +48,7 @@ class RecordCollectionFactoryTest extends TestCase
      *
      * @return void
      */
-    public function testConstructorRequiresValidFactoryFunction()
+    public function testConstructorRequiresValidFactoryFunction(): void
     {
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Record factory must be callable.');
@@ -61,7 +61,7 @@ class RecordCollectionFactoryTest extends TestCase
      *
      * @return void
      */
-    public function testInvalidInput()
+    public function testInvalidInput(): void
     {
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');

@@ -66,7 +66,7 @@ class VisualFacets extends AbstractFacets
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Visual_Settings' : $settings[0];
@@ -102,7 +102,7 @@ class VisualFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getPivotFacetSet()
+    public function getPivotFacetSet(): array
     {
         // Avoid fatal error in case of unexpected results object (e.g. EmptySet):
         return is_callable([$this->results, 'getPivotFacetList'])

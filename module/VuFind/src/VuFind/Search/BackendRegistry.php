@@ -88,7 +88,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    protected function getExpectedInterface(): string
     {
         return \VuFindSearch\Backend\BackendInterface::class;
     }

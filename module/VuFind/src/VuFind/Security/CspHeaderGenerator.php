@@ -84,7 +84,7 @@ class CspHeaderGenerator implements
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         $headers = [];
         if ($cspHeader = $this->getCspHeader()) {
@@ -104,7 +104,7 @@ class CspHeaderGenerator implements
      *
      * @return ContentSecurityPolicy
      */
-    public function getCspHeader()
+    public function getCspHeader(): ContentSecurityPolicy
     {
         $cspHeader = $this->createHeaderObject();
         $directives = $this->config['Directives'] ?? [];
@@ -136,7 +136,7 @@ class CspHeaderGenerator implements
      *
      * @return ContentSecurityPolicy
      */
-    protected function createHeaderObject()
+    protected function createHeaderObject(): ContentSecurityPolicy
     {
         $mode = $this->config['CSP']['enabled'][APPLICATION_ENV] ?? 'report_only';
         if (!$mode) {
@@ -152,7 +152,7 @@ class CspHeaderGenerator implements
      *
      * @return ?GenericHeader
      */
-    public function getReportToHeader()
+    public function getReportToHeader(): ?GenericHeader
     {
         $reportToHeader = new GenericHeader();
         $reportToHeader->setFieldName('Report-To');
@@ -189,7 +189,7 @@ class CspHeaderGenerator implements
      *
      * @return ?GenericHeader
      */
-    public function getNetworkErrorLoggingHeader()
+    public function getNetworkErrorLoggingHeader(): ?GenericHeader
     {
         $nelHeader = new \Laminas\Http\Header\GenericHeader();
         $nelHeader->setFieldName('NEL');

@@ -48,7 +48,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testIterate()
+    public function testIterate(): void
     {
         $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
         $keys = [];
@@ -63,7 +63,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testCountable()
+    public function testCountable(): void
     {
         $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
         $this->assertCount(2, $list);
@@ -74,7 +74,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testToArray()
+    public function testToArray(): void
     {
         $list = new NamedList([['first term', 'info'], ['second term', 'info2']]);
         $this->assertEquals(
@@ -88,7 +88,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testKeyRemoval()
+    public function testKeyRemoval(): void
     {
         $list = new NamedList([['first term', 'info'], ['second term', 'info2']]);
         $list->removeKey('second term');
@@ -110,7 +110,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testMultipleKeyRemoval()
+    public function testMultipleKeyRemoval(): void
     {
         $list = new NamedList(
             [

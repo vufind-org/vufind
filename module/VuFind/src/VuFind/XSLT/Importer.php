@@ -78,7 +78,7 @@ class Importer
         string $properties,
         string $index = 'Solr',
         bool $testMode = false
-    ) {
+    ): string {
         // Process the file:
         $xml = $this->generateXML($xmlFile, $properties);
 
@@ -99,7 +99,7 @@ class Importer
      * @throws \Exception
      * @return mixed             Transformed XML.
      */
-    protected function generateXML(string $xmlFile, string $properties)
+    protected function generateXML(string $xmlFile, string $properties): mixed
     {
         // Load properties file:
         $resolver = $this->getService(\VuFind\Config\PathResolver::class);
@@ -174,7 +174,7 @@ class Importer
      * @throws \Exception
      * @return object        XSLT processor.
      */
-    protected function initProcessor(array $options)
+    protected function initProcessor(array $options): object
     {
         // Prepare an XSLT processor and pass it some variables
         $xsl = new XSLTProcessor();

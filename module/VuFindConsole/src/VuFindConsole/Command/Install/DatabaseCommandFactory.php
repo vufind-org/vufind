@@ -65,7 +65,7 @@ class DatabaseCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(DbBuilder::class),
             ...($options ?? [])

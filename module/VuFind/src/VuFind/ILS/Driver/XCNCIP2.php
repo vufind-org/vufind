@@ -326,7 +326,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         // Validate config
         $required = ['url', 'agency'];
@@ -403,7 +403,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function loadPickUpLocations()
+    public function loadPickUpLocations(): void
     {
         $filename = $this->config['Catalog']['pickupLocationsFile'] ?? null;
         if ($filename) {
@@ -423,7 +423,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    protected function loadPickUpLocationsFromFile(string $filename)
+    protected function loadPickUpLocationsFromFile(string $filename): void
     {
         // Load pickup locations file:
         $pickupLocationsFile = $this->pathResolver->getConfigPath($filename);
@@ -449,7 +449,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return void
      */
-    public function loadPickUpLocationsFromNcip()
+    public function loadPickUpLocationsFromNcip(): void
     {
         $request = $this->getLookupAgencyRequest();
         $response = $this->sendRequest($request);
@@ -486,7 +486,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return \SimpleXMLElement SimpleXMLElement parsed from response
      * @throws ILSException
      */
-    protected function sendRequest(string $xml)
+    protected function sendRequest(string $xml): \SimpleXMLElement
     {
         $this->debug('Sending NCIP request: ' . $xml);
         $client = $this->httpService->createClient($this->url);
@@ -547,7 +547,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function getOAuth2Token(bool $renew = false)
+    protected function getOAuth2Token(bool $renew = false): string
     {
         $cacheKey = 'oauth';
 
@@ -590,7 +590,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function getCacheKey(?string $suffix = null)
+    protected function getCacheKey(?string $suffix = null): string
     {
         return 'XCNCIP2-' . md5($this->url . $suffix);
     }
@@ -603,7 +603,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return array of status information for this holding
      */
-    protected function getStatusForChunk(SimpleXMLElement $current)
+    protected function getStatusForChunk(SimpleXMLElement $current): array
     {
         $this->registerNamespaceFor($current);
         $status = $current->xpath(
@@ -653,7 +653,7 @@ class XCNCIP2 extends AbstractBase implements
         string $aggregateId = null,
         string $bibId = null,
         array $patron = null
-    ) {
+    ): array {
         $this->registerNamespaceFor($current);
 
         // Extract details from the XML:
@@ -769,7 +769,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         // For now, we'll just use getHolding, since getStatus should return a
         // subset of the same fields, and the extra values will be ignored.
@@ -785,7 +785,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string            XML request
      */
-    protected function getStatusRequest(array $idList, string $resumption = null, string $agency = null)
+    protected function getStatusRequest(array $idList, string $resumption = null, string $agency = null): string
     {
         $agency = $this->determineToAgencyId($agency);
 
@@ -834,7 +834,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses(array $idList)
+    public function getStatuses(array $idList): array
     {
         $status = [];
 
@@ -1074,7 +1074,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         $response = $this->getLookupUserResponse($username, $password);
 
@@ -1129,7 +1129,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): array
     {
         $response = $this->getLookupUserResponse(
             $patron['cat_username'],
@@ -1232,7 +1232,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         $response = $this->getLookupUserResponse(
             $patron['cat_username'],
@@ -1298,7 +1298,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    protected function getMyRequests(array $patron, array $types)
+    protected function getMyRequests(array $patron, array $types): array
     {
         $response = $this->getLookupUserResponse(
             $patron['cat_username'],
@@ -1380,7 +1380,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         return $this->getMyRequests($patron, $this->holdRequestTypes);
     }
@@ -1395,7 +1395,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $response = $this->getLookupUserResponse(
             $patron['cat_username'],
@@ -1489,7 +1489,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array An associative array with key = dept. ID, value = dept. name.
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         // NCIP does not support course reserves
         return [];
@@ -1503,7 +1503,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         // NCIP does not support course reserves
         return [];
@@ -1517,7 +1517,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         // NCIP does not support course reserves
         return [];
@@ -1548,7 +1548,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return array ID numbers of suppressed records in the system.
      */
-    public function getSuppressedRecords()
+    public function getSuppressedRecords(): array
     {
         // NCIP does not support this
         return [];
@@ -1699,7 +1699,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return array        Array of the patron's storage retrieval requests.
      */
-    public function getMyStorageRetrievalRequests(array $patron)
+    public function getMyStorageRetrievalRequests(array $patron): array
     {
         return $this->getMyRequests($patron, $this->storageRetrievalRequestTypes);
     }
@@ -1732,7 +1732,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful.
      */
-    public function placeStorageRetrievalRequest(array $details)
+    public function placeStorageRetrievalRequest(array $details): mixed
     {
         return $this->placeRequest($details, 'Stack Retrieval');
     }
@@ -1746,7 +1746,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         return $checkOutDetails['item_agency_id'] .
             '|' . $checkOutDetails['item_id'];
@@ -1765,7 +1765,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful
      */
-    public function placeHold(array $details)
+    public function placeHold(array $details): mixed
     {
         return $this->placeRequest($details, $details['holdtype']);
     }
@@ -1784,7 +1784,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful
      */
-    public function placeRequest(array $details, string $type = 'Hold')
+    public function placeRequest(array $details, string $type = 'Hold'): mixed
     {
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
@@ -1857,7 +1857,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful.
      */
-    public function handleCancelRequest(array $cancelDetails, string $type = 'Hold')
+    public function handleCancelRequest(array $cancelDetails, string $type = 'Hold'): array
     {
         $msgPrefix = ($type === 'Stack Retrieval')
             ? 'storage_retrieval_request_cancel_'
@@ -1925,7 +1925,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful.
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         return $this->handleCancelRequest($cancelDetails, 'Hold');
     }
@@ -1939,7 +1939,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string Data for use in a form field
      */
-    public function getCancelRequestDetails(array $details)
+    public function getCancelRequestDetails(array $details): string
     {
         if ($details['available']) {
             return '';
@@ -1980,7 +1980,7 @@ class XCNCIP2 extends AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful.
      */
-    public function cancelStorageRetrievalRequests(array $cancelDetails)
+    public function cancelStorageRetrievalRequests(array $cancelDetails): array
     {
         return $this->handleCancelRequest($cancelDetails, 'Stack Retrieval');
     }
@@ -2015,7 +2015,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $details = [];
         $username = $renewDetails['patron']['cat_username'];
@@ -2071,7 +2071,7 @@ class XCNCIP2 extends AbstractBase implements
      * of block reasons if blocks are in place
      * @throws ILSException
      */
-    public function getAccountBlocks(array $patron)
+    public function getAccountBlocks(array $patron): mixed
     {
         $blocks = $this->getPatronBlocks($patron);
         $blocks = array_map(
@@ -2106,7 +2106,7 @@ class XCNCIP2 extends AbstractBase implements
         string $type,
         string $itemId,
         string $patronId = null
-    ) {
+    ): string {
         if (empty($requestId) && empty($itemId)) {
             throw new ILSException('No identifiers for CancelRequest');
         }
@@ -2163,7 +2163,7 @@ class XCNCIP2 extends AbstractBase implements
         string $lastInterestDate,
         string $pickupLocation = null,
         string $patronId = null
-    ) {
+    ): string {
         $ret = $this->getNCIPMessageStart() .
             '<ns1:RequestItem>' .
             $this->getInitiationHeaderXml($patronAgencyId) .
@@ -2202,7 +2202,7 @@ class XCNCIP2 extends AbstractBase implements
         string $itemAgencyId,
         string $patronAgencyId,
         string $patronId = null
-    ) {
+    ): string {
         $itemAgencyId = $this->determineToAgencyId($itemAgencyId);
         return $this->getNCIPMessageStart() .
             '<ns1:RenewItem>' .
@@ -2231,7 +2231,7 @@ class XCNCIP2 extends AbstractBase implements
         string $patronAgencyId = null,
         array $extras = [],
         string $patronId = null
-    ) {
+    ): string {
         return $this->getNCIPMessageStart() .
             '<ns1:LookupUser>' .
             $this->getInitiationHeaderXml($patronAgencyId) .
@@ -2248,7 +2248,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string XML Document
      */
-    public function getLookupAgencyRequest(?string $agency = null)
+    public function getLookupAgencyRequest(?string $agency = null): string
     {
         $agency = $this->determineToAgencyId($agency);
 
@@ -2306,7 +2306,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function getInitiationHeaderXml(string $agency = null)
+    protected function getInitiationHeaderXml(string $agency = null): string
     {
         $agency = $this->determineToAgencyId($agency);
         if (empty($agency) || empty($this->fromAgency)) {
@@ -2327,7 +2327,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function getNCIPMessageStart()
+    protected function getNCIPMessageStart(): string
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
@@ -2342,7 +2342,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string XML string for AuthenticationInput element
      */
-    protected function getAuthenticationInputXml(string $username, string $password)
+    protected function getAuthenticationInputXml(string $username, string $password): string
     {
         return (!empty($username) && !empty($password))
             ? '<ns1:AuthenticationInput>' .
@@ -2367,7 +2367,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string ItemId element XML string
      */
-    protected function getItemIdXml(string $agency, string $itemId, ?string $idType = null)
+    protected function getItemIdXml(string $agency, string $itemId, ?string $idType = null): string
     {
         $agency = $this->determineToAgencyId($agency);
         $ret = '<ns1:ItemId>' . $this->element('AgencyId', $agency);
@@ -2387,7 +2387,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string Get UserId element XML string
      */
-    protected function getUserIdXml(string $patronAgency, string $patronId = null)
+    protected function getUserIdXml(string $patronAgency, string $patronId = null): string
     {
         $agency = $this->determineToAgencyId($patronAgency);
         if ($patronId !== null) {
@@ -2408,7 +2408,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string RequestType and RequestScopeType element XML string
      */
-    protected function getRequestTypeXml(string $type, string $scope = 'Bibliographic Item')
+    protected function getRequestTypeXml(string $type, string $scope = 'Bibliographic Item'): string
     {
         return
             $this->element('RequestType', $type) .
@@ -2422,7 +2422,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string Get BibliographicId XML element string
      */
-    protected function getBibliographicId(string $id)
+    protected function getBibliographicId(string $id): string
     {
         return '<ns1:BibliographicId>' .
             '<ns1:BibliographicItemId>' .
@@ -2443,7 +2443,7 @@ class XCNCIP2 extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    protected function checkResponseForError(\SimpleXMLElement $response)
+    protected function checkResponseForError(\SimpleXMLElement $response): void
     {
         $error = $response->xpath(
             '//ns1:Problem'
@@ -2460,7 +2460,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return void
      */
-    protected function registerNamespaceFor(\SimpleXMLElement $element)
+    protected function registerNamespaceFor(\SimpleXMLElement $element): void
     {
         $element->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
     }
@@ -2472,7 +2472,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function displayDate(string $date)
+    protected function displayDate(string $date): string
     {
         return $this->convertDateOrTime($date);
     }
@@ -2484,7 +2484,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function displayTime(string $date)
+    protected function displayTime(string $date): string
     {
         return $this->convertDateOrTime($date, 'time');
     }
@@ -2497,7 +2497,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string
      */
-    protected function convertDateOrTime(string $dateString, string $dateOrTime = 'date')
+    protected function convertDateOrTime(string $dateString, string $dateOrTime = 'date'): string
     {
         if (!$dateString) {
             return '';
@@ -2529,7 +2529,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string Hold type, could be 'Hold' or 'Recall'
      */
-    protected function getHoldType(string $status)
+    protected function getHoldType(string $status): string
     {
         return in_array(strtolower($status), $this->availableStatuses)
             ? 'Hold' : 'Recall';
@@ -2542,7 +2542,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return bool Return true if item is available
      */
-    protected function isAvailable(string $status)
+    protected function isAvailable(string $status): bool
     {
         return in_array(strtolower($status), $this->availableStatuses);
     }
@@ -2554,7 +2554,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return bool Return true if a request was cancelled
      */
-    protected function isRequestCancelled(string $status)
+    protected function isRequestCancelled(string $status): bool
     {
         return !in_array(strtolower($status), $this->activeRequestStatuses);
     }
@@ -2567,7 +2567,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return bool Return true if request is of desired type
      */
-    protected function checkRequestType(\SimpleXMLElement $request, array $types)
+    protected function checkRequestType(\SimpleXMLElement $request, array $types): bool
     {
         $requestType = $request->xpath('ns1:RequestType');
         $requestType = (string)$requestType[0];
@@ -2613,7 +2613,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string|null First Agency Id found
      */
-    protected function determineToAgencyId(array|string|null $agency = null)
+    protected function determineToAgencyId(array|string|null $agency = null): ?string
     {
         // FIXME: We are using the first defined agency, it will probably not work in
         // consortium scenario

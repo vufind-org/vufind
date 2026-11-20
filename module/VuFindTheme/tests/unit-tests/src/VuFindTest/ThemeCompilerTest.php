@@ -82,7 +82,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStandardCompilation()
+    public function testStandardCompilation(): void
     {
         $baseDir = $this->info->getBaseDir();
         $parentDir = $baseDir . '/parent';
@@ -136,7 +136,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStandardCompilationWithMixin()
+    public function testStandardCompilationWithMixin(): void
     {
         $baseDir = $this->info->getBaseDir();
         $parentDir = $baseDir . '/parent';
@@ -196,7 +196,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOverwriteProtection()
+    public function testOverwriteProtection(): void
     {
         // First, compile the theme:
         $compiler = $this->getThemeCompiler();
@@ -237,7 +237,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
      *
      * @return ThemeCompiler
      */
-    protected function getThemeCompiler()
+    protected function getThemeCompiler(): ThemeCompiler
     {
         return new ThemeCompiler($this->info);
     }

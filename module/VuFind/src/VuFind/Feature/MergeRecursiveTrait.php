@@ -54,7 +54,7 @@ trait MergeRecursiveTrait
      *
      * @return bool
      */
-    protected function isStringKeyedArray(mixed $op)
+    protected function isStringKeyedArray(mixed $op): bool
     {
         return is_array($op) && !array_is_list($op);
     }
@@ -68,7 +68,7 @@ trait MergeRecursiveTrait
      *
      * @return array|string merged values
      */
-    protected function mergeRecursive(array|string $val1, array|string $val2)
+    protected function mergeRecursive(array|string $val1, array|string $val2): array|string
     {
         if ($val2 === null || $val2 === []) {
             return $val1;

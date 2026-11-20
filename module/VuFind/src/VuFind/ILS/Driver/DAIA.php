@@ -150,7 +150,7 @@ class DAIA extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (isset($this->config['DAIA']['baseUrl'])) {
             $this->baseUrl = $this->config['DAIA']['baseUrl'];
@@ -217,7 +217,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getCacheKey(?string $suffix = null)
+    protected function getCacheKey(?string $suffix = null): string
     {
         return $this->getBaseCacheKey(md5($this->baseUrl) . $suffix);
     }
@@ -268,7 +268,7 @@ class DAIA extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         // check ids for existing availability data in cache and skip these ids
         if (
@@ -320,7 +320,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array    An array of status information values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): array
     {
         $status = [];
 
@@ -433,7 +433,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string Formatted date
      */
-    protected function convertDate(string $date)
+    protected function convertDate(string $date): string
     {
         try {
             return $this->dateConverter
@@ -451,7 +451,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string Formatted datetime
      */
-    protected function convertDatetime(string $datetime)
+    protected function convertDatetime(string $datetime): string
     {
         return $this->convertDate($datetime);
     }
@@ -464,7 +464,7 @@ class DAIA extends AbstractBase implements
      * @return xml or json object
      * @throws ILSException
      */
-    protected function doHTTPRequest(string $id)
+    protected function doHTTPRequest(string $id): xml
     {
         $http_headers = [
             'Content-type: ' . $this->contentTypesRequest[$this->daiaResponseFormat],
@@ -538,7 +538,7 @@ class DAIA extends AbstractBase implements
      *
      * @see http://gbv.github.io/daia/daia.html#query-parameters
      */
-    protected function generateURI(string $id)
+    protected function generateURI(string $id): string
     {
         return $this->daiaIdPrefix . $id;
     }
@@ -553,7 +553,7 @@ class DAIA extends AbstractBase implements
      *
      * @see http://gbv.github.io/daia/daia.html#query-parameters
      */
-    protected function generateMultiURIs(array $ids)
+    protected function generateMultiURIs(array $ids): string
     {
         $multiURI = '';
         foreach ($ids as $id) {
@@ -576,7 +576,7 @@ class DAIA extends AbstractBase implements
      * @return array An array with status information for the record
      * @throws ILSException
      */
-    protected function parseDaiaDoc(string $id, mixed $daiaDoc)
+    protected function parseDaiaDoc(string $id, mixed $daiaDoc): array
     {
         if (is_array($daiaDoc)) {
             return $this->parseDaiaArray($id, $daiaDoc);
@@ -601,7 +601,7 @@ class DAIA extends AbstractBase implements
      *                                  type depending on daiaResponseFormat.
      * @throws ILSException
      */
-    protected function extractDaiaDoc(string $id, string $daiaResponse)
+    protected function extractDaiaDoc(string $id, string $daiaResponse): array|DOMNode|null
     {
         $docs = [];
         if ($this->daiaResponseFormat == 'xml') {
@@ -659,7 +659,7 @@ class DAIA extends AbstractBase implements
      *
      * @return mixed
      */
-    protected function convertDaiaXmlToJson(string $daiaResponse)
+    protected function convertDaiaXmlToJson(string $daiaResponse): mixed
     {
         $dom = new DOMDocument();
         $dom->loadXML($daiaResponse);
@@ -746,7 +746,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array            Array with VuFind compatible status information.
      */
-    protected function parseDaiaArray(string $id, array $daiaArray)
+    protected function parseDaiaArray(string $id, array $daiaArray): array
     {
         $result = [];
         $doc_id = null;
@@ -812,7 +812,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array
      */
-    protected function getItemStatus(array $item)
+    protected function getItemStatus(array $item): array
     {
         $return = [];
         $availability = false;
@@ -1009,7 +1009,7 @@ class DAIA extends AbstractBase implements
      *
      * @return bool
      */
-    protected function checkIsRecallable(array $item)
+    protected function checkIsRecallable(array $item): bool
     {
         // This basic implementation checks the item for being unavailable for loan
         // and presentation but with an existing href (as a flag for further action).
@@ -1055,7 +1055,7 @@ class DAIA extends AbstractBase implements
      *
      * @return bool
      */
-    protected function checkIsStorageRetrievalRequest(array $item)
+    protected function checkIsStorageRetrievalRequest(array $item): bool
     {
         // This basic implementation checks the item for being available for loan
         // and presentation but with an existing href (as a flag for further action).
@@ -1105,7 +1105,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string 'recall'|null
      */
-    protected function getHoldType(array $item)
+    protected function getHoldType(array $item): string
     {
         // return holdtype (hold, recall or block if patron is not allowed) for item
         return $this->checkIsRecallable($item) ? 'recall' : null;
@@ -1118,7 +1118,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array
      */
-    protected function getItemLimitation(array $limitations)
+    protected function getItemLimitation(array $limitations): array
     {
         $itemLimitation = [];
         foreach ($limitations as $limitation) {
@@ -1138,7 +1138,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemDepartment(array $item)
+    protected function getItemDepartment(array $item): string
     {
         return isset($item['department']) && isset($item['department']['content'])
         && !empty($item['department']['content'])
@@ -1154,7 +1154,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemDepartmentId(array $item)
+    protected function getItemDepartmentId(array $item): string
     {
         return isset($item['department']) && isset($item['department']['id'])
             ? $item['department']['id'] : '';
@@ -1168,7 +1168,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemDepartmentLink(array $item)
+    protected function getItemDepartmentLink(array $item): string
     {
         return $item['department']['href'] ?? false;
     }
@@ -1181,7 +1181,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemStorage(array $item)
+    protected function getItemStorage(array $item): string
     {
         return isset($item['storage']) && isset($item['storage']['content'])
         && !empty($item['storage']['content'])
@@ -1197,7 +1197,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemStorageId(array $item)
+    protected function getItemStorageId(array $item): string
     {
         return isset($item['storage']) && isset($item['storage']['id'])
             ? $item['storage']['id'] : '';
@@ -1211,7 +1211,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemStorageLink(array $item)
+    protected function getItemStorageLink(array $item): string
     {
         return isset($item['storage']) && isset($item['storage']['href'])
             ? $item['storage']['href'] : '';
@@ -1224,7 +1224,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array
      */
-    protected function getItemLimitationContent(array $limitations)
+    protected function getItemLimitationContent(array $limitations): array
     {
         $itemLimitationContent = [];
         foreach ($limitations as $limitation) {
@@ -1243,7 +1243,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array
      */
-    protected function getItemLimitationTypes(array $limitations)
+    protected function getItemLimitationTypes(array $limitations): array
     {
         $itemLimitationTypes = [];
         foreach ($limitations as $limitation) {
@@ -1302,7 +1302,7 @@ class DAIA extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemCallnumber(array $item)
+    protected function getItemCallnumber(array $item): string
     {
         return isset($item['label']) && !empty($item['label'])
             ? $item['label']
@@ -1317,7 +1317,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array
      */
-    protected function getAvailableItemServices(array $services)
+    protected function getAvailableItemServices(array $services): array
     {
         $availableServices = [];
         if (isset($services['available'])) {
@@ -1341,7 +1341,7 @@ class DAIA extends AbstractBase implements
      *
      * @return void
      */
-    protected function logMessages(array $messages, string $context)
+    protected function logMessages(array $messages, string $context): void
     {
         foreach ($messages as $message) {
             if (isset($message['content'])) {

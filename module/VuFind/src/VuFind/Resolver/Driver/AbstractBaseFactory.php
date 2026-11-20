@@ -65,7 +65,7 @@ class AbstractBaseFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         if (!isset($config['OpenURL']['url'])) {
             throw new BadConfig('OpenURL url is not set.');

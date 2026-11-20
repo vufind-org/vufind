@@ -47,7 +47,7 @@ class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testException()
+    public function testException(): void
     {
         $message = 'Not Found';
         $url = 'https://mock.codes/404';

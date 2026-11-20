@@ -59,7 +59,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
      *
      * @return array
      */
-    protected function getGenericData(\VuFind\RecordDriver\AbstractBase $driver)
+    protected function getGenericData(\VuFind\RecordDriver\AbstractBase $driver): array
     {
         return [
             'author' => array_unique(
@@ -91,7 +91,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
      *
      * @return array
      */
-    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver)
+    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver): array
     {
         $genericData = $this->getGenericData($driver);
         $mappedData = [];

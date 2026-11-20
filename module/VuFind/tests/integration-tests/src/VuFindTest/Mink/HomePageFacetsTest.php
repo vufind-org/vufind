@@ -51,7 +51,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testNormalFacets()
+    public function testNormalFacets(): void
     {
         $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);

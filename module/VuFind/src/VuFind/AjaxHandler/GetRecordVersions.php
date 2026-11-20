@@ -77,7 +77,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
      *
      * @return string
      */
-    protected function getVersionsLinkForRecord(string $id, string $source, string $searchId)
+    protected function getVersionsLinkForRecord(string $id, string $source, string $searchId): string
     {
         $driver = $this->recordLoader->load($id, $source);
         $tabs = $this->tabManager->getTabsForRecord($driver);

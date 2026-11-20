@@ -95,7 +95,7 @@ interface ResourceTagsServiceInterface extends DbServiceInterface
         UserEntityInterface|int|null $userOrId = null,
         UserListEntityInterface|int|null $listOrId = null,
         ?DateTime $posted = null
-    );
+    ): void;
 
     /**
      * Remove links from the resource_tags table based on an array of IDs.

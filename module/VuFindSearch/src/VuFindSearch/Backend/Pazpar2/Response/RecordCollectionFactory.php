@@ -88,7 +88,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return RecordCollection
      */
-    public function factory(array $response)
+    public function factory(array $response): RecordCollection
     {
         $collection = new $this->collectionClass(
             $response['total'],

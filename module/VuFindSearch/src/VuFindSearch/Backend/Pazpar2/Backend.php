@@ -104,7 +104,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setMaxQueryTime(int $time)
+    public function setMaxQueryTime(int $time): void
     {
         $this->maxQueryTime = $time;
     }
@@ -116,7 +116,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setSearchProgressTarget(float $progress)
+    public function setSearchProgressTarget(float $progress): void
     {
         $this->progressTarget = $progress;
     }
@@ -136,7 +136,7 @@ class Backend extends AbstractBackend
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
             $baseParams->mergeWith($params);
@@ -184,7 +184,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): RecordCollectionInterface
     {
         $response   = $this->connector->record($id);
         $collection = $this->createRecordCollection([$response], 1);
@@ -199,7 +199,7 @@ class Backend extends AbstractBackend
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -211,7 +211,7 @@ class Backend extends AbstractBackend
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -226,7 +226,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         if (!$this->collectionFactory) {
             $this->collectionFactory = new Response\RecordCollectionFactory();
@@ -239,7 +239,7 @@ class Backend extends AbstractBackend
      *
      * @return Connector
      */
-    public function getConnector()
+    public function getConnector(): Connector
     {
         return $this->connector;
     }
@@ -267,7 +267,7 @@ class Backend extends AbstractBackend
      *
      * @return float
      */
-    protected function getSearchProgress()
+    protected function getSearchProgress(): float
     {
         $statResponse = $this->connector->stat();
         return (float)$statResponse->progress;

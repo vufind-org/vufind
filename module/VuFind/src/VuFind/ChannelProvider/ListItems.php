@@ -114,7 +114,7 @@ class ListItems extends AbstractChannelProvider
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->ids = $options['ids'] ?? [];
         $this->tags = $options['tags'] ?? [];
@@ -171,7 +171,7 @@ class ListItems extends AbstractChannelProvider
      *
      * @return array
      */
-    protected function buildListChannels(string $channelToken)
+    protected function buildListChannels(string $channelToken): array
     {
         $channels = [];
         $lists = $channelToken

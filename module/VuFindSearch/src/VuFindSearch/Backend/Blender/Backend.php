@@ -123,7 +123,7 @@ class Backend extends AbstractBackend
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $mergedCollection = $this->createRecordCollection();
 
         $backendDetails = [];
@@ -342,7 +342,7 @@ class Backend extends AbstractBackend
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): \VuFindSearch\Response\RecordCollectionInterface
     {
         throw new \Exception('Blender does not support retrieve');
     }
@@ -354,7 +354,7 @@ class Backend extends AbstractBackend
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         throw new \Exception('getRecordCollectionFactory not supported in Blender');
     }
@@ -515,7 +515,7 @@ class Backend extends AbstractBackend
      *
      * @return EventInterface
      */
-    protected function triggerSearchEvent(EventInterface $event)
+    protected function triggerSearchEvent(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if (

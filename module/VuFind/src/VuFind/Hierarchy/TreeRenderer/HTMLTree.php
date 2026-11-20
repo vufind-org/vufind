@@ -75,7 +75,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
-    public function getTreeList(string $hierarchyID = false)
+    public function getTreeList(string $hierarchyID = false): mixed
     {
         $record = $this->getRecordDriver();
         $inHierarchies = $record->getHierarchyTopID();
@@ -200,7 +200,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      *
      * @return string URL
      */
-    protected function getUrlFromRouteCache(string $route, string $id)
+    protected function getUrlFromRouteCache(string $route, string $id): string
     {
         static $cache = [];
         if (!isset($cache[$route])) {
@@ -227,7 +227,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      *
      * @return string
      */
-    protected function getRouteNameFromDataSource(string $route)
+    protected function getRouteNameFromDataSource(string $route): string
     {
         if ($route === 'collection') {
             return $this->getDataSource()->getCollectionRoute();

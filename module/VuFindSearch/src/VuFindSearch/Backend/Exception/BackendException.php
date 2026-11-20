@@ -58,7 +58,7 @@ class BackendException extends RuntimeException
      *
      * @return void
      */
-    public function addTag(string $tag)
+    public function addTag(string $tag): void
     {
         $this->tags[] = $tag;
     }
@@ -68,7 +68,7 @@ class BackendException extends RuntimeException
      *
      * @return array
      */
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }
@@ -80,7 +80,7 @@ class BackendException extends RuntimeException
      *
      * @return bool
      */
-    public function hasTag(string $tag)
+    public function hasTag(string $tag): bool
     {
         return in_array($tag, $this->tags);
     }

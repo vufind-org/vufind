@@ -175,7 +175,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                      *
                      * @return void
                      */
-                    public function setOptions(array $options)
+                    public function setOptions(array $options): void
                     {
                         if (!empty($options)) {
                             $this->settings .= '-' . implode(':', $options);

@@ -53,7 +53,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $connector = $this->getConnector('proquestfsg/connector_searchresult.json');
         $backend = new Backend(
@@ -81,7 +81,7 @@ class BackendTest extends TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $connector = $this->getConnector('proquestfsg/connector_record.json');
         $backend = new Backend(

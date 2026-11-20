@@ -54,7 +54,7 @@ class ErrorListenerTest extends TestCase
      *
      * @return void
      */
-    public function testDetectParseError()
+    public function testDetectParseError(): void
     {
         $response  = $this->createResponse('solr4-parse-error');
         $backend   = 'foo';
@@ -76,7 +76,7 @@ class ErrorListenerTest extends TestCase
      *
      * @return void
      */
-    public function testDetectUndefinedFieldError()
+    public function testDetectUndefinedFieldError(): void
     {
         $response = $this->createResponse('solr4-undefined-field-error');
         $backend  = 'foo';
@@ -102,7 +102,7 @@ class ErrorListenerTest extends TestCase
      *
      * @return Response Response
      */
-    protected function createResponse(string $name)
+    protected function createResponse(string $name): Response
     {
         return Response::fromString(
             $this->getFixture('response/solr/' . $name)

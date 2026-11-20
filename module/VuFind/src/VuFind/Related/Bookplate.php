@@ -100,7 +100,7 @@ class Bookplate implements RelatedInterface
      *
      * @return void
      */
-    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver): void
     {
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
@@ -128,7 +128,7 @@ class Bookplate implements RelatedInterface
      *
      * @return array
      */
-    protected function getBookplateData($field)
+    protected function getBookplateData($field): array
     {
         if (!empty($field) && isset($this->fields[$field])) {
             return (array)$this->fields[$field];
@@ -141,7 +141,7 @@ class Bookplate implements RelatedInterface
      *
      * @return string
      */
-    protected function getBookplateFullUrlTemplate()
+    protected function getBookplateFullUrlTemplate(): string
     {
         return $this->config['bookplate_full'] ?? '';
     }
@@ -151,7 +151,7 @@ class Bookplate implements RelatedInterface
      *
      * @return string
      */
-    protected function getBookplateThumbUrlTemplate()
+    protected function getBookplateThumbUrlTemplate(): string
     {
         return $this->config['bookplate_thumb'] ?? '';
     }
@@ -161,7 +161,7 @@ class Bookplate implements RelatedInterface
      *
      * @return bool
      */
-    protected function displayBookplateTitles()
+    protected function displayBookplateTitles(): bool
     {
         return $this->config['bookplate_display_title'] ?? true;
     }
@@ -171,7 +171,7 @@ class Bookplate implements RelatedInterface
      *
      * @return string
      */
-    protected function getBookplateTitlesField()
+    protected function getBookplateTitlesField(): string
     {
         return $this->config['bookplate_titles_field'] ?? '';
     }
@@ -183,7 +183,7 @@ class Bookplate implements RelatedInterface
      *
      * @return string
      */
-    protected function getBookplateFullImagesField()
+    protected function getBookplateFullImagesField(): string
     {
         return $this->config['bookplate_images_field'] ?? '';
     }
@@ -195,7 +195,7 @@ class Bookplate implements RelatedInterface
      *
      * @return string
      */
-    protected function getBookplateThumbnailsField()
+    protected function getBookplateThumbnailsField(): string
     {
         return $this->config['bookplate_thumbnails_field'] ?? '';
     }
@@ -205,7 +205,7 @@ class Bookplate implements RelatedInterface
      *
      * @return array
      */
-    public function getBookplateDetails()
+    public function getBookplateDetails(): array
     {
         $hasBookplates = !empty($this->bookplateStrs);
         if ($hasBookplates) {

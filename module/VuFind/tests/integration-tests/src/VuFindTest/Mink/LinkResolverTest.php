@@ -49,7 +49,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getConfigIniOverrides(array $openUrlExtras = [])
+    public function getConfigIniOverrides(array $openUrlExtras = []): array
     {
         return [
             'OpenURL' => $openUrlExtras + [
@@ -68,7 +68,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setupRecordPage(array $openUrlExtras = [], array $extraConfigs = [])
+    protected function setupRecordPage(array $openUrlExtras = [], array $extraConfigs = []): Element
     {
         // Set up configs
         $this->changeConfigs(
@@ -94,7 +94,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertOpenUrl(Element $page, bool $click = true)
+    protected function assertOpenUrl(Element $page, bool $click = true): void
     {
         // Click the OpenURL link:
         if ($click) {
@@ -139,7 +139,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLinkInSearchResults()
+    public function testLinkInSearchResults(): void
     {
         // Set up configs
         $this->changeConfigs(
@@ -163,7 +163,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLinkInSearchResultsWithAutoloading()
+    public function testLinkInSearchResultsWithAutoloading(): void
     {
         // Set up configs
         $this->changeConfigs(
@@ -186,7 +186,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLinkOnRecordPageWithDefaultConfig()
+    public function testLinkOnRecordPageWithDefaultConfig(): void
     {
         // By default, no OpenURL on record page:
         $page = $this->setupRecordPage();
@@ -198,7 +198,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLinkOnRecordPageWithLinkInCore()
+    public function testLinkOnRecordPageWithLinkInCore(): void
     {
         // By default, no OpenURL on record page:
         $page = $this->setupRecordPage(['show_in_record' => true]);
@@ -210,7 +210,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLinkOnRecordPageWithLinkInHoldings()
+    public function testLinkOnRecordPageWithLinkInHoldings(): void
     {
         // By default, no OpenURL on record page:
         $page = $this->setupRecordPage(['show_in_holdings' => true]);

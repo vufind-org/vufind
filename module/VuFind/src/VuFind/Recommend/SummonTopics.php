@@ -68,7 +68,7 @@ class SummonTopics extends AbstractSummonRecommend
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         return $this->results->getTopicRecommendations();
     }
@@ -81,7 +81,7 @@ class SummonTopics extends AbstractSummonRecommend
      *
      * @return void
      */
-    protected function configureSummonResults(\VuFind\Search\Summon\Results $results)
+    protected function configureSummonResults(\VuFind\Search\Summon\Results $results): void
     {
         parent::configureSummonResults($results);
         $results->getOptions()->setMaxTopicRecommendations(1);

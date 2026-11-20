@@ -66,7 +66,7 @@ class ResourceTagsService extends AbstractDbService implements
      *
      * @return array
      */
-    protected function formatTagOrder(array $order)
+    protected function formatTagOrder(array $order): array
     {
         // This array defines legal sort fields:
         $legalSorts = ['tag', 'title', 'username', 'posted asc', 'posted desc'];
@@ -177,7 +177,7 @@ class ResourceTagsService extends AbstractDbService implements
         UserEntityInterface|int|null $userOrId = null,
         UserListEntityInterface|int|null $listOrId = null,
         ?DateTime $posted = null
-    ) {
+    ): void {
         $tag = $this->getDoctrineReference(TagsEntityInterface::class, $tagOrId);
         $dql = ' SELECT rt FROM ' . ResourceTagsEntityInterface::class . ' rt ';
         $dqlWhere = ['rt.tag = :tag '];
@@ -268,7 +268,7 @@ class ResourceTagsService extends AbstractDbService implements
         int|array|null $tagId = null,
         array $extraWhere = [],
         array $extraParams = [],
-    ) {
+    ): void {
         $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt ';
 
         $dqlWhere = ['rt.user = :user '];

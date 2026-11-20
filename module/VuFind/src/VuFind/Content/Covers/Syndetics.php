@@ -73,7 +73,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool
      */
-    public function getUrl(string $key, string $size, array $ids)
+    public function getUrl(string $key, string $size, array $ids): string|bool
     {
         $baseUrl = $this->getBaseUrl($key, $ids);
         if ($baseUrl == false) {
@@ -106,7 +106,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool Base URL, or false if no identifier can be used
      */
-    protected function getBaseUrl(string $key, array $ids)
+    protected function getBaseUrl(string $key, array $ids): string|bool
     {
         $url = "https://www.syndetics.com/index.aspx?client={$key}";
         $ident = '';
@@ -136,7 +136,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool Image filename, or false if the size is not 'small', 'medium' or 'large'
      */
-    protected function getImageFilenameFromSize(string $size)
+    protected function getImageFilenameFromSize(string $size): string|bool
     {
         return match ($size) {
             'small' => 'SC.GIF',
@@ -153,7 +153,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return DOMDocument|bool The metadata as a DOM XML document, or false if the document cannot be parsed.
      */
-    protected function getMetadataXML($baseUrl)
+    protected function getMetadataXML($baseUrl): DOMDocument|bool
     {
         $url = $baseUrl . '/index.xml';
         if (!isset($this->cachingDownloader)) {
@@ -172,7 +172,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string|bool Image filename, or false if none matches
      */
-    protected function getImageFilenameFromMetadata(DOMDocument $xmldoc, string $size)
+    protected function getImageFilenameFromMetadata(DOMDocument $xmldoc, string $size): string|bool
     {
         $elementName = match ($size) {
             'small' => 'SC',
@@ -198,7 +198,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      *
      * @return string Full url of the image
      */
-    protected function getImageUrl($baseUrl, $filename)
+    protected function getImageUrl($baseUrl, $filename): string
     {
         return $baseUrl . "/{$filename}";
     }

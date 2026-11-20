@@ -77,7 +77,7 @@ class Solr extends AbstractFallbackLoader
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    protected function fetchSingleRecord(string $id)
+    protected function fetchSingleRecord(string $id): \VuFindSearch\Response\RecordCollectionInterface
     {
         // If there is no legacy ID field defined, short circuit the lookup:
         if (null === $this->legacyIdField) {

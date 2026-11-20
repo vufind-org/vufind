@@ -64,7 +64,7 @@ class DownloadCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(\VuFind\Http\GuzzleService::class),
             ...($options ?? [])

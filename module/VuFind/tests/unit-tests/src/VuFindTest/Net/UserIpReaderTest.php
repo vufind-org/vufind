@@ -48,7 +48,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMultipleHeaders()
+    public function testMultipleHeaders(): void
     {
         $params = [
             'HTTP_X_REAL_IP' => '1.2.3.4',
@@ -78,7 +78,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runFilterTests(array $params, string $rules)
+    protected function runFilterTests(array $params, string $rules): void
     {
         // Test appropriate behavior with one filtered address:
         $reader1 = new UserIpReader(
@@ -108,7 +108,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMultipleHeadersWithFilter()
+    public function testMultipleHeadersWithFilter(): void
     {
         // Run the same tests twice, once in "first" mode and once in "last" mode,
         // to make sure both cases are covered correctly (we use different parameters
@@ -134,7 +134,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFilteredSingle()
+    public function testFilteredSingle(): void
     {
         // This is a contrived test because it is unlikely that you would really
         // want to extract the middle value of a list, but just making sure edge
@@ -158,7 +158,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testXForwardedForMultiValued()
+    public function testXForwardedForMultiValued(): void
     {
         $params = [
             'HTTP_X_FORWARDED_FOR' => '5.6.7.8, 9.10.11.12',
@@ -184,7 +184,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testXForwardedForWithoutHeaders()
+    public function testXForwardedForWithoutHeaders(): void
     {
         $params = [
             'REMOTE_ADDR' => '127.0.0.1',

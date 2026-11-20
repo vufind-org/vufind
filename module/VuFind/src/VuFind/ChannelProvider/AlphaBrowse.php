@@ -112,7 +112,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
         $this->browseIndex = $options['browseIndex'] ?? 'lcc';
@@ -195,7 +195,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      *
      * @return array
      */
-    protected function summarizeBrowseDetails(array $details)
+    protected function summarizeBrowseDetails(array $details): array
     {
         $ids = $results = [];
         if (isset($details['Browse']['items'])) {

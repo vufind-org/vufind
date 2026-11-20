@@ -87,7 +87,7 @@ class OpenLibrary
         int $limit = 5,
         int $offset = null,
         bool $publicFullText = true
-    ) {
+    ): array {
         // empty array to hold the result
         $result = [];
 
@@ -131,7 +131,7 @@ class OpenLibrary
      *
      * @return array
      */
-    protected function processSubjectsApi(string $url, int $limit, bool $publicFullText)
+    protected function processSubjectsApi(string $url, int $limit, bool $publicFullText): array
     {
         // empty array to hold the result
         $result = [];
@@ -181,7 +181,7 @@ class OpenLibrary
      *
      * @return string
      */
-    protected function normaliseSubjectString(string $subject)
+    protected function normaliseSubjectString(string $subject): string
     {
         // Normalise search term
         $subject = str_replace(['"', ',', '/'], '', $subject);

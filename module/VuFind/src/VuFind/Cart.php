@@ -91,7 +91,7 @@ class Cart
      *
      * @return array     array of items in the cart
      */
-    public function getItems()
+    public function getItems(): array
     {
         return $this->items;
     }
@@ -103,7 +103,7 @@ class Cart
      *
      * @return bool
      */
-    public function contains(string $item)
+    public function contains(string $item): bool
     {
         return in_array($item, $this->items);
     }
@@ -113,7 +113,7 @@ class Cart
      *
      * @return void
      */
-    public function emptyCart()
+    public function emptyCart(): void
     {
         $this->items = [];
         $this->save();
@@ -127,7 +127,7 @@ class Cart
      * @return array       Associative array with two keys: success (bool) and
      * notAdded (array of IDs that were unable to be added to the cart)
      */
-    public function addItem(string $item)
+    public function addItem(string $item): array
     {
         return $this->addItems([$item]);
     }
@@ -140,7 +140,7 @@ class Cart
      * @return array       Associative array with two keys: success (bool) and
      * notAdded (array of IDs that were unable to be added to the cart)
      */
-    public function addItems(array $items)
+    public function addItems(array $items): array
     {
         $items = array_merge($this->items, $items);
 
@@ -161,7 +161,7 @@ class Cart
      *
      * @return void
      */
-    public function removeItems(array $items)
+    public function removeItems(array $items): void
     {
         $results = [];
         foreach ($this->items as $id) {
@@ -178,7 +178,7 @@ class Cart
      *
      * @return int The maximum cart size
      */
-    public function getMaxSize()
+    public function getMaxSize(): int
     {
         return $this->maxSize;
     }
@@ -188,7 +188,7 @@ class Cart
      *
      * @return bool      true if full, false otherwise
      */
-    public function isFull()
+    public function isFull(): bool
     {
         return count($this->items) >= $this->maxSize;
     }
@@ -198,7 +198,7 @@ class Cart
      *
      * @return bool      true if empty, false otherwise
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->items);
     }
@@ -208,7 +208,7 @@ class Cart
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -218,7 +218,7 @@ class Cart
      *
      * @return bool
      */
-    public function isActiveInSearch()
+    public function isActiveInSearch(): bool
     {
         return $this->active && $this->showTogglesInSearch;
     }
@@ -230,7 +230,7 @@ class Cart
      *
      * @return void
      */
-    protected function init(array $cookies)
+    protected function init(array $cookies): void
     {
         $items = null;
         if (isset($cookies[self::CART_COOKIE])) {
@@ -265,7 +265,7 @@ class Cart
      *
      * @return void
      */
-    protected function save()
+    protected function save(): void
     {
         $sources = [];
         $ids = [];
@@ -297,7 +297,7 @@ class Cart
      *
      * @return array $records The cart content
      */
-    public function getRecordDetails()
+    public function getRecordDetails(): array
     {
         return $this->recordLoader->loadBatch($this->items);
     }

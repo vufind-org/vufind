@@ -59,7 +59,7 @@ class DedupeCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Deduplicates lines in a sorted file.')
@@ -112,7 +112,7 @@ class DedupeCommand extends Command
      *
      * @return void
      */
-    protected function writeToOutputFile($handle, string $text)
+    protected function writeToOutputFile($handle, string $text): void
     {
         fwrite($handle, $text);
     }
@@ -124,7 +124,7 @@ class DedupeCommand extends Command
      *
      * @return void
      */
-    protected function closeOutputFile($handle)
+    protected function closeOutputFile($handle): void
     {
         fclose($handle);
     }

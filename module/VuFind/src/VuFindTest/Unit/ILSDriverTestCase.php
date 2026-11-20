@@ -52,7 +52,7 @@ abstract class ILSDriverTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testMissingConfiguration(): void
     {
         $this->expectException(\VuFind\Exception\ILS::class);
 

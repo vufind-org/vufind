@@ -74,7 +74,7 @@ class UserTags
      *
      * @return string
      */
-    public function getMode()
+    public function getMode(): string
     {
         return $this->mode;
     }
@@ -84,7 +84,7 @@ class UserTags
      *
      * @return string
      */
-    public function getListMode()
+    public function getListMode(): string
     {
         return $this->listMode;
     }
@@ -94,7 +94,7 @@ class UserTags
      *
      * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }

@@ -147,7 +147,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
      *
      * @return AvailabilityStatus
      */
-    protected function createAvailabilityStatus(bool $available = true, string $description = 'Available')
+    protected function createAvailabilityStatus(bool $available = true, string $description = 'Available'): AvailabilityStatus
     {
         // Use the real AvailabilityStatus class
         $availability = $available ?

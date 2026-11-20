@@ -55,7 +55,7 @@ class AssetManagerFactory implements FactoryInterface
      *
      * @return string|bool
      */
-    protected function getPipelineConfig(array $config)
+    protected function getPipelineConfig(array $config): string|bool
     {
         $default = false;
         if (isset($config['Site']['asset_pipeline'])) {
@@ -95,7 +95,7 @@ class AssetManagerFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }

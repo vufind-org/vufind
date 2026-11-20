@@ -79,7 +79,7 @@ class ImportXslCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Indexes XML into Solr using XSLT.')

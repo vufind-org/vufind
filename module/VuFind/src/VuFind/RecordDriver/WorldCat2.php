@@ -50,7 +50,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         if (!isset($this->fields['identifier']['oclcNumber'])) {
             throw new \Exception('ID not set!');
@@ -63,7 +63,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getCallNumbers()
+    public function getCallNumbers(): array
     {
         $retVal = [];
         foreach (['lc', 'dewey'] as $type) {
@@ -77,7 +77,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string
      */
-    public function getDeweyCallNumber()
+    public function getDeweyCallNumber(): string
     {
         return ((array)($this->fields['classification']['dewey'] ?? []))[0] ?? '';
     }
@@ -87,7 +87,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string
      */
-    protected function getRawLCCN()
+    protected function getRawLCCN(): string
     {
         return ((array)($this->fields['classification']['lc'] ?? []))[0] ?? '';
     }
@@ -97,7 +97,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         $formats = [];
         foreach (['generalFormat', 'specificFormat'] as $key) {
@@ -116,7 +116,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getISBNs()
+    public function getISBNs(): array
     {
         return (array)($this->fields['identifier']['isbns'] ?? []);
     }
@@ -126,7 +126,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         return (array)($this->fields['identifier']['issns'] ?? []);
     }
@@ -136,7 +136,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         return (array)($this->fields['language']['itemLanguage'] ?? []);
     }
@@ -146,7 +146,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getOCLC()
+    public function getOCLC(): array
     {
         return array_merge(
             [$this->getUniqueID()],
@@ -159,7 +159,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPlacesOfPublication()
+    public function getPlacesOfPublication(): array
     {
         return array_map(
             fn ($publisher) => ($publisher['publicationPlace'] ?? '') . ' :',
@@ -267,7 +267,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         return array_values(
             array_map(
@@ -285,7 +285,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getSecondaryAuthors(): array
     {
         return array_values(
             array_map(
@@ -303,7 +303,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getCorporateAuthors()
+    public function getCorporateAuthors(): array
     {
         return array_map(
             [$this, 'formatCreatorName'],
@@ -321,7 +321,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getDateSpan()
+    public function getDateSpan(): array
     {
         return (array)($this->fields['date']['publicationSequentialDesignationDate'] ?? []);
     }
@@ -331,7 +331,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         return (array)($this->fields['date']['machineReadableDate'] ?? []);
     }
@@ -342,7 +342,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getHumanReadablePublicationDates()
+    public function getHumanReadablePublicationDates(): array
     {
         return (array)($this->fields['date']['publicationDate'] ?? []);
     }
@@ -352,7 +352,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPublishers()
+    public function getPublishers(): array
     {
         return array_map(
             fn ($publisher) => $publisher['publisherName']['text'] ?? '',
@@ -365,7 +365,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getNewerTitles()
+    public function getNewerTitles(): array
     {
         return array_filter(
             array_map(
@@ -380,7 +380,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPreviousTitles()
+    public function getPreviousTitles(): array
     {
         return array_filter(
             array_map(
@@ -395,7 +395,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getSummary()
+    public function getSummary(): array
     {
         return array_map(
             fn ($summary) => $summary['text'] ?? '',
@@ -408,7 +408,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         $full = $this->fields['title']['mainTitles'][0]['text'] ?? '';
         $parts = explode(' / ', $full);
@@ -420,7 +420,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         $parts = explode(':', $this->getTitle(), 2);
         return trim($parts[0] . (count($parts) > 1 ? ':' : ''));
@@ -431,7 +431,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string
      */
-    public function getSubtitle()
+    public function getSubtitle(): string
     {
         $parts = explode(':', $this->getTitle(), 2);
         return trim($parts[1] ?? '');
@@ -442,7 +442,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return string
      */
-    public function getEdition()
+    public function getEdition(): string
     {
         return ((array)($this->fields['edition']['statement'] ?? []))[0] ?? '';
     }
@@ -452,7 +452,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPhysicalDescriptions()
+    public function getPhysicalDescriptions(): array
     {
         return ((array)($this->fields['description']['physicalDescription'] ?? []))[0] ?? '';
     }
@@ -470,7 +470,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         // Get all the unique subject strings:
         $values = array_unique(
@@ -491,7 +491,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getAwards()
+    public function getAwards(): array
     {
         return (array)($this->fields['note']['awardNote'] ?? []);
     }
@@ -501,7 +501,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getGeneralNotes()
+    public function getGeneralNotes(): array
     {
         return array_filter(
             array_map(
@@ -519,7 +519,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getBibliographyNotes()
+    public function getBibliographyNotes(): array
     {
         return array_filter(
             array_map(
@@ -534,7 +534,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getProductionCredits()
+    public function getProductionCredits(): array
     {
         return (array)($this->fields['note']['creditNotes'] ?? []);
     }
@@ -544,7 +544,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPublicationFrequency()
+    public function getPublicationFrequency(): array
     {
         return (array)($this->fields['date']['currentPublicationFrequency'] ?? []);
     }
@@ -556,7 +556,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getSeries()
+    public function getSeries(): array
     {
         $separator = '|||||';
         $raw = array_map(
@@ -577,7 +577,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getTOC()
+    public function getTOC(): array
     {
         return array_map(
             fn ($toc) => $toc['contentNote']['text'] ?? '',
@@ -599,7 +599,7 @@ class WorldCat2 extends DefaultRecord
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         if (!($this->recordConfig['Record']['show_urls'] ?? false)) {
             return [];

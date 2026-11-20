@@ -65,7 +65,7 @@ abstract class AbstractBase
      *
      * @return AbstractBase
      */
-    public function setRecordDriver(\VuFind\RecordDriver\AbstractBase $driver)
+    public function setRecordDriver(\VuFind\RecordDriver\AbstractBase $driver): AbstractBase
     {
         $this->recordDriver = $driver;
         return $this;
@@ -77,7 +77,7 @@ abstract class AbstractBase
      * @return \VuFind\RecordDriver\DefaultRecord
      * @throws \Exception
      */
-    protected function getRecordDriver()
+    protected function getRecordDriver(): \VuFind\RecordDriver\DefaultRecord
     {
         if (null === $this->recordDriver) {
             throw new \Exception('Missing record driver object');
@@ -91,7 +91,7 @@ abstract class AbstractBase
      * @return \VuFind\Hierarchy\TreeDataSource\AbstractBase
      * @throws \Exception
      */
-    protected function getDataSource()
+    protected function getDataSource(): \VuFind\Hierarchy\TreeDataSource\AbstractBase
     {
         if (null === $this->dataSource) {
             // Load the hierarchy driver from the record driver -- throw exception if
@@ -118,7 +118,7 @@ abstract class AbstractBase
      * @return mixed An array of hierarchy IDS if a hierarchy tree exists,
      * false if it does not
      */
-    abstract public function getTreeList(string $hierarchyID = false);
+    abstract public function getTreeList(string $hierarchyID = false): mixed;
 
     /**
      * Render the Hierarchy Tree.
@@ -135,7 +135,7 @@ abstract class AbstractBase
         string $mode,
         string $hierarchyID,
         ?string $selectedID = null
-    );
+    ): mixed;
 
     /**
      * Get Hierarchy Name.
@@ -150,7 +150,7 @@ abstract class AbstractBase
         string $hierarchyID,
         array $inHierarchies,
         array $inHierarchiesTitle
-    ) {
+    ): string {
         $keys = array_flip($inHierarchies);
         $key = $keys[$hierarchyID];
         return $inHierarchiesTitle[$key];

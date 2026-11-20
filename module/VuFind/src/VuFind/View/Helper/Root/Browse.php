@@ -48,7 +48,7 @@ class Browse
      *
      * @return string
      */
-    public function getSolrField(string $action, string $backup = null)
+    public function getSolrField(string $action, string $backup = null): string
     {
         $action = strtolower($action);
         $backup = strtolower($backup ?? '');

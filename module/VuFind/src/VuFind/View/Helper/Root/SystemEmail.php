@@ -58,7 +58,7 @@ class SystemEmail
      *
      * @return string
      */
-    public function __invoke()
+    public function __invoke(): string
     {
         return $this->email;
     }

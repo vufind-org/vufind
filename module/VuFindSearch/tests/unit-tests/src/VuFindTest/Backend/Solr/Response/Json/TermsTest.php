@@ -48,7 +48,7 @@ class TermsTest extends TestCase
      *
      * @return void
      */
-    public function testTerms()
+    public function testTerms(): void
     {
         $field1 = [['a', 1], ['b', 2], ['c', 3]];
         $terms = new Terms(

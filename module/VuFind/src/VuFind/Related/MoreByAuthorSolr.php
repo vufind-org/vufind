@@ -85,7 +85,7 @@ class MoreByAuthorSolr implements RelatedInterface
      *
      * @return void
      */
-    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver): void
     {
         $this->results = [];
         if ($this->author = $driver->tryMethod('getPrimaryAuthor')) {

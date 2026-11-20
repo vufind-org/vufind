@@ -49,7 +49,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFacetLimit()
+    public function testGetFacetLimit(): void
     {
         $results = $this->getMockResults();
         $results->getParams()->expects($this->once())->method('getFacetSettings')
@@ -90,7 +90,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults(\VuFind\Search\Solr\Params $params = null)
+    protected function getMockResults(\VuFind\Search\Solr\Params $params = null): \VuFind\Search\Solr\Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
@@ -107,7 +107,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null)
+    protected function getMockParams(\VuFindSearch\Query\Query $query = null): \VuFind\Search\Solr\Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');

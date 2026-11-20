@@ -76,7 +76,7 @@ class UserList
      *
      * @return string
      */
-    public function getMode()
+    public function getMode(): string
     {
         return $this->mode;
     }
@@ -86,7 +86,7 @@ class UserList
      *
      * @return mixed User_list ID (if set) or null (if not available).
      */
-    public function lastUsed()
+    public function lastUsed(): mixed
     {
         return $this->favoritesService->getLastUsedList();
     }

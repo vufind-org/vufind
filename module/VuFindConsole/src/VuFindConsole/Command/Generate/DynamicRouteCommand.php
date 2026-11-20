@@ -54,7 +54,7 @@ class DynamicRouteCommand extends AbstractRouteCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Adds a dynamic route.')

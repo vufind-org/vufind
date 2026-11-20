@@ -54,7 +54,7 @@ class TrendingILSItems extends AbstractILSChannelProvider
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         // Use higher default age for trending.
         if (!isset($options['maxAge'])) {
@@ -68,7 +68,7 @@ class TrendingILSItems extends AbstractILSChannelProvider
      *
      * @return array
      */
-    protected function getIlsResponse()
+    protected function getIlsResponse(): array
     {
         return $this->ils->checkCapability('getTrendingBibs')
             ? $this->ils->getTrendingBibs($this->batchSize, $this->maxAge)
@@ -83,7 +83,7 @@ class TrendingILSItems extends AbstractILSChannelProvider
      *
      * @return string
      */
-    protected function extractIdsFromResponse(array $response)
+    protected function extractIdsFromResponse(array $response): string
     {
         return $response['id'];
     }

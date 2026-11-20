@@ -56,7 +56,7 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Db\Service\PluginManager
      */
-    protected function getServices()
+    protected function getServices(): \VuFind\Db\Service\PluginManager
     {
         if (!$this->services) {
             $this->services
@@ -72,7 +72,7 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function injectMockDatabaseDependencies(SessionHandler $handler)
+    protected function injectMockDatabaseDependencies(SessionHandler $handler): void
     {
         $handler->setDbServiceManager($this->getServices());
     }

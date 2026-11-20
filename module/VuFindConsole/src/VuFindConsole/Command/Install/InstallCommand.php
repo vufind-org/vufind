@@ -144,7 +144,7 @@ class InstallCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Set up (or modify) initial VuFind® installation.')
@@ -215,7 +215,7 @@ class InstallCommand extends Command
      *
      * @return bool
      */
-    protected function writeFileToDisk(string $filename, string $content)
+    protected function writeFileToDisk(string $filename, string $content): bool
     {
         return @file_put_contents($filename, $content);
     }
@@ -225,7 +225,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getWindowsApacheMessage()
+    protected function getWindowsApacheMessage(): string
     {
         return "Go to Start -> Apache HTTP Server -> Edit the Apache httpd.conf\n"
             . "and add this line to your httpd.conf file: \n"
@@ -240,7 +240,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getLinuxApacheMessage()
+    protected function getLinuxApacheMessage(): string
     {
         if (is_dir('/etc/httpd/conf.d')) {                      // Mandriva / RedHat
             $confD = '/etc/httpd/conf.d';
@@ -291,7 +291,7 @@ class InstallCommand extends Command
      *
      * @return void
      */
-    protected function getApacheLocation(OutputInterface $output)
+    protected function getApacheLocation(OutputInterface $output): void
     {
         // There is one special case for Windows, and a variety of different
         // Unix-flavored possibilities that all work similarly.
@@ -308,7 +308,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateBasePath(string $basePath, bool $allowEmpty = false)
+    protected function validateBasePath(string $basePath, bool $allowEmpty = false): bool|string
     {
         if ($allowEmpty && empty($basePath)) {
             return true;
@@ -326,7 +326,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateSolrPort(string $solrPort)
+    protected function validateSolrPort(string $solrPort): bool|string
     {
         if (is_numeric($solrPort)) {
             return true;
@@ -342,7 +342,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getBasePath(InputInterface $input, OutputInterface $output)
+    protected function getBasePath(InputInterface $input, OutputInterface $output): string
     {
         // Get VuFind base path:
         while (true) {
@@ -368,7 +368,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getSolrPort(InputInterface $input, OutputInterface $output)
+    protected function getSolrPort(InputInterface $input, OutputInterface $output): string
     {
         // Get VuFind base path:
         while (true) {
@@ -393,7 +393,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function initializeOverrideDir(string $dir)
+    protected function initializeOverrideDir(string $dir): bool|string
     {
         return $this->buildDirs(
             [
@@ -414,7 +414,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getOverrideDir(InputInterface $input, OutputInterface $output)
+    protected function getOverrideDir(InputInterface $input, OutputInterface $output): string
     {
         // Get override directory path:
         while (true) {
@@ -443,7 +443,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateModules(string $modules)
+    protected function validateModules(string $modules): bool|string
     {
         foreach (explode(',', $modules) as $module) {
             $result = $this->validateModule(trim($module));
@@ -461,7 +461,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateModule(string $module)
+    protected function validateModule(string $module): bool|string
     {
         $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
         $illegalModules = [
@@ -484,7 +484,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getModule(InputInterface $input, OutputInterface $output)
+    protected function getModule(InputInterface $input, OutputInterface $output): string
     {
         // Get custom module name:
         $output->writeln(
@@ -520,7 +520,7 @@ class InstallCommand extends Command
     protected function getMultisiteMode(
         InputInterface $input,
         OutputInterface $output
-    ) {
+    ): int {
         $output->writeln(
             "\nWhen running multiple VuFind® sites against a single installation, you"
             . " need\nto decide how to distinguish between instances. Choose an "
@@ -556,7 +556,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function validateHost(string $host)
+    protected function validateHost(string $host): bool|string
     {
         // From http://stackoverflow.com/questions/106179/
         //             regular-expression-to-match-hostname-or-ip-address
@@ -575,7 +575,7 @@ class InstallCommand extends Command
      *
      * @return string
      */
-    protected function getHost(InputInterface $input, OutputInterface $output)
+    protected function getHost(InputInterface $input, OutputInterface $output): string
     {
         while (true) {
             $response = $this->getInput(
@@ -618,7 +618,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function backUpFile(OutputInterface $output, string $filename, string $desc)
+    protected function backUpFile(OutputInterface $output, string $filename, string $desc): bool|string
     {
         if ($this->makeBackups && file_exists($filename)) {
             $bak = $filename . '.bak.' . time();
@@ -638,7 +638,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildApacheConfig(OutputInterface $output)
+    protected function buildApacheConfig(OutputInterface $output): bool|string
     {
         $baseConfig = $this->baseDir . '/config/vufind/httpd-vufind.conf';
         $config = @file_get_contents($baseConfig);
@@ -721,7 +721,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildUnixEnvironment(OutputInterface $output)
+    protected function buildUnixEnvironment(OutputInterface $output): bool|string
     {
         $filename = $this->baseDir . '/env.sh';
         if (($msg = $this->backUpFile($output, $filename, 'Unix environment file')) !== true) {
@@ -743,7 +743,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildWindowsConfig(OutputInterface $output)
+    protected function buildWindowsConfig(OutputInterface $output): bool|string
     {
         $filename = $this->baseDir . '/env.bat';
         if (($msg = $this->backUpFile($output, $filename, 'Windows environment file')) !== true) {
@@ -766,7 +766,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildImportConfig(OutputInterface $output, string $filename)
+    protected function buildImportConfig(OutputInterface $output, string $filename): bool|string
     {
         $target = $this->overrideDir . '/import/' . $filename;
         if (($msg = $this->backUpFile($output, $target, 'import configuration')) !== true) {
@@ -796,7 +796,7 @@ class InstallCommand extends Command
      *
      * @return bool|string True on success, name of problem directory on failure
      */
-    protected function buildDirs(array $dirs)
+    protected function buildDirs(array $dirs): bool|string
     {
         foreach ($dirs as $dir) {
             if (!is_dir($dir) && !@mkdir($dir)) {
@@ -814,7 +814,7 @@ class InstallCommand extends Command
      *
      * @return bool|string
      */
-    protected function buildModules(OutputInterface $output)
+    protected function buildModules(OutputInterface $output): bool|string
     {
         if (!empty($this->module)) {
             foreach (explode(',', $this->module) as $module) {
@@ -932,7 +932,7 @@ class InstallCommand extends Command
      *
      * @return void
      */
-    protected function displaySuccessMessage(OutputInterface $output)
+    protected function displaySuccessMessage(OutputInterface $output): void
     {
         if ($this->showApacheHelp) {
             $output->writeln(
@@ -982,7 +982,7 @@ class InstallCommand extends Command
     protected function collectParameters(
         InputInterface $input,
         OutputInterface $output
-    ) {
+    ): int {
         // Are we allowing user interaction?
         $interactive = !$input->getOption('non-interactive');
         $userInputNeeded = [];
@@ -1088,7 +1088,7 @@ class InstallCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function processParameters(OutputInterface $output)
+    protected function processParameters(OutputInterface $output): int
     {
         // Make sure the override directory is initialized (using defaults or CLI
         // parameters will not have initialized it yet; attempt to reinitialize it

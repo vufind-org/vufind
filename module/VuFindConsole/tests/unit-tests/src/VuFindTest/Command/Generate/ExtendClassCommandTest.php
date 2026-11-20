@@ -50,7 +50,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -71,7 +71,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
@@ -101,7 +101,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithFactoryOption()
+    public function testSuccessWithFactoryOption(): void
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
@@ -132,7 +132,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testError()
+    public function testError(): void
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
@@ -160,7 +160,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools(array $methods = [])
+    protected function getMockGeneratorTools(array $methods = []): GeneratorTools
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
@@ -175,7 +175,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ContainerInterface
      */
-    protected function getMockContainer(array $methods = [])
+    protected function getMockContainer(array $methods = []): ContainerInterface
     {
         return $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

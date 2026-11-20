@@ -107,7 +107,7 @@ class WorldCat2Similar extends Similar
      *
      * @return void
      */
-    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver): void
     {
         // Create advanced query:
         $queryObj = new QueryGroup('OR');

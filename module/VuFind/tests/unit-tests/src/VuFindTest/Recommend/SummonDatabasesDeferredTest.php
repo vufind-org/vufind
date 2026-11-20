@@ -45,7 +45,7 @@ class SummonDatabasesDeferredTest extends \VuFindTest\Unit\RecommendDeferredTest
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $this->assertEquals(
             'mod=SummonDatabases&params=lookfor&lookfor=foo',

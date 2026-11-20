@@ -54,7 +54,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAutocomplete()
+    public function testAutocomplete(): void
     {
         $conn = $this->getConnectorMock(['call']);
         $expectedUri = 'http://foo?idx=rawdata&token=auth1234'
@@ -90,7 +90,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieveEdsItem()
+    public function testRetrieveEdsItem(): void
     {
         $conn = $this->getConnectorMock(['retrieveEdsItem']);
         $conn->expects($this->once())
@@ -124,7 +124,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieveEpfItem()
+    public function testRetrieveEpfItem(): void
     {
         $conn = $this->getConnectorMock(['retrieveEpfItem']);
         $conn->expects($this->once())
@@ -158,7 +158,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())
@@ -220,7 +220,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetQueryBuilder()
+    public function testSetQueryBuilder(): void
     {
         $qb = new \VuFindSearch\Backend\EDS\QueryBuilder();
         $back = $this->getBackend($this->getConnectorMock());
@@ -233,7 +233,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConstructorSetters()
+    public function testConstructorSetters(): void
     {
         $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock();
@@ -264,7 +264,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse(string $fixture)
+    protected function loadResponse(string $fixture): mixed
     {
         return unserialize(
             $this->getFixture('eds/response/' . $fixture, 'VuFindSearch')
@@ -278,7 +278,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): array
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Connector::class)
@@ -307,7 +307,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         \Laminas\Session\Container $container = null,
         array $settings = [],
         array $mock = null
-    ) {
+    ): \VuFindSearch\Backend\EDS\Backend {
         if (null === $factory) {
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         }
@@ -333,7 +333,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getEdsRCFactory()
+    protected function getEdsRCFactory(): \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
     {
         $driverClass = \VuFind\RecordDriver\EDS::class;
         return $this->getRCFactory($driverClass);
@@ -344,7 +344,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getEpfRCFactory()
+    protected function getEpfRCFactory(): \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
     {
         $driverClass = \VuFind\RecordDriver\EPF::class;
         return $this->getRCFactory($driverClass);
@@ -357,7 +357,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getRCFactory(string $driverClass)
+    protected function getRCFactory(string $driverClass): \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
     {
         $callback = function ($data) use ($driverClass) {
             $driver = new $driverClass();

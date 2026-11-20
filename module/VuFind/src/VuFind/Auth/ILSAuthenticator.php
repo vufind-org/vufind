@@ -112,7 +112,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return bool
      */
-    public function passwordEncryptionEnabled()
+    public function passwordEncryptionEnabled(): bool
     {
         if (null === $this->encryptionEnabled) {
             $this->encryptionEnabled
@@ -129,7 +129,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @return null|string|bool The decrypted string (null if empty or false if invalid)
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function decrypt(?string $text)
+    public function decrypt(?string $text): string|bool|null
     {
         return $this->encryptOrDecrypt($text, false);
     }
@@ -142,7 +142,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @return null|string|bool The encrypted string (null if empty or false if invalid)
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function encrypt(?string $text)
+    public function encrypt(?string $text): string|bool|null
     {
         return $this->encryptOrDecrypt($text, true);
     }
@@ -170,7 +170,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @return null|string|bool The encrypted/decrypted string (null = empty input; false = error)
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    protected function encryptOrDecrypt(?string $text, bool $encrypt = true)
+    protected function encryptOrDecrypt(?string $text, bool $encrypt = true): string|bool|null
     {
         // Ignore empty text:
         if ($text === null || $text === '') {
@@ -224,7 +224,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return ?string
      */
-    public function getCatPasswordForUser(UserEntityInterface $user)
+    public function getCatPasswordForUser(UserEntityInterface $user): ?string
     {
         if ($this->passwordEncryptionEnabled()) {
             $encrypted = $user->getCatPassEnc();
@@ -305,7 +305,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return array|bool
      */
-    public function getStoredCatalogCredentials()
+    public function getStoredCatalogCredentials(): array|bool
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
@@ -327,7 +327,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return array|bool
      */
-    public function storedCatalogLogin()
+    public function storedCatalogLogin(): array|bool
     {
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
@@ -367,7 +367,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @return array|bool
      * @throws ILSException
      */
-    public function newCatalogLogin(string $username, string $password, ?UserEntityInterface $loggedInUser = null)
+    public function newCatalogLogin(string $username, string $password, ?UserEntityInterface $loggedInUser = null): array|bool
     {
         $result = $this->catalog->patronLogin($username, $password);
 
@@ -445,7 +445,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @deprecated Use code-based authentication instead
      */
-    public function processEmailLoginHash(string $hash)
+    public function processEmailLoginHash(string $hash): array|bool
     {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
@@ -471,7 +471,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return void
      */
-    protected function updateUser(string $catUsername, string $catPassword, array $patron)
+    protected function updateUser(string $catUsername, string $catPassword, array $patron): void
     {
         $user = $this->getAuthManager()->getUserObject();
         if ($user) {

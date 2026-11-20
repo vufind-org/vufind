@@ -147,7 +147,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     public function configureTestTargetAndExpectations(
         array $options = ['maxRecordsToExamine' => 1],
         bool $fetchFromSearchService = false
-    ) {
+    ): array {
         $objects = $this->getAlphaBrowse($options);
         $alpha = $objects['alpha'];
         $search = $objects['search'];
@@ -292,7 +292,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         array $args = [],
         string $class = \VuFindSearch\Command\AlphabeticBrowseCommand::class,
         string $target = 'Solr'
-    ) {
+    ): callable {
         return function ($command) use ($class, $args, $target) {
             $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
@@ -308,7 +308,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver(array $data = [])
+    protected function getDriver(array $data = []): TestHarness
     {
         $driver = new TestHarness();
         $data = [
@@ -329,7 +329,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getAlphaBrowse(array $options = [])
+    protected function getAlphaBrowse(array $options = []): array
     {
         $search = $this->createMock(\VuFindSearch\Service::class);
         $routeHelper = $this->createMock(RouteHelper::class);

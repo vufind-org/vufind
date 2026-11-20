@@ -101,7 +101,7 @@ class RecordLinker
      *
      * @return RecordLinker
      */
-    public function __invoke(?\VuFind\Search\Base\Results $results = null)
+    public function __invoke(?\VuFind\Search\Base\Results $results = null): RecordLinker
     {
         // Avoid setting any existing results null:
         if (null !== $results) {
@@ -129,7 +129,7 @@ class RecordLinker
      *
      * @return string       URL derived from link information
      */
-    public function related(array $link, string $source = DEFAULT_SEARCH_BACKEND)
+    public function related(array $link, string $source = DEFAULT_SEARCH_BACKEND): string
     {
         $baseUrl = ($this->url)($this->getSearchActionForSource($source));
         switch ($link['type']) {
@@ -178,7 +178,7 @@ class RecordLinker
         array $query = [],
         string $anchor = '',
         array $options = []
-    ) {
+    ): string {
         // Build the URL:
         $details = $this->router->getActionRouteDetails($driver, $action);
         return ($this->url)(
@@ -200,7 +200,7 @@ class RecordLinker
      *
      * @return string
      */
-    public function getRequestUrl(string|array $url, bool $includeAnchor = true)
+    public function getRequestUrl(string|array $url, bool $includeAnchor = true): string
     {
         if (is_array($url)) {
             // Assemble URL string from array parts:
@@ -236,7 +236,7 @@ class RecordLinker
      *
      * @return string
      */
-    public function getTabUrl(AbstractRecord|string $driver, ?string $tab = null, array $query = [], array $options = [])
+    public function getTabUrl(AbstractRecord|string $driver, ?string $tab = null, array $query = [], array $options = []): string
     {
         $driverId = is_string($driver)
             ? $driver
@@ -270,7 +270,7 @@ class RecordLinker
      *
      * @return string
      */
-    public function getUrl(AbstractRecord|string $driver, array $options = [])
+    public function getUrl(AbstractRecord|string $driver, array $options = []): string
     {
         return $this->getTabUrl($driver, null, [], $options);
     }
@@ -299,7 +299,7 @@ class RecordLinker
      *
      * @return string
      */
-    public function getChildRecordSearchUrl(AbstractRecord $driver)
+    public function getChildRecordSearchUrl(AbstractRecord $driver): string
     {
         $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
         return ($this->url)($route)
@@ -315,7 +315,7 @@ class RecordLinker
      *
      * @return string
      */
-    public function getVersionsSearchUrl(AbstractRecord $driver)
+    public function getVersionsSearchUrl(AbstractRecord $driver): string
     {
         $route = $this->getVersionsActionForSource($driver->getSourceIdentifier());
         if ($route === null) {
@@ -337,7 +337,7 @@ class RecordLinker
      *
      * @return string
      */
-    protected function getSearchActionForSource(string $source)
+    protected function getSearchActionForSource(string $source): string
     {
         return $this->searchOptionsManager->get($source)->getSearchAction();
     }

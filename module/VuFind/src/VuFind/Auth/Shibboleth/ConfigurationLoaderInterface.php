@@ -33,5 +33,5 @@ interface ConfigurationLoaderInterface
      * @throws \VuFind\Exception\Auth
      * @return array shibboleth configuration
      */
-    public function getConfiguration(string $entityId);
+    public function getConfiguration(string $entityId): array;
 }

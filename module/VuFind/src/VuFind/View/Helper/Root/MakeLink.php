@@ -66,7 +66,7 @@ class MakeLink
      *
      * @return array (associative) Combined attributes by key
      */
-    protected function mergeAttributes(string $href, string|array $attrs, array $options)
+    protected function mergeAttributes(string $href, string|array $attrs, array $options): array
     {
         // If $attrs is not an object, interpret as class name
         if (!is_array($attrs)) {
@@ -115,7 +115,7 @@ class MakeLink
         ?string $href = null,
         string|array $attrs = [],
         array $options = []
-    ) {
+    ): string {
         $mergedAttrs = $this->mergeAttributes($href, $attrs, $options);
 
         // Span instead of anchor when no href present

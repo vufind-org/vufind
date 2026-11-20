@@ -168,7 +168,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @return mixed
      */
-    public function getResult()
+    public function getResult(): mixed
     {
         if (!$this->isExecuted()) {
             throw new LogicException('Command was not yet executed');
@@ -203,7 +203,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @return mixed
      */
-    public function getContext()
+    public function getContext(): mixed
     {
         return $this->context;
     }
@@ -215,7 +215,7 @@ abstract class AbstractBase implements CommandInterface
      *
      * @return void
      */
-    public function setContext(mixed $context)
+    public function setContext(mixed $context): void
     {
         $this->context = $context;
     }

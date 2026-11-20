@@ -52,7 +52,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttach()
+    public function testAttach(): void
     {
         $listener = new FilterFieldConversionListener(['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
@@ -70,7 +70,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFilterTranslation()
+    public function testFilterTranslation(): void
     {
         $params   = new ParamBag(
             [

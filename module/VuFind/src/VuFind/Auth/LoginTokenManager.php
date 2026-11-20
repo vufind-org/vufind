@@ -234,7 +234,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      *
      * @return void
      */
-    public function deleteTokenSeries(string $series)
+    public function deleteTokenSeries(string $series): void
     {
         $cookie = $this->getLoginTokenCookie();
         if (!empty($cookie) && $cookie['series'] === $series) {
@@ -255,7 +255,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      *
      * @return void
      */
-    public function deleteUserLoginTokens(int $userId)
+    public function deleteUserLoginTokens(int $userId): void
     {
         $userTokens = $this->loginTokenService->getByUser($userId, false);
         $handler = $this->sessionManager->getSaveHandler();
@@ -290,7 +290,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      *
      * @return void
      */
-    public function deleteActiveToken()
+    public function deleteActiveToken(): void
     {
         $cookie = $this->getLoginTokenCookie();
         if (!empty($cookie) && $cookie['series']) {
@@ -361,7 +361,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
      *
      * @return void
      */
-    protected function sendLoginTokenWarningEmail(UserEntityInterface $user)
+    protected function sendLoginTokenWarningEmail(UserEntityInterface $user): void
     {
         if (!($this->config['Authentication']['send_login_warnings'] ?? true)) {
             return;

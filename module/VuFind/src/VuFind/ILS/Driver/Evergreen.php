@@ -99,7 +99,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws PDOException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -139,7 +139,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         $holding = [];
 
@@ -207,7 +207,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses(array $idList)
+    public function getStatuses(array $idList): array
     {
         $status = [];
         foreach ($idList as $id) {
@@ -335,7 +335,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @return ?array         Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $barcode, string $passwd)
+    public function patronLogin(string $barcode, string $passwd): ?array
     {
         $sql = <<<HERE
             SELECT usr.id, usr.first_given_name as firstName,
@@ -386,7 +386,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): array
     {
         $transList = [];
 
@@ -475,7 +475,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         $fineList = [];
 
@@ -532,7 +532,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         $holdList = [];
 
@@ -589,7 +589,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $sql = <<<HERE
             SELECT usr.family_name, usr.first_given_name, usr.day_phone,
@@ -702,7 +702,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array ID numbers of suppressed records in the system.
      */
-    public function getSuppressedRecords()
+    public function getSuppressedRecords(): array
     {
         $list = [];
 
@@ -734,7 +734,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array An associative array with key = dept. ID, value = dept. name.
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         // TODO
         return [];
@@ -748,7 +748,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         // TODO
         return [];
@@ -762,7 +762,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         // TODO
         return [];
@@ -797,7 +797,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @throws ILSException
      * @return string The formatted date
      */
-    protected function formatDate(string $date)
+    protected function formatDate(string $date): string
     {
         if (!$date) {
             return '';

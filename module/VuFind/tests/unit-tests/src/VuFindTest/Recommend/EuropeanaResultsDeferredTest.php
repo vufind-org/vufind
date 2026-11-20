@@ -47,7 +47,7 @@ class EuropeanaResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTes
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(EuropeanaResultsDeferred::class);
         $this->assertEquals(

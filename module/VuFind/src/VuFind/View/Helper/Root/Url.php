@@ -87,7 +87,7 @@ class Url extends \Laminas\View\Helper\Url
         array $params = [],
         iterable $options = [],
         bool $reuseMatchedParams = false
-    ) {
+    ): self|string {
         // If argument list is empty, return object for method access:
         return func_num_args() === 0 ? $this : parent::__invoke(...func_get_args());
     }
@@ -100,7 +100,7 @@ class Url extends \Laminas\View\Helper\Url
      *
      * @return string
      */
-    public function addQueryParameters(array $params, bool $reuseMatchedParams = true)
+    public function addQueryParameters(array $params, bool $reuseMatchedParams = true): string
     {
         $requestQuery = (null !== $this->request)
             ? $this->request->getQuery()->toArray() : [];

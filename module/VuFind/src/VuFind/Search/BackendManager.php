@@ -84,7 +84,7 @@ class BackendManager
      *
      * @return ServiceLocatorInterface
      */
-    public function getBackendRegistry()
+    public function getBackendRegistry(): ServiceLocatorInterface
     {
         return $this->registry;
     }
@@ -100,7 +100,7 @@ class BackendManager
      * @throws UnexpectedValueException Retrieved backend does not implement
      * BackendInterface
      */
-    public function get(string $name)
+    public function get(string $name): BackendInterface
     {
         $backend = $this->registry->get($name);
         if (!is_object($backend)) {
@@ -130,7 +130,7 @@ class BackendManager
      *
      * @return bool
      */
-    public function has(string $name)
+    public function has(string $name): bool
     {
         return $this->registry->has($name);
     }
@@ -142,7 +142,7 @@ class BackendManager
      *
      * @return BackendInterface|null
      */
-    public function onResolve(EventInterface $e)
+    public function onResolve(EventInterface $e): ?BackendInterface
     {
         $name = $e->getParam('command')->getTargetIdentifier();
         if ($name && $this->has($name)) {
@@ -158,7 +158,7 @@ class BackendManager
      *
      * @return void
      */
-    public function attachShared(SharedEventManagerInterface $events)
+    public function attachShared(SharedEventManagerInterface $events): void
     {
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
@@ -174,7 +174,7 @@ class BackendManager
      *
      * @return void
      */
-    public function detachShared(SharedEventManagerInterface $events)
+    public function detachShared(SharedEventManagerInterface $events): void
     {
         if ($this->listeners->offsetExists($events)) {
             $listener = $this->listeners->offsetGet($events);

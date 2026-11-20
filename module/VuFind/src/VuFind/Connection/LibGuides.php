@@ -120,7 +120,7 @@ class LibGuides implements
      * @return object|null A JSON object of all LibGuides accounts, or null
      * if an error occurs
      */
-    public function getAccounts()
+    public function getAccounts(): ?object
     {
         if (!$this->authenticateAndSetHeaders()) {
             return null;
@@ -144,7 +144,7 @@ class LibGuides implements
      * @return object|null A JSON object of all LibGuides databases, or null
      * if an error occurs
      */
-    public function getAZ(bool $excludeHidden = true)
+    public function getAZ(bool $excludeHidden = true): ?object
     {
         if (!$this->authenticateAndSetHeaders()) {
             return null;
@@ -170,7 +170,7 @@ class LibGuides implements
      *
      * @return bool Indicates if authentication succeeded.
      */
-    protected function authenticateAndSetHeaders()
+    protected function authenticateAndSetHeaders(): bool
     {
         $tokenData = $this->authenticateWithClientCredentials(
             $this->baseUrl . '/oauth/token',
@@ -203,7 +203,7 @@ class LibGuides implements
      *
      * @return object|null A JSON object of the response data, or null if an error occurs
      */
-    protected function doGet(string $url)
+    protected function doGet(string $url): ?object
     {
         $this->client->setMethod('GET');
         $this->client->setUri($url);

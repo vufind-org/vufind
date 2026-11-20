@@ -121,7 +121,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      *
      * @return Connection
      */
-    public function getConnection(string $overrideUser = null, string $overridePass = null)
+    public function getConnection(string $overrideUser = null, string $overridePass = null): Connection
     {
         // Parse details from connection string if available, otherwise use
         // more granular config settings.
@@ -157,7 +157,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      *
      * @return string
      */
-    public function getDriverName(string $type)
+    public function getDriverName(string $type): string
     {
         switch (strtolower($type)) {
             case 'mariadb':
@@ -176,7 +176,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      *
      * @return array
      */
-    protected function getDriverOptions(string $driver)
+    protected function getDriverOptions(string $driver): array
     {
         // Load options from the configuration:
         $driverOptions = $this->config['Database']['extra_options'] ?? [];
@@ -240,7 +240,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      *
      * @return Connection
      */
-    public function getConnectionFromOptions(array $options)
+    public function getConnectionFromOptions(array $options): Connection
     {
         // Set up custom options by database type:
         $driver = strtolower($options['driver']);

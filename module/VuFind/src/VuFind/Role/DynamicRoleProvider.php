@@ -83,7 +83,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @return Role
      */
-    protected function getRole(string $name)
+    protected function getRole(string $name): Role
     {
         // Retrieve permissions from providers if not already done:
         if (false === $this->roles) {
@@ -103,7 +103,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @return void
      */
-    protected function populateRoles()
+    protected function populateRoles(): void
     {
         // Reset internal role array:
         $this->roles = [];
@@ -123,7 +123,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @return array
      */
-    protected function getPermissionsArray()
+    protected function getPermissionsArray(): array
     {
         // Loop through all of the permissions:
         $retVal = [];
@@ -150,7 +150,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @return array
      */
-    protected function getRolesForSettings(array $settings)
+    protected function getRolesForSettings(array $settings): array
     {
         // Extract require setting:
         if (isset($settings['require'])) {

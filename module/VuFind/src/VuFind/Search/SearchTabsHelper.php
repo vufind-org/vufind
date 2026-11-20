@@ -87,7 +87,7 @@ class SearchTabsHelper
         string $searchClassId,
         bool $returnDefaultsIfEmpty = true,
         bool $ignoreCurrentRequest = false
-    ) {
+    ): array {
         $filters = $ignoreCurrentRequest
             ? null : $this->request->getQuery('hiddenFilters');
         if (null === $filters && $returnDefaultsIfEmpty) {
@@ -102,7 +102,7 @@ class SearchTabsHelper
      *
      * @return array
      */
-    public function getTabConfig()
+    public function getTabConfig(): array
     {
         return $this->tabConfig;
     }
@@ -112,7 +112,7 @@ class SearchTabsHelper
      *
      * @return array
      */
-    public function getTabFilterConfig()
+    public function getTabFilterConfig(): array
     {
         return $this->filterConfig;
     }
@@ -122,7 +122,7 @@ class SearchTabsHelper
      *
      * @return array
      */
-    public function getTabPermissionConfig()
+    public function getTabPermissionConfig(): array
     {
         return $this->permissionConfig;
     }
@@ -132,7 +132,7 @@ class SearchTabsHelper
      *
      * @return array
      */
-    public function getSettings()
+    public function getSettings(): array
     {
         return $this->settings;
     }
@@ -144,7 +144,7 @@ class SearchTabsHelper
      *
      * @return string
      */
-    public function extractClassName(string $tabId)
+    public function extractClassName(string $tabId): string
     {
         [$class] = explode(':', $tabId, 2);
         return $class;
@@ -159,7 +159,7 @@ class SearchTabsHelper
      *
      * @return bool
      */
-    public function filtersMatch(string $class, array $hiddenFilters, array $configFilters)
+    public function filtersMatch(string $class, array $hiddenFilters, array $configFilters): bool
     {
         return $hiddenFilters == $this->parseFilters($class, $configFilters);
     }
@@ -171,7 +171,7 @@ class SearchTabsHelper
      *
      * @return null|array
      */
-    protected function getDefaultTabHiddenFilters(string $searchClassId)
+    protected function getDefaultTabHiddenFilters(string $searchClassId): ?array
     {
         if (empty($this->tabConfig)) {
             return null;
@@ -204,7 +204,7 @@ class SearchTabsHelper
      *
      * @return array
      */
-    protected function parseFilters(string $class, array $filters)
+    protected function parseFilters(string $class, array $filters): array
     {
         $results = $this->results->get($class);
         $params = $results->getParams();

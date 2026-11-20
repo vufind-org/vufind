@@ -1125,7 +1125,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testDisabledResetFiltersBehavior()
+    public function testDisabledResetFiltersBehavior(): void
     {
         $this->changeConfigs(
             [
@@ -1148,7 +1148,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testEnabledResetFiltersBehavior()
+    public function testEnabledResetFiltersBehavior(): void
     {
         $this->changeConfigs(
             [

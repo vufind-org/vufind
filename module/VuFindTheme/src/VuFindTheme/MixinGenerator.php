@@ -52,7 +52,7 @@ class MixinGenerator extends AbstractThemeUtility implements GeneratorInterface
      *
      * @return bool
      */
-    public function generate(string $name, string $template = 'local_mixin_example')
+    public function generate(string $name, string $template = 'local_mixin_example'): bool
     {
         // Check for existing theme
         $baseDir = $this->info->getBaseDir() . '/';

@@ -60,7 +60,7 @@ abstract class HttpErrorException extends BackendException
      *
      * @return RequestErrorException|RemoteErrorException
      */
-    public static function createFromResponse(Response $response)
+    public static function createFromResponse(Response $response): RequestErrorException|RemoteErrorException
     {
         $status = $response->getStatusCode();
         $phrase = $response->getReasonPhrase();
@@ -104,7 +104,7 @@ abstract class HttpErrorException extends BackendException
      *
      * @return Response
      */
-    public function getResponse()
+    public function getResponse(): Response
     {
         return $this->response;
     }

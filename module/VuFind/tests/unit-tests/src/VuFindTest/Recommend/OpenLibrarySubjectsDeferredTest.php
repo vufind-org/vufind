@@ -47,7 +47,7 @@ class OpenLibrarySubjectsDeferredTest extends \VuFindTest\Unit\RecommendDeferred
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(OpenLibrarySubjectsDeferred::class);
         $this->assertEquals(

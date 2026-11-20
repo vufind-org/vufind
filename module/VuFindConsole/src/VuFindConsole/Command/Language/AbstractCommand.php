@@ -108,7 +108,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function addLineToFile(string $filename, string $key, string $value)
+    protected function addLineToFile(string $filename, string $key, string $value): void
     {
         $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
@@ -125,7 +125,7 @@ abstract class AbstractCommand extends Command
      *
      * @return array [textdomain, key]
      */
-    protected function extractTextDomain(string $raw)
+    protected function extractTextDomain(string $raw): array
     {
         $parts = explode('::', $raw, 2);
         return count($parts) > 1 ? $parts : ['default', $raw];
@@ -145,7 +145,7 @@ abstract class AbstractCommand extends Command
         OutputInterface $output,
         string $domain = 'default',
         bool $createIfMissing = false
-    ) {
+    ): object|bool {
         $subDir = $domain === 'default' ? '' : ('/' . $domain);
         $langDir = $this->languageDir . $subDir;
         if ($createIfMissing && !is_dir($langDir)) {
@@ -167,7 +167,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function createMissingFiles(string $path, array $files)
+    protected function createMissingFiles(string $path, array $files): void
     {
         foreach ($files as $file) {
             if (!file_exists($path . '/' . $file)) {
@@ -186,7 +186,7 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    protected function processDirectory(object $dir, callable $callback, bool $statusCallback = false)
+    protected function processDirectory(object $dir, callable $callback, bool $statusCallback = false): void
     {
         while ($file = $dir->read()) {
             // Only process .ini files, and ignore special case files:

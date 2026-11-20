@@ -82,7 +82,7 @@ class DatabaseCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Upgrade the database.')

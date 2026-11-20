@@ -52,7 +52,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetConnector()
+    public function testGetConnector(): void
     {
         $connector = $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
             ->setConstructorArgs(['http://fake', $this->createMock(\Laminas\Http\Client::class)])
@@ -69,7 +69,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $conn = $this->getConnectorMock(['search', 'show', 'stat']);
         $conn->expects($this->once())
@@ -108,7 +108,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetSearchProgressTarget()
+    public function testSetSearchProgressTarget(): void
     {
         $back = new Backend($this->getConnectorMock());
         $back->setSearchProgressTarget(0.75);
@@ -120,7 +120,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetMaxQueryTime()
+    public function testSetMaxQueryTime(): void
     {
         $back = new Backend($this->getConnectorMock());
         $back->setMaxQueryTime(3);
@@ -138,7 +138,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse(string $fixture)
+    protected function loadResponse(string $fixture): mixed
     {
         $xml = $this->getFixture("pazpar2/response/$fixture", 'VuFindSearch');
         return simplexml_load_string($xml);
@@ -151,7 +151,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): array
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
@@ -167,7 +167,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getStatXml(float $progress)
+    protected function getStatXml(float $progress): string
     {
         return '<?xml version="1.0" encoding="UTF-8"?><stat><progress>'
             . $progress . '</progress></stat>';

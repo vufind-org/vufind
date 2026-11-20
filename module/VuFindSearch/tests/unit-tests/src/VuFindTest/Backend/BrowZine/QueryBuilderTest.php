@@ -50,7 +50,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testBasic()
+    public function testBasic(): void
     {
         $q = new Query('query1');
         $qb = new QueryBuilder();
@@ -64,7 +64,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testAdvanced()
+    public function testAdvanced(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Query groups not supported');

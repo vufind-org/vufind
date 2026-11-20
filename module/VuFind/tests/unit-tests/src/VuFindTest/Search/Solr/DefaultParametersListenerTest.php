@@ -77,7 +77,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttach()
+    public function testAttach(): void
     {
         $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $listener = new DefaultParametersListener($backend, ['foo' => 'bar']);

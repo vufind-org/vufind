@@ -73,7 +73,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * @return array     Returns array with table of contents data.
      * @author John Jung <jej@uchicago.edu>
      */
-    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj)
+    public function loadByIsbn(string $key, \VuFindCode\ISBN $isbnObj): array
     {
         // Initialize return value:
         $toc = [];

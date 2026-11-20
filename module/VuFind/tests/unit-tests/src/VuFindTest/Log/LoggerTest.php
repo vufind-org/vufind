@@ -139,7 +139,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFillInMissingDetails()
+    public function testFillInMissingDetails(): void
     {
         $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);
         $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)

@@ -49,7 +49,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFixPrimoFacetValue()
+    public function testFixPrimoFacetValue(): void
     {
         $params = $this->getParams();
         $this->assertSame(

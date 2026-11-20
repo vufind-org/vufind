@@ -50,7 +50,7 @@ class Sample extends AbstractBase
      *
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         // Sample driver doesn't care about configuration.
     }
@@ -62,7 +62,7 @@ class Sample extends AbstractBase
      *
      * @return array An associative array with key = dept. ID, value = dept. name.
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         return [];
     }
@@ -74,7 +74,7 @@ class Sample extends AbstractBase
      *
      * @return array An associative array with key = ID, value = name.
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         return [];
     }
@@ -86,7 +86,7 @@ class Sample extends AbstractBase
      *
      * @return array An associative array with key = ID, value = name.
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         return [];
     }
@@ -102,7 +102,7 @@ class Sample extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         return [
             [
@@ -129,7 +129,7 @@ class Sample extends AbstractBase
      *
      * @return mixed     An array of getStatus() return values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): mixed
     {
         $items = [];
         foreach ($ids as $id) {

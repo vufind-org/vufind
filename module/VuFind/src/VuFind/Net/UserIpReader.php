@@ -66,7 +66,7 @@ class UserIpReader
      *
      * @return string
      */
-    public function getUserIp()
+    public function getUserIp(): string
     {
         if ($this->allowForwardedIps) {
             foreach (explode(',', $this->allowForwardedIps) as $chunk) {

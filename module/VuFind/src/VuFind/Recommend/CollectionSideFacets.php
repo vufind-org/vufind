@@ -56,7 +56,7 @@ class CollectionSideFacets extends SideFacets
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         parent::setConfig($settings);
 
@@ -72,7 +72,7 @@ class CollectionSideFacets extends SideFacets
      *
      * @return string
      */
-    public function getKeywordFilter()
+    public function getKeywordFilter(): string
     {
         return $this->results->getParams()->getDisplayQuery();
     }
@@ -82,7 +82,7 @@ class CollectionSideFacets extends SideFacets
      *
      * @return bool
      */
-    public function keywordFilterEnabled()
+    public function keywordFilterEnabled(): bool
     {
         return $this->keywordFilter;
     }

@@ -79,7 +79,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         $retval = [];
 
@@ -105,7 +105,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getBibliographyNotes()
+    public function getBibliographyNotes(): array
     {
         return $this->fields['Notes'] ?? [];
     }
@@ -115,7 +115,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getCallNumbers()
+    public function getCallNumbers(): array
     {
         // Summon calls this LCCNum even though it may be Dewey
         return isset($this->fields['LCCCallnum'])
@@ -128,7 +128,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return mixed
      */
-    public function getCleanDOI()
+    public function getCleanDOI(): mixed
     {
         return (isset($this->fields['DOI'][0]) && !empty($this->fields['DOI'][0]))
             ? $this->fields['DOI'][0] : false;
@@ -139,7 +139,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getEdition()
+    public function getEdition(): string
     {
         return isset($this->fields['Edition']) ?
             $this->fields['Edition'][0] : '';
@@ -152,7 +152,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getExtraResourceMetadata()
+    public function getExtraResourceMetadata(): string
     {
         return isset($this->fields['BookMark'][0])
             ? ['bookmark' => $this->fields['BookMark'][0]] : null;
@@ -163,7 +163,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         return $this->fields['ContentType'] ?? [];
     }
@@ -173,7 +173,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getRawAuthorHighlights()
+    public function getRawAuthorHighlights(): array
     {
         // Don't check for highlighted values if highlighting is disabled.
         return ($this->highlight && isset($this->fields['Author']))
@@ -186,7 +186,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      * @return mixed False if no snippet found, otherwise associative array
      * with 'snippet' and 'caption' keys.
      */
-    public function getHighlightedSnippet()
+    public function getHighlightedSnippet(): mixed
     {
         return isset($this->fields['Snippet'][0])
             ? [
@@ -201,7 +201,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getHighlightedTitle()
+    public function getHighlightedTitle(): string
     {
         // Don't check for highlighted values if highlighting is disabled:
         if (!$this->highlight) {
@@ -217,7 +217,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getISBNs()
+    public function getISBNs(): array
     {
         if (isset($this->fields['ISBN']) && is_array($this->fields['ISBN'])) {
             return $this->fields['ISBN'];
@@ -230,7 +230,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         $issns = [];
         if (isset($this->fields['ISSN'])) {
@@ -247,7 +247,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         return $this->fields['Language'] ?? [];
     }
@@ -257,7 +257,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getOCLC()
+    public function getOCLC(): array
     {
         return $this->fields['OCLC'] ?? [];
     }
@@ -271,7 +271,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string OpenURL parameters.
      */
-    public function getOpenUrl(bool $overrideSupportsOpenUrl = false)
+    public function getOpenUrl(bool $overrideSupportsOpenUrl = false): string
     {
         // stop here if this record does not support OpenURLs
         if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
@@ -287,7 +287,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return bool
      */
-    public function supportsOpenUrl()
+    public function supportsOpenUrl(): bool
     {
         // Summon never uses OpenURLs for anything other than COinS:
         return false;
@@ -298,7 +298,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getPlacesOfPublication()
+    public function getPlacesOfPublication(): array
     {
         return $this->fields['PublicationPlace'] ?? [];
     }
@@ -310,7 +310,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return void
      */
-    public function setDateConverter(\VuFind\Date\Converter $dc)
+    public function setDateConverter(\VuFind\Date\Converter $dc): void
     {
         $this->dateConverter = $dc;
     }
@@ -320,7 +320,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return \VuFind\Date\Converter
      */
-    protected function getDateConverter()
+    protected function getDateConverter(): \VuFind\Date\Converter
     {
         // No object passed in yet?  Build one with default settings:
         if (null === $this->dateConverter) {
@@ -334,7 +334,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         if (
             isset($this->fields['PublicationDate_xml'])
@@ -367,7 +367,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getPublishers()
+    public function getPublishers(): array
     {
         return $this->fields['Publisher'] ?? [];
     }
@@ -377,7 +377,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         $authors = [];
         if (isset($this->fields['Author_xml'])) {
@@ -397,7 +397,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getSeries()
+    public function getSeries(): array
     {
         return $this->fields['PublicationSeriesTitle'] ?? [];
     }
@@ -407,7 +407,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return isset($this->fields['Title']) ?
             $this->fields['Title'][0] : '';
@@ -418,7 +418,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getSubtitle()
+    public function getSubtitle(): string
     {
         return isset($this->fields['Subtitle']) ?
             $this->fields['Subtitle'][0] : '';
@@ -429,7 +429,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getSummary()
+    public function getSummary(): array
     {
         return $this->fields['Abstract'] ?? [];
     }
@@ -445,7 +445,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string|array|bool
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string|array|bool
     {
         $params = parent::getThumbnail($size);
 
@@ -475,7 +475,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         $title = $this->getShortTitle();
         $sub = $this->getSubtitle();
@@ -492,7 +492,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getTOC()
+    public function getTOC(): array
     {
         return $this->fields['TableOfContents'] ?? [];
     }
@@ -511,7 +511,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         if (isset($this->fields['link'])) {
             $msg = $this->hasFullText() ? 'Get full text' : 'Get more information';
@@ -535,7 +535,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         return $this->fields['ID'][0];
     }
@@ -546,7 +546,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getContainerTitle()
+    public function getContainerTitle(): string
     {
         return isset($this->fields['PublicationTitle'])
             ? $this->fields['PublicationTitle'][0] : '';
@@ -558,7 +558,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getContainerVolume()
+    public function getContainerVolume(): string
     {
         return (isset($this->fields['Volume'])) ? $this->fields['Volume'][0] : '';
     }
@@ -569,7 +569,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getContainerIssue()
+    public function getContainerIssue(): string
     {
         return (isset($this->fields['Issue'])) ? $this->fields['Issue'][0] : '';
     }
@@ -580,7 +580,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getContainerStartPage()
+    public function getContainerStartPage(): string
     {
         return (isset($this->fields['StartPage']))
             ? $this->fields['StartPage'][0] : '';
@@ -591,7 +591,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getContainerEndPage()
+    public function getContainerEndPage(): string
     {
         if (isset($this->fields['EndPage'])) {
             return $this->fields['EndPage'][0];
@@ -611,7 +611,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return string
      */
-    public function getContainerReference()
+    public function getContainerReference(): string
     {
         $str = '';
         $vol = $this->getContainerVolume();
@@ -649,7 +649,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return bool
      */
-    public function hasFullText()
+    public function hasFullText(): bool
     {
         return (bool)($this->fields['hasFullText'] ?? false);
     }
@@ -659,7 +659,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      *
      * @return bool
      */
-    public function isOpenAccess()
+    public function isOpenAccess(): bool
     {
         return (bool)($this->fields['IsOpenAccess'] ?? false);
     }

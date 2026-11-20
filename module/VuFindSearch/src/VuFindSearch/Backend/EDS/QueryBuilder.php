@@ -90,7 +90,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function queryToEdsQuery(Query $query, string $operator = 'AND')
+    protected function queryToEdsQuery(Query $query, string $operator = 'AND'): array
     {
         $expression = $query->getString();
         $fieldCode = ($query->getHandler() == 'AllFields')
@@ -113,7 +113,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function abstractQueryToArray(AbstractQuery $query)
+    protected function abstractQueryToArray(AbstractQuery $query): array
     {
         if ($query instanceof Query) {
             return ['1' => $this->queryToEdsQuery($query)];
@@ -129,7 +129,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function queryGroupToArray(QueryGroup $query)
+    protected function queryGroupToArray(QueryGroup $query): array
     {
         $groups = [];
         foreach ($query->getQueries() as $params) {

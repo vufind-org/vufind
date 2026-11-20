@@ -56,7 +56,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp(
@@ -82,7 +82,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
      *
      * @return bool
      */
-    protected function writeToDisk(string $filename, string $content)
+    protected function writeToDisk(string $filename, string $content): bool
     {
         return file_put_contents($filename, $content);
     }

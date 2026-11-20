@@ -67,7 +67,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
     }
 
@@ -97,7 +97,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $filters = $results->getParams()->getFilterList(false);
         foreach ($filters as $filter) {
@@ -111,7 +111,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return bool
      */
-    public function hasFilters()
+    public function hasFilters(): bool
     {
         return $this->activeFacetsCount > 0;
     }
@@ -121,7 +121,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return string
      */
-    public function getFilterlessUrl()
+    public function getFilterlessUrl(): string
     {
         return $this->results->getUrlQuery()->removeAllFilters()->getParams();
     }
@@ -131,7 +131,7 @@ class RemoveFilters implements RecommendInterface
      *
      * @return string
      */
-    public function getActiveFacetsCount()
+    public function getActiveFacetsCount(): string
     {
         return $this->activeFacetsCount;
     }

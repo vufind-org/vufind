@@ -51,7 +51,7 @@ trait SecureDatabaseTrait
      *
      * @return array
      */
-    protected function getSecureAlgorithmAndKey()
+    protected function getSecureAlgorithmAndKey(): array
     {
         // Make example hash for AES
         $alpha = 'abcdefghijklmnopqrstuvwxyz';

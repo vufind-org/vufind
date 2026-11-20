@@ -82,7 +82,7 @@ class CurrencyFormatter
      *
      * @return string
      */
-    public function convertToDisplayFormat(float $number, string $currency = null)
+    public function convertToDisplayFormat(float $number, string $currency = null): string
     {
         return $this->formatter->formatCurrency(
             $number,

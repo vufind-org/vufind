@@ -58,7 +58,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      *
      * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
-    public function getQuery(?string $name = null, mixed $default = null)
+    public function getQuery(?string $name = null, mixed $default = null): \Laminas\Stdlib\ParametersInterface|mixed|null
     {
         return $this->cleanup(parent::getQuery($name, $default));
     }
@@ -74,7 +74,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      *
      * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
-    public function getPost(?string $name = null, mixed $default = null)
+    public function getPost(?string $name = null, mixed $default = null): \Laminas\Stdlib\ParametersInterface|mixed|null
     {
         return $this->cleanup(parent::getPost($name, $default));
     }
@@ -91,7 +91,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      * @see    http://www.faqs.org/rfcs/rfc3875.html
      * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
-    public function getServer(?string $name = null, mixed $default = null)
+    public function getServer(?string $name = null, mixed $default = null): \Laminas\Stdlib\ParametersInterface|mixed|null
     {
         return $this->cleanup(parent::getServer($name, $default));
     }
@@ -103,7 +103,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      *
      * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
-    protected function cleanup(\Laminas\Stdlib\ParametersInterface|mixed|null $param)
+    protected function cleanup(\Laminas\Stdlib\ParametersInterface|mixed|null $param): \Laminas\Stdlib\ParametersInterface|mixed|null
     {
         if (
             is_array($param)
@@ -133,7 +133,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      *
      * @return bool
      */
-    protected function isValid(mixed $param)
+    protected function isValid(mixed $param): bool
     {
         if (!is_string($param)) {
             return true;

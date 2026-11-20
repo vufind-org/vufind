@@ -65,7 +65,7 @@ class DbBuilderFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             $container->get(ConnectionFactory::class),
             $container->get(MigrationLoader::class),

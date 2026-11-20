@@ -68,7 +68,7 @@ class ProxyUrl implements
      *
      * @return string
      */
-    public function __invoke(string $url)
+    public function __invoke(string $url): string
     {
         $useWebService = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? false;
         $usePrefix = $useWebService
@@ -85,7 +85,7 @@ class ProxyUrl implements
      *
      * @return bool The configured setting, or the default
      */
-    protected function checkConfig()
+    protected function checkConfig(): bool
     {
         return $this->config['EZproxy']['prefixLinks'] ?? true;
     }
@@ -97,7 +97,7 @@ class ProxyUrl implements
      *
      * @return mixed Whether the URL should be prefixed, or null if it can't be determined
      */
-    protected function checkUrl(string $url)
+    protected function checkUrl(string $url): mixed
     {
         $domain = parse_url($url, PHP_URL_SCHEME)
          . '://'
@@ -118,7 +118,7 @@ class ProxyUrl implements
      *
      * @return mixed Whether the URL should be prefixed, or null if it can't be determined
      */
-    protected function queryWebService(string $domain)
+    protected function queryWebService(string $domain): mixed
     {
         $prefixLinksWebServiceUrl = $this->config['EZproxy']['prefixLinksWebServiceUrl'] ?? '';
         try {

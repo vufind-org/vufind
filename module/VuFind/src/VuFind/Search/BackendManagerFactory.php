@@ -64,7 +64,7 @@ class BackendManagerFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
@@ -78,7 +78,7 @@ class BackendManagerFactory implements FactoryInterface
      *
      * @return BackendRegistry
      */
-    protected function getRegistry(ContainerInterface $container)
+    protected function getRegistry(ContainerInterface $container): BackendRegistry
     {
         $config = $container->get('config');
         return new BackendRegistry(

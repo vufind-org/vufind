@@ -45,7 +45,7 @@ class Reviews extends AbstractContent
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Reviews';
     }

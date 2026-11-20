@@ -51,7 +51,7 @@ trait FixtureTrait
      *
      * @return string
      */
-    protected function getFixtureDir(string $module = 'VuFind')
+    protected function getFixtureDir(string $module = 'VuFind'): string
     {
         return __DIR__ . '/../../../../' . $module . '/tests/fixtures/';
     }
@@ -65,7 +65,7 @@ trait FixtureTrait
      * @return string
      * @throws RuntimeException
      */
-    protected function getFixturePath(string $filename, string $module = 'VuFind')
+    protected function getFixturePath(string $filename, string $module = 'VuFind'): string
     {
         $realFilename = realpath($this->getFixtureDir($module) . $filename);
         if (
@@ -88,7 +88,7 @@ trait FixtureTrait
      * @return string
      * @throws RuntimeException
      */
-    protected function getFixture(string $filename, string $module = 'VuFind')
+    protected function getFixture(string $filename, string $module = 'VuFind'): string
     {
         return file_get_contents($this->getFixturePath($filename, $module));
     }
@@ -101,7 +101,7 @@ trait FixtureTrait
      *
      * @return array
      */
-    protected function getJsonFixture(string $filename, string $module = 'VuFind')
+    protected function getJsonFixture(string $filename, string $module = 'VuFind'): array
     {
         try {
             return json_decode($this->getFixture($filename, $module), true, 512, JSON_THROW_ON_ERROR);

@@ -93,7 +93,7 @@ class BrowscapCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Manages the browscap cache.')
@@ -122,7 +122,7 @@ class BrowscapCommand extends Command
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    protected function checkCachePermissions(ConsoleLogger $logger, StorageInterface $browscapCache)
+    protected function checkCachePermissions(ConsoleLogger $logger, StorageInterface $browscapCache): void
     {
         // If we have a file cache, let's make sure the created files are consistent
         // with expectations.

@@ -48,7 +48,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $rc = new RecordCollection([]);
         $this->assertEquals(0, $rc->getTotal());

@@ -65,7 +65,7 @@ class ServiceWithConfigIniFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         return new $requestedName($config, ...($options ?: []));
     }

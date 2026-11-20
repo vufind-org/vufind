@@ -45,7 +45,7 @@ class MapSelectionConfig extends AbstractConfig
      *
      * @return array
      */
-    protected function getDefaultOptions()
+    protected function getDefaultOptions(): array
     {
         return [
             'default_coordinates' => '-95, 30, 72, 15',
@@ -58,7 +58,7 @@ class MapSelectionConfig extends AbstractConfig
      *
      * @return array
      */
-    public function getMapSelectionOptions()
+    public function getMapSelectionOptions(): array
     {
         $validFields = ['default_coordinates', 'height'];
         // Check geofeatures.ini

@@ -56,7 +56,7 @@ class Overdrive
      *
      * @return bool
      */
-    public function showMyContentLink()
+    public function showMyContentLink(): bool
     {
         //if not configured at all, connector is null
         if (null === $this->connector) {
@@ -70,7 +70,7 @@ class Overdrive
      *
      * @return bool
      */
-    public function showOverdriveAdminLink()
+    public function showOverdriveAdminLink(): bool
     {
         // If not configured at all, connector is null
         if (null === $this->connector) {

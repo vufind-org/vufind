@@ -131,7 +131,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query, ?ParamBag $params = null)
+    public function build(AbstractQuery $query, ?ParamBag $params = null): ParamBag
     {
         $newParams = new ParamBag();
 
@@ -327,7 +327,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function getFieldsToHighlight(array $filter = [])
+    protected function getFieldsToHighlight(array $filter = []): string
     {
         // No filter? Return unmodified default:
         if (empty($filter)) {
@@ -349,7 +349,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function setFieldsToHighlight(string $list)
+    public function setFieldsToHighlight(string $list): QueryBuilder
     {
         $this->fieldsToHighlight = $list;
         return $this;
@@ -363,7 +363,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function setCreateSpellingQuery(bool $enable)
+    public function setCreateSpellingQuery(bool $enable): void
     {
         $this->createSpellingQuery = $enable;
     }
@@ -375,7 +375,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function setSpecs(array $specs)
+    public function setSpecs(array $specs): void
     {
         foreach ($specs as $handler => $spec) {
             if ('GlobalExtraParams' === $handler) {
@@ -399,7 +399,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return LuceneSyntaxHelper
      */
-    public function getLuceneHelper()
+    public function getLuceneHelper(): LuceneSyntaxHelper
     {
         if (null === $this->luceneHelper) {
             $this->luceneHelper = new LuceneSyntaxHelper();
@@ -414,7 +414,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function setLuceneHelper(LuceneSyntaxHelper $helper)
+    public function setLuceneHelper(LuceneSyntaxHelper $helper): void
     {
         $this->luceneHelper = $helper;
     }
@@ -429,7 +429,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler(string $handler, string $searchString)
+    protected function getSearchHandler(string $handler, string $searchString): ?SearchHandler
     {
         $handler = $handler ? strtolower($handler) : $handler;
         if ($handler) {
@@ -460,7 +460,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return Query
      */
-    protected function reduceQueryGroup(QueryGroup $group)
+    protected function reduceQueryGroup(QueryGroup $group): Query
     {
         $searchString  = $this->reduceQueryGroupComponents($group);
         $searchHandler = $group->getReducedHandler();
@@ -478,7 +478,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @see \VuFindSearch\Backend\Solr\QueryBuilder::reduceQueryGroup()
      */
-    protected function reduceQueryGroupComponents(AbstractQuery $component)
+    protected function reduceQueryGroupComponents(AbstractQuery $component): string
     {
         if ($component instanceof QueryGroup) {
             $reduced = array_map(
@@ -519,7 +519,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function createSearchString(string $string, ?SearchHandler $handler = null)
+    protected function createSearchString(string $string, ?SearchHandler $handler = null): string
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
@@ -544,7 +544,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function fixTrailingQuestionMarks(string $string)
+    protected function fixTrailingQuestionMarks(string $string): string
     {
         // Treat colon and whitespace as word separators -- in either case, we
         // should add parentheses for accuracy.
@@ -578,7 +578,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      */
-    protected function getNormalizedQueryString(string $queryString)
+    protected function getNormalizedQueryString(string $queryString): string
     {
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
@@ -598,7 +598,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected function createAdvancedInnerSearchString(
         string $string,
         SearchHandler $handler
-    ) {
+    ): string {
         // Special case -- if the user wants all records but the current handler
         // has a filter query, apply the filter query:
         if (trim($string) === '*:*' && $handler && $handler->hasFilterQuery()) {

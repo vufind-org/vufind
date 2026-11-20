@@ -82,7 +82,7 @@ class Eds implements AutocompleteInterface
      *
      * @return array        The suggestions for the provided query
      */
-    public function getSuggestions(string $query)
+    public function getSuggestions(string $query): array
     {
         $results = null;
         try {
@@ -107,7 +107,7 @@ class Eds implements AutocompleteInterface
      *
      * @return void
      */
-    public function setConfig(string $params)
+    public function setConfig(string $params): void
     {
         // Only change the value if it is not empty:
         $this->domain = !empty($params) ? $params : $this->domain;

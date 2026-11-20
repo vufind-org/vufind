@@ -65,7 +65,7 @@ class Router
      *
      * @return array
      */
-    public function getActionRouteDetails(\VuFind\RecordDriver\AbstractBase|string $driver, string $action)
+    public function getActionRouteDetails(\VuFind\RecordDriver\AbstractBase|string $driver, string $action): array
     {
         return $this->getRouteDetails($driver, '-' . strtolower($action));
     }
@@ -80,7 +80,7 @@ class Router
      *
      * @return array
      */
-    public function getTabRouteDetails(\VuFind\RecordDriver\AbstractBase|string $driver, string $tab = null, array $query = [])
+    public function getTabRouteDetails(\VuFind\RecordDriver\AbstractBase|string $driver, string $tab = null, array $query = []): array
     {
         $route = $this->getRouteDetails(
             $driver,
@@ -134,7 +134,7 @@ class Router
         \VuFind\RecordDriver\AbstractBase|string $driver,
         string $routeSuffix = '',
         array $extraParams = []
-    ) {
+    ): array {
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
             $source = $driver->getSourceIdentifier();
@@ -173,7 +173,7 @@ class Router
      *
      * @return array
      */
-    protected function extractSourceAndId(string $driver)
+    protected function extractSourceAndId(string $driver): array
     {
         $parts = explode('|', $driver, 2);
         if (count($parts) < 2) {

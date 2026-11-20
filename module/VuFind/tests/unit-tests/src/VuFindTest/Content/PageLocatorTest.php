@@ -50,7 +50,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDetermineTemplateAndRenderer()
+    public function testDetermineTemplateAndRenderer(): void
     {
         $language  = 'aa';
         $defaultLanguage = 'bb';

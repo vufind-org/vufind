@@ -64,7 +64,7 @@ class Username implements PermissionProviderInterface
      *
      * @return array
      */
-    public function getPermissions(mixed $options)
+    public function getPermissions(mixed $options): array
     {
         // If no user is logged in, or the user doesn't match the passed-in
         // filter, we can't grant the permission to any roles.

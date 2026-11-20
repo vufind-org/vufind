@@ -81,7 +81,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['SearchResult']['Statistics']['TotalHits'] ?? 0;
     }
@@ -91,7 +91,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getRawFacets()
+    public function getRawFacets(): array
     {
         return $this->response['SearchResult']['AvailableFacets'] ?? [];
     }
@@ -104,7 +104,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         if ($this->facetFields === null) {
             $this->facetFields = [];
@@ -137,7 +137,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         if (
             isset($this->response['SearchRequestGet'])
@@ -173,7 +173,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return bool
      */
-    public function isRestrictedView()
+    public function isRestrictedView(): bool
     {
         return $this->restrictedView;
     }

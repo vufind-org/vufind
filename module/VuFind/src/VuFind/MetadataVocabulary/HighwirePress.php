@@ -69,7 +69,7 @@ class HighwirePress extends AbstractBase
      *
      * @return array
      */
-    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver)
+    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver): array
     {
         $mappedData = parent::getMappedData($driver);
 

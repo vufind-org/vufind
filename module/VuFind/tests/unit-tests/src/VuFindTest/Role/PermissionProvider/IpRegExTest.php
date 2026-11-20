@@ -49,7 +49,7 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      *
      * @return IpRegEx
      */
-    protected function getPermissionProvider(string $ipAddr)
+    protected function getPermissionProvider(string $ipAddr): IpRegEx
     {
         $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);
@@ -63,7 +63,7 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMatchingRegEx()
+    public function testMatchingRegEx(): void
     {
         $regEx = '/123\.124\..*/';
         $provider = $this->getPermissionProvider('123.124.125.126');
@@ -78,7 +78,7 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonMatchingRegExArray()
+    public function testNonMatchingRegExArray(): void
     {
         $regEx = [
             '/123\.124\..*/',

@@ -83,7 +83,7 @@ class TitleHolds
      *
      * @todo Indicate login failure or ILS connection failure somehow?
      */
-    public function getHold(string $id, array $linkOverrides = [])
+    public function getHold(string $id, array $linkOverrides = []): string|bool
     {
         // Get Holdings Data
         $mode = $this->catalog->getTitleHoldsMode();
@@ -117,7 +117,7 @@ class TitleHolds
      *
      * @return array
      */
-    protected function getHoldings(string $id)
+    protected function getHoldings(string $id): array
     {
         // Cache results in a static array since the same holdings may be requested
         // multiple times during a run through the class:
@@ -138,7 +138,7 @@ class TitleHolds
      *
      * @return string
      */
-    protected function checkOverrideMode(string $id, string $mode)
+    protected function checkOverrideMode(string $id, string $mode): string
     {
         if ($this->config['Catalog']['allow_holds_override'] ?? false) {
             $holdings = $this->getHoldings($id);
@@ -169,7 +169,7 @@ class TitleHolds
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function driverHold(string $id, array $patron, array $linkOverrides = [])
+    protected function driverHold(string $id, array $patron, array $linkOverrides = []): mixed
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
@@ -202,7 +202,7 @@ class TitleHolds
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold(string $id, string $type, array $patron, array $linkOverrides = [])
+    protected function generateHold(string $id, string $type, array $patron, array $linkOverrides = []): mixed
     {
         $any_available = false;
         $addlink = false;
@@ -257,7 +257,7 @@ class TitleHolds
      *
      * @return array          Details for generating URL
      */
-    protected function getHoldDetails(array $data, array $HMACKeys, array $linkOverrides)
+    protected function getHoldDetails(array $data, array $HMACKeys, array $linkOverrides): array
     {
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $data);

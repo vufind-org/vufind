@@ -66,7 +66,7 @@ trait HierarchyAwareTrait
      *
      * @return \VuFind\Hierarchy\Driver\AbstractBase|bool
      */
-    public function getHierarchyDriver()
+    public function getHierarchyDriver(): \VuFind\Hierarchy\Driver\AbstractBase|bool
     {
         if (
             null === $this->hierarchyDriver
@@ -88,7 +88,7 @@ trait HierarchyAwareTrait
      */
     public function setHierarchyDriverManager(
         \VuFind\Hierarchy\Driver\PluginManager $pm
-    ) {
+    ): object {
         $this->hierarchyDriverManager = $pm;
         return $this;
     }
@@ -98,7 +98,7 @@ trait HierarchyAwareTrait
      *
      * @return array
      */
-    public function getHierarchyTopID()
+    public function getHierarchyTopID(): array
     {
         return (array)($this->fields['hierarchy_top_id'] ?? []);
     }
@@ -108,7 +108,7 @@ trait HierarchyAwareTrait
      *
      * @return array
      */
-    public function getHierarchyTopTitle()
+    public function getHierarchyTopTitle(): array
     {
         return (array)($this->fields['hierarchy_top_title'] ?? []);
     }
@@ -128,7 +128,7 @@ trait HierarchyAwareTrait
      *
      * @return array
      */
-    public function getContainingCollections()
+    public function getContainingCollections(): array
     {
         // If collections are disabled or this record is not part of a hierarchy, go
         // no further....
@@ -190,7 +190,7 @@ trait HierarchyAwareTrait
      *
      * @return bool
      */
-    public function isCollection()
+    public function isCollection(): bool
     {
         if (!($hierarchyDriver = $this->getHierarchyDriver())) {
             // Not a hierarchy type record
@@ -221,7 +221,7 @@ trait HierarchyAwareTrait
      * @return mixed An associative array of hierarchy trees on success
      * (id => title), false if no hierarchies found
      */
-    public function getHierarchyTrees(string $hierarchyID = false)
+    public function getHierarchyTrees(string $hierarchyID = false): mixed
     {
         $hierarchyDriver = $this->getHierarchyDriver();
         if ($hierarchyDriver && $hierarchyDriver->showTree()) {
@@ -236,7 +236,7 @@ trait HierarchyAwareTrait
      *
      * @return string|bool
      */
-    public function getHierarchyType()
+    public function getHierarchyType(): string|bool
     {
         if (isset($this->fields['hierarchy_top_id'])) {
             $hierarchyType = $this->fields['hierarchytype'] ?? false;

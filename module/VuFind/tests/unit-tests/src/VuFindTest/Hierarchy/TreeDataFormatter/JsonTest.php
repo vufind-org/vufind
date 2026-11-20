@@ -49,7 +49,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHierarchyPositionsInParents()
+    public function testGetHierarchyPositionsInParents(): void
     {
         $method = 'getHierarchyPositionsInParents';
 

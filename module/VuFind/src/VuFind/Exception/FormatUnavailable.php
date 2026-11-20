@@ -45,7 +45,7 @@ class FormatUnavailable extends \Exception implements HttpStatusInterface
      *
      * @return int
      */
-    public function getHttpStatus()
+    public function getHttpStatus(): int
     {
         return 415;
     }

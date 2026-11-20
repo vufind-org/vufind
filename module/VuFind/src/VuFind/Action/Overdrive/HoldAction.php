@@ -149,7 +149,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getHoldConfirmRes()
+    protected function getHoldConfirmRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $result = $this->overdriveConnector->getResultObject();
@@ -177,7 +177,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getConfirmCheckoutRes()
+    protected function getConfirmCheckoutRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $rec_id = $this->getQueryParam('rec_id');
@@ -222,7 +222,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getCheckoutRes()
+    protected function getCheckoutRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         if ($edition = $this->getPostOrQueryParam('edition')) {
@@ -236,7 +236,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getPlaceHoldRes()
+    protected function getPlaceHoldRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $email = $this->getPostParam('email');
@@ -255,7 +255,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getEditHoldEmailConfRes()
+    protected function getEditHoldEmailConfRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $hold = $this->overdriveConnector->getHold($od_id, true);
@@ -270,7 +270,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getEditHoldEmailRes()
+    protected function getEditHoldEmailRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $email = $this->getPostParam('email');
@@ -284,7 +284,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getReturnTitleConfirmResult()
+    protected function getReturnTitleConfirmResult(): object
     {
         $result = $this->overdriveConnector->getResultObject();
         $rec_id = $this->getQueryParam('rec_id');
@@ -299,7 +299,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getSuspendHoldRes()
+    protected function getSuspendHoldRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $suspendValue = $this->getPostParam('suspendValue');
@@ -326,7 +326,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getEditSuspendedRes()
+    protected function getEditSuspendedRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $suspendValue = $this->getPostParam('suspendValue');
@@ -347,7 +347,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getCancelHoldRes()
+    protected function getCancelHoldRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $result = $this->overdriveConnector->cancelHold($od_id);
@@ -360,7 +360,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getReturnTitleRes()
+    protected function getReturnTitleRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $result = $this->overdriveConnector->returnResource($od_id);
@@ -373,7 +373,7 @@ class HoldAction extends AbstractOverdriveAction implements LoggerAwareInterface
      *
      * @return object Result Object
      */
-    protected function getDownloadTitleRes()
+    protected function getDownloadTitleRes(): object
     {
         $od_id = $this->getQueryParam('od_id');
         $result = $this->overdriveConnector->getDownloadRedirect($od_id);

@@ -144,7 +144,7 @@ class MonitorCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Validate unregistered online payments and send error notifications')
@@ -353,7 +353,7 @@ class MonitorCommand extends Command
      *
      * @return void
      */
-    protected function msg(string $msg)
+    protected function msg(string $msg): void
     {
         $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";
         $this->output->writeln($msg);
@@ -366,7 +366,7 @@ class MonitorCommand extends Command
      *
      * @return void
      */
-    protected function err(string $msg)
+    protected function err(string $msg): void
     {
         if ($this->output instanceof ConsoleOutputInterface) {
             $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";

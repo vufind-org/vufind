@@ -53,7 +53,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver(array $data)
+    protected function getDriver(array $data): TestHarness
     {
         $driver = new TestHarness();
         $driver->setRawData($data);
@@ -65,7 +65,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      *
      * @return HeadMeta
      */
-    protected function getMetaHelper()
+    protected function getMetaHelper(): HeadMeta
     {
         $mock = $this->createMock(HeadMeta::class);
         $mock->expects($this->once())->method('__call')
@@ -87,7 +87,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getPluginManager()
+    protected function getPluginManager(): PluginManager
     {
         $mock = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
@@ -104,7 +104,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMetadata()
+    public function testMetadata(): void
     {
         $helper = new Metadata(
             $this->getPluginManager(),

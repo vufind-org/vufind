@@ -79,7 +79,7 @@ trait LoggerAwareTrait
      *
      * @return void
      */
-    protected function logError(string $msg, array $context = [], bool $prependClass = true)
+    protected function logError(string $msg, array $context = [], bool $prependClass = true): void
     {
         $this->log(LogLevel::ERROR, $msg, $context, $prependClass);
     }
@@ -110,7 +110,7 @@ trait LoggerAwareTrait
      *
      * @return void
      */
-    protected function logWarning(string $msg, array $context = [], bool $prependClass = true)
+    protected function logWarning(string $msg, array $context = [], bool $prependClass = true): void
     {
         $this->log(LogLevel::WARNING, $msg, $context, $prependClass);
     }
@@ -124,7 +124,7 @@ trait LoggerAwareTrait
      *
      * @return void
      */
-    protected function debug(string $msg, array $context = [], bool $prependClass = true)
+    protected function debug(string $msg, array $context = [], bool $prependClass = true): void
     {
         $this->log(LogLevel::DEBUG, $msg, $context, $prependClass);
     }
@@ -144,7 +144,7 @@ trait LoggerAwareTrait
         string $message,
         array $context = [],
         bool $prependClass = false
-    ) {
+    ): void {
         if ($this->logger) {
             if ($prependClass) {
                 $message = get_class($this) . ': ' . $message;

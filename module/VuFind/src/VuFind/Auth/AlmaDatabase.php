@@ -86,7 +86,7 @@ class AlmaDatabase extends Database
      *
      * @return UserEntityInterface New user entity.
      */
-    public function create(Request $request)
+    public function create(Request $request): UserEntityInterface
     {
         // When in privacy mode, don't create an Alma account and delegate
         // further code execution to the parent.

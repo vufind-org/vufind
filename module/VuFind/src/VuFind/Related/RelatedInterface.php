@@ -58,5 +58,5 @@ interface RelatedInterface
      *
      * @return void
      */
-    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver);
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver): void;
 }

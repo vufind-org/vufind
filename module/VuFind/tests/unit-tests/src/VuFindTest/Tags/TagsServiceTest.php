@@ -70,7 +70,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTagParsing()
+    public function testTagParsing(): void
     {
         $this->assertSame(
             ['this', 'that', 'the other'],
@@ -83,7 +83,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyTagParsing()
+    public function testEmptyTagParsing(): void
     {
         $this->assertSame([], $this->getTagsService()->parse(''));
     }
@@ -93,7 +93,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDeduplication()
+    public function testDeduplication(): void
     {
         $this->assertSame(['test'], $this->getTagsService()->parse('test test test'));
     }
@@ -103,7 +103,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTruncation()
+    public function testTruncation(): void
     {
         // Create custom object w/ small size limit:
         $this->assertSame(['0123456789'], $this->getTagsService(10)->parse('01234567890'));

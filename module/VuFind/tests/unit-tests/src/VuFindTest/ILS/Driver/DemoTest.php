@@ -72,7 +72,7 @@ class DemoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPatronLogin()
+    public function testPatronLogin(): void
     {
         $patron = $this->driver->patronLogin('foo', 'bar');
         $this->assertTrue(isset($patron['id']));

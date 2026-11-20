@@ -99,7 +99,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -117,7 +117,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
      *
      * @return mixed  On success a driver object, otherwise null.
      */
-    protected function getDriver(string $name)
+    protected function getDriver(string $name): mixed
     {
         // Check for a cached driver
         if (!array_key_exists($name, $this->driverCache)) {
@@ -138,7 +138,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
      *
      * @return mixed On success a driver object, otherwise null.
      */
-    protected function createDriver(string $name)
+    protected function createDriver(string $name): mixed
     {
         if (!isset($this->drivers[$name])) {
             return null;
@@ -165,7 +165,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
      *
      * @return array   The configuration of the driver
      */
-    protected function getDriverConfig(string $name)
+    protected function getDriverConfig(string $name): array
     {
         // Determine config file name based on class name:
         $path = empty($this->driversConfigPath)
@@ -187,7 +187,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
      *
      * @return bool
      */
-    protected function driverSupportsMethod(object $driver, string $method, array $params = null)
+    protected function driverSupportsMethod(object $driver, string $method, array $params = null): bool
     {
         if (is_callable([$driver, $method])) {
             if (method_exists($driver, 'supportsMethod')) {

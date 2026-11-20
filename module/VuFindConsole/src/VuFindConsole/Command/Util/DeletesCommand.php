@@ -60,7 +60,7 @@ class DeletesCommand extends AbstractSolrCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Deletes a set of records from the Solr index.')

@@ -75,7 +75,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testOutOfBoundsPage()
+    public function testOutOfBoundsPage(): void
     {
         $session = $this->getMinkSession();
         $baseUrl = $this->getVuFindUrl() . '/Search/Results?lookfor=' . urlencode('id:testbug1');
@@ -93,7 +93,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testOutOfBoundsPageWithJS()
+    public function testOutOfBoundsPageWithJS(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=Author&type=AllFields&limit=5');

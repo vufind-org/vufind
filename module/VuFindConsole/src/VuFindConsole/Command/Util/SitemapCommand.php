@@ -76,7 +76,7 @@ class SitemapCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Generates XML sitemap files.')

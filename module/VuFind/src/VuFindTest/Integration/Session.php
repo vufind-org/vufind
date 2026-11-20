@@ -97,7 +97,7 @@ class Session extends \Behat\Mink\Session
      *
      * @return void
      */
-    public function reset()
+    public function reset(): void
     {
         parent::reset();
 
@@ -139,7 +139,7 @@ class Session extends \Behat\Mink\Session
      *
      * @return void
      */
-    public function visit(string $url)
+    public function visit(string $url): void
     {
         // Request remote code coverage if enabled:
         if ($this->testName && $this->coverageDir) {

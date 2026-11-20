@@ -63,7 +63,7 @@ class SummonFactory extends NameBasedConfigFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $driver = parent::__invoke($container, $requestedName, $options);
         $driver->setDateConverter($container->get(\VuFind\Date\Converter::class));
         return $driver;

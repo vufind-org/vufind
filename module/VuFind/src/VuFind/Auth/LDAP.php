@@ -66,7 +66,7 @@ class LDAP extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         // Check for missing parameters:
         if (
@@ -87,7 +87,7 @@ class LDAP extends AbstractBase
      *
      * @return string
      */
-    protected function getSetting(string $name)
+    protected function getSetting(string $name): string
     {
         $config = $this->getConfig();
         $value = $config['LDAP'][$name] ?? '';
@@ -107,7 +107,7 @@ class LDAP extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
@@ -126,7 +126,7 @@ class LDAP extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    protected function checkLdap(string $username, string $password)
+    protected function checkLdap(string $username, string $password): UserEntityInterface
     {
         // Establish a connection:
         $connection = $this->connect();
@@ -194,7 +194,7 @@ class LDAP extends AbstractBase
      *
      * @return void
      */
-    protected function bindForSearch($connection)
+    protected function bindForSearch($connection): void
     {
         // If bind_username and bind_password were supplied in the config file, use
         // them to access LDAP before proceeding. In some LDAP setups, these
@@ -219,7 +219,7 @@ class LDAP extends AbstractBase
      *
      * @return array
      */
-    protected function findUsername($connection, string $username)
+    protected function findUsername($connection, string $username): array
     {
         $ldapFilter = $this->getSetting('username') . '=' . $username;
         $basedn = $this->getSetting('basedn');
@@ -242,7 +242,7 @@ class LDAP extends AbstractBase
      *
      * @return bool|array Array of user data on success, false otherwise
      */
-    protected function validateCredentialsInLdap($connection, array $info, string $password)
+    protected function validateCredentialsInLdap($connection, array $info, string $password): bool|array
     {
         // Validate the user credentials by attempting to bind to LDAP:
         $dn = $info[0]['dn'];
@@ -271,7 +271,7 @@ class LDAP extends AbstractBase
      *
      * @return UserEntityInterface Object representing logged-in user.
      */
-    protected function processLDAPUser(string $username, array $data)
+    protected function processLDAPUser(string $username, array $data): UserEntityInterface
     {
         // Database fields that we may be able to load from LDAP:
         $fields = [

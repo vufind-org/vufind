@@ -67,7 +67,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (!($this->mainDriver = $this->config['General']['main_driver'] ?? false)) {
@@ -86,7 +86,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         return $this->defaultCall('cancelHolds', func_get_args());
     }
@@ -103,7 +103,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelILLRequests(array $cancelDetails)
+    public function cancelILLRequests(array $cancelDetails): array
     {
         return $this->defaultCall('cancelILLRequests', func_get_args());
     }
@@ -120,7 +120,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelStorageRetrievalRequests(array $cancelDetails)
+    public function cancelStorageRetrievalRequests(array $cancelDetails): array
     {
         return $this->defaultCall('cancelStorageRetrievalRequests', func_get_args());
     }
@@ -135,7 +135,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function changePassword(array $details)
+    public function changePassword(array $details): mixed
     {
         return $this->defaultCall('changePassword', func_get_args());
     }
@@ -153,7 +153,7 @@ class ComposedDriver extends AbstractMultiDriver
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkILLRequestIsValid(string $id, array $data, array $patron)
+    public function checkILLRequestIsValid(string $id, array $data, array $patron): mixed
     {
         return $this->defaultCall('checkILLRequestIsValid', func_get_args());
     }
@@ -171,7 +171,7 @@ class ComposedDriver extends AbstractMultiDriver
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkRequestIsValid(string $id, array $data, array $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron): mixed
     {
         return $this->defaultCall('checkRequestIsValid', func_get_args());
     }
@@ -189,7 +189,7 @@ class ComposedDriver extends AbstractMultiDriver
      * whether or not it is valid and a status message. Alternatively a boolean
      * true if request is valid, false if not.
      */
-    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron)
+    public function checkStorageRetrievalRequestIsValid(string $id, array $data, array $patron): mixed
     {
         return $this->defaultCall('checkStorageRetrievalRequestIsValid', func_get_args());
     }
@@ -205,7 +205,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed An array of associative arrays representing reserve items
      */
-    public function findReserves(string $course, string $inst, string $dept)
+    public function findReserves(string $course, string $inst, string $dept): mixed
     {
         return $this->defaultCall('findReserves', func_get_args());
     }
@@ -218,7 +218,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks(array $patron)
+    public function getAccountBlocks(array $patron): mixed
     {
         return $this->defaultCall('getAccountBlocks', func_get_args());
     }
@@ -236,7 +236,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string Data for use in a form field
      */
-    public function getCancelHoldDetails(array $hold, array $patron = [])
+    public function getCancelHoldDetails(array $hold, array $patron = []): string
     {
         return $this->defaultCall('getCancelHoldDetails', func_get_args());
     }
@@ -249,7 +249,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string URL to native OPAC
      */
-    public function getCancelHoldLink(array $holdDetails, array $patron)
+    public function getCancelHoldLink(array $holdDetails, array $patron): string
     {
         return $this->defaultCall('getCancelHoldLink', func_get_args());
     }
@@ -266,7 +266,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string Data for use in a form field
      */
-    public function getCancelILLRequestDetails(array $details)
+    public function getCancelILLRequestDetails(array $details): string
     {
         return $this->defaultCall('getCancelILLRequestDetails', func_get_args());
     }
@@ -283,7 +283,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string Data for use in a form field
      */
-    public function getCancelStorageRetrievalRequestDetails(array $details)
+    public function getCancelStorageRetrievalRequestDetails(array $details): string
     {
         return $this->defaultCall('getCancelStorageRetrievalRequestDetails', func_get_args());
     }
@@ -318,7 +318,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @throws DateException
      */
-    public function getConsortialHoldings(string $id, array $patron, array $ids)
+    public function getConsortialHoldings(string $id, array $patron, array $ids): array
     {
         return $this->combineArraysOfAssociativeArrays(
             'getConsortialHoldings',
@@ -334,7 +334,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array An associative array with key = ID, value = name.
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         return $this->defaultCall('getCourses', func_get_args());
     }
@@ -353,7 +353,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string A location ID
      */
-    public function getDefaultPickUpLocation(array $patron = false, array $holdDetails = null)
+    public function getDefaultPickUpLocation(array $patron = false, array $holdDetails = null): string
     {
         return $this->defaultCall('getDefaultPickUpLocation', func_get_args());
     }
@@ -365,7 +365,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array An associative array with key = dept. ID, value = dept. name.
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         return $this->defaultCall('getDepartments', func_get_args());
     }
@@ -379,7 +379,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return int|null
      */
-    public function getHoldDefaultRequiredDate(array $patron, array $holdInfo)
+    public function getHoldDefaultRequiredDate(array $patron, array $holdInfo): ?int
     {
         return $this->defaultCall('getHoldDefaultRequiredDate', func_get_args());
     }
@@ -420,7 +420,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string         URL to ILS's OPAC's place hold screen.
      */
-    public function getHoldLink(string $id, array $details)
+    public function getHoldLink(string $id, array $details): string
     {
         return $this->defaultCall('getHoldLink', func_get_args());
     }
@@ -436,7 +436,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
      */
-    public function getILLPickupLibraries(string $id, array $patron)
+    public function getILLPickupLibraries(string $id, array $patron): bool|array
     {
         return $this->defaultCall('getILLPickupLibraries', func_get_args());
     }
@@ -454,7 +454,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return bool|array False if request not allowed, or an array of
      * locations.
      */
-    public function getILLPickupLocations(string $id, string $pickupLib, array $patron)
+    public function getILLPickupLocations(string $id, string $pickupLib, array $patron): bool|array
     {
         return $this->defaultCall('getILLPickupLocations', func_get_args());
     }
@@ -466,7 +466,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array An associative array with key = ID, value = name.
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         return $this->defaultCall('getInstructors', func_get_args());
     }
@@ -480,7 +480,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         return $this->combineArraysOfAssociativeArrays('getMyFines', func_get_args());
     }
@@ -494,7 +494,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed      Array of the patron's holds
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): mixed
     {
         return $this->combineArraysOfAssociativeArrays('getMyHolds', func_get_args());
     }
@@ -508,7 +508,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed      Array of the patron's ILL requests
      */
-    public function getMyILLRequests(array $patron)
+    public function getMyILLRequests(array $patron): mixed
     {
         return $this->combineArraysOfAssociativeArrays('getMyILLRequests', func_get_args());
     }
@@ -522,7 +522,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed Array of the patron's profile data
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): mixed
     {
         return $this->mergeSingleArrayResults('getMyProfile', func_get_args());
     }
@@ -536,7 +536,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed      Array of the patron's holds
      */
-    public function getMyStorageRetrievalRequests(array $patron)
+    public function getMyStorageRetrievalRequests(array $patron): mixed
     {
         return $this->combineArraysOfAssociativeArrays('getMyStorageRetrievalRequests', func_get_args());
     }
@@ -551,7 +551,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return array      Array of the patron's historic loans on success.
      */
-    public function getMyTransactionHistory(array $user, array $params = null)
+    public function getMyTransactionHistory(array $user, array $params = null): array
     {
         return $this->combineArraysOfAssociativeArrays('getMyTransactionHistory', func_get_args());
     }
@@ -566,7 +566,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): mixed
     {
         return $this->combineArraysOfAssociativeArrays('getMyTransactions', func_get_args(), ['records']);
     }
@@ -579,7 +579,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return string "ils-offline" for systems where the main ILS is offline,
      * "ils-none" for systems which do not use an ILS
      */
-    public function getOfflineMode()
+    public function getOfflineMode(): string
     {
         return $this->defaultCall('getOfflineMode', func_get_args());
     }
@@ -603,7 +603,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
      */
-    public function getPickUpLocations(array $patron = false, array $holdDetails = null)
+    public function getPickUpLocations(array $patron = false, array $holdDetails = null): array
     {
         return $this->defaultCall('getPickUpLocations', func_get_args());
     }
@@ -615,7 +615,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    public function getProxiedUsers(array $patron)
+    public function getProxiedUsers(array $patron): array
     {
         return $this->defaultCall('getProxiedUsers', func_get_args());
     }
@@ -631,7 +631,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory(string $id)
+    public function getPurchaseHistory(string $id): array
     {
         return $this->combineArraysOfAssociativeArrays('getPurchaseHistory', func_get_args());
     }
@@ -645,7 +645,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkoutDetails)
+    public function getRenewDetails(array $checkoutDetails): string
     {
         return $this->defaultCall('getRenewDetails', func_get_args());
     }
@@ -658,7 +658,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getRequestBlocks(array $patron)
+    public function getRequestBlocks(array $patron): mixed
     {
         return $this->defaultCall('getRequestBlocks', func_get_args());
     }
@@ -677,7 +677,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array  An array of associative arrays with requestGroupId and
      * name keys
      */
-    public function getRequestGroups(int $id, array $patron, array $holdDetails = null)
+    public function getRequestGroups(int $id, array $patron, array $holdDetails = null): array
     {
         return $this->defaultCall('getRequestGroups', func_get_args());
     }
@@ -694,7 +694,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         return $this->combineArraysOfAssociativeArrays('getStatus', [$id]);
     }
@@ -710,7 +710,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return array     An array of getStatus() return values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): array
     {
         return $this->combineMultipleArraysOfAssociativeArrays('getStatuses', [$ids], 'id');
     }
@@ -720,7 +720,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array ID numbers of suppressed authority records in the system.
      */
-    public function getSuppressedAuthorityRecords()
+    public function getSuppressedAuthorityRecords(): array
     {
         return $this->defaultCall('getSuppressedAuthorityRecords', func_get_args());
     }
@@ -731,7 +731,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return array ID numbers of suppressed records in the system.
      */
-    public function getSuppressedRecords()
+    public function getSuppressedRecords(): array
     {
         return $this->defaultCall('getSuppressedRecords', func_get_args());
     }
@@ -744,7 +744,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    public function getUrlsForRecord(string $id)
+    public function getUrlsForRecord(string $id): array
     {
         return $this->defaultCall('getUrlsForRecord', func_get_args());
     }
@@ -772,7 +772,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return bool true if the login should be hidden, false if not
      */
-    public function loginIsHidden()
+    public function loginIsHidden(): bool
     {
         return $this->defaultCall('loginIsHidden', func_get_args());
     }
@@ -789,7 +789,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         return $this->defaultCall('patronLogin', func_get_args());
     }
@@ -805,7 +805,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): mixed
     {
         return $this->defaultCall('placeHold', func_get_args());
     }
@@ -822,7 +822,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeILLRequest(array $details)
+    public function placeILLRequest(array $details): mixed
     {
         return $this->defaultCall('placeILLRequest', func_get_args());
     }
@@ -838,7 +838,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeStorageRetrievalRequest(array $details)
+    public function placeStorageRetrievalRequest(array $details): mixed
     {
         return $this->defaultCall('placeStorageRetrievalRequest', func_get_args());
     }
@@ -852,7 +852,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return array Associative array of the results
      */
-    public function purgeTransactionHistory(array $patron, ?array $ids)
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
     {
         return $this->defaultCall('purgeTransactionHistory', func_get_args());
     }
@@ -868,7 +868,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         return $this->defaultCall('renewMyItems', func_get_args());
     }
@@ -880,7 +880,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string Url to a native OPAC
      */
-    public function renewMyItemsLink(array $checkedOutDetails)
+    public function renewMyItemsLink(array $checkedOutDetails): string
     {
         return $this->defaultCall('renewMyItemsLink', func_get_args());
     }
@@ -895,7 +895,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
      */
-    public function supportsMethod(string $method, array $params)
+    public function supportsMethod(string $method, array $params): bool
     {
         $driverName = $this->config[$method]['main_driver'] ?? $this->mainDriver;
         $driver = $this->getDriver($driverName);
@@ -913,7 +913,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array Associative array of the results
      */
-    public function updateHolds(array $holdsDetails, array $fields, array $patron)
+    public function updateHolds(array $holdsDetails, array $fields, array $patron): array
     {
         return $this->defaultCall('updateHolds', func_get_args());
     }
@@ -923,7 +923,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string[] Source ID's
      */
-    public function getLoginDrivers()
+    public function getLoginDrivers(): array
     {
         return [$this->mainDriver];
     }
@@ -933,7 +933,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string Default login driver or empty string
      */
-    public function getDefaultLoginDriver()
+    public function getDefaultLoginDriver(): string
     {
         return $this->mainDriver;
     }
@@ -951,7 +951,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return false|string       The default request group for the patron.
      */
-    public function getDefaultRequestGroup(array $patron, ?array $holdDetails = null)
+    public function getDefaultRequestGroup(array $patron, ?array $holdDetails = null): bool|string
     {
         return $this->defaultCall('getDefaultRequestGroup', func_get_args());
     }
@@ -966,7 +966,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @throws ILSException
      * @return mixed             Varies by method
      */
-    public function __call(string $methodName, array $params)
+    public function __call(string $methodName, array $params): mixed
     {
         return $this->defaultCall($methodName, $params);
     }
@@ -980,7 +980,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed
      */
-    protected function callDriverMethod(string $driverName, string $method, array $params)
+    protected function callDriverMethod(string $driverName, string $method, array $params): mixed
     {
         $driver = $this->getDriver($driverName);
         return call_user_func_array([$driver, $method], $params);
@@ -993,7 +993,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return string
      */
-    protected function getMainDriverNameForMethod($method)
+    protected function getMainDriverNameForMethod($method): string
     {
         $driverName = $this->config[$method]['main_driver'] ?? $this->mainDriver;
         return $driverName;
@@ -1007,7 +1007,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed
      */
-    protected function defaultCall(string $methodName, array $params)
+    protected function defaultCall(string $methodName, array $params): mixed
     {
         if ($this->supportsMethod($methodName, $params)) {
             $driverName = $this->getMainDriverNameForMethod($methodName);
@@ -1025,7 +1025,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    protected function mergeSingleArrayResults(string $methodName, array $params)
+    protected function mergeSingleArrayResults(string $methodName, array $params): array
     {
         $methodConfig = $this->config[$methodName] ?? [];
 
@@ -1060,7 +1060,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return mixed
      */
-    protected function combineArraysOfAssociativeArrays($methodName, $params, $optionalResultSubfields = [])
+    protected function combineArraysOfAssociativeArrays($methodName, $params, $optionalResultSubfields = []): mixed
     {
         $methodConfig = $this->config[$methodName] ?? [];
 
@@ -1120,7 +1120,7 @@ class ComposedDriver extends AbstractMultiDriver
         $params,
         $baseMergeKey,
         $optionalResultSubfields = []
-    ) {
+    ): mixed {
         $methodConfig = $this->config[$methodName] ?? [];
 
         // get main results
@@ -1205,7 +1205,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    protected function extractResultSubfields($result, $optionalResultSubfields)
+    protected function extractResultSubfields($result, $optionalResultSubfields): array
     {
         $includesSubfields = false;
         foreach ($optionalResultSubfields as $subfield) {
@@ -1231,7 +1231,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    protected function mergeInSubfields($mainResult, $supportResults, $mergeKeys, $optionalResultSubfields)
+    protected function mergeInSubfields($mainResult, $supportResults, $mergeKeys, $optionalResultSubfields): array
     {
         $includesSubfields = false;
         foreach ($optionalResultSubfields as $subfield) {
@@ -1256,7 +1256,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    protected function mergeAssociativeArrays(array $mainResult, array $supportResults, array $mergeKeys)
+    protected function mergeAssociativeArrays(array $mainResult, array $supportResults, array $mergeKeys): array
     {
         $res = [];
         foreach ($mainResult as $mainEntry) {
@@ -1284,7 +1284,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    protected function extractKey(array $data, string $key)
+    protected function extractKey(array $data, string $key): array
     {
         $res = [];
         foreach ($data as $entry) {

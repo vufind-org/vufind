@@ -70,7 +70,7 @@ class Writer
      *
      * @return void
      */
-    public function commit(string $backend)
+    public function commit(string $backend): void
     {
         // Commit can take a long time -- use a custom timeout:
         $this->write($backend, new CommitDocument(), 60 * 60);
@@ -85,7 +85,7 @@ class Writer
      *
      * @return void
      */
-    public function deleteAll(string $backend)
+    public function deleteAll(string $backend): void
     {
         $this->deleteByQuery($backend, '*:*');
     }
@@ -100,7 +100,7 @@ class Writer
      *
      * @return void
      */
-    public function deleteByQuery(string $backend, string $query)
+    public function deleteByQuery(string $backend, string $query): void
     {
         $deleteDoc = new DeleteDocument();
         $deleteDoc->addQuery($query);
@@ -115,7 +115,7 @@ class Writer
      *
      * @return void
      */
-    public function deleteRecords(string $backend, array $idList)
+    public function deleteRecords(string $backend, array $idList): void
     {
         // Delete IDs:
         $deleteDoc = new DeleteDocument();
@@ -135,7 +135,7 @@ class Writer
      *
      * @return void
      */
-    public function optimize(string $backend)
+    public function optimize(string $backend): void
     {
         // Optimize can take a long time -- use a custom timeout:
         $this->write($backend, new OptimizeDocument(), 60 * 60 * 24);
@@ -156,7 +156,7 @@ class Writer
         DocumentInterface $doc,
         string $handler = 'update',
         ?ParamBag $params = null
-    ) {
+    ): void {
         $this->write($backend, $doc, null, $handler, $params);
     }
 
@@ -178,7 +178,7 @@ class Writer
         ?int $timeout = null,
         string $handler = 'update',
         ?ParamBag $params = null
-    ) {
+    ): array {
         $command = new WriteDocumentCommand(...func_get_args());
         return $this->searchService->invoke($command)->getResult();
     }

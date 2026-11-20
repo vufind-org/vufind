@@ -81,7 +81,7 @@ class TransEscAttr
         string $default = null,
         bool $useIcuFormatter = false,
         array $fallbackDomains = []
-    ) {
+    ): string {
         $escaper = $this->escapeHtmlAttr;
         $translator = $this->translate;
         return $escaper($translator($str, $tokens, $default, $useIcuFormatter, $fallbackDomains));

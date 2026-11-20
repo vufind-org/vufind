@@ -50,7 +50,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getDefaultDefs()
+    protected function getDefaultDefs(): array
     {
         return [
             'cleanDOI' => [

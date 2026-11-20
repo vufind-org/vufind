@@ -50,7 +50,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getISBNs()
+    public function getISBNs(): array
     {
         $isbn = array_merge(
             $this->getFieldArray('020', ['a', 'z', '9'], false),
@@ -68,7 +68,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         $issn = array_merge(
             $this->getFieldArray('022', ['a']),
@@ -89,7 +89,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         return $this->getFieldArray('245', ['h']);
     }
@@ -101,7 +101,7 @@ trait MarcBasicTrait
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         return (string)$this->getMarcReader()->getField('001');
     }
@@ -111,7 +111,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getCallNumbers()
+    public function getCallNumbers(): array
     {
         $retVal = [];
         foreach (['090', '050'] as $field) {
@@ -132,7 +132,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    public function getDeweyCallNumber()
+    public function getDeweyCallNumber(): string
     {
         return $this->getFirstFieldValue('082', ['a']);
     }
@@ -142,7 +142,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         $primary = $this->getFirstFieldValue('100', ['a', 'b', 'c', 'd']);
         return empty($primary) ? [] : [$primary];
@@ -153,7 +153,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         $retVal = [];
         $field = $this->getMarcReader()->getField('008');
@@ -178,7 +178,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->getFirstFieldValue('245', ['a', 'b']);
     }
@@ -188,7 +188,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    public function getSortTitle()
+    public function getSortTitle(): string
     {
         $field = $this->getMarcReader()->getField('245');
         if ($field && $title = $this->getSubfield($field, 'a')) {
@@ -203,7 +203,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return $this->getFirstFieldValue('245', ['a']);
     }
@@ -213,7 +213,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    public function getSubtitle()
+    public function getSubtitle(): string
     {
         return $this->getFirstFieldValue('245', ['b']);
     }
@@ -223,7 +223,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getPublishers()
+    public function getPublishers(): array
     {
         return $this->getPublicationInfo('b');
     }
@@ -235,7 +235,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getDateSpan()
+    public function getDateSpan(): array
     {
         return $this->getFieldArray('362', ['a']);
     }
@@ -245,7 +245,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         return $this->getPublicationInfo('c');
     }
@@ -255,7 +255,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getCorporateAuthors()
+    public function getCorporateAuthors(): array
     {
         return array_merge(
             $this->getFieldArray('110', ['a', 'b']),
@@ -270,7 +270,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getSecondaryAuthors(): array
     {
         return $this->getFieldArray('700', ['a', 'b', 'c', 'd']);
     }
@@ -280,7 +280,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getNewerTitles()
+    public function getNewerTitles(): array
     {
         return $this->getFieldArray('785', ['a', 's', 't']);
     }
@@ -290,7 +290,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getPreviousTitles()
+    public function getPreviousTitles(): array
     {
         return $this->getFieldArray('780', ['a', 's', 't']);
     }
@@ -300,7 +300,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    public function getEdition()
+    public function getEdition(): string
     {
         return $this->getFirstFieldValue('250', ['a']);
     }
@@ -310,7 +310,7 @@ trait MarcBasicTrait
      *
      * @return string
      */
-    protected function getRawLCCN()
+    protected function getRawLCCN(): string
     {
         return $this->getFirstFieldValue('010', ['a']);
     }
@@ -320,7 +320,7 @@ trait MarcBasicTrait
      *
      * @return array
      */
-    public function getPhysicalDescriptions()
+    public function getPhysicalDescriptions(): array
     {
         return $this->getFieldArray('300', ['a', 'b', 'c', 'e', 'f', 'g'], true);
     }

@@ -108,7 +108,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $settings = explode(':', $settings);
         $this->requestParam = empty($settings[0]) ? 'lookfor' : $settings[0];
@@ -192,7 +192,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         // No action needed.
     }
@@ -217,7 +217,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return string
      */
-    public function getHeading()
+    public function getHeading(): string
     {
         return $this->heading;
     }
@@ -227,12 +227,12 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @return string
      */
-    abstract protected function getSearchClassId();
+    abstract protected function getSearchClassId(): string;
 
     /**
      * Get the default heading for this recommendation module.
      *
      * @return string
      */
-    abstract protected function getDefaultHeading();
+    abstract protected function getDefaultHeading(): string;
 }

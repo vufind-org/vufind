@@ -94,7 +94,7 @@ class ServerParam implements
      *
      * @return array
      */
-    public function getPermissions(mixed $options)
+    public function getPermissions(mixed $options): array
     {
         // user only gets the permission if all options match (AND)
         foreach ((array)$options as $option) {
@@ -115,7 +115,7 @@ class ServerParam implements
      *
      * @return bool true if a server param matches, false if not
      */
-    protected function checkServerParam(string $option)
+    protected function checkServerParam(string $option): bool
     {
         // split option on spaces unless escaped with backslash
         $optionParts = $this->splitString($option, ' ', '\\');
@@ -184,7 +184,7 @@ class ServerParam implements
      *
      * @return array split string parts
      */
-    protected function splitString(string $string, string $delimiter, string $escape)
+    protected function splitString(string $string, string $delimiter, string $escape): array
     {
         if ($delimiter === '') {
             return [$string];

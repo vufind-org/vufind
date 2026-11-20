@@ -93,7 +93,7 @@ trait ClassBasedTemplateRendererTrait
         RendererInterface $viewRenderer,
         ResolverInterface $viewResolver,
         Context $contextHelper
-    ) {
+    ): void {
         $this->viewRenderer = $viewRenderer;
         $this->viewResolver = $viewResolver;
         $this->contextHelper = $contextHelper;
@@ -117,7 +117,7 @@ trait ClassBasedTemplateRendererTrait
         string $className,
         ResolverInterface $resolver,
         string $topClassName = null
-    ) {
+    ): string {
         // If the template resolves, return it:
         $templateWithClass = $this->getTemplateWithClass($template, $className);
         if ($resolver->resolve($templateWithClass)) {
@@ -200,7 +200,7 @@ trait ClassBasedTemplateRendererTrait
         string $className,
         array $context = [],
         bool $throw = true
-    ) {
+    ): string {
         $viewRenderer = $this->getViewRenderer();
         $contextHelper = $this->getContextHelper();
         $oldContext = $contextHelper($viewRenderer)->apply($context);
@@ -231,7 +231,7 @@ trait ClassBasedTemplateRendererTrait
      *
      * @return string
      */
-    protected function getCachedClassTemplate(string $template, string $className)
+    protected function getCachedClassTemplate(string $template, string $className): string
     {
         if (!isset($this->templateCache[$className][$template])) {
             $this->templateCache[$className][$template]
@@ -251,7 +251,7 @@ trait ClassBasedTemplateRendererTrait
      *
      * @return string
      */
-    protected function getBriefClass(string $className)
+    protected function getBriefClass(string $className): string
     {
         $classParts = explode('\\', $className);
         $className = array_pop($classParts);

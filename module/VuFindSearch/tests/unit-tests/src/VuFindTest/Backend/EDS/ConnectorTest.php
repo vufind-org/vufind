@@ -60,7 +60,7 @@ class ConnectorTest extends TestCase
      *
      * @return void
      */
-    public function testCaching()
+    public function testCaching(): void
     {
         $conn = $this->createConnector('retrieveEdsItem');
 
@@ -108,7 +108,7 @@ class ConnectorTest extends TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector(string $fixture = null, HttpClient $client = null)
+    protected function createConnector(string $fixture = null, HttpClient $client = null): Connector
     {
         if ($fixture) {
             $this->response = unserialize(
@@ -131,7 +131,7 @@ class ConnectorTest extends TestCase
      *
      * @return HttpClient
      */
-    protected function createClient()
+    protected function createClient(): HttpClient
     {
         $client = new HttpClient();
         $adapter = new TestAdapter();

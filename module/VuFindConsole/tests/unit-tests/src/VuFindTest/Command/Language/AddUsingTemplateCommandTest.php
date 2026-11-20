@@ -69,7 +69,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -90,7 +90,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
@@ -130,7 +130,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
         ?ExtendedIniReader $reader = null,
         string $languageDir = null,
         array $methods = ['addLineToFile']
-    ) {
+    ): AddUsingTemplateCommand {
         return $this->getMockBuilder(AddUsingTemplateCommand::class)
             ->setConstructorArgs(
                 [
@@ -149,7 +149,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniNormalizer
      */
-    protected function getMockNormalizer(array $methods = [])
+    protected function getMockNormalizer(array $methods = []): ExtendedIniNormalizer
     {
         $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor();
@@ -166,7 +166,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniReader
      */
-    protected function getMockReader(array $methods = [])
+    protected function getMockReader(array $methods = []): ExtendedIniReader
     {
         $builder = $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor();

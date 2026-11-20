@@ -91,7 +91,7 @@ class SessionContainerRegistry implements ContainerInterface
      * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
      * @throws ContainerExceptionInterface Error while retrieving the entry.
      */
-    public function get(string $id)
+    public function get(string $id): mixed
     {
         $this->containers[$id] ??= new Container($id, $this->sessionManager);
         return $this->containers[$id];

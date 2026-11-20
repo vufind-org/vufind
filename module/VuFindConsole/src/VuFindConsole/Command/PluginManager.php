@@ -121,7 +121,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return array
      */
-    public function getCommandList()
+    public function getCommandList(): array
     {
         return array_values($this->aliases);
     }
@@ -132,7 +132,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    protected function getExpectedInterface(): string
     {
         return \Symfony\Component\Console\Command\Command::class;
     }

@@ -85,7 +85,7 @@ trait MockContainerTrait
      *
      * @return mixed
      */
-    public function createMock(string $id, array $methods = [])
+    public function createMock(string $id, array $methods = []): mixed
     {
         $builder = (new MockBuilder($this->test, $id))->disableOriginalConstructor();
         if ($methods) {
@@ -105,7 +105,7 @@ trait MockContainerTrait
      *
      * @return object
      */
-    public function disable(string $id)
+    public function disable(string $id): object
     {
         // Don't double-disable a service:
         if ($this->has($id)) {
@@ -123,7 +123,7 @@ trait MockContainerTrait
      *
      * @return mixed
      */
-    public function get(string $rawId, ?array $options = [])
+    public function get(string $rawId, ?array $options = []): mixed
     {
         $id = $this->mockAliases[$rawId] ?? $rawId;
         if (!isset($this->mockServices[$id])) {
@@ -140,7 +140,7 @@ trait MockContainerTrait
      *
      * @return bool
      */
-    public function has(string $rawId)
+    public function has(string $rawId): bool
     {
         $id = $this->mockAliases[$rawId] ?? $rawId;
         // Assume every service exists unless explicitly disabled
@@ -169,7 +169,7 @@ trait MockContainerTrait
      *
      * @return object
      */
-    public function set(string $id, mixed $obj)
+    public function set(string $id, mixed $obj): object
     {
         $this->mockServices[$id] = $obj;
         return $this;
@@ -183,7 +183,7 @@ trait MockContainerTrait
      *
      * @return object
      */
-    public function setAlias(string $alias, string $target)
+    public function setAlias(string $alias, string $target): object
     {
         $this->mockAliases[$alias] = $target;
         return $this;

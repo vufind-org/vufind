@@ -74,7 +74,7 @@ class RediTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParseLinks()
+    public function testParseLinks(): void
     {
         $conn = $this->createConnector('redi.xhtml');
         $openUrl = $this->getFixture('openurl/redi');
@@ -123,7 +123,7 @@ class RediTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector(string $fixture = null)
+    protected function createConnector(string $fixture = null): Connector
     {
         $adapter = new TestAdapter();
         if ($fixture) {

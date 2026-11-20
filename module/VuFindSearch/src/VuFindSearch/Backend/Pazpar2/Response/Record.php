@@ -70,7 +70,7 @@ class Record implements RecordInterface
      *
      * @return SimpleXMLElement
      */
-    public function getXML()
+    public function getXML(): SimpleXMLElement
     {
         return $this->xml;
     }

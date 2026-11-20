@@ -62,7 +62,7 @@ class SerializableRecord implements SerializableRecordInterface
      *
      * @return array
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->fields;
     }

@@ -73,7 +73,7 @@ class Threesixtylink extends AbstractBase
      *
      * @return string         raw XML returned by resolver
      */
-    public function fetchLinks(string $openURL)
+    public function fetchLinks(string $openURL): string
     {
         // Make the call to SerialsSolutions and load results
         $url = $this->baseUrl . (str_ends_with($this->baseUrl, '/') ? '' : '/') .
@@ -92,7 +92,7 @@ class Threesixtylink extends AbstractBase
      *
      * @return array         Array of values
      */
-    public function parseLinks(string $xmlstr)
+    public function parseLinks(string $xmlstr): array
     {
         $records = []; // array to return
 

@@ -48,7 +48,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testContains()
+    public function testContains(): void
     {
         $bag = new ParamBag();
         $bag->set('foo', 'bar');
@@ -62,7 +62,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testHasParam()
+    public function testHasParam(): void
     {
         $bag = new ParamBag();
         $bag->set('foo', 'bar');
@@ -75,7 +75,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testRemove()
+    public function testRemove(): void
     {
         $bag = new ParamBag();
         $bag->set('foo', 'bar');
@@ -89,7 +89,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testMergeWithAll()
+    public function testMergeWithAll(): void
     {
         $bag1 = new ParamBag(['a' => 1]);
         $bag2 = new ParamBag(['b' => 2]);
@@ -103,7 +103,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testCountability()
+    public function testCountability(): void
     {
         $bag = new ParamBag();
         $this->assertCount(0, $bag);
@@ -118,7 +118,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testDeduplication()
+    public function testDeduplication(): void
     {
         $bag = new ParamBag();
         $bag->add('foo', 'bar');
@@ -139,7 +139,7 @@ class ParamBagTest extends TestCase
      *
      * @return void
      */
-    public function testDisabledDeduplication()
+    public function testDisabledDeduplication(): void
     {
         $bag = new ParamBag();
         $bag->add('foo', 'bar', false);

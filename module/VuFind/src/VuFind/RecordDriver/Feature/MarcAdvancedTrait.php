@@ -100,7 +100,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getAccessRestrictions()
+    public function getAccessRestrictions(): array
     {
         return $this->getFieldArray('506');
     }
@@ -118,7 +118,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getAllSubjectHeadings(bool $extended = false)
+    public function getAllSubjectHeadings(bool $extended = false): array
     {
         if (($this->mainConfig['Record']['marcSubjectHeadingsSort'] ?? '') === 'numerical') {
             $returnValues = $this->getAllSubjectHeadingsNumericalOrder($extended);
@@ -250,7 +250,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getAwards()
+    public function getAwards(): array
     {
         return $this->getFieldArray('586');
     }
@@ -260,7 +260,7 @@ trait MarcAdvancedTrait
      *
      * @return string
      */
-    public function getBibliographicLevel()
+    public function getBibliographicLevel(): string
     {
         $leader = $this->getMarcReader()->getLeader();
         $biblioLevel = strtoupper($leader[7]);
@@ -290,7 +290,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getBibliographyNotes()
+    public function getBibliographyNotes(): array
     {
         return $this->getFieldArray('504');
     }
@@ -300,7 +300,7 @@ trait MarcAdvancedTrait
      *
      * @return string
      */
-    public function getFilteredXML()
+    public function getFilteredXML(): string
     {
         // The default implementation does not filter out any fields. You can do
         // simple filtering using MarcReader's getFilteredRecord method, or more
@@ -373,7 +373,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getFindingAids()
+    public function getFindingAids(): array
     {
         return $this->getFieldArray('555');
     }
@@ -383,7 +383,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getGeneralNotes()
+    public function getGeneralNotes(): array
     {
         return $this->getFieldArray('500');
     }
@@ -394,7 +394,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getHumanReadablePublicationDates()
+    public function getHumanReadablePublicationDates(): array
     {
         return $this->getPublicationInfo('c');
     }
@@ -404,7 +404,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getNewerTitles()
+    public function getNewerTitles(): array
     {
         // If the MARC links are being used, return blank array
         $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
@@ -418,7 +418,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getPlacesOfPublication()
+    public function getPlacesOfPublication(): array
     {
         return $this->getPublicationInfo();
     }
@@ -428,7 +428,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getPlayingTimes()
+    public function getPlayingTimes(): array
     {
         $times = $this->getFieldArray('306', ['a'], false);
 
@@ -448,7 +448,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getPreviousTitles()
+    public function getPreviousTitles(): array
     {
         // If the MARC links are being used, return blank array
         $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
@@ -462,7 +462,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getProductionCredits()
+    public function getProductionCredits(): array
     {
         return $this->getFieldArray('508');
     }
@@ -472,7 +472,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getPublicationFrequency()
+    public function getPublicationFrequency(): array
     {
         return $this->getFieldArray('310', ['a', 'b']);
     }
@@ -482,7 +482,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getRelationshipNotes()
+    public function getRelationshipNotes(): array
     {
         return $this->getFieldArray('580');
     }
@@ -494,7 +494,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getSeries()
+    public function getSeries(): array
     {
         // First check the 440, 800 and 830 fields for series information:
         $primaryFields = [
@@ -526,7 +526,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    protected function getSeriesFromMARC(array $fieldInfo)
+    protected function getSeriesFromMARC(array $fieldInfo): array
     {
         $matches = [];
 
@@ -563,7 +563,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getSystemDetails()
+    public function getSystemDetails(): array
     {
         return $this->getFieldArray('538');
     }
@@ -573,7 +573,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getTargetAudienceNotes()
+    public function getTargetAudienceNotes(): array
     {
         return $this->getFieldArray('521');
     }
@@ -583,7 +583,7 @@ trait MarcAdvancedTrait
      *
      * @return string
      */
-    public function getTitleSection()
+    public function getTitleSection(): string
     {
         return $this->getFirstFieldValue('245', ['n', 'p']);
     }
@@ -594,7 +594,7 @@ trait MarcAdvancedTrait
      *
      * @return string
      */
-    public function getTitleStatement()
+    public function getTitleStatement(): string
     {
         return $this->getFirstFieldValue('245', ['c']);
     }
@@ -604,7 +604,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getTOC()
+    public function getTOC(): array
     {
         $toc = [];
         if (
@@ -639,7 +639,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getHierarchicalPlaceNames()
+    public function getHierarchicalPlaceNames(): array
     {
         $placeNames = [];
         if ($fields = $this->getMarcReader()->getFields('752')) {
@@ -670,7 +670,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         $retVal = [];
 
@@ -717,7 +717,7 @@ trait MarcAdvancedTrait
      *
      * @return null|array
      */
-    public function getAllRecordLinks()
+    public function getAllRecordLinks(): ?array
     {
         // Load configurations:
         $fieldsNames = isset($this->mainConfig['Record']['marc_links'])
@@ -757,7 +757,7 @@ trait MarcAdvancedTrait
      *
      * @return string
      */
-    protected function getRecordLinkNote(array $field)
+    protected function getRecordLinkNote(array $field): string
     {
         // If set, use relationship information from subfield i
         if ($subfieldI = $this->getSubfield($field, 'i')) {
@@ -800,7 +800,7 @@ trait MarcAdvancedTrait
      * @return array|bool  Array on success, boolean false if no valid link could be
      * found in the data.
      */
-    protected function getFieldData(array $field)
+    protected function getFieldData(array $field): array|bool
     {
         // Make sure that there is a t field to be displayed:
         if (!($title = $this->getSubfield($field, 't'))) {
@@ -883,7 +883,7 @@ trait MarcAdvancedTrait
      *
      * @return string|bool    ID on success, false on failure
      */
-    protected function getIdFromLinkingField(string $idField, string $prefix = null, bool $raw = false)
+    protected function getIdFromLinkingField(string $idField, string $prefix = null, bool $raw = false): string|bool
     {
         if (preg_match('/\(([^)]+)\)(.+)/', $idField, $matches)) {
             // If prefix matches, return ID:
@@ -908,7 +908,7 @@ trait MarcAdvancedTrait
      *
      * @return string|bool
      */
-    protected function extractSingleMarcDetail(array $currentField, array $details)
+    protected function extractSingleMarcDetail(array $currentField, array $details): string|bool
     {
         // Simplest case -- "msg" mode (just return a configured message):
         if ($details['mode'] === 'msg') {
@@ -942,7 +942,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getFormattedMarcDetails(string $defaultField, array $data)
+    public function getFormattedMarcDetails(string $defaultField, array $data): array
     {
         // First, parse the instructions into a more useful format, so we know
         // which fields we're going to have to look up.
@@ -996,7 +996,7 @@ trait MarcAdvancedTrait
      *
      * @return mixed XML, or false if format unsupported.
      */
-    public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null)
+    public function getXML(string $format, string $baseUrl = null, RecordLinker $linker = null): mixed
     {
         // Special case for MARC:
         if ($format === 'marc21') {
@@ -1037,7 +1037,7 @@ trait MarcAdvancedTrait
      *
      * @return mixed XML RDF data (empty if unsupported or error).
      */
-    public function getRDFXML()
+    public function getRDFXML(): mixed
     {
         try {
             $xml = $this->getMarcReader()->toFormat('MARCXML');
@@ -1055,7 +1055,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getConsortialIDs()
+    public function getConsortialIDs(): array
     {
         return $this->getFieldArray('035');
     }
@@ -1065,7 +1065,7 @@ trait MarcAdvancedTrait
      *
      * @return mixed
      */
-    public function getCleanISMN()
+    public function getCleanISMN(): mixed
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
@@ -1084,7 +1084,7 @@ trait MarcAdvancedTrait
      *
      * @return mixed
      */
-    public function getCleanNBN()
+    public function getCleanNBN(): mixed
     {
         $field = $this->getMarcReader()->getField('015');
         if ($field && $nbn = $this->getSubfield($field, 'a')) {
@@ -1156,7 +1156,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getTextualHoldings()
+    public function getTextualHoldings(): array
     {
         return $this->getFieldArray('866');
     }
@@ -1227,7 +1227,7 @@ trait MarcAdvancedTrait
         string $field,
         ?array $subfield = null,
         array $indData = []
-    ) {
+    ): array {
         $vals = [];
         $marc = $this->getMarcReader();
         $marc_fields = $marc->getFields($field, $subfield);
@@ -1252,7 +1252,7 @@ trait MarcAdvancedTrait
      *
      * @return array Note fields from the MARC record
      */
-    public function getLocationOfArchivalMaterialsNotes()
+    public function getLocationOfArchivalMaterialsNotes(): array
     {
         return $this->getMarcFieldWithInd('544', range('a', 'z'), [[1 => ['', '0']]]);
     }
@@ -1262,7 +1262,7 @@ trait MarcAdvancedTrait
      *
      * @return array
      */
-    public function getSummary()
+    public function getSummary(): array
     {
         return $this->getMarcFieldWithInd('520', ['a'], [[1 => ['', '0', '2', '8']]]);
     }
@@ -1272,7 +1272,7 @@ trait MarcAdvancedTrait
      *
      * @return array Note fields from the MARC record
      */
-    public function getSummaryNotes()
+    public function getSummaryNotes(): array
     {
         return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['', '0', '2', '8']]]);
     }
@@ -1282,7 +1282,7 @@ trait MarcAdvancedTrait
      *
      * @return array Note fields from the MARC record
      */
-    public function getAbstractNotes()
+    public function getAbstractNotes(): array
     {
         return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['3']]]);
     }
@@ -1292,7 +1292,7 @@ trait MarcAdvancedTrait
      *
      * @return array Note fields from the MARC record
      */
-    public function getReviewNotes()
+    public function getReviewNotes(): array
     {
         return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['1']]]);
     }
@@ -1302,7 +1302,7 @@ trait MarcAdvancedTrait
      *
      * @return array Note fields from the MARC record
      */
-    public function getContentAdviceNotes()
+    public function getContentAdviceNotes(): array
     {
         return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['4']]]);
     }

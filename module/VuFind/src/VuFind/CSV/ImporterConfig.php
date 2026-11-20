@@ -199,7 +199,7 @@ class ImporterConfig
      *
      * @return array
      */
-    public function getFixedFieldValues()
+    public function getFixedFieldValues(): array
     {
         $fields = [];
         foreach ($this->getAllFields() as $field) {

@@ -82,7 +82,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
         $this->setBatchSizeFromOptions($options);

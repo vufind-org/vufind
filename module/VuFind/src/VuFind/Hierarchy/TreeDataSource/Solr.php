@@ -139,7 +139,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getXML(string $id, array $options = [])
+    public function getXML(string $id, array $options = []): string
     {
         return $this->getFormattedData($id, 'xml', $options, 'hierarchyTree_%s.xml');
     }
@@ -254,7 +254,7 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    protected function getMapForHierarchy(string $id)
+    protected function getMapForHierarchy(string $id): array
     {
         // Static cache of last map; if the user requests the same map twice
         // in a row (as when generating XML and JSON in sequence) this will
@@ -295,7 +295,7 @@ class Solr extends AbstractBase
      *
      * @return array|bool
      */
-    protected function getRecord(string $id)
+    protected function getRecord(string $id): array|bool
     {
         // Static cache of last record; if the user requests the same map twice
         // in a row (as when generating XML and JSON in sequence) this will
@@ -323,7 +323,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getJSON(string $id, array $options = [])
+    public function getJSON(string $id, array $options = []): string
     {
         return $this->getFormattedData($id, 'json', $options, 'tree_%s.json');
     }
@@ -345,7 +345,7 @@ class Solr extends AbstractBase
         string $format,
         array $options = [],
         string $cacheTemplate = 'tree_%s'
-    ) {
+    ): string {
         $cacheFile = (null !== $this->cacheDir)
             ? $this->cacheDir . '/'
               . ($this->cachePrefix ? "{$this->cachePrefix}_" : '')
@@ -403,7 +403,7 @@ class Solr extends AbstractBase
      *
      * @return bool
      */
-    public function supports(string $id)
+    public function supports(string $id): bool
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 

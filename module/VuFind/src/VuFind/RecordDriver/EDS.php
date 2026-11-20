@@ -95,7 +95,7 @@ class EDS extends DefaultRecord
      *
      * @return string The determined key
      */
-    protected function getCacheKey(string $key = '')
+    protected function getCacheKey(string $key = ''): string
     {
         return 'EDS_Shared_' . md5($key);
     }
@@ -107,7 +107,7 @@ class EDS extends DefaultRecord
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
@@ -120,7 +120,7 @@ class EDS extends DefaultRecord
      *
      * @return string unique rtac identifier
      */
-    public function getUniqueIDOverrideForRequest()
+    public function getUniqueIDOverrideForRequest(): string
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
@@ -145,7 +145,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function hasCatalog()
+    public function hasCatalog(): bool
     {
         $dbid = $this->fields['Header']['DbId'];
         $hasCatalog = $this->recordConfig['Catalog']['EDSHasCatalog'] ?? false;
@@ -169,7 +169,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function pubTypeRtacEnabled()
+    public function pubTypeRtacEnabled(): bool
     {
         $pubTypeId = $this->fields['Header']['PubTypeId'];
         return $pubTypeId !== 'ebook';
@@ -180,7 +180,7 @@ class EDS extends DefaultRecord
      *
      * @return ?float
      */
-    public function getScore()
+    public function getScore(): ?float
     {
         $score =
             $this->fields['Header']['PreciseRelevancyScore']
@@ -197,7 +197,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function supportsHoldingsTab()
+    public function supportsHoldingsTab(): bool
     {
         // For EDS records, only show holdings tab if it's a catalog record
         // and the publication type is not excluded from RTAC
@@ -210,7 +210,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings(): array
     {
         if (
             !$this->hasILS() ||
@@ -233,7 +233,7 @@ class EDS extends DefaultRecord
      *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold()
+    public function getRealTimeTitleHold(): mixed
     {
         if ($this->hasILS() && $this->hasCatalog() && $this->pubTypeRtacEnabled()) {
             $supportedPubTypes = ['book'];
@@ -255,7 +255,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getHighlightedTitle()
+    public function getHighlightedTitle(): string
     {
         // If highlighting is available, it will be in the item data; the raw data will
         // include <highlight> tags, but these get converted into spans by deeper layers
@@ -273,7 +273,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         $title = $this->getTitle();
         if (null == $title) {
@@ -288,7 +288,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getSubtitle()
+    public function getSubtitle(): string
     {
         $title = $this->getTitle();
         if (null == $title) {
@@ -304,7 +304,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getAbstractNotes()
+    public function getAbstractNotes(): array
     {
         $abstracts = $this->getItem('Group', 'Ab');
         return array_filter(array_map(fn ($abstract) => ($abstract['Data'] ?? null), $abstracts));
@@ -320,7 +320,7 @@ class EDS extends DefaultRecord
      *                3 - Full access: search/display all content to guests
      *                6 - Display full record but no access to full text
      */
-    public function getAccessLevel()
+    public function getAccessLevel(): string
     {
         return $this->fields['Header']['AccessLevel'] ?? '';
     }
@@ -351,7 +351,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getItemsAuthors()
+    public function getItemsAuthors(): string
     {
         $authors = $this->getItemsAuthorsArray();
         return empty($authors) ? '' : implode('; ', $authors);
@@ -362,7 +362,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function getItemsAuthorsArray()
+    protected function getItemsAuthorsArray(): array
     {
         return array_map(
             function ($data) {
@@ -386,7 +386,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getCustomLinks()
+    public function getCustomLinks(): array
     {
         return $this->fields['CustomLinks'] ?? [];
     }
@@ -396,7 +396,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getFTCustomLinks()
+    public function getFTCustomLinks(): array
     {
         return $this->fields['FullText']['CustomLinks'] ?? [];
     }
@@ -406,7 +406,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getDbLabel()
+    public function getDbLabel(): string
     {
         return $this->fields['Header']['DbLabel'] ?? '';
     }
@@ -416,7 +416,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getHTMLFullText()
+    public function getHTMLFullText(): string
     {
         return $this->toHTML($this->fields['FullText']['Text']['Value'] ?? '');
     }
@@ -426,7 +426,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function hasHTMLFullTextAvailable()
+    public function hasHTMLFullTextAvailable(): bool
     {
         return '1' == ($this->fields['FullText']['Text']['Availability'] ?? '0');
     }
@@ -534,7 +534,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getPLink()
+    public function getPLink(): string
     {
         return $this->fields['PLink'] ?? '';
     }
@@ -544,7 +544,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getPubType()
+    public function getPubType(): string
     {
         return $this->fields['Header']['PubType'] ?? '';
     }
@@ -554,7 +554,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getPubTypeId()
+    public function getPubTypeId(): string
     {
         return $this->fields['Header']['PubTypeId'] ?? '';
     }
@@ -566,7 +566,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    protected function hasEbookAvailable(array $types)
+    protected function hasEbookAvailable(array $types): bool
     {
         foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
             if (in_array($link['Type'] ?? '', $types)) {
@@ -581,7 +581,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function hasPdfAvailable()
+    public function hasPdfAvailable(): bool
     {
         return $this->hasEbookAvailable($this->pdfTypes);
     }
@@ -591,7 +591,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function hasEpubAvailable()
+    public function hasEpubAvailable(): bool
     {
         return $this->hasEbookAvailable($this->epubTypes);
     }
@@ -601,7 +601,7 @@ class EDS extends DefaultRecord
      *
      * @return bool
      */
-    public function hasLinkedFullTextAvailable()
+    public function hasLinkedFullTextAvailable(): bool
     {
         return $this->hasEbookAvailable(['other']);
     }
@@ -613,7 +613,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getEbookLink(array $types)
+    public function getEbookLink(array $types): string
     {
         foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
             if (
@@ -631,7 +631,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getPdfLink()
+    public function getPdfLink(): string
     {
         return $this->getEbookLink($this->pdfTypes);
     }
@@ -641,7 +641,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getEpubLink()
+    public function getEpubLink(): string
     {
         return $this->getEbookLink($this->epubTypes);
     }
@@ -651,7 +651,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getLinkedFullTextLink()
+    public function getLinkedFullTextLink(): string
     {
         return $this->getEbookLink(['other']);
     }
@@ -661,7 +661,7 @@ class EDS extends DefaultRecord
      *
      * @return array Subject headings
      */
-    public function getAllSubjectHeadingsFlattened()
+    public function getAllSubjectHeadingsFlattened(): array
     {
         $subject_arrays = array_map(
             function ($data) {
@@ -687,7 +687,7 @@ class EDS extends DefaultRecord
      *
      * @return string|array|bool
      */
-    public function getThumbnail(string $size = 'small')
+    public function getThumbnail(string $size = 'small'): string|array|bool
     {
         $thumbnail = null;
         // Create a ranked list of sizes so we can use "best available" when appropriate.
@@ -764,7 +764,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getItemsTitle()
+    public function getItemsTitle(): string
     {
         $title = $this->getItem('Group', 'Ti');
         return $title[0]['Data'] ?? '';
@@ -775,7 +775,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         $list = $this->extractEbscoDataFromRecordInfo('BibRecord/BibEntity/Titles');
         foreach ($list as $titleRecord) {
@@ -791,7 +791,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         $authors = $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/HasContributorRelationships/*/'
@@ -805,7 +805,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getRawAuthorHighlights()
+    public function getRawAuthorHighlights(): array
     {
         $authors = $this->getItem('Group', 'Au')[0] ?? [];
         $highlightedAuthors = [];
@@ -822,7 +822,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getItemsTitleSource()
+    public function getItemsTitleSource(): string
     {
         $title = $this->getItem('Group', 'Src');
         return $title[0]['Data'] ?? '';
@@ -986,7 +986,7 @@ class EDS extends DefaultRecord
      *
      * @return mixed
      */
-    public function getCleanDOI()
+    public function getCleanDOI(): mixed
     {
         $doi = $this->getItem('Name', 'DOI');
         if (isset($doi[0]['Data'])) {
@@ -1003,7 +1003,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         return $this->extractEbscoData(
             [
@@ -1022,7 +1022,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function getFilteredIdentifiers(array $filter)
+    protected function getFilteredIdentifiers(array $filter): array
     {
         $raw = array_merge(
             $this->extractEbscoDataFromRecordInfo(
@@ -1048,7 +1048,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getISSNs()
+    public function getISSNs(): array
     {
         return $this->getFilteredIdentifiers(['issn-print', 'issn-electronic']);
     }
@@ -1058,7 +1058,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getISBNs()
+    public function getISBNs(): array
     {
         return $this->getFilteredIdentifiers(['isbn-print', 'isbn-electronic']);
     }
@@ -1068,7 +1068,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerTitle()
+    public function getContainerTitle(): string
     {
         // If there is no source, we don't want to identify a container
         // (in this situation, it is likely redundant data):
@@ -1089,7 +1089,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    protected function getFilteredNumbering(string $type)
+    protected function getFilteredNumbering(string $type): string
     {
         $numbering = $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/*/BibEntity/Numbering'
@@ -1110,7 +1110,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerIssue()
+    public function getContainerIssue(): string
     {
         return $this->getFilteredNumbering('issue');
     }
@@ -1120,7 +1120,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerVolume()
+    public function getContainerVolume(): string
     {
         return $this->getFilteredNumbering('volume');
     }
@@ -1130,7 +1130,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         $pubDates = array_map(
             function ($data) {
@@ -1148,7 +1148,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerStartPage()
+    public function getContainerStartPage(): string
     {
         $pagination = $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibEntity/PhysicalDescription/Pagination'
@@ -1161,7 +1161,7 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getContainerEndPage()
+    public function getContainerEndPage(): string
     {
         // EBSCO doesn't make this information readily available, but in some
         // cases we can abstract it from an OpenURL.
@@ -1204,7 +1204,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getFormats()
+    public function getFormats(): array
     {
         $formats = [];
         $pubType = $this->getPubType();
@@ -1239,7 +1239,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getPublishers()
+    public function getPublishers(): array
     {
         return array_map(
             function ($data) {
@@ -1254,7 +1254,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getPlacesOfPublication()
+    public function getPlacesOfPublication(): array
     {
         return array_map(
             function ($data) {
@@ -1270,7 +1270,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    public function getPublicationDetails()
+    public function getPublicationDetails(): array
     {
         $details = $this->getRawEDSPublicationDetails();
         return !empty($details) ? $details : parent::getPublicationDetails();
@@ -1281,7 +1281,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function getRawEDSPublicationDetails()
+    protected function getRawEDSPublicationDetails(): array
     {
         $details = [];
         foreach ($this->getItem('Label', 'Publication Information') as $pub) {
@@ -1326,7 +1326,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function extractEbscoData(array $selectors)
+    protected function extractEbscoData(array $selectors): array
     {
         $result = [];
         foreach ($selectors as $selector) {
@@ -1350,7 +1350,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function extractEbscoDataFromItems(string $label)
+    protected function extractEbscoDataFromItems(string $label): array
     {
         $items = $this->getItem('Label', $label);
         $output = [];
@@ -1368,7 +1368,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function extractEbscoDataFromRecordInfo(string $path)
+    protected function extractEbscoDataFromRecordInfo(string $path): array
     {
         return (array)$this->recurseIntoRecordInfo(
             $this->fields['RecordInfo'] ?? [],
@@ -1384,7 +1384,7 @@ class EDS extends DefaultRecord
      *
      * @return array
      */
-    protected function recurseIntoRecordInfo(array $data, array $path)
+    protected function recurseIntoRecordInfo(array $data, array $path): array
     {
         $nextField = array_shift($path);
         $keys = $nextField === '*' ? array_keys($data) : [$nextField];

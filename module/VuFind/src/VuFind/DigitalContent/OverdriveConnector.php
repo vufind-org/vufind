@@ -116,7 +116,7 @@ class OverdriveConnector implements
      *
      * @return \Laminas\Session\Container
      */
-    protected function getSessionContainer()
+    protected function getSessionContainer(): \Laminas\Session\Container
     {
         if (null === $this->sessionContainer || !$this->sessionContainer) {
             error_log('NO SESSION CONTAINER');
@@ -131,7 +131,7 @@ class OverdriveConnector implements
      *
      * @return array|bool an array of user info from the ILSAuthenticator or false if user is not logged in.
      */
-    public function getUser()
+    public function getUser(): array|bool
     {
         try {
             $user = $this->ilsAuth->storedCatalogLogin();
@@ -152,7 +152,7 @@ class OverdriveConnector implements
      *
      * @return object
      */
-    public function getAccess(bool $refresh = false)
+    public function getAccess(bool $refresh = false): object
     {
         if (!$user = $this->getUser()) {
             return $this->getResultObject(false, 'User not logged in.');
@@ -203,7 +203,7 @@ class OverdriveConnector implements
      *
      * @return bool
      */
-    public function isContentActive()
+    public function isContentActive(): bool
     {
         $config = $this->getConfig();
         if ($config->showMyContent == 'always') {
@@ -229,7 +229,7 @@ class OverdriveConnector implements
      *
      * @link https://developer.overdrive.com/apis/library-availability-new
      */
-    public function getAvailability(string $overDriveId)
+    public function getAvailability(string $overDriveId): object
     {
         $result = $this->getResultObject();
         if (!$overDriveId) {
@@ -292,7 +292,7 @@ class OverdriveConnector implements
      *
      * @todo if more than 25 passed in, make multiple calls
      */
-    public function getAvailabilityBulk(array $overDriveIds = [])
+    public function getAvailabilityBulk(array $overDriveIds = []): object|bool
     {
         $result = $this->getResultObject();
         $loginRequired = false;
@@ -373,7 +373,7 @@ class OverdriveConnector implements
      *
      * @return object|bool A collection token for the library's collection.
      */
-    public function getCollectionToken()
+    public function getCollectionToken(): object|bool
     {
         $collectionToken = $this->getCachedData('collectionToken');
         $userCollectionToken = $this->getSessionContainer(
@@ -423,7 +423,7 @@ class OverdriveConnector implements
      *
      * @return object $result Results of the call.
      */
-    public function doOverdriveCheckout(string $overDriveId)
+    public function doOverdriveCheckout(string $overDriveId): object
     {
         $result = $this->getResultObject();
 
@@ -482,7 +482,7 @@ class OverdriveConnector implements
      *
      * @return \stdClass Object with result
      */
-    public function placeOverDriveHold(string $overDriveId, string $email)
+    public function placeOverDriveHold(string $overDriveId, string $email): \stdClass
     {
         $overDriveId = strtoupper($overDriveId);
         $this->debug('OverDriveConnector: placeOverDriveHold: OverDriveID: $overDriveId, Email: $email');
@@ -539,7 +539,7 @@ class OverdriveConnector implements
      *
      * @return \stdClass Object with result
      */
-    public function updateOverDriveHold(string $overDriveId, string $email)
+    public function updateOverDriveHold(string $overDriveId, string $email): \stdClass
     {
         $overDriveId = strtoupper($overDriveId);
         $this->debug('OverDriveConnector: updateOverDriveHold: OverDriveID: $overDriveId, Email: $email');
@@ -591,7 +591,7 @@ class OverdriveConnector implements
      *
      * @return \stdClass Object with result
      */
-    public function suspendHold(string $overDriveId, string $email, string $suspensionType = 'indefinite', int $numberOfDays = 7)
+    public function suspendHold(string $overDriveId, string $email, string $suspensionType = 'indefinite', int $numberOfDays = 7): \stdClass
     {
         $holdResult = $this->getResultObject();
         $this->debug("suspendHold: OverDriveID:$overDriveId|Email:$email|suspensionType:$suspensionType");
@@ -648,7 +648,7 @@ class OverdriveConnector implements
      *
      * @return \stdClass Object with result
      */
-    public function editSuspendedHold(string $overDriveId, string $email, string $suspensionType = 'indefinite', int $numberOfDays = 7)
+    public function editSuspendedHold(string $overDriveId, string $email, string $suspensionType = 'indefinite', int $numberOfDays = 7): \stdClass
     {
         $holdResult = $this->getResultObject();
 
@@ -697,7 +697,7 @@ class OverdriveConnector implements
      *
      * @return \stdClass Object with result
      */
-    public function deleteHoldSuspension(string $overDriveId)
+    public function deleteHoldSuspension(string $overDriveId): \stdClass
     {
         $holdResult = $this->getResultObject();
 
@@ -738,7 +738,7 @@ class OverdriveConnector implements
      *
      * @return \stdClass Object with result
      */
-    public function cancelHold(string $overDriveId)
+    public function cancelHold(string $overDriveId): \stdClass
     {
         $holdResult = $this->getResultObject();
         $this->debug('OverDriveConnector: cancelHold | OverDriveID: $overDriveID');
@@ -779,7 +779,7 @@ class OverdriveConnector implements
      *
      * @return object|bool Object with result
      */
-    public function returnResource(string $resourceID)
+    public function returnResource(string $resourceID): object|bool
     {
         $result = $this->getResultObject();
         if (!$user = $this->getUser()) {
@@ -819,7 +819,7 @@ class OverdriveConnector implements
      * @return object Object with result. If successful, then data will
      * have the download URI ($result->data->downloadRedirect)
      */
-    public function getDownloadRedirect(string $overDriveId)
+    public function getDownloadRedirect(string $overDriveId): object
     {
         $result = $this->getResultObject();
         if (!$user = $this->getUser()) {
@@ -866,7 +866,7 @@ class OverdriveConnector implements
      *
      * @return object
      */
-    public function getAuthHeader()
+    public function getAuthHeader(): object
     {
         $result = $this->getResultObject();
         if (!$user = $this->getUser()) {
@@ -888,7 +888,7 @@ class OverdriveConnector implements
      *
      * @return bool|\stdClass
      */
-    public function getConfig()
+    public function getConfig(): bool|\stdClass
     {
         $conf = new \stdClass();
         if (!$this->recordConfig) {
@@ -941,7 +941,7 @@ class OverdriveConnector implements
      *
      * @return array
      */
-    public function getFormatNames()
+    public function getFormatNames(): array
     {
         return [
             'ebook-kindle' => 'od_ebook-kindle',
@@ -965,7 +965,7 @@ class OverdriveConnector implements
      *
      * @return array<string>
      */
-    public function getPermanentLinks(array $overDriveIds = [])
+    public function getPermanentLinks(array $overDriveIds = []): array
     {
         $links = [];
         if (!$overDriveIds || count($overDriveIds) < 1) {
@@ -993,7 +993,7 @@ class OverdriveConnector implements
      *
      * @return object results of metadata fetch
      */
-    public function getMagazineIssues(string $overDriveId = false, bool $checkouts = false, int $limit = 100, int $offset = 0)
+    public function getMagazineIssues(string $overDriveId = false, bool $checkouts = false, int $limit = 100, int $offset = 0): object
     {
         $result = $this->getResultObject();
         if (!$overDriveId) {
@@ -1033,7 +1033,7 @@ class OverdriveConnector implements
      *
      * @todo if more than 25 passed in, make multiple calls
      */
-    public function getMetadata(array $overDriveIds = [])
+    public function getMetadata(array $overDriveIds = []): array
     {
         $metadata = [];
         if (!$overDriveIds || count($overDriveIds) < 1) {
@@ -1068,7 +1068,7 @@ class OverdriveConnector implements
      *
      * @return array initial array with results of metadata attached as "metadata" property
      */
-    public function getMetadataForTitles(array $overDriveTitles = [])
+    public function getMetadataForTitles(array $overDriveTitles = []): array
     {
         if (!$overDriveTitles || count($overDriveTitles) < 1) {
             $this->logWarning('OverDriveConnector - getMetadataForTitles: no overdrive content was passed in.');
@@ -1099,7 +1099,7 @@ class OverdriveConnector implements
      * the checkout is not in the current list of checkouts for the current
      * user.
      */
-    public function getCheckout(string $overDriveId, bool $refresh = true)
+    public function getCheckout(string $overDriveId, bool $refresh = true): object|bool
     {
         $result = $this->getCheckouts($refresh);
         if ($result->status) {
@@ -1132,7 +1132,7 @@ class OverdriveConnector implements
      * the checkout is not in the current list of checkouts for the current
      * user.
      */
-    public function getHold(string $overDriveId, bool $refresh = true)
+    public function getHold(string $overDriveId, bool $refresh = true): object|bool
     {
         $result = $this->getHolds($refresh);
         if ($result->status) {
@@ -1155,7 +1155,7 @@ class OverdriveConnector implements
      *
      * @return object Results of the call
      */
-    public function getCheckouts(bool $refresh = true)
+    public function getCheckouts(bool $refresh = true): object
     {
         // The checkouts are cached in the session, but we can force a refresh
         $result = $this->getResultObject();
@@ -1231,7 +1231,7 @@ class OverdriveConnector implements
      * @return \stdClass Results of the call. the data property will be set
      *     to an empty array if there are no  holds.
      */
-    public function getHolds(bool $refresh = true)
+    public function getHolds(bool $refresh = true): \stdClass
     {
         $this->debug('OverDriveConnector - getHolds');
         $result = $this->getResultObject();
@@ -1324,7 +1324,7 @@ class OverdriveConnector implements
         array $headers = null,
         bool $checkToken = true,
         string $requestType = 'GET'
-    ) {
+    ): object|bool {
         if (!$checkToken || $this->connectToAPI()) {
             $tokenData = $this->getSessionContainer()->tokenData;
             try {
@@ -1400,7 +1400,7 @@ class OverdriveConnector implements
      * @return string token for the session or false
      *     if the token request failed
      */
-    protected function connectToAPI(bool $forceNewConnection = false)
+    protected function connectToAPI(bool $forceNewConnection = false): string
     {
         $conf = $this->getConfig();
         $tokenData = $this->getSessionContainer()->tokenData;
@@ -1489,7 +1489,7 @@ class OverdriveConnector implements
         array $params = null,
         string $requestType = 'GET',
         string $returnType = 'json'
-    ) {
+    ): object|bool {
         if ($this->connectToPatronAPI($patronBarcode, $patronPin, false)) {
             $patronTokenData = $this->getSessionContainer()->patronTokenData;
             $authorizationData = $patronTokenData->token_type .
@@ -1604,7 +1604,7 @@ class OverdriveConnector implements
         string $patronBarcode,
         string $patronPin = '1234',
         bool $forceNewConnection = false
-    ) {
+    ): object|bool {
         $patronTokenData = $this->getSessionContainer()->patronTokenData;
         $config = $this->getConfig();
         if (!$config->usePatronAPI) {
@@ -1694,7 +1694,7 @@ class OverdriveConnector implements
      * @return \Laminas\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient(string $url = null, bool $allowRedirects = true)
+    protected function getHttpClient(string $url = null, bool $allowRedirects = true): \Laminas\Http\Client
     {
         if (null === $this->httpService) {
             throw new Exception('HTTP service missing.');
@@ -1721,7 +1721,7 @@ class OverdriveConnector implements
      *
      * @return void
      */
-    public function setCacheStorage(?StorageInterface $cache = null)
+    public function setCacheStorage(?StorageInterface $cache = null): void
     {
         $this->cache = $cache;
     }
@@ -1737,7 +1737,7 @@ class OverdriveConnector implements
      *
      * @return mixed|null Cached entry or null if not cached or expired
      */
-    protected function getCachedData(string $key)
+    protected function getCachedData(string $key): mixed
     {
         // No cache object, no cached results!
         if (null === $this->cache) {
@@ -1770,7 +1770,7 @@ class OverdriveConnector implements
      *
      * @return void
      */
-    protected function putCachedData(string $key, mixed $entry)
+    protected function putCachedData(string $key, mixed $entry): void
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {
@@ -1790,7 +1790,7 @@ class OverdriveConnector implements
      *
      * @return void
      */
-    protected function removeCachedData(string $key)
+    protected function removeCachedData(string $key): void
     {
         // Don't write to cache if we don't have a cache!
         if (null === $this->cache) {
@@ -1808,7 +1808,7 @@ class OverdriveConnector implements
      *
      * @return object
      */
-    public function getResultObject(bool $status = false, string $msg = '', string $code = '')
+    public function getResultObject(bool $status = false, string $msg = '', string $code = ''): object
     {
         return (object)[
             'status' => $status,

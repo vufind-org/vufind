@@ -188,7 +188,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParseLinks()
+    public function testParseLinks(): void
     {
         $conn = $this->createConnector('alma.xml');
         $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004';
@@ -201,7 +201,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParseLinksWithoutIgnoredFiltering()
+    public function testParseLinksWithoutIgnoredFiltering(): void
     {
         $conn = $this->createConnector('alma.xml', ['ignoredFilterReasons' => '']);
         $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004';
@@ -219,7 +219,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector(string $fixture = null, array $options = [])
+    protected function createConnector(string $fixture = null, array $options = []): Connector
     {
         $adapter = new TestAdapter();
         if ($fixture) {

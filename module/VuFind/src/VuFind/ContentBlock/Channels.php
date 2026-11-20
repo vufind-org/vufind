@@ -71,7 +71,7 @@ class Channels implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         if (!empty($settings)) {
             $this->source = $settings;
@@ -83,7 +83,7 @@ class Channels implements ContentBlockInterface
      *
      * @return array
      */
-    public function getContext()
+    public function getContext(): array
     {
         $activeChannel = $this->request->getQuery()->get('channelProvider');
         $token = $this->request->getQuery()->get('channelToken');

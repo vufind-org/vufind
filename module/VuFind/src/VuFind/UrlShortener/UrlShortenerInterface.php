@@ -47,7 +47,7 @@ interface UrlShortenerInterface
      *
      * @return string
      */
-    public function shorten(string $url);
+    public function shorten(string $url): string;
 
     /**
      * Resolve a shortened URL by its id.
@@ -56,5 +56,5 @@ interface UrlShortenerInterface
      *
      * @return string
      */
-    public function resolve(string $id);
+    public function resolve(string $id): string;
 }

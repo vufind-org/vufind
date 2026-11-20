@@ -101,7 +101,7 @@ class Translator
      *
      * @return array
      */
-    public function parsetable(string $file, string $callback)
+    public function parsetable(string $file, string $callback): array
     {
         $result = [];
         $file_handle = fopen($file, 'r, ccs=UTF-8');
@@ -137,7 +137,7 @@ class Translator
      *
      * @return string
      */
-    public function tab40Translate(string $collection, string $sublib)
+    public function tab40Translate(string $collection, string $sublib): string
     {
         $findme = $collection . '|' . $sublib;
         $desc = $this->table40[$findme];
@@ -155,7 +155,7 @@ class Translator
      *
      * @return string
      */
-    public function tabSubLibraryTranslate(string $sl)
+    public function tabSubLibraryTranslate(string $sl): string
     {
         return $this->table_sub_library[$sl];
     }
@@ -169,7 +169,7 @@ class Translator
      *
      * @return string
      */
-    public function tab15Translate(string $slc, string $isc, string $ipsc)
+    public function tab15Translate(string $slc, string $isc, string $ipsc): string
     {
         $tab15 = $this->tabSubLibraryTranslate($slc);
         if ($tab15 == null) {
@@ -194,7 +194,7 @@ class Translator
      *
      * @return void
      */
-    public static function tab15Callback(array $matches, array &$tab15, string $charset)
+    public static function tab15Callback(array $matches, array &$tab15, string $charset): void
     {
         $lib = $matches[1];
         $no1 = $matches[2];
@@ -222,7 +222,7 @@ class Translator
      *
      * @return void
      */
-    public static function tab40Callback(array $matches, array &$tab40, string $charset)
+    public static function tab40Callback(array $matches, array &$tab40, string $charset): void
     {
         $code = trim($matches[1]);
         $sub = trim($matches[2]);
@@ -245,7 +245,7 @@ class Translator
         array $matches,
         array &$tab_sub_library,
         string $charset
-    ) {
+    ): void {
         $sublib = trim($matches[1]);
         $desc = trim(iconv($charset, 'UTF-8', $matches[5]));
         $tab = trim($matches[6]);
@@ -259,7 +259,7 @@ class Translator
      *
      * @return string
      */
-    public static function regexp(string $string)
+    public static function regexp(string $string): string
     {
         $string = preg_replace('/\\-/', ')\\s(', $string);
         $string = preg_replace('/!/', '.', $string);

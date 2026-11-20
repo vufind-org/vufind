@@ -152,7 +152,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return void
      */
-    public function enableWrites()
+    public function enableWrites(): void
     {
         $this->__call(__FUNCTION__, []);
     }
@@ -162,7 +162,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return void
      */
-    public function disableWrites()
+    public function disableWrites(): void
     {
         $this->__call(__FUNCTION__, []);
     }
@@ -175,7 +175,7 @@ class SecureDelegator implements HandlerInterface
      *
      * @return mixed
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         return $this->handler->{$name}(...$arguments);
     }

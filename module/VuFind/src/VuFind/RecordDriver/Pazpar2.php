@@ -62,7 +62,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return void
      */
-    public function setRawData(mixed $data)
+    public function setRawData(mixed $data): void
     {
         $this->pz2fields = $this->xmlToArray($data);
     }
@@ -74,7 +74,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return associative array of converted XML
      */
-    protected function xmlToArray(\SimpleXMLElement $xml)
+    protected function xmlToArray(\SimpleXMLElement $xml): associative
     {
         $array = [];
         foreach ($xml as $key => $data) {
@@ -132,7 +132,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         return $this->pz2fields['location']['md-id'] ?? $this->pz2fields['recid'];
     }
@@ -142,7 +142,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPrimaryAuthors()
+    public function getPrimaryAuthors(): array
     {
         $authors = $this->pz2fields['md-author'] ?? [];
 
@@ -154,7 +154,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return array
      */
-    public function getProviders()
+    public function getProviders(): array
     {
         if (!$this->pz2fields['location']) {
             return [];
@@ -179,7 +179,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return array
      */
-    public function getPublicationDates()
+    public function getPublicationDates(): array
     {
         return isset($this->pz2fields['md-date']) ?
             [$this->pz2fields['md-date']] : [];
@@ -190,7 +190,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->getShortTitle();
     }
@@ -200,7 +200,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return $this->pz2fields['md-title'] ?? '';
     }
@@ -219,7 +219,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         if (isset($this->pz2fields['location']['md-electronic-url'])) {
             return array_map(
@@ -237,7 +237,7 @@ class Pazpar2 extends DefaultRecord
      *
      * @return string
      */
-    protected function getOpenUrlFormat()
+    protected function getOpenUrlFormat(): string
     {
         return 'Book';
     }

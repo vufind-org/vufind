@@ -57,7 +57,7 @@ class Export
      *
      * @return \VuFind\Export
      */
-    public function __invoke()
+    public function __invoke(): \VuFind\Export
     {
         return $this->export;
     }

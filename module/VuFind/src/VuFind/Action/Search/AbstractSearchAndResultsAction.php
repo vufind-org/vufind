@@ -686,7 +686,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      *
      * @return mixed
      */
-    protected function redirectToLegalSearchPage(array $request, int $page)
+    protected function redirectToLegalSearchPage(array $request, int $page): mixed
     {
         if (($request['page'] ?? 0) <= $page) {
             throw new \Exception('Unrecoverable deep paging error.');

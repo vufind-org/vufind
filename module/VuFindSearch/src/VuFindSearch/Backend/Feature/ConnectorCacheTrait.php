@@ -63,7 +63,7 @@ trait ConnectorCacheTrait
      *
      * @return void
      */
-    public function setCache(StorageInterface $cache)
+    public function setCache(StorageInterface $cache): void
     {
         $this->cache = $cache;
     }
@@ -87,7 +87,7 @@ trait ConnectorCacheTrait
      *
      * @return mixed
      */
-    public function getCachedData(string $key)
+    public function getCachedData(string $key): mixed
     {
         try {
             if ($result = $this->cache->getItem($key)) {

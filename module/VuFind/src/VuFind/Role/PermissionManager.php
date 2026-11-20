@@ -74,7 +74,7 @@ class PermissionManager
      *
      * @return bool
      */
-    public function isAuthorized(string $permission, mixed $context = null)
+    public function isAuthorized(string $permission, mixed $context = null): bool
     {
         $authService = $this->getAuthorizationService();
 
@@ -106,7 +106,7 @@ class PermissionManager
      *
      * @return bool
      */
-    public function permissionRuleExists(string $permission)
+    public function permissionRuleExists(string $permission): bool
     {
         foreach ($this->config as $value) {
             if (!isset($value['permission'])) {

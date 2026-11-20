@@ -47,7 +47,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return object
      */
-    protected function getMockRetryTestClass()
+    protected function getMockRetryTestClass(): object
     {
         return new class () {
             use RetryTrait;
@@ -67,7 +67,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
                 callable $callback,
                 ?callable $statusCallback = null,
                 array $options = []
-            ) {
+            ): mixed {
                 return $this->callWithRetry($callback, $statusCallback, $options);
             }
 
@@ -92,7 +92,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrySuccess()
+    public function testRetrySuccess(): void
     {
         $testClass = $this->getMockRetryTestClass();
 
@@ -114,7 +114,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetryFail()
+    public function testRetryFail(): void
     {
         $testClass = $this->getMockRetryTestClass();
 
@@ -141,7 +141,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetryableExceptionCallback()
+    public function testRetryableExceptionCallback(): void
     {
         $testClass = $this->getMockRetryTestClass();
 

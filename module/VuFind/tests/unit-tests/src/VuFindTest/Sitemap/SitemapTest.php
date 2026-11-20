@@ -47,7 +47,7 @@ class SitemapTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testToString()
+    public function testToString(): void
     {
         $sm = new Sitemap();
         $sm->addUrl('http://foo');
@@ -78,7 +78,7 @@ class SitemapTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testToStringWithLanguagesAndFrequencies()
+    public function testToStringWithLanguagesAndFrequencies(): void
     {
         $sm = new Sitemap();
         $sm->addUrl(

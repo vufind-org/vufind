@@ -103,7 +103,7 @@ class PermissionDeniedManager
      *
      * @return void
      */
-    public function setDefaultDeniedActionBehavior(string|bool $value)
+    public function setDefaultDeniedActionBehavior(string|bool $value): void
     {
         $this->defaultDeniedActionBehavior = $value;
     }
@@ -115,7 +115,7 @@ class PermissionDeniedManager
      *
      * @return void
      */
-    public function setDefaultDeniedTemplateBehavior(string|bool $value)
+    public function setDefaultDeniedTemplateBehavior(string|bool $value): void
     {
         $this->defaultDeniedTemplateBehavior = $value;
     }
@@ -130,7 +130,7 @@ class PermissionDeniedManager
      * @return array|bool Associative array of behavior for the given permission (containing the keys 'action', 'value',
      * 'params' and 'exceptionMessage' for exceptions) or false if no action needed.
      */
-    public function getDeniedActionBehavior(string $permission, string $defaultBehavior = null)
+    public function getDeniedActionBehavior(string $permission, string $defaultBehavior = null): array|bool
     {
         if ($defaultBehavior === null) {
             $defaultBehavior = $this->defaultDeniedActionBehavior;
@@ -151,7 +151,7 @@ class PermissionDeniedManager
      *
      * @return array|bool
      */
-    public function getDeniedTemplateBehavior(string $permission, string $defaultBehavior = null)
+    public function getDeniedTemplateBehavior(string $permission, string $defaultBehavior = null): array|bool
     {
         if ($defaultBehavior === null) {
             $defaultBehavior = $this->defaultDeniedTemplateBehavior;
@@ -173,7 +173,7 @@ class PermissionDeniedManager
      *
      * @return array|bool
      */
-    protected function getDeniedBehavior(string $permission, string $mode, string $defaultBehavior)
+    protected function getDeniedBehavior(string $permission, string $mode, string $defaultBehavior): array|bool
     {
         $config = $this->config[$permission][$mode] ?? $defaultBehavior;
 
@@ -187,7 +187,7 @@ class PermissionDeniedManager
      *
      * @return array
      */
-    protected function processConfigString(string $config)
+    protected function processConfigString(string $config): array
     {
         // Split config string:
         $parts = explode(':', $config);

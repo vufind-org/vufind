@@ -52,7 +52,7 @@ class RecentlyReturned extends AbstractILSChannelProvider
      *
      * @return array
      */
-    protected function getIlsResponse()
+    protected function getIlsResponse(): array
     {
         return $this->ils->checkCapability('getRecentlyReturnedBibs')
             ? $this->ils->getRecentlyReturnedBibs($this->batchSize, $this->maxAge)
@@ -67,7 +67,7 @@ class RecentlyReturned extends AbstractILSChannelProvider
      *
      * @return string
      */
-    protected function extractIdsFromResponse(array $response)
+    protected function extractIdsFromResponse(array $response): string
     {
         return $response['id'];
     }

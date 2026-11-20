@@ -47,7 +47,7 @@ class Module
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return include __DIR__ . '/config/module.config.php';
     }
@@ -59,7 +59,7 @@ class Module
      *
      * @return void
      */
-    public function onBootstrap(MvcEvent $e)
+    public function onBootstrap(MvcEvent $e): void
     {
         $bootstrapper = new Bootstrapper($e);
         $bootstrapper->bootstrap();

@@ -78,7 +78,7 @@ class RatingsService
      *
      * @return array
      */
-    public function getRatingData(RecordDriver $driver, ?int $userId = null)
+    public function getRatingData(RecordDriver $driver, ?int $userId = null): array
     {
         // Cache data since comments list may ask for same information repeatedly:
         $recordId = $driver->getUniqueID();
@@ -104,7 +104,7 @@ class RatingsService
      *
      * @return array
      */
-    public function getRatingBreakdown(RecordDriver $driver, array $groups)
+    public function getRatingBreakdown(RecordDriver $driver, array $groups): array
     {
         return $this->dbService->getCountsForRecord(
             $driver->getUniqueID(),

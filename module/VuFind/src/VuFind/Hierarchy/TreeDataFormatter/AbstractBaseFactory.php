@@ -65,7 +65,7 @@ class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }

@@ -56,7 +56,7 @@ trait ConsoleOutputTrait
      *
      * @return mixed
      */
-    public function setOutputInterface(OutputInterface $output)
+    public function setOutputInterface(OutputInterface $output): mixed
     {
         $this->outputInterface = $output;
         return $this;
@@ -69,7 +69,7 @@ trait ConsoleOutputTrait
      *
      * @return mixed
      */
-    public function writeln(string $output)
+    public function writeln(string $output): mixed
     {
         if ($this->outputInterface) {
             $this->outputInterface->writeln($output);

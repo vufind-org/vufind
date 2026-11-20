@@ -106,7 +106,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
      *
      * @return void
      */
-    public function setTurnstile(Turnstile $turnstile)
+    public function setTurnstile(Turnstile $turnstile): void
     {
         $this->turnstile = $turnstile;
     }

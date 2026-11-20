@@ -54,7 +54,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testMissingILSConfiguration()
+    public function testMissingILSConfiguration(): void
     {
         $driver = new MultiBackend(
             $this->getMockFailingConfigManager(new RuntimeException()),
@@ -73,7 +73,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testLogging()
+    public function testLogging(): void
     {
         $objs = parent::testLogging();
 
@@ -90,7 +90,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetSourceFromParams()
+    public function testGetSourceFromParams(): void
     {
         $driver = $this->initDriver();
 
@@ -140,7 +140,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testAddIdPrefixes()
+    public function testAddIdPrefixes(): void
     {
         $driver = $this->initDriver();
         $source = 'source';
@@ -224,7 +224,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testStripIdPrefixes()
+    public function testStripIdPrefixes(): void
     {
         $driver = $this->initDriver();
         $source = 'source';
@@ -307,7 +307,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testDriverSupportsMethod()
+    public function testDriverSupportsMethod(): void
     {
         $driver = $this->initDriver();
         $voyager = $this->getMockILS('Voyager', ['init']);
@@ -345,7 +345,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetHolding()
+    public function testGetHolding(): void
     {
         $ils1 = $this->getMockILS('Voyager', ['init', 'getHolding']);
         $ils1->expects($this->exactly(2))
@@ -405,7 +405,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetPurchaseHistory()
+    public function testGetPurchaseHistory(): void
     {
         $driverReturn = ['purchases' => '123456'];
         $ILS = $this->getMockILS('Voyager', ['init', 'getPurchaseHistory']);
@@ -432,7 +432,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetLoginDrivers()
+    public function testGetLoginDrivers(): void
     {
         $driver = $this->initDriver();
 
@@ -445,7 +445,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetDefaultLoginDriver()
+    public function testGetDefaultLoginDriver(): void
     {
         $driver = $this->initDriver();
 
@@ -479,7 +479,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetStatus()
+    public function testGetStatus(): void
     {
         $ILS = $this->getMockILS('Voyager', ['init', 'getStatus']);
         $ILS->expects($this->exactly(2))
@@ -524,7 +524,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetStatuses()
+    public function testGetStatuses(): void
     {
         $ils1 = $this->getMockILS('Voyager', ['init', 'getStatuses']);
         $ils1->expects($this->exactly(2))
@@ -674,7 +674,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A MultiBackend instance.
      */
-    public function testGetLocalId()
+    public function testGetLocalId(): mixed
     {
         $driver = $this->initDriver();
         $term = 'source.local';
@@ -688,7 +688,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testDefaultDriver()
+    public function testDefaultDriver(): void
     {
         //Case: The parameters let it know what driver to use
         //Result: return the function results for that driver
@@ -744,7 +744,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetCoursesNoDefault()
+    public function testGetCoursesNoDefault(): void
     {
         $driver = $this->initDriver();
 
@@ -758,7 +758,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetCourses()
+    public function testGetCourses(): void
     {
         $expected = ['test' => 'true'];
         $driver = $this->initSimpleMethodTest(
@@ -780,7 +780,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetDepartmentsNoDefault()
+    public function testGetDepartmentsNoDefault(): void
     {
         $driver = $this->initDriver();
 
@@ -794,7 +794,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetDepartments()
+    public function testGetDepartments(): void
     {
         $expected = ['test' => 'true'];
         $driver = $this->initSimpleMethodTest(
@@ -816,7 +816,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetInstructorsNoDefault()
+    public function testGetInstructorsNoDefault(): void
     {
         $driver = $this->initDriver();
 
@@ -830,7 +830,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetInstructors()
+    public function testGetInstructors(): void
     {
         $expected = ['test' => 'true'];
         $driver = $this->initSimpleMethodTest(
@@ -852,7 +852,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testFindReservesNoDefault()
+    public function testFindReservesNoDefault(): void
     {
         $driver = $this->initDriver();
 
@@ -866,7 +866,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testFindReserves()
+    public function testFindReserves(): void
     {
         $reservesReturn = [
             [
@@ -907,7 +907,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetMyProfile()
+    public function testGetMyProfile(): void
     {
         $expected1 = ['test' => '1'];
         $expected2 = ['test' => '2'];
@@ -936,7 +936,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testPatronLogin()
+    public function testPatronLogin(): void
     {
         $driver = $this->initDriver();
         $patronReturn = $this->getPatron('username');
@@ -973,7 +973,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetMyTransactions()
+    public function testGetMyTransactions(): void
     {
         $expected1 = [['id' => 'd1.1']];
         $expected2 = [['id' => 'd2.1']];
@@ -1004,7 +1004,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetRenewDetails()
+    public function testGetRenewDetails(): void
     {
         $expected1 = [['id' => 'd1.1']];
         $expected2 = [['id' => 'd2.1']];
@@ -1045,7 +1045,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testRenewMyItems()
+    public function testRenewMyItems(): void
     {
         $expected1 = [
             ['id' => 'd1.1'],
@@ -1086,7 +1086,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetMyFines()
+    public function testGetMyFines(): void
     {
         $expected1 = [['id' => 'd1.1']];
         $expected2 = [['id' => 'd2.1']];
@@ -1115,7 +1115,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetHoldLink()
+    public function testGetHoldLink(): void
     {
         $expected1 = 'http://driver1/1';
         $expected2 = 'http://driver2/1';
@@ -1144,7 +1144,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetMyHolds()
+    public function testGetMyHolds(): void
     {
         $expected1 = [['id' => 'd1.1']];
         $expected2 = [['id' => 'd2.1']];
@@ -1173,7 +1173,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetAccountBlocks()
+    public function testGetAccountBlocks(): void
     {
         $driver = $this->initSimpleMethodTest(
             $this->once(),
@@ -1203,7 +1203,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetRequestBlocks()
+    public function testGetRequestBlocks(): void
     {
         $driver = $this->initSimpleMethodTest(
             $this->once(),
@@ -1233,7 +1233,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetMyStorageRetrievalRequests()
+    public function testGetMyStorageRetrievalRequests(): void
     {
         $expected1 = [['id' => 'd1.1']];
         $expected2 = [['id' => 'd2.1']];
@@ -1274,7 +1274,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCheckRequestIsValid()
+    public function testCheckRequestIsValid(): void
     {
         $ils1 = $this->getMockILS('Voyager', ['init', 'checkRequestIsValid']);
         $ils1->expects($this->once())
@@ -1360,7 +1360,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCheckStorageRetrievalRequestIsValid()
+    public function testCheckStorageRetrievalRequestIsValid(): void
     {
         $expected1 = true;
         $expected2 = false;
@@ -1420,7 +1420,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetPickUpLocations()
+    public function testGetPickUpLocations(): void
     {
         $expected1 = [['locationID' => '1']];
         $expected2 = [['locationID' => '2']];
@@ -1468,7 +1468,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetDefaultPickUpLocation()
+    public function testGetDefaultPickUpLocation(): void
     {
         $expected1 = '1';
         $expected2 = '1';
@@ -1516,7 +1516,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetRequestGroups()
+    public function testGetRequestGroups(): void
     {
         $expected1 = [['locationID' => '1']];
         $expected2 = [['locationID' => '2']];
@@ -1564,7 +1564,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetDefaultRequestGroup()
+    public function testGetDefaultRequestGroup(): void
     {
         $expected1 = '1';
         $expected2 = '1';
@@ -1612,7 +1612,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testPlaceHold()
+    public function testPlaceHold(): void
     {
         $expected1 = [
             'success' => true,
@@ -1677,7 +1677,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCancelHolds()
+    public function testCancelHolds(): void
     {
         $expected = [
             '1' => [
@@ -1735,7 +1735,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetCancelHoldDetails()
+    public function testGetCancelHoldDetails(): void
     {
         $expected = ['1', '2'];
         $driver = $this->initSimpleMethodTest(
@@ -1777,7 +1777,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testPlaceStorageRetrievalRequest()
+    public function testPlaceStorageRetrievalRequest(): void
     {
         $expected1 = [
             'success' => true,
@@ -1842,7 +1842,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCancelStorageRetrievalRequests()
+    public function testCancelStorageRetrievalRequests(): void
     {
         $expected = [
             '1' => [
@@ -1900,7 +1900,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetCancelStorageRetrievalRequestDetails()
+    public function testGetCancelStorageRetrievalRequestDetails(): void
     {
         $expected = ['1', '2'];
         $driver = $this->initSimpleMethodTest(
@@ -1937,7 +1937,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCheckILLRequestIsValid()
+    public function testCheckILLRequestIsValid(): void
     {
         $expected1 = true;
         $expected2 = false;
@@ -1994,7 +1994,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetILLPickupLibraries()
+    public function testGetILLPickupLibraries(): void
     {
         $expected1 = [['locationID' => '1']];
         $expected2 = [['locationID' => '2']];
@@ -2038,7 +2038,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetILLPickupLocations()
+    public function testGetILLPickupLocations(): void
     {
         $expected1 = [['locationID' => '1']];
         $expected2 = [['locationID' => '2']];
@@ -2086,7 +2086,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testPlaceILLRequest()
+    public function testPlaceILLRequest(): void
     {
         $expected1 = [
             'success' => true,
@@ -2147,7 +2147,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetMyILLRequests()
+    public function testGetMyILLRequests(): void
     {
         $expected1 = [['id' => 'd1.1']];
         $expected2 = [['id' => 'd2.1']];
@@ -2182,7 +2182,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testCancelILLRequests()
+    public function testCancelILLRequests(): void
     {
         $expected = [
             '1' => [
@@ -2240,7 +2240,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetCancelILLRequestDetails()
+    public function testGetCancelILLRequestDetails(): void
     {
         $expected = ['1', '2'];
         $driver = $this->initSimpleMethodTest(
@@ -2277,7 +2277,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testGetConfig()
+    public function testGetConfig(): void
     {
         $expected1 = ['config' => 'ok1'];
         $expected2 = ['config' => 'ok2'];
@@ -2332,7 +2332,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return void
      */
-    public function testSupportsMethod()
+    public function testSupportsMethod(): void
     {
         //Set up the mock driver to be retrieved
         $ILS = $this->getMockILS('Voyager', ['setConfig', 'init']);
@@ -2418,7 +2418,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         array $params,
         mixed $return1,
         mixed $return2
-    ) {
+    ): object {
         $voyager = $this->getMockILS('Voyager', ['init', $function]);
         call_user_func_array(
             [$voyager->expects($times1)->method($function), 'with'],
@@ -2452,7 +2452,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A MultiBackend instance.
      */
-    protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null)
+    protected function initDriver(array $constructorArgs = [], array $drivers = [], ?string $driversConfigPath = null): mixed
     {
         $driver = $this->getDriver($constructorArgs);
         $driver->setConfig(
@@ -2478,7 +2478,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return mixed A MultiBackend instance.
      */
-    protected function getDriver(array $constructorArgs = [])
+    protected function getDriver(array $constructorArgs = []): mixed
     {
         $driver = new MultiBackend(
             $constructorArgs['configManager']
@@ -2498,7 +2498,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      *
      * @return \VuFind\Auth\ILSAuthenticator
      */
-    protected function getMockILSAuthenticator(string $userSource = '')
+    protected function getMockILSAuthenticator(string $userSource = ''): \VuFind\Auth\ILSAuthenticator
     {
         $mockAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         if ($userSource) {

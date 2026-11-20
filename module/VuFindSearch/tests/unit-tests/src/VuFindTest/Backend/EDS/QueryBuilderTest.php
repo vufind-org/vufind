@@ -52,7 +52,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return array
      */
-    protected function decodeResponse(array $response)
+    protected function decodeResponse(array $response): array
     {
         foreach ($response as $i => $raw) {
             $response[$i] = json_decode($raw, true);
@@ -65,7 +65,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testBlankSearch()
+    public function testBlankSearch(): void
     {
         $qb = new QueryBuilder();
         $params = $qb->build(new \VuFindSearch\Query\Query());
@@ -90,7 +90,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testParsing()
+    public function testParsing(): void
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):

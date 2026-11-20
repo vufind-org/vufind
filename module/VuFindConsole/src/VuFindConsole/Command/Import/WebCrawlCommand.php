@@ -87,7 +87,7 @@ class WebCrawlCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Crawls websites to populate VuFind\'s web index.')
@@ -118,7 +118,7 @@ class WebCrawlCommand extends Command
      *
      * @return string     Filename of downloaded (and decompressed if needed) content
      */
-    protected function downloadFile(string $url)
+    protected function downloadFile(string $url): string
     {
         $file = tempnam('/tmp', 'sitemap');
         $content = file_get_contents($url);
@@ -140,7 +140,7 @@ class WebCrawlCommand extends Command
      *
      * @return void
      */
-    protected function removeTempFile(string $file)
+    protected function removeTempFile(string $file): void
     {
         unlink($file);
     }
@@ -290,7 +290,7 @@ class WebCrawlCommand extends Command
         bool $verbose = false,
         string $index = 'SolrWeb',
         bool $testMode = false
-    ) {
+    ): bool {
         // Date to use as a default "last modification" date in scenarios where we
         // don't care about cache invalidation.
         $pastDate = '1980-01-01';

@@ -61,7 +61,7 @@ class CurrentPath
      *
      * @return string
      */
-    public function __invoke()
+    public function __invoke(): string
     {
         $base = rtrim(($this->serverUrl)(), '/');
         $full = ($this->serverUrl)(true);

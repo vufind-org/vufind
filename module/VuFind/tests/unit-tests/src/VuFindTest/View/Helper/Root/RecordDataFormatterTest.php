@@ -220,7 +220,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return SolrDefault
      */
-    protected function getDriver(array $overrides = [])
+    protected function getDriver(array $overrides = []): SolrDefault
     {
         $record = new class () extends \VuFind\RecordDriver\SolrDefault {
             /**
@@ -229,7 +229,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              *
              * @return array
              */
-            public function getBuildings()
+            public function getBuildings(): array
             {
                 return ['0'];
             }
@@ -240,7 +240,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              *
              * @return array
              */
-            public function getContainerTitle()
+            public function getContainerTitle(): array
             {
                 return '0';
             }
@@ -267,7 +267,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              *
              * @return array
              */
-            public function getNewerTitles()
+            public function getNewerTitles(): array
             {
                 return ['New Title', 'Second New Title'];
             }
@@ -281,7 +281,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              *
              * @return mixed
              */
-            public function __call(mixed $method, mixed $args)
+            public function __call(mixed $method, mixed $args): mixed
             {
                 switch ($method) {
                     case 'getFullTitle':
@@ -324,7 +324,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDataFormatter
      */
-    protected function getFormatter(array $additionalConfig = [], array $additionalSpecs = [])
+    protected function getFormatter(array $additionalConfig = [], array $additionalSpecs = []): RecordDataFormatter
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $recordDataFormatterConfig = array_merge($additionalConfig, [
@@ -416,7 +416,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findResult(string $needle, array $haystack)
+    protected function findResult(string $needle, array $haystack): mixed
     {
         foreach ($haystack as $current) {
             if ($current['label'] == $needle) {
@@ -433,7 +433,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getLabels(array $results)
+    protected function getLabels(array $results): array
     {
         $callback = function ($c) {
             return $c['label'];
@@ -764,7 +764,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getGlobalTestConfig()
+    public function getGlobalTestConfig(): array
     {
         return [
             'Global' => [

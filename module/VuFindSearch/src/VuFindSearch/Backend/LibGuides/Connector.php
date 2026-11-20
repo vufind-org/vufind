@@ -125,7 +125,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws \Exception
      * @return array             An array of query results
      */
-    public function query(array $params, int $offset = 0, int $limit = 20, bool $returnErr = true)
+    public function query(array $params, int $offset = 0, int $limit = 20, bool $returnErr = true): array
     {
         $args = $this->prepareParams($params);
 
@@ -160,7 +160,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @return object    The parsed data
      * @throws \Exception
      */
-    protected function call(string $qs, string $method = 'GET')
+    protected function call(string $qs, string $method = 'GET'): object
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
@@ -187,7 +187,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array      The processed response
      */
-    protected function process(array $data)
+    protected function process(array $data): array
     {
         // make sure data exists
         if (strlen($data) === 0) {
@@ -240,7 +240,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array
      */
-    protected function prepareParams(array $params)
+    protected function prepareParams(array $params): array
     {
         // defaults for params (vary by version)
         if ($this->apiVersion < 2) {

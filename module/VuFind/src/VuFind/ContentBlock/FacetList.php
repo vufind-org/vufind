@@ -83,7 +83,7 @@ class FacetList implements ContentBlockInterface
      *
      * @return array Facets
      */
-    protected function getHierarchicalFacets(array $facetConfig)
+    protected function getHierarchicalFacets(array $facetConfig): array
     {
         return $facetConfig['SpecialFacets']['hierarchical'] ?? [];
     }
@@ -95,7 +95,7 @@ class FacetList implements ContentBlockInterface
      *
      * @return array Array of sort settings keyed by facet
      */
-    protected function getHierarchicalFacetSortSettings(array $facetConfig)
+    protected function getHierarchicalFacetSortSettings(array $facetConfig): array
     {
         $baseConfig
             = $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions'] ?? [];
@@ -112,7 +112,7 @@ class FacetList implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $parts = explode(':', $settings);
         $this->searchClassId = empty($parts[0]) ? $this->searchClassId : $parts[0];
@@ -141,7 +141,7 @@ class FacetList implements ContentBlockInterface
      *
      * @return array
      */
-    public function getContext()
+    public function getContext(): array
     {
         $facetCache = $this->facetCacheManager->get($this->searchClassId);
         $results = $facetCache->getResults();

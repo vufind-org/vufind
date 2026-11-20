@@ -65,7 +65,7 @@ class ConfigCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName($container->get(Upgrade::class), ...($options ?? []));
     }
 }

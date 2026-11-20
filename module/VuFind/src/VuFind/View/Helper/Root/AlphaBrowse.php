@@ -65,7 +65,7 @@ class AlphaBrowse
      *
      * @return string
      */
-    public function getUrl(string $source, array $item)
+    public function getUrl(string $source, array $item): string
     {
         if ($item['count'] <= 0) {
             return null;
@@ -92,7 +92,7 @@ class AlphaBrowse
      *
      * @return string
      */
-    protected function escapeForSolr(string $str)
+    protected function escapeForSolr(string $str): string
     {
         return '"' . addcslashes($str, '"') . '"';
     }

@@ -443,7 +443,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return void
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
@@ -457,7 +457,7 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -587,7 +587,7 @@ class SierraRest extends AbstractBase implements
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): array
     {
         return $this->getItemStatusesForBib($id, $this->config['Holdings']['check_holdings_in_results'] ?? true);
     }
@@ -602,7 +602,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return mixed     An array of getStatus() return values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): mixed
     {
         $items = [];
         foreach ($ids as $id) {
@@ -712,7 +712,7 @@ class SierraRest extends AbstractBase implements
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getRequestBlocks(array $patron)
+    public function getRequestBlocks(array $patron): mixed
     {
         return $this->getPatronBlocks($patron);
     }
@@ -725,7 +725,7 @@ class SierraRest extends AbstractBase implements
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks(array $patron)
+    public function getAccountBlocks(array $patron): mixed
     {
         return $this->getPatronBlocks($patron);
     }
@@ -740,7 +740,7 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id']],
@@ -801,7 +801,7 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron, array $params = [])
+    public function getMyTransactions(array $patron, array $params = []): array
     {
         $pageSize = $params['limit'] ?? 50;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
@@ -892,7 +892,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         return $checkOutDetails['checkout_id'] . '|' . $checkOutDetails['item_id'];
     }
@@ -908,7 +908,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $patron = $renewDetails['patron'];
         $finalResult = ['details' => []];
@@ -960,7 +960,7 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's historic transactions on success.
      */
-    public function getMyTransactionHistory(array $patron, array $params)
+    public function getMyTransactionHistory(array $patron, array $params): array
     {
         $pageSize = $params['limit'] ?? 50;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
@@ -1093,7 +1093,7 @@ class SierraRest extends AbstractBase implements
      * @return array        Array of the patron's holds on success.
      * @todo   Support for handling frozen and pickup location change
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         $fields = 'default,location,priorityQueueLength';
         if ($this->apiVersion >= 5) {
@@ -1249,7 +1249,7 @@ class SierraRest extends AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         $details = $cancelDetails['details'];
         $patron = $cancelDetails['patron'];
@@ -1477,7 +1477,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkRequestIsValid(string $id, array $data, array $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron): bool
     {
         if ($this->getPatronBlocks($patron)) {
             return false;
@@ -1515,7 +1515,7 @@ class SierraRest extends AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): mixed
     {
         $patron = $holdDetails['patron'];
         $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
@@ -1574,7 +1574,7 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): array
     {
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
@@ -1762,7 +1762,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return array Associative array of the results
      */
-    public function getPasswordRecoveryData(array $params)
+    public function getPasswordRecoveryData(array $params): array
     {
         // We need a username and an email address to find the account:
         if (empty($params['cat_username'])) {
@@ -1880,7 +1880,7 @@ class SierraRest extends AbstractBase implements
      * @throws ILSException
      * @return array Status
      */
-    public function resetPassword(array $details, array $params)
+    public function resetPassword(array $details, array $params): array
     {
         if (empty($details['id']) || empty($params['password'])) {
             return [
@@ -1932,7 +1932,7 @@ class SierraRest extends AbstractBase implements
      * whether it was successful or not and a system message (if available)
      * @throws ILSException
      */
-    public function changePassword(array $details)
+    public function changePassword(array $details): array
     {
         // Force new login
         $this->sessionCache->accessTokenPatron = '';
@@ -2047,7 +2047,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string ID
      */
-    protected function extractId(string $url)
+    protected function extractId(string $url): string
     {
         $parts = explode('/', $url);
         return end($parts);
@@ -2060,7 +2060,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function extractVolume(array $item)
+    protected function extractVolume(array $item): string
     {
         foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
@@ -2099,7 +2099,7 @@ class SierraRest extends AbstractBase implements
         array $patron = false,
         bool $returnStatus = false,
         array $queryParams = []
-    ) {
+    ): mixed {
         // Status logging callback:
         $statusCallback = function (
             $attempt,
@@ -2172,7 +2172,7 @@ class SierraRest extends AbstractBase implements
         array $patron = false,
         bool $returnStatus = false,
         array $queryParams = []
-    ) {
+    ): mixed {
         // Clear current access token if it's not specific to the given patron
         if (
             $patron && $this->isPatronSpecificAccess()
@@ -2315,7 +2315,7 @@ class SierraRest extends AbstractBase implements
      * @return bool True on success, false on patron login failure
      * @throws ILSException
      */
-    protected function renewAccessToken(array $patron = false)
+    protected function renewAccessToken(array $patron = false): bool
     {
         $patronCode = false;
         if ($patron && $this->isPatronSpecificAccess()) {
@@ -2392,7 +2392,7 @@ class SierraRest extends AbstractBase implements
      * @return string|bool
      * @throws ILSException
      */
-    protected function getPatronAuthorizationCode(array $patron)
+    protected function getPatronAuthorizationCode(array $patron): string|bool
     {
         // Do a patron login and then perform an authorization grant request
         $redirectUri = $this->config['Catalog']['redirect_uri'];
@@ -2511,7 +2511,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return \Laminas\Http\Client
      */
-    protected function createHttpClient(string $url)
+    protected function createHttpClient(string $url): \Laminas\Http\Client
     {
         $client = $this->httpService->createClient($url);
 
@@ -2539,7 +2539,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function formatCacheKey(string $key)
+    protected function formatCacheKey(string $key): string
     {
         return 'SierraRest-' . md5($this->config['Catalog']['host'] . "|$key");
     }
@@ -2551,7 +2551,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function getBibCallNumber(array $bib)
+    protected function getBibCallNumber(array $bib): string
     {
         $result = empty($this->config['CallNumber']['bib_fields'])
             ? '' : $this->extractFieldsFromApiData(
@@ -2810,7 +2810,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return array
      */
-    protected function getHoldingsData(array $holdings)
+    protected function getHoldingsData(array $holdings): array
     {
         $result = [];
         // Get Notes
@@ -2867,7 +2867,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string|string[] Results as a string if single, array if multiple
      */
-    protected function extractFieldsFromApiData(array $response, array|string $fieldSpecs)
+    protected function extractFieldsFromApiData(array $response, array|string $fieldSpecs): string|array
     {
         if (!is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
@@ -2923,7 +2923,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function getLocationName(string $locationCode)
+    protected function getLocationName(string $locationCode): string
     {
         $locations = $this->getCachedData('locations');
         if (null === $locations) {
@@ -2962,7 +2962,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function translateLocation(array $location)
+    protected function translateLocation(array $location): string
     {
         $prefix = 'location_';
         if (!empty($this->config['Catalog']['id'])) {
@@ -2983,7 +2983,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return int
      */
-    protected function statusSortFunction(array $a, array $b)
+    protected function statusSortFunction(array $a, array $b): int
     {
         $result = $this->getSorter()->compare($a['location'], $b['location']);
         if ($result === 0 && $this->sortItemsByEnumChron) {
@@ -3002,7 +3002,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function translateOpacMessage(string $code)
+    protected function translateOpacMessage(string $code): string
     {
         $prefix = 'opacmsg_';
         if (!empty($this->config['Catalog']['id'])) {
@@ -3019,7 +3019,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function mapStatusCode(string $code, string $default = null)
+    protected function mapStatusCode(string $code, string $default = null): string
     {
         return trim($this->itemStatusMappings[$code] ?? $default ?? $code);
     }
@@ -3031,7 +3031,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return array Status string, possible due date and any notes
      */
-    protected function getItemStatus(array $item)
+    protected function getItemStatus(array $item): array
     {
         $duedate = '';
         $notes = [];
@@ -3140,7 +3140,7 @@ class SierraRest extends AbstractBase implements
      * @return mixed        A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    protected function getPatronBlocks(array $patron)
+    protected function getPatronBlocks(array $patron): mixed
     {
         $patronId = $patron['id'];
         $cacheId = "blocks|$patronId";
@@ -3174,7 +3174,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return int
      */
-    protected function pickupLocationSortFunction(array $a, array $b)
+    protected function pickupLocationSortFunction(array $a, array $b): int
     {
         $result = $this->getSorter()->compare(
             $a['locationDisplay'],
@@ -3196,7 +3196,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return bool
      */
-    protected function pickUpLocationIsValid(string $pickUpLocation, array $patron, array $holdDetails)
+    protected function pickUpLocationIsValid(string $pickUpLocation, array $patron, array $holdDetails): bool
     {
         $pickUpLibs = $this->getPickUpLocations($patron, $holdDetails);
         foreach ($pickUpLibs as $location) {
@@ -3217,7 +3217,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return array An array with a success (boolean) and sysMessage key
      */
-    protected function holdError(string $msg, bool $ilsMsg = true)
+    protected function holdError(string $msg, bool $ilsMsg = true): array
     {
         return [
             'success' => false,
@@ -3232,7 +3232,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function formatErrorMessage(string $msg)
+    protected function formatErrorMessage(string $msg): string
     {
         // Remove prefix like "WebPAC Error" or "XCirc error"
         $msg = preg_replace('/.* [eE]rror\s*:\s*/', '', $msg);
@@ -3475,7 +3475,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return int
      */
-    protected function extractBibId(string $id)
+    protected function extractBibId(string $id): int
     {
         // If the .b prefix is found, strip it and the trailing checksum:
         return str_starts_with($id, '.b') ? substr($id, 2, -1) : $id;
@@ -3489,7 +3489,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return string
      */
-    protected function formatBibId(int $id)
+    protected function formatBibId(int $id): string
     {
         // Simple case: prefixing is disabled, so return ID unmodified:
         if (!($this->config['Catalog']['use_prefixed_ids'] ?? false)) {
@@ -3514,7 +3514,7 @@ class SierraRest extends AbstractBase implements
      *
      * @return bool
      */
-    protected function isPatronSpecificAccess()
+    protected function isPatronSpecificAccess(): bool
     {
         return !empty($this->config['Catalog']['redirect_uri']);
     }

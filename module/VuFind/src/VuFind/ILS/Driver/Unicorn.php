@@ -116,7 +116,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -223,7 +223,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return string Data for use in a form field
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         return $checkOutDetails['item_id'];
     }
@@ -239,7 +239,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return array              An array of renewal information keyed by item ID
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $patron = $renewDetails['patron'];
         $details = $renewDetails['details'];
@@ -296,7 +296,7 @@ class Unicorn extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         $params = ['query' => 'single', 'id' => $id];
         $response = $this->querySirsi($params);
@@ -347,7 +347,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses(array $idList)
+    public function getStatuses(array $idList): array
     {
         $statuses = [];
         $params = [
@@ -426,7 +426,7 @@ class Unicorn extends AbstractBase implements
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): mixed
     {
         $patron = $holdDetails['patron'];
 
@@ -488,7 +488,7 @@ class Unicorn extends AbstractBase implements
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         //query sirsi
         $params = [
@@ -544,7 +544,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
@@ -584,7 +584,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
@@ -642,7 +642,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
@@ -708,7 +708,7 @@ class Unicorn extends AbstractBase implements
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         $patron = $cancelDetails['patron'];
         $details = $cancelDetails['details'];
@@ -770,7 +770,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): array
     {
         $username = $patron['cat_username'];
         $password = $patron['cat_password'];
@@ -843,7 +843,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         //query sirsi
         $params = ['query' => 'courses'];
@@ -870,7 +870,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         //query sirsi
         $params = ['query' => 'instructors'];
@@ -896,7 +896,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array An associative array with key = dept. ID, value = dept. name.
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         //query sirsi
         $params = ['query' => 'desks'];
@@ -927,7 +927,7 @@ class Unicorn extends AbstractBase implements
      * @return array               An array of associative arrays representing
      * reserve items.
      */
-    public function findReserves(string $courseId, string $instructorId, string $departmentId)
+    public function findReserves(string $courseId, string $instructorId, string $departmentId): array
     {
         //query sirsi
         if ($courseId) {
@@ -981,7 +981,7 @@ class Unicorn extends AbstractBase implements
      * @throws ILSException
      * @return array ID numbers of suppressed records in the system.
      */
-    public function getSuppressedRecords()
+    public function getSuppressedRecords(): array
     {
         $params = ['query' => 'shadowed'];
         $response = $this->querySirsi($params);
@@ -1004,7 +1004,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return array       Associative array of holding information
      */
-    protected function parseStatusLine(string $line)
+    protected function parseStatusLine(string $line): array
     {
         [$catkey, $shelving_key, $callnum, $itemkey1, $itemkey2, $itemkey3,
             $barcode, $reserve, $number_of_charges, $item_type, $recirculate_flag,
@@ -1090,7 +1090,7 @@ class Unicorn extends AbstractBase implements
      * @return string      The friendly name if defined, otherwise the code is
      * returned.
      */
-    protected function mapLocation(string $code)
+    protected function mapLocation(string $code): string
     {
         if (
             isset($this->config['Locations'])
@@ -1109,7 +1109,7 @@ class Unicorn extends AbstractBase implements
      * @return string      The library friendly name if defined, otherwise the code
      * is returned.
      */
-    protected function mapLibrary(string $code)
+    protected function mapLibrary(string $code): string
     {
         if (
             isset($this->config['Libraries'])
@@ -1127,7 +1127,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return string
      */
-    protected function querySirsi(array $params)
+    protected function querySirsi(array $params): string
     {
         // make sure null parameters are sent as empty strings instead or else the
         // driver.pl may choke on null parameter values
@@ -1176,7 +1176,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return int              New due date as unix time stamp.
      */
-    protected function calculateRecallDueDate(int $dateRecalled, int $recallPeriod, int $duedate)
+    protected function calculateRecallDueDate(int $dateRecalled, int $recallPeriod, int $duedate): int
     {
         // FIXME: There must be a better way of getting recall due date
         if ($dateRecalled) {
@@ -1195,7 +1195,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return int         Unix time stamp if successful, false otherwise.
      */
-    protected function parseDateTime(string $date)
+    protected function parseDateTime(string $date): int
     {
         if (strlen($date) >= 8) {
             // format is MM/DD/YYYY HH:MI so it can be passed to strtotime
@@ -1218,7 +1218,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return string Formatted date/time.
      */
-    protected function formatDateTime(int $time)
+    protected function formatDateTime(int $time): string
     {
         $dateTimeString = '';
         if ($time) {
@@ -1239,7 +1239,7 @@ class Unicorn extends AbstractBase implements
      *
      * @return array Location information.
      */
-    protected function processMarcHoldingLocation(MarcReader $record, array $field)
+    protected function processMarcHoldingLocation(MarcReader $record, array $field): array
     {
         $library_code  = $record->getSubfield($field, 'b');
         $location_code = $record->getSubfield($field, 'c');
@@ -1266,7 +1266,7 @@ class Unicorn extends AbstractBase implements
      * @todo Check if is OK to print multiple times textual holdings
      *       that had more than one $8.
      */
-    protected function decodeMarcHoldingRecord(MarcReader $record)
+    protected function decodeMarcHoldingRecord(MarcReader $record): array
     {
         $locations = [];
         $holdings = [];
@@ -1368,7 +1368,7 @@ class Unicorn extends AbstractBase implements
      * @return array   Array of holdings data similar to the one returned by
      *                 getHolding.
      */
-    protected function getMarcHoldings(string $marc)
+    protected function getMarcHoldings(string $marc): array
     {
         $holdings = [];
         $collection = new MarcCollection($marc);

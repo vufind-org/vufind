@@ -60,7 +60,7 @@ class Feedback
      *
      * @return bool
      */
-    public function tabEnabled()
+    public function tabEnabled(): bool
     {
         return $this->enabled;
     }

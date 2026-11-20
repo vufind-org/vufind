@@ -47,7 +47,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFormatting()
+    public function testFormatting(): void
     {
         // test default currency in en_US locale
         $smf = new SafeMoneyFormat(

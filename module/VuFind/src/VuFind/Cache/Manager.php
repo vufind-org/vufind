@@ -183,7 +183,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return mixed Entry.
      */
-    public function get(string $id)
+    public function get(string $id): mixed
     {
         return $this->getCache($id);
     }
@@ -214,7 +214,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      * @return StorageInterface
      * @throws NotFoundException
      */
-    public function getCache(string $name, ?string $namespace = null)
+    public function getCache(string $name, ?string $namespace = null): StorageInterface
     {
         $this->ensureFileCache($name);
         $namespace ??= $name;
@@ -241,7 +241,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function getCacheDir(bool $allowCliOverride = true)
+    public function getCacheDir(bool $allowCliOverride = true): string
     {
         if (isset($this->defaults['cache_dir'])) {
             // Handle legacy configuration: cache_dir setting in config.ini is obsolete
@@ -290,7 +290,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return array
      */
-    public function getCacheList()
+    public function getCacheList(): array
     {
         return array_unique(
             [
@@ -321,7 +321,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return bool
      */
-    public function hasDirectoryCreationError()
+    public function hasDirectoryCreationError(): bool
     {
         return $this->directoryCreationError;
     }
@@ -334,7 +334,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function addDownloaderCache(string $downloaderName, array $opts = [])
+    public function addDownloaderCache(string $downloaderName, array $opts = []): string
     {
         $cacheName = 'downloader-' . $downloaderName;
         $this->createFileCache(
@@ -353,7 +353,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return string
      */
-    public function addLanguageCacheForTheme(string $themeName)
+    public function addLanguageCacheForTheme(string $themeName): string
     {
         $cacheName = 'languages-' . $themeName;
         $this->createFileCache(
@@ -396,7 +396,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function createNoCache(string $cacheName)
+    protected function createNoCache(string $cacheName): void
     {
         $this->cacheSettings[$cacheName] = [
             'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
@@ -412,7 +412,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return void
      */
-    public function ensureCacheDirectoryExists(string $dirName, array $overrideOpts = [])
+    public function ensureCacheDirectoryExists(string $dirName, array $overrideOpts = []): void
     {
         $opts = array_merge($this->defaults, $overrideOpts);
 
@@ -443,7 +443,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function createFileCache(string $cacheName, string $dirName, array $overrideOpts = [])
+    protected function createFileCache(string $cacheName, string $dirName, array $overrideOpts = []): void
     {
         $opts = array_merge($this->defaults, $overrideOpts);
         if ($opts['disabled'] ?? false) {

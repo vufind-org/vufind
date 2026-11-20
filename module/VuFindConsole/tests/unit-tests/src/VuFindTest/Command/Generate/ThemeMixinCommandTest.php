@@ -49,7 +49,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
@@ -73,7 +73,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailure()
+    public function testFailure(): void
     {
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
@@ -95,7 +95,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ThemeGenerator
      */
-    protected function getMockGenerator()
+    protected function getMockGenerator(): ThemeGenerator
     {
         return $this->createMock(MixinGenerator::class);
     }

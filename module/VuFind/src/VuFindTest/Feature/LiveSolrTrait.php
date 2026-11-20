@@ -59,7 +59,7 @@ trait LiveSolrTrait
      *
      * @return \VuFindTest\Container\MockContainer
      */
-    protected function createLiveSolrContainer()
+    protected function createLiveSolrContainer(): \VuFindTest\Container\MockContainer
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
@@ -97,7 +97,7 @@ trait LiveSolrTrait
      *
      * @return \VuFindTest\Container\MockContainer
      */
-    protected function getLiveSolrContainer()
+    protected function getLiveSolrContainer(): \VuFindTest\Container\MockContainer
     {
         if (null === $this->liveSolrContainer) {
             $this->liveSolrContainer = $this->createLiveSolrContainer();
@@ -112,7 +112,7 @@ trait LiveSolrTrait
      *
      * @return object
      */
-    protected function getBackend(string $name = 'Solr')
+    protected function getBackend(string $name = 'Solr'): object
     {
         return $this->getLiveSolrContainer()
             ->get(\VuFind\Search\BackendManager::class)->get($name);
@@ -125,7 +125,7 @@ trait LiveSolrTrait
      *
      * @return \VuFind\Search\Base\Results
      */
-    protected function getResultsObject(string $name = 'Solr')
+    protected function getResultsObject(string $name = 'Solr'): \VuFind\Search\Base\Results
     {
         return $this->getLiveSolrContainer()
             ->get(\VuFind\Search\Results\PluginManager::class)->get($name);

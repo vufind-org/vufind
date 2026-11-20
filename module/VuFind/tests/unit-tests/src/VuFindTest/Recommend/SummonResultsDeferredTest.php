@@ -45,7 +45,7 @@ class SummonResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCa
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $results = $this->getMockResults();
         $params = $results->getParams();

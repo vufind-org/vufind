@@ -76,7 +76,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSettersAndGetters()
+    public function testSettersAndGetters(): void
     {
         // Test get/set of single value:
         $this->container->value = 'tmp';
@@ -98,7 +98,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIssetAndUnset()
+    public function testIssetAndUnset(): void
     {
         // Test isset before setting a value:
         $this->assertFalse(isset($this->container->value));

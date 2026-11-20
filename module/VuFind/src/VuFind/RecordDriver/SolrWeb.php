@@ -62,7 +62,7 @@ class SolrWeb extends SolrDefault
      *
      * @return string Breadcrumb text to represent this record.
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb(): string
     {
         return $this->getTitle();
     }
@@ -82,7 +82,7 @@ class SolrWeb extends SolrDefault
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->fields['url'];
     }
@@ -92,7 +92,7 @@ class SolrWeb extends SolrDefault
      *
      * @return string
      */
-    public function getLastModified()
+    public function getLastModified(): string
     {
         return $this->fields['last_modified'] ?? '';
     }

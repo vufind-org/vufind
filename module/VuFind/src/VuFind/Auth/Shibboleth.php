@@ -137,7 +137,7 @@ class Shibboleth extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    protected function validateConfig()
+    protected function validateConfig(): void
     {
         // Throw an exception if the required username setting is missing.
         $shib = $this->config['Shibboleth'] ?? [];
@@ -163,7 +163,7 @@ class Shibboleth extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): UserEntityInterface
     {
         // validate config before authentication
         $this->validateConfig();
@@ -264,7 +264,7 @@ class Shibboleth extends AbstractBase
      *
      * @return bool
      */
-    public function isExpired()
+    public function isExpired(): bool
     {
         $config = $this->getConfig();
         if (
@@ -305,7 +305,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    public function connectLibraryCard(Request $request, UserEntityInterface $connectingUser)
+    public function connectLibraryCard(Request $request, UserEntityInterface $connectingUser): void
     {
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
@@ -332,7 +332,7 @@ class Shibboleth extends AbstractBase
      *
      * @return ConfigurationLoaderInterface configuration loader
      */
-    protected function getConfigurationLoader()
+    protected function getConfigurationLoader(): ConfigurationLoaderInterface
     {
         return $this->configurationLoader;
     }
@@ -345,7 +345,7 @@ class Shibboleth extends AbstractBase
      * @return array      Only username and attribute-related values
      * @throws AuthException
      */
-    protected function getRequiredAttributes(array $config)
+    protected function getRequiredAttributes(array $config): array
     {
         // Special case -- store username as-is to establish return array:
         $sortedUserAttributes = [];
@@ -375,7 +375,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    protected function storeShibbolethSession(Request $request)
+    protected function storeShibbolethSession(Request $request): void
     {
         if (!isset($this->shibSessionId)) {
             return;
@@ -400,7 +400,7 @@ class Shibboleth extends AbstractBase
      *
      * @return string entityId of IdP
      */
-    protected function getCurrentEntityId(Request $request)
+    protected function getCurrentEntityId(Request $request): string
     {
         return $this->getAttribute($request, $this->shibIdentityProvider) ?? '';
     }

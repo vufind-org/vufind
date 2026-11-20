@@ -85,7 +85,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return void
      */
-    public function enableWrites()
+    public function enableWrites(): void
     {
         $this->writesDisabled = false;
     }
@@ -95,7 +95,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return void
      */
-    public function disableWrites()
+    public function disableWrites(): void
     {
         $this->writesDisabled = true;
     }

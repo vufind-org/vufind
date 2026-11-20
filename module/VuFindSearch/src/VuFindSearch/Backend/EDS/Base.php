@@ -211,7 +211,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array
      */
-    public function info(string $authenticationToken = null, string $sessionToken = null)
+    public function info(string $authenticationToken = null, string $sessionToken = null): array
     {
         $this->debug('Info');
         $url = $this->apiHost . '/info';
@@ -232,7 +232,7 @@ abstract class Base implements LoggerAwareInterface
         string $profile = null,
         string $isGuest = null,
         string $authToken = null
-    ) {
+    ): array {
         $this->debug(
             'Create Session for profile: '
             . "$profile, guest: $isGuest, authToken: $authToken "
@@ -265,7 +265,7 @@ abstract class Base implements LoggerAwareInterface
         string $sessionToken,
         string $highlightTerms = null,
         array $extraQueryParams = []
-    ) {
+    ): array {
         $this->debug(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
         );
@@ -292,7 +292,7 @@ abstract class Base implements LoggerAwareInterface
         string $pubId,
         string $authenticationToken,
         string $sessionToken
-    ) {
+    ): array {
         $this->debug(
             "Get Record. pubId: $pubId"
         );
@@ -311,7 +311,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array An array of query results as returned from the api
      */
-    public function search(SearchRequestModel $query, string $authenticationToken, string $sessionToken)
+    public function search(SearchRequestModel $query, string $authenticationToken, string $sessionToken): array
     {
         // Query String Parameters
         $method = $this->searchHttpMethod;
@@ -332,7 +332,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array of terms
      */
-    protected function parseAutocomplete(array $msg)
+    protected function parseAutocomplete(array $msg): array
     {
         $result = [];
         if (isset($msg['terms']) && is_array($msg['terms'])) {
@@ -355,7 +355,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array An array of autocomplete terns as returned from the api
      */
-    public function autocomplete(string $query, string $type, array $data, bool $raw = false)
+    public function autocomplete(string $query, string $type, array $data, bool $raw = false): array
     {
         // $filters is an array of filter objects
         // filter objects consist of name and an array of values (customer ids)
@@ -390,7 +390,7 @@ abstract class Base implements LoggerAwareInterface
         string $password = null,
         string $orgid = null,
         array $params = null
-    ) {
+    ): array {
         $this->debug(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
@@ -420,7 +420,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array
      */
-    protected function createQSFromArray(array $params)
+    protected function createQSFromArray(array $params): array
     {
         $queryParameters = [];
         if (null != $params && is_array($params)) {
@@ -472,7 +472,7 @@ abstract class Base implements LoggerAwareInterface
         string $message = null,
         string $messageFormat = '',
         bool $cacheable = true
-    ) {
+    ): object {
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
         $queryString = implode('&', $queryParameters);
@@ -540,7 +540,7 @@ abstract class Base implements LoggerAwareInterface
      * @throws ApiException
      * @return array        The processed response from EDS API
      */
-    protected function process(string $input)
+    protected function process(string $input): array
     {
         //process response.
         try {
@@ -566,7 +566,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @return array Associative array of header parameters to add.
      */
-    protected function setTokens(string $authenticationToken = null, string $sessionToken = null)
+    protected function setTokens(string $authenticationToken = null, string $sessionToken = null): array
     {
         $headers = [];
         if (!empty($authenticationToken)) {
@@ -599,5 +599,5 @@ abstract class Base implements LoggerAwareInterface
         string $messageBody,
         string $messageFormat,
         bool $cacheable = true
-    );
+    ): string;
 }

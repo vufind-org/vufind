@@ -71,7 +71,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function abstractQueryToArray(AbstractQuery $query)
+    protected function abstractQueryToArray(AbstractQuery $query): array
     {
         if ($query instanceof Query) {
             return $query->getString();

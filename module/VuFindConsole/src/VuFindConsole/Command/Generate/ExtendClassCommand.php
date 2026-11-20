@@ -55,7 +55,7 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Subclasses a service, with lookup by class name.')

@@ -69,7 +69,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBaseDir()
+    public function testGetBaseDir(): void
     {
         $this->assertEquals($this->fixturePath, $this->getThemeInfo()->getBaseDir());
     }
@@ -79,7 +79,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testThemeSetting()
+    public function testThemeSetting(): void
     {
         $ti = $this->getThemeInfo();
         $this->assertEquals('parent', $ti->getTheme()); // default
@@ -92,7 +92,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testInvalidTheme()
+    public function testInvalidTheme(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot load theme: invalid');
@@ -105,7 +105,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThemeInfo()
+    public function testGetThemeInfo(): void
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
@@ -126,7 +126,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThemeInfoWithMixin()
+    public function testGetThemeInfoWithMixin(): void
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('mixin_user');
@@ -155,7 +155,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnfindableItem()
+    public function testUnfindableItem(): void
     {
         $this->assertNull($this->getThemeInfo()->findContainingTheme('does-not-exist'));
     }
@@ -165,7 +165,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFindContainingTheme()
+    public function testFindContainingTheme(): void
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
@@ -188,7 +188,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFindContainingThemeWithMixin()
+    public function testFindContainingThemeWithMixin(): void
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('mixin_user');
@@ -201,7 +201,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFindInThemes()
+    public function testFindInThemes(): void
     {
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
@@ -235,7 +235,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMergedConfigParentOnly()
+    public function testGetMergedConfigParentOnly(): void
     {
         // Parent
         $ti = $this->getThemeInfo();
@@ -254,7 +254,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMergedConfigChild()
+    public function testGetMergedConfigChild(): void
     {
         // Child with parents merged in
         $ti = $this->getThemeInfo();
@@ -274,7 +274,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMergedConfigMixin()
+    public function testGetMergedConfigMixin(): void
     {
         // Theme using a mixin
         $ti = $this->getThemeInfo();
@@ -293,7 +293,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMergedConfigReturnString()
+    public function testGetMergedConfigReturnString(): void
     {
         $ti = $this->getThemeInfo();
         $doctype = $ti->getMergedConfig('doctype');
@@ -305,7 +305,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMergedConfigNoKey()
+    public function testGetMergedConfigNoKey(): void
     {
         $ti = $this->getThemeInfo();
         $config = $ti->getMergedConfig();
@@ -436,7 +436,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      *
      * @return ThemeInfo
      */
-    protected function getThemeInfo()
+    protected function getThemeInfo(): ThemeInfo
     {
         return new ThemeInfo($this->fixturePath, 'parent');
     }

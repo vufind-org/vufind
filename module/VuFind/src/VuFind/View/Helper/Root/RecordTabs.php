@@ -122,7 +122,7 @@ class RecordTabs
      *
      * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }

@@ -94,7 +94,7 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
      *
      * @return bool
      */
-    protected function getHideSetting(array $config)
+    protected function getHideSetting(array $config): bool
     {
         $setting = $config['Content']['hide_if_empty'] ?? false;
         if (in_array($setting, [true, false, 1, 0], true)) {

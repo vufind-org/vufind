@@ -63,7 +63,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
      *
      * @return void
      */
-    protected function initLookFor(\VuFind\Search\Base\Params $params, array $request, array &$settings)
+    protected function initLookFor(\VuFind\Search\Base\Params $params, array $request, array &$settings): void
     {
         // Collect the best possible search term(s):
         $this->lookfor = $request['lookfor'] ?? '';
@@ -78,7 +78,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
      *
      * @return string Module name in call to AjaxHandler
      */
-    protected function getAjaxModule()
+    protected function getAjaxModule(): string
     {
         return 'EuropeanaResults';
     }

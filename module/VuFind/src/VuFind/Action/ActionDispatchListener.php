@@ -101,7 +101,7 @@ class ActionDispatchListener
      *
      * @return mixed
      */
-    public function onDispatch(MvcEvent $e)
+    public function onDispatch(MvcEvent $e): mixed
     {
         if (null !== $e->getResult()) {
             return;

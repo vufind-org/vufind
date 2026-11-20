@@ -234,7 +234,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function assertSortControl(Element $page, string $active)
+    protected function assertSortControl(Element $page, string $active): void
     {
         $this->assertSelectedSort($page, $active);
         $optionElements = $page->findAll('css', $this->sortControlSelector . ' option');

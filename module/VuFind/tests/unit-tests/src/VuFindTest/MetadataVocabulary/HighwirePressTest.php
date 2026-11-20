@@ -49,7 +49,7 @@ class HighwirePressTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMappings()
+    public function testMappings(): void
     {
         $meta = new HighwirePress();
         $this->assertEquals(

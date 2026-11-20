@@ -51,5 +51,5 @@ interface MetadataVocabularyInterface
      *
      * @return array
      */
-    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver);
+    public function getMappedData(\VuFind\RecordDriver\AbstractBase $driver): array;
 }

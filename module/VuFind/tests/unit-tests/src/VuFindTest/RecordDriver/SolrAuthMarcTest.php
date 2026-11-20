@@ -47,7 +47,7 @@ class SolrAuthMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRawLCCN()
+    public function testRawLCCN(): void
     {
         // LCCN in 700
         $marc = $this->getFixture('marc/authlccn1.xml');

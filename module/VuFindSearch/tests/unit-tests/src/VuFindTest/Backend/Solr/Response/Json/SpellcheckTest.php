@@ -48,7 +48,7 @@ class SpellcheckTest extends TestCase
      *
      * @return void
      */
-    public function testMerge()
+    public function testMerge(): void
     {
         $s1 = new Spellcheck(
             [
@@ -91,7 +91,7 @@ class SpellcheckTest extends TestCase
      *
      * @return void
      */
-    public function testDoubleMerge()
+    public function testDoubleMerge(): void
     {
         $s1 = new Spellcheck([['a', []]], 'fake');
         $s2 = new Spellcheck([['b', []]], 'fake');
@@ -108,7 +108,7 @@ class SpellcheckTest extends TestCase
      *
      * @return void
      */
-    public function testExactDuplication()
+    public function testExactDuplication(): void
     {
         $s1 = new Spellcheck([['a', []]], 'fake');
         $s2 = new Spellcheck([['a', []]], 'fake');
@@ -121,7 +121,7 @@ class SpellcheckTest extends TestCase
      *
      * @return void
      */
-    public function testGetQuery()
+    public function testGetQuery(): void
     {
         $s = new Spellcheck([], 'test');
         $this->assertEquals('test', $s->getQuery());

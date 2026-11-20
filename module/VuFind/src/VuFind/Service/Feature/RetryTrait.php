@@ -73,7 +73,7 @@ trait RetryTrait
         callable $callback,
         ?callable $statusCallback = null,
         array $options = []
-    ) {
+    ): mixed {
         $attempt = 0;
         $firstException = null;
         $lastException = null;

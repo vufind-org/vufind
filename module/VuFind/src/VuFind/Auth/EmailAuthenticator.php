@@ -119,7 +119,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         string $subject = 'email_login_subject',
         string $template = 'Email/login-link.phtml',
         array $templateParams = []
-    ) {
+    ): void {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config['Authentication']['recover_interval'] ?? 60;
         $sessionId = $this->sessionManager->getId();
@@ -170,7 +170,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * @deprecated Use code-based authentication instead
      */
-    public function authenticate(string $hash)
+    public function authenticate(string $hash): array
     {
         $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL, false);
         if (!$row) {
@@ -208,7 +208,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * @deprecated Use code-based authentication instead
      */
-    public function isValidLoginRequest(Request $request)
+    public function isValidLoginRequest(Request $request): bool
     {
         $hash = $request->getPost()->get(
             'hash',

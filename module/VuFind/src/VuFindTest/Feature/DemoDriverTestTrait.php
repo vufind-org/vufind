@@ -49,7 +49,7 @@ trait DemoDriverTestTrait
      *
      * @return array
      */
-    protected function getFakeTransactions(string $bibId)
+    protected function getFakeTransactions(string $bibId): array
     {
         $rawDueDate = strtotime('now +5 days');
         return json_encode(
@@ -80,7 +80,7 @@ trait DemoDriverTestTrait
      *
      * @return array
      */
-    protected function getFakeHistoricTransactions(string $bibId, string $bibId2)
+    protected function getFakeHistoricTransactions(string $bibId, string $bibId2): array
     {
         $checkoutDate = strtotime('now -30 days');
         $returnDate = strtotime('now -5 days');
@@ -153,7 +153,7 @@ trait DemoDriverTestTrait
      *
      * @return array
      */
-    protected function getFakeHolds(string $bibId, string $bibId2)
+    protected function getFakeHolds(string $bibId, string $bibId2): array
     {
         $createDate = strtotime('now -30 days');
         $expireDate = strtotime('now +1 year');
@@ -232,7 +232,7 @@ trait DemoDriverTestTrait
     protected function getDemoIniOverrides(
         string $bibId = 'testsample1',
         string $bibId2 = 'testsample2'
-    ) {
+    ): array {
         return [
             'Records' => [
                 'transactions' => $this->getFakeTransactions($bibId),
@@ -281,7 +281,7 @@ trait DemoDriverTestTrait
      *
      * @return array
      */
-    protected function getFakeItem()
+    protected function getFakeItem(): array
     {
         return [
             'barcode'      => '12345678',

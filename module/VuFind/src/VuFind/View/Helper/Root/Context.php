@@ -66,7 +66,7 @@ class Context
      *
      * @return array
      */
-    public function apply(array $vars)
+    public function apply(array $vars): array
     {
         $oldVars = [];
         foreach ($vars as $k => $v) {
@@ -83,7 +83,7 @@ class Context
      *
      * @return void
      */
-    public function restore(array $vars)
+    public function restore(array $vars): void
     {
         foreach ($vars as $k => $v) {
             if (null === $v) {
@@ -105,7 +105,7 @@ class Context
      *
      * @return string          Rendered template output
      */
-    public function renderInContext(string $template, array $context)
+    public function renderInContext(string $template, array $context): string
     {
         $oldContext = $this->apply($context);
         $html = $this->view->render($template);
@@ -120,7 +120,7 @@ class Context
      *
      * @return Context
      */
-    public function __invoke(?RendererInterface $view = null)
+    public function __invoke(?RendererInterface $view = null): Context
     {
         if (null !== $view) {
             $this->view = $view;

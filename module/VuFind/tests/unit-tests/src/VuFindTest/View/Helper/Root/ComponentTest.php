@@ -48,7 +48,7 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      *
      * @return Component
      */
-    protected function getHelper()
+    protected function getHelper(): Component
     {
         $view = $this->createMock(PhpRenderer::class);
         $view->method('render')->willReturnArgument(0);
@@ -63,7 +63,7 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testComponent()
+    public function testComponent(): void
     {
         $helper = $this->getHelper();
 

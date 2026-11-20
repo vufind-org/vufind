@@ -72,7 +72,7 @@ class Recommend implements ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $parts = explode(':', $settings, 3);
         $backend = array_shift($parts);
@@ -88,7 +88,7 @@ class Recommend implements ContentBlockInterface
      *
      * @return array
      */
-    public function getContext()
+    public function getContext(): array
     {
         return ['recommend' => $this->recommend];
     }

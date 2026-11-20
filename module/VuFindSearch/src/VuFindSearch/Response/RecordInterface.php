@@ -51,7 +51,7 @@ interface RecordInterface
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier(string $identifier);
+    public function setSourceIdentifier(string $identifier): void;
 
     /**
      * Set the source backend identifiers.
@@ -62,21 +62,21 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = '');
+    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = ''): void;
 
     /**
      * Return the source backend identifier.
      *
      * @return string
      */
-    public function getSourceIdentifier();
+    public function getSourceIdentifier(): string;
 
     /**
      * Return the search backend identifier used to find the record.
      *
      * @return string
      */
-    public function getSearchBackendIdentifier();
+    public function getSearchBackendIdentifier(): string;
 
     /**
      * Sets the result set identifier for the record collection.
@@ -85,7 +85,7 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid);
+    public function setResultSetIdentifier(string $uuid): void;
 
     /**
      * Retrieves the unique result set identifier.
@@ -95,7 +95,7 @@ interface RecordInterface
      *
      * @return string|null The UUID of the result set, or null if not set.
      */
-    public function getResultSetIdentifier();
+    public function getResultSetIdentifier(): ?string;
 
     /**
      * Add a label for the record.
@@ -105,7 +105,7 @@ interface RecordInterface
      *
      * @return void
      */
-    public function addLabel(string $label, string $class);
+    public function addLabel(string $label, string $class): void;
 
     /**
      * Set the labels for the record.
@@ -115,12 +115,12 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setLabels(array $labels);
+    public function setLabels(array $labels): void;
 
     /**
      * Return all labels for the record.
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */
-    public function getLabels();
+    public function getLabels(): array;
 }

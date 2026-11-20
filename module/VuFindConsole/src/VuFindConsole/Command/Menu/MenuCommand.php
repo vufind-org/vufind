@@ -88,7 +88,7 @@ class MenuCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setHelp('Display an interactive menu of commands.');
     }

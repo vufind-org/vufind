@@ -47,7 +47,7 @@ class SitemapIndexTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testToString()
+    public function testToString(): void
     {
         $sm = new SitemapIndex('2014-11-14');
         $sm->addUrl('http://foo');

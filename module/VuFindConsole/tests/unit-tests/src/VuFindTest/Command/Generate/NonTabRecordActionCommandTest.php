@@ -51,7 +51,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -73,7 +73,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $configFixturePath = $this->getFixtureDir('VuFindConsole') . 'empty.config.php';
         $expectedConfig = [
@@ -147,7 +147,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return GeneratorTools
      */
-    protected function getMockGeneratorTools(array $methods = [])
+    protected function getMockGeneratorTools(array $methods = []): GeneratorTools
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()

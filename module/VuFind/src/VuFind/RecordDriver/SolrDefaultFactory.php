@@ -63,7 +63,7 @@ class SolrDefaultFactory extends SolrDefaultWithoutSearchServiceFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $driver = parent::__invoke($container, $requestedName, $options);
         $driver->attachSearchService($container->get(\VuFindSearch\Service::class));
         return $driver;

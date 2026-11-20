@@ -80,7 +80,7 @@ class PublicationDetails
      *
      * @return string
      */
-    public function getPlace()
+    public function getPlace(): string
     {
         return $this->place;
     }
@@ -90,7 +90,7 @@ class PublicationDetails
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -100,7 +100,7 @@ class PublicationDetails
      *
      * @return string
      */
-    public function getDate()
+    public function getDate(): string
     {
         return $this->date;
     }
@@ -110,7 +110,7 @@ class PublicationDetails
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return trim(
             preg_replace(

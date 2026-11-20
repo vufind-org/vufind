@@ -72,7 +72,7 @@ class Permission
      *
      * @return bool
      */
-    public function isAuthorized(string $context)
+    public function isAuthorized(string $context): bool
     {
         return $this->permissionManager->isAuthorized($context) === true;
     }
@@ -84,7 +84,7 @@ class Permission
      *
      * @return bool
      */
-    public function allowDisplay(string $context)
+    public function allowDisplay(string $context): bool
     {
         // If there is no context, assume permission is granted.
         if (empty($context)) {
@@ -111,7 +111,7 @@ class Permission
      *
      * @return string
      */
-    public function getAlternateContent(string $context)
+    public function getAlternateContent(string $context): string
     {
         $displayLogic = $this->permissionDeniedManager
             ->getDeniedTemplateBehavior($context);

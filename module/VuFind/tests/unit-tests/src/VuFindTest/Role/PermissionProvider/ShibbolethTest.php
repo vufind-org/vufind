@@ -49,7 +49,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAliasIdpentityidTrue()
+    public function testAliasIdpentityidTrue(): void
     {
         $this->checkShibboleth(
             ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp'],
@@ -63,7 +63,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMultivaluedOptionTrue()
+    public function testMultivaluedOptionTrue(): void
     {
         $this->checkShibboleth(
             ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
@@ -78,7 +78,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMultivaluedOptionFalse()
+    public function testMultivaluedOptionFalse(): void
     {
         $this->checkShibboleth(
             ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
@@ -103,7 +103,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
         mixed $options,
         array $expectedResult,
         array $config = []
-    ) {
+    ): void {
         $request = new \Laminas\Http\PhpEnvironment\Request();
         $request->setServer(new \Laminas\Stdlib\Parameters($headers));
         $shibboleth = new Shibboleth($request, $config);

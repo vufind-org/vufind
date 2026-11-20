@@ -65,7 +65,7 @@ class HelpText
      *
      * @return array
      */
-    public function getWarnings()
+    public function getWarnings(): array
     {
         return $this->warnings;
     }
@@ -80,7 +80,7 @@ class HelpText
      *
      * @return string|bool
      */
-    public function render(string $name, array $context = [])
+    public function render(string $name, array $context = []): string|bool
     {
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.

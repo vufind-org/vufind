@@ -90,7 +90,7 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
      *
      * @return string Module name in call to AjaxHandler
      */
-    protected function getAjaxModule()
+    protected function getAjaxModule(): string
     {
         return 'SummonResults';
     }
@@ -100,7 +100,7 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
      *
      * @return string
      */
-    public function getUrlParams()
+    public function getUrlParams(): string
     {
         return parent::getUrlParams() . '&typeLabel=' . urlencode($this->typeLabel);
     }

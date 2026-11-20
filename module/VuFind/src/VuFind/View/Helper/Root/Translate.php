@@ -63,7 +63,7 @@ class Translate implements \VuFind\I18n\Translator\TranslatorAwareInterface
         string $default = null,
         bool $useIcuFormatter = false,
         array $fallbackDomains = []
-    ) {
+    ): string {
         return $this->translate($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
     }
 }

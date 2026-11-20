@@ -45,7 +45,7 @@ class Search extends \VuFind\View\Helper\AbstractSearch
      *
      * @return string
      */
-    protected function getContainerClass()
+    protected function getContainerClass(): string
     {
         return 'alert alert-info';
     }
@@ -58,7 +58,7 @@ class Search extends \VuFind\View\Helper\AbstractSearch
      *
      * @return string
      */
-    protected function renderExpandLink(string $url, \Laminas\View\Renderer\PhpRenderer $view)
+    protected function renderExpandLink(string $url, \Laminas\View\Renderer\PhpRenderer $view): string
     {
         return ' <a href="' . $url
             . '" title="' . $view->transEsc('spell_expand_alt')

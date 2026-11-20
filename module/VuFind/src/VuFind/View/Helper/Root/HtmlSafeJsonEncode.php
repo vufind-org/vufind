@@ -66,7 +66,7 @@ class HtmlSafeJsonEncode
      *
      * @return string
      */
-    public function __invoke(mixed $value, ?string $outerEscaper = 'escapeHtmlAttr')
+    public function __invoke(mixed $value, ?string $outerEscaper = 'escapeHtmlAttr'): string
     {
         $json = json_encode(
             $value,

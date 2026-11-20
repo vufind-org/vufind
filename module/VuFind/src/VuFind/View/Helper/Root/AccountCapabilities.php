@@ -59,7 +59,7 @@ class AccountCapabilities
      *
      * @return Helper
      */
-    public function __invoke()
+    public function __invoke(): Helper
     {
         return $this->helper;
     }

@@ -104,7 +104,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return array         An array of query results
      */
-    public function getMoreLikeThis(array $record, string $id, int $max = 5)
+    public function getMoreLikeThis(array $record, string $id, int $max = 5): array
     {
         // More Like This Query
         $query = 'title="' . $record['245']['a'] . '" ' .
@@ -131,7 +131,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string          XML response
      */
-    public function scan(string $clause, int $pos = null, int $maxTerms = null)
+    public function scan(string $clause, int $pos = null, int $maxTerms = null): string
     {
         $options = ['operation' => 'scan',
                          'scanClause' => $clause];
@@ -164,7 +164,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
         string $sortBy = null,
         string $schema = 'marcxml',
         bool $process = true
-    ) {
+    ): array {
         $this->debug('Query: ' . $query);
 
         // Query String Parameters
@@ -190,7 +190,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws BackendException
      * @return void
      */
-    public function checkForHttpError(\Laminas\Http\Response $result)
+    public function checkForHttpError(\Laminas\Http\Response $result): void
     {
         if (!$result->isSuccess()) {
             throw HttpErrorException::createFromResponse($result);
@@ -206,7 +206,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @throws BackendException
      * @return void
      */
-    public function checkForSRUDiagnosticsError(string $resultBody)
+    public function checkForSRUDiagnosticsError(string $resultBody): void
     {
         if (str_contains($resultBody, 'info:srw/diagnostic')) {
             $xmlDoc = simplexml_load_string($resultBody);
@@ -226,7 +226,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string|SimpleXMLElement The response from the XServer
      */
-    protected function call(string $method = 'GET', string $path = '', array $params = null, bool $process = true)
+    protected function call(string $method = 'GET', string $path = '', array $params = null, bool $process = true): string|SimpleXMLElement
     {
         $queryString = '';
         if ($params) {
@@ -285,7 +285,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      *
      * @return string|SimpleXMLElement
      */
-    protected function process(string $response)
+    protected function process(string $response): string|SimpleXMLElement
     {
         // Send back either the raw XML or a SimpleXML object, as requested:
         $result = XSLTProcessor::process('sru-convert-simple.xsl', $response);

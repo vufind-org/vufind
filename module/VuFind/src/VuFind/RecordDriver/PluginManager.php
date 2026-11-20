@@ -144,7 +144,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    protected function getExpectedInterface(): string
     {
         return AbstractBase::class;
     }
@@ -162,7 +162,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $data,
         string $keyPrefix = 'Solr',
         string $defaultKeySuffix = 'Default'
-    ) {
+    ): AbstractBase {
         $key = $keyPrefix . ucwords(
             $data['record_format'] ?? $data['recordtype'] ?? $defaultKeySuffix
         );
@@ -187,7 +187,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return AbstractBase
      */
-    public function getSearch2Record(array $data, string $defaultKeySuffix = 'Default')
+    public function getSearch2Record(array $data, string $defaultKeySuffix = 'Default'): AbstractBase
     {
         return $this->getSolrRecord($data, 'Search2', $defaultKeySuffix);
     }
@@ -199,7 +199,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return AbstractBase
      */
-    public function getSolrAuthRecord(array $data)
+    public function getSolrAuthRecord(array $data): AbstractBase
     {
         return $this->getSolrRecord($data, 'SolrAuth');
     }

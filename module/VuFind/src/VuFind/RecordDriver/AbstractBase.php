@@ -113,7 +113,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function setRawData(mixed $data)
+    public function setRawData(mixed $data): void
     {
         $this->fields = $data;
     }
@@ -124,7 +124,7 @@ abstract class AbstractBase implements
      *
      * @return mixed
      */
-    public function getRawData()
+    public function getRawData(): mixed
     {
         return $this->fields;
     }
@@ -134,7 +134,7 @@ abstract class AbstractBase implements
      *
      * @return string Breadcrumb text to represent this record.
      */
-    abstract public function getBreadcrumb();
+    abstract public function getBreadcrumb(): string;
 
     /**
      * Return the unique identifier of this record for retrieving additional
@@ -142,7 +142,7 @@ abstract class AbstractBase implements
      *
      * @return string Unique identifier.
      */
-    abstract public function getUniqueID();
+    abstract public function getUniqueID(): string;
 
     /**
      * Get comments associated with this record.
@@ -151,7 +151,7 @@ abstract class AbstractBase implements
      *
      * @deprecated Use CommentsServiceInterface::getRecordComments()
      */
-    public function getComments()
+    public function getComments(): array
     {
         return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
             $this->getUniqueID(),
@@ -164,7 +164,7 @@ abstract class AbstractBase implements
      *
      * @return string
      */
-    public function getSortTitle()
+    public function getSortTitle(): string
     {
         // Child classes should override this with smarter behavior, and the "strip
         // articles" logic probably belongs in a more appropriate place, but for now
@@ -187,7 +187,7 @@ abstract class AbstractBase implements
      *
      * @deprecated Use \VuFind\Ratings\RatingsService::getRatingData()
      */
-    public function getRatingData(?int $userId = null)
+    public function getRatingData(?int $userId = null): array
     {
         // Cache data since comments list may ask for same information repeatedly:
         $cacheKey = $userId ?? '-';
@@ -219,7 +219,7 @@ abstract class AbstractBase implements
      *
      * @deprecated Use \VuFind\Ratings\RatingsService::getRatingBreakdown()
      */
-    public function getRatingBreakdown(array $groups)
+    public function getRatingBreakdown(array $groups): array
     {
         return $this->getDbService(\VuFind\Db\Service\RatingsServiceInterface::class)
             ->getCountsForRecord(
@@ -238,7 +238,7 @@ abstract class AbstractBase implements
      *
      * @deprecated Use UserListServiceInterface::getListsContainingRecord()
      */
-    public function getContainingLists(int $user_id = null)
+    public function getContainingLists(int $user_id = null): array
     {
         return $this->getDbService(UserListServiceInterface::class)->getListsContainingRecord(
             $this->getUniqueID(),
@@ -252,7 +252,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsAjaxStatus()
+    public function supportsAjaxStatus(): bool
     {
         return false;
     }
@@ -262,7 +262,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsOpenUrl()
+    public function supportsOpenUrl(): bool
     {
         return true;
     }
@@ -272,7 +272,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsCoinsOpenUrl()
+    public function supportsCoinsOpenUrl(): bool
     {
         return true;
     }
@@ -295,7 +295,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function setExtraDetail(string $key, mixed $val)
+    public function setExtraDetail(string $key, mixed $val): void
     {
         $this->extraDetails[$key] = $val;
     }
@@ -305,7 +305,7 @@ abstract class AbstractBase implements
      *
      * @return array Strings representing citation formats.
      */
-    public function getCitationFormats()
+    public function getCitationFormats(): array
     {
         $formatSetting = $this->mainConfig['Record']['citation_formats'] ?? true;
 
@@ -331,7 +331,7 @@ abstract class AbstractBase implements
      *
      * @return array Strings representing citation formats.
      */
-    protected function getSupportedCitationFormats()
+    protected function getSupportedCitationFormats(): array
     {
         return [];
     }
@@ -343,7 +343,7 @@ abstract class AbstractBase implements
      *
      * @return mixed
      */
-    public function getExtraDetail(string $key)
+    public function getExtraDetail(string $key): mixed
     {
         return $this->extraDetails[$key] ?? null;
     }
@@ -371,7 +371,7 @@ abstract class AbstractBase implements
      *
      * @return mixed
      */
-    public function tryMethod(string $method, array $params = [], mixed $default = null)
+    public function tryMethod(string $method, array $params = [], mixed $default = null): mixed
     {
         return is_callable([$this, $method]) ? $this->$method(...$params) : $default;
     }

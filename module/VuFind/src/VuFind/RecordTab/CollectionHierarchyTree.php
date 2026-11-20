@@ -65,7 +65,7 @@ class CollectionHierarchyTree extends HierarchyTree
      *
      * @return string
      */
-    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
+    public function renderTree(?string $id = null, ?string $context = null, array $options = []): string
     {
         // Same as parent -- we just have a different default context:
         return parent::renderTree($id, $context ?? 'Collection', $options);

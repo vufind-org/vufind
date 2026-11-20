@@ -90,7 +90,7 @@ class Preview extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Preview';
     }
@@ -100,7 +100,7 @@ class Preview extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -110,7 +110,7 @@ class Preview extends AbstractBase
      *
      * @return bool
      */
-    public function isVisible()
+    public function isVisible(): bool
     {
         // in this case there is no downside to keeping it hidden
         // until there is content
@@ -122,7 +122,7 @@ class Preview extends AbstractBase
      *
      * @return bool
      */
-    public function supportsAjax()
+    public function supportsAjax(): bool
     {
         // No, Google script magic required
         return false;

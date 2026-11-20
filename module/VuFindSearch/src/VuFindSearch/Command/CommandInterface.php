@@ -77,7 +77,7 @@ interface CommandInterface
      *
      * @return mixed
      */
-    public function getResult();
+    public function getResult(): mixed;
 
     /**
      * Return search parameters.
@@ -91,5 +91,5 @@ interface CommandInterface
      *
      * @return mixed
      */
-    public function getContext();
+    public function getContext(): mixed;
 }

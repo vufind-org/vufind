@@ -74,7 +74,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         // If accessPermission is set, check for authorization to enable tab
         if (!empty($this->accessPermission)) {
@@ -93,7 +93,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function isVisible()
+    public function isVisible(): bool
     {
         // Assume visible by default; subclasses may add rules.
         return true;
@@ -104,7 +104,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsAjax()
+    public function supportsAjax(): bool
     {
         // Assume we can load by AJAX; subclasses may add rules.
         return true;
@@ -128,7 +128,7 @@ abstract class AbstractBase implements
      *
      * @return AbstractBase
      */
-    public function setRecordDriver(\VuFind\RecordDriver\AbstractBase $driver)
+    public function setRecordDriver(\VuFind\RecordDriver\AbstractBase $driver): AbstractBase
     {
         $this->driver = $driver;
         return $this;
@@ -140,7 +140,7 @@ abstract class AbstractBase implements
      * @return \VuFind\RecordDriver\AbstractBase
      * @throws \Exception
      */
-    protected function getRecordDriver()
+    protected function getRecordDriver(): \VuFind\RecordDriver\AbstractBase
     {
         if (null === $this->driver) {
             throw new \Exception('Record driver not set.');
@@ -155,7 +155,7 @@ abstract class AbstractBase implements
      *
      * @return AbstractBase
      */
-    public function setRequest(\Laminas\Http\Request $request)
+    public function setRequest(\Laminas\Http\Request $request): AbstractBase
     {
         $this->request = $request;
         return $this;
@@ -166,7 +166,7 @@ abstract class AbstractBase implements
      *
      * @return \Laminas\Http\Request|bool
      */
-    protected function getRequest()
+    protected function getRequest(): \Laminas\Http\Request|bool
     {
         return $this->request;
     }

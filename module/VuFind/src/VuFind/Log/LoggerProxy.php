@@ -217,7 +217,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      *
      * @return mixed Varies by method
      */
-    public function __call(string $methodName, array $params)
+    public function __call(string $methodName, array $params): mixed
     {
         return call_user_func_array([$this->getLogger(), $methodName], $params);
     }

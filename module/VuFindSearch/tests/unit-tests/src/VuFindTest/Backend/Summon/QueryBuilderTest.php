@@ -50,7 +50,7 @@ class QueryBuilderTest extends TestCase
      *
      * @return void
      */
-    public function testParsing()
+    public function testParsing(): void
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):

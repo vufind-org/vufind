@@ -48,7 +48,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRoutingWithDriver()
+    public function testRoutingWithDriver(): void
     {
         $driver = $this->getDriver();
         $router = $this->getRouter();
@@ -69,7 +69,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRoutingWithString()
+    public function testRoutingWithString(): void
     {
         $router = $this->getRouter();
         $this->assertEquals(
@@ -89,7 +89,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTabRoutingWithString()
+    public function testTabRoutingWithString(): void
     {
         $router = $this->getRouter();
         $this->assertEquals(
@@ -109,7 +109,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCollectionSpecialCaseWithString()
+    public function testCollectionSpecialCaseWithString(): void
     {
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
@@ -130,7 +130,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRoutingWithIDContainingPercent()
+    public function testRoutingWithIDContainingPercent(): void
     {
         $router = $this->getRouter();
         $this->assertEquals(
@@ -150,7 +150,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCollectionSpecialCaseWithStringMissingSource()
+    public function testCollectionSpecialCaseWithStringMissingSource(): void
     {
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
@@ -171,7 +171,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCollectionSpecialCaseWithDriver()
+    public function testCollectionSpecialCaseWithDriver(): void
     {
         $driver = $this->getDriver();
         $driver->expects($this->once())
@@ -196,7 +196,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRoutingWithStringMissingSource()
+    public function testRoutingWithStringMissingSource(): void
     {
         $router = $this->getRouter();
         $this->assertEquals(
@@ -216,7 +216,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testActionRoutingWithDriver()
+    public function testActionRoutingWithDriver(): void
     {
         $driver = $this->getDriver();
         $router = $this->getRouter();
@@ -240,7 +240,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDriver
      */
-    protected function getDriver(string $id = 'test', string $source = 'Solr')
+    protected function getDriver(string $id = 'test', string $source = 'Solr'): RecordDriver
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->method('getUniqueId')->willReturn($id);
@@ -255,7 +255,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
      *
      * @return Router
      */
-    protected function getRouter(array $config = [])
+    protected function getRouter(array $config = []): Router
     {
         return new Router($config);
     }

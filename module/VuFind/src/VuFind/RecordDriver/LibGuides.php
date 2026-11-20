@@ -45,7 +45,7 @@ class LibGuides extends DefaultRecord
      *
      * @return string
      */
-    public function getShortTitle()
+    public function getShortTitle(): string
     {
         return $this->getTitle();
     }

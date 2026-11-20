@@ -96,7 +96,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->mode = $options['mode'] ?? 'retain';
         $this->setBatchSizeFromOptions($options);
@@ -152,7 +152,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @return array
      */
-    protected function buildChannelFromParams(Params $params)
+    protected function buildChannelFromParams(Params $params): array
     {
         $retVal = [
             'title' => $this->translate('random_recommendation_title'),

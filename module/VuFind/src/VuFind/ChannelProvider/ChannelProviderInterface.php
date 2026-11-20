@@ -90,7 +90,7 @@ interface ChannelProviderInterface
      *
      * @return void
      */
-    public function setOptions(array $options);
+    public function setOptions(array $options): void;
 
     /**
      * Set an identifier that will be injected as the 'providerId' key of all
@@ -100,5 +100,5 @@ interface ChannelProviderInterface
      *
      * @return void
      */
-    public function setProviderId(string $id);
+    public function setProviderId(string $id): void;
 }

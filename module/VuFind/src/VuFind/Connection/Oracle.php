@@ -128,7 +128,7 @@ class Oracle
      *
      * @return mixed      SQL resource on success, boolean false otherwise.
      */
-    public function prepare(string $sql)
+    public function prepare(string $sql): mixed
     {
         if ($parsed = @oci_parse($this->dbHandle, $sql)) {
             return $parsed;
@@ -143,7 +143,7 @@ class Oracle
      *
      * @return mixed New descriptor on success, boolean false otherwise.
      */
-    public function prepRowId()
+    public function prepRowId(): mixed
     {
         if ($new_id = @oci_new_descriptor($this->dbHandle, OCI_D_ROWID)) {
             return $new_id;
@@ -161,7 +161,7 @@ class Oracle
      *
      * @return int
      */
-    protected function getDataTypeConstant(string $data_type)
+    protected function getDataTypeConstant(string $data_type): int
     {
         switch ($data_type) {
             case 'integer':
@@ -207,7 +207,7 @@ class Oracle
         string $data,
         string $data_type = 'string',
         int $length = -1
-    ) {
+    ): bool {
         $success = @oci_bind_by_name(
             $parsed,
             $place_holder,
@@ -248,7 +248,7 @@ class Oracle
         string &$data,
         string $data_type = 'string',
         int $length = -1
-    ) {
+    ): bool {
         $success = @oci_bind_by_name(
             $parsed,
             $place_holder,
@@ -271,7 +271,7 @@ class Oracle
      *
      * @return bool
      */
-    public function exec($parsed)
+    public function exec($parsed): bool
     {
         // OCI_DEFAULT == DO NOT COMMIT!!!
         if (@oci_execute($parsed, OCI_DEFAULT)) {
@@ -287,7 +287,7 @@ class Oracle
      *
      * @return bool
      */
-    public function commit()
+    public function commit(): bool
     {
         if (@oci_commit($this->dbHandle)) {
             return true;
@@ -302,7 +302,7 @@ class Oracle
      *
      * @return bool
      */
-    public function rollback()
+    public function rollback(): bool
     {
         if (@oci_rollback($this->dbHandle)) {
             return true;
@@ -319,7 +319,7 @@ class Oracle
      *
      * @return bool
      */
-    public function free($parsed)
+    public function free($parsed): bool
     {
         if (@oci_free_statement($parsed)) {
             return true;
@@ -337,7 +337,7 @@ class Oracle
      *
      * @return array|bool    Results on success, false on error.
      */
-    public function simpleSelect(string $sql, array $fields = [])
+    public function simpleSelect(string $sql, array $fields = []): array|bool
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
@@ -364,7 +364,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleDelete(string $table, array $fields = [])
+    public function simpleDelete(string $table, array $fields = []): bool
     {
         $types   = [];
         $data    = [];
@@ -413,7 +413,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleInsert(string $table, array $fields = [])
+    public function simpleInsert(string $table, array $fields = []): bool
     {
         $types   = [];
         $data    = [];
@@ -471,7 +471,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleSql(string $sql, array $fields = [])
+    public function simpleSql(string $sql, array $fields = []): bool
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
@@ -494,7 +494,7 @@ class Oracle
      *
      * @return void
      */
-    protected function clearError()
+    protected function clearError(): void
     {
         $this->lastError       = null;
         $this->lastErrorType   = null;
@@ -511,7 +511,7 @@ class Oracle
      *
      * @return void
      */
-    protected function handleError(string $type, string $error, string $sql = '')
+    protected function handleError(string $type, string $error, string $sql = ''): void
     {
         // All we are doing at the moment is storing it
         $this->lastError       = $error;
@@ -524,7 +524,7 @@ class Oracle
      *
      * @return string
      */
-    public function getLastError()
+    public function getLastError(): string
     {
         return $this->lastError;
     }
@@ -534,7 +534,7 @@ class Oracle
      *
      * @return string
      */
-    public function getLastErrorType()
+    public function getLastErrorType(): string
     {
         return $this->lastErrorType;
     }
@@ -544,7 +544,7 @@ class Oracle
      *
      * @return string
      */
-    public function getLastSql()
+    public function getLastSql(): string
     {
         return $this->lastSql;
     }
@@ -554,7 +554,7 @@ class Oracle
      *
      * @return string
      */
-    public function getHtmlError()
+    public function getHtmlError(): string
     {
         if ($this->lastError == null) {
             return 'No error found!';

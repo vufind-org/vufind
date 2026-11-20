@@ -68,7 +68,7 @@ class Similar implements RelatedInterface
      *
      * @return void
      */
-    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver)
+    public function init(string $settings, \VuFind\RecordDriver\AbstractBase $driver): void
     {
         $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
@@ -83,7 +83,7 @@ class Similar implements RelatedInterface
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         return $this->results;
     }

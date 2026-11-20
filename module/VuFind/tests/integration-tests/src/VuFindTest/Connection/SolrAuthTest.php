@@ -64,7 +64,7 @@ class SolrAuthTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSimpleSearch()
+    public function testSimpleSearch(): void
     {
         $solr = $this->getBackend('SolrAuth');
 

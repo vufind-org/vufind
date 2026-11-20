@@ -99,7 +99,7 @@ class SimulatedSSO extends AbstractBase
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): UserEntityInterface
     {
         // If we made it this far, we should log in the user!
         $username = $this->simulatedSSOConfig['General']['username'] ?? 'fakeuser1';

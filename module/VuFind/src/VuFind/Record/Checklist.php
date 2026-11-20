@@ -71,7 +71,7 @@ class Checklist
      *
      * @return array
      */
-    public function getChecked()
+    public function getChecked(): array
     {
         return array_values($this->checked);
     }
@@ -81,7 +81,7 @@ class Checklist
      *
      * @return array
      */
-    public function getUnchecked()
+    public function getUnchecked(): array
     {
         return array_values($this->unchecked);
     }
@@ -91,7 +91,7 @@ class Checklist
      *
      * @return bool
      */
-    public function hasChecked()
+    public function hasChecked(): bool
     {
         return count($this->checked) > 0;
     }
@@ -101,7 +101,7 @@ class Checklist
      *
      * @return bool
      */
-    public function hasUnchecked()
+    public function hasUnchecked(): bool
     {
         return count($this->unchecked) > 0;
     }
@@ -114,7 +114,7 @@ class Checklist
      *
      * @return bool
      */
-    public function check(mixed $value)
+    public function check(mixed $value): bool
     {
         $key = array_search($value, $this->unchecked);
         if ($key !== false) {
@@ -133,7 +133,7 @@ class Checklist
      *
      * @return bool
      */
-    public function uncheck(mixed $value)
+    public function uncheck(mixed $value): bool
     {
         $key = array_search($value, $this->checked);
         if ($key !== false) {

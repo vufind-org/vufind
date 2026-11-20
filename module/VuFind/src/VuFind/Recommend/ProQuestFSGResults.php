@@ -49,7 +49,7 @@ class ProQuestFSGResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getSearchClassId()
+    protected function getSearchClassId(): string
     {
         return 'ProQuestFSG';
     }
@@ -59,7 +59,7 @@ class ProQuestFSGResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getDefaultHeading()
+    protected function getDefaultHeading(): string
     {
         return 'proquestfsg_recommendations';
     }

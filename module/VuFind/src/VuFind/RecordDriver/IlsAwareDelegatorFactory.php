@@ -86,7 +86,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
      *
      * @return string[]
      */
-    protected function getIlsBackends(ContainerInterface $container)
+    protected function getIlsBackends(ContainerInterface $container): array
     {
         // Get a list of ILS-compatible backends.
         static $ilsBackends = null;

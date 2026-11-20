@@ -455,7 +455,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *     override flag has been toggled off, and a service instance
      *     exists for a given service.
      */
-    public function configure(array $config)
+    public function configure(array $config): static
     {
         parent::configure($config);
         $this->categoryAliases = ($config['category_aliases'] ?? []) + $this->categoryAliases;
@@ -483,7 +483,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * and the service is not auto-invokable.
      * @throws InvalidServiceException  If the plugin created is invalid for the plugin context.
      */
-    public function get($name, ?array $options = null)
+    public function get($name, ?array $options = null): mixed
     {
         return parent::get($this->resolveAlias($name), $options);
     }
@@ -495,7 +495,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return bool
      */
-    public function has($name)
+    public function has($name): bool
     {
         return parent::has($this->resolveAlias($name));
     }
@@ -533,7 +533,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return string
      */
-    protected function getExpectedInterface()
+    protected function getExpectedInterface(): string
     {
         return ActionInterface::class;
     }

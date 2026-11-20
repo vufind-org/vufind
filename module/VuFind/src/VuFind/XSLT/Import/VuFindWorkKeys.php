@@ -72,7 +72,7 @@ class VuFindWorkKeys
         string $includeRegEx = '',
         string $excludeRegEx = '',
         string $transliteratorRules = ''
-    ) {
+    ): DOMDocument {
         $transliterator = $transliteratorRules
             ? \Transliterator::createFromRules(
                 $transliteratorRules,
@@ -167,7 +167,7 @@ class VuFindWorkKeys
         string $includeRegEx,
         string $excludeRegEx,
         \Transliterator $transliterator
-    ) {
+    ): string {
         // Handle strings and/or DOM elements:
         $string = self::deDom($rawString);
         $normalized = $transliterator ? $transliterator->transliterate($string)

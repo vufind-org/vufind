@@ -46,7 +46,7 @@ interface AccessPermissionInterface
      *
      * @return string|bool|null
      */
-    public function getAccessPermission();
+    public function getAccessPermission(): string|bool|null;
 
     /**
      * Getter for access permission.
@@ -56,5 +56,5 @@ interface AccessPermissionInterface
      *
      * @return void
      */
-    public function setAccessPermission(string|bool $ap);
+    public function setAccessPermission(string|bool $ap): void;
 }

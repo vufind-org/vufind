@@ -75,7 +75,7 @@ class Loader
      *
      * @return \VuFindCode\ISBN|bool
      */
-    protected function getIsbnObject(string $isbn)
+    protected function getIsbnObject(string $isbn): \VuFindCode\ISBN|bool
     {
         // We can't proceed without an ISBN:
         return (empty($isbn))
@@ -89,7 +89,7 @@ class Loader
      *
      * @return array
      */
-    public function loadByIsbn(string $isbn)
+    public function loadByIsbn(string $isbn): array
     {
         $results = [];
         if (!($isbnObj = $this->getIsbnObject($isbn))) {

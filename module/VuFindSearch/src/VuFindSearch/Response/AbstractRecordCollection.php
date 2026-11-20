@@ -77,7 +77,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return array
      */
-    public function getRecords()
+    public function getRecords(): array
     {
         return $this->records;
     }
@@ -90,7 +90,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return [];
     }
@@ -100,7 +100,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return bool
      */
-    public function shuffle()
+    public function shuffle(): bool
     {
         return shuffle($this->records);
     }
@@ -127,7 +127,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface|null
      */
-    public function first()
+    public function first(): ?RecordInterface
     {
         return $this->records[0] ?? null;
     }
@@ -137,7 +137,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }
@@ -151,7 +151,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier(string $identifier)
+    public function setSourceIdentifier(string $identifier): void
     {
         $this->source = $identifier;
         foreach ($this->records as $record) {
@@ -168,7 +168,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = '')
+    public function setSourceIdentifiers(string $recordSourceId, string $searchBackendId = ''): void
     {
         $this->source = $searchBackendId ?: $recordSourceId;
         foreach ($this->records as $record) {
@@ -184,7 +184,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return string
      */
-    public function getSourceIdentifier()
+    public function getSourceIdentifier(): string
     {
         return $this->source;
     }
@@ -199,7 +199,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid)
+    public function setResultSetIdentifier(string $uuid): void
     {
         foreach ($this->records as $record) {
             $record->setResultSetIdentifier($uuid);
@@ -215,7 +215,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function add(RecordInterface $record, bool $checkExisting = true)
+    public function add(RecordInterface $record, bool $checkExisting = true): void
     {
         if (!$checkExisting || !$this->has($record)) {
             $this->records[$this->pointer] = $record;
@@ -230,7 +230,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return bool
      */
-    public function has(RecordInterface $record)
+    public function has(RecordInterface $record): bool
     {
         return in_array($record, $this->records, true);
     }
@@ -243,7 +243,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function replace(RecordInterface $record, RecordInterface $replacement)
+    public function replace(RecordInterface $record, RecordInterface $replacement): void
     {
         $key = array_search($record, $this->records, true);
         if ($key !== false) {

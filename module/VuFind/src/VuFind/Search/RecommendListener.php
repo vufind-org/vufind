@@ -96,7 +96,7 @@ class RecommendListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             \VuFind\Search\SearchRunner::class,
@@ -117,7 +117,7 @@ class RecommendListener
      *
      * @return void
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
@@ -129,7 +129,7 @@ class RecommendListener
      *
      * @return EventInterface
      */
-    public function onSearchConfigured(EventInterface $event)
+    public function onSearchConfigured(EventInterface $event): EventInterface
     {
         // Make sure we're triggering in the appropriate context:
         if ($this->searchId != $event->getParam('runningSearchId')) {
@@ -181,7 +181,7 @@ class RecommendListener
      *
      * @return EventInterface
      */
-    public function onSearchComplete(EventInterface $event)
+    public function onSearchComplete(EventInterface $event): EventInterface
     {
         // Make sure we're triggering in the appropriate context:
         if ($this->searchId != $event->getParam('runningSearchId')) {

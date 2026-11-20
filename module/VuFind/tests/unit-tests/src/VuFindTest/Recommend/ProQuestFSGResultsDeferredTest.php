@@ -47,7 +47,7 @@ class ProQuestFSGResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredT
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\ProQuestFSGResultsDeferred::class,

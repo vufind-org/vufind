@@ -92,7 +92,7 @@ class QueryBuilder
      *
      * @return void
      */
-    public function setDefaultWidgetType(string $type)
+    public function setDefaultWidgetType(string $type): void
     {
         $this->widgetType = $type;
     }
@@ -106,7 +106,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function abstractQueryToArray(AbstractQuery $query)
+    protected function abstractQueryToArray(AbstractQuery $query): array
     {
         if ($query instanceof Query) {
             return $this->queryToArray($query);
@@ -135,7 +135,7 @@ class QueryBuilder
      *
      * @return array
      */
-    protected function queryToArray(Query $query)
+    protected function queryToArray(Query $query): array
     {
         // Clean and validate input:
         $index = $query->getHandler();

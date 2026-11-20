@@ -45,7 +45,7 @@ abstract class AbstractSearch
      *
      * @return string
      */
-    abstract protected function getContainerClass();
+    abstract protected function getContainerClass(): string;
 
     /**
      * Render an expand link.
@@ -55,7 +55,7 @@ abstract class AbstractSearch
      *
      * @return string
      */
-    abstract protected function renderExpandLink(string $url, \Laminas\View\Renderer\PhpRenderer $view);
+    abstract protected function renderExpandLink(string $url, \Laminas\View\Renderer\PhpRenderer $view): string;
 
     /**
      * Support function to display spelling suggestions.
@@ -67,7 +67,7 @@ abstract class AbstractSearch
      *
      * @return string
      */
-    public function renderSpellingSuggestions(string $msg, \VuFind\Search\Base\Results $results, \Laminas\View\Renderer\PhpRenderer $view)
+    public function renderSpellingSuggestions(string $msg, \VuFind\Search\Base\Results $results, \Laminas\View\Renderer\PhpRenderer $view): string
     {
         $spellingSuggestions = $results->getSpellingSuggestions();
         if (empty($spellingSuggestions)) {

@@ -177,7 +177,7 @@ class PageLocator
         string $pathPrefix,
         string $pageName,
         string $pattern = null
-    ) {
+    ): ?array {
         if ($pattern === null) {
             $pattern = '%pathPrefix%/%pageName%{_%language%}';
         }

@@ -55,7 +55,7 @@ interface QueryBuilderInterface
      *
      * @return ParamBag
      */
-    public function build(AbstractQuery $query, ?ParamBag $params = null);
+    public function build(AbstractQuery $query, ?ParamBag $params = null): ParamBag;
 
     /**
      * Control whether or not the QueryBuilder should create a spellcheck.q
@@ -65,5 +65,5 @@ interface QueryBuilderInterface
      *
      * @return void
      */
-    public function setCreateSpellingQuery(bool $enable);
+    public function setCreateSpellingQuery(bool $enable): void;
 }

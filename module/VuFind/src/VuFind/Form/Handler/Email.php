@@ -126,7 +126,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
      *
      * @return array with name, email
      */
-    protected function getSender(Form $form)
+    protected function getSender(Form $form): array
     {
         $config = $this->mainConfig;
         $email = $form->getEmailFromAddress()

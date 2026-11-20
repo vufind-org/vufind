@@ -48,5 +48,5 @@ interface FallbackLoaderInterface
      *
      * @return array
      */
-    public function load(array $ids);
+    public function load(array $ids): array;
 }

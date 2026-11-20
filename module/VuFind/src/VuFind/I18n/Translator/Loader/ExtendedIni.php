@@ -133,7 +133,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return void
      */
-    public function addToPathStack(array|string $pathStack)
+    public function addToPathStack(array|string $pathStack): void
     {
         $this->pathStack = array_merge($this->pathStack, (array)$pathStack);
     }
@@ -148,7 +148,7 @@ class ExtendedIni implements FileLoaderInterface
      * @return TextDomain
      * @throws InvalidArgumentException
      */
-    public function load(string $locale, string $filename)
+    public function load(string $locale, string $filename): TextDomain
     {
         if ($locale === 'debug') {
             return null;
@@ -192,7 +192,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return string
      */
-    public function getLanguageFilename(string $locale, string $domain)
+    public function getLanguageFilename(string $locale, string $domain): string
     {
         return (empty($domain) || $domain === 'default')
             ? $locale . '.ini'
@@ -204,7 +204,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return void
      */
-    protected function resetLoadedFiles()
+    protected function resetLoadedFiles(): void
     {
         $this->loadedFiles = [];
     }
@@ -216,7 +216,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return bool True if loaded, false if new.
      */
-    protected function checkAndMarkLoadedFile(string $filename)
+    protected function checkAndMarkLoadedFile(string $filename): bool
     {
         if (isset($this->loadedFiles[$filename])) {
             return true;
@@ -234,7 +234,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      */
-    protected function loadLanguageLocale(string $locale, string $domain, bool $processAliases = false)
+    protected function loadLanguageLocale(string $locale, string $domain, bool $processAliases = false): TextDomain
     {
         $filename = $this->getLanguageFilename($locale, $domain);
         // Load the language file, and throw a fatal exception if it's missing
@@ -392,7 +392,7 @@ class ExtendedIni implements FileLoaderInterface
      * @throws InvalidArgumentException
      * @return TextDomain
      */
-    protected function loadLanguageFile(string $filename, bool $failOnError, ?string $aliasDomain)
+    protected function loadLanguageFile(string $filename, bool $failOnError, ?string $aliasDomain): TextDomain
     {
         // Don't load a file that has already been loaded:
         if ($this->checkAndMarkLoadedFile($filename)) {
@@ -440,7 +440,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      */
-    protected function loadParentData(TextDomain $data, ?string $aliasDomain)
+    protected function loadParentData(TextDomain $data, ?string $aliasDomain): TextDomain
     {
         if (!isset($data['@parent_ini'])) {
             return $data;

@@ -45,5 +45,5 @@ interface SerializableRecordInterface
      *
      * @return array
      */
-    public function getFields();
+    public function getFields(): array;
 }

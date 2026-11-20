@@ -49,7 +49,7 @@ class SiteMapTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testDefaultConfiguration()
+    public function testDefaultConfiguration(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
@@ -64,7 +64,7 @@ class SiteMapTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testMissingConfigurationAndSectionKey()
+    public function testMissingConfigurationAndSectionKey(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
@@ -78,7 +78,7 @@ class SiteMapTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testSectionKeySpecifyingSiteMap()
+    public function testSectionKeySpecifyingSiteMap(): void
     {
         $this->expectExceptionMessage('Specifying SiteMap plugin sections is not possible');
         $container = $this->getContainerWithSectionRelatedServices();
@@ -95,7 +95,7 @@ class SiteMapTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testClashingGroupKeysFromUsingSectionKey()
+    public function testClashingGroupKeysFromUsingSectionKey(): void
     {
         $this->expectExceptionMessage('Group key clash in configuration: Header');
         $container = $this->getContainerWithSectionRelatedServices();

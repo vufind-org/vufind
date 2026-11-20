@@ -53,7 +53,7 @@ trait PreviousUniqueIdTrait
      *
      * @return string
      */
-    public function getPreviousUniqueId()
+    public function getPreviousUniqueId(): string
     {
         return $this->previousUniqueId;
     }
@@ -65,7 +65,7 @@ trait PreviousUniqueIdTrait
      *
      * @return void
      */
-    public function setPreviousUniqueId(string $id)
+    public function setPreviousUniqueId(string $id): void
     {
         $this->previousUniqueId = $id;
     }

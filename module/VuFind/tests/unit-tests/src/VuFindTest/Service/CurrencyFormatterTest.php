@@ -50,7 +50,7 @@ class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFormatting()
+    public function testFormatting(): void
     {
         // test default settings
         $formatter = new NumberFormatter('', NumberFormatter::CURRENCY);

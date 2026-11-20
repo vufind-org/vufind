@@ -63,7 +63,7 @@ class CommitCommand extends AbstractSolrCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Sends a ' . $this->solrCommand . ' command to a Solr index.')

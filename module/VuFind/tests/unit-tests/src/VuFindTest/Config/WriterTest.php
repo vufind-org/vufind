@@ -50,7 +50,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReadFile()
+    public function testReadFile(): void
     {
         $fixture = 'configs/defaultgenerator/config.ini';
         $test = new Writer($this->getFixtureDir() . $fixture);
@@ -65,7 +65,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReadArray()
+    public function testReadArray(): void
     {
         $cfg = ['Test' => ['key1' => 'val1', 'key2' => 'val2']];
         $comments = [
@@ -95,7 +95,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testReadString()
+    public function testReadString(): void
     {
         $cfg = "[test]\nkey1=val1\n";
         $test = new Writer('fake.ini', $cfg);
@@ -107,7 +107,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testStandardArray()
+    public function testStandardArray(): void
     {
         $cfg = ['Test' => ['test' => ['val1', 'val2']]];
         $test = new Writer('fake.ini', $cfg);
@@ -122,7 +122,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOutOfOrderArray()
+    public function testOutOfOrderArray(): void
     {
         $cfg = ['Test' => ['test' => [6 => 'val1', 8 => 'val2']]];
         $test = new Writer('fake.ini', $cfg);
@@ -136,7 +136,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAssocArray()
+    public function testAssocArray(): void
     {
         $cfg = [
             'Test' => ['test' => ['key1' => 'val1', 'key2' => 'val2']],
@@ -152,7 +152,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicSet()
+    public function testBasicSet(): void
     {
         $cfg = "[test]\nkey1=val1\nkey3=val3\n";
         $test = new Writer('fake.ini', $cfg);
@@ -175,7 +175,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetDuplicateValue()
+    public function testSetDuplicateValue(): void
     {
         $cfg = "[test]\nkey1=val1\nkey1=val2\n";
         $test = new Writer('fake.ini', $cfg);
@@ -189,7 +189,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAddMissingSection()
+    public function testAddMissingSection(): void
     {
         $cfg = "[test]\nkey1=val1\n";
         $test = new Writer('fake.ini', $cfg);
@@ -203,7 +203,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCommentMaintenance()
+    public function testCommentMaintenance(): void
     {
         $cfg = "[test]\nkey1=val1 ; comment\n";
         $test = new Writer('fake.ini', $cfg);
@@ -219,7 +219,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testInsertEmpty()
+    public function testInsertEmpty(): void
     {
         $cfg = "[a]\none=1\n[b]\n";
         $test = new Writer('fake.ini', $cfg);
@@ -233,7 +233,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTabAlignment()
+    public function testTabAlignment(): void
     {
         $test = new Writer('fake.ini', ['general' => ['foo' => 'bar', 'foofoofoofoofoofo' => 'baz']]);
         $expected = "[general]\nfoo              = \"bar\"\nfoofoofoofoofoofo = \"baz\"\n";
@@ -245,7 +245,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testClear()
+    public function testClear(): void
     {
         $cfg = "[a]\nb[]=1\nb[]=2\n[b]\nc=3\n";
         $test = new Writer('fake.ini', $cfg);

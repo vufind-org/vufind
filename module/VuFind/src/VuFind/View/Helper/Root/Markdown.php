@@ -61,7 +61,7 @@ class Markdown
      *
      * @return RenderedContentInterface
      */
-    public function __invoke(string $markdown)
+    public function __invoke(string $markdown): RenderedContentInterface
     {
         return $this->converter->convert($markdown);
     }

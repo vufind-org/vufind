@@ -153,7 +153,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testJSONgetStatus()
+    public function testJSONgetStatus(): void
     {
         $conn = $this->createConnector('daia.json');
         $conn->setConfig(
@@ -179,7 +179,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testXMLgetStatus()
+    public function testXMLgetStatus(): void
     {
         $conn = $this->createConnector('daia.xml');
         $conn->setConfig(
@@ -207,7 +207,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector(string $fixture = null)
+    protected function createConnector(string $fixture = null): Connector
     {
         $adapter = new TestAdapter();
         if ($fixture) {

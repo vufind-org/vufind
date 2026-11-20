@@ -50,7 +50,7 @@ class CommitDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXML()
+    public function testAsXML(): void
     {
         $document = new CommitDocument(30000);
         $this->assertSame(

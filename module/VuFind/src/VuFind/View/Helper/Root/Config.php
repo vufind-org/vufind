@@ -81,7 +81,7 @@ class Config
      *
      * @deprecated Use getArray().
      */
-    public function get(string $config)
+    public function get(string $config): \VuFind\Config\Config
     {
         return $this->configManager->getConfigObject($config);
     }
@@ -103,7 +103,7 @@ class Config
      *
      * @return bool
      */
-    public function nonJavascriptSupportEnabled()
+    public function nonJavascriptSupportEnabled(): bool
     {
         return $this->getArray('config')['Site']['nonJavascriptSupportEnabled'] ?? false;
     }
@@ -113,7 +113,7 @@ class Config
      *
      * @return bool
      */
-    public function ajaxCoversEnabled()
+    public function ajaxCoversEnabled(): bool
     {
         return $this->getArray('config')['Content']['ajaxcovers'] ?? false;
     }
@@ -123,7 +123,7 @@ class Config
      *
      * @return int
      */
-    public function getHoldingsItemLimit()
+    public function getHoldingsItemLimit(): int
     {
         $limit = $this->getArray('config')['Record']['holdingsItemLimit'] ?? null;
         return $limit ? (int)$limit : PHP_INT_MAX;

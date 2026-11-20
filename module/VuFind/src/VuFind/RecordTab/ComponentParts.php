@@ -72,7 +72,7 @@ class ComponentParts extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'child_records';
     }
@@ -82,7 +82,7 @@ class ComponentParts extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         $children = $this->getRecordDriver()->tryMethod('getChildRecordCount');
         return $children !== null && $children > 0;
@@ -93,7 +93,7 @@ class ComponentParts extends AbstractBase
      *
      * @return int
      */
-    public function getMaxResults()
+    public function getMaxResults(): int
     {
         return $this->maxResults;
     }
@@ -103,7 +103,7 @@ class ComponentParts extends AbstractBase
      *
      * @return RecordCollectionInterface
      */
-    public function getResults()
+    public function getResults(): RecordCollectionInterface
     {
         $record = $this->getRecordDriver();
         $safeId = addcslashes($record->getUniqueID(), '"');

@@ -47,12 +47,12 @@ interface ContentBlockInterface
      *
      * @return void
      */
-    public function setConfig(string $settings);
+    public function setConfig(string $settings): void;
 
     /**
      * Return context variables used for rendering the block's template.
      *
      * @return array
      */
-    public function getContext();
+    public function getContext(): array;
 }

@@ -73,7 +73,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetUniqueCallNumbers()
+    public function testGetUniqueCallNumbers(): void
     {
         $obj = new HoldingsILS();
 
@@ -119,7 +119,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsVisibleTrue()
+    public function testIsVisibleTrue(): void
     {
         $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
         $obj = new HoldingsILS($searchObj);
@@ -140,7 +140,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsVisibleFalse()
+    public function testIsVisibleFalse(): void
     {
         $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
         $obj = new HoldingsILS($searchObj);

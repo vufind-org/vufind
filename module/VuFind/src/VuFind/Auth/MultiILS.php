@@ -99,7 +99,7 @@ class MultiILS extends ILS
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request)
+    public function authenticate(\Laminas\Http\PhpEnvironment\Request $request): UserEntityInterface
     {
         $username = trim($request->getPost()->get('username', ''));
         $password = trim($request->getPost()->get('password', ''));
@@ -126,7 +126,7 @@ class MultiILS extends ILS
      *
      * @return array
      */
-    public function getLoginTargets()
+    public function getLoginTargets(): array
     {
         return $this->getCatalog()->getLoginDrivers();
     }
@@ -136,7 +136,7 @@ class MultiILS extends ILS
      *
      * @return string
      */
-    public function getDefaultLoginTarget()
+    public function getDefaultLoginTarget(): string
     {
         return $this->getCatalog()->getDefaultLoginDriver();
     }
@@ -148,7 +148,7 @@ class MultiILS extends ILS
      *
      * @return void
      */
-    public function setCatalog(\VuFind\ILS\Connection $connection)
+    public function setCatalog(\VuFind\ILS\Connection $connection): void
     {
         // Right now, MultiILS authentication only works with the MultiBackend
         // driver; if other ILS drivers eventually support this option, we

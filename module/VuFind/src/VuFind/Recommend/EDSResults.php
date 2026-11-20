@@ -47,7 +47,7 @@ class EDSResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getSearchClassId()
+    protected function getSearchClassId(): string
     {
         return 'EDS';
     }
@@ -57,7 +57,7 @@ class EDSResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getDefaultHeading()
+    protected function getDefaultHeading(): string
     {
         return 'EDS Results';
     }

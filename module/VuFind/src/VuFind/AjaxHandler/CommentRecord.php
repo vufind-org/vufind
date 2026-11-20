@@ -87,7 +87,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      *
      * @return bool
      */
-    protected function checkCaptcha(ServerRequestInterface $request)
+    protected function checkCaptcha(ServerRequestInterface $request): bool
     {
         // Not enabled? Report success!
         if (!$this->captcha->active('userComments')) {

@@ -77,7 +77,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function setUpTestInputsAndExpectations()
+    public function setUpTestInputsAndExpectations(): array
     {
         $query = new Query('bar');
         $paramBag = new ParamBag(['far' => 'rar']);
@@ -132,7 +132,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredCoverRouterMock(mixed $recordDriver)
+    protected function getConfiguredCoverRouterMock(mixed $recordDriver): MockObject
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
@@ -149,7 +149,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredRecordRouterMock(mixed $recordDriver)
+    protected function getConfiguredRecordRouterMock(mixed $recordDriver): MockObject
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
@@ -171,7 +171,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         array $args = [],
         string $class = \VuFindSearch\Command\SearchCommand::class,
         string $target = 'Solr'
-    ) {
+    ): callable {
         return function ($command) use ($class, $args, $target) {
             $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
@@ -190,7 +190,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject
      */
-    protected function getConfiguredParamsMock(\VuFindSearch\Query\Query $query, \VuFindSearch\ParamBag $paramBag)
+    protected function getConfiguredParamsMock(\VuFindSearch\Query\Query $query, \VuFindSearch\ParamBag $paramBag): MockObject
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getQuery')->willReturn($query);
@@ -205,7 +205,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return TestHarness
      */
-    protected function getDriver()
+    protected function getDriver(): TestHarness
     {
         $driver = new TestHarness();
         $data = [

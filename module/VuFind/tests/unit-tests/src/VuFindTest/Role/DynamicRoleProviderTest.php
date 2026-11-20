@@ -48,7 +48,7 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfiguration()
+    public function testConfiguration(): void
     {
         $config = [
             'testRequireAny' => [
@@ -97,7 +97,7 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
      *
      * @return DynamicRoleProvider
      */
-    protected function getDynamicRoleProvider(PluginManager $pluginManager = null, array $config = [])
+    protected function getDynamicRoleProvider(PluginManager $pluginManager = null, array $config = []): DynamicRoleProvider
     {
         if (null === $pluginManager) {
             $pluginManager = $this->getFakePluginManager();
@@ -110,7 +110,7 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getFakePluginManager()
+    protected function getFakePluginManager(): PluginManager
     {
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         foreach (['a', 'b', 'c'] as $name) {

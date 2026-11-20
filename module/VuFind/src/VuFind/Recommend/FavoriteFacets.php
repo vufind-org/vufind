@@ -70,7 +70,7 @@ class FavoriteFacets extends SideFacets
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         // Only display tags when enabled:
         $this->mainFacets = ($this->tagSetting !== 'disabled')

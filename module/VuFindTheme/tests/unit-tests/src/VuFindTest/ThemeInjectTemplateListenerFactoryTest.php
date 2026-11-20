@@ -52,7 +52,7 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
      *
      * @return void
      */
-    public function testFactoryPrefixProcessing()
+    public function testFactoryPrefixProcessing(): void
     {
         $factory = new InjectTemplateListenerFactory();
         $container = new \VuFindTest\Container\MockContainer($this);

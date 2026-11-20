@@ -50,7 +50,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      *
      * @return void
      */
-    public function init()
+    public function init(): void
     {
     }
 

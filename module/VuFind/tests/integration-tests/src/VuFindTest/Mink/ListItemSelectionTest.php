@@ -71,7 +71,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return \Behat\Mink\Element\DocumentElement
      */
-    protected function goToUserAccount()
+    protected function goToUserAccount(): \Behat\Mink\Element\DocumentElement
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
@@ -94,7 +94,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return \Behat\Mink\Element\DocumentElement
      */
-    protected function setupTest($config)
+    protected function setupTest($config): \Behat\Mink\Element\DocumentElement
     {
         $this->changeConfigs(['config' => ['Social' => $config]]);
         return $this->goToUserAccount();
@@ -108,7 +108,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkNumberOfSelectedOnPage(Element $page, int $expectedNumber)
+    protected function checkNumberOfSelectedOnPage(Element $page, int $expectedNumber): void
     {
         $elements = $page->findAll('css', '.checkbox-select-item');
         $clickedElements = array_filter($elements, function ($element) {
@@ -125,7 +125,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkNumberOfSelectedGlobal(Element $page, int $expectedNumber)
+    protected function checkNumberOfSelectedGlobal(Element $page, int $expectedNumber): void
     {
         $this->clickCss($page, '[name=bulkActionForm] [name=email]');
         if ($expectedNumber === 0) {
@@ -154,7 +154,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkClearSelectionButton(Element $page, int $expectedNumber)
+    protected function checkClearSelectionButton(Element $page, int $expectedNumber): void
     {
         $button = $this->findCss($page, '.clear-selection');
         if ($expectedNumber === 0) {
@@ -176,7 +176,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkSelectAllOnPageDoesExists(Element $page, bool $expectTrue = true)
+    protected function checkSelectAllOnPageDoesExists(Element $page, bool $expectTrue = true): void
     {
         if ($expectTrue) {
             $this->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
@@ -193,7 +193,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkSelectAllOnPageIsClicked(Element $page, bool $expectTrue = true)
+    protected function checkSelectAllOnPageIsClicked(Element $page, bool $expectTrue = true): void
     {
         $this->assertEquals(
             $expectTrue,
@@ -209,7 +209,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkSelectAllGlobalDoesExists(Element $page, bool $expectTrue = true)
+    protected function checkSelectAllGlobalDoesExists(Element $page, bool $expectTrue = true): void
     {
         if ($expectTrue) {
             $this->findCss($page, '[name=bulkActionForm] .checkbox-select-all-global');
@@ -226,7 +226,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function checkSelectAllGlobalIsClicked(Element $page, bool $expectTrue = true)
+    protected function checkSelectAllGlobalIsClicked(Element $page, bool $expectTrue = true): void
     {
         $this->assertEquals(
             $expectTrue,
@@ -253,7 +253,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         int $numberOfSelectedOnPage,
         int $numberOfSelectedGlobal,
         bool $multiPageSelectionEnabled = false
-    ) {
+    ): void {
         $this->waitForPageLoad($page);
         switch ($selectAllOnPageCheckbox) {
             case self::NONE:
@@ -295,7 +295,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickSelectAllOnPage($page)
+    protected function clickSelectAllOnPage($page): void
     {
         $this->clickCss($page, '[name=bulkActionForm] .checkbox-select-all');
     }
@@ -307,7 +307,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickSelectAllGlobal(Element $page)
+    protected function clickSelectAllGlobal(Element $page): void
     {
         $this->clickCss($page, '[name=bulkActionForm] .checkbox-select-all-global');
     }
@@ -319,7 +319,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickClearSelection(Element $page)
+    protected function clickClearSelection(Element $page): void
     {
         $this->clickCss($page, '[name=bulkActionForm] .clear-selection');
     }
@@ -332,7 +332,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function clickSelectSingleElement(Element $page, int $index)
+    protected function clickSelectSingleElement(Element $page, int $index): void
     {
         $this->clickCss($page, '.checkbox-select-item', null, $index);
     }
@@ -344,7 +344,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function goToPrevPage(Element $page)
+    protected function goToPrevPage(Element $page): void
     {
         $this->clickCss($page, $this->pagePrevSelector);
     }
@@ -356,7 +356,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function goToNextPage(Element $page)
+    protected function goToNextPage(Element $page): void
     {
         $this->clickCss($page, $this->pageNextSelector);
     }
@@ -367,7 +367,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testPrepareFavoriteList()
+    public function testPrepareFavoriteList(): void
     {
         $this->changeConfigs(
             [

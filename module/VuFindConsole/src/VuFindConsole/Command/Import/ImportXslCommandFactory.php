@@ -64,7 +64,7 @@ class ImportXslCommandFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         return new $requestedName(
             new \VuFind\XSLT\Importer($container),
             ...($options ?? [])

@@ -56,7 +56,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      *
      * @return mixed
      */
-    public function __call(string $method, array $params)
+    public function __call(string $method, array $params): mixed
     {
         if (str_starts_with($method, 'get')) {
             $index = substr($method, 3);
@@ -73,7 +73,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      *
      * @return string Breadcrumb text to represent this record.
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb(): string
     {
         return $this->__call('getBreadcrumb', []);
     }
@@ -84,7 +84,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      *
      * @return string Unique identifier.
      */
-    public function getUniqueID()
+    public function getUniqueID(): string
     {
         return $this->__call('getUniqueID', []);
     }
@@ -94,7 +94,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      *
      * @return string
      */
-    public function getSourceIdentifier()
+    public function getSourceIdentifier(): string
     {
         // For consistency with other methods, allow SourceIdentifier to be
         // overridden via rawData (but also allow the "normal" method as a

@@ -92,7 +92,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
         string $source = DEFAULT_SEARCH_BACKEND,
         bool $tolerateMissing = false,
         ?ParamBag $params = null
-    ) {
+    ): \VuFind\RecordDriver\AbstractBase {
         if (null !== $id && '' !== $id) {
             $results = [];
             if (
@@ -175,7 +175,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
         string $source = DEFAULT_SEARCH_BACKEND,
         bool $tolerateBackendExceptions = false,
         ?ParamBag $params = null
-    ) {
+    ): array {
         $list = new Checklist($ids);
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
@@ -264,7 +264,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      *
      * @return \VuFind\RecordDriver\Missing
      */
-    protected function buildMissingRecord(array $details)
+    protected function buildMissingRecord(array $details): \VuFind\RecordDriver\Missing
     {
         $fields = $details['extra_fields'] ?? [];
         $fields['id'] = $details['id'];
@@ -297,7 +297,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
         array $ids,
         bool $tolerateBackendExceptions = false,
         array $params = []
-    ) {
+    ): array {
         // Create a SourceAndIdList object to help sort the IDs by source:
         $list = new SourceAndIdList($ids);
 
@@ -340,7 +340,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function setCacheContext(string $context)
+    public function setCacheContext(string $context): void
     {
         if (null !== $this->recordCache) {
             $this->recordCache->setContext($context);

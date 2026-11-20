@@ -75,7 +75,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -114,7 +114,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @return string            The best status message to display.
      */
-    protected function pickStatus(array $statusArray)
+    protected function pickStatus(array $statusArray): string
     {
         // This array controls the rankings of possible status messages. The lower
         // the ID in the ITEM_STATUS_TYPE table, the higher the priority of the
@@ -157,7 +157,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @return array             Availability and other status information.
      */
-    protected function determineAvailability(array $statusArray)
+    protected function determineAvailability(array $statusArray): array
     {
         // It's possible for a record to have multiple status codes. We
         // need to loop through in search of the "Not Charged" (i.e. on
@@ -191,7 +191,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @return int        Number of on loan items.
      */
-    protected function sacaStatus(int $copyId)
+    protected function sacaStatus(int $copyId): int
     {
         $circulacion = 'SELECT COUNT(*) AS PRESTADO ' .
             'FROM CIRT_ITM ' .
@@ -225,7 +225,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @return string     String with special message or due date.
      */
-    protected function sacaFecha(int $copyId)
+    protected function sacaFecha(int $copyId): string
     {
         $circulacion = "SELECT to_char(CIRT_ITM_DUE_DTE,'dd-mm-yyyy') AS FECHADEV, "
             . 'ROUND(CIRT_ITM_DUE_DTE - SYSDATE) AS DIFERENCIA '
@@ -254,7 +254,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @return int           Integer with the number of holds.
      */
-    protected function sacaReservas(int $holdingId)
+    protected function sacaReservas(int $holdingId): int
     {
         $reservas = 'SELECT COUNT(*) as reservados ' .
                     'FROM CIRTN_HLD ' .
@@ -285,7 +285,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
@@ -420,7 +420,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array        An array of getStatus() return values on success.
      */
-    public function getStatuses(array $idList)
+    public function getStatuses(array $idList): array
     {
         $status = [];
 
@@ -523,7 +523,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory(string $id)
+    public function getPurchaseHistory(string $id): array
     {
         $sql = "select REPLACE(REPLACE(CPY_STMT_TXT,'a',''),'Fondos: ','') as " .
             'ENUMCHRON ' .
@@ -555,7 +555,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @return ?array         Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $barcode, string $lname)
+    public function patronLogin(string $barcode, string $lname): ?array
     {
         $sql = 'SELECT LOGIN , PASSWORD AS FIRST_NAME ' .
                'FROM LV_USER ' .
@@ -589,7 +589,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): array
     {
         $transList = [];
 
@@ -622,7 +622,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         $fineList = [];
 
@@ -659,7 +659,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         $holdList = [];
 
@@ -697,7 +697,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $sql = 'SELECT DISTINCT  PRSN.PRSN_NBR AS UNO, (SELECT p1.PRSN_CMCTN_NBR ' .
             'FROM PRSN_CMCTN p1 ' .
@@ -842,7 +842,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return array ID numbers of suppressed records in the system.
      */
-    public function getSuppressedRecords()
+    public function getSuppressedRecords(): array
     {
         $list = [];
         $sql = 'SELECT BIB_AUT_ITM_NBR as BIB_ID ' .

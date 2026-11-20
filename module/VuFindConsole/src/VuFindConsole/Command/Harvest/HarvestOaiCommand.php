@@ -80,7 +80,7 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      *
      * @return void
      */
-    protected function checkLocalSetting(OutputInterface $output)
+    protected function checkLocalSetting(OutputInterface $output): void
     {
         if (!getenv('VUFIND_LOCAL_DIR')) {
             $output->writeln(

@@ -71,7 +71,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return array
      */
-    protected function getConfig()
+    protected function getConfig(): array
     {
         return $this->config;
     }
@@ -81,7 +81,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'hierarchy_tree';
     }
@@ -91,7 +91,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         $trees = $this->getTreeList();
         return !empty($trees);
@@ -102,7 +102,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return string|bool
      */
-    public function getActiveTree()
+    public function getActiveTree(): string|bool
     {
         $treeList = $this->getTreeList();
         $hierarchySetting = ($request = $this->getRequest())
@@ -121,7 +121,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return array
      */
-    public function getTreeList()
+    public function getTreeList(): array
     {
         if (null === $this->treeList) {
             $this->treeList
@@ -138,7 +138,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return bool
      */
-    public function isFullHierarchyVisible()
+    public function isFullHierarchyVisible(): bool
     {
         // Get hierarchy driver:
         $recordDriver = $this->getRecordDriver();
@@ -166,7 +166,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return string
      */
-    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
+    public function renderTree(?string $id = null, ?string $context = null, array $options = []): string
     {
         $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
@@ -182,7 +182,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return bool
      */
-    public function searchActive()
+    public function searchActive(): bool
     {
         $config = $this->getConfig();
         return (bool)($config['Hierarchy']['search'] ?? false);
@@ -193,7 +193,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return int
      */
-    public function getSearchLimit()
+    public function getSearchLimit(): int
     {
         $config = $this->getConfig();
         return $config['Hierarchy']['treeSearchLimit'] ?? -1;
@@ -226,7 +226,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return bool
      */
-    public function supportsAjax()
+    public function supportsAjax(): bool
     {
         // No, special width adjustment needed.
         return false;

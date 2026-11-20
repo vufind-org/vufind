@@ -48,7 +48,7 @@ class SitemapCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithOptions()
+    public function testSuccessWithOptions(): void
     {
         $generator = $this->createMock(\VuFind\Sitemap\Generator::class);
         $generator->expects($this->once())->method('setBaseUrl')

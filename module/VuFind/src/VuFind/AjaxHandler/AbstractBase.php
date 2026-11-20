@@ -66,7 +66,7 @@ abstract class AbstractBase implements AjaxHandlerInterface
      *
      * @return void
      */
-    protected function disableSessionWrites()
+    protected function disableSessionWrites(): void
     {
         if (null === $this->sessionSettings) {
             throw new \Exception('Session settings object missing.');
@@ -135,7 +135,7 @@ abstract class AbstractBase implements AjaxHandlerInterface
      *
      * @return array
      */
-    protected function formatResponse(mixed $response, int $httpCode = null)
+    protected function formatResponse(mixed $response, int $httpCode = null): array
     {
         $arr = [$response];
         if ($httpCode !== null) {

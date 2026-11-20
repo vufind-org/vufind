@@ -48,7 +48,7 @@ class LintMarcCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -66,7 +66,7 @@ class LintMarcCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLintingFile()
+    public function testLintingFile(): void
     {
         $command = new LintMarcCommand();
         $commandTester = new CommandTester($command);

@@ -66,7 +66,7 @@ class Relais
      *
      * @return string
      */
-    public function getSearchLink(RecordDriver $driver)
+    public function getSearchLink(RecordDriver $driver): string
     {
         // Get data elements:
         $isbn = $driver->tryMethod('getCleanISBN');
@@ -94,7 +94,7 @@ class Relais
      *
      * @return string
      */
-    public function renderButtonIfActive(?RecordDriver $driver = null)
+    public function renderButtonIfActive(?RecordDriver $driver = null): string
     {
         // Case 1: API enabled:
         if ($this->config['apikey'] ?? false) {

@@ -75,7 +75,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settingsStr)
+    public function setConfig(string $settingsStr): void
     {
         // Parse the settings:
         $settings = explode(':', $settingsStr);
@@ -117,7 +117,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         // no action needed
     }
@@ -127,7 +127,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return string
      */
-    public function getLinkText()
+    public function getLinkText(): string
     {
         return $this->linkText;
     }
@@ -137,7 +137,7 @@ class ExternalSearch implements RecommendInterface
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return (!str_contains($this->template, '%%lookfor%%'))
             ? $this->template . urlencode($this->lookfor)

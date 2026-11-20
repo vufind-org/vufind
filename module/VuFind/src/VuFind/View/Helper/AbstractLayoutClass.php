@@ -63,5 +63,5 @@ abstract class AbstractLayoutClass
      *
      * @return string       CSS classes to apply
      */
-    abstract public function __invoke(string $class);
+    abstract public function __invoke(string $class): string;
 }

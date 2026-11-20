@@ -69,7 +69,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -87,7 +87,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormalizingDirectory()
+    public function testNormalizingDirectory(): void
     {
         $target = realpath($this->languageFixtureDir);
         $normalizer = $this->getMockNormalizer();
@@ -105,7 +105,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormalizingDirectoryWithBadFilter()
+    public function testNormalizingDirectoryWithBadFilter(): void
     {
         $target = realpath($this->languageFixtureDir);
         $filter = '*.ini';
@@ -125,7 +125,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormalizingFile()
+    public function testNormalizingFile(): void
     {
         $target = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
@@ -143,7 +143,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormalizingNonExistentFile()
+    public function testNormalizingNonExistentFile(): void
     {
         $target = realpath($this->languageFixtureDir) . '/foo/noexist.ini';
         $command = new NormalizeCommand($this->getMockNormalizer());
@@ -161,7 +161,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormalizingNonLanguageFile()
+    public function testNormalizingNonLanguageFile(): void
     {
         $target = realpath($this->languageFixtureDir) . '/non-language-file.ini';
         $command = new NormalizeCommand(new ExtendedIniNormalizer());
@@ -181,7 +181,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniNormalizer
      */
-    protected function getMockNormalizer(array $methods = [])
+    protected function getMockNormalizer(array $methods = []): ExtendedIniNormalizer
     {
         $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor();
@@ -198,7 +198,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ExtendedIniReader
      */
-    protected function getMockReader(array $methods = [])
+    protected function getMockReader(array $methods = []): ExtendedIniReader
     {
         $builder = $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor();

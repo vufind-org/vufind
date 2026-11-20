@@ -47,7 +47,7 @@ class HMACTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHash()
+    public function testHash(): void
     {
         $hmac = new HMAC('secret');
         $this->assertEquals(

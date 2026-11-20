@@ -92,7 +92,7 @@ class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwa
      *
      * @return void
      */
-    protected function debugPrint(string $msg)
+    protected function debugPrint(string $msg): void
     {
         if ($this->logger) {
             $this->logger->debug($msg);
@@ -108,7 +108,7 @@ class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwa
      *
      * @return void
      */
-    public function handleFatalError(SerialsSolutions_Summon_Exception $e)
+    public function handleFatalError(SerialsSolutions_Summon_Exception $e): void
     {
         throw $e;
     }
@@ -124,7 +124,7 @@ class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwa
      * @throws SerialsSolutions_Summon_Exception
      * @return string             HTTP response body
      */
-    protected function httpRequest(string $baseUrl, string $method, string $queryString, array $headers)
+    protected function httpRequest(string $baseUrl, string $method, string $queryString, array $headers): string
     {
         $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
 

@@ -50,7 +50,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $coll = new RecordCollection([]);
         $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
@@ -69,7 +69,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testDefaultsWithNullResponse()
+    public function testDefaultsWithNullResponse(): void
     {
         $coll = new RecordCollection(['response' => null]);
         $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
@@ -87,7 +87,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testOffsets()
+    public function testOffsets(): void
     {
         $coll = new RecordCollection(
             [
@@ -108,7 +108,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testSpellingQuery()
+    public function testSpellingQuery(): void
     {
         $input = [
             'responseHeader' => [
@@ -130,7 +130,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testSpellingSuggestions()
+    public function testSpellingSuggestions(): void
     {
         $input = [
             'spellcheck' => [
@@ -168,7 +168,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testReplace()
+    public function testReplace(): void
     {
         $coll = new RecordCollection([]);
         $r1 = new TestHarness();
@@ -188,7 +188,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testShuffle()
+    public function testShuffle(): void
     {
         // Since shuffle is random, there is no 100% reliable way to test its
         // behavior, but we can at least test that it doesn't corrupt anything.
@@ -215,7 +215,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testAdd()
+    public function testAdd(): void
     {
         $coll = new RecordCollection(
             [
@@ -239,7 +239,7 @@ class RecordCollectionTest extends TestCase
      *
      * @return void
      */
-    public function testFacets()
+    public function testFacets(): void
     {
         $coll = new RecordCollection(
             [

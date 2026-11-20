@@ -56,7 +56,7 @@ class ManagerFactory implements FactoryInterface
      *
      * @return array
      */
-    protected function getOptions(ContainerInterface $container)
+    protected function getOptions(ContainerInterface $container): array
     {
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
         // Set options only if we are not running from CLI
@@ -88,7 +88,7 @@ class ManagerFactory implements FactoryInterface
      *
      * @return array
      */
-    protected function getHandler(ContainerInterface $container)
+    protected function getHandler(ContainerInterface $container): array
     {
         // Load and validate session configuration:
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
@@ -111,7 +111,7 @@ class ManagerFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function registerShutdownFunction(ManagerInterface $sessionManager)
+    protected function registerShutdownFunction(ManagerInterface $sessionManager): void
     {
         register_shutdown_function(
             function () use ($sessionManager): void {
@@ -141,7 +141,7 @@ class ManagerFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }

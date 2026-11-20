@@ -65,7 +65,7 @@ class HMAC
      *
      * @return string A hash_hmac string using md5
      */
-    public function generate(array $keysToHash, array $keyValueArray)
+    public function generate(array $keysToHash, array $keyValueArray): string
     {
         $str = '';
         foreach ($keysToHash as $key) {

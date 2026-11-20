@@ -64,7 +64,7 @@ class HTMLTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }

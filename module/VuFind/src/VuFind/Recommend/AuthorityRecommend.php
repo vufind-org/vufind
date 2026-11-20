@@ -122,7 +122,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $params = explode(':', $settings);
         for ($i = 0; $i < count($params); $i += 2) {
@@ -167,7 +167,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return array
      */
-    protected function performSearch(array $params)
+    protected function performSearch(array $params): array
     {
         // Initialise and process search (ignore Solr errors -- no reason to fail
         // just because search syntax is not compatible with Authority core):
@@ -192,7 +192,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return bool
      */
-    protected function fuzzyCompare(string $a, string $b)
+    protected function fuzzyCompare(string $a, string $b): bool
     {
         $normalize = function ($str) {
             return trim(strtolower(preg_replace('/\W/', '', $str)));
@@ -205,7 +205,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return void
      */
-    protected function addUseForHeadings()
+    protected function addUseForHeadings(): void
     {
         // Build an advanced search request that prevents Solr from retrieving
         // records that would already have been retrieved by a search of the biblio
@@ -234,7 +234,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return void
      */
-    protected function addSeeAlsoReferences()
+    protected function addSeeAlsoReferences(): void
     {
         // Build a simple "MainHeading" search.
         $params = [
@@ -261,7 +261,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return bool
      */
-    protected function isModeActive(string $mode)
+    protected function isModeActive(string $mode): bool
     {
         return $this->mode === '*' || str_contains($this->mode, $mode);
     }
@@ -275,7 +275,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $this->results = $results;
 
@@ -313,7 +313,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return string
      */
-    public function getHeader()
+    public function getHeader(): string
     {
         return $this->header;
     }
@@ -323,7 +323,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return array
      */
-    public function getRecommendations()
+    public function getRecommendations(): array
     {
         return array_unique($this->recommendations);
     }
@@ -333,7 +333,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getResults()
+    public function getResults(): \VuFind\Search\Base\Results
     {
         return $this->results;
     }

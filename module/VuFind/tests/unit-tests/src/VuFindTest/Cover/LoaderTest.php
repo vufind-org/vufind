@@ -58,7 +58,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUtterFailure()
+    public function testUtterFailure(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Could not load default fail image.');
@@ -78,7 +78,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultLoadingForContentType()
+    public function testDefaultLoadingForContentType(): void
     {
         $loader = $this->getLoader();
         $this->assertEquals('image/gif', $loader->getContentType());
@@ -92,7 +92,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultLoadingForImage()
+    public function testDefaultLoadingForImage(): void
     {
         $loader = $this->getLoader();
         $this->assertSame(64, strlen($loader->getImage()));
@@ -104,7 +104,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfiguredDefaultLoadingForContentType()
+    public function testConfiguredDefaultLoadingForContentType(): void
     {
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
@@ -119,7 +119,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfiguredDefaultLoadingForImage()
+    public function testConfiguredDefaultLoadingForImage(): void
     {
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
@@ -132,7 +132,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingUserSpecifiedFailImage()
+    public function testMissingUserSpecifiedFailImage(): void
     {
         $badfile = 'not/a/real/file/at.all';
         $cfg = ['Content' => ['noCoverAvailableImage' => $badfile]];
@@ -149,7 +149,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailImageIllegalExtension()
+    public function testFailImageIllegalExtension(): void
     {
         $badfile = 'templates/layout/layout.phtml';
         $cfg = ['Content' => ['noCoverAvailableImage' => $badfile]];
@@ -200,7 +200,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    protected function getThemeDir()
+    protected function getThemeDir(): string
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
     }

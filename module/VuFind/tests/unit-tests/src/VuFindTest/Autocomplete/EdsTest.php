@@ -52,7 +52,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Backend
      */
-    protected function getMockBackend()
+    protected function getMockBackend(): Backend
     {
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->onlyMethods(['autocomplete'])
@@ -66,7 +66,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\BackendManager
      */
-    protected function getMockBackendManager(Backend $backend)
+    protected function getMockBackendManager(Backend $backend): \VuFind\Search\BackendManager
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set('EDS', $backend);
@@ -78,7 +78,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSuggestions()
+    public function testGetSuggestions(): void
     {
         $backend = $this->getMockBackend();
         $manager = $this->getMockBackendManager($backend);
@@ -95,7 +95,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSuggestionsWithNonDefaultConfiguration()
+    public function testGetSuggestionsWithNonDefaultConfiguration(): void
     {
         $backend = $this->getMockBackend();
         $manager = $this->getMockBackendManager($backend);

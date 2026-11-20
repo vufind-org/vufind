@@ -49,7 +49,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testContainsTerm()
+    public function testContainsTerm(): void
     {
         $q = $this->getSampleQueryGroup();
 
@@ -70,7 +70,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testGetAllTerms()
+    public function testGetAllTerms(): void
     {
         $q = $this->getSampleQueryGroup();
         $this->assertEquals('test query multi word query', $q->getAllTerms());
@@ -81,7 +81,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testReplaceTerm()
+    public function testReplaceTerm(): void
     {
         $q = $this->getSampleQueryGroup();
         $q->replaceTerm('query', 'question');
@@ -93,7 +93,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testReplaceTermWithNormalization()
+    public function testReplaceTermWithNormalization(): void
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         // Without normalization we only replace the accented instance of "query":
@@ -111,7 +111,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testClone()
+    public function testClone(): void
     {
         $q = $this->getSampleQueryGroup();
         $qClone = clone $q;
@@ -128,7 +128,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testReducedHandler()
+    public function testReducedHandler(): void
     {
         $q = $this->getSampleQueryGroup();
         $q->setReducedHandler('foo');
@@ -142,7 +142,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testIllegalOperator()
+    public function testIllegalOperator(): void
     {
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown or invalid boolean operator: fizz');
@@ -156,7 +156,7 @@ class QueryGroupTest extends TestCase
      *
      * @return void
      */
-    public function testContainsTermWithNormalization()
+    public function testContainsTermWithNormalization(): void
     {
         $normalizer = new \VuFind\Normalizer\DefaultSpellingNormalizer();
         $q = $this->getSampleQueryGroupWithWeirdCharacters();
@@ -171,7 +171,7 @@ class QueryGroupTest extends TestCase
      *
      * @return QueryGroup
      */
-    protected function getSampleQueryGroup()
+    protected function getSampleQueryGroup(): QueryGroup
     {
         $q1 = new Query('test');
         $q2 = new Query('query');
@@ -184,7 +184,7 @@ class QueryGroupTest extends TestCase
      *
      * @return QueryGroup
      */
-    protected function getSampleQueryGroupWithWeirdCharacters()
+    protected function getSampleQueryGroupWithWeirdCharacters(): QueryGroup
     {
         $q1 = new Query('tést');
         $q2 = new Query('Quéry');

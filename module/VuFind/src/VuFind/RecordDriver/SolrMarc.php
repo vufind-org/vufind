@@ -65,7 +65,7 @@ class SolrMarc extends SolrDefault
      *
      * @return array
      */
-    public function getURLs()
+    public function getURLs(): array
     {
         return array_merge(
             $this->getMarcURLs(),

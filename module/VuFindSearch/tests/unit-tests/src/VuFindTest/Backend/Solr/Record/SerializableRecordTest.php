@@ -47,7 +47,7 @@ class SerializableRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFields()
+    public function testGetFields(): void
     {
         $fields = ['a' => 'b'];
         $sr = new SerializableRecord($fields);

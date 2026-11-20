@@ -933,7 +933,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         ?int $timeout = null,
         int $index = 0,
         ?int $maxRetries = null
-    ) {
+    ): mixed {
         $timeout ??= $this->getDefaultTimeout();
         $maxRetries ??= $this->getDefaultRetryCount();
 

@@ -58,7 +58,7 @@ interface AuthInterface
      * @throws AuthException
      * @return void
      */
-    public function preLoginCheck(Request $request);
+    public function preLoginCheck(Request $request): void;
 
     /**
      * Reset any internal status; this is essentially an event hook which most auth
@@ -66,7 +66,7 @@ interface AuthInterface
      *
      * @return void
      */
-    public function clearLoginState();
+    public function clearLoginState(): void;
 
     /**
      * Set configuration.
@@ -84,7 +84,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function needsCsrfCheck(Request $request);
+    public function needsCsrfCheck(Request $request): bool;
 
     /**
      * Returns any authentication method this request should be delegated to.
@@ -93,7 +93,7 @@ interface AuthInterface
      *
      * @return string|bool
      */
-    public function getDelegateAuthMethod(Request $request);
+    public function getDelegateAuthMethod(Request $request): string|bool;
 
     /**
      * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
@@ -122,7 +122,7 @@ interface AuthInterface
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
-    public function authenticate(Request $request);
+    public function authenticate(Request $request): UserEntityInterface;
 
     /**
      * Validate the credentials in the provided request, but do not change the state
@@ -134,14 +134,14 @@ interface AuthInterface
      * @throws AuthException
      * @return bool
      */
-    public function validateCredentials(Request $request);
+    public function validateCredentials(Request $request): bool;
 
     /**
      * Has the user's login expired?
      *
      * @return bool
      */
-    public function isExpired();
+    public function isExpired(): bool;
 
     /**
      * Create a new user account from the request.
@@ -151,7 +151,7 @@ interface AuthInterface
      * @throws AuthException
      * @return UserEntityInterface New user entity.
      */
-    public function create(Request $request);
+    public function create(Request $request): UserEntityInterface;
 
     /**
      * Update a user's password from the request.
@@ -161,7 +161,7 @@ interface AuthInterface
      * @throws AuthException
      * @return UserEntityInterface Updated user entity.
      */
-    public function updatePassword(Request $request);
+    public function updatePassword(Request $request): UserEntityInterface;
 
     /**
      * Check if session initiator is used.
@@ -195,7 +195,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function supportsCreation();
+    public function supportsCreation(): bool;
 
     /**
      * Does this authentication method support password changing.
@@ -219,14 +219,14 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function supportsConnectingLibraryCard();
+    public function supportsConnectingLibraryCard(): bool;
 
     /**
      * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
-    public function getUsernamePolicy();
+    public function getUsernamePolicy(): array;
 
     /**
      * Get password policy for a new password (e.g. minLength, maxLength).

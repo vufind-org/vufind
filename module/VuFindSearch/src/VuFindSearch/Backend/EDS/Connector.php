@@ -99,7 +99,7 @@ class Connector extends Base implements LoggerAwareInterface
         string $messageBody = null,
         string $messageFormat = 'application/json; charset=utf-8',
         bool $cacheable = true
-    ) {
+    ): string {
         $this->debug("{$method}: {$baseUrl}?{$queryString}");
 
         $this->client->resetParameters();

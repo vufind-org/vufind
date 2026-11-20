@@ -74,7 +74,7 @@ class GeoCoords
      *
      * @return bool
      */
-    protected function recommendationEnabled(array $settings)
+    protected function recommendationEnabled(array $settings): bool
     {
         if (isset($settings['top']) && is_array($settings['top'])) {
             foreach ($settings['top'] as $setting) {
@@ -95,7 +95,7 @@ class GeoCoords
      *
      * @return string|bool
      */
-    public function getSearchUrl(Options $options)
+    public function getSearchUrl(Options $options): string|bool
     {
         // If the relevant module is disabled, bail out now:
         if (!$this->recommendationEnabled($options->getRecommendationSettings())) {

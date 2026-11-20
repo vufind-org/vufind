@@ -45,7 +45,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return int
      */
-    public function getTotal();
+    public function getTotal(): int;
 
     /**
      * Return available facets.
@@ -55,14 +55,14 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return array
      */
-    public function getFacets();
+    public function getFacets(): array;
 
     /**
      * Return records.
      *
      * @return array
      */
-    public function getRecords();
+    public function getRecords(): array;
 
     /**
      * Return any errors.
@@ -72,21 +72,21 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return array
      */
-    public function getErrors();
+    public function getErrors(): array;
 
     /**
      * Return offset in the total search result set.
      *
      * @return int
      */
-    public function getOffset();
+    public function getOffset(): int;
 
     /**
      * Return first record in collection.
      *
      * @return RecordInterface|null
      */
-    public function first();
+    public function first(): ?RecordInterface;
 
     /**
      * Set the source backend identifier.
@@ -97,7 +97,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @deprecated Use setSourceIdentifiers instead
      */
-    public function setSourceIdentifier(string $identifier);
+    public function setSourceIdentifier(string $identifier): void;
 
     /**
      * Set the source backend identifiers.
@@ -108,14 +108,14 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function setSourceIdentifiers(string $identifier, string $searchBackendId = '');
+    public function setSourceIdentifiers(string $identifier, string $searchBackendId = ''): void;
 
     /**
      * Return the source backend identifier.
      *
      * @return string
      */
-    public function getSourceIdentifier();
+    public function getSourceIdentifier(): string;
 
     /**
      * Sets the result set identifier for the record.
@@ -126,7 +126,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function setResultSetIdentifier(string $uuid);
+    public function setResultSetIdentifier(string $uuid): void;
 
     /**
      * Add a record to the collection.
@@ -135,5 +135,5 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function add(RecordInterface $record);
+    public function add(RecordInterface $record): void;
 }

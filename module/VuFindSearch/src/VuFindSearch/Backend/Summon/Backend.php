@@ -103,7 +103,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         int $offset,
         int $limit,
         ?ParamBag $params = null
-    ) {
+    ): RecordCollectionInterface {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
             $baseParams->mergeWith($params);
@@ -136,7 +136,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      * @return RecordCollectionInterface
      * @throws RecordMissingException
      */
-    public function retrieve(string $id, ?ParamBag $params = null)
+    public function retrieve(string $id, ?ParamBag $params = null): RecordCollectionInterface
     {
         $finalParams = $params ?: new ParamBag();
         // We normally look up by ID, but we occasionally need to use bookmarks:
@@ -166,7 +166,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return RecordCollectionInterface
      */
-    public function retrieveBatch(array $ids, ?ParamBag $params = null)
+    public function retrieveBatch(array $ids, ?ParamBag $params = null): RecordCollectionInterface
     {
         // Load 50 records at a time; this is the limit for Summon.
         $pageSize = 50;
@@ -212,7 +212,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -224,7 +224,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -239,7 +239,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory()
+    public function getRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         if ($this->collectionFactory === null) {
             $this->collectionFactory = new Response\RecordCollectionFactory();
@@ -252,7 +252,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return Connector
      */
-    public function getConnector()
+    public function getConnector(): Connector
     {
         return $this->connector;
     }
@@ -266,7 +266,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection(array $records)
+    protected function createRecordCollection(array $records): RecordCollectionInterface
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }
@@ -278,7 +278,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @return SummonQuery
      */
-    protected function paramBagToSummonQuery(ParamBag $params)
+    protected function paramBagToSummonQuery(ParamBag $params): SummonQuery
     {
         $params = $params->getArrayCopy();
 

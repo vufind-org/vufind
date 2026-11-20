@@ -73,7 +73,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return void
      */
-    protected function setApiError(array $message)
+    protected function setApiError(array $message): void
     {
         if (isset($message['ErrorCode'])) {
             // AuthErrorMessages
@@ -105,7 +105,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return array
      */
-    public function getApiError()
+    public function getApiError(): array
     {
         return $this->apiErrorDetails;
     }
@@ -115,7 +115,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return bool
      */
-    public function isApiError()
+    public function isApiError(): bool
     {
         return isset($this->apiErrorDetails);
     }
@@ -125,7 +125,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return array
      */
-    public function getApiErrorCode()
+    public function getApiErrorCode(): array
     {
         return $this->apiErrorDetails['ErrorCode'] ?? '';
     }
@@ -135,7 +135,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return string
      */
-    public function getApiErrorDescription()
+    public function getApiErrorDescription(): string
     {
         return $this->apiErrorDetails['Description'] ?? '';
     }
@@ -145,7 +145,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      *
      * @return string
      */
-    public function getApiDetailedErrorDescription()
+    public function getApiDetailedErrorDescription(): string
     {
         return $this->apiErrorDetails['DetailedDescription'] ?? '';
     }

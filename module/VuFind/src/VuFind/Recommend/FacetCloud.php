@@ -49,7 +49,7 @@ class FacetCloud extends ExpandFacets
      *
      * @return int
      */
-    public function getFacetLimit()
+    public function getFacetLimit(): int
     {
         $params = $this->searchObject->getParams();
         $settings = is_callable([$params, 'getFacetSettings'])

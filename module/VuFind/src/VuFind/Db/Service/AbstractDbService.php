@@ -144,7 +144,7 @@ abstract class AbstractDbService implements DbServiceInterface
      *
      * @return ?object
      */
-    public function getEntityById(string $entityClass, int $id)
+    public function getEntityById(string $entityClass, int $id): ?object
     {
         return $this->entityManager->find($entityClass, $id);
     }
@@ -156,7 +156,7 @@ abstract class AbstractDbService implements DbServiceInterface
      *
      * @return int
      */
-    public function getRowCountForTable(string $entityClass)
+    public function getRowCountForTable(string $entityClass): int
     {
         $dql = 'SELECT COUNT(e) FROM ' . $entityClass . ' e ';
         $query = $this->entityManager->createQuery($dql);

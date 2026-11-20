@@ -45,7 +45,7 @@ class Description extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Description';
     }

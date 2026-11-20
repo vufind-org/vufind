@@ -59,7 +59,7 @@ class BasemapConfig extends AbstractConfig
      *
      * @return array
      */
-    protected function getDefaultOptions()
+    protected function getDefaultOptions(): array
     {
         return [
             'basemap_url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
@@ -76,7 +76,7 @@ class BasemapConfig extends AbstractConfig
      *
      * @return array
      */
-    public function getBasemap(string $origin)
+    public function getBasemap(string $origin): array
     {
         $options = [];
         if ($origin === 'MapSelection') {
@@ -97,7 +97,7 @@ class BasemapConfig extends AbstractConfig
      *
      * @return array
      */
-    protected function getMapSelectionBasemap()
+    protected function getMapSelectionBasemap(): array
     {
         // Check geofeatures.ini [MapSelection]
         $options = $this->getOptions('geofeatures', 'MapSelection', $this->options);
@@ -113,7 +113,7 @@ class BasemapConfig extends AbstractConfig
      *
      * @return array
      */
-    protected function getMapTabBasemap()
+    protected function getMapTabBasemap(): array
     {
         // Check geofeatures.ini [MapTab]
         $options = $this->getOptions('geofeatures', 'MapTab', $this->options);

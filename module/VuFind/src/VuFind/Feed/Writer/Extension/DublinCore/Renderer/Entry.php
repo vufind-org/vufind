@@ -49,7 +49,7 @@ class Entry extends ParentEntry
      *
      * @return void
      */
-    public function render()
+    public function render(): void
     {
         if (strtolower($this->getType()) === 'atom') {
             return;
@@ -67,7 +67,7 @@ class Entry extends ParentEntry
      *
      * @return void
      */
-    protected function setDCFormats(DOMDocument $dom, DOMElement $root)
+    protected function setDCFormats(DOMDocument $dom, DOMElement $root): void
     {
         $dcFormats = $this->getDataContainer()->getDCFormats();
         if (empty($dcFormats)) {
@@ -90,7 +90,7 @@ class Entry extends ParentEntry
      *
      * @return void
      */
-    protected function setDCDate(DOMDocument $dom, DOMElement $root)
+    protected function setDCDate(DOMDocument $dom, DOMElement $root): void
     {
         $dcDate = $this->getDataContainer()->getDCDate();
         if (empty($dcDate)) {

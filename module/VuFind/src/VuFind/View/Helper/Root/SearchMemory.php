@@ -85,7 +85,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getLastSearchLink(string $link, string $prefix = '', string $suffix = '')
+    public function getLastSearchLink(string $link, string $prefix = '', string $suffix = ''): string
     {
         if ($url = $this->getLastSearchUrl()) {
             return $prefix . '<a href="' . ($this->escapeHtml)($url) . '">' . $link . '</a>' . $suffix;
@@ -143,7 +143,7 @@ class SearchMemory
      *
      * @return array
      */
-    public function getLastHiddenFilters(string $context)
+    public function getLastHiddenFilters(string $context): array
     {
         return $this->memory->retrieveLastSetting($context, 'hiddenFilters', []);
     }
@@ -155,7 +155,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getLastLimit(string $context)
+    public function getLastLimit(string $context): string
     {
         return $this->memory->retrieveLastSetting($context, 'limit');
     }
@@ -167,7 +167,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getLastSort(string $context)
+    public function getLastSort(string $context): string
     {
         return $this->memory->retrieveLastSetting($context, 'sort');
     }
@@ -181,7 +181,7 @@ class SearchMemory
      *
      * @return string
      */
-    public function getEditLink(string $searchClassId, string $action, mixed $value)
+    public function getEditLink(string $searchClassId, string $action, mixed $value): string
     {
         $query = compact('searchClassId') + [$action => $value];
         return ($this->url)('search-editmemory', [], compact('query'));
@@ -194,7 +194,7 @@ class SearchMemory
      *
      * @return \VuFind\Search\Base\Params
      */
-    public function getLastSearchParams(string $searchClassId)
+    public function getLastSearchParams(string $searchClassId): \VuFind\Search\Base\Params
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';

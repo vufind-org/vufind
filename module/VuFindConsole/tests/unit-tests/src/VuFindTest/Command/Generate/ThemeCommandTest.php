@@ -49,7 +49,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $config = [];
         $generator = $this->getMockGenerator();
@@ -76,7 +76,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailure()
+    public function testFailure(): void
     {
         $config = [];
         $generator = $this->getMockGenerator();
@@ -103,7 +103,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return ThemeGenerator
      */
-    protected function getMockGenerator()
+    protected function getMockGenerator(): ThemeGenerator
     {
         return $this->createMock(ThemeGenerator::class);
     }

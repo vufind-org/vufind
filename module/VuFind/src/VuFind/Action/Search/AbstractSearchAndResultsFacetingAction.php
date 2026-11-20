@@ -140,7 +140,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      *
      * @return array Facets
      */
-    protected function getHierarchicalFacets(string $config)
+    protected function getHierarchicalFacets(string $config): array
     {
         $facetConfig = $this->configManager->getConfigArray($config);
         return $facetConfig['SpecialFacets']['hierarchical'] ?? [];
@@ -153,7 +153,7 @@ abstract class AbstractSearchAndResultsFacetingAction extends AbstractSearchAndR
      *
      * @return array
      */
-    protected function getAdvancedHierarchicalFacetsSortOptions(string $config)
+    protected function getAdvancedHierarchicalFacetsSortOptions(string $config): array
     {
         $facetConfig = $this->configManager->getConfigArray($config);
         $baseConfig = $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions'] ?? [];

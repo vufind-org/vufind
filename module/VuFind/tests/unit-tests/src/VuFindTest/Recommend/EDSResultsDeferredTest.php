@@ -45,7 +45,7 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\EDSResultsDeferred::class,
@@ -64,7 +64,7 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
      *
      * @return void
      */
-    public function testLookforArray()
+    public function testLookforArray(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\EDSResultsDeferred::class,

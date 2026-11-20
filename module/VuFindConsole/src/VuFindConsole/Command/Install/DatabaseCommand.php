@@ -71,7 +71,7 @@ class DatabaseCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Build a new database.')

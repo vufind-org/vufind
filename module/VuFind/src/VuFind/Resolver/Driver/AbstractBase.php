@@ -68,7 +68,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @return string Returns resolver specific url
      */
-    public function getResolverUrl(string $openURL)
+    public function getResolverUrl(string $openURL): string
     {
         $url = $this->baseUrl;
         $url .= !str_contains($url, '?') ? '?' : '&';
@@ -99,7 +99,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @return bool
      */
-    public function supportsMoreOptionsLink()
+    public function supportsMoreOptionsLink(): bool
     {
         return true;
     }

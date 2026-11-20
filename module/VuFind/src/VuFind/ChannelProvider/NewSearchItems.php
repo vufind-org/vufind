@@ -90,7 +90,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->maxAge = $options['maxAge'] ?? 30;
         $this->sort = $options['sort'] ?? 'first_indexed desc';
@@ -144,7 +144,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      *
      * @return array
      */
-    protected function buildChannelFromParams(Params $params)
+    protected function buildChannelFromParams(Params $params): array
     {
         $retVal = [
             'title' => $this->translate('New Items'),

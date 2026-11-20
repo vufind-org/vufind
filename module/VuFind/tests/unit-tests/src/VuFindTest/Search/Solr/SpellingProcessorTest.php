@@ -51,7 +51,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultConfigs()
+    public function testDefaultConfigs(): void
     {
         $sp = new SpellingProcessor();
         $this->assertEquals(true, $sp->shouldSkipNumericSpelling());
@@ -63,7 +63,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNonDefaultConfigs()
+    public function testNonDefaultConfigs(): void
     {
         $config = ['limit' => 5, 'skip_numeric' => false];
         $sp = new SpellingProcessor($config);
@@ -76,7 +76,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuggestionProcessing()
+    public function testSuggestionProcessing(): void
     {
         $sp = new SpellingProcessor();
         $spelling = $this->unserializeFixture('spell1');
@@ -92,7 +92,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuggestionProcessingWithNonDefaultLimit()
+    public function testSuggestionProcessingWithNonDefaultLimit(): void
     {
         $config = ['limit' => 5];
         $sp = new SpellingProcessor($config);
@@ -129,7 +129,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicSuggestions()
+    public function testBasicSuggestions(): void
     {
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
@@ -192,7 +192,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicSuggestionsForUppercaseQuery()
+    public function testBasicSuggestionsForUppercaseQuery(): void
     {
         $spelling = $this->unserializeFixture('spell6');
         $query = $this->unserializeFixture('query6');
@@ -255,7 +255,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicSuggestionsWithNonDefaultSettings()
+    public function testBasicSuggestionsWithNonDefaultSettings(): void
     {
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
@@ -313,7 +313,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testShingleSuggestion()
+    public function testShingleSuggestion(): void
     {
         $this->runSpellingTest(
             2,
@@ -341,7 +341,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAdvancedQuerySuggestions()
+    public function testAdvancedQuerySuggestions(): void
     {
         $this->runSpellingTest(
             4,
@@ -385,7 +385,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSpellingTokenization()
+    public function testSpellingTokenization(): void
     {
         $sp = new SpellingProcessor();
         $this->assertSame(['single'], $sp->tokenize('single'));
@@ -415,7 +415,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNumericInclusion()
+    public function testNumericInclusion(): void
     {
         $this->runSpellingTest(
             3,
@@ -448,7 +448,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNumericExclusion()
+    public function testNumericExclusion(): void
     {
         $this->runSpellingTest(
             3,
@@ -472,7 +472,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDetectionOfMissingExtendedResultsSetting()
+    public function testDetectionOfMissingExtendedResultsSetting(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
@@ -492,7 +492,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runSpellingTest(int $testNum, array $expected, array $config = [])
+    protected function runSpellingTest(int $testNum, array $expected, array $config = []): void
     {
         $spelling = $this->unserializeFixture('spell' . $testNum);
         $query = $this->unserializeFixture('query' . $testNum);
@@ -515,7 +515,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getExpectedQuery1Suggestions()
+    protected function getExpectedQuery1Suggestions(): array
     {
         return [
             'grumble' => [
@@ -542,7 +542,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getExpectedQuery6Suggestions()
+    protected function getExpectedQuery6Suggestions(): array
     {
         return [
             'Grumble' => [
@@ -571,7 +571,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function unserializeFixture(string $file)
+    protected function unserializeFixture(string $file): mixed
     {
         return unserialize($this->getFixture("spell/$file"));
     }

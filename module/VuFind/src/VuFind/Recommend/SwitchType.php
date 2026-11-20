@@ -79,7 +79,7 @@ class SwitchType implements RecommendInterface
      *
      * @return void
      */
-    public function setConfig(string $settings)
+    public function setConfig(string $settings): void
     {
         $params = explode(':', $settings);
         $this->newHandler = !empty($params[0]) ? $params[0] : 'AllFields';
@@ -112,7 +112,7 @@ class SwitchType implements RecommendInterface
      *
      * @return void
      */
-    public function process(\VuFind\Search\Base\Results $results)
+    public function process(\VuFind\Search\Base\Results $results): void
     {
         $handler = $results->getParams()->getSearchHandler();
         $this->results = $results;
@@ -130,7 +130,7 @@ class SwitchType implements RecommendInterface
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function getResults()
+    public function getResults(): \VuFind\Search\Base\Results
     {
         return $this->results;
     }
@@ -140,7 +140,7 @@ class SwitchType implements RecommendInterface
      *
      * @return string|false
      */
-    public function getNewHandler()
+    public function getNewHandler(): string|bool
     {
         return $this->active ? $this->newHandler : false;
     }
@@ -150,7 +150,7 @@ class SwitchType implements RecommendInterface
      *
      * @return string
      */
-    public function getNewHandlerName()
+    public function getNewHandlerName(): string
     {
         return $this->newHandlerName;
     }

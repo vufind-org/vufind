@@ -49,7 +49,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -69,7 +69,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithMinimalParameters()
+    public function testSuccessWithMinimalParameters(): void
     {
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
@@ -99,7 +99,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailure()
+    public function testFailure(): void
     {
         $e = new \Exception('foo', 0, new \Exception('bar'));
         $importer = $this->getMockImporter();
@@ -134,7 +134,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return Importer
      */
-    protected function getMockImporter(array $methods = [])
+    protected function getMockImporter(array $methods = []): Importer
     {
         $builder = $this->getMockBuilder(Importer::class)
             ->disableOriginalConstructor();

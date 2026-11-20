@@ -51,7 +51,7 @@ class AddEllipsis
      *
      * @return string             Highlighted string with ellipsis added
      */
-    public function __invoke(string $highlighted, mixed $fullString)
+    public function __invoke(string $highlighted, mixed $fullString): string
     {
         // Remove highlighting markers from the string so we can perform a clean
         // comparison:

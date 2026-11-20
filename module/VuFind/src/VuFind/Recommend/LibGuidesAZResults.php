@@ -49,7 +49,7 @@ class LibGuidesAZResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getSearchClassId()
+    protected function getSearchClassId(): string
     {
         return 'LibGuidesAZ';
     }
@@ -59,7 +59,7 @@ class LibGuidesAZResults extends AbstractSearchObject
      *
      * @return string
      */
-    protected function getDefaultHeading()
+    protected function getDefaultHeading(): string
     {
         return 'libguidesaz_recommendations';
     }

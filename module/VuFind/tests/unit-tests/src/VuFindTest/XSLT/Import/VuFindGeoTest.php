@@ -47,7 +47,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDataExtraction()
+    public function testDataExtraction(): void
     {
         $coverage = 'name=Dehradun; westlimit=77.8884; southlimit=30.2259; '
             . 'eastlimit=78.2234; northlimit=30.4511';
@@ -67,7 +67,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
      *
      * @return \class
      */
-    public function getLogger()
+    public function getLogger(): \class
     {
         $logger = new class () {
             protected $messages = [];
@@ -89,7 +89,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
              *
              * @return string
              */
-            public function popMessage()
+            public function popMessage(): string
             {
                 return array_pop($this->messages);
             }
@@ -103,7 +103,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingData()
+    public function testMissingData(): void
     {
         $badInputs = [
             [

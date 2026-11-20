@@ -48,7 +48,7 @@ class ShortenUrlTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHelper()
+    public function testHelper(): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $service = $container->createMock(Database::class, ['shorten']);

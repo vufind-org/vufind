@@ -56,7 +56,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHelper()
+    public function testHelper(): void
     {
         $helper = new SetupThemeResources(
             $this->getResourceContainer(),
@@ -73,7 +73,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConfigParsing()
+    public function testConfigParsing(): void
     {
         $tests = [
             'foo:bar:baz' => ['foo', 'bar', 'baz'],
@@ -92,7 +92,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      *
      * @return ResourceContainer
      */
-    protected function getResourceContainer()
+    protected function getResourceContainer(): ResourceContainer
     {
         $rc = new ResourceContainer();
         $rc->setEncoding('utf-8');
@@ -105,7 +105,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\View\Renderer\PhpRenderer
      */
-    protected function getMockView()
+    protected function getMockView(): \Laminas\View\Renderer\PhpRenderer
     {
         $view = new \Laminas\View\Renderer\PhpRenderer();
         $container = new \VuFindTest\Container\MockViewHelperContainer($this);

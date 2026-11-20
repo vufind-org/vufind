@@ -47,7 +47,7 @@ class LibGuidesResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTes
      *
      * @return void
      */
-    public function testStandardOperation()
+    public function testStandardOperation(): void
     {
         $mod = $this->getRecommend(
             \VuFind\Recommend\LibGuidesResultsDeferred::class,

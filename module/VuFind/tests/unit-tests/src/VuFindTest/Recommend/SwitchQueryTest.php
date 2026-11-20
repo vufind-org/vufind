@@ -50,7 +50,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetResults()
+    public function testGetResults(): void
     {
         $results = $this->getMockResults();
         $sq = $this->getSwitchQuery($results);
@@ -62,7 +62,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLowercaseBooleans()
+    public function testLowercaseBooleans(): void
     {
         $results = $this->getMockResults('a or b');
         $sq = $this->getSwitchQuery($results);
@@ -80,7 +80,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLowercaseBooleansAndCaseInsensitivity()
+    public function testLowercaseBooleansAndCaseInsensitivity(): void
     {
         $results = $this->getMockResults('a or b');
         $bm = $this->getMockBackendManager(false);
@@ -93,7 +93,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIdQuery()
+    public function testIdQuery(): void
     {
         $results = $this->getMockResults('id:foo');
         $sq = $this->getSwitchQuery($results);
@@ -108,7 +108,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAdvancedQuery()
+    public function testAdvancedQuery(): void
     {
         $results = $this->getMockResults('', 'advanced');
         $sq = $this->getSwitchQuery($results);
@@ -123,7 +123,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnwantedBools()
+    public function testUnwantedBools(): void
     {
         $results = $this->getMockResults('AND NOT OR');
         $sq = $this->getSwitchQuery($results);
@@ -141,7 +141,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnwantedQuotes()
+    public function testUnwantedQuotes(): void
     {
         $results = $this->getMockResults('"my phrase"');
         $sq = $this->getSwitchQuery($results);
@@ -158,7 +158,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTransformUnwantedCharacter()
+    public function testTransformUnwantedCharacter(): void
     {
         $results = $this->getMockResults('abcd');
         $sq = $this->getSwitchQuery($results, ':wildcard:truncatechar');
@@ -175,7 +175,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTransformUnwantedCharacterOnPhrase()
+    public function testTransformUnwantedCharacterOnPhrase(): void
     {
         $results = $this->getMockResults('"my phrase"');
         $sq = $this->getSwitchQuery($results, ':unwantedquotes:truncatechar');
@@ -191,7 +191,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return SwitchQuery
      */
-    protected function getSwitchQuery(\VuFind\Search\Solr\Results $results = null, string $settings = '', BackendManager $bm = null)
+    protected function getSwitchQuery(\VuFind\Search\Solr\Results $results = null, string $settings = '', BackendManager $bm = null): SwitchQuery
     {
         $results ??= $this->getMockResults();
         $sq = new SwitchQuery(
@@ -211,7 +211,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return BackendManager
      */
-    protected function getMockBackendManager(bool|string $csBools = true, bool $csRanges = true)
+    protected function getMockBackendManager(bool|string $csBools = true, bool $csRanges = true): BackendManager
     {
         $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper($csBools, $csRanges);
         $queryBuilder = $this->createMock(\VuFindSearch\Backend\Solr\QueryBuilder::class);
@@ -232,7 +232,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults(string $query = '', string $type = 'basic')
+    protected function getMockResults(string $query = '', string $type = 'basic'): \VuFind\Search\Solr\Results
     {
         $params = $this->getMockParams($query, $type);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
@@ -248,7 +248,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(string $query = '', string $type = 'basic')
+    protected function getMockParams(string $query = '', string $type = 'basic'): \VuFind\Search\Solr\Params
     {
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->method('getDisplayQuery')->willReturn($query);

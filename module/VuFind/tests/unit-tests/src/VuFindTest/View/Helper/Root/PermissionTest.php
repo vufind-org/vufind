@@ -102,7 +102,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMessageDisplay()
+    public function testMessageDisplay(): void
     {
         $mockPdmMessage = $this->getMockPdm(
             [
@@ -125,7 +125,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testTemplateDisplay()
+    public function testTemplateDisplay(): void
     {
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
 
@@ -150,7 +150,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExistingTemplateDisplay()
+    public function testExistingTemplateDisplay(): void
     {
         $mockPdm = $this->getMockPdm(
             [
@@ -193,7 +193,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return PermissionManager
      */
-    protected function getMockPm(array $isAuthorized = false)
+    protected function getMockPm(array $isAuthorized = false): PermissionManager
     {
         $mockPm = $this->createMock(PermissionManager::class);
         $mockPm->method('isAuthorized')->willReturn($isAuthorized);
@@ -207,7 +207,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\View\Helper\Root\Context
      */
-    protected function getMockContext()
+    protected function getMockContext(): \VuFind\View\Helper\Root\Context
     {
         return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
@@ -217,7 +217,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return \Laminas\View\Renderer\PhpRenderer
      */
-    protected function getMockView()
+    protected function getMockView(): \Laminas\View\Renderer\PhpRenderer
     {
         $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();

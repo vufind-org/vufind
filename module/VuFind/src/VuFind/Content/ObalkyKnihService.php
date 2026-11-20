@@ -133,7 +133,7 @@ class ObalkyKnihService implements
      *
      * @return \Laminas\Http\Client
      */
-    protected function getHttpClient(?string $url = null)
+    protected function getHttpClient(?string $url = null): \Laminas\Http\Client
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -153,7 +153,7 @@ class ObalkyKnihService implements
      *
      * @return string
      */
-    protected function createCacheKey(array $ids)
+    protected function createCacheKey(array $ids): string
     {
         $key = $ids['recordid'] ?? '';
         $key = !empty($key) ? $key

@@ -55,7 +55,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testResponseParsing()
+    public function testResponseParsing(): void
     {
         $europeana = new EuropeanaResults('fakekey');
         $europeana->setHttpService($this->getHttpService());
@@ -114,7 +114,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
      *
      * @return HttpClient
      */
-    protected function getHttpService(string $fixture = 'europeana')
+    protected function getHttpService(string $fixture = 'europeana'): HttpClient
     {
         $adapter = new TestAdapter();
         if ($fixture) {
@@ -132,7 +132,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockResults(\VuFind\Search\Solr\Params $params = null)
+    protected function getMockResults(\VuFind\Search\Solr\Params $params = null): \VuFind\Search\Solr\Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
@@ -149,7 +149,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\Search\Solr\Params
      */
-    protected function getMockParams(\VuFindSearch\Query\Query $query = null)
+    protected function getMockParams(\VuFindSearch\Query\Query $query = null): \VuFind\Search\Solr\Params
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');

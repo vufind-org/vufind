@@ -122,7 +122,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -313,7 +313,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         $sql = $sqlStmt = $row = '';
         $id = 0;
@@ -359,7 +359,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds(array $patron)
+    public function getMyHolds(array $patron): array
     {
         $sql = $sqlStmt = $row = '';
         $id = 0;
@@ -398,7 +398,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $id = 0;
         $sql = $sqlStmt = $row = '';
@@ -438,7 +438,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions(array $patron)
+    public function getMyTransactions(array $patron): array
     {
         $id = 0;
         $transactionLst = [];
@@ -475,7 +475,7 @@ class Koha extends AbstractBase
      * @return mixed A boolean false if no blocks are in place and an array
      * of block reasons if blocks are in place
      */
-    public function getAccountBlocks(array $patron)
+    public function getAccountBlocks(array $patron): mixed
     {
         $blocks = [];
 
@@ -522,7 +522,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactionHistory(array $patron, array $params)
+    public function getMyTransactionHistory(array $patron, array $params): array
     {
         $id = 0;
         $historicLoans = [];
@@ -619,7 +619,7 @@ class Koha extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         return $this->getHolding($id);
     }
@@ -635,7 +635,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array       An array of getStatus() return values on success.
      */
-    public function getStatuses(array $idLst)
+    public function getStatuses(array $idLst): array
     {
         $statusLst = [];
         foreach ($idLst as $id) {
@@ -653,7 +653,7 @@ class Koha extends AbstractBase
      * @throws ILSException
      * @return array ID numbers of suppressed records in the system.
      */
-    public function getSuppressedRecords()
+    public function getSuppressedRecords(): array
     {
         // TODO
         return [];
@@ -671,7 +671,7 @@ class Koha extends AbstractBase
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         $row = '';
 
@@ -743,7 +743,7 @@ class Koha extends AbstractBase
      *
      * @return string
      */
-    public function displayDate(string $date)
+    public function displayDate(string $date): string
     {
         if (empty($date)) {
             return '';
@@ -765,7 +765,7 @@ class Koha extends AbstractBase
      *
      * @return string
      */
-    public function displayDateTime(string $date)
+    public function displayDateTime(string $date): string
     {
         if (empty($date)) {
             return '';

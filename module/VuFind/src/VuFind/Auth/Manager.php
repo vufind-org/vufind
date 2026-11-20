@@ -791,7 +791,7 @@ class Manager implements LoggerAwareInterface
      * @throws AuthException
      * @return void
      */
-    public function resetPassword(array $recoveryData, array $params)
+    public function resetPassword(array $recoveryData, array $params): void
     {
         $this->getAuth()->resetPassword($recoveryData, $params);
         $this->auditEventService->addEvent(

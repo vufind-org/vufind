@@ -83,7 +83,7 @@ class UpdateResourceMetadataCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Updates the metadata fields of the resource table.')

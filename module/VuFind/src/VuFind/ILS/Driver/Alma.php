@@ -109,7 +109,7 @@ class Alma extends AbstractBase implements
      * @throws ILSException
      * @return void
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
@@ -150,7 +150,7 @@ class Alma extends AbstractBase implements
         Headers|array $headers = null,
         array $allowedErrors = [],
         bool $returnStatus = false
-    ) {
+    ): SimpleXMLElement|array|null {
         // Set some variables
         $url = null;
         $result = null;
@@ -352,7 +352,7 @@ class Alma extends AbstractBase implements
      * availability, status, location, reserve, callnumber, duedate, returnDate,
      * number, barcode, item_notes, item_id, holdings_id, addLink, description
      */
-    public function getHolding(string $id, array $patron = null, array $options = [])
+    public function getHolding(string $id, array $patron = null, array $options = []): array
     {
         // Prepare result array with default values. If no API result can be received
         // these will be returned.
@@ -458,7 +458,7 @@ class Alma extends AbstractBase implements
      *
      * @return bool True if request is valid, false if not
      */
-    public function checkRequestIsValid(string $id, array $data, array $patron)
+    public function checkRequestIsValid(string $id, array $data, array $patron): bool
     {
         $patronId = $patron['id'];
         $level = $data['level'] ?? 'copy';
@@ -508,7 +508,7 @@ class Alma extends AbstractBase implements
      * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
-    public function getRequestBlocks(array $patron)
+    public function getRequestBlocks(array $patron): array|bool
     {
         return $this->getAccountBlocks($patron);
     }
@@ -521,7 +521,7 @@ class Alma extends AbstractBase implements
      * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
-    public function getAccountBlocks(array $patron)
+    public function getAccountBlocks(array $patron): array|bool
     {
         $patronId = $patron['id'];
         $cacheId = 'alma|user|' . $patronId . '|blocks';
@@ -575,7 +575,7 @@ class Alma extends AbstractBase implements
      *                                 the fulfillment unit of the location that was found.
      * @author Michael Birkner
      */
-    protected function getFulfillmentUnitByLocation(string $locationCode, array $fulfillmentUnits)
+    protected function getFulfillmentUnitByLocation(string $locationCode, array $fulfillmentUnits): ?string
     {
         foreach ($fulfillmentUnits as $key => $val) {
             if (in_array($locationCode, $val)) {
@@ -595,7 +595,7 @@ class Alma extends AbstractBase implements
      * @return ?SimpleXMLElement
      * @author Michael Birkner
      */
-    public function createAlmaUser(array $formParams)
+    public function createAlmaUser(array $formParams): ?SimpleXMLElement
     {
         // Get config for creating new Alma users from Alma.ini
         $newUserConfig = $this->config['NewUser'] ?? [];
@@ -707,7 +707,7 @@ class Alma extends AbstractBase implements
      *
      * @return ?array
      */
-    public function patronLogin(string $username, string $password)
+    public function patronLogin(string $username, string $password): ?array
     {
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'vufind';
 
@@ -834,7 +834,7 @@ class Alma extends AbstractBase implements
      *
      * @return array Array of the patron's profile data on success.
      */
-    public function getMyProfile(array $patron)
+    public function getMyProfile(array $patron): array
     {
         $patronId = $patron['id'];
         $xml = $this->makeRequest('/users/' . rawurlencode($patronId));
@@ -879,7 +879,7 @@ class Alma extends AbstractBase implements
      *
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines(array $patron)
+    public function getMyFines(array $patron): mixed
     {
         $xml = $this->makeRequest(
             '/users/' . rawurlencode($patron['id']) . '/fees'
@@ -984,7 +984,7 @@ class Alma extends AbstractBase implements
      *                                 (number of items successfully cancelled) and
      *                                 'items' (array of successful cancellations).
      */
-    public function cancelHolds(array $cancelDetails)
+    public function cancelHolds(array $cancelDetails): array
     {
         $returnArray = [];
         $patronId = $cancelDetails['patron']['id'];
@@ -1177,7 +1177,7 @@ class Alma extends AbstractBase implements
      *
      * @author Michael Birkner
      */
-    public function getMyTransactions(array $patron, array $params = [])
+    public function getMyTransactions(array $patron, array $params = []): array
     {
         // Defining the return value
         $returnArray = [];
@@ -1281,7 +1281,7 @@ class Alma extends AbstractBase implements
      *
      * @author Michael Birkner
      */
-    public function getRenewDetails(array $checkOutDetails)
+    public function getRenewDetails(array $checkOutDetails): string
     {
         $loanId = $checkOutDetails['item_id'];
         return $loanId;
@@ -1299,7 +1299,7 @@ class Alma extends AbstractBase implements
      *
      * @author Michael Birkner
      */
-    public function renewMyItems(array $renewDetails)
+    public function renewMyItems(array $renewDetails): array
     {
         $returnArray = [];
         $patronId = $renewDetails['patron']['id'];
@@ -1353,7 +1353,7 @@ class Alma extends AbstractBase implements
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus(string $id)
+    public function getStatus(string $id): mixed
     {
         $idList = [$id];
         $status = $this->getStatuses($idList);
@@ -1370,7 +1370,7 @@ class Alma extends AbstractBase implements
      *
      * @return array An array of getStatus() return values on success.
      */
-    public function getStatuses(array $ids)
+    public function getStatuses(array $ids): array
     {
         return $this->getStatusesForInventoryTypes($ids, $this->getInventoryTypes());
     }
@@ -1385,7 +1385,7 @@ class Alma extends AbstractBase implements
      *
      * @return array     An array with the acquisitions data on success.
      */
-    public function getPurchaseHistory(string $id)
+    public function getPurchaseHistory(string $id): array
     {
         // TODO: Alma getPurchaseHistory
         return [];
@@ -1447,7 +1447,7 @@ class Alma extends AbstractBase implements
      *
      * @link https://developers.exlibrisgroup.com/alma/apis/bibs
      */
-    public function placeHold(array $holdDetails)
+    public function placeHold(array $holdDetails): array
     {
         // Check for title or item level request
         $level = $holdDetails['level'] ?? 'item';
@@ -1588,7 +1588,7 @@ class Alma extends AbstractBase implements
      *
      * @return array with key = course ID, value = course name
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         // https://developers.exlibrisgroup.com/alma/apis/courses
         // GET /almaws/v1/courses
@@ -1639,7 +1639,7 @@ class Alma extends AbstractBase implements
      *
      * @return string
      */
-    public function parseDate(string $date, bool $withTime = false)
+    public function parseDate(string $date, bool $withTime = false): string
     {
         // Remove trailing Z from end of date
         // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
@@ -1720,7 +1720,7 @@ class Alma extends AbstractBase implements
      *
      * @return array
      */
-    protected function getInventoryTypes()
+    protected function getInventoryTypes(): array
     {
         $types = explode(
             ':',
@@ -1755,7 +1755,7 @@ class Alma extends AbstractBase implements
      *
      * @return array An array of getStatus() return values on success.
      */
-    protected function getStatusesForInventoryTypes(array $ids, array $types)
+    protected function getStatusesForInventoryTypes(array $ids, array $types): array
     {
         $results = [];
         $params = [
@@ -1869,7 +1869,7 @@ class Alma extends AbstractBase implements
      *
      * @return ?string
      */
-    protected function getPreferredEmail(SimpleXMLElement $user)
+    protected function getPreferredEmail(SimpleXMLElement $user): ?string
     {
         if (!empty($user->contact_info->emails->email)) {
             foreach ($user->contact_info->emails->email as $email) {
@@ -1892,7 +1892,7 @@ class Alma extends AbstractBase implements
      *
      * @return ?TranslatableString
      */
-    protected function getTranslatableString(SimpleXMLElement $element)
+    protected function getTranslatableString(SimpleXMLElement $element): ?TranslatableString
     {
         if (null === $element) {
             return null;
@@ -1910,7 +1910,7 @@ class Alma extends AbstractBase implements
      *
      * @return ?TranslatableString
      */
-    protected function getTranslatableStatusString(SimpleXMLElement $element)
+    protected function getTranslatableStatusString(SimpleXMLElement $element): ?TranslatableString
     {
         if (null === $element) {
             return null;
@@ -1927,7 +1927,7 @@ class Alma extends AbstractBase implements
      *
      * @return TranslatableString|string
      */
-    protected function getItemLocation(SimpleXMLElement $item)
+    protected function getItemLocation(SimpleXMLElement $item): TranslatableString|string
     {
         return $this->getTranslatableString($item->item_data->location);
     }
@@ -1939,7 +1939,7 @@ class Alma extends AbstractBase implements
      *
      * @return string
      */
-    protected function getItemLocationType(SimpleXMLElement $item)
+    protected function getItemLocationType(SimpleXMLElement $item): string
     {
         // Yes, temporary location is in holding data while permanent location is in
         // item data.
@@ -1963,7 +1963,7 @@ class Alma extends AbstractBase implements
      *
      * @return string
      */
-    protected function getLocationType(string $library, string $location)
+    protected function getLocationType(string $library, string $location): string
     {
         $locations = $this->getLocations($library);
         return $locations[$location]['type'] ?? '';
@@ -1976,7 +1976,7 @@ class Alma extends AbstractBase implements
      *
      * @return array
      */
-    protected function getLocations(string $library)
+    protected function getLocations(string $library): array
     {
         $cacheId = 'alma|locations|' . $library;
         $locations = $this->getCachedData($cacheId);

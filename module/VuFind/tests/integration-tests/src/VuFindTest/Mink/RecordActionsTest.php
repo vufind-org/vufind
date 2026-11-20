@@ -939,7 +939,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testUserContentDeletion()
+    public function testUserContentDeletion(): void
     {
         $this->changeConfigs(
             [

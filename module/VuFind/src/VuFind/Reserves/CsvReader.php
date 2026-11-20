@@ -143,7 +143,7 @@ class CsvReader
      *
      * @return string
      */
-    protected function getValueFromLine(array $line, string $key)
+    protected function getValueFromLine(array $line, string $key): string
     {
         return isset($this->template[$key]) ? $line[$this->template[$key]] : '';
     }
@@ -156,7 +156,7 @@ class CsvReader
      * @return void
      * @throws \Exception
      */
-    protected function loadFile(string $fn)
+    protected function loadFile(string $fn): void
     {
         if (!file_exists($fn) || !($fh = fopen($fn, 'r'))) {
             throw new \Exception("Could not open $fn!");
@@ -214,7 +214,7 @@ class CsvReader
      * @return void
      * @throws \Exception
      */
-    protected function load()
+    protected function load(): void
     {
         // Only load data if we haven't already retrieved it.
         if (!$this->loaded) {
@@ -232,7 +232,7 @@ class CsvReader
      * @return array
      * @throws \Exception
      */
-    public function getInstructors()
+    public function getInstructors(): array
     {
         $this->load();
         return $this->instructors;
@@ -244,7 +244,7 @@ class CsvReader
      * @return array
      * @throws \Exception
      */
-    public function getCourses()
+    public function getCourses(): array
     {
         $this->load();
         return $this->courses;
@@ -256,7 +256,7 @@ class CsvReader
      * @return array
      * @throws \Exception
      */
-    public function getDepartments()
+    public function getDepartments(): array
     {
         $this->load();
         return $this->departments;
@@ -268,7 +268,7 @@ class CsvReader
      * @return array
      * @throws \Exception
      */
-    public function getReserves()
+    public function getReserves(): array
     {
         $this->load();
         return $this->reserves;
@@ -279,7 +279,7 @@ class CsvReader
      *
      * @return string
      */
-    public function getErrors()
+    public function getErrors(): string
     {
         return $this->errors;
     }

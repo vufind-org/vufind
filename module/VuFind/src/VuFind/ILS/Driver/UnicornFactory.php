@@ -65,7 +65,7 @@ class UnicornFactory extends DriverWithDateConverterFactory
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         $driver = parent::__invoke($container, $requestedName);
         $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $driver;

@@ -83,7 +83,7 @@ class AutowiringFactory implements FactoryInterface
         ContainerInterface $container,
         string $requestedName,
         ?array $options = null
-    ) {
+    ): object {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
@@ -132,7 +132,7 @@ class AutowiringFactory implements FactoryInterface
         ContainerInterface $container,
         ReflectionParameter $reflectionParameter,
         ?array $autowireArgs
-    ) {
+    ): mixed {
         if ($config = $autowireArgs['config'] ?? null) {
             $result = $this->getConfig($container, $config, $autowireArgs);
         } else {

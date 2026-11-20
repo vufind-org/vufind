@@ -75,7 +75,7 @@ class Container
      *
      * @return array
      */
-    public function getAllValues()
+    public function getAllValues(): array
     {
         $retVal = [];
         foreach ($this->manager->getCookies() as $key => $value) {
@@ -94,7 +94,7 @@ class Container
      *
      * @return void
      */
-    public function & __get(string $var)
+    public function & __get(string $var): void
     {
         $val = $this->manager->get($this->groupName . $var);
         return $val;
@@ -109,7 +109,7 @@ class Container
      *
      * @return void
      */
-    public function __set(string $var, string $value)
+    public function __set(string $var, string $value): void
     {
         $this->manager->set($this->groupName . $var, $value);
     }
@@ -122,7 +122,7 @@ class Container
      *
      * @return bool
      */
-    public function __isset(string $var)
+    public function __isset(string $var): bool
     {
         return null !== $this->manager->get($this->groupName . $var);
     }
@@ -135,7 +135,7 @@ class Container
      *
      * @return void
      */
-    public function __unset(string $var)
+    public function __unset(string $var): void
     {
         $this->manager->clear($this->groupName . $var);
     }

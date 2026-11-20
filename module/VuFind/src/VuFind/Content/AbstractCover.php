@@ -124,7 +124,7 @@ abstract class AbstractCover
      *
      * @return bool
      */
-    public function isCacheAllowed()
+    public function isCacheAllowed(): bool
     {
         return $this->cacheAllowed;
     }
@@ -134,7 +134,7 @@ abstract class AbstractCover
      *
      * @return bool
      */
-    public function useDirectUrls()
+    public function useDirectUrls(): bool
     {
         return $this->directUrls;
     }
@@ -146,7 +146,7 @@ abstract class AbstractCover
      *
      * @return bool
      */
-    public function supports(array $ids)
+    public function supports(array $ids): bool
     {
         return
             ($this->supportsIsbn && isset($ids['isbn']))
@@ -170,7 +170,7 @@ abstract class AbstractCover
      *
      * @return string|bool
      */
-    abstract public function getUrl(string $key, string $size, array $ids);
+    abstract public function getUrl(string $key, string $size, array $ids): string|bool;
 
     /**
      * Get cover metadata for a particular API key and set of IDs (or empty array).
@@ -183,7 +183,7 @@ abstract class AbstractCover
      *
      * @return array Array with keys: url, backlink_url, backlink_text
      */
-    public function getMetadata(?string $key, string $size, array $ids)
+    public function getMetadata(?string $key, string $size, array $ids): array
     {
         $url = $this->getUrl($key, $size, $ids);
         return $url ? ['url' => $url] : [];

@@ -63,7 +63,7 @@ class HoldingsWorldCat2 extends AbstractBase
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Holdings';
     }
@@ -73,7 +73,7 @@ class HoldingsWorldCat2 extends AbstractBase
      *
      * @return ?array
      */
-    public function getHoldings()
+    public function getHoldings(): ?array
     {
         $ids = $this->getIdentifiers();
         if (!$ids) {
@@ -88,7 +88,7 @@ class HoldingsWorldCat2 extends AbstractBase
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         $ids = $this->getIdentifiers();
         return !empty($ids);

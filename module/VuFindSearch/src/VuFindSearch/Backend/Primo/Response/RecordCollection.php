@@ -67,7 +67,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['recordCount'] ?? 0;
     }
@@ -80,7 +80,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         return $this->response['facets'] ?? [];
     }
@@ -102,7 +102,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         $page = isset($this->response['query']['pageNumber'])
             ? $this->response['query']['pageNumber'] - 1 : 0;
@@ -118,7 +118,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return (array)($this->response['error'] ?? []);
     }

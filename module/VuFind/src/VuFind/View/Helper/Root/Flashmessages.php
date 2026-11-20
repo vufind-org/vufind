@@ -89,7 +89,7 @@ class Flashmessages
      *
      * @return string
      */
-    protected function getClassForNamespace(string $ns)
+    protected function getClassForNamespace(string $ns): string
     {
         return $ns;
     }
@@ -99,7 +99,7 @@ class Flashmessages
      *
      * @return string $html
      */
-    public function __invoke()
+    public function __invoke(): string
     {
         if (!empty($this->globalsContainer['lightboxChild'])) {
             return '';

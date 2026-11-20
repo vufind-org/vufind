@@ -77,7 +77,7 @@ trait CachingDownloaderAwareTrait
      *
      * @return void
      */
-    public function setCachingDownloader(CachingDownloader $cachingDownloader)
+    public function setCachingDownloader(CachingDownloader $cachingDownloader): void
     {
         $this->cachingDownloader = $cachingDownloader;
         $this->cachingDownloader->setUpCache(

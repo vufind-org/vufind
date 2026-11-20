@@ -85,7 +85,7 @@ abstract class AbstractThemeCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription(ucwords($this->type) . ' generator')
@@ -105,7 +105,7 @@ abstract class AbstractThemeCommand extends Command
      *
      * @return bool
      */
-    protected function generate(string $name)
+    protected function generate(string $name): bool
     {
         return $this->generator->generate($name);
     }

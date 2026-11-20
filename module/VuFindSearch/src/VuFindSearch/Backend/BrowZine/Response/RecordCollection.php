@@ -67,7 +67,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->response['recordCount'] ?? 0;
     }
@@ -77,7 +77,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets()
+    public function getFacets(): array
     {
         // Not supported
         return [];
@@ -88,7 +88,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->response['offset'] ?? 0;
     }

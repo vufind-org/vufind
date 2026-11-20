@@ -63,7 +63,7 @@ class DeprecatedTest extends \PHPUnit\Framework\TestCase
      *
      * @return string|bool
      */
-    protected function getUrl(string $size, string $isbn = '0739313126')
+    protected function getUrl(string $size, string $isbn = '0739313126'): string|bool
     {
         $deprecated = new \VuFind\Content\Covers\Deprecated();
         $params = empty($isbn) ? [] : ['isbn' => new ISBN($isbn)];
