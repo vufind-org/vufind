@@ -40,7 +40,6 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindHttp\HttpService;
@@ -68,7 +67,6 @@ class FixCacheAction extends AbstractInstallAction
      * @param array                    $config          VuFind configuration
      * @param Connection               $ilsConnection   ILS connection
      * @param SearchService            $searchService   Search service
-     * @param ServerUrlHelper          $serverUrlHelper Server URL helper
      * @param HttpService              $httpService     HTTP service
      * @param TagServiceInterface      $tagService      Tags database service
      * @param CacheManager             $cacheManager    Cache manager
@@ -84,7 +82,6 @@ class FixCacheAction extends AbstractInstallAction
         array $config,
         Connection $ilsConnection,
         SearchService $searchService,
-        ServerUrlHelper $serverUrlHelper,
         HttpService $httpService,
         #[Autowire(container: DbServicePluginManager::class)]
         TagServiceInterface $tagService,
@@ -98,7 +95,6 @@ class FixCacheAction extends AbstractInstallAction
             $config,
             $ilsConnection,
             $searchService,
-            $serverUrlHelper,
             $httpService,
             $tagService
         );

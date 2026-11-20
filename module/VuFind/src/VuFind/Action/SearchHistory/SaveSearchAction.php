@@ -137,7 +137,7 @@ class SaveSearchAction extends AbstractSearchHistoryAction
         if (!isset($scheduleOptions[$schedule])) {
             throw new BadRequestException('Illegal schedule option: ' . $schedule);
         }
-        $baseurl =  rtrim($this->serverUrlHelper->getUrlForPath($this->getRouteHelper()->getUrlFromRoute('home')), '/');
+        $baseurl =  rtrim($this->absoluteBaseUrl, '/');
         $savedRow = $this->getSearchRowSecurely($sid, $user);
 
         // In case the user has just logged in, let's deduplicate...

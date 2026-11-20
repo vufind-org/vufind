@@ -29,9 +29,11 @@
 
 namespace VuFindTest\Auth;
 
+use Closure;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\ManagerInterface;
 use Laminas\Session\SessionManager;
+use Laminas\Session\Storage\ArrayStorage;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
@@ -571,7 +573,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $loginTokenManager = $this->createMock(\VuFind\Auth\LoginTokenManager::class);
         $ils = $this->createMock(\VuFind\ILS\Connection::class);
         $ils->method('loginIsHidden')->willReturn(false);
-        $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
         return new Manager(
             $config,
             $this->createMock(UserServiceInterface::class),
@@ -582,7 +583,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $csrf,
             $loginTokenManager,
             $ils,
-            $viewRenderer,
+            Closure::fromCallable(fn () => 'http://localhost/'),
             $this->createMock(\VuFind\Db\Service\AuditEventServiceInterface::class)
         );
     }
@@ -594,7 +595,10 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSessionManager(): MockObject&ManagerInterface
     {
-        return $this->createMock(\Laminas\Session\ManagerInterface::class);
+        $sm = $this->createMock(ManagerInterface::class);
+        $sm->method('getStorage')
+            ->willReturn(new ArrayStorage());
+        return $sm;
     }
 
     /**

@@ -35,8 +35,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
-use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function sprintf;
 
@@ -60,11 +60,11 @@ trait ClassBasedTemplateRendererTrait
     protected $templateCache = [];
 
     /**
-     * View renderer.
+     * Template renderer.
      *
-     * @var ?RendererInterface
+     * @var ?TemplateRendererInterface
      */
-    protected ?RendererInterface $viewRenderer = null;
+    protected ?TemplateRendererInterface $templateRenderer = null;
 
     /**
      * View resolver.
@@ -83,18 +83,18 @@ trait ClassBasedTemplateRendererTrait
     /**
      * Helper setter function for required dependencies.
      *
-     * @param RendererInterface $viewRenderer  View renderer
-     * @param ResolverInterface $viewResolver  View resolver
-     * @param Context           $contextHelper Context helper
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param ResolverInterface         $viewResolver     View resolver
+     * @param Context                   $contextHelper    Context helper
      *
      * @return void
      */
     protected function setClassBasedTemplateRendererDependencies(
-        RendererInterface $viewRenderer,
+        TemplateRendererInterface $templateRenderer,
         ResolverInterface $viewResolver,
         Context $contextHelper
     ) {
-        $this->viewRenderer = $viewRenderer;
+        $this->templateRenderer = $templateRenderer;
         $this->viewResolver = $viewResolver;
         $this->contextHelper = $contextHelper;
     }
@@ -155,17 +155,17 @@ trait ClassBasedTemplateRendererTrait
     }
 
     /**
-     * Get the view renderer.
+     * Get the template renderer.
      *
      * @throws RuntimeException If view renderer is not set
-     * @return RendererInterface
+     * @return TemplateRendererInterface
      */
-    public function getViewRenderer(): RendererInterface
+    public function getTemplateRenderer(): TemplateRendererInterface
     {
-        if (null === $this->viewRenderer) {
-            throw new RuntimeException('View renderer not set in ' . __CLASS__);
+        if (null === $this->templateRenderer) {
+            throw new RuntimeException('Template renderer not set in ' . __CLASS__);
         }
-        return $this->viewRenderer;
+        return $this->templateRenderer;
     }
 
     /**
@@ -201,10 +201,6 @@ trait ClassBasedTemplateRendererTrait
         $context = [],
         $throw = true
     ) {
-        $viewRenderer = $this->getViewRenderer();
-        $contextHelper = $this->getContextHelper();
-        $oldContext = $contextHelper($viewRenderer)->apply($context);
-
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);
         if (!$classTemplate && $throw) {
@@ -215,10 +211,13 @@ trait ClassBasedTemplateRendererTrait
             );
         }
 
-        $html = $classTemplate ? $viewRenderer->render($classTemplate) : '';
+        $html = $classTemplate
+            ? $this->getTemplateRenderer()->renderTemplateAsString(
+                template: $classTemplate,
+                params: $context,
+                rootContext: true
+            ) : '';
 
-        // Restore the original context before returning the result:
-        $contextHelper($viewRenderer)->restore($oldContext);
         return $html;
     }
 

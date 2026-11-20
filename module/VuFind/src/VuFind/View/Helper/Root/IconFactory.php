@@ -33,10 +33,10 @@ namespace VuFind\View\Helper\Root;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\View\GlobalsContainer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Icon helper factory.
@@ -75,22 +75,17 @@ class IconFactory implements FactoryInterface
         $config = $container->get(\VuFindTheme\ThemeInfo::class)
             ->getMergedConfig('icons');
 
-        // As of release 1.1.0, the memory storage adapter has a flaw which can cause
-        // unnecessary out of memory exceptions when a memory limit is enabled; we
-        // can disable these problematic checks by setting memory_limit to -1.
         $cacheConfig = [
             'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
-            'options' => ['memory_limit' => -1],
         ];
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);
         $helpers = $container->get('ViewHelperManager');
-        $renderer = $container->get(RendererInterface::class);
         return new $requestedName(
             $config,
             $cache,
             $helpers->get('escapeHtmlAttr'),
-            $renderer,
+            $container->get(TemplateRendererInterface::class),
             $container->get(GlobalsContainer::class)['rtl']
         );
     }

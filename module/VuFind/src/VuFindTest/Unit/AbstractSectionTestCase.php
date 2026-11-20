@@ -30,7 +30,6 @@
 namespace VuFindTest\Unit;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
@@ -51,6 +50,7 @@ use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\View\GlobalsContainer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
@@ -427,11 +427,10 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $config ??= $this->getDefaultConfig('SiteMap.yaml');
         $this->mockConfigFiles['SiteMap.yaml'] = $config;
 
-        $mockViewRenderer = $this->createMock(PhpRenderer::class);
-        // We are only testing that the templates are getting rendered, not the
-        // actual templates themselves.
-        $mockViewRenderer->method('render')->willReturn('<li></li>');
-        $container->set('ViewRenderer', $mockViewRenderer);
+        $mockRenderer = $this->createMock(TemplateRendererInterface::class);
+        // We are only testing that the templates are getting rendered, not the actual templates themselves.
+        $mockRenderer->method('renderTemplateAsString')->willReturn('<li></li>');
+        $container->set(TemplateRendererInterface::class, $mockRenderer);
 
         $siteMap = $this->getAutowiredObject(SiteMap::class, $container);
         $this->setSectionPlugin($container, $siteMap, 'siteMap');

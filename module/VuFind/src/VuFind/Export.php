@@ -29,7 +29,8 @@
 
 namespace VuFind;
 
-use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -58,17 +59,18 @@ class Export
     /**
      * Constructor.
      *
-     * @param array       $mainConfig   Main VuFind configuration
-     * @param array       $exportConfig Export-specific configuration
-     * @param PhpRenderer $viewRenderer View renderer
+     * @param array           $mainConfig      Main VuFind configuration
+     * @param array           $exportConfig    Export-specific configuration
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param RouteHelper     $routeHelper     Route helper
      */
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $mainConfig,
         #[Autowire(config: 'export')]
         protected array $exportConfig,
-        #[Autowire(service: 'ViewRenderer')]
-        protected PhpRenderer $viewRenderer
+        protected ServerUrlHelper $serverUrlHelper,
+        protected RouteHelper $routeHelper,
     ) {
     }
 
@@ -82,13 +84,12 @@ class Export
      */
     public function getBulkUrl(string $format, array $ids): string
     {
+        // Build query params here so that they conform to the expected format (no numbered array params etc.):
         $params = ['f=' . urlencode($format)];
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
         }
-        $serverUrlHelper = $this->viewRenderer->plugin('serverurl');
-        $urlHelper = $this->viewRenderer->plugin('url');
-        $url = $serverUrlHelper($urlHelper('cart-doexport'))
+        $url = $this->serverUrlHelper->getUrlForPath($this->routeHelper->getUrlFromRoute('cart-doexport'))
             . '?' . implode('&', $params);
 
         return $this->needsRedirect($format)
@@ -112,8 +113,11 @@ class Export
             $parts = explode('|', $current);
             switch ($parts[0]) {
                 case 'route':
-                    $urlHelper = $this->viewRenderer->plugin('url');
-                    $template = str_replace('{' . $current . '}', $urlHelper($parts[1] ?? '??'), $template);
+                    $template = str_replace(
+                        '{' . $current . '}',
+                        $this->routeHelper->getUrlFromRoute($parts[1] ?? '??'),
+                        $template
+                    );
                     break;
                 case 'config':
                 case 'encodedConfig':

@@ -29,6 +29,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\HelperPluginManager;
 use VuFind\View\Helper\Root\JsTranslations;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
@@ -108,9 +109,9 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get view helpers needed by test.
      *
-     * @return array
+     * @return HelperPluginManager
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers(): HelperPluginManager
     {
         $translator = $this->getMockTranslator(
             [
@@ -123,8 +124,8 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
         );
         $translate = new Translate();
         $translate->setTranslator($translator);
-        return [
+        return $this->getHelperPluginManager([
             'translate' => $translate,
-        ];
+        ]);
     }
 }

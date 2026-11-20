@@ -170,6 +170,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             );
 
         $this->container->set(TemplateRendererInterface::class, $mockRenderer);
+        $this->container->set('ViewHelperManager', $viewHelperManager);
 
         $handler = $this->getAutowiredObject(IdentifierLinksLookup::class, $this->container);
         $request = $this->getRequest(content: json_encode($requested));

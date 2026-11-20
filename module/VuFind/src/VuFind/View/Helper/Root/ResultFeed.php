@@ -32,8 +32,8 @@ namespace VuFind\View\Helper\Root;
 use DateTime;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
-use Laminas\View\Helper\ServerUrl;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -64,14 +64,14 @@ class ResultFeed implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param ServerUrl    $serverUrl    ServerUrl Helper
-     * @param CurrentPath  $currentPath  CurrentPath Helper
-     * @param RecordLinker $recordLinker RecordLinker Helper
-     * @param Record       $record       Record  Helper
-     * @param array        $options      Options array (valid key = 'prioritizeRecordDriverLinks')
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param CurrentPath     $currentPath     CurrentPath Helper
+     * @param RecordLinker    $recordLinker    RecordLinker Helper
+     * @param Record          $record          Record Helper
+     * @param array           $options         Options array (valid key = 'prioritizeRecordDriverLinks')
      */
     public function __construct(
-        protected ServerUrl $serverUrl,
+        protected ServerUrlHelper $serverUrlHelper,
         protected CurrentPath $currentPath,
         protected RecordLinker $recordLinker,
         protected Record $record,
@@ -137,7 +137,7 @@ class ResultFeed implements TranslatorAwareInterface
         if (null === $currentPath) {
             $currentPath = ($this->currentPath)();
         }
-        $baseUrl = ($this->serverUrl)($currentPath);
+        $baseUrl = $this->serverUrlHelper->getUrlForPath($currentPath);
         $lang = $this->getTranslatorLocale();
 
         // Create the parent feed
@@ -279,7 +279,7 @@ class ResultFeed implements TranslatorAwareInterface
     protected function getLinkFromRecordLinker(RecordDriver $record): ?string
     {
         try {
-            $url = ($this->serverUrl)($this->recordLinker->getUrl($record));
+            $url = $this->serverUrlHelper->getUrlForPath($this->recordLinker->getUrl($record));
         } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // Not every record driver has a route defined; return null if the
             // record linker fails to give us anything usable.
@@ -337,9 +337,7 @@ class ResultFeed implements TranslatorAwareInterface
             }
         }
         // If we got this far, all methods failed, so we have to throw an exception:
-        if (!$url) {
-            throw new \Exception('Cannot find URL for record.');
-        }
+        throw new \Exception('Cannot find URL for record.');
     }
 
     /**

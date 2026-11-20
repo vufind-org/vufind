@@ -30,11 +30,10 @@
 namespace VuFindTest\Sitemap\Plugin;
 
 use Laminas\Router\RouteStackInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\Sitemap\Plugin\ContentPages;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\ThemeInfo;
-
-use function func_get_args;
 
 /**
  * ContentPages Plugin Test Class.
@@ -140,7 +139,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         );
 
         // Set up other dependencies:
-        $this->container->set('HttpRouter', $router ?? $this->getMockRouter());
+        $this->container->set('RouteHelper', $router ?? $this->getMockRouteHelper());
         $this->container
             ->set(ThemeInfo::class, $themeInfo ?? $this->getMockThemeInfo());
         // Build the object:
@@ -148,23 +147,21 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock router object.
+     * Get mock route helper.
      *
-     * @return RouteStackInterface
+     * @return RouteHelper
      */
-    protected function getMockRouter(): RouteStackInterface
+    protected function getMockRouteHelper(): RouteHelper
     {
-        $router = $this->container->get(RouteStackInterface::class);
+        $routeHelper = $this->container->get(RouteHelper::class);
         // Callback to ensure that ContentPages is passing expected
         // parameters, and to convert them into a format we can test:
-        $callback = function () {
-            [$params, $options] = func_get_args();
-            $this->assertSame(['page'], array_keys($params));
-            $this->assertSame(['name'], array_keys($options));
-            return $options['name'] . '/' . $params['page'];
+        $callback = function (string $name, array $routeParams) {
+            $this->assertSame(['page'], array_keys($routeParams));
+            return $name . '/' . $routeParams['page'];
         };
-        $router->method('assemble')->willReturnCallback($callback);
-        return $router;
+        $routeHelper->method('getUrlFromRoute')->willReturnCallback($callback);
+        return $routeHelper;
     }
 
     /**
