@@ -1519,7 +1519,7 @@ class DefaultRecord extends AbstractBase
      * @return mixed An associative array of hierarchy trees on success
      * (id => title), false if no hierarchies found
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    #[SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHierarchyTrees($hierarchyID = false)
     {
         // Unsupported by default:
