@@ -29,6 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+
 /**
  * Trait for ChannelProviders to configure and calculate batch sizes.
  *
@@ -55,6 +57,20 @@ trait BatchTrait
      * @var int
      */
     protected $maxBatchSize = 48;
+
+    /**
+     * Page of results to retrieve.
+     *
+     * @var int
+     */
+    protected $page = 1;
+
+    /**
+     * Page size for retrieved results.
+     *
+     * @var ?int
+     */
+    protected $limit = null;
 
     /**
      * Apply appropriate defaults and calculations in order to return an array of batch-related settings.
@@ -114,5 +130,19 @@ trait BatchTrait
         }
 
         return $batchSize;
+    }
+
+    /**
+     * Hook to extract pagination parameters from the request.
+     *
+     * @param HttpRequest $request Current HTTP request
+     *
+     * @return void
+     */
+    public function applyPaginationFromRequest(HttpRequest $request): void
+    {
+        // Add pagination params
+        $this->page = (int)($request->getQuery('page', 1));
+        $this->limit = min((int)($request->getQuery('limit', $this->batchSize)), $this->maxBatchSize);
     }
 }

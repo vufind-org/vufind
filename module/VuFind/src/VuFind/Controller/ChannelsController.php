@@ -89,8 +89,11 @@ class ChannelsController extends AbstractBase
         $recordId = $this->params()->fromQuery('id');
         $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $activeChannel = $this->params()->fromQuery('channelProvider');
+        $configSections = $this->params()->fromQuery('context');
         $token = $this->params()->fromQuery('channelToken');
-        $context = $this->loader->getRecordContext($recordId, $token, $activeChannel, $source);
+        // If an active channel is set, it might come from a non-default config; check provided sections:
+        $configSections = $activeChannel && $configSections ? explode(':', $configSections) : ['record'];
+        $context = $this->loader->getRecordContext($recordId, $token, $activeChannel, $source, $configSections);
         return $this->createViewModel($context);
     }
 

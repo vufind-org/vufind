@@ -387,8 +387,11 @@ class AssetPipeline implements LoggerAwareInterface
                 $type . '/' . $path,
                 ThemeInfo::RETURN_ALL_DETAILS
             );
-            return ($this->urlHelper)('home') . 'themes/' . $details['theme']
+            $url = ($this->urlHelper)('home') . 'themes/' . $details['theme']
                 . '/' . $type . '/' . $path;
+            $url .= str_contains($url, '?') ? '&_=' : '?_=';
+            $url .= filemtime($details['path']);
+            return $url;
         }
         // Locate/create concatenated asset file
         $filename = md5($group['key']) . '.min.' . $type;
