@@ -106,6 +106,7 @@ abstract class AbstractPaymentServiceAction extends AbstractTemplateRenderingAct
      *
      * @return string
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getCacheKey(?string $suffix = null, ?StorageInterface $cache = null): string
     {
         // Make sure all actions generate cache keys with same prefix:

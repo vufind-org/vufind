@@ -95,9 +95,8 @@ trait ConfigSettingPropertiesTrait
      * @param string               $contextKey Key identifying the context (optional)
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function isRequiredSetting(
         string $setting,
         array $context = [],

@@ -134,6 +134,7 @@ abstract class AbstractCitationAction extends AbstractSearchAndResultsAction
      *
      * @return mixed
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function performCitationSearch(
         ServerRequestInterface $request,
         ResponseInterface $response,

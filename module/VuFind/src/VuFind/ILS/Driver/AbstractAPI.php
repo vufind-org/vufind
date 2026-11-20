@@ -124,9 +124,8 @@ abstract class AbstractAPI extends AbstractBase implements
      * @param int      $attemptNumber Counter to keep track of attempts (starts at 1 for the first attempt)
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function shouldRetryAfterUnexpectedStatusCode(Response $response, int $attemptNumber): bool
     {
         // No retries by default.

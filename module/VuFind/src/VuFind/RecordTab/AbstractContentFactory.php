@@ -69,6 +69,7 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,

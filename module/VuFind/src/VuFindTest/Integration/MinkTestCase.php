@@ -995,9 +995,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector CSS selector
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkFieldIsValid(Element $page, string $selector): void
     {
         $session = $this->getMinkSession();
@@ -1014,9 +1013,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector CSS selector
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkFieldIsInvalid(Element $page, string $selector): void
     {
         $session = $this->getMinkSession();

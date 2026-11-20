@@ -54,6 +54,7 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
      *
      * @return Content
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getMockContentHelper(
         string $mockReturnValue,
         array $mockPageDetails = [],

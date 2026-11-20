@@ -276,9 +276,8 @@ class Innovative extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
@@ -294,9 +293,8 @@ class Innovative extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -314,9 +312,8 @@ class Innovative extends AbstractBase implements
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHoldLink($id, $details)
     {
         // Strip ID
