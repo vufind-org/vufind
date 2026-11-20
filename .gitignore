@@ -31,3 +31,4 @@ local/DirLocations.ini
 local/config/vufind.bak
 local/config/vufind/*
 !local/config/vufind/README.txt
+/.env.local
