@@ -12,7 +12,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
-                        'admin_route' => true,
+                        'admin_route' => 'true',
                     ],
                 ],
                 'may_terminate' => true,
