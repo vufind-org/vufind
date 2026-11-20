@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Http;
 
-use Closure;
-use Laminas\View\Helper\ServerUrl;
 use VuFind\Http\ServerUrlHelper;
 
 /**
@@ -195,8 +193,6 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
      */
     protected function getServerUrlHelper(): ServerUrlHelper
     {
-        return new ServerUrlHelper(
-            Closure::fromCallable(fn () => new ServerUrl())
-        );
+        return new ServerUrlHelper(false);
     }
 }
