@@ -592,7 +592,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return mixed        Caption if found, false if none available.
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
+    #[SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getSnippetCaption($field)
     {
         // Not supported by default.
