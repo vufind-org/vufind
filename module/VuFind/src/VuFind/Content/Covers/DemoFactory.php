@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Application\UriRegistry;
 
 /**
  * Demo cover loader factory.
@@ -69,9 +70,9 @@ class DemoFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $helpers = $container->get('ViewHelperManager');
-        $basePath = ($helpers->get('url'))('home');
-        $baseUrl = ($helpers->get('serverurl'))($basePath);
-        return new $requestedName($container->get(\VuFindTheme\ThemeInfo::class), $baseUrl);
+        return new $requestedName(
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get(UriRegistry::class)->get('AbsoluteBaseUrl')
+        );
     }
 }

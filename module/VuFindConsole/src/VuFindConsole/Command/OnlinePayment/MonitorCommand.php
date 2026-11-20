@@ -29,7 +29,6 @@
 
 namespace VuFindConsole\Command\OnlinePayment;
 
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,6 +42,7 @@ use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Mailer\Mailer;
 use VuFind\OnlinePayment\OnlinePaymentManager;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 
@@ -123,7 +123,7 @@ class MonitorCommand extends Command
      *
      * @param PaymentServiceInterface    $paymentService       Payment database service
      * @param OnlinePaymentManager       $onlinePaymentManager Online payment manager
-     * @param PhpRenderer                $viewRenderer         View renderer
+     * @param TemplateRendererInterface  $templateRenderer     Template renderer
      * @param Mailer                     $mailer               Mailer
      * @param array                      $config               VuFind configuration
      * @param AuditEventServiceInterface $auditEventService    Audit event database service
@@ -131,7 +131,7 @@ class MonitorCommand extends Command
     public function __construct(
         protected PaymentServiceInterface $paymentService,
         protected OnlinePaymentManager $onlinePaymentManager,
-        protected PhpRenderer $viewRenderer,
+        protected TemplateRendererInterface $templateRenderer,
         protected Mailer $mailer,
         protected array $config,
         protected AuditEventServiceInterface $auditEventService,
@@ -309,7 +309,8 @@ class MonitorCommand extends Command
             $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
 
             $params = compact('source', 'errorCount');
-            $message = $this->viewRenderer->render('Email/online-payment-alert.phtml', $params);
+            $message = $this->templateRenderer
+                ->renderTemplateAsString(template: 'Email/online-payment-alert.phtml', params: $params);
 
             try {
                 $this->mailer->setMaxRecipients(0);

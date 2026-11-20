@@ -33,7 +33,7 @@
   );
   $moreUrl = '#';
   if ($facetLightbox) {
-    $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+    $moreUrl = $this->url($facetLightbox) . $this->results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
     if (!empty($this->baseUriExtra)) {
       $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
     }
@@ -56,7 +56,7 @@
         <?php endif; ?>
       <?php endif; ?>
 
-      <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/single-facet.phtml', [
         'exclude' => $this->allowExclude,
         'facet' => $thisFacet,
         'group' => $this->title,

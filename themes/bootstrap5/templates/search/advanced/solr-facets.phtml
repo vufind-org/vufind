@@ -2,7 +2,7 @@
   <fieldset class="solr-facets">
     <legend><?=$this->transEsc('Limit To')?></legend>
     <?php if (!empty($this->checkboxFacets)): ?>
-      <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+      <?=$this->context($this)->renderInContext('search/advanced/checkbox-filters.phtml')?>
     <?php endif; ?>
     <div class="solr-facet-container">
       <?php foreach ($this->facetList as $field => $list): ?>

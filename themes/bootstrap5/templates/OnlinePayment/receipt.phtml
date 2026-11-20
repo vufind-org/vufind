@@ -21,7 +21,7 @@ $globals = $this->globals();
       $filenameEsc = $titleEsc . ' - ' . $payment->getPaidDate()->format('Y-m-d H-i') . '.pdf';
     ?>
     <meta name="filename" content="<?=$filenameEsc?>">
-    <?=$this->partial('OnlinePayment/receipt-head-style.phtml')?>
+    <?=$this->context($this)->renderInContext('OnlinePayment/receipt-head-style.phtml')?>
   </head>
   <body>
     <h1><?=$titleEsc?></h1>

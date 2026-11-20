@@ -1,4 +1,4 @@
-<?=$this->layout()->content?>
+<?=$this->content?>
 <?=$this->matomo(['context' => $this->globals()['layoutContext'] ?? 'lightbox'])?>
 <?=$this->googleanalytics($this->serverUrl(true))?>
 <?php if ($this->session()->put('reset_account_status', null) && $this->auth()->getManager()->ajaxEnabled()) {

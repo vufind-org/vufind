@@ -29,6 +29,11 @@
 
 namespace VuFind\View\Helper;
 
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\Search\Base\Results;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Helper\Root\TransEsc;
+
 /**
  * Helper class for displaying search-related HTML chunks.
  *
@@ -41,6 +46,20 @@ namespace VuFind\View\Helper;
 abstract class AbstractSearch
 {
     /**
+     * Constructor.
+     *
+     * @param EscapeHtml $escapeHtml EscapeHtml helper
+     * @param TransEsc   $transEsc   TransEsc helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected TransEsc $transEsc,
+    ) {
+    }
+
+    /**
      * Get the CSS classes for the container holding the suggestions.
      *
      * @return string
@@ -50,24 +69,22 @@ abstract class AbstractSearch
     /**
      * Render an expand link.
      *
-     * @param string                             $url  Link href
-     * @param \Laminas\View\Renderer\PhpRenderer $view View renderer object
+     * @param string $url Link href
      *
      * @return string
      */
-    abstract protected function renderExpandLink($url, $view);
+    abstract protected function renderExpandLink(string $url): string;
 
     /**
      * Support function to display spelling suggestions.
      *
-     * @param string                             $msg     HTML to display at the top
-     * of the spelling section.
-     * @param \VuFind\Search\Base\Results        $results Results object
-     * @param \Laminas\View\Renderer\PhpRenderer $view    View renderer object
+     * @param string  $msg     HTML to display at the top
+     *                         of the spelling section.
+     * @param Results $results Results object
      *
      * @return string
      */
-    public function renderSpellingSuggestions($msg, $results, $view)
+    public function renderSpellingSuggestions(string $msg, Results $results): string
     {
         $spellingSuggestions = $results->getSpellingSuggestions();
         if (empty($spellingSuggestions)) {
@@ -78,7 +95,7 @@ abstract class AbstractSearch
         $html .= '<h2>' . $msg . '</h2><ul class="terms">';
         $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<li>' . $view->escapeHtml($term) . ' &raquo; <ul class="suggestions">';
+            $html .= '<li>' . ($this->escapeHtml)($term) . ' &raquo; <ul class="suggestions">';
             foreach ($details['suggestions'] as $word => $data) {
                 $href = $results->getUrlQuery()
                     ->replaceTerm(
@@ -86,7 +103,7 @@ abstract class AbstractSearch
                         $data['new_term'],
                         $normalizer
                     )->getParams();
-                $html .= '<li><a href="' . $href . '">' . $view->escapeHtml($word)
+                $html .= '<li><a href="' . $href . '">' . ($this->escapeHtml)($word)
                     . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $url = $results->getUrlQuery()
@@ -95,7 +112,7 @@ abstract class AbstractSearch
                             $data['expand_term'],
                             $normalizer
                         )->getParams();
-                    $html .= $this->renderExpandLink($url, $view);
+                    $html .= $this->renderExpandLink($url);
                 }
                 $html .= '</li>';
             }

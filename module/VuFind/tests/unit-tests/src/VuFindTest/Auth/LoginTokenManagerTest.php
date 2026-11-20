@@ -183,10 +183,10 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get login token.
      *
-     * @param CookieManager        $cookieManager cookie manager
-     * @param LoginToken           $tokenTable    Login token table
-     * @param UserServiceInterface $userTable     User table
-     * @param bool                 $browscapOk    Whether to emulate working browscap
+     * @param CookieManager              $cookieManager cookie manager
+     * @param LoginTokenServiceInterface $tokenTable    Login token table
+     * @param UserServiceInterface       $userTable     User table
+     * @param bool                       $browscapOk    Whether to emulate working browscap
      *
      * @return LoginTokenManager
      */

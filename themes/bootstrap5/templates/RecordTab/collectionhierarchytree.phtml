@@ -1,6 +1,6 @@
 <?php
-  $this->treeContext = 'Collection';
-  $this->treePreviewElement = '#tree-preview';
+  $treeContext = 'Collection';
+  $treePreviewElement = '#tree-preview';
 
   $previewAttrs = [
     'id' => 'tree-preview',
@@ -12,12 +12,15 @@
 
 <div class="collection-hierarchytree">
   <div class="tree-panel">
-    <?=$this->render('RecordTab/hierarchytree.phtml')?>
+    <?=$this->context($this)->renderInContext(
+      'RecordTab/hierarchytree.phtml',
+      ['treeContext' => 'Collection', 'treePreviewElement' => '#tree-preview', 'tab' => $this->tab]
+    )?>
   </div>
   <div<?=$this->htmlAttributes($previewAttrs)?>>
     <?php if (($collectionRecord = $this->tab->getActiveRecord()) !== false): ?>
       <?php if ($collectionRecord === null): ?>
-        <?=$this->render('collection/collection-record-error.phtml')?>
+        <?=$this->context($this)->renderInContext('collection/collection-record-error.phtml')?>
       <?php else: ?>
         <?=$this->record($collectionRecord)->getCollectionBriefRecord()?>
       <?php endif; ?>
