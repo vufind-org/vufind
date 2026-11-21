@@ -41,10 +41,20 @@ use VuFind\Db\Entity\ExternalSessionEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ExternalSessionService extends AbstractDbService implements
+class ExternalSessionService extends AbstractSessionRelatedDataService implements
     ExternalSessionServiceInterface,
     Feature\DeleteExpiredInterface
 {
+    /**
+     * Get class name of entity managed by the service.
+     *
+     * @return string
+     */
+    protected function getEntityClass(): string
+    {
+        return ExternalSessionEntityInterface::class;
+    }
+
     /**
      * Create a new external session entity.
      *
@@ -92,22 +102,6 @@ class ExternalSessionService extends AbstractDbService implements
         $query->setParameter('esid', $sid);
         $result = $query->getResult();
         return $result;
-    }
-
-    /**
-     * Destroy data for the given session ID.
-     *
-     * @param string $sid Session ID to erase
-     *
-     * @return void
-     */
-    public function destroySession(string $sid): void
-    {
-        $dql = 'DELETE FROM ' . ExternalSessionEntityInterface::class . ' es'
-            . ' WHERE es.sessionId = :sid';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameter('sid', $sid);
-        $query->execute();
     }
 
     /**

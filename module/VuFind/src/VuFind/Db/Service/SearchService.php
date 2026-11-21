@@ -43,10 +43,27 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SearchService extends AbstractDbService implements
+class SearchService extends AbstractSessionRelatedDataService implements
     SearchServiceInterface,
     Feature\DeleteExpiredInterface
 {
+    /**
+     * Additional conditions when deleting sessions.
+     *
+     * @var string
+     */
+    protected string $additionalDeleteConditions = ' AND e.saved = false';
+
+    /**
+     * Get class name of entity managed by the service.
+     *
+     * @return string
+     */
+    protected function getEntityClass(): string
+    {
+        return SearchEntityInterface::class;
+    }
+
     /**
      * Create a search entity.
      *

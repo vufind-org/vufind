@@ -175,4 +175,24 @@ class Memcache extends AbstractBase
             $this->lifetime
         );
     }
+
+    /**
+     * Check which sessions expired based on an array of IDs.
+     *
+     * @param array $sessionIds Session IDs to check.
+     *
+     * @return array
+     */
+    public function expiredSessionIds(array $sessionIds): array
+    {
+        // For some reason, Memcache tests fail if we do not pass exactly three
+        // parameters to the get method, even though this seems inconsistent with
+        // the documentation. This mechanism makes the tests pass, but may be worth
+        // revisiting in the future.
+        $extraParams = $this->connection instanceof \Memcache ? [null, null] : [];
+        return array_filter(
+            $sessionIds,
+            fn ($sessionId) => empty($this->connection->get("vufind_sessions/{$sessionId}", ...$extraParams))
+        );
+    }
 }

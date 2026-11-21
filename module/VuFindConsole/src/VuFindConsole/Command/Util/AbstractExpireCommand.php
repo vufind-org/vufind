@@ -195,7 +195,24 @@ abstract class AbstractExpireCommand extends Command
         $output->writeln(
             $this->getTimestampedMessage("Total $total {$this->rowLabel} deleted.")
         );
+
+        $this->postProcess($input, $output);
+
         return self::SUCCESS;
+    }
+
+    /**
+     * Run some processes after expiring.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function postProcess(InputInterface $input, OutputInterface $output): void
+    {
     }
 
     /**
