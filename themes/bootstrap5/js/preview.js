@@ -160,14 +160,17 @@ function getHTPreviews(keys) {
 
 /**
  * Gather all bibkey strings from elements with the `previewBibkeys` class.
+ * @param {boolean} unprocessedOnly Get all keys (false) or just unprocessed ones (true)?
  * @returns {string} A space-separated string of all bibkeys.
  */
-function getBibKeyString() {
+function getBibKeyString(unprocessedOnly = true) {
   var skeys = '';
-  // Only collect from elements not yet processed, then mark them
-  $('.previewBibkeys:not([data-preview-loaded])').each(function previewBibkeysEach(){
+  // Only collect from elements not yet processed (unless forced to fetch all), then mark them
+  $('.previewBibkeys' + (unprocessedOnly ? ':not([data-preview-loaded])' : '')).each(function previewBibkeysEach(){
     skeys += $(this).attr('class');
-    $(this).attr('data-preview-loaded', '1'); // mark as processed
+    if (unprocessedOnly) {
+      $(this).attr('data-preview-loaded', '1'); // mark as processed when appropriate
+    }
   });
   return skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
 }
