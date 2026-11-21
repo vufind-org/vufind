@@ -23,7 +23,8 @@
                     "administrativeNotes": [],
                     "notes": [
                         {
-                            "note": "Fake note"
+                            "note": "Fake note",
+                            "holdingsNoteTypeId": "note-type-id"
                         }
                     ],
                     "holdingsStatements": [],
@@ -94,6 +95,22 @@
                 "facets": [],
                 "diagnostics": []
             }
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/holdings-note-types?limit=500",
+        "body": {
+            "holdingsNoteTypes": [
+                {
+                    "id": "note-type-id",
+                    "name": "Note",
+                    "source": "folio"
+                }
+            ],
+            "totalRecords": 1
         },
         "bodyType": "json",
         "status": 200

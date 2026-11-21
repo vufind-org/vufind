@@ -291,6 +291,19 @@ $tag-remove-badge-color:          #a94442 !default;
     font-weight: bold;
   }
 }
+.holdings-tab .access-details {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+
+  table {
+    margin-top: 1rem;
+
+    th {
+      width: 17vw;
+    }
+  }
+}
 
 /* ------ OpenURL Links ------ */
 .openurls {
