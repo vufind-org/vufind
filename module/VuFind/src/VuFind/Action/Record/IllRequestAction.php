@@ -182,6 +182,9 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
             // Add Patron Data to Submitted Data
             $details = $gatheredDetails + ['patron' => $patron];
 
+            // Add the RecordDriver in case additional record details are needed
+            $details['recordDriver'] = $driver;
+
             // Attempt to place the hold:
             $function = (string)$checkRequests['function'];
             $results = $this->ilsConnection->$function($details);
