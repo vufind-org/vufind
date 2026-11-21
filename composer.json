@@ -107,6 +107,7 @@
         "stripe/stripe-php": "v21.0.0",
         "swagger-api/swagger-ui": "5.32.11",
         "symfony/console": "6.4.25",
+        "symfony/dotenv": "^7.4",
         "symfony/mailer": "^7.4",
         "symfony/rate-limiter": "^7.4",
         "symfony/var-dumper": "^7.4",
