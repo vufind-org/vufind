@@ -548,6 +548,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testAlphabrowsePagination(): void
     {
         $this->changeConfigs(
