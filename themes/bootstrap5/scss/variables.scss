@@ -52,3 +52,29 @@ $home-facet-list-column-overflow: clip !default; // Defines what's to be done if
 $home-facet-list-left-padding: 0 !default; // Overwrites the default left padding for uls (2rem)
 $home-facet-list-list-style: none !default; // Removes list style bullets from <li>
 $home-facet-list-right-padding: 1rem !default; // Adds greater visual separation
+
+@include color-mode(light, true) {
+  .breadcrumb {
+    --bs-breadcrumb-bg: #f5f5f5;
+  }
+}
+@include color-mode(dark, true) {
+  .breadcrumb {
+    --bs-breadcrumb-bg: #{$dark-bg-subtle-dark};
+  }
+}
+
+@include color-mode(light, true) {
+  .navbar {
+    --bs-navbar-color: #{$primary};
+    --bs-navbar-active-color: #{#fff};
+    --bs-navbar-brand-color: #{$primary};
+    --bs-navbar-brand-hover-color: #{$primary};
+  }
+}
+
+@include color-mode(light, true) {
+  table.table-striped {
+    --bs-table-striped-bg: #f9f9f9;
+  }
+}

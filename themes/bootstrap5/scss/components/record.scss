@@ -238,7 +238,9 @@ $tag-remove-badge-color:          #a94442 !default;
 .item-notes ul { padding-left: 2rem; }
 
 .subject-line:hover { color: #999; }
-.subject-line:hover a { color: $link-hover-color; }
+@include color-mode(light, true) {
+  .subject-line:hover a { color: $link-hover-color; }
+}
 .subject-line a:hover ~ a {
   color: #999;
   text-decoration: none;
@@ -289,6 +291,15 @@ $tag-remove-badge-color:          #a94442 !default;
 
   .bound-with-records .direct-item {
     font-weight: bold;
+  }
+}
+@include color-mode(dark, true) {
+  .holdings-tab .holdings-table {
+    td {
+      .text-success {
+        color: lightgreen;
+      }
+    }
   }
 }
 

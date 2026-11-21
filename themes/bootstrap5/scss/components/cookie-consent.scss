@@ -2,11 +2,16 @@
   position: relative;
 }
 
+@include color-mode(light, true) {
+  --vufind-cc-category-bg-color: #{$gray-lighter};
+}
+@include color-mode(dark, true) {
+  --vufind-cc-category-bg-color: #{$gray-darker};
+}
 .cookie-consent {
   $cc-box-shadow: 0 0.625em 1.875em rgba(0, 0, 2, .3) !default;
   --vufind-cc-border-color: #{$modal-content-border-color};
   --vufind-cc-border-width: #{$modal-content-border-width};
-  --vufind-cc-category-bg-color: #{$gray-lighter};
   --vufind-cc-category-divider-color: #{$gray-light};
   --vufind-cc-box-shadow: #{$cc-box-shadow};
 

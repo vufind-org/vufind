@@ -5,18 +5,26 @@
 .channel {
   margin-block: 1rem;
   padding: 1rem;
-  background-color: #eee;
   border-radius: $border-radius;
   container-type: inline-size;
-
-  .btn {
-    background-color: white;
-  }
 
   @container (width < 768px) {
     display: flex;
     flex-direction: column;
     align-items: start;
+  }
+}
+@include color-mode(light, true) {
+  .channel {
+    background-color: #eee;
+    .btn {
+      background-color: white;
+    }        
+  }
+}
+@include color-mode(dark, true) {
+  .channel {
+    background-color: var(--bs-gray-dark);
   }
 }
 
@@ -85,7 +93,11 @@
 .channel-item {
   display: inline-block;
   text-align: center;
-  background-color: white;
+}
+@include color-mode(light, true) {
+  .channel-item {
+    background-color: white;
+  }
 }
 .hidden-batch-item {
   display: none;
