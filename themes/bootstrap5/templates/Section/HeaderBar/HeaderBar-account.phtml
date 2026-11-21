@@ -8,7 +8,7 @@
     <?php if ($account->dropdownEnabled()): ?>
       <a class="nav-link account-dropdown-toggle" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-open') ?></a>
       <div class="dropdown-menu">
-        <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => '', 'idPrefix' => 'header_'])?>
+        <?=$this->section('AccountMenu')->render(['active' => '', 'idPrefix' => 'header_'], \VuFind\Section\PageRegion::Header)?>
       </div>
     <?php endif; ?>
   </li>

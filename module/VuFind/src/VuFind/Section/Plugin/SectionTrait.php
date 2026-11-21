@@ -30,6 +30,7 @@
 namespace VuFind\Section\Plugin;
 
 use VuFind\Config\Feature\ConfigSettingPropertiesTrait;
+use VuFind\Section\PageRegion;
 
 /**
  * Section trait.
@@ -105,12 +106,30 @@ trait SectionTrait
     }
 
     /**
+     * Is the section active?
+     *
+     * An inactive section does not need to be rendered. An active section may
+     * be rendered, but may still not be visible.
+     *
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return true;
+    }
+
+    /**
      * Return context variables that can be used to render the section.
      *
-     * @return array
+     * @param ?PageRegion $pageRegion Page region in which the section is used (optional)
+     *
+     * @return ?array Context variables, or null if section should not be rendered
      */
-    public function getSectionContext(): array
+    public function getSectionContext(?PageRegion $pageRegion = null): ?array
     {
+        if (!$this->isActive()) {
+            return null;
+        }
         return $this->sectionConfig;
     }
 

@@ -30,10 +30,14 @@
 namespace VuFind\Navigation;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Application;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\Role\PermissionManager;
+use VuFind\Section\PageRegion;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\GlobalsContainer;
@@ -55,14 +59,17 @@ class HeaderBar extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService   Section service
-     * @param array                   $sectionConfig    Section configuration
-     * @param array                   $config           Main configuration
-     * @param Cart                    $cart             Cart
-     * @param Manager                 $authManager      Authentication manager
-     * @param GlobalsContainer        $globalsContainer Global data container
-     * @param LocaleSettings          $localeSettings   Locale settings
-     * @param Request                 $request          Request
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param Request                 $request           Request
+     * @param Application             $application       Application
+     * @param RouteHelper             $routeHelper       Route helper
+     * @param PermissionManager       $permissionManager Permission manager
+     * @param Cart                    $cart              Cart
+     * @param Manager                 $authManager       Authentication manager
+     * @param GlobalsContainer        $globalsContainer  Global data container
+     * @param LocaleSettings          $localeSettings    Locale settings
      */
     public function __construct(
         SectionServiceInterface $sectionService,
@@ -70,12 +77,16 @@ class HeaderBar extends AbstractMenu
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
+        #[Autowire(service: 'Request')]
+        Request $request,
+        #[Autowire(service: 'Application')]
+        Application $application,
+        RouteHelper $routeHelper,
+        PermissionManager $permissionManager,
         protected Cart $cart,
         protected Manager $authManager,
         protected GlobalsContainer $globalsContainer,
         protected LocaleSettings $localeSettings,
-        #[Autowire(service: 'Request')]
-        protected Request $request
     ) {
         $this->addRequiredSettings(
             [
@@ -98,7 +109,15 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct(
+            $sectionService,
+            $sectionConfig,
+            $config,
+            $request,
+            $application,
+            $routeHelper,
+            $permissionManager
+        );
     }
 
     /**
@@ -138,14 +157,17 @@ class HeaderBar extends AbstractMenu
     /**
      * Return context variables that can be used to render the section.
      *
-     * @return array
+     * @param ?PageRegion $pageRegion Page region in which the section is used (optional)
+     *
+     * @return ?array Context variables, or null if section should not be rendered
      */
-    public function getSectionContext(): array
+    public function getSectionContext(?PageRegion $pageRegion = null): ?array
     {
-        $context = parent::getSectionContext();
+        if (null === ($context = parent::getSectionContext($pageRegion))) {
+            return null;
+        }
         $context['userLang'] = $this->localeSettings->getUserLocale();
         $context['allLangs'] = $this->localeSettings->getEnabledLocales();
-        $context['requestUri'] = $this->request->getRequestUri();
         return $context;
     }
 

@@ -1,0 +1,18 @@
+<?php
+  /**
+   * Tab links component.
+   *
+   * @property array   $submenuItems         Tab data
+   * @property ?string $requestUri           Request URI (optional)
+   * @property ?array  $activeItemParentPath Parent path for the currently active item (optional)
+   */
+?>
+<ul class="nav nav-tabs" role="tablist">
+  <?php foreach ($this->submenuItems as $item): ?>
+    <?=$this->component('tab-link', [
+      'requestUri' => $this->requestUri ?? null,
+      'activeItemParentPath' => $this->activeItemParentPath ?? null,
+      ...$item,
+    ])?>
+  <?php endforeach; ?>
+</ul>

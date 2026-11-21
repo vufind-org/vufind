@@ -142,6 +142,9 @@ return [
             'Collapse' => [
                 'template' => 'collapse',
             ],
+            'SidebarCollapse' => [
+                'template' => 'sidebar-collapse',
+            ],
             // Unicode symbol characters. Icons are defined as hex code points.
             'Unicode' => [
                 'template' => 'unicode',
@@ -187,6 +190,7 @@ return [
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'config' => 'FontAwesome:file-text',
             'content-delete' => 'FontAwesome:trash',
             'content-edit' => 'FontAwesome:edit',
             'user-content' => 'FontAwesome:comment',
@@ -276,6 +280,7 @@ return [
             'keyboard' => 'FontAwesome:keyboard fa-regular',
             'lightbox-close' => 'FontAwesome:times',
             'link' => 'FontAwesome:link',
+            'maintenance' => 'FontAwesome:wrench',
             'more' => 'FontAwesome:chevron-circle-right',
             'more-rtl' => 'FontAwesome:chevron-circle-left',
             'my-account' => 'FontAwesome:circle-user fa-regular',
@@ -309,6 +314,7 @@ return [
             'page-next-rtl' => 'FontAwesome:angle-left',
             'page-prev' => 'FontAwesome:angle-left',
             'page-prev-rtl' => 'FontAwesome:angle-right',
+            'payment' => 'FontAwesome:credit-card',
             'place-hold' => 'FontAwesome:flag',
             'place-ill-request' => 'FontAwesome:right-left',
             'place-recall' => 'FontAwesome:flag',
@@ -333,9 +339,13 @@ return [
             'search-schedule-alert' => 'FontAwesome:exclamation-circle',
             'send-email' => 'FontAwesome:envelope',
             'send-sms' => 'FontAwesome:mobile-screen-button',
+            'sidebar-collapse' => 'SidebarCollapse:_', // uses the icons below
+            'sidebar-collapse-close' => 'FontAwesome:chevron-left',
+            'sidebar-collapse-open' => 'FontAwesome:chevron-right',
             'sign-in' => 'FontAwesome:right-to-bracket',
             'sign-out' => 'FontAwesome:right-from-bracket',
             'spinner' => 'FontAwesome:spinner:icon--spin',
+            'statistics' => 'FontAwesome:line-chart',
             'status-available' => 'FontAwesome:check',
             'status-pending' => 'FontAwesome:clock fa-regular',
             'status-ready' => 'FontAwesome:bell',
