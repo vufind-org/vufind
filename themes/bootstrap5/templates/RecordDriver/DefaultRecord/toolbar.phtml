@@ -1,6 +1,6 @@
 <nav class="record-nav" aria-label="<?=$this->transEscAttr('ajaxview_label_tools'); ?>">
   <ul class="action-toolbar">
-    <?php if (count($this->driver->getCitationFormats()) > 0): ?>
+    <?php if (count($this->driver->getCitationFormats('record')) > 0): ?>
       <li>
         <a class="cite-record toolbar-btn icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" rel="nofollow">
           <?=$this->icon('cite', 'icon-link__icon') ?>
