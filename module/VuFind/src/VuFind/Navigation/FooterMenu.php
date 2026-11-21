@@ -49,10 +49,12 @@ class FooterMenu extends AbstractMenu
      *
      * @param array $sectionConfig Menu configuration
      * @param array $config        Main configuration
+     * @param array $searchConfig  Search configuration
      */
     public function __construct(
         array $sectionConfig,
-        array $config
+        array $config,
+        protected array $searchConfig = []
     ) {
         $this->addRequiredSettings(
             [
@@ -142,6 +144,7 @@ class FooterMenu extends AbstractMenu
 
                 - label: 'New Items'
                   route: search-newitem
+                  checkMethod: checkNewItemsSettings
 
             footer-right:
               label: footer_header_need_help
@@ -186,5 +189,15 @@ class FooterMenu extends AbstractMenu
     public function checkCookieSettings(): bool
     {
         return !empty($this->config['Cookies']['consent']);
+    }
+
+    /**
+     * Check whether to show new items entry.
+     *
+     * @return bool
+     */
+    public function checkNewItemsSettings(): bool
+    {
+        return 'disabled' !== ($this->searchConfig['NewItem']['method'] ?? 'ils');
     }
 }

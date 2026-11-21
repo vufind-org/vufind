@@ -52,6 +52,7 @@ footer-center:
 
     - label: 'New Items'
       route: search-newitem
+      checkMethod: checkNewItemsSettings
 
 footer-right:
   label: footer_header_need_help
