@@ -28,6 +28,13 @@ do
         id-prefix=*)
           PREFIX=${OPTARG#*=}
           ;;
+        rm-prefix)
+          RMPREFIX="${!OPTIND}";
+          OPTIND=$(( $OPTIND + 1 ))
+          ;;
+        rm-prefix=*)
+          RMPREFIX=${OPTARG#*=}
+          ;;
         *)
           echo "Unknown option -- ${OPTARG}" >&2
           ;;
@@ -60,6 +67,7 @@ then
   echo "Options:"
   echo "-s:  Skip optimize operation after importing."
   echo "--id-prefix [prefix]: Specify a prefix to prepend to all IDs."
+  echo "--rm-prefix [prefix]: Specify a prefix to remove from the beginning of all IDs."
   exit 1
 fi
 
@@ -93,7 +101,7 @@ do
       FOUNDSOME=1
     fi
     echo "Processing $file ..."
-    php deletes.php $file flat $2 --id-prefix=$PREFIX
+    php deletes.php $file flat $2 --id-prefix=$PREFIX --rm-prefix=$RMPREFIX
     mv $file $BASEPATH/processed/`basename $file`
   fi
 done
