@@ -204,9 +204,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // eight authors
             'raw' => [
@@ -219,9 +219,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // seven authors
             'raw' => [
@@ -234,9 +234,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, and Person Seven. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, and Person Seven. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // six authors
             'raw' => [
@@ -249,9 +249,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // three authors, including one with a random trailing comma
             'raw' => [
@@ -264,9 +264,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // two authors with birth dates in different formats, single-page article
             'raw' => [
@@ -310,9 +310,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // eight authors in "first name first" format.
             'raw' => [
@@ -325,9 +325,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // ten authors in "first name first" format.
             'raw' => [
@@ -340,9 +340,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
-            'chicago' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21.',
+            'chicago' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21.',
         ];
         yield [  // DOI
             'raw' => [
@@ -356,9 +356,9 @@ class CitationTest extends \PHPUnit\Framework\TestCase
                 'ContainerEndPage' => 21,
                 'CleanDOI' => 'testDOI',
             ],
-            'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21. https://doi.org/testDOI',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21, https://doi.org/testDOI.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://doi.org/testDOI.',
+            'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19–21. https://doi.org/testDOI',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19–21, https://doi.org/testDOI.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19–21. https://doi.org/testDOI.',
         ];
         // phpcs:enable
     }
