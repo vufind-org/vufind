@@ -1082,6 +1082,13 @@ class Form implements \VuFind\I18n\Translator\TranslatorAwareInterface
     {
         $elements = [];
         foreach ($config['fields'] as $field) {
+            if (
+                ($name = ($field['name'] ?? ''))
+                && ($commonField = ($this->feedbackFormConfig['commonFields'][$name] ?? []))
+            ) {
+                // Use commonField definitions, overriden by any field specifics
+                $field = array_merge($commonField, $field);
+            }
             if (!isset($field['type'])) {
                 continue;
             }
