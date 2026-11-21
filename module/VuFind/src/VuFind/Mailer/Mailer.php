@@ -37,7 +37,6 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
 use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
-use VuFind\RecordDriver\AbstractBase;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
@@ -367,42 +366,6 @@ class Mailer implements
     }
 
     /**
-     * Send an email message representing a record.
-     *
-     * @param string|Address|Address[]      $to      Recipient email address(es) (or delimited list)
-     * @param string|Address                $from    Sender name and email address
-     * @param string                        $msg     User notes to include in message
-     * @param AbstractBase                  $record  Record being emailed
-     * @param ?string                       $subject Subject for email (optional)
-     * @param string|Address|Address[]|null $cc      CC recipient(s) (null for none)
-     * @param string|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
-     *
-     * @throws MailException
-     * @return void
-     */
-    public function sendRecord(
-        string|Address|array $to,
-        string|Address $from,
-        string $msg,
-        AbstractBase $record,
-        ?string $subject = null,
-        string|Address|array|null $cc = null,
-        string|Address|array|null $replyTo = null
-    ) {
-        if (null === $subject) {
-            $subject = $this->getDefaultRecordSubject($record);
-        }
-        $body = $this->templateRenderer->renderTemplateAsString(
-            template: 'Email/record.phtml',
-            params: [
-                'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg,
-            ]
-        );
-
-        $this->send($to, $from, $subject, $body, $cc, $replyTo);
-    }
-
-    /**
      * Set the maximum number of email recipients.
      *
      * @param int $max Maximum
@@ -412,18 +375,6 @@ class Mailer implements
     public function setMaxRecipients($max)
     {
         $this->maxRecipients = $max;
-    }
-
-    /**
-     * Get the default subject line for sendRecord().
-     *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
-     *
-     * @return string
-     */
-    public function getDefaultRecordSubject($record)
-    {
-        return $this->translate('Library Catalog Record') . ': ' . $record->getBreadcrumb();
     }
 
     /**
