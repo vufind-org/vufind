@@ -73,7 +73,8 @@
   }
 
   .unknown-match {
-    color: red;
+    // Pure red only has a contrast of 4:1 on white.
+    color: $danger;
   }
 
   .raw-explanation-btn {

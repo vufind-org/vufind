@@ -68,7 +68,8 @@ mark { background-color: $highlighter-color; }
 .alert-danger,
 .alert-danger:hover {
   color: $white;
-  background-color: $red;
+  // White text only has a contrast of 3.5:1 on $red.
+  background-color: $dark-red;
   a { color: $washed-red; }
 }
 
