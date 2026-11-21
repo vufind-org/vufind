@@ -59,13 +59,14 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
         string $body,
         string|array $expectedIds,
     ): callable {
-        return function ($url, $params, $callback) use ($body, $expectedIds) {
+        return function ($url, $params, $headers, $callback) use ($body, $expectedIds) {
             $this->assertEquals(
                 'https://books.google.com/books?jscmd=viewapi'
                 . '&bibkeys=' . urlencode(implode(',', (array)$expectedIds)) . '&callback=addTheCover',
                 $url
             );
             $this->assertEquals([], $params);
+            $this->assertEquals([], $headers);
 
             $mockStream = $this->createMock(\Psr\Http\Message\StreamInterface::class);
             $mockStream->method('getContents')->willReturn($body);
