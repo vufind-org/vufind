@@ -62,12 +62,10 @@ class IdentifierLinker
     /**
      * Constructor.
      *
-     * @param Context                   $contextHelper    Context helper
      * @param TemplateRendererInterface $templateRenderer Template renderer
      * @param array                     $config           Identifier-based linking configuration settings
      */
     public function __construct(
-        protected Context $contextHelper,
         protected TemplateRendererInterface $templateRenderer,
         protected array $config = []
     ) {
