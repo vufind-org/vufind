@@ -34,6 +34,7 @@ namespace VuFindAdmin\AjaxHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\AbstractBase;
 use VuFind\Content\NoticeManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -57,6 +58,7 @@ class EditNotices extends AbstractBase
      * @param SessionSettings $ss            Session settings
      * @param NoticeManager   $noticeManager Notice Manager
      */
+    #[Autowire]
     public function __construct(
         SessionSettings $ss,
         protected NoticeManager $noticeManager
