@@ -29,6 +29,8 @@
 
 namespace VuFind\Form\Handler;
 
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
+
 /**
  * Form handler plugin manager.
  *
@@ -64,7 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $v3config = []
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
-        $this->addAbstractFactory(PluginFactory::class);
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
     }
 
     /**
