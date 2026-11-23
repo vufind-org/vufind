@@ -141,7 +141,7 @@ class IdentifierLinksLookup extends AbstractBase
                 // can short circuit out of here.
                 if (
                     $this->multiMode !== 'merge'
-                    && count(array_diff(array_keys($ids), array_keys($gatheredData))) == 0
+                    && count(array_diff(array_keys($ids), array_keys($gatheredData))) === 0
                 ) {
                     break;
                 }

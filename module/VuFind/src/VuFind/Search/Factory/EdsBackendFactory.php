@@ -98,9 +98,8 @@ class EdsBackendFactory extends AbstractBackendFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -131,7 +130,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
-            $this->getService(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\ManagerInterface::class)
         );
         $backend = new Backend(
             $connector,

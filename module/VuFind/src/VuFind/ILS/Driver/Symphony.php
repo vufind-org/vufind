@@ -469,7 +469,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         // the use of something other than catkeys as record IDs).
         $invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT);
         if (count($invalid) > 0) {
-            $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
+            $titleIDs = count($invalid) === 1 ? 'titleID' : 'titleIDs';
             $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
             throw new ILSException($msg);
         }
@@ -497,7 +497,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
         // If only one library is being exclusively included,
         // filtering can be done within Web Services.
-        if (count($this->config['LibraryFilter']['include_only']) == 1) {
+        if (count($this->config['LibraryFilter']['include_only']) === 1) {
             $params['libraryFilter']
                 = $this->config['LibraryFilter']['include_only'][0];
         }
@@ -623,7 +623,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
+                    if (count($this->config['LibraryFilter']['include_only']) !== 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -1056,9 +1056,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
@@ -1212,9 +1211,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $zip         = $addressInfo[2]->addressValue;
             $phone       = $addressInfo[3]->addressValue;
 
-            if (strcmp($userProfileGroupField, 'GROUP_ID') == 0) {
+            if (strcmp($userProfileGroupField, 'GROUP_ID') === 0) {
                 $group = $result->patronInfo->groupID;
-            } elseif (strcmp($userProfileGroupField, 'USER_PROFILE_ID') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'USER_PROFILE_ID') === 0) {
                 $group = $this->makeRequest(
                     'security',
                     'lookupSessionInfo',
@@ -1224,9 +1223,9 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         'password' => $patron['cat_password'],
                     ]
                 )->userProfileID;
-            } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') === 0) {
                 $group = $result->patronInfo->patronLibraryID;
-            } elseif (strcmp($userProfileGroupField, 'DEPARTMENT') == 0) {
+            } elseif (strcmp($userProfileGroupField, 'DEPARTMENT') === 0) {
                 $group = $result->patronInfo->department;
             } else {
                 $group = null;
@@ -1426,9 +1425,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array $patron      Patron information from patronLogin
      *
      * @return string  Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
@@ -1490,9 +1488,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         return $this->config[$function] ?? [];
@@ -1691,9 +1688,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $libraries = [];
@@ -1721,9 +1717,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if (isset($patron['library'])) {

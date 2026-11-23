@@ -177,7 +177,7 @@ class SearchRequestModel implements LoggerAwareInterface
         $dates = substr($dates, 0, strlen($dates) - 1);
         $parts = explode(' TO ', $dates, 2);
         $start = $end = null;
-        if (count($parts) == 2) {
+        if (count($parts) === 2) {
             $start = trim($parts[0]);
             $end = trim($parts[1]);
         }

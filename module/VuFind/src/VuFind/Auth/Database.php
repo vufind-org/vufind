@@ -106,7 +106,7 @@ class Database extends AbstractBase
         // Make sure the credentials are non-blank:
         $this->username = trim($request->getPost()->get('username', ''));
         $this->password = trim($request->getPost()->get('password', ''));
-        if ($this->username == '' || $this->password == '') {
+        if ($this->username === '' || $this->password === '') {
             throw new AuthException('authentication_error_blank');
         }
 
@@ -239,7 +239,7 @@ class Database extends AbstractBase
     protected function validateUsername($params, $checkPolicy = true)
     {
         // Needs a username
-        if (trim($params['username']) == '') {
+        if (trim($params['username']) === '') {
             throw new AuthException('Username cannot be blank');
         }
         if ($checkPolicy) {
@@ -258,7 +258,7 @@ class Database extends AbstractBase
     protected function validatePassword($params)
     {
         // Needs a password
-        if (trim($params['password']) == '') {
+        if (trim($params['password']) === '') {
             throw new AuthException('Password cannot be blank');
         }
         // Passwords don't match
@@ -376,9 +376,8 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsPasswordRecovery(?string $target = null): bool
     {
         return true;
@@ -455,9 +454,8 @@ class Database extends AbstractBase
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPasswordPolicy(?string $target = null): array
     {
         $policy = parent::getPasswordPolicy();

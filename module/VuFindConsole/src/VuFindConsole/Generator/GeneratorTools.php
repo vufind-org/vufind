@@ -595,7 +595,7 @@ class GeneratorTools
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
         if (
-            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+            !is_array($parts) || count($parts) !== 2 || !class_exists($parts[0])
             || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
@@ -670,7 +670,7 @@ class GeneratorTools
         preg_match_all($regex, $body, $matches);
         $classNames = $matches[1];
         $count = count($classNames);
-        if ($count != 1) {
+        if ($count !== 1) {
             throw new \Exception("Found $count class names; expected 1.");
         }
         $className = $classNames[0];

@@ -52,6 +52,7 @@ class HasVerifiedEmailAssertion implements AssertionInterface
      *
      * @return bool
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function assert(
         string $permission,
         ?object $identity = null,

@@ -52,7 +52,7 @@
         <?=$this->component(
           'tabs',
           [
-            'tabs' => $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
+            'tabs' => $this->recordTabs()->getTabs($this->driver, $this->tabs),
             'activeTab' => $this->activeTab,
           ]
         )?>

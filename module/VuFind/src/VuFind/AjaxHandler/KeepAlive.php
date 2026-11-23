@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -50,10 +50,10 @@ class KeepAlive extends AbstractBase
     /**
      * Constructor.
      *
-     * @param SessionManager $sessionManager Session manager
+     * @param ManagerInterface $sessionManager Session manager
      */
     #[Autowire]
-    public function __construct(protected SessionManager $sessionManager)
+    public function __construct(protected ManagerInterface $sessionManager)
     {
         parent::__construct(null);
     }
@@ -64,9 +64,8 @@ class KeepAlive extends AbstractBase
      * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function handleRequest(ServerRequestInterface $request): array
     {
         // Request ID from session to mark it active

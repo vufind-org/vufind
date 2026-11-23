@@ -201,10 +201,13 @@ $config = [
             \VuFindHttp\HttpService::class => \VuFind\Service\HttpServiceFactory::class,
             \VuFindSearch\Service::class => \VuFind\Service\SearchServiceFactory::class,
             \Laminas\Session\SessionManager::class => \VuFind\Session\ManagerFactory::class,
+
+            // Add a factory definition for the current interface (see also alias below):
+            \Laminas\Translator\TranslatorInterface::class => \Laminas\I18n\Translator\TranslatorServiceFactory::class,
         ],
         'delegators' => [
-            'Laminas\Mvc\I18n\Translator' => [
-                'VuFind\I18n\Translator\TranslatorFactory',
+            \Laminas\Translator\TranslatorInterface::class => [
+                \VuFind\I18n\Translator\TranslatorFactory::class,
             ],
         ],
         'initializers' => [
@@ -270,18 +273,24 @@ $config = [
             'VuFind\SessionPluginManager' => 'VuFind\Session\PluginManager',
             'VuFind\SMS' => 'VuFind\SMS\SMSInterface',
             'VuFind\Tags' => 'VuFind\Tags\TagsService',
-            'VuFind\Translator' => 'Laminas\Mvc\I18n\Translator',
+            'VuFind\Translator' => 'Laminas\Translator\TranslatorInterface',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
             'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
             'VuFind\View\FlashMessenger\FlashMessengerInterface' => 'VuFind\View\FlashMessenger\FlashMessenger',
             'VuFind\View\Renderer\TemplateRendererInterface' => 'VuFind\View\Renderer\LaminasTemplateRenderer',
 
+            'Laminas\Session\ManagerInterface' => 'Laminas\Session\SessionManager',
+
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
             'League\CommonMark\ConverterInterface' => 'League\CommonMark\MarkdownConverter',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
+
+            // Override Laminas-i18n alias pointing to a deprecated interface:
+            // TODO: Remove after updating to laminas-servicemanager 4.5 or later.
+            \Laminas\Translator\TranslatorInterface::class => null,
         ],
         'shared' => [
             'VuFind\Crypt\BlockCipher' => false,

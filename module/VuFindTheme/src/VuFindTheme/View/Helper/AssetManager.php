@@ -126,7 +126,7 @@ class AssetManager
      * @param array  $extras                Array of extra attributes
      * @param array  $options               Additional options (supported: exclude_from_pipeline)
      *
-     * @return void
+     * @return static
      */
     public function appendStyleLink(
         string $href,
@@ -310,7 +310,7 @@ class AssetManager
         $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
         if (!empty($details)) {
             $url = ($this->url)('home') . "themes/{$details['theme']}/" . $relPath;
-            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= str_contains($url, '?') ? '&_=' : '?_=';
             $url .= filemtime($details['path']);
             return $url;
         }
