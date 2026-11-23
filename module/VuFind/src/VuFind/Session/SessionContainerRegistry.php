@@ -30,7 +30,7 @@
 namespace VuFind\Session;
 
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -57,10 +57,10 @@ class SessionContainerRegistry implements ContainerInterface
     /**
      * Constructor.
      *
-     * @param SessionManager $sessionManager Session manager
+     * @param ManagerInterface $sessionManager Session manager
      */
     #[Autowire]
-    public function __construct(protected SessionManager $sessionManager)
+    public function __construct(protected ManagerInterface $sessionManager)
     {
     }
 

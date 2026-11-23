@@ -51,7 +51,7 @@ class Entry extends ParentEntry
      */
     public function render()
     {
-        if (strtolower($this->getType()) == 'atom') {
+        if (strtolower($this->getType()) === 'atom') {
             return;
         }
         $this->setDCFormats($this->dom, $this->base);

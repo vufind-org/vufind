@@ -65,9 +65,8 @@ class QueryBuilder
      * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query
@@ -103,9 +102,8 @@ class QueryBuilder
      * @param QueryGroup $query QueryGroup to convert
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function queryGroupToString(QueryGroup $query)
     {
         throw new \Exception('Advanced queries not supported.');

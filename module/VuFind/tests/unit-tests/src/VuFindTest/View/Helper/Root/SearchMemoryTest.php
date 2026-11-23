@@ -69,11 +69,9 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock Solr Params object.
      *
-     * @param array $requestArray Request array to populate Params from.
-     *
      * @return MockObject&Params
      */
-    protected function getMockSolrParams(array $requestArray = []): MockObject&Params
+    protected function getMockSolrParams(): MockObject&Params
     {
         $solrOptions = $this->createMock(Options::class);
         $solrOptions->expects($this->once())->method('getSearchAction')->willReturn($this->searchRoute);
@@ -137,7 +135,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     ): void {
         $memory = $this->createMock(Memory::class);
         $memory->expects($this->once())->method('retrieveSearch')->willReturn($this->searchBasePath . $query);
-        $solrParams = $this->getMockSolrParams($expectedRequestArray);
+        $solrParams = $this->getMockSolrParams();
         $solrParams->expects($this->once())->method('initFromRequest')->with($expectedRequestArray);
         $helper = $this->getConfiguredHelper($solrParams, $memory);
         $this->assertEquals($solrParams, $helper->getLastSearchParams('Solr'));

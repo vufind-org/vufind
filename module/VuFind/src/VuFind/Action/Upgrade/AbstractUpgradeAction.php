@@ -34,7 +34,7 @@ namespace VuFind\Action\Upgrade;
 use ArrayObject;
 use Doctrine\ORM\EntityManager;
 use Laminas\Session\Container as SessionContainer;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use VuFind\Action\Install\AbstractInstallOrUpgradeAction;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
@@ -80,7 +80,7 @@ abstract class AbstractUpgradeAction extends AbstractInstallOrUpgradeAction
      * @param UserCardServiceInterface $userCardService User card database service
      * @param array                    $config          VuFind configuration
      * @param CookieManager            $cookieManager   Cookie manager
-     * @param SessionManager           $sessionManager  Session manager
+     * @param ManagerInterface         $sessionManager  Session manager
      * @param EntityManager            $entityManager   Entity manager
      */
     public function __construct(
@@ -93,7 +93,7 @@ abstract class AbstractUpgradeAction extends AbstractInstallOrUpgradeAction
         #[Autowire(config: 'config')]
         array $config,
         CookieManager $cookieManager,
-        SessionManager $sessionManager,
+        ManagerInterface $sessionManager,
         protected EntityManager $entityManager,
     ) {
         parent::__construct(

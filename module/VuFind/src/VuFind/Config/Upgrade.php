@@ -473,7 +473,7 @@ class Upgrade implements LoggerAwareInterface
         }
         if (
             isset($newConfig['Content']['recordMap'])
-            && 'google' == strtolower($newConfig['Content']['recordMap'])
+            && 'google' === strtolower($newConfig['Content']['recordMap'])
         ) {
             unset($newConfig['Content']['recordMap']);
             unset($newConfig['Content']['googleMapApiKey']);
@@ -575,10 +575,10 @@ class Upgrade implements LoggerAwareInterface
         }
 
         // Translate legacy auth settings:
-        if (strtolower($newConfig['Authentication']['method']) == 'db') {
+        if (strtolower($newConfig['Authentication']['method']) === 'db') {
             $newConfig['Authentication']['method'] = 'Database';
         }
-        if (strtolower($newConfig['Authentication']['method']) == 'sip') {
+        if (strtolower($newConfig['Authentication']['method']) === 'sip') {
             $newConfig['Authentication']['method'] = 'SIP2';
         }
 
@@ -1090,7 +1090,7 @@ class Upgrade implements LoggerAwareInterface
         ) {
             $codes = $config['Institutions']['code'];
             $regex = $config['Institutions']['regex'];
-            if (count($regex) != count($codes)) {
+            if (count($regex) !== count($codes)) {
                 $this->addWarning(
                     'Mismatched code/regex counts in Primo.ini [Institutions].'
                 );
@@ -1113,7 +1113,7 @@ class Upgrade implements LoggerAwareInterface
                 $perm = "access.PrimoInstitution.$code";
                 $config['Institutions']["onCampusRule['$code']"] = $perm;
                 $permissions[$perm] = [
-                    'ipRegEx' => count($regexes) == 1 ? $regexes[0] : $regexes,
+                    'ipRegEx' => count($regexes) === 1 ? $regexes[0] : $regexes,
                     'permission' => $perm,
                 ];
                 $this->permissionsModified = true;

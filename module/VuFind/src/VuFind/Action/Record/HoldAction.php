@@ -205,7 +205,7 @@ class HoldAction extends AbstractRecordAction implements TranslatorAwareInterfac
         if (
             !$requestGroupNeeded
             && !empty($requestGroups)
-            && count($requestGroups) == 1
+            && count($requestGroups) === 1
         ) {
             // Request group selection is not required, but we have a single request
             // group, so make sure pickup locations match with the group

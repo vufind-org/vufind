@@ -38,7 +38,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\Translator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -422,7 +422,7 @@ class Aleph extends AbstractBase implements
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
         $replyCode = (string)$result->{'reply-code'};
-        if ($replyCode != '0000') {
+        if ($replyCode !== '0000') {
             $replyText = (string)$result->{'reply-text'};
             $this->logError(
                 'DLF request failed',
@@ -521,7 +521,7 @@ class Aleph extends AbstractBase implements
             if (!in_array($base, $this->bib)) {
                 throw new \Exception("Unknown library base '$base'");
             }
-        } elseif (count($this->bib) == 1) {
+        } elseif (count($this->bib) === 1) {
             $result = [$this->bib[0], $id];
         } else {
             throw new \Exception(
@@ -675,9 +675,8 @@ class Aleph extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
@@ -732,7 +731,7 @@ class Aleph extends AbstractBase implements
             if (in_array($status, $this->available_statuses)) {
                 $availability = true;
             }
-            if ($item_status['request'] == 'Y' && $availability == false) {
+            if ($item_status['request'] == 'Y' && $availability === false) {
                 $addLink = true;
             }
             if (!empty($patron)) {
@@ -745,7 +744,7 @@ class Aleph extends AbstractBase implements
             $dueDateRegEx = '/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*)/';
             if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
-                $requested = (trim($matches[2]) == 'Requested');
+                $requested = (trim($matches[2]) === 'Requested');
             } elseif (preg_match($dueDateRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
             } else {
@@ -994,7 +993,7 @@ class Aleph extends AbstractBase implements
             if (preg_match($this->queuePositionRegex, $status, $matches)) {
                 $position = $matches['position'];
             }
-            $holddate = $holddate == '00000000' ? null : $this->parseDate($holddate);
+            $holddate = $holddate === '00000000' ? null : $this->parseDate($holddate);
             $delete = ($delete[0] == 'Y');
             // Secondary, Aleph-specific identifier that may be useful for
             // local customizations
@@ -1029,9 +1028,8 @@ class Aleph extends AbstractBase implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if ($holdDetails['delete']) {
@@ -1114,7 +1112,7 @@ class Aleph extends AbstractBase implements
             $checkout = (string)$z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
             $cachetype = strtolower((string)($item->attributes()->type ?? ''));
-            $mult = $cachetype == 'debit' ? -100 : 100;
+            $mult = $cachetype === 'debit' ? -100 : 100;
             $amount
                 = (float)(preg_replace("/[\(\)]/", '', (string)$z31->{'z31-sum'}))
                 * $mult;
@@ -1484,7 +1482,7 @@ class Aleph extends AbstractBase implements
                     false
                 );
                 $docs = (int)$xml->{'no_records'};
-                if ($docs == 1) {
+                if ($docs === 1) {
                     $set = (string)$xml->{'set_number'};
                     $result = $this->doXRequest(
                         'present',
@@ -1493,7 +1491,7 @@ class Aleph extends AbstractBase implements
                     );
                     $id = $result->xpath('//doc_number/text()');
                     $idString = (string)$id[0];
-                    if (count($this->bib) == 1) {
+                    if (count($this->bib) === 1) {
                         return $idString;
                     } else {
                         return $base . '-' . $idString;
@@ -1542,9 +1540,8 @@ class Aleph extends AbstractBase implements
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function supportsMethod($method, $params)
     {
         // Loan history is only available if properly configured
@@ -1562,12 +1559,11 @@ class Aleph extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
-        if ($function == 'Holds') {
+        if ($function === 'Holds') {
             $holdsConfig = $this->config['Holds'] ?? [];
             $defaults = [
                 'HMACKeys' => 'id:item_id',
@@ -1684,9 +1680,8 @@ class Aleph extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // TODO
@@ -1746,9 +1741,8 @@ class Aleph extends AbstractBase implements
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // TODO

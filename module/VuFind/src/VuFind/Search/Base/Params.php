@@ -423,7 +423,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = (int)($request['limit'] ?? $defaultLimit)) != $defaultLimit) {
+        if (($limit = (int)($request['limit'] ?? $defaultLimit)) !== $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -441,7 +441,7 @@ class Params
         }
 
         // Increase default limit for RSS mode:
-        if ($this->getView() == 'rss' && $defaultLimit < 50) {
+        if ($this->getView() === 'rss' && $defaultLimit < 50) {
             $defaultLimit = 50;
         }
 
@@ -581,7 +581,7 @@ class Params
 
         // If we ended up with a basic search, it's probably the result of
         // submitting an empty form, and more processing may be needed:
-        if ($this->searchType == 'basic') {
+        if ($this->searchType === 'basic') {
             // Set a default handler if necessary:
             if ($this->query->getHandler() === null) {
                 $this->query->setHandler($this->getOptions()->getDefaultHandler());
@@ -759,7 +759,7 @@ class Params
         $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
-        if (!$this->skipRssSort && $this->getView() == 'rss') {
+        if (!$this->skipRssSort && $this->getView() === 'rss') {
             $this->sort = $this->getOptions()->getRssSort($this->sort);
         }
     }
@@ -837,7 +837,7 @@ class Params
         // Special case: complex filters cannot be split into field/value
         // since they have multiple parts (e.g. field1:a OR field2:b). Use
         // a fake "#" field to collect these types of filters.
-        if ($this->isAdvancedFilter($filter) == true) {
+        if ($this->isAdvancedFilter($filter) === true) {
             return ['#', $filter];
         }
 
@@ -1036,7 +1036,7 @@ class Params
      */
     public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
-        if (strlen($newField) == 0) {
+        if (strlen($newField) === 0) {
             throw new \VuFind\Exception\BadRequest('Can not add facet when no field provided');
         }
         if ($newAlias == null) {
@@ -1307,10 +1307,10 @@ class Params
     protected function parseOperatorAndFieldName(string $field): array
     {
         $firstChar = substr($field, 0, 1);
-        if ($firstChar == '-') {
+        if ($firstChar === '-') {
             $operator = 'NOT';
             $field = substr($field, 1);
-        } elseif ($firstChar == '~') {
+        } elseif ($firstChar === '~') {
             $operator = 'OR';
             $field = substr($field, 1);
         } else {
@@ -1430,9 +1430,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string      Formatted year.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function formatYearForDateRange(?string $year, bool $rangeEnd = false): string
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
@@ -1463,9 +1462,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string     Formatted number.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function formatValueForNumericRange(?string $num, bool $rangeEnd = false): string
     {
         // empty strings, null values and non-numeric values are treated as wildcards:
@@ -1559,7 +1557,7 @@ class Params
     protected function buildNumericRangeFilter(string $field, string $from, string $to): string
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from != '*' && $to < $from) {
+        if ($to !== '*' && $from !== '*' && $to < $from) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1597,7 +1595,7 @@ class Params
     protected function buildFullDateRangeFilter(string $field, string $from, string $to): string
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from != '*' && strtotime($to) < strtotime($from)) {
+        if ($to !== '*' && $from !== '*' && strtotime($to) < strtotime($from)) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1960,9 +1958,8 @@ class Params
      * @param array $ids Record IDs to load
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function setQueryIDs(array $ids): void
     {
         // This needs to be defined in child classes:

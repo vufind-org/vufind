@@ -55,9 +55,8 @@ trait OnlinePaymentTrait
      *
      * @throws ILSException
      * @return array Associative array of payment details
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getOnlinePaymentDetails(array $patron, array $fines, ?array $selectedFineIds): array
     {
         $amount = 0;

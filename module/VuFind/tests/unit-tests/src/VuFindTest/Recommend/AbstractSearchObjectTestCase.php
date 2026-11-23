@@ -143,6 +143,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testInitAppliesConfiguredFilters(): void
     {
         $configManager = $this->createMock(ConfigManagerInterface::class);

@@ -112,9 +112,8 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,
@@ -133,9 +132,8 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromSearch(Results $results, ?string $channelToken = null): array
     {
         $params = $results->getParams();
@@ -162,11 +160,18 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
             'limit' => $this->batchSize,
         ];
         $query = $params->getQuery();
+        if (!method_exists($params, 'getBackendParameters')) {
+            throw new \Exception($params::class . ' does not support getBackendParameters()!');
+        }
         $paramBag = $params->getBackendParameters();
+        if ($this->page > 1) {
+            // Random method does not support pagination:
+            return ['contents' => []];
+        }
         $command = new RandomCommand(
             $params->getSearchClassId(),
             $query,
-            $this->batchSize,
+            $this->limit ?? $this->batchSize,
             $paramBag
         );
         $random = $this->searchService->invoke($command)->getResult()->getRecords();

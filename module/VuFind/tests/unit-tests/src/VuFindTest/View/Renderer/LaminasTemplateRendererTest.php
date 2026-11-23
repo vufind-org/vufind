@@ -38,6 +38,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\View;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use VuFind\View\Renderer\LaminasTemplateRenderer;
 use VuFindTest\Feature\AutowireTrait;
@@ -211,7 +212,7 @@ class LaminasTemplateRendererTest extends TestCase
      *
      * @return MockObject&ViewModel
      */
-    protected function getLayout(bool $inLightbox, string $expectedTemplate): ViewModel
+    protected function getLayout(bool $inLightbox, string $expectedTemplate): MockObject&ViewModel
     {
         $layout = $this->createMock(ViewModel::class);
         $layout->expects($this->once())

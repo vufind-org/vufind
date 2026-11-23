@@ -38,7 +38,6 @@ use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
-use function intval;
 
 /**
  * Facet-driven channel provider.
@@ -76,20 +75,6 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $maxValuesToSuggestPerField;
 
     /**
-     * Page of results to retrieve.
-     *
-     * @var int
-     */
-    protected $page = 1;
-
-    /**
-     * Page size for retrieved results.
-     *
-     * @var int
-     */
-    protected $limit;
-
-    /**
      * Constructor.
      *
      * @param ResultsManager $resultsManager Results manager
@@ -102,7 +87,6 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         array $options = []
     ) {
         $this->setOptions($options);
-        $this->limit = $this->batchSize;
     }
 
     /**
@@ -130,17 +114,13 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function configureSearchParams(Params $params, HttpRequest $request): void
     {
+        $this->applyPaginationFromRequest($request);
         foreach ($this->fields as $field => $desc) {
             $params->addFacet($field, $desc);
         }
 
-        // Add pagination params
-        $this->page = intval($request->getQuery('page', 1));
-        $this->limit = intval($request->getQuery('limit', $this->batchSize));
         $params->setPage($this->page);
-        if ($this->limit) {
-            $params->setLimit(min($this->limit, $this->maxBatchSize));
-        }
+        $params->setLimit($this->limit ?? $this->batchSize);
     }
 
     /**
@@ -153,9 +133,8 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * Channels page, 'tab' for record tab)
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getFromRecord(
         RecordDriver $driver,
         ?string $channelToken = null,
@@ -303,9 +282,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         // Add pagination
         $pagedParams = $newResults->getParams();
         $pagedParams->setPage($this->page);
-        if ($this->limit) {
-            $pagedParams->setLimit(min($this->limit, $this->maxBatchSize));
-        }
+        $pagedParams->setLimit($this->limit ?? $this->batchSize);
         $newResults->setParams($pagedParams);
 
         // Run the search and convert the results into a channel:

@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -85,6 +85,6 @@ class FlashMessengerFactory implements FactoryInterface
      */
     protected function getMessageContainer(ContainerInterface $sm): Container
     {
-        return new Container('FlashMessenger', $sm->get(SessionManager::class));
+        return new Container('FlashMessenger', $sm->get(ManagerInterface::class));
     }
 }
