@@ -668,7 +668,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testCartCite(): void
     {
-        $page = $this->setUpGenericCartTest(['config' => ['Citation' => ['cart' => true]]]);
+        $page = $this->setUpGenericCartTest(['config' => ['Citation' => ['book_bag' => true]]]);
         $button = $this->findCss($page, '.cart-controls button[name=cite]');
 
         // First try clicking without selecting anything:
