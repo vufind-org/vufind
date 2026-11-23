@@ -29,8 +29,11 @@
 
 namespace VuFindTest\Navigation;
 
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Exception\BadConfig;
 use VuFind\Navigation\FooterMenu;
+use VuFind\Section\SectionServiceInterface;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
@@ -142,5 +145,32 @@ class FooterMenuTest extends AbstractSectionTestCase
         }
         $container = $this->getContainerWithSectionRelatedServices();
         $this->getFooterMenu($container, $config);
+    }
+
+    /**
+     * Data provider for testCheckNewItemsSettings.
+     *
+     * @return Generator<string, array>
+     */
+    public static function checkNewItemsSettingsProvider(): Generator
+    {
+        yield 'default' => [[], false];
+        yield 'enabled' => [['NewItem' => ['method' => 'solr']], true];
+        yield 'disabled' => [['NewItem' => ['method' => 'disabled']], false];
+    }
+
+    /**
+     * Test checkNewItemsSettings().
+     *
+     * @param array $searchConfig Search configuration
+     * @param bool  $expected     Expected result
+     *
+     * @return void
+     */
+    #[DataProvider('checkNewItemsSettingsProvider')]
+    public function testCheckNewItemsSettings(array $searchConfig, bool $expected): void
+    {
+        $footerMenu = new FooterMenu($this->createMock(SectionServiceInterface::class), [], [], $searchConfig);
+        $this->assertSame($expected, $footerMenu->checkNewItemsSettings());
     }
 }
