@@ -138,8 +138,8 @@ trait ViewTrait
     {
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
-        // This assumes that all themes we'll be testing inherit directly from root with no intermediate themes. Probably
-        // safe for most test situations, though other scenarios are possible.
+        // This assumes that all themes we'll be testing inherit directly from root with no intermediate themes.
+        // Probably safe for most test situations, though other scenarios are possible.
         $resolver->setPaths(
             [
                 $this->getPathForTheme('root'),
