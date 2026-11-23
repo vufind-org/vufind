@@ -88,9 +88,9 @@ interface SectionInterface extends ConfigSettingPropertiesInterface
     /**
      * Return context variables that can be used to render the section.
      *
-     * @param ?PageRegion $pageRegion Page region in which the section is used (optional)
+     * @param PageRegion|string|null $pageRegion Page region in which the section is used (optional)
      *
      * @return ?array Context variables, or null if section should not be rendered
      */
-    public function getSectionContext(?PageRegion $pageRegion = null): ?array;
+    public function getSectionContext(PageRegion|string|null $pageRegion = null): ?array;
 }

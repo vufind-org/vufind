@@ -158,15 +158,15 @@ class Section
     /**
      * Render a section.
      *
-     * @param array       $context    Additional context to be merged with section context (optional)
-     * @param ?PageRegion $pageRegion Page region in which the section is used (optional)
-     * @param ?string     $template   File name of template used to render section (call specific, optional)
+     * @param array                  $context    Additional context to be merged with section context (optional)
+     * @param PageRegion|string|null $pageRegion Page region in which the section is used (optional)
+     * @param ?string                $template   File name of template used to render section (call specific, optional)
      *
      * @return string
      */
     public function render(
         array $context = [],
-        ?PageRegion $pageRegion = null,
+        PageRegion|string|null $pageRegion = null,
         ?string $template = null
     ): string {
         if (null === ($sectionContext = $this->section->getSectionContext($pageRegion))) {
