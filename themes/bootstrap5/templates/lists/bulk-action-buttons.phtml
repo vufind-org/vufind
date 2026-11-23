@@ -40,8 +40,8 @@
         ?>
       <?php endif; ?>
       <?php if (
-        ($this->config()->get('config')->toArray()['Citation']['list_bulk'] ?? false)
-        && ($this->config()->get('config')->toArray()['Citation']['formats'] ?? true)
+        ($this->config()->getArray('config')['Citation']['list_bulk'] ?? false)
+        && ($this->config()->getArray('config')['Citation']['formats'] ?? true)
       ): ?>
         <?=
           $this->bulkAction()->button(
