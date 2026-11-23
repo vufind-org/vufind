@@ -573,7 +573,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testDeletingNoticesInAdminModule')]
     public function testDisablingAndEnablingNoticesInAdminModule(): void
     {
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin/Notices');
         $page = $session->getPage();
