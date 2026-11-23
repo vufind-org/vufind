@@ -222,9 +222,6 @@ $config = [
                 ],
             ],
             'ajaxhandler' => [
-                'factories' => [
-                    'VuFindAdmin\AjaxHandler\EditNotices' => 'VuFindAdmin\AjaxHandler\EditNoticesFactory',
-                ],
                 'aliases' => [
                     'editNotices' => 'VuFindAdmin\AjaxHandler\EditNotices',
                 ],
