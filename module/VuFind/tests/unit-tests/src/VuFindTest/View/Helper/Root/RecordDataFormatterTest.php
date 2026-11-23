@@ -187,7 +187,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'context' => $context,
             'config' => $configHelper,
             'escapeHtmlAttr' => $escapeHtmlAttr,
-            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context, $templateRenderer),
+            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($templateRenderer),
             'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode($helperPluginManager),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
