@@ -379,6 +379,8 @@ class Mailer implements
      *
      * @throws MailException
      * @return void
+     *
+     * @deprecated Craft the message separately and use send() instead.
      */
     public function sendRecord(
         string|Address|array $to,
@@ -420,6 +422,8 @@ class Mailer implements
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      *
      * @return string
+     *
+     * @deprecated Superseded by \VuFind\Action\Record\EmailAction::getDefaultRecordSubject()
      */
     public function getDefaultRecordSubject($record)
     {
