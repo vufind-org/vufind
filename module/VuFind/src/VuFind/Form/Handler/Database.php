@@ -34,10 +34,13 @@ namespace VuFind\Form\Handler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
+use VuFind\Application\UriRegistry;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserService;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class Database.
@@ -60,9 +63,11 @@ class Database implements HandlerInterface, LoggerAwareInterface
      * @param string                   $baseUrl         Site base url
      */
     public function __construct(
+        #[Autowire(container: DbServicePluginManager::class)]
         protected FeedbackServiceInterface $feedbackService,
         protected UserService $userService,
-        protected string $baseUrl
+        #[Autowire(container: UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $baseUrl,
     ) {
     }
 

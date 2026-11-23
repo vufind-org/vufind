@@ -40,6 +40,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class Email.
@@ -63,6 +64,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
      */
     public function __construct(
         protected RendererInterface $viewRenderer,
+        #[Autowire(config: 'config')]
         protected array $mainConfig,
         protected Mailer $mailer
     ) {
