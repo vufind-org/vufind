@@ -40,7 +40,7 @@
     case 'url':
       $attrs->add('type', $this->type);
       if (null !== ($value = $this->value ?? null)) {
-        $attrs->add('value', $value);
+        $attrs['value'] = $value;
       }
       if (null !== $placeholder) {
         $attrs->add('placeholder', $this->translate($placeholder));
@@ -127,7 +127,7 @@
         'class' => 'btn btn-primary',
       ]);
       if (null !== ($value = $this->value ?? null)) {
-        $attrs->add('value', $value);
+        $attrs['value'] = $value;
       }
       echo "<input$attrs>";
       break;
