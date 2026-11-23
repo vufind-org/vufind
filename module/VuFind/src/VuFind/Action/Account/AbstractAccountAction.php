@@ -45,7 +45,6 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\Mail as MailException;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ILS\Connection;
@@ -76,7 +75,7 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
      * @param EmailAuthenticator              $emailAuthenticator Email authenticator
      * @param UserSessionPersistenceInterface $userSessionService User session database service
      * @param AuditEventServiceInterface      $auditEventService  Audit event service
-     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
+     * @param string                          $absoluteBaseUrl    Absolute base URL
      * @param Mailer                          $mailer             Mailer
      * @param Connection                      $ilsConnection      ILS connection
      * @param array                           $config             VuFind configuration
@@ -89,7 +88,8 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
         protected UserSessionPersistenceInterface $userSessionService,
         #[Autowire(container: DbServicePluginManager::class)]
         protected AuditEventServiceInterface $auditEventService,
-        protected ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
+        protected string $absoluteBaseUrl,
         protected Mailer $mailer,
         protected Connection $ilsConnection,
         #[Autowire(config: 'config')]
@@ -204,7 +204,7 @@ abstract class AbstractAccountAction extends AbstractTemplateRenderingAction imp
             template: 'Email/notify-email-change.phtml',
             params: [
                 'library' => $this->config['Site']['title'] ?? '',
-                'url' => $this->serverUrlHelper->getUrlForPath($this->routeHelper->getUrlFromRoute('home')),
+                'url' => $this->absoluteBaseUrl,
                 'email' => $this->config['Site']['email'] ?? '',
                 'newEmail' => $newEmail,
             ]

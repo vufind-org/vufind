@@ -43,7 +43,6 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\Search\History;
 use VuFind\Search\Memory;
 use VuFind\Search\Results\PluginManager as SearchResultsPluginManager;
@@ -72,7 +71,6 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
      * @param Memory                     $searchMemory               Search memory
      * @param History                    $searchHistory              Search history
-     * @param ServerUrlHelper            $serverUrlHelper            Server URL helper
      * @param SearchServiceInterface     $searchService              Search service
      * @param SearchNormalizer           $searchNormalizer           Search normalizer
      * @param SearchResultsPluginManager $searchResultsPluginManager Search results plugin manager
@@ -88,7 +86,6 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
         protected AccountCapabilities $accountCapabilities,
         protected Memory $searchMemory,
         protected History $searchHistory,
-        protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected SearchNormalizer $searchNormalizer,

@@ -34,7 +34,6 @@ use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Install\FixBasicConfigAction;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
-use VuFind\Http\ServerUrlHelper;
 
 /**
  * Install FixBasicConfigAction test class.
@@ -58,8 +57,6 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
         $routeHelper = $this->createMock(RouteHelper::class);
         $homePath = '/';
         $routeHelper->method('getUrlFromRoute')->with('home')->willReturn($homePath);
-        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
-        $serverUrlHelper->method('getUrlForPath')->with($homePath)->willReturn('https://vufind.example.edu/');
 
         $expectedResponse = new Response();
         $redirectHelper = $this->createMock(RedirectHelper::class);
@@ -73,7 +70,7 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
             [RedirectHelper::class => $redirectHelper],
             $routeHelper
         );
-        $this->setProperty($action, 'serverUrlHelper', $serverUrlHelper);
+        $this->setProperty($action, 'absoluteBaseUrl', 'https://vufind.example.edu/');
         $action->method('installBasicConfig')->willReturn(true);
         $action->method('getFixedSecurityConfiguration')->willReturn([]);
         $action->method('getSolrUrlFromImportConfig')->willReturn('http://localhost:8983/solr');
