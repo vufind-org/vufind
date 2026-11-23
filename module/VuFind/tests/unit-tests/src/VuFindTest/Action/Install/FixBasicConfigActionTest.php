@@ -52,7 +52,6 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
      *
      * @return void
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testWritesConfigAndRedirectsHomeOnSuccess(): void
     {
         $captured = [];
@@ -80,13 +79,13 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
         $action->method('getSolrUrlFromImportConfig')->willReturn('http://localhost:8983/solr');
         $action->method('changeConfig')->willReturnCallback(
             function (string $configName, array $config) use (&$captured): void {
-                $captured = $config;
+                $captured[$configName] = $config;
             }
         );
 
         $this->assertSame($expectedResponse, $action($this->getServerRequest(), new Response()));
-        $this->assertSame('https://vufind.example.edu', $captured['Site']['url']);
-        $this->assertSame('http://localhost:8983/solr', $captured['Index']['url']);
+        $this->assertSame('https://vufind.example.edu', $captured['config']['Site']['url']);
+        $this->assertSame('http://localhost:8983/solr', $captured['config']['Index']['url']);
     }
 
     /**
