@@ -422,6 +422,8 @@ class Mailer implements
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      *
      * @return string
+     *
+     * @deprecated Superseded by \VuFind\Action\Record\EmailAction::getDefaultRecordSubject()
      */
     public function getDefaultRecordSubject($record)
     {
