@@ -98,6 +98,6 @@ class Component
         // Pass information from view to the component
         $params['inLightbox'] ??= $this->globalsContainer['inLightbox'] ?? false;
 
-        return (clone $this->templateRenderer)->renderTemplateAsString(template: "_ui/$path/" . $name, params: $params);
+        return $this->templateRenderer->renderTemplateAsString(template: "_ui/$path/" . $name, params: $params);
     }
 }
