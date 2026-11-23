@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;

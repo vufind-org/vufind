@@ -51,6 +51,7 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testWritesConfigAndRedirectsHomeOnSuccess(): void
     {
         $captured = [];

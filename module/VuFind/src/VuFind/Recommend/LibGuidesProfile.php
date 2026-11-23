@@ -152,9 +152,8 @@ class LibGuidesProfile implements
      * request.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // No action needed.

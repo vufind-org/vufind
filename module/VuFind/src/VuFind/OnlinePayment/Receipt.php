@@ -284,9 +284,8 @@ class Receipt implements TranslatorAwareInterface
      * @param string $source Source ID
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContactInfo(string $source): string
     {
         return $this->paymentConfig['contactInfo'] ?? '';

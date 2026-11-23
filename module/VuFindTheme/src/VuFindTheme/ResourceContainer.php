@@ -422,7 +422,7 @@ class ResourceContainer
     /**
      * Get the encoding.
      *
-     * @return void
+     * @return string
      */
     public function getEncoding()
     {

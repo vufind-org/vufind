@@ -71,6 +71,7 @@ class GoogleAnalytics
      *
      * @return string
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getRawJavascript()
     {
         return <<<JS

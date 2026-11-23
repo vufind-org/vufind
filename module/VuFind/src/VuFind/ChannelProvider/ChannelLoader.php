@@ -158,9 +158,8 @@ class ChannelLoader
      * @param string $source        Backend to use
      *
      * @return Results
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function performChannelSearch($searchRequest, $providers, $source)
     {
         // Perform search and configure providers:
@@ -323,6 +322,7 @@ class ChannelLoader
         // Collect details:
         $channels = [];
         foreach ($providers as $provider) {
+            $provider->applyPaginationFromRequest($this->request);
             $channels = array_merge(
                 $channels,
                 $provider->getFromRecord($driver, $token, $context)

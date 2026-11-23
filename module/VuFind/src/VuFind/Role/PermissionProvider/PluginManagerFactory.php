@@ -59,6 +59,7 @@ class PluginManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,

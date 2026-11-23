@@ -45,6 +45,7 @@ use VuFind\Http\ServerUrlHelper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\AbstractBase;
 use VuFind\RecordDriver\Response\PublicationDetails;
+use VuFind\RecordDriver\SolrDefault;
 use VuFind\Tags\TagsService;
 use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\RecordDataFormatter;
@@ -258,9 +259,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              * getAuthorDataFields)
              *
              * @return array
-             *
-             * @SuppressWarnings(PHPMD.UnusedFormalParameter)
              */
+            #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
             public function getDeduplicatedAuthors($dataFields = [])
             {
                 return [

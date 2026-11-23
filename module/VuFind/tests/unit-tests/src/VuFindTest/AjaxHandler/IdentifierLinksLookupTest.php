@@ -126,6 +126,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return array
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getHandlerResults($requested = [['doi' => 'bar']])
     {
         $serverUrlHelper = $this->createMock(ServerUrlHelper::class);

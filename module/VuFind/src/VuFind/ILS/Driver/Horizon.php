@@ -293,9 +293,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @param array  $patron Patron Array
      *
      * @return array Keyed data
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function processHoldingRow($id, $row, $patron)
     {
         $duedate     = $row['DUEDATE'];
@@ -351,9 +350,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $sqlArray = $this->getHoldingSQL($id);

@@ -37,6 +37,8 @@ use Laminas\Router\RouteMatch;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use PHPMD\Attribute\SuppressWarnings;
+use PHPMD\Rule\Design\NumberOfChildren;
 use VuFind\Action\ActionDispatchListener;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Captcha\Service\CaptchaService;
@@ -76,9 +78,8 @@ use function is_object;
  * @method Plugin\Permission permission() Permission plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
- *
- * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
+#[SuppressWarnings(NumberOfChildren::class)]
 class AbstractBase extends AbstractActionController implements AccessPermissionInterface, TranslatorAwareInterface
 {
     use EmailSettingsTrait;

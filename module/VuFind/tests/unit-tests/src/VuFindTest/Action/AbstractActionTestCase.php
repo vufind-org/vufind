@@ -161,6 +161,7 @@ abstract class AbstractActionTestCase extends TestCase
      *
      * @return TemplateRendererInterface
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getCapturingRenderer(): TemplateRendererInterface
     {
         $renderer = $this->createMock(TemplateRendererInterface::class);
