@@ -114,25 +114,17 @@ class RedirectActionTest extends AbstractActionTestCase
      *
      * @return void
      */
-    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testThresholdLongUrlRedirectsViaHtml(): void
     {
         $longUrl = 'https://vufind.org/' . str_repeat('a', 50);
         $shortener = $this->createMock(UrlShortenerInterface::class);
         $shortener->method('resolve')->with('abc')->willReturn($longUrl);
-        $captured = [];
-        $renderer = $this->createMock(TemplateRendererInterface::class);
-        $renderer->method('renderTemplate')->willReturnCallback(
-            function ($request, $response, ?string $template, array $params) use (&$captured) {
-                $captured = $params;
-                return $response;
-            }
-        );
+        $renderer = $this->getCapturingRenderer();
 
         $action = $this->buildAction('threshold:10', shortener: $shortener, renderer: $renderer);
         $action($this->requestWithId('abc'), new Response());
 
-        $this->assertSame(['redirectTarget' => $longUrl, 'redirectDelay' => 3], $captured);
+        $this->assertSame(['redirectTarget' => $longUrl, 'redirectDelay' => 3], $this->capturedTemplateParams);
     }
 
     /**
