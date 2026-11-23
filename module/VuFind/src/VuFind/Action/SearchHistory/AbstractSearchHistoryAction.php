@@ -71,7 +71,6 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
      * @param AccountCapabilities        $accountCapabilities        Account capabilities
      * @param Memory                     $searchMemory               Search memory
      * @param History                    $searchHistory              Search history
-     * @param string                     $absoluteBaseUrl            Absolute base URL
      * @param SearchServiceInterface     $searchService              Search service
      * @param SearchNormalizer           $searchNormalizer           Search normalizer
      * @param SearchResultsPluginManager $searchResultsPluginManager Search results plugin manager
@@ -87,8 +86,6 @@ abstract class AbstractSearchHistoryAction extends AbstractTemplateRenderingActi
         protected AccountCapabilities $accountCapabilities,
         protected Memory $searchMemory,
         protected History $searchHistory,
-        #[Autowire(container: \VuFind\Application\UriRegistry::class, service: 'AbsoluteBaseUrl')]
-        protected string $absoluteBaseUrl,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected SearchNormalizer $searchNormalizer,
