@@ -42,7 +42,6 @@ use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Mailer\Mailer;
-use VuFind\OnlinePayment\OnlinePaymentEventTrait;
 use VuFind\OnlinePayment\OnlinePaymentManager;
 
 use function count;
@@ -62,7 +61,6 @@ use function count;
 class MonitorCommand extends Command
 {
     use EmailSettingsTrait;
-    use OnlinePaymentEventTrait;
 
     /**
      * Minimum time after payment was paid for it to be considered for retry (SECONDS).
@@ -136,9 +134,8 @@ class MonitorCommand extends Command
         protected PhpRenderer $viewRenderer,
         protected Mailer $mailer,
         protected array $config,
-        AuditEventServiceInterface $auditEventService,
+        protected AuditEventServiceInterface $auditEventService,
     ) {
-        $this->auditEventService = $auditEventService;
         parent::__construct();
     }
 
@@ -277,7 +274,7 @@ class MonitorCommand extends Command
                 . ", card {$payment->getCatUsername()}: "
                 . (string)$e
             );
-            $this->addPaymentEvent(
+            $this->auditEventService->addPaymentEvent(
                 $payment,
                 AuditEventSubtype::PaymentRegistration,
                 'Exception processing payment',

@@ -64,7 +64,7 @@ class ByTitleAction extends AbstractCollectionsAction
         ResponseInterface $response,
     ): ResponseInterface {
         $collections = $this->getCollectionsFromTitle($this->getQueryParam('title', ''));
-        if (count($collections) != 1) {
+        if (count($collections) !== 1) {
             return $this->renderTemplate($request, $response, compact('collections'));
         }
         return $this->getHelper(RedirectHelper::class)

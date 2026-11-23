@@ -65,10 +65,10 @@ class FormAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param AuthManager              $authManager    Authentication manager
-     * @param Form                     $form           Form
-     * @param protected CaptchaService $captchaService Captcha service
-     * @param array                    $config         VuFind configuration
+     * @param AuthManager    $authManager    Authentication manager
+     * @param Form           $form           Form
+     * @param CaptchaService $captchaService Captcha service
+     * @param array          $config         VuFind configuration
      */
     public function __construct(
         protected AuthManager $authManager,
@@ -143,7 +143,8 @@ class FormAction extends AbstractTemplateRenderingAction
                     $templateParams['successMessage'] = $form->getSubmitResponse();
                     $template = 'feedback/response';
                 } else {
-                    $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('could_not_process_feedback');
+                    $failureResponse = $form->getSubmitFailureResponse();
+                    $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($failureResponse);
                 }
 
                 $handlers = $form->getSecondaryHandlers();

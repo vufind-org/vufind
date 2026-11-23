@@ -91,9 +91,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        EDS::class => NameBasedConfigFactory::class,
         EIT::class => NameBasedConfigFactory::class,
-        EPF::class => NameBasedConfigFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
@@ -119,9 +117,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // we are building a brand new object.
         $this->sharedByDefault = false;
 
-        $this->addAbstractFactory(PluginFactory::class);
-
         parent::__construct($configOrContainerInstance, $v3config);
+
+        $this->addAbstractFactory(PluginFactory::class);
 
         // Add an initializer for setting up hierarchies
         $initializer = function ($sm, $instance): void {

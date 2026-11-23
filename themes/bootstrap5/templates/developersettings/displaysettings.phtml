@@ -1,6 +1,6 @@
 <?php
   // Set up breadcrumbs:
-  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('account-home'))
     ->add($this->translate('Profile'));
 ?>
 
@@ -40,5 +40,5 @@
 </div>
 
 <div class="<?= $this->layoutClass('sidebar') ?>" id="myresearch-sidebar" role="navigation" aria-label="<?= $this->transEscAttr('account_menu_label') ?>">
-  <?= $this->section('AccountMenu', template: 'myresearch/menu.phtml')->render() ?>
+  <?= $this->section('AccountMenu', template: 'account/menu.phtml')->render() ?>
 </div>

@@ -31,7 +31,6 @@ namespace VuFind\Favorites;
 
 use DateTime;
 use Laminas\Session\Container;
-use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -462,7 +461,7 @@ class FavoritesService implements TranslatorAwareInterface
      *
      * @param UserListEntityInterface $list    List to update
      * @param ?UserEntityInterface    $user    Logged-in user (false if none)
-     * @param Parameters              $request Request to process
+     * @param array                   $request Request to process
      *
      * @return int ID of newly created row
      * @throws ListPermissionException
@@ -471,14 +470,14 @@ class FavoritesService implements TranslatorAwareInterface
     public function updateListFromRequest(
         UserListEntityInterface $list,
         ?UserEntityInterface $user,
-        Parameters $request
+        array $request
     ): int {
-        $list->setTitle($request->get('title'))
-            ->setDescription($request->get('desc'))
-            ->setPublic((bool)$request->get('public'));
+        $list->setTitle($request['title'] ?? '')
+            ->setDescription($request['desc'] ?? '')
+            ->setPublic((bool)($request['public'] ?? false));
         $this->saveListForUser($list, $user);
 
-        if (null !== ($tags = $request->get('tags'))) {
+        if (null !== ($tags = $request['tags'] ?? null)) {
             $this->resourceTagsService->destroyUserListLinks($list, $user);
             foreach ($this->tagsService->parse($tags) as $tag) {
                 $this->addListTag($tag, $list, $user);

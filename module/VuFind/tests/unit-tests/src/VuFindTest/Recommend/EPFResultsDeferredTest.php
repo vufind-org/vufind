@@ -52,7 +52,7 @@ class EPFResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
         $mod = $this->getRecommend(
             \VuFind\Recommend\EPFResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=EPFResults&params=lookfor%3A3&lookfor=foo',

@@ -91,7 +91,7 @@ class ActionDispatchListener
     public function attach(EventManagerInterface $eventManager, int $priority = 1): void
     {
         // Attach with higher priority than default to override Laminas' default dispatch handler:
-        $eventManager->attach(MvcEvent::EVENT_DISPATCH, [$this, 'onDispatch'], 2);
+        $eventManager->attach(MvcEvent::EVENT_DISPATCH, [$this, 'onDispatch'], $priority + 1);
     }
 
     /**
@@ -180,7 +180,8 @@ class ActionDispatchListener
             $response = $this->actionHelperPluginManager->get(RedirectHelper::class)->redirectToRoute(
                 Psr7Response::fromLaminas($laminasResponse),
                 $redirectRoute,
-                queryParams: $request->getQuery()->toArray()
+                $route->getParams(),
+                $request->getQuery()->toArray()
             );
             $laminasResponse = $this->updateLaminasResponse($laminasResponse, $response);
             $e->setResult($laminasResponse);

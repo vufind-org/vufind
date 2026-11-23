@@ -241,7 +241,7 @@ class Mailer implements
         }
 
         // Validate recipient email address count:
-        if (count($recipients) == 0) {
+        if (count($recipients) === 0) {
             throw new MailException('Invalid Recipient Email Address', MailException::ERROR_INVALID_RECIPIENT);
         }
         if ($this->maxRecipients > 0) {

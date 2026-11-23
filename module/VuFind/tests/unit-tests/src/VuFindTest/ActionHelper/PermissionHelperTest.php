@@ -98,7 +98,7 @@ class PermissionHelperTest extends TestCase
         $permissionDeniedManager->method('getDeniedActionBehavior')
             ->willReturn(['action' => $accessDeniedBehavior, 'value' => 'Message!']);
 
-        $forceLoginResponse = new Response(302, ['Location' => '/MyResearch/Home']);
+        $forceLoginResponse = new Response(302, ['Location' => '/Account/Home']);
         $loginHelper = $this->createMock(LoginHelper::class);
         $loginHelper->method('forceLogin')->willReturn($forceLoginResponse);
 
@@ -134,7 +134,7 @@ class PermissionHelperTest extends TestCase
             $this->assertInstanceOf(ResponseInterface::class, $result);
             if ('promptlogin' === $accessDeniedBehavior) {
                 $this->assertSame(302, $result->getStatusCode());
-                $this->assertSame(['/MyResearch/Home'], $result->getHeader('Location'));
+                $this->assertSame(['/Account/Home'], $result->getHeader('Location'));
             } else {
                 $this->assertSame(403, $result->getStatusCode());
                 $this->assertEmpty($result->getHeader('Location'));

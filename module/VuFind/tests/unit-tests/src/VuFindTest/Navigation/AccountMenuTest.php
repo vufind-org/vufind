@@ -118,14 +118,14 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'favorites',
                     'label' => 'saved_items',
-                    'route' => 'myresearch-favorites',
+                    'route' => 'lists-allitems',
                     'icon' => 'user-favorites',
                     'checkMethod' => 'checkFavorites',
                 ],
                 [
                     'name' => 'checkedout',
                     'label' => 'Checked Out Items',
-                    'route' => 'myresearch-checkedout',
+                    'route' => 'checkouts-list',
                     'icon' => 'user-checked-out',
                     'status' => true,
                     'checkMethod' => 'checkCheckedout',
@@ -148,7 +148,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'storageRetrievalRequests',
                     'label' => 'Storage Retrieval Requests',
-                    'route' => 'myresearch-storageretrievalrequests',
+                    'route' => 'storageretrievalrequests-list',
                     'icon' => 'user-storage-retrievals',
                     'status' => true,
                     'checkMethod' => 'checkStorageRetrievalRequests',
@@ -156,7 +156,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'ILLRequests',
                     'label' => 'Interlibrary Loan Requests',
-                    'route' => 'myresearch-illrequests',
+                    'route' => 'illrequests-list',
                     'icon' => 'user-ill-requests',
                     'status' => true,
                     'checkMethod' => 'checkILLRequests',
@@ -164,7 +164,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'fines',
                     'label' => 'Fines',
-                    'route' => 'myresearch-fines',
+                    'route' => 'fines-list',
                     'status' => true,
                     'checkMethod' => 'checkFines',
                     'iconMethod' => 'finesIcon',
@@ -172,7 +172,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'profile',
                     'label' => 'Profile',
-                    'route' => 'myresearch-profile',
+                    'route' => 'account-profile',
                     'icon' => 'profile',
                 ],
                 [
@@ -199,7 +199,7 @@ class AccountMenuTest extends AbstractSectionTestCase
                 [
                     'name' => 'logout',
                     'label' => 'Log Out',
-                    'route' => 'myresearch-logout',
+                    'route' => 'account-logout',
                     'icon' => 'sign-out',
                     'checkMethod' => 'checkLogout',
                 ],

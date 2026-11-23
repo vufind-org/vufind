@@ -78,7 +78,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="11.1.0" />
+  <property name="version" value="11.1.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport}" />
   <!-- Add user if not empty -->
@@ -196,8 +196,16 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
+    <if>
+      <not>
+        <available file="${builddir}/reports" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${builddir}/reports" />
+      </then>
+    </if>
     <exec executable="${srcdir}/vendor/bin/phpmd" passthru="true">
-      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml ${phpmd_cache_params}" />
+      <arg line="analyze ${srcdir}/module --format=xml --ruleset ${srcdir}/tests/phpmd.yml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile-xml ${builddir}/reports/phpmd.xml ${phpmd_cache_params}" />
     </exec>
   </target>
 

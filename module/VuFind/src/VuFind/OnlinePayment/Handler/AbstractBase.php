@@ -64,7 +64,6 @@ abstract class AbstractBase implements
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
      * Result codes for processPaymentResponse.
@@ -111,9 +110,8 @@ abstract class AbstractBase implements
         protected HttpService $httpService,
         protected LocaleSettings $localeSettings,
         protected OnlinePaymentManager $onlinePaymentManager,
-        AuditEventServiceInterface $auditEventService
+        protected AuditEventServiceInterface $auditEventService
     ) {
-        $this->auditEventService = $auditEventService;
     }
 
     /**
@@ -214,7 +212,8 @@ abstract class AbstractBase implements
         $response = new Response();
         $response->getHeaders()->addHeaderLine('Location', $url);
         $response->setStatusCode(302);
-        $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Redirected to payment gateway');
+        $this->auditEventService
+            ->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Redirected to payment gateway');
         return $response;
     }
 

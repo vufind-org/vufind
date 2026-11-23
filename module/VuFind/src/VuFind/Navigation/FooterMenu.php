@@ -163,7 +163,7 @@ class FooterMenu extends AbstractMenu
                 - label: 'Ask a Librarian'
                   route: content-page
                   routeParams:
-                    page: askLibrary
+                    page: asklibrary
 
                 - label: 'FAQs'
                   route: content-page

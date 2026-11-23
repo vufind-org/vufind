@@ -50,7 +50,7 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
         $mod = $this->getRecommend(
             \VuFind\Recommend\EDSResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=EDSResults&params=lookfor%3A3&lookfor=foo',
@@ -69,7 +69,7 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
         $mod = $this->getRecommend(
             \VuFind\Recommend\EDSResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => ['foo', 'bar']])
+            ['lookfor' => ['foo', 'bar']]
         );
         $this->assertEquals(
             'mod=EDSResults&params=lookfor%3A3&lookfor=foo+bar',

@@ -257,7 +257,7 @@ class ConfigWritingTest extends ConfigTestCase
         $this->assertEquals($expectedContent, $actualContent);
 
         foreach ($expectedContent as $item) {
-            if ($item == '.' || $item == '..') {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
             if (is_dir($expected . '/' . $item)) {

@@ -76,7 +76,7 @@ abstract class AbstractExpirationAction extends AbstractAdminAction
                 throw new \Exception('Unsupported service: ' . $service::class);
             }
             $count = $service->deleteExpired(new DateTime("now - $daysOld days"));
-            $msg = $count == 0
+            $msg = $count === 0
                 ? $failString
                 : str_replace('%%count%%', $count, $successString);
             $flashMessagesHelper->addSuccessMessage($msg);

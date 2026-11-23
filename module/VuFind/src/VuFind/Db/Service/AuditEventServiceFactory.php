@@ -31,7 +31,7 @@ namespace VuFind\Db\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\ExplodeSettingTrait;
@@ -77,7 +77,7 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
         $serverName = null;
         $requestUri = null;
         if ('cli' !== PHP_SAPI) {
-            $sessionId = $container->get(SessionManager::class)->getId();
+            $sessionId = $container->get(ManagerInterface::class)->getId();
             $clientIp = $container->get(UserIpReader::class)->getUserIp();
             $serverParams = $container->get('Request')->getServer();
             $serverIp = $serverParams->get('SERVER_ADDR');
