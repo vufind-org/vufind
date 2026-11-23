@@ -31,6 +31,8 @@
 
 namespace VuFind\Config;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * VuFind YAML Configuration Reader.
  *
@@ -48,6 +50,7 @@ class YamlReader
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
+    #[Autowire]
     public function __construct(
         protected ConfigManagerInterface $configManager,
     ) {

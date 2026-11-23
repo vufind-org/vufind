@@ -15,6 +15,7 @@
 namespace VuFind\Regex;
 
 use Exception;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 
@@ -34,8 +35,10 @@ class Regex
      *
      * @param array $config Regular expression configuration
      */
-    public function __construct(protected array $config)
-    {
+    public function __construct(
+        #[Autowire(config: 'Regex')]
+        protected array $config
+    ) {
     }
 
     /**

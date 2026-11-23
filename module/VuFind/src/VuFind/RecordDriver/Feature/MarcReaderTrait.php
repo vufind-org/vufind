@@ -82,7 +82,7 @@ trait MarcReaderTrait
             }
         }
         if (empty($this->fields[$preferredMarcField])) {
-            throw new \Exception('Missing MARC data in record ' . $this->getUniqueId());
+            throw new \Exception('Missing MARC data in record ' . $this->getUniqueID());
         }
         return trim($this->fields[$preferredMarcField]);
     }

@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function strlen;
 
@@ -50,20 +51,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader.
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Record\Loader $loader Record loader
+     * @param \VuFind\Record\Loader $recordLoader Record loader
      */
-    public function __construct(\VuFind\Record\Loader $loader)
+    #[Autowire]
+    public function __construct(protected \VuFind\Record\Loader $recordLoader)
     {
-        $this->recordLoader = $loader;
     }
 
     /**
@@ -88,9 +82,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
         return $this->config[$function] ?? [];
@@ -199,9 +192,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $useHoldings = $this->config['settings']['useHoldings'] ?? 'none';
@@ -274,9 +266,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param string $id The record id to retrieve the holdings for
      *
      * @return bool True if holdings exist, False if they do not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function hasHoldings($id)
     {
         // If the ILS is offline, we should if we can look up details:
@@ -339,9 +330,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function patronLogin($username, $password)
     {
         // Block authentication:
@@ -405,9 +395,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // Does not work while ILS offline:

@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function in_array;
 
 /**
@@ -70,6 +72,7 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
+    #[Autowire]
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
     }

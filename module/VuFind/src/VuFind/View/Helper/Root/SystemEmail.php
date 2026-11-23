@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * System contact email helper.
  *
@@ -45,9 +47,10 @@ class SystemEmail
      *
      * @param string $email System email
      */
-    public function __construct(protected string $email)
-    {
-        $this->email = $email;
+    public function __construct(
+        #[Autowire(config:'config', path: 'Site/email', default: '')]
+        protected string $email
+    ) {
     }
 
     /**

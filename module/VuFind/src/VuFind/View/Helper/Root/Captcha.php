@@ -104,7 +104,7 @@ class Captcha
      */
     public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
     {
-        if (count($this->captchas) == 0 || !$useCaptcha) {
+        if (count($this->captchas) === 0 || !$useCaptcha) {
             return '';
         }
 

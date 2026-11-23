@@ -58,9 +58,8 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
      * @param array|null         $options   Service options
      *
      * @return SecureDelegator
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,

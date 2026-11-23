@@ -33,6 +33,7 @@ use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Class for updating the database when a record ID changes.
@@ -54,9 +55,13 @@ class RecordIdUpdater
      * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceServiceInterface $resourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected CommentsServiceInterface $commentsService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected UserResourceServiceInterface $userResourceService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected ResourceTagsServiceInterface $resourceTagsService
     ) {
     }

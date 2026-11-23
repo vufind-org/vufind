@@ -106,7 +106,8 @@ trait SearchSortTrait
      */
     protected function sortResults(Element $page, string $value): void
     {
-        $this->findCssAndSetValue($page, $this->sortControlSelector, $value);
+        $select = $this->findCss($page, $this->sortControlSelector);
+        $select->selectOption($value);
     }
 
     /**

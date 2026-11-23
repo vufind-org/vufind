@@ -221,7 +221,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
         $this->assertMatchesRegularExpression(
-            '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
+            '|href="[^"]*/Lists/List/[0-9]+"|',
             $result->getOuterHtml()
         );
 
@@ -239,6 +239,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Log in to account that owns the list:
         $session = $this->getMinkSession();
+        // Use old path intentionally:
         $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -273,7 +274,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             'Your saved item(s) were deleted.',
             $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->unfindCss($page, 'button[name="delete"]');
+        $this->unFindCss($page, 'button[name="delete"]');
     }
 
     /**
@@ -454,7 +455,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // check delete limit exceeded
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $session->visit($this->getVuFindUrl() . '/Lists/AllItems');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
 

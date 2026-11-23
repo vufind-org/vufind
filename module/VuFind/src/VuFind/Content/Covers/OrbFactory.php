@@ -58,9 +58,8 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -77,9 +76,6 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!isset($config['Orb']['key'])) {
             throw new \Exception("Orb 'key' not set in VuFind config");
         }
-        $orb = new $requestedName($url, $config['Orb']['user'], $config['Orb']['key']);
-        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $orb->setCachingDownloader($cachingDownloader);
-        return $orb;
+        return new $requestedName($url, $config['Orb']['user'], $config['Orb']['key']);
     }
 }

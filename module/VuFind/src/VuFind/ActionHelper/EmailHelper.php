@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Validator\EmailAddressValidator;
 
 use function intval;
 
@@ -52,11 +53,13 @@ class EmailHelper implements HelperInterface
     /**
      * Constructor.
      *
-     * @param AuthManager $authManager Authentication manager
-     * @param array       $config      VuFind configuration
+     * @param AuthManager           $authManager    Authentication manager
+     * @param EmailAddressValidator $emailValidator Email address validator
+     * @param array                 $config         VuFind configuration
      */
     public function __construct(
         protected AuthManager $authManager,
+        protected EmailAddressValidator $emailValidator,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {
@@ -122,5 +125,17 @@ class EmailHelper implements HelperInterface
         }
 
         return $params;
+    }
+
+    /**
+     * Check email address validity.
+     *
+     * @param string $email Email address
+     *
+     * @return bool
+     */
+    public function isValidAddress(string $email): bool
+    {
+        return $this->emailValidator->isValid($email);
     }
 }

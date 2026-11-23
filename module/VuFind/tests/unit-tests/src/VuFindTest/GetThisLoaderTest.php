@@ -19,17 +19,13 @@ use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerExceptionInterface;
 use ReflectionException;
-use Throwable;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\YamlReader;
 use VuFind\GetThis\GetThisLoader;
-use VuFind\GetThis\GetThisLoaderFactory;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\RecordDriver\SolrDefault;
 use VuFind\Regex\Regex;
-use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\ReflectionTrait;
@@ -930,30 +926,5 @@ class GetThisLoaderTest extends TestCase
         $getThis->setRecordDriver($driver);
         $templates = $this->getProperty($getThis, 'subTemplates');
         $this->assertNull($templates);
-    }
-
-    /**
-     * Test factory.
-     *
-     * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     * @throws ContainerExceptionInterface&Throwable
-     */
-    public function testFactory(): void
-    {
-        $cm = $this->createMock(ConfigManagerInterface::class);
-        $cm->expects($this->once())->method('getConfigArray')->willReturn([]);
-
-        $regex = $this->createMock(Regex::class);
-
-        $container = $this->createMock(MockContainer::class);
-        $container->expects($this->exactly(2))->method('get')->willReturnMap([
-            [Regex::class, $regex],
-            [ConfigManagerInterface::class, $cm],
-        ]);
-
-        $factory = new GetThisLoaderFactory();
-        $getThis = $factory($container, GetThisLoader::class);
-        $this->assertInstanceOf(GetThisLoader::class, $getThis);
     }
 }

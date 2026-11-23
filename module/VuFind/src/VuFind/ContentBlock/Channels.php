@@ -31,6 +31,7 @@ namespace VuFind\ContentBlock;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\ChannelProvider\ChannelLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Channels content block.
@@ -44,20 +45,6 @@ use VuFind\ChannelProvider\ChannelLoader;
 class Channels implements ContentBlockInterface
 {
     /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Channel loader.
-     *
-     * @var ChannelLoader
-     */
-    protected $loader;
-
-    /**
      * Data source (null to use default found in channels.ini).
      *
      * @var string
@@ -70,10 +57,11 @@ class Channels implements ContentBlockInterface
      * @param Request       $request Request object
      * @param ChannelLoader $loader  Channel loader
      */
-    public function __construct(Request $request, ChannelLoader $loader)
-    {
-        $this->request = $request;
-        $this->loader = $loader;
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        protected Request $request,
+        protected ChannelLoader $loader
+    ) {
     }
 
     /**

@@ -56,18 +56,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Env::class => DefaultHandlerFactory::class,
-        GenericFile::class => DefaultHandlerFactory::class,
-        Ini::class => DefaultHandlerFactory::class,
-        Yaml::class => DefaultHandlerFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
@@ -80,8 +68,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory(AbstractPluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(AbstractPluginFactory::class);
     }
 
     /**

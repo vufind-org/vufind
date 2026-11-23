@@ -148,7 +148,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '#search-sidebar .close-offcanvas')->isVisible());
 
         // Log in:
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Home');
+        $session->visit($this->getVuFindUrl() . '/Account/Home');
         $this->clickCss($page, '.createAccountLink');
         $this->waitForPageLoad($page);
         $this->fillInAccountForm($page, ['username' => 'username2']);

@@ -82,7 +82,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function gotoRecordById(string $id = 'testsample1'): Element
+    protected function goToRecordById(string $id = 'testsample1'): Element
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -181,11 +181,10 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test canceling a request with the "cancel selected" button.
      *
      * @param Element $page Page element.
-     * @param string  $type Request type being tested.
      *
      * @return void
      */
-    protected function cancelSelectedProcedure(Element $page, string $type): void
+    protected function cancelSelectedProcedure(Element $page): void
     {
         // First make sure item is there before cancel is pushed:
         $this->assertSame(
@@ -223,11 +222,10 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test canceling a request with the "cancel all" button.
      *
      * @param Element $page Page element.
-     * @param string  $type Request type being tested.
      *
      * @return void
      */
-    protected function cancelAllProcedure(Element $page, string $type): void
+    protected function cancelAllProcedure(Element $page): void
     {
         // First make sure item is there before cancel is pushed:
         $this->assertSame(
@@ -332,7 +330,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Set up user account:
@@ -369,7 +367,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Set up user account:
@@ -406,7 +404,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->illRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -432,7 +430,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->illRequestProcedure($page);
         return $page;
     }
@@ -446,7 +444,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelAllIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
-        $this->cancelAllProcedure($page, 'interlibrary loan requests');
+        $this->cancelAllProcedure($page);
     }
 
     /**
@@ -458,7 +456,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelSelectedIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
-        $this->cancelSelectedProcedure($page, 'interlibrary loan requests');
+        $this->cancelSelectedProcedure($page);
     }
 
     /**
@@ -477,7 +475,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->storageRetrievalRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -503,7 +501,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log in the user on the record page:
-        $page = $this->gotoRecordById();
+        $page = $this->goToRecordById();
         $this->storageRetrievalRequestProcedure($page);
         return $page;
     }
@@ -517,7 +515,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelAllStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
-        $this->cancelAllProcedure($page, 'storage retrieval requests');
+        $this->cancelAllProcedure($page);
     }
 
     /**
@@ -529,7 +527,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testCancelSelectedStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
-        $this->cancelSelectedProcedure($page, 'storage retrieval requests');
+        $this->cancelSelectedProcedure($page);
     }
 
     /**
@@ -547,9 +545,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        // Go to user profile screen:
+        // Go to checkouts:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/CheckedOut');
+        $session->visit($this->getVuFindUrl() . '/Checkouts/List');
         $page = $session->getPage();
 
         // Log in

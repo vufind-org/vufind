@@ -29,6 +29,7 @@
 
 namespace VuFind\ActionHelper;
 
+use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\FlashMessenger\FlashMessenger;
 
@@ -110,5 +111,34 @@ class FlashMessagesHelper implements HelperInterface
     public function addWarningMessage(string|array $message): void
     {
         $this->getFlashMessenger()->addWarningMessage($message);
+    }
+
+    /**
+     * Add account blocks to the flash messenger as errors.
+     *
+     * These messages are lightbox ignored.
+     *
+     * @param Connection $ilsConnection ILS connection
+     * @param array      $patron        Patron details
+     *
+     * @return void
+     */
+    public function addAccountBlocks(Connection $ilsConnection, array $patron): void
+    {
+        if (
+            $ilsConnection->checkCapability('getAccountBlocks', compact('patron'))
+            && $blocks = $ilsConnection->getAccountBlocks($patron)
+        ) {
+            foreach ($blocks as $block) {
+                $this->addErrorMessage(
+                    [
+                        'msg' => $block,
+                        'dataset' => [
+                            'lightbox-ignore' => '1',
+                        ],
+                    ]
+                );
+            }
+        }
     }
 }

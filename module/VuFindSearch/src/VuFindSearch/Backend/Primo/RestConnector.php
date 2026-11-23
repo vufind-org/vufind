@@ -522,6 +522,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             $item['fulltext'] = $pnx->delivery->fulltext[0] ?? '';
             $item['isbn'] = array_values(array_unique($addata->isbn ?? []));
             $item['issn'] = $search->issn ?? [];
+            $item['publishDate'] = $search->creationdate ?? [];
             $item['publisher'] = $display->publisher ?? [];
             $item['peer_reviewed'] = ($display->lds50[0] ?? '') === 'peer_reviewed';
             $item['attributes'] = (array)($display->attribute ?? []);
@@ -565,7 +566,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
             // true to the metadata)
             $callback = function ($issn) use ($item) {
-                return strlen($issn) != 8
+                return strlen($issn) !== 8
                     || !in_array(
                         substr($issn, 0, 4) . '-' . substr($issn, 4),
                         $item['issn']

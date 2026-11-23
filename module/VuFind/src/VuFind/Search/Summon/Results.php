@@ -372,7 +372,7 @@ class Results extends \VuFind\Search\Base\Results
         $params = $this->getParams();
         $query  = $params->getQuery();
         // No limit not implemented with Summon: cause page loop
-        if ($limit == -1) {
+        if ($limit === -1) {
             if ($page === null) {
                 $page = 1;
             }

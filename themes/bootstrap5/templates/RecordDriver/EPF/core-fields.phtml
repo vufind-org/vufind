@@ -1,9 +1,12 @@
 <?php
   $formatter = $this->recordDataFormatter($this->driver);
   $coreFields = $formatter->getData($formatter->getDefaults($this->defaults ?? 'core'));
+  $restrictedView = $this->driver->isRestrictedView();
   $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
-<?php if ($searchOptions->showRestrictedViewWarning() && $this->driver->isRestrictedView()): ?>
+<?php if ($this->driver->isPlaceholder()): ?>
+  <?=$this->render('error/guestRestriction.phtml')?>
+<?php elseif ($searchOptions->showRestrictedViewWarning('record_view') && $restrictedView): ?>
   <?=$this->render('error/restrictedViewWarning.phtml')?>
 <?php endif; ?>
 <?php if (!empty($coreFields)): ?>

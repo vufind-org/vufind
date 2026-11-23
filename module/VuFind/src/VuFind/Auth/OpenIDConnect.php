@@ -44,6 +44,8 @@ use UnexpectedValueException;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\PasswordSecurity as PasswordSecurityException;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 use function in_array;
 use function is_int;
@@ -66,7 +68,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Request token.
      *
-     * @var object
+     * @var array
      */
     protected array $requestTokens = [];
 
@@ -105,7 +107,9 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      * @throws \Exception
      */
     public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'OpenIDConnect')]
         protected SessionContainer $session,
+        #[Autowire(config: 'OpenIDConnectClient')]
         protected array $oidcConfig,
         protected ILSAuthenticator $ilsAuthenticator
     ) {

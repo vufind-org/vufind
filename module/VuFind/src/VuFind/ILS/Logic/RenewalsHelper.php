@@ -29,7 +29,6 @@
 
 namespace VuFind\ILS\Logic;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 use VuFind\View\FlashMessenger\FlashMessengerInterface;
@@ -79,7 +78,7 @@ class RenewalsHelper
     /**
      * Process renewal requests.
      *
-     * @param Parameters              $request        Request object
+     * @param array                   $request        Request object
      * @param Connection              $catalog        ILS connection object
      * @param array                   $patron         Current logged in patron
      * @param FlashMessengerInterface $flashMessenger Flash messenger for user messages
@@ -89,21 +88,21 @@ class RenewalsHelper
      * item ID (empty if no renewals performed)
      */
     public function processRenewals(
-        Parameters $request,
+        array $request,
         Connection $catalog,
         array $patron,
         FlashMessengerInterface $flashMessenger,
         ?CsrfInterface $csrfValidator = null
     ): array {
         // Pick IDs to renew based on which button was pressed:
-        $all = $request->get('renewAll');
-        $selected = $request->get('renewSelected');
+        $all = $request['renewAll'] ?? null;
+        $selected = $request['renewSelected'] ?? null;
         if (!empty($all)) {
-            $ids = $request->get('renewAllIDS');
+            $ids = $request['renewAllIDS'] ?? [];
         } elseif (!empty($selected)) {
-            $ids = $request->get('selectAll')
-                ? $request->get('selectAllIDS')
-                : $request->get('renewSelectedIDS');
+            $ids = !empty($request['selectAll'])
+                ? ($request['selectAllIDS'] ?? null)
+                : ($request['renewSelectedIDS'] ?? null);
         } else {
             $ids = [];
         }
@@ -111,7 +110,7 @@ class RenewalsHelper
         // If there is actually something to renew, attempt the renewal action:
         if (is_array($ids) && !empty($ids)) {
             if (null !== $csrfValidator) {
-                if (!$csrfValidator->isValid($request->get('csrf'))) {
+                if (!$csrfValidator->isValid($request['csrf'] ?? '')) {
                     $flashMessenger->addErrorMessage('csrf_validation_failed');
                     return [];
                 }

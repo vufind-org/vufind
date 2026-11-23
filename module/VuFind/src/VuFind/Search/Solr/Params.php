@@ -30,7 +30,6 @@
 
 namespace VuFind\Search\Solr;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\BadConfig;
 use VuFindSearch\ParamBag;
@@ -269,7 +268,7 @@ class Params extends \VuFind\Search\Base\Params
             $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
                 $fieldLimit = $this->getFacetLimitForField($facetField);
-                if ($fieldLimit != $this->facetLimit) {
+                if ($fieldLimit !== $this->facetLimit) {
                     $facetSet["f.{$facetField}.facet.limit"] = $fieldLimit;
                 }
                 $fieldPrefix = $this->getFacetPrefixForField($facetField);
@@ -292,7 +291,7 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
                     $facetSet['range'][] = $facetField;
                 } else {
-                    if ($this->getFacetOperator($facetField) == 'OR') {
+                    if ($this->getFacetOperator($facetField) === 'OR') {
                         $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                     }
                     $facetSet['field'][] = $facetField;
@@ -337,15 +336,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(Parameters $request): void
+    protected function initSearch(array $request): void
     {
         // Special case -- did we get a list of IDs instead of a standard query?
-        $ids = $request->get('overrideIds', null);
+        $ids = $request['overrideIds'] ?? null;
         if (is_array($ids)) {
             $this->setQueryIDs($ids);
         } else {
@@ -484,17 +483,17 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(Parameters $request): void
+    protected function initFilters(array $request): void
     {
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
         parent::initFilters($request);
-        switch ($request->get('illustration', -1)) {
+        switch ($request['illustration'] ?? -1) {
             case 1:
                 $this->addFilter('illustrated:Illustrated');
                 break;
@@ -720,8 +719,8 @@ class Params extends \VuFind\Search\Base\Params
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
             if (
-                strtolower($matches[3]) == strtolower($matches[1])
-                && strtolower($matches[4]) == strtolower($matches[2])
+                strtolower($matches[3]) === strtolower($matches[1])
+                && strtolower($matches[4]) === strtolower($matches[2])
             ) {
                 $filter['displayText'] = $matches[1] . ' - ' . $matches[2];
             }

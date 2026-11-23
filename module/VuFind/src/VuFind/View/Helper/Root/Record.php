@@ -33,6 +33,7 @@ use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
@@ -203,7 +204,7 @@ class Record implements DbServiceAwareInterface
     public function getComments(): array
     {
         return $this->getDbService(CommentsServiceInterface::class)->getRecordComments(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier()
         );
     }
@@ -298,7 +299,7 @@ class Record implements DbServiceAwareInterface
     public function getListNotes($list_id = null, $user_id = null)
     {
         $data = $this->getDbService(UserResourceServiceInterface::class)->getFavoritesForRecord(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier(),
             $list_id,
             $user_id
@@ -398,7 +399,7 @@ class Record implements DbServiceAwareInterface
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
         return $this->tagsService->getRecordTags(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier(),
             0,
             $listOrId,
@@ -426,7 +427,7 @@ class Record implements DbServiceAwareInterface
         UserEntityInterface|int|null $ownerOrId = null
     ): array {
         return $this->tagsService->getRecordTagsFromFavorites(
-            $this->driver->getUniqueId(),
+            $this->driver->getUniqueID(),
             $this->driver->getSourceIdentifier(),
             0,
             $listOrId,
@@ -864,7 +865,7 @@ class Record implements DbServiceAwareInterface
             '_',
             ($idPrefix ? $idPrefix . '-' : '')
             . ($resultSetId ? $resultSetId . '-' : '')
-            . $this->driver->getUniqueId()
+            . $this->driver->getUniqueID()
         );
     }
 
@@ -877,7 +878,7 @@ class Record implements DbServiceAwareInterface
     {
         if ($this->driver) {
             return "{$this->driver->getSourceIdentifier()}"
-                . "|{$this->driver->getUniqueId()}";
+                . "|{$this->driver->getUniqueID()}";
         }
         throw new \Exception('No record driver found.');
     }

@@ -147,7 +147,7 @@ trait IlsAwareTrait
     {
         if ($this->hasILS()) {
             $biblioLevel = strtolower($this->tryMethod('getBibliographicLevel'));
-            if ('monograph' == $biblioLevel || strstr($biblioLevel, 'part')) {
+            if ('monograph' === $biblioLevel || strstr($biblioLevel, 'part')) {
                 if ($this->ils->getTitleHoldsMode() != 'disabled') {
                     return $this->titleHoldLogic->getHold($this->getUniqueID());
                 }
@@ -173,9 +173,9 @@ trait IlsAwareTrait
      */
     public function getURLs()
     {
-        $params = [$this->getUniqueId()];
+        $params = [$this->getUniqueID()];
         return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord', $params)
-            ? $this->ils->getUrlsForRecord($this->getUniqueId())
+            ? $this->ils->getUrlsForRecord($this->getUniqueID())
             : [];
     }
 

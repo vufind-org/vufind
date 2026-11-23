@@ -30,7 +30,7 @@
 namespace VuFind\ActionHelper;
 
 use Laminas\Session\Container;
-use Laminas\Session\SessionManager;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
@@ -60,7 +60,7 @@ class BulkActionHelper implements HelperInterface
      * Constructor.
      *
      * @param FlashMessengerInterface $flashMessenger Flash messenger
-     * @param SessionManager          $sessionManager Session manager
+     * @param ManagerInterface        $sessionManager Session manager
      * @param RouteHelper             $routeHelper    Route helper
      * @param Export                  $export         Export handler
      * @param ConfigManager           $configManager  Config manager
@@ -70,7 +70,7 @@ class BulkActionHelper implements HelperInterface
      */
     public function __construct(
         protected FlashMessengerInterface $flashMessenger,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         protected RouteHelper $routeHelper,
         protected Export $export,
         protected ConfigManager $configManager,
@@ -122,15 +122,14 @@ class BulkActionHelper implements HelperInterface
             return null;
         }
 
-        // If we entered the controller in the expected way (i.e. via the
-        // myresearchbulk action), we should have a source set in the followup
-        // memory. If that's missing for some reason, just forward to MyResearch.
+        // If we entered the action in the expected way (i.e. via MyResearchBulkAction), we should have a source set in
+        // the followup memory. If that's missing for some reason, just forward to Account home.
         $session = $this->getCartFollowupSession();
         if (isset($session->url)) {
             $target = $session->url;
             unset($session->url);
         } else {
-            $target = $this->routeHelper->getUrlFromRoute('myresearch-home');
+            $target = $this->routeHelper->getUrlFromRoute('account-home');
         }
         return $this->redirectHelper->redirectToUrl($response, $target);
     }

@@ -39,6 +39,8 @@ use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 use function count;
 use function is_array;
@@ -80,12 +82,14 @@ class ResultScroller
      * @param bool                   $enabled        Is the scroller enabled?
      */
     public function __construct(
+        #[Autowire(container: SessionContainerRegistry::class, service: 'ResultScroller')]
         protected SessionContainer $session,
         protected ResultsManager $resultsManager,
         protected SearchMemory $searchMemory,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected RouteHelper $routeHelper,
-        protected $enabled = true
+        protected bool $enabled = true
     ) {
     }
 
@@ -537,7 +541,7 @@ class ResultScroller
         }
 
         // build a full ID string using the driver:
-        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
+        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueID();
 
         // find where this record is in the current result page
         $pos = is_array($this->data->currIds)
@@ -613,7 +617,7 @@ class ResultScroller
                 return false;
             }
             $retVal[]
-                = $record->getSourceIdentifier() . '|' . $record->getUniqueId();
+                = $record->getSourceIdentifier() . '|' . $record->getUniqueID();
         }
         return $retVal;
     }

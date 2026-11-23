@@ -36,7 +36,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\ContextHelper;
 use VuFind\ActionHelper\ForwardHelper;
-use VuFind\ActionHelper\UrlHelper;
 
 /**
  * Cart search results bulk action.
@@ -67,11 +66,7 @@ class SearchResultsBulkAction extends AbstractCartAction
         // site in the referrer, we should ignore that!
         $referrer = $this->getHelper(ContextHelper::class)->getReferrer($request);
         $bulk = $this->getRouteHelper()->getUrlFromRoute('cart-searchresultsbulk');
-        if (
-            $referrer
-            && !str_ends_with($referrer, $bulk)
-            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
-        ) {
+        if ($referrer && !str_ends_with($referrer, $bulk)) {
             $this->getHelper(BulkActionHelper::class)->getCartFollowupSession()->url = $referrer;
         }
 

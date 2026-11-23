@@ -74,8 +74,6 @@ abstract class AbstractNoticeAction extends AbstractAdminAction implements Local
         protected NoticeManager $noticeManager,
     ) {
         parent::__construct($globalsContainer, $config);
-        // Notice management may be enabled even without the full admin module:
-        $this->checkAdminEnabled = false;
     }
 
     /**

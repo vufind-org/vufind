@@ -64,7 +64,7 @@ class IdentifierLinkerTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->unfindCss($page, '.identifierLink a');
+        $this->unFindCss($page, '.identifierLink a');
         $this->clickCss($page, '.page-next .page-link');
         $this->waitForPageLoad($page);
         $this->findCss($page, '.identifierLink a');

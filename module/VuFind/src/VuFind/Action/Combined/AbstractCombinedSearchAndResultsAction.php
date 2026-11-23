@@ -47,17 +47,6 @@ use function is_array;
 abstract class AbstractCombinedSearchAndResultsAction extends AbstractSearchAndResultsAction
 {
     /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        $this->searchClassId = 'Combined';
-        parent::init();
-    }
-
-    /**
      * Adjust the query context to reflect the current settings.
      *
      * @param ServerRequestInterface $request    Request to adjust

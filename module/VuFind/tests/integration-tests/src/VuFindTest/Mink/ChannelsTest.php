@@ -35,6 +35,7 @@ use Generator;
 use PHPUnit\Framework\ExpectationFailedException;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
+use function array_slice;
 use function count;
 
 /**
@@ -356,7 +357,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getChannelsHomePage();
         // We don't expect deprecated options to yield any data at all:
-        $this->unfindCss($page, 'h2.channel-title');
+        $this->unFindCss($page, 'h2.channel-title');
         $this->assertCount(0, $page->findAll('css', 'li.channel-item'));
     }
 
@@ -577,5 +578,49 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Add more results and confirm they loaded:
         $this->clickCss($page, '.channel-load-more-btn');
         $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
+
+    /**
+     * Test pagination of the AlphaBrowse channel.
+     *
+     * @return void
+     */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    public function testAlphabrowsePagination(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'source.Solr' => ['record' => ['alphabrowse']],
+                ],
+            ]
+        );
+        $channelUrl = $this->getVuFindUrl()
+            . '/Channels/Record?id=0000183626-0&source=Solr&layout=lightbox&channelProvider=alphabrowse';
+        $session = $this->getMinkSession();
+
+        // Set up some helpful variables for use below:
+        $selector = 'a.channel-item-title';
+        $getUrls = fn ($entry) => $entry->getAttribute('href');
+
+        // Get 12 results all at once:
+        $session->visit($channelUrl . '&page=1&limit=12');
+        $page = $session->getPage();
+        $all12 = $page->findAll('css', $selector);
+        $all12Urls = array_map($getUrls, $all12);
+        $this->assertCount(12, $all12Urls);
+
+        // Now grab two pages of 6, and make sure everything is consistent:
+        $session->visit($channelUrl . '&page=1&limit=6');
+        $page = $session->getPage();
+        $firstSix = $page->findAll('css', $selector);
+        $firstSixUrls = array_map($getUrls, $firstSix);
+        $this->assertSame(array_slice($all12Urls, 0, 6), $firstSixUrls);
+
+        $session->visit($channelUrl . '&page=2&limit=6');
+        $page = $session->getPage();
+        $nextSix = $page->findAll('css', $selector);
+        $nextSixUrls = array_map($getUrls, $nextSix);
+        $this->assertSame(array_slice($all12Urls, 6), $nextSixUrls);
     }
 }

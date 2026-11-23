@@ -78,8 +78,6 @@ class AutowiringFactory implements FactoryInterface
      * @param ?array             $options       Options (unused)
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -186,9 +184,8 @@ class AutowiringFactory implements FactoryInterface
      * @param ?array              $autowireArgs        Autowire attribute arguments
      *
      * @return mixed
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function resolveService(
         ContainerInterface $container,
         ReflectionParameter $reflectionParameter,

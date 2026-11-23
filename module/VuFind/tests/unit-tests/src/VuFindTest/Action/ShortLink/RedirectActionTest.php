@@ -114,6 +114,7 @@ class RedirectActionTest extends AbstractActionTestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testThresholdLongUrlRedirectsViaHtml(): void
     {
         $longUrl = 'https://vufind.org/' . str_repeat('a', 50);

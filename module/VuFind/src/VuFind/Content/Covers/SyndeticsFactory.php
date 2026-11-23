@@ -58,9 +58,8 @@ class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -70,9 +69,6 @@ class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $syndetics = new $requestedName($config['Syndetics'] ?? null);
-        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
-        $syndetics->setCachingDownloader($cachingDownloader);
-        return $syndetics;
+        return new $requestedName($config['Syndetics'] ?? null);
     }
 }

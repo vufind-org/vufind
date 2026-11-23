@@ -30,6 +30,8 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Solr Authority Autocomplete Module.
  *
@@ -48,6 +50,7 @@ class SolrAuth extends Solr
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
+    #[Autowire]
     public function __construct(\VuFind\Search\Results\PluginManager $results)
     {
         parent::__construct($results);

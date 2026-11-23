@@ -202,7 +202,7 @@ class LanguageHelper
             $domains = [];
             while ($current = readdir($dir)) {
                 if (
-                    $current != '.' && $current != '..'
+                    $current !== '.' && $current !== '..'
                     && is_dir("$base/$current")
                     && !in_array($current, $filter)
                 ) {
@@ -226,7 +226,7 @@ class LanguageHelper
     protected function loadLanguage($lang, $includeOptional, $includeAliases = true)
     {
         $includeAliases ? $this->loader->enableAliases() : $this->loader->disableAliases();
-        $base = $this->loader->load($lang, null);
+        $base = $this->loader->load($lang, '');
         foreach ($this->getTextDomains($includeOptional) as $domain) {
             $current = $this->loader->load($lang, $domain);
             foreach ($current as $k => $v) {

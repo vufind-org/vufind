@@ -40,7 +40,7 @@ use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
-use WebSocket\ConnectionException;
+use WebSocket\Exception\ConnectionLevelInterface as ConnectionException;
 
 use function call_user_func;
 use function count;
@@ -995,9 +995,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector CSS selector
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkFieldIsValid(Element $page, string $selector): void
     {
         $session = $this->getMinkSession();
@@ -1014,9 +1013,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector CSS selector
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function checkFieldIsInvalid(Element $page, string $selector): void
     {
         $session = $this->getMinkSession();
@@ -1069,7 +1067,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wait for a callback to return the expected value.
+     * Wait for a callback to return the expected value (non-strict comparison).
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
@@ -1086,9 +1084,34 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $expected,
             $callback,
             function ($expected, $result): bool {
-                return $expected === $result;
+                return $expected == $result;
             },
             [$this, 'assertEquals'],
+            $timeout
+        );
+    }
+
+    /**
+     * Wait for a callback to return the expected value (strict comparison).
+     *
+     * @param mixed    $expected Expected value
+     * @param callable $callback Callback
+     * @param ?int     $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertSameWithTimeout(
+        $expected,
+        callable $callback,
+        ?int $timeout = null
+    ): void {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === $result;
+            },
+            [$this, 'assertSame'],
             $timeout
         );
     }
@@ -1318,7 +1341,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function assertLightboxWarning(Element $page, string $message): void
     {
         $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || strlen(trim($warning->getText())) == 0) {
+        if (!$warning || strlen(trim($warning->getText())) === 0) {
             $warning = $this->findCss($page, '.modal-body .alert-danger');
         }
         $this->assertEquals($message, $warning->getText());
@@ -1531,6 +1554,23 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // storage).
         $this->getMinkSession()
             ->evaluateScript('window.addEventListener("beforeunload", () => window.sessionStorage.clear());');
+    }
+
+    /**
+     * Get config settings for activating the admin module.
+     *
+     * @return array
+     */
+    protected function getAdminPermissionConfig(): array
+    {
+        return [
+            'permissions' => [
+                'default.adminModule' => [
+                    'permission' => 'access.AdminModule',
+                    'role' => ['guest', 'loggedin'],
+                ],
+            ],
+        ];
     }
 
     /**

@@ -928,9 +928,8 @@ class XCNCIP2 extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConsortialHoldings(
         $id,
         ?array $patron = null,
@@ -1026,9 +1025,8 @@ class XCNCIP2 extends AbstractBase implements
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $ids = null;
@@ -1056,9 +1054,8 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPurchaseHistory($id)
     {
         // NCIP is not able to send acquisition data
@@ -1174,40 +1171,40 @@ class XCNCIP2 extends AbstractBase implements
                 $itemType = !empty($itemType) ? (string)$itemType[0] : null;
                 $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
                 $itemResponse = $this->sendRequest($itemRequest);
-            }
-            if ($bibId === null && isset($itemResponse)) {
-                $bibId = $itemResponse->xpath(
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
-                    'ns1:BibliographicItemIdentifier' .
-                    ' | ' .
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
-                    'ns1:BibliographicRecordIdentifier'
-                );
-                // Hack to account for bibs from other non-local institutions
-                // temporarily until consortial functionality is enabled.
-                $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
-            }
-            if ($itemAgencyId === null && isset($itemResponse)) {
-                $itemAgencyId = $itemResponse->xpath(
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
-                    'ns1:AgencyId' .
-                    ' | ' .
-                    'ns1:LookupItemResponse/ns1:ItemId/ns1:AgencyId'
-                );
-                $itemAgencyId = !empty($itemAgencyId)
-                    ? (string)$itemAgencyId[0] : null;
-            }
-            if (empty($due) && isset($itemResponse)) {
-                $rawDueDate = $itemResponse->xpath(
-                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
-                    'ns1:DateDue'
-                );
-                $due = $this->displayDate(
-                    !empty($rawDueDate) ? (string)$rawDueDate[0] : null
-                );
+                if ($bibId === null) {
+                    $bibId = $itemResponse->xpath(
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
+                        'ns1:BibliographicItemIdentifier' .
+                        ' | ' .
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                        'ns1:BibliographicRecordIdentifier'
+                    );
+                    // Hack to account for bibs from other non-local institutions
+                    // temporarily until consortial functionality is enabled.
+                    $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
+                }
+                if ($itemAgencyId === null) {
+                    $itemAgencyId = $itemResponse->xpath(
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                        'ns1:AgencyId' .
+                        ' | ' .
+                        'ns1:LookupItemResponse/ns1:ItemId/ns1:AgencyId'
+                    );
+                    $itemAgencyId = !empty($itemAgencyId)
+                        ? (string)$itemAgencyId[0] : null;
+                }
+                if (empty($due)) {
+                    $rawDueDate = $itemResponse->xpath(
+                        'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                        'ns1:DateDue'
+                    );
+                    $due = $this->displayDate(
+                        !empty($rawDueDate) ? (string)$rawDueDate[0] : null
+                    );
+                }
             }
 
             $retVal[] = [
@@ -1537,9 +1534,8 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function findReserves($course, $inst, $dept)
     {
         // NCIP does not support course reserves
@@ -1566,12 +1562,11 @@ class XCNCIP2 extends AbstractBase implements
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getConfig(string $function, array $params = []): array
     {
-        if ($function == 'Holds') {
+        if ($function === 'Holds') {
             $holdsConfig = $this->config['Holds'] ?? [];
             $extraHoldFields = empty($this->getPickUpLocations([]))
                 ? 'comments:requiredByDate'
@@ -1584,7 +1579,7 @@ class XCNCIP2 extends AbstractBase implements
             ];
             return $holdsConfig + $defaults;
         }
-        if ($function == 'StorageRetrievalRequests') {
+        if ($function === 'StorageRetrievalRequests') {
             $config = $this->config['StorageRetrievalRequests'] ?? [];
             $extraFields = empty($this->getPickUpLocations([]))
                 ? 'comments:requiredByDate:item-issue'
@@ -1612,9 +1607,8 @@ class XCNCIP2 extends AbstractBase implements
      * or may be ignored.
      *
      * @return string A location ID
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getDefaultPickUpLocation($patron, $holdDetails = null)
     {
         return $this->pickupLocations[$patron['patronAgencyId']][0]['locationID'];
@@ -1686,9 +1680,8 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getPickUpLocations($patron, $holdDetails = null)
     {
         if (!isset($this->pickupLocations)) {
@@ -1721,9 +1714,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
         return true;
@@ -1748,9 +1740,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Get Renew Details.
      *
-     * This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -1971,9 +1961,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $this->getCancelRequestDetails($holdDetails);
@@ -2008,9 +1997,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $this->getCancelRequestDetails($details);
@@ -2854,9 +2842,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function invalidateResponseCache(string $message, string $key): void
     {
         unset($this->responses['LookupUser'][$key]);

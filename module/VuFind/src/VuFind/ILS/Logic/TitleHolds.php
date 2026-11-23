@@ -155,7 +155,7 @@ class TitleHolds
                     $allDisabled = false;
                 }
             }
-            $mode = (true == $allDisabled) ? 'disabled' : $mode;
+            $mode = (true === $allDisabled) ? 'disabled' : $mode;
         }
         return $mode;
     }

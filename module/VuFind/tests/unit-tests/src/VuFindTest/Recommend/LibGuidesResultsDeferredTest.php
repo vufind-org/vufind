@@ -52,7 +52,7 @@ class LibGuidesResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTes
         $mod = $this->getRecommend(
             \VuFind\Recommend\LibGuidesResultsDeferred::class,
             ':3',
-            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+            ['lookfor' => 'foo']
         );
         $this->assertEquals(
             'mod=LibGuidesResults&params=lookfor%3A3&lookfor=foo',

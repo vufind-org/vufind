@@ -138,7 +138,7 @@ class Router
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
             $source = $driver->getSourceIdentifier();
-            $id = $driver->getUniqueId();
+            $id = $driver->getUniqueID();
         } else {
             [$source, $id] = $this->extractSourceAndId($driver);
         }

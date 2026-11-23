@@ -29,6 +29,8 @@
 
 namespace VuFind\ContentBlock;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function is_callable;
 
 /**
@@ -50,20 +52,13 @@ class TemplateBased implements ContentBlockInterface
     protected $templateName;
 
     /**
-     * Page content.
-     *
-     * @var \VuFind\Content\PageLocator
-     */
-    protected $pageLocator;
-
-    /**
      * TemplateBased constructor.
      *
      * @param \VuFind\Content\PageLocator $pageLocator Content page locator service
      */
-    public function __construct(\VuFind\Content\PageLocator $pageLocator)
+    #[Autowire]
+    public function __construct(protected \VuFind\Content\PageLocator $pageLocator)
     {
-        $this->pageLocator = $pageLocator;
     }
 
     /**
@@ -115,9 +110,8 @@ class TemplateBased implements ContentBlockInterface
      * @param string $path         Full path of template file
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextForMd(string $relativePath, string $path): array
     {
         return [
@@ -133,9 +127,8 @@ class TemplateBased implements ContentBlockInterface
      * @param string $path         Full path of template file
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextForPhtml(string $relativePath, string $path): array
     {
         return ['template' => $relativePath];

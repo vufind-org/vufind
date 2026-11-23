@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\IdentifierLinker\PluginManager as LinkerPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Icon;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
@@ -93,7 +94,9 @@ class IdentifierLinksLookup extends AbstractBase
         protected TemplateRendererInterface $renderer,
         protected ServerUrlHelper $serverUrlHelper,
         protected RouteHelper $routeHelper,
+        #[Autowire(container: 'ViewHelperManager')]
         protected Icon $iconHelper,
+        #[Autowire(config: 'config')]
         array $config
     ) {
         parent::__construct(null);
@@ -138,7 +141,7 @@ class IdentifierLinksLookup extends AbstractBase
                 // can short circuit out of here.
                 if (
                     $this->multiMode !== 'merge'
-                    && count(array_diff(array_keys($ids), array_keys($gatheredData))) == 0
+                    && count(array_diff(array_keys($ids), array_keys($gatheredData))) === 0
                 ) {
                     break;
                 }

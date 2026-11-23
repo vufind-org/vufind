@@ -33,6 +33,7 @@ namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth as ShibbolethAuth;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Shibboleth permission provider for VuFind.
@@ -48,13 +49,6 @@ use VuFind\Auth\Shibboleth as ShibbolethAuth;
 class Shibboleth extends ServerParam
 {
     /**
-     * Request object.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Server param with the identity provider entityID.
      *
      * @var string
@@ -67,8 +61,12 @@ class Shibboleth extends ServerParam
      * @param Request $request Request object
      * @param array   $config  VuFind configuration
      */
-    public function __construct(Request $request, array $config)
-    {
+    public function __construct(
+        #[Autowire(service: 'Request')]
+        Request $request,
+        #[Autowire(config: 'config')]
+        array $config
+    ) {
         parent::__construct($request);
 
         $this->idpServerParam = $config['Shibboleth']['idpserverparam']
@@ -91,7 +89,7 @@ class Shibboleth extends ServerParam
     {
         $this->debug('getPermissions: idpServerParam = ' . $this->idpServerParam);
         if ($this->request->getServer()->get($this->idpServerParam) === null) {
-            $this->logWarning('getPermissions: Shibboleth server params missing');
+            $this->debug('getPermissions: Shibboleth server params missing');
 
             return [];
         }

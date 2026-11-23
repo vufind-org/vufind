@@ -198,12 +198,13 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
      * Log an exception triggered by the framework for administrative purposes.
      * (Part of ExtendedLoggerInterface).
      *
-     * @param \Exception                 $error  Exception to log
-     * @param \Laminas\Stdlib\Parameters $server Server metadata
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
+     * @param ?string    $level  Optional log level
      *
      * @return void
      */
-    public function logException($error, $server): void
+    public function logException(\Throwable $error, array $server = [], ?string $level = null): void
     {
         $this->__call(__FUNCTION__, func_get_args());
     }

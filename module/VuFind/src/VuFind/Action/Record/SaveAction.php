@@ -39,7 +39,6 @@ use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\ActionHelper\UrlHelper;
 use VuFind\ActionHelper\UserContentHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
@@ -165,8 +164,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         if (
             !empty($referrer)
             && !str_ends_with($referrer, '/Save')
-            && stripos($referrer, 'MyResearch/EditList/NEW') === false
-            && $this->getHelper(UrlHelper::class)->isLocalUrl($referrer)
+            && stripos($referrer, 'Lists/Edit/NEW') === false
         ) {
             $loginHelper->setFollowupUrlToReferrer($request);
         } else {
@@ -179,7 +177,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = [];
         $resources = $this->userResourceService->getFavoritesForRecord(
-            $driver->getUniqueId(),
+            $driver->getUniqueID(),
             $driver->getSourceIdentifier(),
             null,
             $user

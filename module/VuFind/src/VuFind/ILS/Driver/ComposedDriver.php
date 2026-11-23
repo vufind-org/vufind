@@ -298,7 +298,8 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getConfig(string $function, array $params = []): array
     {
-        return $this->defaultCall('getConfig', func_get_args());
+        $driverName = $this->getMainDriverNameForMethod($function);
+        return $this->callDriverMethod($driverName, 'getConfig', func_get_args());
     }
 
     /**
@@ -396,9 +397,8 @@ class ComposedDriver extends AbstractMultiDriver
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->combineArraysOfAssociativeArrays(
@@ -639,10 +639,7 @@ class ComposedDriver extends AbstractMultiDriver
     /**
      * Get Renew Details.
      *
-     * In order to renew an item, the ILS requires information on the item and
-     * patron. This function returns the information as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * This function returns the details required to renew items.
      *
      * @param array $checkoutDetails An array of item data
      *
@@ -761,9 +758,8 @@ class ComposedDriver extends AbstractMultiDriver
      * @param string $id The record id to retrieve the holdings for
      *
      * @return bool True if holdings exist, False if they do not
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function hasHoldings($id)
     {
         return $this->defaultCall('hasHoldings', func_get_args());

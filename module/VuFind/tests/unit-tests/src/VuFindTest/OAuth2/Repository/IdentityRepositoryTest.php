@@ -126,7 +126,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $repo = new IdentityRepository(
             $this->getMockUserService(),
             $accessTokenService,
-            $this->getMockILSConnection($blocks),
+            $this->getMockIlsConnection($blocks),
             $this->oauth2Config,
             $this->getMockILSAuthenticator()
         );
@@ -368,7 +368,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     {
         return hash(
             'sha256',
-            'user' . $this->oauth2Config['Server']['hashSalt']
+            $username . $this->oauth2Config['Server']['hashSalt']
         );
     }
 }

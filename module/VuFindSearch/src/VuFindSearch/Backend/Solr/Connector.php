@@ -217,9 +217,8 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      * @param ParamBag $params Parameters
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function similar($id, ParamBag $params)
     {
         $handler = $this->map->getHandler(__FUNCTION__);

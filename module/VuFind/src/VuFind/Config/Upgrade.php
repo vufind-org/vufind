@@ -35,6 +35,7 @@ use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function dirname;
@@ -112,6 +113,7 @@ class Upgrade implements LoggerAwareInterface
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
      */
+    #[Autowire]
     public function __construct(
         protected PathResolver $pathResolver,
         protected ConfigManagerInterface $configManager,
@@ -471,7 +473,7 @@ class Upgrade implements LoggerAwareInterface
         }
         if (
             isset($newConfig['Content']['recordMap'])
-            && 'google' == strtolower($newConfig['Content']['recordMap'])
+            && 'google' === strtolower($newConfig['Content']['recordMap'])
         ) {
             unset($newConfig['Content']['recordMap']);
             unset($newConfig['Content']['googleMapApiKey']);
@@ -564,11 +566,19 @@ class Upgrade implements LoggerAwareInterface
         $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
+        // Warn the user if they are using a deprecated encryption algorithm:
+        if ($newConfig['Security']['legacyPbkdf2'] ?? true) {
+            $this->addWarning(
+                'Support for the "true" value of legacyPbkdf2 in config.ini is deprecated. '
+                . 'See https://vufind.org/wiki/configuration:pbkdf2 for important details.'
+            );
+        }
+
         // Translate legacy auth settings:
-        if (strtolower($newConfig['Authentication']['method']) == 'db') {
+        if (strtolower($newConfig['Authentication']['method']) === 'db') {
             $newConfig['Authentication']['method'] = 'Database';
         }
-        if (strtolower($newConfig['Authentication']['method']) == 'sip') {
+        if (strtolower($newConfig['Authentication']['method']) === 'sip') {
             $newConfig['Authentication']['method'] = 'SIP2';
         }
 
@@ -657,6 +667,19 @@ class Upgrade implements LoggerAwareInterface
             }
             unset($newConfig['LDAP']['host']);
             unset($newConfig['LDAP']['port']);
+        }
+
+        // If obsolete image captcha settings are present, warn the user about their removal.
+        $captcha = $newConfig['Captcha'] ?? [];
+        if (
+            isset($captcha['image_fontSize'])
+            || isset($captcha['image_dotNoiseLevel'])
+            || isset($captcha['image_lineNoiseLevel'])
+        ) {
+            $this->addWarning(
+                'The image captcha settings in the [Captcha] section of config.ini have changed. Please review and'
+                . ' adjust as required.'
+            );
         }
 
         $this->applyOldSettings('RecordDataFormatter/DefaultRecord');
@@ -888,6 +911,10 @@ class Upgrade implements LoggerAwareInterface
             $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
         }
 
+        if (($newBaseConfig['General']['show_restricted_view_warning'] ?? '') == '1') {
+            $newBaseConfig['General']['show_restricted_view_warning'] = 'result_list_top,record_view';
+        }
+
         // Move several settings to RecordDataFormatter/EDS
         foreach ($newBaseConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
             $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Label', $label);
@@ -1063,7 +1090,7 @@ class Upgrade implements LoggerAwareInterface
         ) {
             $codes = $config['Institutions']['code'];
             $regex = $config['Institutions']['regex'];
-            if (count($regex) != count($codes)) {
+            if (count($regex) !== count($codes)) {
                 $this->addWarning(
                     'Mismatched code/regex counts in Primo.ini [Institutions].'
                 );
@@ -1086,7 +1113,7 @@ class Upgrade implements LoggerAwareInterface
                 $perm = "access.PrimoInstitution.$code";
                 $config['Institutions']["onCampusRule['$code']"] = $perm;
                 $permissions[$perm] = [
-                    'ipRegEx' => count($regexes) == 1 ? $regexes[0] : $regexes,
+                    'ipRegEx' => count($regexes) === 1 ? $regexes[0] : $regexes,
                     'permission' => $perm,
                 ];
                 $this->permissionsModified = true;

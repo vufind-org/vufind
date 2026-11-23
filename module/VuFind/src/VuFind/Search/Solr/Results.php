@@ -169,7 +169,7 @@ class Results extends \VuFind\Search\Base\Results
         $scoreMap = [];
         foreach ($this->results as $record) {
             $data = $record->getRawData();
-            $scoreMap[$record->getUniqueId()] = $data['score'] ?? null;
+            $scoreMap[$record->getUniqueID()] = $data['score'] ?? null;
         }
         return $scoreMap;
     }
@@ -402,7 +402,7 @@ class Results extends \VuFind\Search\Base\Results
         $params->setFacetLimit($limit);
         // Clear field-specific limits, as they can interfere with retrieval:
         $params->setFacetLimitByField([]);
-        if (null !== $page && $limit != -1) {
+        if (null !== $page && $limit !== -1) {
             $offset = ($page - 1) * $limit;
             $params->setFacetOffset($offset);
             // Return limit plus one so we know there's another page

@@ -68,9 +68,6 @@ trait AutowireTrait
 
         // Nothing to do if there are no constructor parameters:
         $reflectionParameters = $constructor->getParameters();
-        if (empty($reflectionParameters)) {
-            return;
-        }
 
         // Check for containers in constructor parameter attributes:
         foreach ($reflectionParameters as $reflectionParameter) {

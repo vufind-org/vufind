@@ -29,6 +29,7 @@
 
 namespace VuFind\Related;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 
@@ -71,6 +72,7 @@ class MoreByAuthorSolr implements RelatedInterface
      *
      * @param \VuFindSearch\Service $searchService Search service
      */
+    #[Autowire]
     public function __construct(protected \VuFindSearch\Service $searchService)
     {
     }
