@@ -340,7 +340,6 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Check that citations are rendered
-        $this->waitForPageLoad($page);
         foreach (['APA', 'Chicago', 'MLA'] as $format) {
             $this->assertStringContainsString(
                 'Person, F',
