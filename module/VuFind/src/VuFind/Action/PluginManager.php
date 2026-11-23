@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
 
@@ -57,6 +56,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'account/cataloglogin' => Account\CatalogLoginAction::class,
+        'account/changeemail' => Account\ChangeEmailAction::class,
+        'account/changepassword' => Account\ChangePasswordAction::class,
+        'account/completelogin' => Account\CompleteLoginAction::class,
+        'account/createaccount' => Account\CreateAccountAction::class,
+        'account/deleteaccount' => Account\DeleteAccountAction::class,
+        'account/deletelogintoken' => Account\DeleteLoginTokenAction::class,
+        'account/deleteuserlogintokens' => Account\DeleteUserLoginTokensAction::class,
+        'account/emailnotverified' => Account\EmailNotVerifiedAction::class,
+        'account/newpassword' => Account\NewPasswordAction::class,
+        'account/resetpassword' => Account\ResetPasswordAction::class,
+        'account/usercontent' => Account\UserContentAction::class,
+        'account/userlogin' => Account\UserLoginAction::class,
+        'account/verifyemail' => Account\VerifyEmailAction::class,
+        'account/verifyotp' => Account\VerifyOtpAction::class,
+        'account/verifyrecoveryotp' => Account\VerifyRecoveryOtpAction::class,
+
         'ajax/json' => Ajax\JsonAction::class,
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
@@ -184,11 +200,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'librarycards/selectcard' => LibraryCards\SelectCardAction::class,
         'librarycards/verifyotp' => LibraryCards\VerifyOtpAction::class,
 
+        'lists/allitems' => Lists\AllItemsAction::class,
+        'lists/deleteitems' => Lists\DeleteItemsAction::class,
+        'lists/deletelist' => Lists\DeleteListAction::class,
+        'lists/edititem' => Lists\EditItemAction::class,
+        'lists/editlist' => Lists\EditListAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
-        'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
-
         'oai/authserver' => Oai\AuthServerAction::class,
+
+        'overdrive/getstatus' => Overdrive\GetStatusAction::class,
 
         'pazpar2/home' => Search\HomeAction::class,
         'pazpar2/search' => Search\ResultsAction::class,
@@ -269,6 +291,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/ajaxtab' => Record\AjaxTabAction::class,
         'search2record/cite' => Record\CiteAction::class,
         'search2record/email' => Record\EmailAction::class,
+        'search2record/explain' => Record\ExplainAction::class,
         'search2record/export' => Record\ExportAction::class,
         'search2record/hold' => Record\HoldAction::class,
         'search2record/home' => Record\HomeAction::class,
@@ -277,6 +300,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/rdf' => Record\RdfAction::class,
         'search2record/save' => Record\SaveAction::class,
         'search2record/sms' => Record\SmsAction::class,
+
+        'searchhistory/savesearch' => SearchHistory\SaveSearchAction::class,
+        'searchhistory/schedulesearch' => SearchHistory\ScheduleSearchAction::class,
+        'searchhistory/unsubscribesearch' => SearchHistory\UnsubscribeSearchAction::class,
 
         // summon/advanced has a custom implementation that is autodiscovered
         'summon/home' => Search\HomeAction::class,
@@ -348,6 +375,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'upgrade/getdbcredentials' => Upgrade\GetDbCredentialsAction::class,
         'upgrade/getsourceversion' => Upgrade\GetSourceVersionAction::class,
         'upgrade/showsql' => Upgrade\ShowSqlAction::class,
+
+        'zotero/authcallback' => Zotero\AuthCallbackAction::class,
     ];
 
     /**
@@ -360,11 +389,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
+        'Illrequests' => 'IllRequests',
         'Librarycards' => 'LibraryCards',
-        'Myresearch' => 'MyResearch',
         'Oauth2' => 'OAuth2',
+        'Qrcode' => 'QRCode',
         'Searchhistory' => 'SearchHistory',
+        'Shibbolethlogoutnotification' => 'ShibbolethLogoutNotification',
         'Shortlink' => 'ShortLink',
+        'Simulatedsso' => 'SimulatedSSO',
+        'Sitemap' => 'SiteMap',
+        'Storageretrievalrequests' => 'StorageRetrievalRequests',
         'Worldcat' => 'WorldCat',
     ];
 
@@ -405,9 +439,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // These objects are not meant to be shared -- every time we retrieve one, we are building a brand new object.
         $this->sharedByDefault = false;
 
+        parent::__construct($configOrContainerInstance, $v3config);
         $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
-        parent::__construct($configOrContainerInstance, $v3config);
     }
 
     /**
@@ -530,8 +564,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             $className = $ns . '\\' . $actionClass;
             if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
-                // Explicitly set the factory so that discovered classes don't need the Autowire attribute:
-                $this->factories[$className] ??= AutowiringFactory::class;
                 return $className;
             }
         }

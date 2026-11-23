@@ -52,6 +52,7 @@ footer-center:
 
     - label: 'New Items'
       route: search-newitem
+      checkMethod: checkNewItemsSettings
 
 footer-right:
   label: footer_header_need_help
@@ -67,7 +68,7 @@ footer-right:
     - label: 'Ask a Librarian'
       route: content-page
       routeParams:
-        page: askLibrary
+        page: asklibrary
 
     - label: 'FAQs'
       route: content-page

@@ -98,6 +98,28 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * This test relies on the records in browse-test.xml -- it is designed to catch regressions of a past bug where
+     * browsing to a title could link to an incorrect record if the chosen title was a sub-part of an alphabetically-
+     * earlier title.
+     *
+     * @return void
+     */
+    public function testJumpToCorrectRecordDespitePartialMatch(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $title = 'Record that the browse test should lead to.';
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'title');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', $title);
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'td.title a');
+        $this->waitForPageLoad($page);
+        $this->assertSame($title, $this->findCssAndGetText($page, 'h1'));
+    }
+
+    /**
      * Test that extra attributes are escaped correctly.
      *
      * @return void

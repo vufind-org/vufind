@@ -57,6 +57,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * Is debug logging enabled?
      *
      * @var bool
+     *
+     * @deprecated Deprecated since 11.1 and will be removed without replacement in 12.0
      */
     protected bool $debugNeeded = false;
 
@@ -271,6 +273,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * @param bool $newState New state (omit to leave current state unchanged)
      *
      * @return bool
+     *
+     * @deprecated Deprecated since 11.1 and will be removed without replacement in 12.0
      */
     public function debugNeeded($newState = null)
     {
@@ -283,14 +287,14 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     /**
      * Log an exception triggered by the framework for administrative purposes.
      *
-     * @param \Throwable                 $error  Exception to log
-     * @param \Laminas\Stdlib\Parameters $server Server metadata
-     * @param ?string                    $level  Optional log level. Will determine from the
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
+     * @param ?string    $level  Optional log level. Will determine from the
      * exception if not provided. (e.g., a \Psr\Log\LogLevel constant)
      *
      * @return void
      */
-    public function logException($error, $server, $level = null)
+    public function logException(\Throwable $error, array $server = [], ?string $level = null): void
     {
         $details = $this->getDetailsFromException($error, $server);
         $this->log(
@@ -305,8 +309,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * if provided, and convert it into an array with keys for each of
      * the 5 verbosity levels.
      *
-     * @param \Exception                 $error  Exception to log
-     * @param \Laminas\Stdlib\Parameters $server Server metadata
+     * @param \Throwable $error  Exception to log
+     * @param array      $server Server metadata
      *
      * @return array
      */
@@ -321,19 +325,19 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             $baseError .= ' ; ' . $prev::class . ' : ' . $prev->getMessage();
             $prev = $prev->getPrevious();
         }
-        $referer = $server->get('HTTP_REFERER', 'none');
+        $referer = $server['HTTP_REFERER'] ?? 'none';
         $ipAddr = $this->userIpReader->getUserIp();
         $basicServer
             = ' (Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
-            . $server->get('HTTP_USER_AGENT') . ', '
+            . ($server['HTTP_USER_AGENT'] ?? '') . ', '
             . 'Host = '
-            . $server->get('HTTP_HOST') . ', '
+            . ($server['HTTP_HOST'] ?? '') . ', '
             . 'Request URI = '
-            . $server->get('REQUEST_URI') . ')';
+            . ($server['REQUEST_URI'] ?? '') . ')';
         $detailedServer = "\nServer Context:\n"
-            . print_r($server->toArray(), true);
+            . print_r($server, true);
         $basicBacktrace = $detailedBacktrace = "\nBacktrace:\n";
         if (is_array($error->getTrace())) {
             foreach ($error->getTrace() as $line) {

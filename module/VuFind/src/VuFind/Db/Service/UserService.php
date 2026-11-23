@@ -34,9 +34,10 @@ use Doctrine\ORM\EntityManager;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\PersistenceManager;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\SessionContainerRegistry;
 
 /**
  * Database service for user.
@@ -63,6 +64,7 @@ class UserService extends AbstractDbService implements
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
         PersistenceManager $persistenceManager,
+        #[Autowire(container: SessionContainerRegistry::class, service: 'Account')]
         protected SessionContainer $userSessionContainer
     ) {
         parent::__construct($entityManager, $entityPluginManager, $persistenceManager);

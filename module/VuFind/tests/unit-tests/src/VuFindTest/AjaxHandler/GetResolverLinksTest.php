@@ -30,7 +30,6 @@
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\GetResolverLinks;
-use VuFind\AjaxHandler\GetResolverLinksFactory;
 use VuFind\Resolver\Driver\DriverInterface;
 use VuFind\Resolver\Driver\PluginManager;
 use VuFind\Session\Settings;
@@ -48,6 +47,7 @@ use VuFind\View\Renderer\TemplateRendererInterface;
 class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\AutowireTrait;
 
     /**
      * Set up configuration for a test.
@@ -151,8 +151,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->setupConfig();
 
         // Build and test the ajax handler:
-        $factory = new GetResolverLinksFactory();
-        $handler = $factory($this->container, GetResolverLinks::class);
+        $handler = $this->getAutowiredObject(GetResolverLinks::class, $this->container);
         $this->assertEquals(
             [
                 [

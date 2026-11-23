@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Log;
 
-use VuFind\Log\Logger;
-
 use function count;
 use function is_array;
 
@@ -50,6 +48,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function testLogException()
     {
         $callback = function ($level, $message, $context = []): bool {
@@ -66,7 +65,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             if (is_array($message)) {
                 $details = $message;
                 $expectedMessage = 'Exception/Detailed log. See context for levels.';
-                $contextCheck = isset($context['vufind_log_details']) && $context['vufind_log_details'] === $details;
+                $contextCheck = ($context['vufind_log_details'] ?? null) === $details;
             } else {
                 $contextCheck = isset($context['vufind_log_details']) && is_array($context['vufind_log_details']);
                 $details = $contextCheck ? $context['vufind_log_details'] : [];
@@ -125,14 +124,12 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             // in the mock IP reader above, to confirm that the IP reader is
             // being used instead of the request; this ensures that proxies
             // are handled correctly, etc.
-            $fakeServer = new \Laminas\Stdlib\Parameters(
-                [
-                    'REMOTE_ADDR' => '5.6.7.8',
-                    'HTTP_USER_AGENT' => 'Fake browser',
-                    'HTTP_HOST' => 'localhost:80',
-                    'REQUEST_URI' => '/foo/bar',
-                ]
-            );
+            $fakeServer = [
+                'REMOTE_ADDR' => '5.6.7.8',
+                'HTTP_USER_AGENT' => 'Fake browser',
+                'HTTP_HOST' => 'localhost:80',
+                'REQUEST_URI' => '/foo/bar',
+            ];
             $logger->logException($e, $fakeServer);
         }
     }

@@ -192,7 +192,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
                     'html' => true,
                     'msg' => 'ill_request_place_success_html',
                     'tokens' => [
-                        '%%url%%' => $this->routeHelper->getUrlFromRoute('myresearch-illrequests'),
+                        '%%url%%' => $this->routeHelper->getUrlFromRoute('illrequests-list'),
                     ],
                 ];
                 $flashMessagesHelper->addSuccessMessage($msg);

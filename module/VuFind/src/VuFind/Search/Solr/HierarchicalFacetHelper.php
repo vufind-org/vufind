@@ -508,7 +508,7 @@ class HierarchicalFacetHelper implements
                     if ($level === $filterLevel) {
                         $levelSpecified = true;
                     }
-                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                    if (strncmp($value, $filterItem, strlen($filterItem)) === 0) {
                         $match = true;
                     }
                 }
@@ -528,7 +528,7 @@ class HierarchicalFacetHelper implements
             foreach ($facets as $key => &$facet) {
                 $value = $facet['value'];
                 foreach ($excludeFilters as $filterItem) {
-                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                    if (strncmp($value, $filterItem, strlen($filterItem)) === 0) {
                         unset($facets[$key]);
                         continue 2;
                     }

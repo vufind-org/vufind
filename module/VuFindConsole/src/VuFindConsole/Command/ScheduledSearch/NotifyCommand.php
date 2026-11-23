@@ -188,9 +188,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param OutputInterface $output Output object
      *
      * @return int 0 for success
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
@@ -378,7 +377,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         ) . $searchObject->getUrlQuery()->getParams(false);
         $secret = $this->secretCalculator->getSearchUnsubscribeSecret($s);
         $unsubscribeUrl = $s->getNotificationBaseUrl()
-            . ($this->urlHelper)('myresearch-unsubscribe')
+            . ($this->urlHelper)('account-unsubscribe')
             . "?id={$s->getId()}&key=$secret";
         $params = $searchObject->getParams();
         // Filter function to only pass along selected checkboxes:

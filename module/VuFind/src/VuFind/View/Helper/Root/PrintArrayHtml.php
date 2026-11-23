@@ -161,6 +161,6 @@ class PrintArrayHtml
     {
         return $this->isArrayList($var)
                && $this->isArrayFlat($var)
-               && count($var) == 1;
+               && count($var) === 1;
     }
 }

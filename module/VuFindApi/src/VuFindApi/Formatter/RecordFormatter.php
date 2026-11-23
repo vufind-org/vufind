@@ -199,7 +199,7 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
                 continue;
             }
             $method = $recordFieldConfig[$field]['vufind.method'];
-            $value = strncmp($method, 'Formatter::', 11) == 0
+            $value = strncmp($method, 'Formatter::', 11) === 0
                 ? $this->{substr($method, 11)}($record)
                 : $record->tryMethod($method);
             $result[$field] = $value;
@@ -236,7 +236,7 @@ class RecordFormatter extends BaseFormatter implements TranslatorAwareInterface
         $fields = array_map(
             function ($item) {
                 foreach (array_keys($item) as $key) {
-                    if (strncmp($key, 'vufind.', 7) == 0) {
+                    if (strncmp($key, 'vufind.', 7) === 0) {
                         unset($item[$key]);
                     }
                 }

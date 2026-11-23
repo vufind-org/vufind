@@ -300,7 +300,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'My Site: translated text',
                 $message
             );
-        $translator = $this->container->createMock(\Laminas\Mvc\I18n\Translator::class);
+        $translator = $this->container->createMock(\Laminas\I18n\Translator\Translator::class);
         $translator->expects($this->once())->method('translate')
             ->with('Scheduled Alert Results')
             ->willReturn('translated text');
@@ -504,7 +504,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $options['localeSettings'] ?? $this->createStub(\VuFind\I18n\Locale\LocaleSettings::class)
         );
         $command->setTranslator(
-            $options['translator'] ?? $this->createStub(\Laminas\Mvc\I18n\Translator::class)
+            $options['translator'] ?? $this->createStub(\Laminas\Translator\TranslatorInterface::class)
         );
         $command->setPathResolver($this->getPathResolver());
         return $command;

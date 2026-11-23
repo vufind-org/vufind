@@ -560,7 +560,7 @@ class Backend extends AbstractBackend implements
     {
         $response = json_decode($json, true);
         $error    = json_last_error();
-        if ($error != \JSON_ERROR_NONE) {
+        if ($error !== \JSON_ERROR_NONE) {
             throw new BackendException(
                 sprintf('JSON decoding error: %s -- %s', $error, $json)
             );

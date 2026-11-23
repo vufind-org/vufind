@@ -229,9 +229,9 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
              * If no arguments are given, grabs the "root" or "layout" view model.
              * Otherwise, attempts to set the template for that view model.
              *
-             * @param null|string $template Template
+             * @param ?string $template Template
              *
-             * @return Model|null|self
+             * @return static
              */
             public function __invoke($template = null)
             {

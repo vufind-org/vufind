@@ -391,8 +391,8 @@ class OpenUrl
                 } else {
                     $valueCount = count($value);
                     if (
-                        $valueCount == count($recordValue)
-                        && $valueCount == count(
+                        $valueCount === count($recordValue)
+                        && $valueCount === count(
                             array_intersect($value, $recordValue)
                         )
                     ) {
@@ -403,7 +403,7 @@ class OpenUrl
         }
 
         // Did all the rules match?
-        return $ruleMatchCounter == count($rules);
+        return $ruleMatchCounter === count($rules);
     }
 
     /**

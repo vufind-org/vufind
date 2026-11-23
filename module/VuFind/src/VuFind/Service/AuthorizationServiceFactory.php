@@ -31,11 +31,12 @@ namespace VuFind\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Lmc\Rbac\Assertion\AssertionPluginManager;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
-use Lmc\Rbac\Mvc\Service\AuthorizationServiceFactory as LmcRbacAuthorizationServiceFactory;
+use Lmc\Rbac\Service\AuthorizationServiceInterface as BaseAuthorizationServiceInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Auth\Manager as AuthManager;
 
 /**
  * Authorization service factory.
@@ -46,7 +47,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AuthorizationServiceFactory extends LmcRbacAuthorizationServiceFactory
+class AuthorizationServiceFactory implements FactoryInterface
 {
     /**
      * Create an object.
@@ -66,11 +67,14 @@ class AuthorizationServiceFactory extends LmcRbacAuthorizationServiceFactory
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
-    ): AuthorizationService {
+    ): AuthorizationServiceInterface {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $authorizationService = parent::__invoke($container, $requestedName, $options);
+        $authorizationService = new $requestedName(
+            $container->get(AuthManager::class),
+            $container->get(BaseAuthorizationServiceInterface::class)
+        );
         $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
         $assertionPluginManager = $container->get(AssertionPluginManager::class);
         foreach ($permissions as $settings) {

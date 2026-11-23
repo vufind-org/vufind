@@ -52,6 +52,7 @@ use function strlen;
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\AutocompleteTrait;
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\SearchSortTrait;
     use \VuFindTest\Feature\TagTrait;
@@ -613,7 +614,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'config' => [
-                    'Mail' => ['testOnly' => 1],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                    ],
                 ],
             ]
         );
@@ -640,6 +645,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Logout
         $this->clickCss($page, '.logoutOptions a.logout');
 
+        $this->resetEmailLog();
+
         // Go to a record view
         $page = $this->goToRecord();
         // Click email record without logging in
@@ -664,6 +671,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         // Logout
         $this->clickCss($page, '.logoutOptions a.logout');
+
+        $email = (string)$this->getLoggedEmail()->getBody()->getBody();
+        $this->resetEmailLog();
+        $this->assertStringContainsString('This email was sent from: asdf@vufind.org', $email);
+        $this->assertStringContainsString('Dewey browse test', $email);
     }
 
     /**
@@ -982,7 +994,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Remove comments, tags and ratings from user account menu
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/UserContent');
+        $session->visit($this->getVuFindUrl() . '/Account/UserContent');
         $page = $session->getPage();
         $this->findCss($page, '.usercontent-table');
         $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));

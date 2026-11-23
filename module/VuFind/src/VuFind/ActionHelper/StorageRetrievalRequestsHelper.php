@@ -114,7 +114,7 @@ class StorageRetrievalRequestsHelper extends AbstractRequestBase
         if (!empty($details)) {
             // Confirm?
             if (($postParams['confirm'] ?? null) === '0') {
-                $targetUrl = $this->routeHelper->getUrlFromRoute('myresearch-storageretrievalrequests');
+                $targetUrl = $this->routeHelper->getUrlFromRoute('storageretrievalrequests-list');
                 if ($all !== null) {
                     $confirmTitle = 'storage_retrieval_request_cancel_all';
                     $confirmMessage = 'confirm_storage_retrieval_request_cancel_all_text';

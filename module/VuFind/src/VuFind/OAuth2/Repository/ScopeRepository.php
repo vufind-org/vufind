@@ -88,9 +88,8 @@ class ScopeRepository implements ScopeRepositoryInterface
      * @param ?string                $authCodeId     Auth code ID
      *
      * @return ScopeEntityInterface[]
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function finalizeScopes(
         array $scopes,
         $grantType,

@@ -18,12 +18,12 @@
     <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled' && is_numeric($this->results->getSearchId())): ?>
       <li>
         <?php if ($this->results->isSavedSearch()): ?>
-          <a class="icon-link" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>">
+          <a class="icon-link" href="<?=$this->url('searchhistory-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>">
             <?=$this->icon('search-delete', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('save_search_remove')?></span>
           </a>
         <?php else: ?>
-          <a class="icon-link" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>" rel="nofollow">
+          <a class="icon-link" href="<?=$this->url('searchhistory-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>" rel="nofollow">
             <?=$this->icon('search-save', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('save_search')?></span>
           </a>
@@ -31,7 +31,7 @@
       </li>
       <?php if ($this->accountCapabilities()->isScheduledSearchEnabled() && !empty($this->scheduleOptions)): ?>
         <li>
-          <a class="manageSchedule icon-link" href="<?=$this->url('myresearch-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>" rel="nofollow">
+          <a class="manageSchedule icon-link" href="<?=$this->url('searchhistory-schedulesearch')?>?searchid=<?=urlencode($this->results->getSearchId())?>" rel="nofollow">
             <?=$this->icon('search-schedule-alert', 'icon-link__icon') ?>
             <span class="icon-link__label">
               <?=$this->transEsc('history_schedule')?>:

@@ -53,9 +53,8 @@ class Factory implements FactoryInterface
      * @param array              $options   Extra options (unused)
      *
      * @return SMSInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $name,

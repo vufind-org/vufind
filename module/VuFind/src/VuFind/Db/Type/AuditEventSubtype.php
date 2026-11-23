@@ -42,6 +42,8 @@ enum AuditEventSubtype: string
 {
     // ILS
     case CancelHolds = 'cancel_holds';
+    case CancelILLRequests = 'cancel_ill_requests';
+    case CancelStorageRetrievalRequests = 'cancel_storage_retrieval_requests';
     case PlaceCheckout = 'place_checkout';
     case PlaceHold = 'place_hold';
     case PlaceILLRequest = 'place_ill_request';

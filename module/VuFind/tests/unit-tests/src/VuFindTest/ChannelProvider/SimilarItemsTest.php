@@ -146,14 +146,14 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $options = [],
         $fetchFromSearchService = false
     ) {
-        $options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20], $options);
+        $options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20, 'start' => 0], $options);
         $mockObjects = $this->getSimilarItems($options);
         $similar = $mockObjects['similar'];
         $search = $mockObjects['search'];
         $routeHelper = $mockObjects['routeHelper'];
         $router = $mockObjects['router'];
         $similar->setProviderId('foo_ProviderId');
-        $params = new ParamBag(['rows' => $options['rows']]);
+        $params = new ParamBag(['rows' => $options['rows'], 'start' => $options['start']]);
         $retrieveParams = new ParamBag();
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $collection = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);

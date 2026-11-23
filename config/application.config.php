@@ -4,26 +4,21 @@ require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
-    'DoctrineModule',
-    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
     'Laminas\Cache\Storage\Adapter\Memcached',
     'Laminas\Cache\Storage\Adapter\Memory',
-    'Laminas\Form',
     'Laminas\Router',
     'Lmc\Rbac',
-    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
-    'Laminas\Mvc\I18n',
     'VuFindTheme',
     'VuFindSearch',
     'VuFind',
     'VuFindAdmin',
     'VuFindApi',
 ];
-if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
+if (PHP_SAPI === 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
@@ -48,7 +43,7 @@ $cacheDir = ($cache = getenv('VUFIND_CACHE_DIR')) ? $cache : $baseDir . '/cache'
 if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
-if (PHP_SAPI == 'cli') {
+if (PHP_SAPI === 'cli') {
     $cacheDir .= '/cli';
     if (!is_dir($cacheDir)) {
         mkdir($cacheDir);
@@ -71,7 +66,7 @@ if (!is_dir($cacheDir)) {
 }
 
 // Enable caching unless in CLI mode, dev mode or running tests:
-$useCache = PHP_SAPI !== 'cli' && APPLICATION_ENV != 'development' && APPLICATION_ENV != 'testing';
+$useCache = PHP_SAPI !== 'cli' && APPLICATION_ENV !== 'development' && APPLICATION_ENV !== 'testing';
 
 // Build configuration:
 return [
@@ -82,7 +77,7 @@ return [
         ],
         'config_cache_enabled' => $useCache,
         'module_map_cache_enabled' => $useCache,
-        'check_dependencies' => (APPLICATION_ENV == 'development'),
+        'check_dependencies' => APPLICATION_ENV === 'development',
         'cache_dir'            => $cacheDir,
         'module_paths' => [
             APPLICATION_PATH . '/module',

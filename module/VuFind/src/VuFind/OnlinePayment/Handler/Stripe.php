@@ -59,7 +59,6 @@ class Stripe extends AbstractBase implements
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
      * Mappings from fine tax percentages to tax codes.
@@ -98,9 +97,8 @@ class Stripe extends AbstractBase implements
      * @return Response
      *
      * @throws PaymentException
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function startPayment(
         string $returnBaseUrl,
         string $notifyBaseUrl,
@@ -216,9 +214,8 @@ class Stripe extends AbstractBase implements
      * @return int One of the result codes defined in AbstractBase
      *
      * @throws PaymentException
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function processPaymentResponse(
         PaymentEntityInterface $payment,
         \Laminas\Http\Request $request

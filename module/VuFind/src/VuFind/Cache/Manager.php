@@ -261,7 +261,7 @@ class Manager implements ContainerInterface, LoggerAwareInterface
         }
 
         // Use separate cache dir in CLI mode to avoid permission issues:
-        if ($allowCliOverride && PHP_SAPI == 'cli') {
+        if ($allowCliOverride && PHP_SAPI === 'cli') {
             $dir .= 'cli/';
         }
 

@@ -31,7 +31,6 @@
 
 namespace VuFind\Search\Base;
 
-use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\TranslatableStringInterface;
 use VuFind\Search\Minified;
@@ -47,7 +46,6 @@ use function call_user_func;
 use function count;
 use function get_class;
 use function in_array;
-use function intval;
 use function is_array;
 use function is_callable;
 use function is_object;
@@ -360,12 +358,12 @@ class Params
     /**
      * Pull the search parameters.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(Parameters $request): void
+    public function initFromRequest(array $request): void
     {
         // We should init view first, since RSS view may cause certain variant
         // behaviors:
@@ -379,21 +377,21 @@ class Params
         $this->initSort($request);
         $this->initFilters($request);
         $this->initHiddenFilters($request);
-        $this->isSpecializedSearch = $request->get('specializedSearch', false);
+        $this->isSpecializedSearch = $request['specializedSearch'] ?? false;
     }
 
     /**
      * Pull shard parameters from the request or set defaults.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initShards(Parameters $request): void
+    protected function initShards(array $request): void
     {
         $legalShards = array_keys($this->getOptions()->getShards());
-        $requestShards = $request->get('shard', []);
+        $requestShards = $request['shard'] ?? [];
         if (!is_array($requestShards)) {
             $requestShards = [$requestShards];
         }
@@ -416,16 +414,16 @@ class Params
     /**
      * Pull the page size parameter or set to default.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initLimit(Parameters $request): void
+    protected function initLimit(array $request): void
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = intval($request->get('limit'))) != $defaultLimit) {
+        if (($limit = (int)($request['limit'] ?? $defaultLimit)) !== $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -443,7 +441,7 @@ class Params
         }
 
         // Increase default limit for RSS mode:
-        if ($this->getView() == 'rss' && $defaultLimit < 50) {
+        if ($this->getView() === 'rss' && $defaultLimit < 50) {
             $defaultLimit = 50;
         }
 
@@ -454,14 +452,14 @@ class Params
     /**
      * Pull the page parameter.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initPage(Parameters $request): void
+    protected function initPage(array $request): void
     {
-        $this->page = intval($request->get('page'));
+        $this->page = (int)($request['page'] ?? 1);
         if ($this->page < 1) {
             $this->page = 1;
         }
@@ -470,12 +468,12 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(Parameters $request): void
+    protected function initSearch(array $request): void
     {
         // Try to initialize a basic search; if that fails, try for an advanced
         // search next!
@@ -487,16 +485,16 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch(Parameters $request): bool
+    protected function initBasicSearch(array $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (null === ($lookfor = $request->get('lookfor'))) {
+        if (null === ($lookfor = $request['lookfor'] ?? null)) {
             return false;
         }
 
@@ -512,7 +510,7 @@ class Params
         }
 
         // Flatten type arrays for backward compatibility with legacy URLs:
-        $handler = $request->get('type');
+        $handler = $request['type'] ?? null;
         if (is_array($handler)) {
             $handler = $handler[0];
         }
@@ -567,12 +565,12 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initAdvancedSearch(Parameters $request): void
+    protected function initAdvancedSearch(array $request): void
     {
         $this->query = $this->getQueryAdapter()->fromRequest(
             $request,
@@ -583,14 +581,14 @@ class Params
 
         // If we ended up with a basic search, it's probably the result of
         // submitting an empty form, and more processing may be needed:
-        if ($this->searchType == 'basic') {
+        if ($this->searchType === 'basic') {
             // Set a default handler if necessary:
             if ($this->query->getHandler() === null) {
                 $this->query->setHandler($this->getOptions()->getDefaultHandler());
             }
             // If the user submitted the advanced search form, we want to treat
             // the search as advanced even if it evaluated to a basic search.
-            if ($request->offsetExists('lookfor0')) {
+            if (isset($request['lookfor0'])) {
                 $this->convertToAdvancedSearch();
             }
         }
@@ -599,18 +597,18 @@ class Params
     /**
      * Get the value for which type of sorting to use.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initSort(Parameters $request): void
+    protected function initSort(array $request): void
     {
         // Check for special parameter only relevant in RSS mode:
-        if ($request->get('skip_rss_sort', 'unset') != 'unset') {
+        if ($request['skip_rss_sort'] ?? null) {
             $this->skipRssSort = true;
         }
-        $this->setSort($request->get('sort'));
+        $this->setSort($request['sort'] ?? null);
     }
 
     /**
@@ -628,15 +626,15 @@ class Params
     /**
      * Get the value for which results view to use.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initView(Parameters $request): void
+    protected function initView(array $request): void
     {
         // Check for a view parameter in the url.
-        $view = $request->get('view');
+        $view = $request['view'] ?? null;
         $validViews = array_keys($this->getOptions()->getViewOptions());
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
@@ -761,7 +759,7 @@ class Params
         $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
-        if (!$this->skipRssSort && $this->getView() == 'rss') {
+        if (!$this->skipRssSort && $this->getView() === 'rss') {
             $this->sort = $this->getOptions()->getRssSort($this->sort);
         }
     }
@@ -839,7 +837,7 @@ class Params
         // Special case: complex filters cannot be split into field/value
         // since they have multiple parts (e.g. field1:a OR field2:b). Use
         // a fake "#" field to collect these types of filters.
-        if ($this->isAdvancedFilter($filter) == true) {
+        if ($this->isAdvancedFilter($filter) === true) {
             return ['#', $filter];
         }
 
@@ -1038,7 +1036,7 @@ class Params
      */
     public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
-        if (strlen($newField) == 0) {
+        if (strlen($newField) === 0) {
             throw new \VuFind\Exception\BadRequest('Can not add facet when no field provided');
         }
         if ($newAlias == null) {
@@ -1309,10 +1307,10 @@ class Params
     protected function parseOperatorAndFieldName(string $field): array
     {
         $firstChar = substr($field, 0, 1);
-        if ($firstChar == '-') {
+        if ($firstChar === '-') {
             $operator = 'NOT';
             $field = substr($field, 1);
-        } elseif ($firstChar == '~') {
+        } elseif ($firstChar === '~') {
             $operator = 'OR';
             $field = substr($field, 1);
         } else {
@@ -1411,12 +1409,12 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initRangeFilters(Parameters $request): void
+    protected function initRangeFilters(array $request): void
     {
         $this->initDateFilters($request);
         $this->initFullDateFilters($request);
@@ -1432,9 +1430,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string      Formatted year.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function formatYearForDateRange(?string $year, bool $rangeEnd = false): string
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
@@ -1465,9 +1462,8 @@ class Params
      * @param bool    $rangeEnd Is this the end of a range?
      *
      * @return string     Formatted number.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function formatValueForNumericRange(?string $num, bool $rangeEnd = false): string
     {
         // empty strings, null values and non-numeric values are treated as wildcards:
@@ -1510,27 +1506,26 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param Parameters $request         Parameter object
-     * representing user request.
-     * @param string     $requestParam    Name of parameter containing names of range filter fields.
-     * @param ?callable  $valueFilter     Optional callback to process values in the range.
-     * @param ?callable  $filterGenerator Optional callback to create a filter query from the range values.
+     * @param array     $request         Parameter array representing user request.
+     * @param string    $requestParam    Name of parameter containing names of range filter fields.
+     * @param ?callable $valueFilter     Optional callback to process values in the range.
+     * @param ?callable $filterGenerator Optional callback to create a filter query from the range values.
      *
      * @return void
      */
     protected function initGenericRangeFilters(
-        Parameters $request,
+        array $request,
         string $requestParam = 'genericrange',
         ?callable $valueFilter = null,
         ?callable $filterGenerator = null
     ): void {
-        $rangeFacets = $request->get($requestParam);
+        $rangeFacets = $request[$requestParam] ?? [];
         if (!empty($rangeFacets)) {
-            $ranges = is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
+            $ranges = (array)$rangeFacets;
             foreach ($ranges as $range) {
                 // Load start and end of range:
-                $from = $request->get($range . 'from');
-                $to = $request->get($range . 'to');
+                $from = $request[$range . 'from'] ?? null;
+                $to = $request[$range . 'to'] ?? null;
 
                 // Apply filtering/validation if necessary:
                 if (is_callable($valueFilter)) {
@@ -1562,7 +1557,7 @@ class Params
     protected function buildNumericRangeFilter(string $field, string $from, string $to): string
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from != '*' && $to < $from) {
+        if ($to !== '*' && $from !== '*' && $to < $from) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1600,7 +1595,7 @@ class Params
     protected function buildFullDateRangeFilter(string $field, string $from, string $to): string
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from != '*' && strtotime($to) < strtotime($from)) {
+        if ($to !== '*' && $from !== '*' && strtotime($to) < strtotime($from)) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1614,12 +1609,12 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initDateFilters(Parameters $request): void
+    protected function initDateFilters(array $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1634,12 +1629,12 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFullDateFilters(Parameters $request): void
+    protected function initFullDateFilters(array $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1654,12 +1649,12 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initNumericRangeFilters(Parameters $request): void
+    protected function initNumericRangeFilters(array $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1672,15 +1667,15 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(Parameters $request): void
+    protected function initFilters(array $request): void
     {
         // Handle standard filters:
-        $filter = $request->get('filter');
+        $filter = $request['filter'] ?? null;
         if (!empty($filter)) {
             if (is_array($filter)) {
                 foreach ($filter as $current) {
@@ -1693,7 +1688,7 @@ class Params
 
         // If we don't have the special flag indicating that defaults have
         // been applied, and if we do have defaults, apply them:
-        if ($request->get('dfApplied')) {
+        if ($request['dfApplied'] ?? false) {
             $this->defaultsApplied = true;
         } else {
             $defaults = $this->getOptions()->getDefaultFilters();
@@ -1712,14 +1707,14 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initHiddenFilters(Parameters $request): void
+    protected function initHiddenFilters(array $request): void
     {
-        $hiddenFilters = $request->get('hiddenFilters');
+        $hiddenFilters = $request['hiddenFilters'] ?? [];
         if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
             foreach ($hiddenFilters as $current) {
                 $this->addHiddenFilter($current);
@@ -1963,9 +1958,8 @@ class Params
      * @param array $ids Record IDs to load
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function setQueryIDs(array $ids): void
     {
         // This needs to be defined in child classes:

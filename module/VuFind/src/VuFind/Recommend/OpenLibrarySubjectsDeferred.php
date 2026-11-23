@@ -81,12 +81,12 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param array                      $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    public function init(\VuFind\Search\Base\Params $params, array $request): void
     {
         // Parse out parameters:
         $settings = explode(':', $this->rawParams);
@@ -104,7 +104,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
         if (!isset($settings[2]) || empty($settings[2])) {
             $settings[2] = 'publishDate';
         }
-        $pubDateRange = strtolower($settings[2]) == 'false' ?
+        $pubDateRange = strtolower($settings[2]) === 'false' ?
             [] : $this->getPublishedDates($settings[2], $params, $request);
         if (!empty($pubDateRange)) {
             // Check if [Subject types] parameter has been supplied in searches.ini
@@ -117,7 +117,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
         $this->processedParams = implode(':', $settings);
 
         // Collect the best possible search term(s):
-        $this->subject = $request->get($this->requestParam);
+        $this->subject = $request[$this->requestParam] ?? '';
         if (empty($this->subject) && is_object($params)) {
             $this->subject = $params->getQuery()->getAllTerms();
         }

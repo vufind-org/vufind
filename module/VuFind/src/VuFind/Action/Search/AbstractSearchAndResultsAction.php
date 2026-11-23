@@ -33,8 +33,7 @@
 namespace VuFind\Action\Search;
 
 use Exception;
-use Laminas\Session\SessionManager;
-use Laminas\Stdlib\Parameters;
+use Laminas\Session\ManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -132,7 +131,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param BlockLoader                $blockLoader                Content block loader
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
-     * @param SessionManager             $sessionManager             Session manager
+     * @param ManagerInterface           $sessionManager             Session manager
      * @param SearchServiceInterface     $searchService              Search service
      * @param AuthManager                $authManager                Authentication manager
      * @param SearchNormalizer           $searchNormalizer           Search normalize
@@ -150,7 +149,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected BlockLoader $blockLoader,
         protected ConfigManager $configManager,
         protected RecordRouter $recordRouter,
-        protected SessionManager $sessionManager,
+        protected ManagerInterface $sessionManager,
         #[Autowire(container: DbServicePluginManager::class)]
         protected SearchServiceInterface $searchService,
         protected AuthManager $authManager,
@@ -320,7 +319,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // to properly populate special controls on the advanced screen.
         if (!$saved && count($options->getDefaultFilters()) > 0) {
             $saved = $this->resultsPluginManager->get($this->getSearchClassId());
-            $saved->getParams()->initFromRequest(new \Laminas\Stdlib\Parameters([]));
+            $saved->getParams()->initFromRequest([]);
         }
 
         $templateParams = $this->createTemplateParams(compact('options', 'saved'));
@@ -480,7 +479,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // Get results
         $results = $this->resultsPluginManager->get($this->getSearchClassId());
         $params = $results->getParams();
-        $params->initFromRequest(new Parameters($this->request->getQueryParams()));
+        $params->initFromRequest($this->request->getQueryParams());
         // Get parameters
         $facet = $this->getQueryParam('facet', '');
         $contains = $this->getQueryParam('contains', '');
@@ -791,7 +790,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         if (
             $jumpto
             && ($this->configManager->getConfigArray('config')['Record']['jump_to_single_search_result'] ?? false)
-            && $results->getResultTotal() == 1
+            && $results->getResultTotal() === 1
             && $recordList = $results->getResults()
         ) {
             return $this->getRedirectForRecord(
@@ -881,7 +880,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         }
 
         // Fail if this is not the right type of search:
-        if ($savedSearch->getParams()->getSearchType() != 'advanced') {
+        if ($savedSearch->getParams()->getSearchType() !== 'advanced') {
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {

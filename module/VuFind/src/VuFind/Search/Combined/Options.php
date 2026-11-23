@@ -79,9 +79,8 @@ class Options extends \VuFind\Search\Base\Options
      * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function getRecommendationSettings(?string $handler = null): array
     {
         $recommend = [];

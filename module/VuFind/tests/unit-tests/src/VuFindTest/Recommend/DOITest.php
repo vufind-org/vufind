@@ -140,7 +140,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
         }
         $doi = new DOI();
         $doi->setConfig($settings);
-        $doi->init($results->getParams(), new \Laminas\Stdlib\Parameters([]));
+        $doi->init($results->getParams(), []);
         $doi->process($results);
         return $doi;
     }
