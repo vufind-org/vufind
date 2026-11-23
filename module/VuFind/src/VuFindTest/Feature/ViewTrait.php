@@ -175,7 +175,6 @@ trait ViewTrait
         $view = $this->createMock(View::class);
         $view->method('render')
             ->willReturnCallback([$renderer, 'render']);
-        // new View($renderer, $helperPluginManager, 'layout/layout', 'content');
         $viewManager = $this->createMock(ViewManager::class);
         $viewManager->method('getView')
             ->willReturn($view);

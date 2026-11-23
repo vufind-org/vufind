@@ -75,7 +75,6 @@ class IconFactory implements FactoryInterface
         $config = $container->get(\VuFindTheme\ThemeInfo::class)
             ->getMergedConfig('icons');
 
-
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause
         // unnecessary out of memory exceptions when a memory limit is enabled; we
         // can disable these problematic checks by setting memory_limit to -1.
