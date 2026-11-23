@@ -39,8 +39,8 @@
           ?>
         <?php endif; ?>
         <?php if (
-          ($this->config()->get('config')->toArray()['Citation']['cart'] ?? false)
-          && ($this->config()->get('config')->toArray()['Citation']['formats'] ?? true)
+          ($this->config()->getArray('config')['Citation']['cart'] ?? false)
+          && ($this->config()->getArray('config')['Citation']['formats'] ?? true)
         ): ?>
           <?=
             $this->bulkAction()->button(
