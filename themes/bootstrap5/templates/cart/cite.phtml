@@ -43,7 +43,7 @@
   $content = ob_get_contents();
   ob_end_clean();
   $tabs[$format] = [
-    'description' => $this->translate($format . ' Edition Citation'),
+    'description' => $this->citation()->getCaption($format),
     'content' => $content,
   ];
   ?>

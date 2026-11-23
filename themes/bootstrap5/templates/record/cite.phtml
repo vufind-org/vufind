@@ -28,7 +28,7 @@
     <?php
       $elementId = 'citation-' . $this->escapeHtmlAttr($format);
     ?>
-    <strong><?=$this->transEsc($format . ' Edition Citation')?></strong>
+    <strong><?=$this->escapeHtml($helper->getCaption($format))?></strong>
     <div class="citation copy-to-clipboard-container">
       <span id="<?=$elementId?>">
         <?=$citation?>

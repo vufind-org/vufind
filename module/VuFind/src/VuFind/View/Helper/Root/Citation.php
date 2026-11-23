@@ -117,75 +117,78 @@ class Citation implements TranslatorAwareInterface
      * Store a record driver object and return this object so that the appropriate
      * template can be rendered.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
+     * @param ?\VuFind\RecordDriver\AbstractBase $driver Record driver object.
      *
      * @return static
      */
-    public function __invoke($driver)
+    public function __invoke(?\VuFind\RecordDriver\AbstractBase $driver = null): static
     {
-        // Store the driver first, since we will need it for prepareAuthors checks.
-        $this->driver = $driver;
+        // Initialize if a driver is given
+        if ($driver !== null) {
+            // Store the driver first, since we will need it for prepareAuthors checks.
+            $this->driver = $driver;
 
-        // Build author list:
-        $authors = $this->prepareAuthors(
-            (array)$driver->tryMethod('getPrimaryAuthors')
-        );
-        $corporateAuthors = [];
-        if (empty($authors)) {
-            // Corporate authors are more likely to have inappropriate trailing
-            // punctuation; strip it off, unless the last word is short, like
-            // "Co.", "Ltd.," etc.:
-            $trimmer = function ($str) {
-                return preg_match('/\s+.{1,3}\.$/', $str)
-                    ? $str : rtrim($str, '.');
-            };
-            $corporateAuthors = $authors = $this->prepareAuthors(
-                array_map(
-                    $trimmer,
-                    (array)$driver->tryMethod('getCorporateAuthors')
-                ),
-                true
+            // Build author list:
+            $authors = $this->prepareAuthors(
+                (array)$driver->tryMethod('getPrimaryAuthors')
             );
-        }
-        $secondary = $this->prepareAuthors(
-            (array)$driver->tryMethod('getSecondaryAuthors')
-        );
-        if (!empty($secondary)) {
-            $authors = array_unique(array_merge($authors, $secondary));
-        }
+            $corporateAuthors = [];
+            if (empty($authors)) {
+                // Corporate authors are more likely to have inappropriate trailing
+                // punctuation; strip it off, unless the last word is short, like
+                // "Co.", "Ltd.," etc.:
+                $trimmer = function ($str) {
+                    return preg_match('/\s+.{1,3}\.$/', $str)
+                        ? $str : rtrim($str, '.');
+                };
+                $corporateAuthors = $authors = $this->prepareAuthors(
+                    array_map(
+                        $trimmer,
+                        (array)$driver->tryMethod('getCorporateAuthors')
+                    ),
+                    true
+                );
+            }
+            $secondary = $this->prepareAuthors(
+                (array)$driver->tryMethod('getSecondaryAuthors')
+            );
+            if (!empty($secondary)) {
+                $authors = array_unique(array_merge($authors, $secondary));
+            }
 
-        // Get best available title details:
-        $title = $driver->tryMethod('getShortTitle');
-        $subtitle = $driver->tryMethod('getSubtitle');
-        if (empty($title)) {
-            $title = $driver->tryMethod('getTitle');
-        }
-        if (empty($title)) {
-            $title = $driver->getBreadcrumb();
-        }
-        // Find subtitle in title if they're not separated:
-        if (empty($subtitle) && strstr($title, ':')) {
-            [$title, $subtitle] = explode(':', $title, 2);
-        }
+            // Get best available title details:
+            $title = $driver->tryMethod('getShortTitle');
+            $subtitle = $driver->tryMethod('getSubtitle');
+            if (empty($title)) {
+                $title = $driver->tryMethod('getTitle');
+            }
+            if (empty($title)) {
+                $title = $driver->getBreadcrumb();
+            }
+            // Find subtitle in title if they're not separated:
+            if (empty($subtitle) && strstr($title, ':')) {
+                [$title, $subtitle] = explode(':', $title, 2);
+            }
 
-        // Extract the additional details from the record driver:
-        $publishers = $driver->tryMethod('getPublishers');
-        $pubDates = $driver->tryMethod('getPublicationDates');
-        $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
-        $edition = $driver->tryMethod('getEdition');
+            // Extract the additional details from the record driver:
+            $publishers = $driver->tryMethod('getPublishers');
+            $pubDates = $driver->tryMethod('getPublicationDates');
+            $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
+            $edition = $driver->tryMethod('getEdition');
 
-        // Store all the collected details:
-        $this->details = [
-            'authors' => $authors,
-            'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title),
-            'subtitle' => trim($subtitle ?? ''),
-            'pubPlace' => $pubPlaces[0] ?? null,
-            'pubName' => $publishers[0] ?? null,
-            'pubDate' => $pubDates[0] ?? null,
-            'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle'),
-        ];
+            // Store all the collected details:
+            $this->details = [
+                'authors' => $authors,
+                'corporateAuthors' => $corporateAuthors,
+                'title' => trim($title),
+                'subtitle' => trim($subtitle ?? ''),
+                'pubPlace' => $pubPlaces[0] ?? null,
+                'pubName' => $publishers[0] ?? null,
+                'pubDate' => $pubDates[0] ?? null,
+                'edition' => empty($edition) ? [] : [$edition],
+                'journal' => $driver->tryMethod('getContainerTitle'),
+            ];
+        }
 
         return $this;
     }
@@ -258,6 +261,26 @@ class Citation implements TranslatorAwareInterface
             },
             $authors
         );
+    }
+
+    /**
+     * Get the caption for a given format.
+     *
+     * @param string $format Citation format
+     *
+     * @return string
+     */
+    public function getCaption(string $format): string
+    {
+        // Some language files only contain translations for a short caption;
+        // let's try to detect whether or not long captions are getting translated
+        // properly and display the appropriate one accordingly. This logic can be
+        // removed once all of the language files contain the "Edition Citation"
+        // version of the relevant strings.
+        $shortCaption = $this->translate($format . ' Citation');
+        $longCaption = $this->translate($format . ' Edition Citation');
+        return (strpos($longCaption, 'Citation') > 0 && !str_contains($shortCaption, 'Citation'))
+            ? $shortCaption : $longCaption;
     }
 
     /**
