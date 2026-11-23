@@ -64,13 +64,14 @@ class FooterMenuFactory extends AbstractMenuFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return parent::__invoke(
             $container,
             $requestedName,
             [
                 'FooterMenu.yaml',
-                $config,
+                $configManager->getConfigArray('config'),
+                $configManager->getConfigArray('searches'),
                 ...($options ?? []),
             ]
         );
