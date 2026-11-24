@@ -113,8 +113,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param LocaleSettings            $localeSettings   Locale settings object
      * @param RouteHelper               $routeHelper      Route helper
      * @param string|null               $name             The name of the command; passing
-     *                                                    null means it must be set in
-     *                                                    configure()
+     * null means it must be set in configure()
      */
     public function __construct(
         protected SecretCalculator $secretCalculator,
