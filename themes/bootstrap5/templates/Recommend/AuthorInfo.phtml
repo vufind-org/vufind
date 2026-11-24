@@ -1,5 +1,5 @@
 <?php $info = $this->recommend->getAuthorInfo() ?>
-<?php if (!(empty($info['description']) || empty($info))): ?>
+<?php if ($info): ?>
 <div class="wikipedia well clearfix">
   <h2><?=$info['name'] ?></h2>
 
