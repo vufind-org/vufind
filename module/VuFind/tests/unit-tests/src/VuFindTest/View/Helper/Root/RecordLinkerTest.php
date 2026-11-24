@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\Http\RouteHelper;
 use VuFind\Record\Router;
 use VuFind\Search\Base\Results;
 use VuFind\View\Helper\Root\RecordLinker;
@@ -231,7 +232,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $recordLinker = new RecordLinker(
             new Router([]),
             $memory,
-            $url,
+            new RouteHelper(fn () => $url),
             $searchOptionManager,
             $translate,
             $truncate,

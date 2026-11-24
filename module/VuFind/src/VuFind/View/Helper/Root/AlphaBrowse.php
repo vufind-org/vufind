@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Url;
+use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -46,12 +46,11 @@ class AlphaBrowse
     /**
      * Constructor.
      *
-     * @param Url   $url     URL helper
-     * @param array $options Additional configuration options
+     * @param RouteHelper $routeHelper Route helper
+     * @param array       $options     Additional configuration options
      */
     public function __construct(
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Url $url,
+        protected RouteHelper $routeHelper,
         #[Autowire(config: 'config', path: 'AlphaBrowse', default: [])]
         protected array $options = []
     ) {
@@ -82,7 +81,7 @@ class AlphaBrowse
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
-        return ($this->url)('search-results', [], ['query' => $query]);
+        return $this->routeHelper->getUrlFromRoute('search-results', queryParams: $query);
     }
 
     /**

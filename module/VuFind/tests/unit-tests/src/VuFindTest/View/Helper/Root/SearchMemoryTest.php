@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\Memory;
 use VuFind\Search\Params\PluginManager;
 use VuFind\Search\Solr\Options;
@@ -117,7 +118,12 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         });
         $searchParams = $this->createMock(PluginManager::class);
         $searchParams->method('get')->with('Solr')->willReturn($solrParams);
-        return $this->getSearchMemoryViewHelper($memory, $url, $escapeHtml, $searchParams);
+        return $this->getSearchMemoryViewHelper(
+            $memory,
+            new RouteHelper(fn () => $url),
+            $escapeHtml,
+            $searchParams
+        );
     }
 
     /**

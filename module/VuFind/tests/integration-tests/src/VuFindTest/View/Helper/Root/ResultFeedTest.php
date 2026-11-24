@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Integration\View\Helper\Root;
 
+use VuFind\Http\RouteHelper;
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
@@ -87,7 +88,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([
                 $router,
                 $memory,
-                $url,
+                new RouteHelper(fn () => $url),
                 $searchOptionsManager,
                 $translate,
                 $truncate,
