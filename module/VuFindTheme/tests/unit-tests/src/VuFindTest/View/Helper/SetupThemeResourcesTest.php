@@ -31,7 +31,6 @@ namespace VuFindTest\View\Helper;
 
 use Laminas\View\Helper\HeadLink;
 use Laminas\View\Helper\HeadMeta;
-use Laminas\View\Helper\HeadScript;
 use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Escaper\Escaper;
