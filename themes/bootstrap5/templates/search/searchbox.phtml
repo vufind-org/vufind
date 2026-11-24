@@ -17,7 +17,7 @@
         ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
-    if (isset($params) && $searchClassId === $params->getSearchClassId() && !$params->isSpecializedSearch()) {
+    if ($searchClassId === $params?->getSearchClassId() && !$params?->isSpecializedSearch()) {
       $hiddenFilters = $params->getHiddenFilters();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
