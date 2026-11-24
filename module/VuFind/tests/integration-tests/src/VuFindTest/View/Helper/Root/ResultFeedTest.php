@@ -30,7 +30,6 @@
 namespace VuFindTest\Integration\View\Helper\Root;
 
 use VuFind\Http\RouteHelper;
-use VuFind\Http\ServerUrlHelper;
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
