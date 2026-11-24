@@ -1,7 +1,4 @@
 <?php
-  $treeContext = 'Collection';
-  $treePreviewElement = '#tree-preview';
-
   $previewAttrs = [
     'id' => 'tree-preview',
   ];
@@ -14,7 +11,7 @@
   <div class="tree-panel">
     <?=$this->context($this)->renderInContext(
       'RecordTab/hierarchytree.phtml',
-      ['treeContext' => 'Collection', 'treePreviewElement' => '#tree-preview', 'tab' => $this->tab]
+      ['treeContext' => 'Collection', 'treePreviewElement' => '#' . $previewAttrs['id'], 'tab' => $this->tab]
     )?>
   </div>
   <div<?=$this->htmlAttributes($previewAttrs)?>>
