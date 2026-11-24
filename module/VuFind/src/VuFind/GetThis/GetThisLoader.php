@@ -132,7 +132,7 @@ class GetThisLoader implements LoggerAwareInterface
      *  - function : the result of a local function
      * The result is negated if the first char is "!".
      *
-     * @param array{name: string, itemKey: string, function: string} $config The config containing the regex name
+     * @param array{name: string, itemKey?: string, function?: string} $config The config containing the regex name
      *                                                                       and the value to match against
      *
      * @return bool
@@ -141,14 +141,11 @@ class GetThisLoader implements LoggerAwareInterface
     protected function isRegexMatching(array $config): bool
     {
         if (
-            !isset($config['name'])
+            !is_string($config['name'] ?? null)
             || (
-                !isset($config['itemKey'])
-                && !isset($config['function'])
+                !is_string($config['itemKey'] ?? null)
+                && !is_string($config['function'] ?? null)
             )
-            || !is_string($config['name'])
-            || (isset($config['itemKey']) && !is_string($config['itemKey']))
-            || (isset($config['function']) && !is_string($config['function']))
         ) {
             throw new Exception(
                 'The config for a regex should contain the ' .
