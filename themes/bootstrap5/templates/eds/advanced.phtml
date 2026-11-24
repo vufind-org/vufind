@@ -1,6 +1,6 @@
 <?php
   // Load the EDS-specific advanced search controls that will be included by the standard advanced search layout:
-  $this->globals()['extraAdvancedControls'] = $this->partial('search/advanced/eds.phtml');
+  $this->globals()['extraAdvancedControls'] = $this->context($this)->renderInContext('search/advanced/eds.phtml');
   $this->globals()['buildPageOverride'] = '/search/advanced/build_page_eds.phtml';
 
   ob_start();
