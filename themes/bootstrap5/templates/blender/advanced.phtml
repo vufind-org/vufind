@@ -46,5 +46,5 @@
   $params = (array)$this->vars() + [
       'helpTopics' => ['blender_advsearch' => 'Help with Advanced Search', 'blender' => 'Help with Search Operators'],
   ];
-  echo $this->render('search/advanced/layout.phtml', $params);
+  echo $this->context($this)->renderInContext('search/advanced/layout.phtml', $params);
 ?>

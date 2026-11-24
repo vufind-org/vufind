@@ -210,4 +210,4 @@
   <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'checkedout'])?>
 </div>
 
-<?=$this->render('account/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>
+<?=$this->context($this)->renderInContext('account/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

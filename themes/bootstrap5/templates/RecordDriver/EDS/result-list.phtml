@@ -67,11 +67,11 @@
 
       <?php if ($this->driver->isPlaceholder()): ?>
         <div class="resultItemLine1">
-          <?=$this->render('error/guestRestriction.phtml')?>
+          <?=$this->context($this)->renderInContext('error/guestRestriction.phtml')?>
         </div>
       <?php elseif ($this->params->getOptions()->showRestrictedViewWarning('result_list_entry') && $this->driver->isRestrictedView()): ?>
         <div class="resultItemLine1">
-          <?=$this->render('error/restrictedViewWarning.phtml')?>
+          <?=$this->context($this)->renderInContext('error/restrictedViewWarning.phtml')?>
         </div>
       <?php endif; ?>
 
@@ -138,7 +138,7 @@
       <?=$this->record($this->driver)->renderTemplate('controls/qrcode.phtml', ['driver' => $this->driver, 'context' => 'results'])?>
 
       <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
+        <?=$this->context($this)->renderInContext('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
       <?php endif; ?>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>

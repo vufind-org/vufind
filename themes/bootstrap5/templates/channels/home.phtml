@@ -5,4 +5,4 @@
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Channels'), active: true);
 ?>
-<?=$this->render('channels/channelList.phtml')?>
+<?=$this->context($this)->renderInContext('channels/channelList.phtml')?>
