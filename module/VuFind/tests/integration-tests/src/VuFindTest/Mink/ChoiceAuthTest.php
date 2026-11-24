@@ -270,6 +270,8 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'config' => $this->getConfigIniEmailOverrides() + $this->getConfigIniOverrides(),
+                // Include Demo config to avoid exceptions:
+                'Demo' => $this->getDemoIniOverrides(),
             ]
         );
         $session = $this->getMinkSession();

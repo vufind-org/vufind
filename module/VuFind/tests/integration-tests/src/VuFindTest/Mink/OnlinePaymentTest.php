@@ -518,9 +518,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     {
         $demoConfig = $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment(['receipt' => false]);
         $demoConfig['Failure_Probabilities']['registerPayment'] = 100;
+        $config = $this->getConfigIniOverrides(false);
+        // Disable logging of known exception:
+        $configs['config']['Logging']['file'] = null;
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(false),
+                'config' => $config,
                 'Demo' => $demoConfig,
             ]
         );
