@@ -8,7 +8,7 @@
 <h2><?=$this->transEsc('Payment::terms_heading')?></h2>
 <form id="confirm_pay" class="confirm-payment confirm-payment__<?=$this->escapeHtmlAttr($this->paymentHandler)?>" action="<?=$this->url('fines-pay')?>" method="post" data-lightbox-ignore data-disable-on-submit>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
-  <?=$this->render($termsTemplate)?>
+  <?=$this->context($this)->renderInContext($termsTemplate)?>
   <?php foreach ($this->selectedIds as $fineId): ?>
     <input name="selectedIDS[]" type="hidden" value="<?=$this->escapeHtmlAttr($fineId)?>">
   <?php endforeach; ?>

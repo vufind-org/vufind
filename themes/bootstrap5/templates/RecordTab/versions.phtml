@@ -1,7 +1,7 @@
 <?php
   $results = $this->driver->tryMethod('getVersions', [false, 20]);
   $view = 'list';
-  $this->render(
+  $this->context($this)->renderInContext(
       'search/results-scripts.phtml',
       [
           'displayVersions' => true,

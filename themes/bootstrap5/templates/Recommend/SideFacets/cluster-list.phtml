@@ -56,7 +56,7 @@
         <?php endif; ?>
       <?php endif; ?>
 
-      <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+      <?=$this->context($this)->renderInContext('Recommend/SideFacets/single-facet.phtml', [
         'exclude' => $this->allowExclude,
         'facet' => $thisFacet,
         'group' => $this->title,

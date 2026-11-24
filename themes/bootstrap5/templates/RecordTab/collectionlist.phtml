@@ -39,17 +39,17 @@
       </form>
     </div>
     <div class="collection-control">
-      <?=$this->render('search/controls/limit.phtml', $searchDetails)?>
+      <?=$this->context($this)->renderInContext('search/controls/limit.phtml', $searchDetails)?>
     </div>
     <div class="collection-control">
-      <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
+      <?=$this->context($this)->renderInContext('search/controls/sort.phtml', $searchDetails)?>
     </div>
   </div>
 
 
   <?php if ($filterList || $checkboxFilters): ?>
     <?=
-      $this->render(
+      $this->context($this)->renderInContext(
           'search/filters.phtml',
           [
             'urlQuery' => $results->getUrlQuery(),
@@ -82,7 +82,7 @@
       </div>
       <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" id="search-cart-form" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
-        <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+        <?=$this->context($this)->renderInContext('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
         <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $results]])?>
       </form>
     <?php else: ?>

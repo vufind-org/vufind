@@ -270,4 +270,4 @@
   <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render(['active' => 'holds'])?>
 </div>
 
-<?=$this->render('account/notify-account-status.phtml', ['method' => 'holds', 'accountStatus' => $this->accountStatus]); ?>
+<?=$this->context($this)->renderInContext('account/notify-account-status.phtml', ['method' => 'holds', 'accountStatus' => $this->accountStatus]); ?>

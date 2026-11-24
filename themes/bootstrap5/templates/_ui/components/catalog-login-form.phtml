@@ -26,7 +26,7 @@
   $loginSettings = $this->config()->getILSLoginSettings();
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
-  <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
+  <?=$this->context($this)->renderInContext('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php elseif (!$this->auth()->getManager()->allowsUserIlsLogin()): ?>
   <?= $heading ?>
   <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>

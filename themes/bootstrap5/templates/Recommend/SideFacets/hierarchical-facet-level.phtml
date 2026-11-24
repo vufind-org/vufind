@@ -4,7 +4,7 @@
 ?>
 <?php foreach ($this->facetList as $item): ?>
   <?php
-    $renderedEntryHtml = $this->render('Recommend/SideFacets/single-facet.phtml', [
+    $renderedEntryHtml = $this->context($this)->renderInContext('Recommend/SideFacets/single-facet.phtml', [
       'exclude' => $this->allowExclude,
       'facet' => $item,
       'group' => $this->group,
@@ -45,7 +45,7 @@
         <?=$renderedEntryHtml?>
       </span>
       <ul id="<?=$this->escapeHtmlAttr($childUlId)?>">
-        <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+        <?=$this->context($this)->renderInContext('Recommend/SideFacets/hierarchical-facet-level.phtml', [
           'allowExclude' => $this->allowExclude,
           'facetList' => $item['children'],
           'group' => $this->group,
