@@ -29,9 +29,9 @@
 
 namespace VuFind\Auth;
 
+use Closure;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\ManagerInterface;
-use Laminas\View\Renderer\RendererInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
 use Psr\Log\LoggerAwareInterface;
 use VuFind\Cookie\CookieManager;
@@ -119,17 +119,18 @@ class Manager implements LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param array                           $config            VuFind configuration
-     * @param UserServiceInterface            $userService       User database service
-     * @param UserSessionPersistenceInterface $userSession       User session persistence service
-     * @param ManagerInterface                $sessionManager    Session manager
-     * @param PluginManager                   $pluginManager     Authentication plugin manager
-     * @param CookieManager                   $cookieManager     Cookie manager
-     * @param CsrfInterface                   $csrf              CSRF validator
-     * @param LoginTokenManager               $loginTokenManager Login Token manager
-     * @param Connection                      $ils               ILS connection
-     * @param RendererInterface               $viewRenderer      View renderer
-     * @param AuditEventServiceInterface      $auditEventService Event database service
+     * @param array                           $config                         VuFind configuration
+     * @param UserServiceInterface            $userService                    User database service
+     * @param UserSessionPersistenceInterface $userSession                    User session persistence service
+     * @param ManagerInterface                $sessionManager                 Session manager
+     * @param PluginManager                   $pluginManager                  Authentication plugin manager
+     * @param CookieManager                   $cookieManager                  Cookie manager
+     * @param CsrfInterface                   $csrf                           CSRF validator
+     * @param LoginTokenManager               $loginTokenManager              Login Token manager
+     * @param Connection                      $ils                            ILS connection
+     * @param Closure                         $accountHomeAbsoluteUrlCallback Factory callback for account home page
+     * absolute URL
+     * @param AuditEventServiceInterface      $auditEventService              Event database service
      */
     public function __construct(
         protected array $config,
@@ -141,7 +142,7 @@ class Manager implements LoggerAwareInterface
         protected CsrfInterface $csrf,
         protected LoginTokenManager $loginTokenManager,
         protected Connection $ils,
-        protected RendererInterface $viewRenderer,
+        protected Closure $accountHomeAbsoluteUrlCallback,
         protected AuditEventServiceInterface $auditEventService
     ) {
         // Initialize active authentication setting (defaulting to Database
@@ -403,9 +404,7 @@ class Manager implements LoggerAwareInterface
     protected function getDefaultSessionInitiatorTarget(): string
     {
         if ($this->defaultSessionInitiatorTarget === null) {
-            $serverHelper = $this->viewRenderer->plugin('serverurl');
-            $urlHelper = $this->viewRenderer->plugin('url');
-            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('account-home'));
+            $this->defaultSessionInitiatorTarget = ($this->accountHomeAbsoluteUrlCallback)();
         }
         return $this->defaultSessionInitiatorTarget;
     }

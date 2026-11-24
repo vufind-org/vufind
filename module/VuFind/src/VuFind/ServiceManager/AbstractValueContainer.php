@@ -59,8 +59,7 @@ abstract class AbstractValueContainer implements ContainerInterface
         }
 
         $method = $this->getMethodName($id);
-        $instance = $this->$method();
-        return $instance;
+        return $this->$method();
     }
 
     /**

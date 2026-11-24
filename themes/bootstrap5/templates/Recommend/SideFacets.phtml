@@ -4,8 +4,7 @@
   $this->assetManager()->appendScriptLink('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
-  $this->results = $results = $this->recommend->getResults();
-  $this->options = $options = $results->getOptions();
+  $results = $this->recommend->getResults();
   $collapsedFacets = $this->recommend->getCollapsedFacets();
   $forceUncollapsedFacets = [];
 

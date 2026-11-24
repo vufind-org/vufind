@@ -129,7 +129,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     ): Icon {
         $escaper = new Escaper();
         $plugins['escapeHtmlAttr'] ??= new EscapeHtmlAttr($escaper);
-        $renderer = $this->getPhpRenderer($plugins);
+        $renderer = $this->getTemplateRenderer($this->getHelperPluginManager($plugins));
         $icon = new Icon(
             $config ?? $this->getDefaultTestConfig(),
             $cache ?? new BlackHole(),

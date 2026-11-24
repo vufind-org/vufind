@@ -2,7 +2,7 @@
   $form = $this->form;
   $form->prepare();
 ?>
-<?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
+<?php if (!$this->globals()['inLightbox']): ?><div class="feedback-content"><?php endif; ?>
 <?php if ($title = $form->getTitle()): ?>
   <?=$this->component('page-title', ['title' => $title, 'level' => 1]);?>
 <?php endif; ?>
@@ -10,4 +10,4 @@
 <div role="status" class="alert alert-success">
   <?=$this->translate($this->successMessage) ?>
 </div>
-<?php if (!$this->inLightbox): ?></div><?php endif; ?>
+<?php if (!$this->globals()['inLightbox']): ?></div><?php endif; ?>

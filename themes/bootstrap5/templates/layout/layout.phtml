@@ -57,7 +57,7 @@
       // if we render them after calling AssetManager's outputHeaderAssets method,
       // some dependencies may not load correctly. Thus, we render early, but use
       // this later.
-      $icons = !isset($globals['renderingError']) ? $this->context($this)->renderInContext('js-icons.phtml') : '{}';
+      $icons = !isset($globals['renderingError']) ? $this->context($this)->renderInContext('layout/js-icons.phtml') : '{}';
     ?>
     <?php if ($globals['rtl']) {
       // RTL styling
@@ -96,15 +96,14 @@
         if ($this->session()->put('reset_account_status', null)) {
           $this->assetManager()->appendScriptString(
               script: 'VuFind.account.clearAllCaches();',
-              attrs: ['data-lightbox-run' => 'always'],
-              options: ['allow_arbitrary_attributes' => true]
+              attrs: ['data-lightbox-run' => 'always']
           );
         }
       }
 
       $root = rtrim($this->url('home'), '/');
-      $jsConfig = !isset($this->renderingError) ? $this->context($this)->renderInContext('js-configs.phtml') : '{}';
-      $translations = !isset($this->renderingError) ? $this->context($this)->renderInContext('js-translations.phtml') : '{}';
+      $jsConfig = !isset($this->renderingError) ? $this->context($this)->renderInContext('layout/js-configs.phtml') : '{}';
+      $translations = !isset($this->renderingError) ? $this->context($this)->renderInContext('layout/js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
       $searchId = json_encode($globals['searchId']);
@@ -160,7 +159,7 @@
         <?php if (!($globals['disableDefaultNotices'] ?? false)): ?>
           <?=$this->notices()->renderNoticesForPosition('default')?>
         <?php endif; ?>
-        <?=$this->layout()->content ?>
+        <?=$this->content ?>
       </div>
     </div>
     <?=$this->context($this)->renderInContext('footer.phtml')?>

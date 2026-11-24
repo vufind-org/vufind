@@ -31,7 +31,6 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\View\Renderer\RendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Mime\Address;
@@ -41,6 +40,7 @@ use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Class Email.
@@ -58,12 +58,12 @@ class Email implements HandlerInterface, LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param RendererInterface $viewRenderer View renderer
-     * @param array             $mainConfig   Main config
-     * @param Mailer            $mailer       Mailer
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param array                     $mainConfig       Main config
+     * @param Mailer                    $mailer           Mailer
      */
     public function __construct(
-        protected RendererInterface $viewRenderer,
+        protected TemplateRendererInterface $templateRenderer,
         #[Autowire(config: 'config')]
         protected array $mainConfig,
         protected Mailer $mailer
@@ -86,9 +86,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
     ): bool {
         $postParams = $request->getParsedBody();
         $fields = $form->mapRequestParamsToFieldValues($postParams);
-        $emailMessage = $this->viewRenderer->render(
-            'Email/form.phtml',
-            compact('fields')
+        $emailMessage = $this->templateRenderer->renderTemplateAsString(
+            template: 'Email/form.phtml',
+            params: compact('fields')
         );
 
         [$senderName, $senderEmail] = $this->getSender($form);

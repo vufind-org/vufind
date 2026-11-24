@@ -30,11 +30,11 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Partial;
 use VuFind\Date\Converter;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function count;
 use function function_exists;
@@ -103,13 +103,13 @@ class Citation implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param Converter $dateConverter Date converter
-     * @param Partial   $partial       Partial view helper
+     * @param Converter                 $dateConverter    Date converter
+     * @param TemplateRendererInterface $templateRenderer Template renderer
      */
+    #[Autowire]
     public function __construct(
         protected Converter $dateConverter,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Partial $partial
+        protected TemplateRendererInterface $templateRenderer,
     ) {
     }
 
@@ -311,7 +311,7 @@ class Citation implements TranslatorAwareInterface
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
-            return ($this->partial)('Citation/apa.phtml', $apa);
+            return $this->templateRenderer->renderTemplateAsString(template: 'Citation/apa.phtml', params: $apa);
         }
 
         // If we got this far, it's the default article case:
@@ -319,7 +319,7 @@ class Citation implements TranslatorAwareInterface
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
-        return ($this->partial)('Citation/apa-article.phtml', $apa);
+        return $this->templateRenderer->renderTemplateAsString(template: 'Citation/apa-article.phtml', params: $apa);
     }
 
     /**
@@ -399,7 +399,7 @@ class Citation implements TranslatorAwareInterface
             $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return ($this->partial)('Citation/mla.phtml', $mla);
+            return $this->templateRenderer->renderTemplateAsString(template: 'Citation/mla.phtml', params: $mla);
         }
         // If we got this far, we should add other journal-specific details:
         $mla['doiArticleComma'] = $doiArticleComma;
@@ -410,7 +410,7 @@ class Citation implements TranslatorAwareInterface
             $volPrefix,
             $yearFormat
         );
-        return ($this->partial)('Citation/mla-article.phtml', $mla);
+        return $this->templateRenderer->renderTemplateAsString(template: 'Citation/mla-article.phtml', params: $mla);
     }
 
     /**

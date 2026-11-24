@@ -73,7 +73,7 @@
               '%%total%%' => $this->localizedNumber($recordTotal),
             ];
           ?>
-          <?php if (!isset($this->skipTotalCount)): ?>
+          <?php if (!($this->globals()['skipTotalCount'] ?? false)): ?>
             <?=$this->translate('showing_items_of_html', $transParams); ?>
           <?php else: ?>
             <?=$this->translate('showing_items_html', $transParams); ?>

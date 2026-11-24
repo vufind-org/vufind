@@ -12,7 +12,7 @@
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
+  $urlBase = $this->url($facetLightbox) . $this->results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
   $searchAction ??= $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
@@ -74,7 +74,7 @@
       $params = $this->delegateParams;
       $params['urlBase'] = $urlBase;
       $params['searchAction'] = $searchAction;
-      $params['inLightbox'] = $this->inLightbox;
+      $params['inLightbox'] = $this->globals()['inLightbox'] ?? false;
     ?>
     <?=$this->context($this)->renderInContext('search/facet-list-content.phtml', $params) ?>
   </div>
@@ -82,6 +82,6 @@
 </div>
 
 <?=$this->assetManager()->outputInlineScriptString('VuFind.facetList.setup();')?>
-<?php if ($this->inLightbox): ?>
+<?php if ($this->globals()['inLightbox']): ?>
   <?=$this->assetManager()->outputInlineScriptString('VuFind.lightbox_facets.setup();')?>
 <?php endif; ?>

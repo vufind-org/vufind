@@ -30,8 +30,10 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
-use Laminas\View\Helper\ServerUrl;
+use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\HelperPluginManager;
 use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use Laminas\View\Resolver\TemplatePathStack;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -39,6 +41,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
 use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\AbstractBase;
 use VuFind\RecordDriver\Response\PublicationDetails;
@@ -83,25 +86,25 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get view helpers needed by test.
      *
-     * @param ContainerInterface $container       Mock service container
-     * @param SchemaOrg          $schemaOrgHelper schema.org helper
-     * @param PhpRenderer        $renderer        View renderer
-     * @param ResolverInterface  $resolver        View resolver
-     * @param Url                $url             URL helper
+     * @param ContainerInterface  $container           Mock service container
+     * @param SchemaOrg           $schemaOrgHelper     schema.org helper
+     * @param RendererInterface   $renderer            View renderer
+     * @param HelperPluginManager $helperPluginManager View helper plugin manager
+     * @param ResolverInterface   $resolver            View resolver
+     * @param Url                 $url                 Url view helper
      *
      * @return array
      */
     protected function getViewHelpers(
         ContainerInterface $container,
         SchemaOrg $schemaOrgHelper,
-        PhpRenderer $renderer,
+        RendererInterface $renderer,
+        HelperPluginManager $helperPluginManager,
         ResolverInterface $resolver,
         Url $url
     ): array {
         $escapeHtml = new EscapeHtml(new Escaper());
-        $serverUrl = new ServerUrl();
-
-        $context = new \VuFind\View\Helper\Root\Context($renderer);
+        $serverUrlHelper = new ServerUrlHelper(false);
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
@@ -127,13 +130,17 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $escapeHtml
         );
 
+        $templateRenderer = $this->getTemplateRenderer($helperPluginManager, renderer: $renderer);
+
+        $context = new \VuFind\View\Helper\Root\Context($this->getPhpRenderer($helperPluginManager), $templateRenderer);
+
         $authManager = $this->createMock(\VuFind\Auth\Manager::class);
         $authManager->method('loginEnabled')->willReturn(true);
         $authManager->method('inPrivacyMode')->willReturn(false);
         $auth = new \VuFind\View\Helper\Root\Auth(
             $authManager,
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
-            $renderer,
+            $templateRenderer,
             $resolver,
             $context
         );
@@ -148,7 +155,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $coverRouter,
             $memory,
             $context,
-            $renderer,
+            $templateRenderer,
             $resolver,
             $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
             $transEsc,
@@ -157,8 +164,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $escapeOrCleanHtml,
             $truncate,
             $auth,
-            $url,
-            $serverUrl,
+            new RouteHelper(fn () => $url),
+            $serverUrlHelper,
             new GlobalsContainer(),
             $configEntity
         );
@@ -170,20 +177,21 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             });
         $record->setDbServiceManager($serviceManager);
 
+        $escapeHtmlAttr = new EscapeHtmlAttr(new Escaper());
+
         return [
-            'assetManager' => $this->getAssetManager($renderer),
+            'assetManager' => $this->getAssetManager($helperPluginManager),
             'auth' => $auth,
             'context' => $context,
             'config' => $configHelper,
-            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context, $renderer),
-            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(
-                $renderer->getHelperPluginManager()
-            ),
+            'escapeHtmlAttr' => $escapeHtmlAttr,
+            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($templateRenderer),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode($helperPluginManager),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
-                new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper()),
-                $renderer
+                $escapeHtmlAttr,
+                $templateRenderer
             ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
                 $context,
@@ -350,7 +358,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ],
         ]);
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
-            new \Laminas\View\Helper\HtmlAttributes()
+            new \Laminas\View\Helper\HtmlAttributes(new Escaper())
         );
         $specManager = $this->createMock(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
         $specs = new DefaultRecordSpec($recordDataFormatterConfig, $schemaOrgHelper);
@@ -379,10 +387,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $this->getPathForTheme('bootstrap5'),
         ]);
 
+        $helperPluginManager = $this->getHelperPluginManager(container: $container);
         $view = new PhpRenderer();
+        $view->setHelperPluginManager($helperPluginManager);
         $view->setResolver($resolver);
+        $container->set(PhpRenderer::class, $view);
+        $container->set('config', []);
 
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $resolver, $url);
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $helperPluginManager, $resolver, $url);
 
         foreach ($helpers as $helper) {
             if (method_exists($helper, 'setView')) {
@@ -391,6 +403,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         }
 
         $pluginManager = $view->getHelperPluginManager();
+        $pluginManager->setAllowOverride(true);
         foreach ($helpers as $key => $value) {
             $pluginManager->setService($key, $value);
         }

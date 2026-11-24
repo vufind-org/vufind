@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\Escaper\Escaper;
 use VuFind\Http\RouteHelper;
 use VuFind\Record\Router;
 use VuFind\Search\Base\Results;
@@ -222,10 +223,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
             $truncate->method('__invoke')->willReturnArgument(0);
         }
 
-        $escapeHtml = $this->createMock(EscapeHtml::class);
-        $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
-            return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-        });
+        $escapeHtml = new EscapeHtml(new Escaper());
 
         $searchOptionManager = $this->createMock(\VuFind\Search\Options\PluginManager::class);
 

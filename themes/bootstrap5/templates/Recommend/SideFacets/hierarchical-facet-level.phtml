@@ -1,5 +1,5 @@
 <?php
-  $this->parentNodeId ??= '';
+  $parentNodeId = $this->parentNodeId ?? '';
   $nodeId = 0;
 ?>
 <?php foreach ($this->facetList as $item): ?>
@@ -26,7 +26,7 @@
     <li class="facet-tree__parent">
       <?php
         ++$nodeId;
-        $childUlId = 'facet_' . $this->group . '_' . $this->parentNodeId . '_' . $nodeId;
+        $childUlId = 'facet_' . $this->group . '_' . $parentNodeId . '_' . $nodeId;
         $buttonAttrs = $this->htmlAttributes(
             [
                 'class' => 'facet-tree__toggle-expanded',
@@ -51,7 +51,7 @@
           'group' => $this->group,
           'url' => $this->url,
           'urlBase' => $this->urlBase,
-          'parentNodeId' => $this->parentNodeId . '_' . $nodeId,
+          'parentNodeId' => $parentNodeId . '_' . $nodeId,
         ]) ?>
       </ul>
     </li>

@@ -14,7 +14,7 @@
   $offlineMode = $this->ils()->getOfflineMode();
 
   // We should show the account menu unless it's been switched off or we're in the lightbox:
-  $showMenu = ($this->showMenu ?? false) && !$this->inLightbox;
+  $showMenu = ($this->showMenu ?? false) && !$this->globals()['inLightbox'];
 
   // Set page title and heading.
   $heading = $this->component('page-title', [

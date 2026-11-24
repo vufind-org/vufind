@@ -33,7 +33,7 @@
   );
   $moreUrl = '#';
   if ($facetLightbox) {
-    $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+    $moreUrl = $this->url($facetLightbox) . $this->results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
     if (!empty($this->baseUriExtra)) {
       $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
     }

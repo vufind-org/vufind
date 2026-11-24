@@ -30,6 +30,7 @@
 namespace VuFindTest\Integration\View\Helper\Root;
 
 use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
@@ -97,10 +98,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordLinker->method('getUrl')->willReturn('test/url');
 
-        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->method('__invoke')->willReturn('http://server/url');
-
-        return compact('currentPath', 'record', 'recordLinker') + ['serverurl' => $serverUrl];
+        return compact('currentPath', 'record', 'recordLinker');
     }
 
     /**
@@ -141,8 +139,11 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
         $plugins = $this->getPlugins();
+        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
+        $serverUrlHelper->method('getUrlForPath')->willReturn('http://server/url');
+
         $helper = new ResultFeed(
-            $plugins['serverurl'],
+            $serverUrlHelper,
             $plugins['currentPath'],
             $plugins['recordLinker'],
             $plugins['record'],

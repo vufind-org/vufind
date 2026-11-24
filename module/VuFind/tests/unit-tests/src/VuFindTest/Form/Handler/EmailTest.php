@@ -34,6 +34,7 @@ use Symfony\Component\Mime\Address;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Email;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Email Form Handler Test Class.
@@ -185,8 +186,8 @@ class EmailTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHandler(array $config = [], int $expectedSendCount = 0, array $expectedSendParams = []): Email
     {
-        $renderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
-        $renderer->method('render')
+        $renderer = $this->createMock(TemplateRendererInterface::class);
+        $renderer->method('renderTemplateAsString')
             ->willReturn('message body');
         $mailer = $this->createMock(\VuFind\Mailer\Mailer::class);
         $mailer->expects($expectedSendCount ? $this->exactly($expectedSendCount) : $this->never())

@@ -30,9 +30,15 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\View;
+use VuFind\Escaper\Escaper;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
+use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Permission;
+use VuFind\View\Helper\Root\TransEsc;
+use VuFind\View\Helper\Root\Translate;
 
 /**
  * Permission view helper Test Class.
@@ -46,6 +52,7 @@ use VuFind\View\Helper\Root\Permission;
  */
 class PermissionTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutowireTrait;
     use \VuFindTest\Feature\ViewTrait;
 
     /**
@@ -88,12 +95,20 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
     {
-        $view = $this->getMockView();
+        $escapehtml = new EscapeHtml(new Escaper());
+        $translate = new Translate();
+        $transEsc = new TransEsc($translate, $escapehtml);
+        $helperPluginManager = $this->getHelperPluginManager(compact('translate', 'transEsc', 'escapehtml'));
+        $templateRenderer = $this->getTemplateRenderer($helperPluginManager);
+        $realView = $this->getPhpRenderer($helperPluginManager);
+        $context = new \VuFind\View\Helper\Root\Context($realView, $templateRenderer);
+        $realView->getHelperPluginManager()->setService('context', $context);
+
         return new Permission(
             $this->getMockPm(false),
             $mockPdm,
-            $view->plugin('transEsc'),
-            $view->plugin('context')
+            $transEsc,
+            $context
         );
     }
 
@@ -210,23 +225,5 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     protected function getMockContext()
     {
         return $this->createMock(\VuFind\View\Helper\Root\Context::class);
-    }
-
-    /**
-     * Return a view object populated for these test cases.
-     *
-     * @return \Laminas\View\Renderer\PhpRenderer
-     */
-    protected function getMockView()
-    {
-        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
-        $translate = new \VuFind\View\Helper\Root\Translate();
-        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
-        $realView = $this->getPhpRenderer(
-            compact('translate', 'transEsc', 'escapehtml')
-        );
-        $context = new \VuFind\View\Helper\Root\Context($realView);
-        $realView->getHelperPluginManager()->setService('context', $context);
-        return $realView;
     }
 }

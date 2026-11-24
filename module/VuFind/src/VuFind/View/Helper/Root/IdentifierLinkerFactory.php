@@ -32,9 +32,9 @@ namespace VuFind\View\Helper\Root;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * IdentifierLinker helper factory.
@@ -70,9 +70,11 @@ class IdentifierLinkerFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $helpers = $container->get('ViewHelperManager');
         // DOI config section is supported as a fallback for legacy back-compatibility:
         $idConfig = $config['IdentifierLinks'] ?? $config['DOI'] ?? [];
-        return new $requestedName($helpers->get('context'), $container->get(RendererInterface::class), $idConfig);
+        return new $requestedName(
+            $container->get(TemplateRendererInterface::class),
+            $idConfig
+        );
     }
 }
