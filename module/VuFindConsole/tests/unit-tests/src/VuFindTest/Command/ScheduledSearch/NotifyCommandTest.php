@@ -281,10 +281,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'records' => [$record],
             'info' => [
                 'baseUrl' => 'http://foo',
-                'description' => null,
+                'description' => '',
                 'recordCount' => 1,
                 'url' => 'http://foo/',
-                'unsubscribeUrl' => 'http://foo/account-unsubscribe?id=1&key=topsecret',
+                'unsubscribeUrl' => 'http://foo/searchhistory-unsubscribesearch?id=1&key=topsecret',
                 'checkboxFilters' => [],
                 'filters' => [],
             ],
