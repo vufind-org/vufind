@@ -41,6 +41,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
@@ -277,6 +278,9 @@ class LoggerFactory implements FactoryInterface
         if (isset($config['Logging']['office365']) && isset($config['Logging']['office365_url'])) {
             $this->addOffice365Handler($monologLogger, $config, $container);
         }
+
+        // Log errors of level E_USER_DEPRECATED
+        ErrorHandler::register()->setLoggers([E_USER_DEPRECATED => [$monologLogger, LogLevel::INFO]]);
 
         // Add common processors:
         $this->addCommonProcessors($monologLogger, $config, $container);
