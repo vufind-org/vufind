@@ -52,12 +52,12 @@ VuFind.register('notices', function notices() {
         __ajaxRequestQueue.add(body);
         if (enabled) {
           enabledToggleButton.removeAttribute('data-enabled');
-          enabledToggleButton.title = VuFind.translate('Enable');
+          enabledToggleButton.title = VuFind.translate('enable_content');
           enabledIcon.classList.add('hidden');
           disabledIcon.classList.remove('hidden');
         } else {
           enabledToggleButton.setAttribute('data-enabled', '');
-          enabledToggleButton.title = VuFind.translate('Disable');
+          enabledToggleButton.title = VuFind.translate('disable_content');
           enabledIcon.classList.remove('hidden');
           disabledIcon.classList.add('hidden');
         }
@@ -67,9 +67,10 @@ VuFind.register('notices', function notices() {
 
   /**
    * Check there are open requests in the queue.
+   * @returns {boolean} Return true if there are open requests.
    */
   function hasOpenRequest() {
-    return  __ajaxRequestQueue.hasOpenRequests();
+    return __ajaxRequestQueue.hasOpenRequests();
   }
 
   /**

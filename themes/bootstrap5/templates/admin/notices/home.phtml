@@ -24,7 +24,7 @@
             <?php $enabled = $notice['enabled'] ?? true; ?>
             <button
               class="btn btn-link content-edit-button notice-enabled-toggle"
-              title="<?=$this->transEsc($enabled ? 'Disable' : 'Enable')?>"
+              title="<?=$this->transEsc($enabled ? 'disable_content' : 'enable_content')?>"
               <?=$enabled ? 'data-enabled' : ''?>
             >
               <?=$this->icon('content-enabled', 'enabled-icon' . ($enabled ? '' : ' hidden'))?>
