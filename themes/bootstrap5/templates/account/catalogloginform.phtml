@@ -57,9 +57,7 @@
   </div>
 
   <?php if ($showMenu): ?>
-    <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-      <?=$this->section('AccountMenu', template: 'account/menu.phtml')->render()?>
-    </div>
+    <?=$this->section('AccountMenu')->render(pageRegion: \VuFind\Section\PageRegion::Sidebar)?>
   <?php endif; ?>
   <?php
     if (null !== $loginSettings['targets']) {

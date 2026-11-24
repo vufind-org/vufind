@@ -13,12 +13,15 @@
 ?>
 <?php foreach ($this->userlist()->getUserListsAndCountsByUser($user) as $current): ?>
   <?php $list = $current['list_entity']; ?>
-  <li>
-    <a class="user-list-link icon-link <?=$this->active == 'list' . $list->getId() ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list->getId()])?>">
-      <?=$this->icon($this->icon, 'icon-link__icon') ?>
-      <span class="icon-link__label"><?=$this->escapeHtml($list->getTitle())?></span>
-      <?=$list->isPublic() ? $publicInd : ''?>
-      <span class="badge"><?=$current['count'] ?></span>
-    </a>
-  </li>
+  <?=$this->component('menu-item', [
+    'name' => 'list' . $list->getId(),
+    'label' => $list->getTitle(),
+    'route' => 'userList',
+    'routeParams' => ['id' => $list->getId()],
+    'icon' => $this->icon,
+    'linkAttributes' => ['class' => 'user-list-link'],
+    'additionalHtml' => $list->isPublic() ? $publicInd : '',
+    'badge' => $current['count'],
+    'active' => $this->active,
+  ])?>
 <?php endforeach; ?>

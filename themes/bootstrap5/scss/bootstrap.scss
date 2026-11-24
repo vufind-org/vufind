@@ -83,6 +83,7 @@
 @import "components/explain";
 @import "components/form";
 @import "components/get-this";
+@import "components/global-sidebar";
 @import "components/icons";
 @import "components/keyboard";
 @import "components/lightbox";
@@ -444,19 +445,17 @@ body.rtl .dropdown-menu {
   white-space: pre;
 }
 
-/* ------ Account (formerly MyResearch) ------ */
-form .toolbar { margin-block: 0.5em; } // bulk toolbar spacing
-form .toolbar.account-action-toolbar { margin-block-end: 0; }
-.form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
-.myresearch-menu {
+/* ------ Menus ------ */
+.myresearch-menu, // For legacy compatibility
+.menu-group  {
   ul {
     list-style: none;
-    margin-bottom: $myresearch-menu-ul-margin-bottom;
-    padding-left: $myresearch-menu-ul-padding-left;
+    margin-bottom: $sidebar-menu-ul-margin-bottom;
+    padding-left: $sidebar-menu-ul-padding-left;
 
     body.rtl & {
       padding-left: inherit;
-      padding-right: $myresearch-menu-ul-padding-left;
+      padding-right: $sidebar-menu-ul-padding-left;
     }
   }
   a {
@@ -527,6 +526,11 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
     border: 1px solid #fff;
   }
 }
+
+/* ------ Account (formerly MyResearch) ------ */
+form .toolbar { margin-block: 0.5em; } // bulk toolbar spacing
+form .toolbar.account-action-toolbar { margin-block-end: 0; }
+.form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 
 .list-group:not(:last-child) {
   list-style: none;

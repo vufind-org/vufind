@@ -5,8 +5,17 @@
     <ul>
   <?php endif; ?>
   <?php foreach ($group['MenuItems'] as $item): ?>
-    <?php if (isset($item['__html'])): ?>
-      <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $item['__html'], options: ['escapeContent' => false]) ?>
+    <?php if ($templateToUse = $item['siteMapPageTemplate'] ?? $item['template'] ?? null): ?>
+      <?php
+        $plugin = $group['__sectionPlugin'] ?? $this->{\VuFind\View\Helper\Root\Section::SECTION_PLUGIN_KEY};
+        $context = [
+            'sectionPlugin' => $plugin,
+            ...$plugin->getSectionContext(),
+            ...$item,
+        ];
+        $html = $this->render($templateToUse, $context);
+      ?>
+      <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $html, options: ['escapeContent' => false]) ?>
     <?php else: ?>
       <?php
         $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null);

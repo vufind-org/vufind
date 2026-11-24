@@ -28,3 +28,6 @@ Sections:
 
   SiteMap:
     plugin: siteMap
+
+  GlobalSidebar:
+    plugin: globalSidebar

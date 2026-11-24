@@ -80,7 +80,8 @@ class AdminMenuTest extends AbstractSectionTestCase
      */
     public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
-        $container = $this->getContainerWithSectionRelatedServices();
+        $container = $this->getContainerWithSectionRelatedServices('en', ['en', 'fi'], true);
+        $this->mockConfigFiles['config']['Site']['admin_enabled'] = true;
         $plugin = $this->getAdminMenu(
             $container,
             AdminMenu::getDefaultMenuConfig(),

@@ -1,0 +1,47 @@
+<?php
+  /**
+   * Menu group component.
+   *
+   * @property array   $menuGroup            Menu group data array with the following required keys:
+   *                                           - label
+   *                                           - MenuItems
+   * @property ?string $idPrefix             ID prefix (optional)
+   * @property ?array  $navAttributes        Additional attributes to apply to the nav element (optional)
+   * @property ?object $iconMethodObject     Object implementing possible icon methods (optional)
+   * @property ?string $active               Name of the active item in the menu (optional)
+   * @property ?string $requestUri           Request URI (optional)
+   * @property ?array  $activeItemParentPath Parent path for the currently active item (optional)
+   */
+
+  $navAttributes = $this->htmlAttributes($this->navAttributes ?? []);
+  if ($id = $menuGroup['id'] ?? null) {
+    if ($idPrefix = $this->idPrefix ?? null) {
+      $id = $idPrefix . $id;
+    }
+    $navAttributes['aria-labelledby'] = $id;
+  }
+?>
+<div class="menu-group">
+  <h3<?=isset($id) ? ' id=' . $this->escapeHtmlAttr($id) : ''?>><?=$this->transEsc($menuGroup['label'])?></h3>
+  <nav<?=$navAttributes?>>
+    <ul<?=!empty($menuGroup['class']) ? ' class="' . $menuGroup['class'] . '"' : ''?>>
+      <?php foreach ($menuGroup['MenuItems'] as $item): ?>
+        <?php
+          $context = [
+            'iconMethodObject' => $this->iconMethodObject ?? null,
+            'active' => $this->active ?? null,
+            'requestUri' => $this->requestUri ?? null,
+            'activeItemParentPath' => $this->activeItemParentPath ?? null,
+            ...$item,
+          ];
+          if (isset($item['template'])) {
+            $renderedItem = $this->render($item['template'], $context);
+          } else {
+            $renderedItem = $this->component('menu-item', $context);
+          }
+        ?>
+        <?=$renderedItem?>
+      <?php endforeach; ?>
+    </ul>
+  </nav>
+</div>

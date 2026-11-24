@@ -1,0 +1,45 @@
+#global-sidebar-container {
+  display: flex;
+  flex-direction: row;
+}
+#main-canvas {
+  flex-grow: 1;
+}
+#global-sidebar {
+  /* Expanded state */
+  width: $global-sidebar-width;
+  h3 {
+    display: block;
+  }
+  .nav-link > span:not(.icon-link__icon):not(.sidebar-collapse) {
+    display: inline;
+  }
+
+  /* Collapsed state */
+  &.collapsed {
+    width: auto;
+    h3,
+    .nav-link > span:not(.icon-link__icon):not(.sidebar-collapse) {
+      @include visually-hidden();
+    }
+    .nav-link[data-bs-title] > span.icon-link__label {
+      /* Labels are available as tooltips in collapsed state */
+      display: none;
+    }
+  }
+
+  /* Both states */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  z-index: $global-sidebar-zindex;
+  h3 {
+    margin-top: 0;
+  }
+
+  /* Overrides */
+  .notices {
+    margin: inherit;
+  }
+}

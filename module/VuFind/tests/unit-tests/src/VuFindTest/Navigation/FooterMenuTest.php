@@ -33,7 +33,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Exception\BadConfig;
 use VuFind\Navigation\FooterMenu;
-use VuFind\Section\SectionServiceInterface;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
@@ -170,7 +169,9 @@ class FooterMenuTest extends AbstractSectionTestCase
     #[DataProvider('checkNewItemsSettingsProvider')]
     public function testCheckNewItemsSettings(array $searchConfig, bool $expected): void
     {
-        $footerMenu = new FooterMenu($this->createMock(SectionServiceInterface::class), [], [], $searchConfig);
+        $this->mockConfigFiles['searches'] = $searchConfig;
+        $container = $this->getContainerWithSectionRelatedServices();
+        $footerMenu = $this->getAutowiredObject(FooterMenu::class, $container);
         $this->assertSame($expected, $footerMenu->checkNewItemsSettings());
     }
 }

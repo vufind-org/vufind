@@ -29,16 +29,17 @@
 
 namespace VuFind\Navigation;
 
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Application;
 use Symfony\Component\Yaml\Yaml;
-use VuFind\Exception\BadConfig;
+use VuFind\Http\RouteHelper;
+use VuFind\Navigation\Feature\SectionKeyTrait;
+use VuFind\Role\PermissionManager;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
-use function in_array;
-use function is_array;
 
 /**
  * SiteMap section plugin.
@@ -51,13 +52,18 @@ use function is_array;
  */
 class SiteMap extends AbstractMenu
 {
+    use SectionKeyTrait;
+
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService Section service
-     * @param array                   $sectionConfig  Section configuration
-     * @param array                   $config         Main configuration
-     * @param RendererInterface       $renderer       View renderer
+     * @param SectionServiceInterface $sectionService    Section service
+     * @param array                   $sectionConfig     Section configuration
+     * @param array                   $config            Main configuration
+     * @param Request                 $request           Request
+     * @param Application             $application       Application
+     * @param RouteHelper             $routeHelper       Route helper
+     * @param PermissionManager       $permissionManager Permission manager
      */
     public function __construct(
         SectionServiceInterface $sectionService,
@@ -65,8 +71,12 @@ class SiteMap extends AbstractMenu
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
-        #[Autowire(service: 'ViewRenderer')]
-        protected RendererInterface $renderer
+        #[Autowire(service: 'Request')]
+        Request $request,
+        #[Autowire(service: 'Application')]
+        Application $application,
+        RouteHelper $routeHelper,
+        PermissionManager $permissionManager
     ) {
         $this->addRequiredSettings(
             [
@@ -89,7 +99,15 @@ class SiteMap extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionService, $sectionConfig, $config);
+        parent::__construct(
+            $sectionService,
+            $sectionConfig,
+            $config,
+            $request,
+            $application,
+            $routeHelper,
+            $permissionManager
+        );
     }
 
     /**
@@ -176,87 +194,6 @@ class SiteMap extends AbstractMenu
             }
         }
         return $menuArray;
-    }
-
-    /**
-     * Process and filter groups.
-     *
-     * @param array $groups Groups to process and filter
-     *
-     * @return array
-     */
-    protected function processGroups(array $groups): array
-    {
-        $availableGroups = parent::processGroups($groups);
-        return $this->processGroupSectionKey($availableGroups);
-    }
-
-    /**
-     * Process or filter group.
-     *
-     * @param array $group Group to process
-     *
-     * @return array|false Processed group or false if group should be filtered
-     */
-    protected function processGroup(array $group): array|false
-    {
-        // Groups containing a section key will be processed in a separate step.
-        if (isset($group['section'])) {
-            return $group;
-        }
-        return parent::processGroup($group);
-    }
-
-    /**
-     * Process any groups with a section key.
-     *
-     * @param array $groups Groups
-     *
-     * @return array
-     * @throws BadConfig
-     */
-    protected function processGroupSectionKey(array $groups): array
-    {
-        $processedGroups = [];
-        foreach ($groups as $groupName => $group) {
-            if (!$section = $group['section'] ?? false) {
-                $processedGroups[$groupName] = $group;
-                continue;
-            }
-            if (is_array($section)) {
-                $groups = $section['groups'] ?? [];
-                $section = $section['section'];
-            } else {
-                $groups = [];
-            }
-            $plugin = $this->sectionService->getSection($section);
-            if ($plugin instanceof SiteMap) {
-                throw new BadConfig('Specifying SiteMap plugin sections is not possible');
-            }
-            foreach ($plugin->getMenu() as $pluginGroupName => $pluginGroup) {
-                if (!empty($groups) && !in_array($pluginGroupName, $groups)) {
-                    continue;
-                }
-                if (isset($processedGroups[$pluginGroupName])) {
-                    throw new BadConfig('Group key clash in configuration: ' . $pluginGroupName);
-                }
-                foreach ($pluginGroup['MenuItems'] ?? [] as $key => $item) {
-                    if ($templateToUse = $item['siteMapPageTemplate'] ?? $item['template'] ?? null) {
-                        // Templates from included sections require a plugin
-                        // specific context so they are rendered at this stage.
-                        $context = [
-                            'sectionPlugin' => $plugin,
-                            ...$plugin->getSectionContext(),
-                            ...$item,
-                        ];
-                        $pluginGroup['MenuItems'][$key]['__html']
-                            = $this->renderer->render($templateToUse, $context);
-                    }
-                }
-                $processedGroups[$pluginGroupName] = $pluginGroup;
-            }
-        }
-        return $processedGroups;
     }
 
     /**
