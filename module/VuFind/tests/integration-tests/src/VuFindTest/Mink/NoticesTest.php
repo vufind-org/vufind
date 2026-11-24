@@ -602,7 +602,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.notice-list .notice-enabled-toggle');
 
         // wait for processing
-        sleep(1);
+        $this->waitStatement('!VuFind.notices.hasOpenRequest()');
         $this->checkToggleButtonEnabled($page);
 
         // reload page and check that the notice is enabled
@@ -617,7 +617,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.notice-list .notice-enabled-toggle');
 
         // wait for processing
-        sleep(1);
+        $this->waitStatement('!VuFind.notices.hasOpenRequest()');
         $this->checkToggleButtonDisabled($page);
 
         // reload page and check that the notice is disabled

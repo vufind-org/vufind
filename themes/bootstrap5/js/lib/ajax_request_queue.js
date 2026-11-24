@@ -77,4 +77,11 @@ class AjaxRequestQueue {
         }
       });
   }
+
+  /**
+   * Check if there are open requests either running or in the queue.
+   */
+  hasOpenRequests() {
+    return this.isRunning || this.payload.length > 0 || this.queue.length > 0;
+  }
 }

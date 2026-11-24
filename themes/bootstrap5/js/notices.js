@@ -66,6 +66,13 @@ VuFind.register('notices', function notices() {
   }
 
   /**
+   * Check there are open requests in the queue.
+   */
+  function hasOpenRequest() {
+    return  __ajaxRequestQueue.hasOpenRequests();
+  }
+
+  /**
    * Initialize notice functionality.
    */
   function init() {
@@ -76,6 +83,7 @@ VuFind.register('notices', function notices() {
   }
 
   return {
-    init: init
+    init,
+    hasOpenRequest
   };
 });
