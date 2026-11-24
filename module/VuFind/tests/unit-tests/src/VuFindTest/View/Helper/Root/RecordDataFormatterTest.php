@@ -65,7 +65,6 @@ use function count;
  */
 class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\AutowireTrait;
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;

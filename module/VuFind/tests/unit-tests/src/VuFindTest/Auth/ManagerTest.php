@@ -33,7 +33,6 @@ use Closure;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\ManagerInterface;
 use Laminas\Session\SessionManager;
-use Laminas\Session\Storage\ArrayStorage;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
@@ -595,10 +594,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSessionManager(): MockObject&ManagerInterface
     {
-        $sm = $this->createMock(ManagerInterface::class);
-        $sm->method('getStorage')
-            ->willReturn(new ArrayStorage());
-        return $sm;
+        return $this->createMock(\Laminas\Session\ManagerInterface::class);
     }
 
     /**

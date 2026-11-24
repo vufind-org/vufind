@@ -44,8 +44,6 @@ use VuFind\Http\ServerUrlHelper;
  */
 class ExportTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\WithConsecutiveTrait;
-
     /**
      * Test options using legacy (deprecated) configuration.
      *

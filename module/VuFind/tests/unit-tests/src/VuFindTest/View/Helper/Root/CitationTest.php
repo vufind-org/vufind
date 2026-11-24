@@ -32,7 +32,6 @@ namespace VuFindTest\View\Helper\Root;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\View\Helper\Root\Citation;
-use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ViewTrait;
 
 /**
@@ -46,7 +45,6 @@ use VuFindTest\Feature\ViewTrait;
  */
 class CitationTest extends \PHPUnit\Framework\TestCase
 {
-    use AutowireTrait;
     use ViewTrait;
 
     /**
