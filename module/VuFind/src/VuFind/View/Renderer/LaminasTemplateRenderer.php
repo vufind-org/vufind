@@ -174,6 +174,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         bool $rootContext = false,
     ): string {
         $viewModelHelper = $this->viewRenderer->plugin('view_model');
+        // Save current model so that we can restore it when done:
         $saveCurrentModel = $viewModelHelper?->getCurrent();
         try {
             if ($rootContext && ($rootViewModel = $this->globalsContainer['viewModel'] ?? null)) {
@@ -211,6 +212,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
             $layout->setOption('has_parent', true);
             return $view->render($layout);
         } finally {
+            // Restore the previous "current" model:
             if ($saveCurrentModel) {
                 $viewModelHelper->setCurrent($saveCurrentModel);
             }
@@ -322,11 +324,11 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * Setup layout with lightbox-related variables, and template when a lightbox is requested.
      *
      * @param ServerRequestInterface $request Request
-     * @param ViewModel              $layout  Layout
+     * @param ModelInterface         $layout  Layout
      *
      * @return void
      */
-    protected function setupRenderingInLightbox(ServerRequestInterface $request, ViewModel $layout): void
+    protected function setupRenderingInLightbox(ServerRequestInterface $request, ModelInterface $layout): void
     {
         if ($this->inLightbox($request)) {
             $layout->setTemplate('layout/lightbox');
