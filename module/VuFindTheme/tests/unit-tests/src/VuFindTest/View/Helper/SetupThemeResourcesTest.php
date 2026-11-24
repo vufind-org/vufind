@@ -120,30 +120,6 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake HeadLink helper.
-     *
-     * @return MockObject&HeadLink
-     */
-    protected function getMockHeadLink(): HeadLink
-    {
-        $mock = $this->createMock(HeadLink::class);
-        $mock->method('__invoke')->willReturn($mock);
-        return $mock;
-    }
-
-    /**
-     * Get a fake HeadScript helper.
-     *
-     * @return MockObject&HeadScript
-     */
-    protected function getMockHeadScript(): HeadScript
-    {
-        $mock = $this->createMock(HeadScript::class);
-        $mock->method('__invoke')->willReturn($mock);
-        return $mock;
-    }
-
-    /**
      * Get a fake AssetManager helper.
      *
      * @return MockObject&AssetManager
