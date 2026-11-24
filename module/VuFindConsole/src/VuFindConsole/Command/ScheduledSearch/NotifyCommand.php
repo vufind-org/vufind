@@ -376,7 +376,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             . $searchObject->getUrlQuery()->getParams(false);
         $secret = $this->secretCalculator->getSearchUnsubscribeSecret($s);
         $unsubscribeUrl = $s->getNotificationBaseUrl() . $this->routeHelper->getUrlFromRoute(
-            'account-unsubscribe',
+            'searchhistory-unsubscribesearch',
             queryParams: ['id' => $s->getId(), 'key' => $secret]
         );
         $params = $searchObject->getParams();
