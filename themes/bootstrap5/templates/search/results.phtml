@@ -138,11 +138,3 @@
   </div>
 <?php endif; ?>
 <?php /* End Refine Search Options */ ?>
-
-<script>
-  window.setTimeout(function() {
-    var xpath_result = document.evaluate("//SELECT[@id=\"sort_options_1\"]", document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
-    element = xpath_result.iterateNext();
-    console.log(element.tagName);
-  }, 10);
-</script>
