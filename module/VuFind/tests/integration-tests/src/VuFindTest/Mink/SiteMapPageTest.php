@@ -75,14 +75,14 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     {
         $yaml = <<<YAML
             "@parent_yaml": false
-            
+
             GroupWithoutLabelAndWithoutSubmenuItems:
               MenuItems:
                 - label: 'Item 1 rendered as heading'
                   url: '#'
                 - label: 'Item 2 rendered as heading'
                   url: '#'
-            
+
             GroupWithoutLabelAndWithSubmenuItems:
               MenuItems:
                 - label: 'Item 1 rendered as heading'
@@ -96,7 +96,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                       url: '#'
                 - label: 'Item 3 rendered as heading'
                   url: '#'
-            
+
             GroupWithLabelAndWithoutSubmenuItems:
               label: 'Group label rendered as heading'
               MenuItems:
@@ -104,7 +104,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                   url: '#'
                 - label: 'Item 2 rendered as list item'
                   url: '#'
-            
+
             GroupWithLabelAndWithSubmenuItems:
               label: 'Group label rendered as heading'
               MenuItems:
@@ -119,19 +119,19 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                       url: '#'
                 - label: 'Item 3 rendered as list item'
                   url: '#'
-            
+
             NestedSubmenuItems:
               label: 'Nested Submenu Items'
               MenuItems:
                 - label: 'Linked Parent Item 1'
                   route: content-page
                   routeParams:
-                    page: askLibrary
+                    page: asklibrary
                   submenuItems:
                     - label: 'Submenu 1 Item 1'
                       route: content-page
                       routeParams:
-                        page: askLibrary
+                        page: asklibrary
                     - label: 'Submenu 1 Item 2'
                       url: '#'
                       submenuItems:
@@ -168,14 +168,14 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     {
         $yaml = <<<YAML
             "@parent_yaml": false
-            
+
             ExcludedGroup:
               label: 'Group 1 excluded from site map page'
               MenuItems:
                 - label: 'Group 1 Item 1'
                   url: '#'
               excludeFromSiteMapPage: true
-            
+
             GroupWithOneExcludedItem:
               label: 'Group 2 with one item excluded from site map page'
               MenuItems:
@@ -186,7 +186,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                   excludeFromSiteMapPage: true
                 - label: 'Group 2 Item 3'
                   url: '#'
-            
+
             GroupWithAllItemsExcluded:
               label: 'Group 3 with all items excluded from site map page'
               MenuItems:
@@ -234,7 +234,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '#content > h2:nth-child(2) > a:nth-child(1)')
         );
         $this->assertStringEndsWith(
-            '/Content/askLibrary',
+            '/Content/asklibrary',
             $this->findCss($page, '#content')->findLink('Ask a Librarian')->getAttribute('href')
         );
 

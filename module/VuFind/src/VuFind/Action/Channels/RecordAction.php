@@ -61,8 +61,11 @@ class RecordAction extends AbstractChannelsAction
         $recordId = $this->getQueryParam('id');
         $source = $this->getQueryParam('source', DEFAULT_SEARCH_BACKEND);
         $activeChannel = $this->getQueryParam('channelProvider');
+        $configSections = $this->getQueryParam('context');
         $token = $this->getQueryParam('channelToken');
-        $context = $this->channelLoader->getRecordContext($recordId, $token, $activeChannel, $source);
+        // If an active channel is set, it might come from a non-default config; check provided sections:
+        $configSections = $activeChannel && $configSections ? explode(':', $configSections) : ['record'];
+        $context = $this->channelLoader->getRecordContext($recordId, $token, $activeChannel, $source, $configSections);
         return $this->renderTemplate($request, $response, $context);
     }
 }

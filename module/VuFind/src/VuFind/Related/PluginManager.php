@@ -56,15 +56,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        MoreByAuthorSolr::class => SimilarFactory::class,
-    ];
-
-    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
@@ -80,8 +71,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
         $this->sharedByDefault = false;
-        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
+        $this->addAbstractFactory(PluginFactory::class);
     }
 
     /**

@@ -145,7 +145,7 @@ class Memory
             'view' => $params->getView(),
         ];
         // Special case: RSS view should not be persisted:
-        if (strtolower($settings['view']) == 'rss') {
+        if (strtolower($settings['view']) === 'rss') {
             unset($settings['view']);
         }
         $this->rememberLastSettings($params->getSearchClassId(), $settings);

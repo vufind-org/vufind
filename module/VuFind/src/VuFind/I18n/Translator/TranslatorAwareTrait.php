@@ -285,7 +285,7 @@ trait TranslatorAwareTrait
         if (count($parts) < 1 || count($parts) > 2) {
             throw new \Exception('Unexpected value sent to translator!');
         }
-        if (count($parts) == 2) {
+        if (count($parts) === 2) {
             if (empty($parts[0])) {
                 $parts[0] = 'default';
             }

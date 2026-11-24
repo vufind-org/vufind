@@ -270,7 +270,7 @@ class InstallCommand extends Command
         // Suggest a symlink name based on the local directory, so if running in
         // multisite mode, we don't use the same symlink for multiple instances:
         $symlink = basename($this->overrideDir);
-        $symlink = ($symlink == 'local') ? 'vufind' : ('vufind-' . $symlink);
+        $symlink = ($symlink === 'local') ? 'vufind' : ('vufind-' . $symlink);
         $symlink .= '.conf';
 
         return "You can do it in either of two ways:\n\n"

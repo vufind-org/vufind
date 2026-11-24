@@ -13,5 +13,5 @@
 <?=$this->flashmessages()?>
 <form class="form-search-email" method="post" name="emailSearch">
   <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>">
-  <?=$this->render('Helpers/email-form-fields.phtml')?>
+  <?=$this->context($this)->renderInContext('Helpers/email-form-fields.phtml')?>
 </form>

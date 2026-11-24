@@ -34,7 +34,6 @@ use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\Install\FixBasicConfigAction;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
-use VuFind\Http\ServerUrlHelper;
 
 /**
  * Install FixBasicConfigAction test class.
@@ -58,8 +57,6 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
         $routeHelper = $this->createMock(RouteHelper::class);
         $homePath = '/';
         $routeHelper->method('getUrlFromRoute')->with('home')->willReturn($homePath);
-        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
-        $serverUrlHelper->method('getUrlForPath')->with($homePath)->willReturn('https://vufind.example.edu/');
 
         $expectedResponse = new Response();
         $redirectHelper = $this->createMock(RedirectHelper::class);
@@ -73,19 +70,19 @@ class FixBasicConfigActionTest extends AbstractInstallActionTestCase
             [RedirectHelper::class => $redirectHelper],
             $routeHelper
         );
-        $this->setProperty($action, 'serverUrlHelper', $serverUrlHelper);
+        $this->setProperty($action, 'absoluteBaseUrl', 'https://vufind.example.edu/');
         $action->method('installBasicConfig')->willReturn(true);
         $action->method('getFixedSecurityConfiguration')->willReturn([]);
         $action->method('getSolrUrlFromImportConfig')->willReturn('http://localhost:8983/solr');
         $action->method('changeConfig')->willReturnCallback(
             function (string $configName, array $config) use (&$captured): void {
-                $captured = $config;
+                $captured[$configName] = $config;
             }
         );
 
         $this->assertSame($expectedResponse, $action($this->getServerRequest(), new Response()));
-        $this->assertSame('https://vufind.example.edu', $captured['Site']['url']);
-        $this->assertSame('http://localhost:8983/solr', $captured['Index']['url']);
+        $this->assertSame('https://vufind.example.edu', $captured['config']['Site']['url']);
+        $this->assertSame('http://localhost:8983/solr', $captured['config']['Index']['url']);
     }
 
     /**

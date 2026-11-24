@@ -68,9 +68,8 @@ class QueryBuilder
      * @param ?ParamBag     $params Search backend parameters
      *
      * @return ParamBag
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
         // Build base query

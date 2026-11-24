@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Favorites;
 
-use Laminas\Stdlib\Parameters;
-
 /**
  * Search Favorites Parameters.
  *
@@ -45,15 +43,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Parameters $request Parameter object representing user
+     * @param array $request Parameter array representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(Parameters $request): void
+    protected function initFilters(array $request): void
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
-        $id = $request->get('id');
+        $id = $request['id'] ?? null;
         if (!empty($id)) {
             $this->addFilter("lists:{$id}");
         }

@@ -250,6 +250,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
         bool $tokenOnly = false,
         string $context = 'default'
     ): array {
+        $limit = $this->limit ?? $this->batchSize;
         $retVal = [
             'title' => $this->translate(
                 'nearby_items',
@@ -257,7 +258,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             ),
             'providerId' => $this->providerId,
             'links' => [],
-            'limit' => $this->batchSize,
+            'limit' => $limit,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -273,8 +274,9 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 $this->browseIndex,
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
-                0,
-                $this->batchSize,
+                // Pagination
+                $this->page - 1, // adjust for zero-based pagination
+                $limit,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );

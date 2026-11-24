@@ -108,7 +108,7 @@ class HierarchyTree extends AbstractBase
         $hierarchySetting = ($request = $this->getRequest())
             ? $request->getPost('hierarchy', $request->getQuery('hierarchy', false))
             : false;
-        if (count($treeList) == 1 || !$hierarchySetting) {
+        if (count($treeList) === 1 || !$hierarchySetting) {
             $keys = array_keys($treeList);
             return $keys[0];
         } else {

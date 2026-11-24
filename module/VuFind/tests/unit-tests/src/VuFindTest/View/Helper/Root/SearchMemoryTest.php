@@ -29,9 +29,9 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Stdlib\Parameters;
 use Laminas\View\Helper\EscapeHtml;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\Memory;
 use VuFind\Search\Params\PluginManager;
 use VuFind\Search\Solr\Options;
@@ -70,11 +70,9 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock Solr Params object.
      *
-     * @param array $requestArray Request array to populate Params from.
-     *
      * @return MockObject&Params
      */
-    protected function getMockSolrParams(array $requestArray = []): MockObject&Params
+    protected function getMockSolrParams(): MockObject&Params
     {
         $solrOptions = $this->createMock(Options::class);
         $solrOptions->expects($this->once())->method('getSearchAction')->willReturn($this->searchRoute);
@@ -120,7 +118,12 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         });
         $searchParams = $this->createMock(PluginManager::class);
         $searchParams->method('get')->with('Solr')->willReturn($solrParams);
-        return $this->getSearchMemoryViewHelper($memory, $url, $escapeHtml, $searchParams);
+        return $this->getSearchMemoryViewHelper(
+            $memory,
+            new RouteHelper(fn () => $url),
+            $escapeHtml,
+            $searchParams
+        );
     }
 
     /**
@@ -138,9 +141,8 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     ): void {
         $memory = $this->createMock(Memory::class);
         $memory->expects($this->once())->method('retrieveSearch')->willReturn($this->searchBasePath . $query);
-        $solrParams = $this->getMockSolrParams($expectedRequestArray);
-        $expectedRequest = new Parameters($expectedRequestArray);
-        $solrParams->expects($this->once())->method('initFromRequest')->with($expectedRequest);
+        $solrParams = $this->getMockSolrParams();
+        $solrParams->expects($this->once())->method('initFromRequest')->with($expectedRequestArray);
         $helper = $this->getConfiguredHelper($solrParams, $memory);
         $this->assertEquals($solrParams, $helper->getLastSearchParams('Solr'));
     }

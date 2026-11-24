@@ -191,7 +191,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $session->visit($this->getVuFindUrl() . '/Account/Profile');
         $page = $session->getPage();
 
         // Log in
@@ -270,6 +270,8 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'config' => $this->getConfigIniEmailOverrides() + $this->getConfigIniOverrides(),
+                // Include Demo config to avoid exceptions:
+                'Demo' => $this->getDemoIniOverrides(),
             ]
         );
         $session = $this->getMinkSession();

@@ -68,7 +68,7 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
         $rec->setConfig($config);
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),
-            new \Laminas\Stdlib\Parameters()
+            []
         );
         $rec->process(
             $this->createMock(\VuFind\Search\Solr\Results::class)

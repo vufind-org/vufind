@@ -153,7 +153,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
         $handle = opendir($dir);
         while ($file = readdir($handle)) {
             $full = $dir . '/' . $file;
-            if ($file != '.' && $file != '..' && is_dir($full)) {
+            if ($file !== '.' && $file !== '..' && is_dir($full)) {
                 $this->checkDirectory($normalizer, $full);
             } elseif (str_ends_with($file, '.ini')) {
                 $this->assertEquals(

@@ -35,7 +35,6 @@ namespace VuFindTest\Action;
 
 use Generator;
 use GuzzleHttp\Psr7\Response;
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\ResponseHelper;
 use VuFind\Config\ConfigManager;
@@ -51,6 +50,7 @@ use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchRunner;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Solr\Options;
+use VuFind\Service\AuthorizationServiceInterface;
 use VuFindApi\Action\SearchApi\RecordAction;
 use VuFindApi\Action\SearchApi\SearchAction;
 use VuFindApi\Formatter\FacetFormatter;
@@ -230,7 +230,7 @@ class SearchAndRecordActionsTest extends AbstractActionTestCase
         $configManager = $this->createMock(ConfigManager::class);
         $configManager->method('getConfigArray')->willReturn($config);
 
-        $authorizationService = $this->createMock(AuthorizationService::class);
+        $authorizationService = $this->createMock(AuthorizationServiceInterface::class);
 
         if ($recordAction) {
             $action = new RecordAction(

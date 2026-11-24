@@ -29,7 +29,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Stdlib\Parameters;
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\PaginationControl;
 use Psr\Http\Message\ServerRequestInterface;
@@ -178,7 +177,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
-        $paramsObj->initFromRequest(new Parameters($searchParams));
+        $paramsObj->initFromRequest($searchParams);
         $results->performAndProcessSearch();
 
         // For a page parameter being out of the results list,
@@ -280,9 +279,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param string                 $navClass Additional class for the nav element
      *
      * @return ?string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function renderPagination(
         ServerRequestInterface $request,
         Results $results,
@@ -370,8 +368,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param Results                $results Search results
      *
      * @return ?string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderAnalytics(
         ServerRequestInterface $request,

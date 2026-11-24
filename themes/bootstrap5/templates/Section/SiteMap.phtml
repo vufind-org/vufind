@@ -20,7 +20,7 @@
           <?php else: ?>
             <h2><?= $label ?></h2>
           <?php endif; ?>
-          <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
+          <?= $this->context($this)->renderInContext('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
           <?php if ($groupHasLabel): ?>
             </li>
           <?php endif; ?>

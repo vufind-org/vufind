@@ -38,7 +38,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
+use VuFind\Http\RouteHelper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
+use VuFind\RecordDriver\AbstractBase;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
 use VuFind\View\GlobalsContainer;
@@ -110,10 +112,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
         $truncate = new \VuFind\View\Helper\Root\Truncate();
 
-        $searchParams = new \VuFind\View\Helper\Root\SearchParams(
-            new \VuFind\Search\Params\PluginManager($container)
-        );
-
         $memory = $this->createMock(\VuFind\Search\Memory::class);
         $memory->method('getLastSearchId')->willReturn(-123);
 
@@ -122,7 +120,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $recordLinker = new \VuFind\View\Helper\Root\RecordLinker(
             $this->getMockRecordRouter(),
             $memory,
-            $url,
+            $this->createMock(RouteHelper::class),
             $pluginManager,
             $translate,
             $truncate,
@@ -167,7 +165,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')
-            ->willReturnCallback(function ($service) {
+            ->willReturnCallback(function (string $service) {
                 return $this->createMock($service);
             });
         $record->setDbServiceManager($serviceManager);
@@ -217,9 +215,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Fixture fields to override.
      *
-     * @return SolrDefault
+     * @return AbstractBase
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = []): AbstractBase
     {
         $record = new class () extends \VuFind\RecordDriver\SolrDefault {
             /**
@@ -251,9 +249,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
              * getAuthorDataFields)
              *
              * @return array
-             *
-             * @SuppressWarnings(PHPMD.UnusedFormalParameter)
              */
+            #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
             public function getDeduplicatedAuthors($dataFields = [])
             {
                 return [
@@ -324,7 +321,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordDataFormatter
      */
-    protected function getFormatter($additionalConfig = [], $additionalSpecs = [])
+    protected function getFormatter(array $additionalConfig = [], array $additionalSpecs = []): RecordDataFormatter
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $recordDataFormatterConfig = array_merge($additionalConfig, [
@@ -416,7 +413,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected function findResult($needle, $haystack)
+    protected function findResult(string $needle, array $haystack): mixed
     {
         foreach ($haystack as $current) {
             if ($current['label'] == $needle) {
@@ -433,7 +430,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getLabels($results)
+    protected function getLabels(array $results): array
     {
         $callback = function ($c) {
             return $c['label'];
@@ -764,7 +761,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    public function getGlobalTestConfig()
+    public function getGlobalTestConfig(): array
     {
         return [
             'Global' => [
@@ -880,13 +877,13 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Invokes a RecordDataFormatter with a driver and returns getData results.
      *
-     * @param SolrDefault $driver        Driver to invoke with.
-     * @param array       $spec          Specifications to test with.
-     * @param array       $globalOptions Optional global options.
+     * @param AbstractBase $driver        Driver to invoke with.
+     * @param array        $spec          Specifications to test with.
+     * @param array        $globalOptions Optional global options.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecs($driver, array $spec, $globalOptions = []): array
+    protected function getInvokedSpecs(AbstractBase $driver, array $spec, array $globalOptions = []): array
     {
         $formatter = ($this->getFormatter($globalOptions))($driver);
         return $formatter->getData($spec);
@@ -895,13 +892,13 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
      *
-     * @param SolrDefault $driver        Driver to call with.
-     * @param array       $spec          Specifications to test with.
-     * @param array       $globalOptions Optional global options.
+     * @param AbstractBase $driver        Driver to call with.
+     * @param array        $spec          Specifications to test with.
+     * @param array        $globalOptions Optional global options.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecs($driver, array $spec, $globalOptions = []): array
+    protected function getOldSpecs(AbstractBase $driver, array $spec, array $globalOptions = []): array
     {
         $formatter = $this->getFormatter($globalOptions);
         return $formatter->getData($driver, $spec);
@@ -910,12 +907,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Invokes a RecordDataFormatter with global options and with a driver and returns getData results.
      *
-     * @param SolrDefault $driver Driver to invoke with.
-     * @param array       $spec   Specifications to test with.
+     * @param AbstractBase $driver Driver to invoke with.
+     * @param array        $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecsWithGlobalOptions($driver, array $spec): array
+    protected function getInvokedSpecsWithGlobalOptions(AbstractBase $driver, array $spec): array
     {
         return $this->getInvokedSpecs($driver, $spec, $this->getGlobalTestConfig());
     }
@@ -923,12 +920,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Calls RecordDataFormatter::getData with global options with a driver as parameter and returns the results.
      *
-     * @param SolrDefault $driver Driver to call with.
-     * @param array       $spec   Specifications to test with.
+     * @param AbstractBase $driver Driver to call with.
+     * @param array        $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecsWithGlobalOptions($driver, array $spec): array
+    protected function getOldSpecsWithGlobalOptions(AbstractBase $driver, array $spec): array
     {
         return $this->getOldSpecs($driver, $spec, $this->getGlobalTestConfig());
     }

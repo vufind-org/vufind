@@ -51,7 +51,7 @@
             </span>
           <?php endif; ?>
         <?php else: ?>
-          <?=$this->render('RecordDriver/EDS/result-list/full-text-links.phtml', ['driver' => $this->driver, 'recordLinker' => $this->recordLinker()])?>
+          <?=$this->context($this)->renderInContext('RecordDriver/EDS/result-list/full-text-links.phtml', ['driver' => $this->driver, 'recordLinker' => $this->recordLinker()])?>
         <?php endif; ?>
       <?php endif; ?>
     </div>
@@ -117,7 +117,7 @@
           $url = $customLink['Url'] ?? '';
           $mot = $customLink['MouseOverText'] ?? '';
           $icon = $customLink['Icon'] ?? '';
-          $name = $customLink['Text'] ?? '';
+          $name = $customLink['Text'] ?: $mot ?: $url;
         ?>
         <div>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">

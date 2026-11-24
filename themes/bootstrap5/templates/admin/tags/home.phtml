@@ -1,7 +1,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Management')]);?>
 
-  <?=$this->render('admin/tags/menu.phtml')?>
+  <?=$this->context($this)->renderInContext('admin/tags/menu.phtml')?>
 
   <h3><?=$this->translate('Statistics')?></h3>
   <table class="table table-striped">

@@ -340,7 +340,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testAddingNoticesInAdminModule(): void
     {
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin/Notices');
         $page = $session->getPage();
@@ -429,7 +429,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testAddingNoticesInAdminModule')]
     public function testEditingNoticesInAdminModule(): void
     {
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin/Notices');
         $page = $session->getPage();
@@ -516,7 +516,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testEditingNoticesInAdminModule')]
     public function testDeletingNoticesInAdminModule(): void
     {
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin/Notices');
         $page = $session->getPage();
@@ -573,7 +573,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testDeletingNoticesInAdminModule')]
     public function testNoticesWithDateOrTimeRestrictionsInAdminModule(): void
     {
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin/Notices');
         $page = $session->getPage();
@@ -697,7 +697,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     #[\PHPUnit\Framework\Attributes\Depends('testNoticesWithDateOrTimeRestrictionsInAdminModule')]
     public function testNoticesWithDateOrTimeContextsInAdminModule(): void
     {
-        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeConfigs($this->getAdminPermissionConfig() + ['config' => ['Site' => ['admin_enabled' => 1]]]);
         $this->changeYamlConfigs(
             [
                 'Notices' => [

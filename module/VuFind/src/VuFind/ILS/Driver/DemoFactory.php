@@ -68,7 +68,7 @@ class DemoFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($ns) use ($container) {
-            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            $manager = $container->get(\Laminas\Session\ManagerInterface::class);
             return new \Laminas\Session\Container('DemoDriver' . $ns, $manager);
         };
         $driver = parent::__invoke(

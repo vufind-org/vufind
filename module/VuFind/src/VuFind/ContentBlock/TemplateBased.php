@@ -110,9 +110,8 @@ class TemplateBased implements ContentBlockInterface
      * @param string $path         Full path of template file
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextForMd(string $relativePath, string $path): array
     {
         return [
@@ -128,9 +127,8 @@ class TemplateBased implements ContentBlockInterface
      * @param string $path         Full path of template file
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getContextForPhtml(string $relativePath, string $path): array
     {
         return ['template' => $relativePath];

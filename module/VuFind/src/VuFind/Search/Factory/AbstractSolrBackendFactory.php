@@ -202,9 +202,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
@@ -215,8 +214,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
-        $connector = $this->createConnector();
-        $backend   = $this->createBackend($connector);
+        $similarBuilder = $this->createSimilarBuilder();
+        $connector = $this->createConnector($similarBuilder);
+        $backend   = $this->createBackend($connector, $similarBuilder);
         $backend->setIdentifier($requestedName);
         $this->createListeners($backend);
         return $backend;
@@ -292,12 +292,15 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Create the SOLR backend.
      *
-     * @param Connector $connector Connector
+     * @param Connector      $connector      Connector
+     * @param SimilarBuilder $similarBuilder Similar records query builder
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector): Backend
-    {
+    protected function createBackend(
+        Connector $connector,
+        SimilarBuilder $similarBuilder
+    ): Backend {
         $backend = new $this->backendClass($connector);
         $pageSize = $this->getIndexConfig('record_batch_size', 100);
         $maxClauses = $this->getIndexConfig('maxBooleanClauses', $pageSize);
@@ -305,7 +308,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $backend->setPageSize(min($pageSize, $maxClauses));
         }
         $backend->setQueryBuilder($this->createQueryBuilder());
-        $backend->setSimilarBuilder($this->createSimilarBuilder());
+        $backend->setSimilarBuilder($similarBuilder);
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -481,9 +484,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Create the SOLR connector.
      *
+     * @param SimilarBuilder $similarBuilder Similar records query builder
+     *
      * @return Connector
      */
-    protected function createConnector(): Connector
+    protected function createConnector(SimilarBuilder $similarBuilder): Connector
     {
         $timeout = $this->getIndexConfig('timeout', 30);
         $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
@@ -502,10 +507,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             'terms' => [
                 'functions' => ['terms'],
             ],
-            'morelikethis' => [
-                'functions' => ['similar'],
-            ],
         ];
+
+        // Only route similar() to /morelikethis if not using legacy qt= approach.
+        if (!$similarBuilder->usesQtParam()) {
+            $handlers['morelikethis'] = [
+                'functions' => ['similar'],
+            ];
+        }
 
         foreach ($this->getHiddenFilters() as $filter) {
             array_push($handlers['select']['appends']['fq'], $filter);
@@ -541,9 +550,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * @param string $url URL being requested
      *
      * @return array
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\PHPMD\Attribute\SuppressWarnings(\PHPMD\Rule\UnusedFormalParameter::class)]
     protected function getHttpOptions(string $url): array
     {
         return $this->getIndexConfig(static::HTTP_CONFIG_KEY, []);
@@ -723,7 +731,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $search['ConditionalHiddenFilters']
         );
         $listener->setAuthorizationService(
-            $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
+            $this->getService(\VuFind\Service\AuthorizationServiceInterface::class)
         );
         return $listener;
     }

@@ -194,7 +194,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         ) {
             $advOutput = '((' . $output . '))';
         } else {
-            $mm = $handler == 'dismax' ? '100%' : '0%';
+            $mm = $handler === 'dismax' ? '100%' : '0%';
             $advOutput = "((_query_:\"{!$handler qf=\\\"foo\\\" mm=\\'$mm\\'}"
                 . addslashes($output) . '"))';
         }

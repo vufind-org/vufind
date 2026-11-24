@@ -9,12 +9,12 @@
 
   // Override search results:
   $this->slot('search-controls')->set(
-      $this->render('search/controls/limit.phtml')
-      . ' ' . $this->render('search/controls/view.phtml')
+      $this->context($this)->renderInContext('search/controls/limit.phtml')
+      . ' ' . $this->context($this)->renderInContext('search/controls/view.phtml')
   );
 
   // Call the standard search template:
-  echo $this->render('search/results.phtml');
+  echo $this->context($this)->renderInContext('search/results.phtml');
 
   // Override searchbox:
   $this->globals()['searchbox'] = $this->context($this)->renderInContext(

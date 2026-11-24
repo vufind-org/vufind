@@ -1,7 +1,7 @@
 <?php
   // Load the EDS-specific advanced search controls and inject them into the
   // standard advanced search layout:
-  $this->extraAdvancedControls = $this->render('search/advanced/eds.phtml');
+  $this->extraAdvancedControls = $this->context($this)->renderInContext('search/advanced/eds.phtml');
   $this->buildPageOverride = '/search/advanced/build_page_eds.phtml';
 
   ob_start();
@@ -46,5 +46,5 @@
   $this->formOverride = ob_get_contents();
   ob_end_clean();
 
-  echo $this->render('search/advanced/layout.phtml');
+  echo $this->context($this)->renderInContext('search/advanced/layout.phtml');
 ?>

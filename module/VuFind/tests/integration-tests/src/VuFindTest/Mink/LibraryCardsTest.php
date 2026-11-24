@@ -272,7 +272,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->setUpLibraryCardConfigs();
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
@@ -313,7 +313,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->setUpLibraryCardConfigs(false);
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $session->visit($this->getVuFindUrl('/Account/Profile'));
         $page = $session->getPage();
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);

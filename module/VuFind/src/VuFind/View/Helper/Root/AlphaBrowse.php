@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Url;
+use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -46,12 +46,11 @@ class AlphaBrowse
     /**
      * Constructor.
      *
-     * @param Url   $url     URL helper
-     * @param array $options Additional configuration options
+     * @param RouteHelper $routeHelper Route helper
+     * @param array       $options     Additional configuration options
      */
     public function __construct(
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Url $url,
+        protected RouteHelper $routeHelper,
         #[Autowire(config: 'config', path: 'AlphaBrowse', default: [])]
         protected array $options = []
     ) {
@@ -73,7 +72,8 @@ class AlphaBrowse
 
         $query = [
             'type' => ucwords($source) . 'Browse',
-            'lookfor' => $this->escapeForSolr($item['sort_key']),
+            // this is needed for appropriate title browsing as searching by sort_key causes issues
+            'lookfor' => $this->escapeForSolr($source == 'title' ? $item['heading'] : $item['sort_key']),
         ];
         if ($this->options['bypass_default_filters'] ?? true) {
             $query['dfApplied'] = 1;
@@ -81,7 +81,7 @@ class AlphaBrowse
         if ($item['count'] == 1) {
             $query['jumpto'] = 1;
         }
-        return ($this->url)('search-results', [], ['query' => $query]);
+        return $this->routeHelper->getUrlFromRoute('search-results', queryParams: $query);
     }
 
     /**

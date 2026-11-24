@@ -105,7 +105,7 @@ class Context
      *
      * @return string          Rendered template output
      */
-    public function renderInContext($template, $context)
+    public function renderInContext($template, $context = [])
     {
         $oldContext = $this->apply($context);
         $html = $this->view->render($template);

@@ -82,7 +82,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getSearchAction(): string
     {
-        return 'myresearch-favorites';
+        return 'lists-allitems';
     }
 
     /**
