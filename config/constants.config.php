@@ -4,8 +4,7 @@
 defined('APPLICATION_PATH')
     || define(
         'APPLICATION_PATH',
-        (getenv('VUFIND_APPLICATION_PATH') ? getenv('VUFIND_APPLICATION_PATH')
-            : dirname(__DIR__))
+        dirname(__DIR__)
     );
 
 // Define application environment
