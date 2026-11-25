@@ -121,13 +121,13 @@ class RatingsService
      * @param ?int         $rating The user-provided rating, or null to clear any existing
      * rating
      *
-     * @return void
+     * @return ?RatingsServiceInterface Entity of rating added, deleted or updated (or null if nothing was done)
      */
-    public function saveRating(RecordDriver $driver, int $userId, ?int $rating): void
+    public function saveRating(RecordDriver $driver, int $userId, ?int $rating): ?RatingsServiceInterface
     {
         // Clear rating cache:
         $this->ratingCache = [];
         $resource = $this->resourcePopulator->getOrCreateResourceForDriver($driver);
-        $this->dbService->addOrUpdateRating($resource, $userId, $rating);
+        return $this->dbService->addOrUpdateRating($resource, $userId, $rating);
     }
 }
