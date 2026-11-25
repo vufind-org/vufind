@@ -5,11 +5,11 @@
 ?>
 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
 <?php if ($hasNumber): ?>
-  <label class="checkbox-select">
+  <label class="checkbox-select" aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number]) ?>">
 <?php else: ?>
   <span class="checkbox-select">
 <?php endif; ?>
-  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number])?>">
+  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
   <?php if ($hasNumber): ?>
     <span class="checkbox-select-number"><?=$this->escapeHtml($this->number) ?></span>
   <?php endif; ?>
