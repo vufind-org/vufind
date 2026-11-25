@@ -31,7 +31,6 @@ namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
 use Laminas\Session\SessionManager;
-use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\PersistenceManager;
 use VuFind\Session\HandlerInterface;

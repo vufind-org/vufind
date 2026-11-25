@@ -107,10 +107,7 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
         $i = 0;
         foreach ($this->getSessionDatabaseServices() as $databaseService) {
             $serviceMock = $this->createMock($databaseService);
-            $serviceMock
-                ->expects($this->any())
-                ->method('deleteRowsWithoutSession')
-                ->willReturn($i++);
+            $serviceMock->method('deleteRowsWithoutSession')->willReturn($i++);
             $serviceManager->set($databaseService, $serviceMock);
         }
 
