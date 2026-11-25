@@ -2,15 +2,25 @@
   // Set a flag for whether we have a record number.
   // If we do, we'll use it as a label; if not, we'll assume that higher-level code will provide labeling.
   $hasNumber = strlen($this->number ?? '') > 0;
+  $tag = $hasNumber ? 'label' : 'span';
+  $inputAttributes = [
+    'class' => 'checkbox-select-item',
+    'type' => 'checkbox',
+    'name' => 'ids[]',
+    'value' => $this->id,
+  ];
+  if (isset($this->formAttr)) {
+    $inputAttributes['form'] = $this->formAttr;
+  }
+  if ($hasNumber) {
+    $inputAttributes['aria-label'] = $this->translate('result_checkbox_label', ['%%number%%' => $this->number]);
+  }
 ?>
 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
-<?php if ($hasNumber): ?>
-  <label class="checkbox-select">
-<?php else: ?>
-  <span class="checkbox-select">
-<?php endif; ?>
-  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number])?>">
+<<?=$tag?> class="checkbox-select">
+  <input<?=$this->htmlAttributes($inputAttributes)?>>
   <?php if ($hasNumber): ?>
     <span class="checkbox-select-number"><?=$this->escapeHtml($this->number) ?></span>
   <?php endif; ?>
-<?=$hasNumber ? '</label>' : '</span>'?>
+</<?=$tag?>>
+
