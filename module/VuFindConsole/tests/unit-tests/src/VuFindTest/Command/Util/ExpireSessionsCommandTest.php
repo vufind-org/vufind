@@ -101,7 +101,6 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
      */
     protected function getExtraCommandConstructorArgs(): array
     {
-
         $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
         foreach ($this->getSessionDatabaseServices() as $databaseService) {
             $serviceMock = $this->createMock($databaseService);
