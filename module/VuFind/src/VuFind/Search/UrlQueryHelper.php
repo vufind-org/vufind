@@ -29,6 +29,7 @@
 
 namespace VuFind\Search;
 
+use Closure;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
@@ -199,7 +200,7 @@ class UrlQueryHelper
     protected function getDefault($key)
     {
         $default = $this->config['defaults'][$key] ?? null;
-        return is_callable($default) ? $default() : $default;
+        return $default instanceof Closure ? $default() : $default;
     }
 
     /**

@@ -29,10 +29,9 @@
 
 namespace VuFind\Search\Factory;
 
+use Closure;
 use VuFind\Search\Base\Params;
 use VuFind\Search\UrlQueryHelper;
-
-use function is_callable;
 
 /**
  * Factory to build UrlQueryHelper.
@@ -166,7 +165,7 @@ class UrlQueryHelperFactory
     }
 
     /**
-     * If value is callable call it and otherwise just return value.
+     * If value is closure, call it and otherwise just return it.
      *
      * @param mixed $value Value
      *
@@ -174,6 +173,6 @@ class UrlQueryHelperFactory
      */
     protected function extractCallableValue(mixed $value): mixed
     {
-        return is_callable($value) ? $value() : $value;
+        return $value instanceof Closure ? $value() : $value;
     }
 }
