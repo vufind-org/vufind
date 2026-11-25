@@ -57,13 +57,6 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     protected string $additionalDeleteConditions = '';
 
     /**
-     * Get class name of entity managed by the service.
-     *
-     * @return string
-     */
-    abstract protected function getEntityClass(): string;
-
-    /**
      * Constructor.
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
@@ -81,6 +74,13 @@ abstract class AbstractSessionRelatedDataService extends AbstractDbService imple
     ) {
         parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
+
+    /**
+     * Get class name of entity managed by the service.
+     *
+     * @return string
+     */
+    abstract protected function getEntityClass(): string;
 
     /**
      * Persist an entity.
