@@ -223,7 +223,6 @@ class RatingsService extends AbstractDbService implements
             } else {
                 $existing->setRating($rating);
             }
-            $updatedRatingId = $existing->getId();
             try {
                 $this->entityManager->flush();
             } catch (\Exception $e) {
